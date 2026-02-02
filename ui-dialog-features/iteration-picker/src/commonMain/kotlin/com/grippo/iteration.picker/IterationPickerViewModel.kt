@@ -26,7 +26,7 @@ public class IterationPickerViewModel(
 
     override fun onVolumeChange(value: String) {
         update {
-            val iteration = it.value.copy(external = VolumeFormatState.of(value))
+            val iteration = it.value.copy(externalWeight = VolumeFormatState.of(value))
             it.copy(value = iteration)
         }
     }
@@ -42,7 +42,7 @@ public class IterationPickerViewModel(
         update {
             val selected = it.suggestions.find { f -> f.id == id } ?: return@update it
             val iteration = it.value.copy(
-                external = selected.external,
+                externalWeight = selected.externalWeight,
                 repetitions = selected.repetitions
             )
             it.copy(value = iteration)

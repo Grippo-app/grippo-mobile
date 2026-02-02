@@ -8,7 +8,10 @@ public fun SetIteration.toEntity(exerciseId: String): DraftIterationEntity {
     return DraftIterationEntity(
         id = Uuid.random().toString(),
         exerciseId = exerciseId,
-        volume = volume,
+        externalWeight = externalWeight,
+        extraWeight = extraWeight,
+        assistWeight = assistWeight,
+        bodyWeight = bodyWeight,
         repetitions = repetitions
     )
 }

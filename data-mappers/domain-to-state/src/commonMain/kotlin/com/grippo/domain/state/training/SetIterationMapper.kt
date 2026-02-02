@@ -15,10 +15,10 @@ public fun List<SetIteration>.toState(): PersistentList<IterationState> {
 public fun SetIteration.toState(): IterationState {
     return IterationState(
         id = Uuid.random().toString(),
-        external = VolumeFormatState.of(volume),
-        extra = VolumeFormatState.of(0f),
-        assist = VolumeFormatState.of(0f),
-        body = VolumeFormatState.of(0f),
+        externalWeight = VolumeFormatState.of(volume),
+        extraWeight = VolumeFormatState.of(0f),
+        assistWeight = VolumeFormatState.of(0f),
+        bodyWeight = VolumeFormatState.of(0f),
         repetitions = RepetitionsFormatState.of(repetitions)
     )
 }

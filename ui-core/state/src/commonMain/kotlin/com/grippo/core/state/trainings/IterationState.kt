@@ -11,36 +11,36 @@ import kotlin.uuid.Uuid
 @Serializable
 public data class IterationState(
     val id: String,
-    val external: VolumeFormatState,
-    val extra: VolumeFormatState,
-    val assist: VolumeFormatState,
-    val body: VolumeFormatState,
+    val externalWeight: VolumeFormatState,
+    val extraWeight: VolumeFormatState,
+    val assistWeight: VolumeFormatState,
+    val bodyWeight: VolumeFormatState,
     val repetitions: RepetitionsFormatState,
 )
 
 public fun stubIteration(): IterationState = listOf(
     IterationState(
         id = Uuid.random().toString(),
-        external = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        externalWeight = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
         repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16)),
-        extra = VolumeFormatState.of(0f),
-        body = VolumeFormatState.of(0f),
-        assist = VolumeFormatState.of(0f),
+        extraWeight = VolumeFormatState.of(0f),
+        bodyWeight = VolumeFormatState.of(0f),
+        assistWeight = VolumeFormatState.of(0f),
     ),
     IterationState(
         id = Uuid.random().toString(),
-        external = VolumeFormatState.of(0f),
+        externalWeight = VolumeFormatState.of(0f),
         repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16)),
-        extra = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
-        body = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
-        assist = VolumeFormatState.of(0f),
+        extraWeight = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        bodyWeight = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        assistWeight = VolumeFormatState.of(0f),
     ),
     IterationState(
         id = Uuid.random().toString(),
-        external = VolumeFormatState.of(0f),
+        externalWeight = VolumeFormatState.of(0f),
         repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16)),
-        extra = VolumeFormatState.of(0f),
-        body = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
-        assist = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        extraWeight = VolumeFormatState.of(0f),
+        bodyWeight = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        assistWeight = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
     )
 ).random()

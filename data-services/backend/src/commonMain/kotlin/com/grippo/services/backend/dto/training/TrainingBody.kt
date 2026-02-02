@@ -37,6 +37,12 @@ public data class ExerciseBody(
 public data class IterationBody(
     @SerialName("repetitions")
     val repetitions: Int,
-    @SerialName("weight")
-    val weight: Float
+    @SerialName("extraWeight")
+    val extraWeight: Float?,
+    @SerialName("bodyWeight")
+    val bodyWeight: Float?,
+    @SerialName("assistWeight")
+    val assistWeight: Float?,
+    @SerialName("externalWeight")
+    val externalWeight: Float?,
 )

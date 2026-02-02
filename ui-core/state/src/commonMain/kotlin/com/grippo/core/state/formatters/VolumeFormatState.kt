@@ -65,7 +65,7 @@ public sealed class VolumeFormatState : FormatState<Float> {
             }
         }
 
-        public fun of(value: Float): VolumeFormatState {
+        public fun of(value: Float?): VolumeFormatState {
             return when {
                 value == null -> Empty()
 

@@ -100,7 +100,9 @@ public class GenerateTrainingUseCase(
 
         val cooledIterations = iterations.map { iteration ->
             val safeWeight = (iteration.volume * factor).coerceAtLeast(MIN_WEIGHT.toFloat())
-            iteration.copy(volume = safeWeight.toSingleDecimal())
+            iteration.copy(
+                externalWeight = safeWeight.toSingleDecimal()
+            )
         }
 
         return buildIterationStats(cooledIterations).toSetExercise(example, createdAt)
@@ -117,7 +119,10 @@ public class GenerateTrainingUseCase(
             val weightUnits = random.nextInt(minWeight * 2, maxWeight * 2 + 1)
             val weight = (weightUnits / 2f).toSingleDecimal()
             SetIteration(
-                volume = weight,
+                externalWeight = weight,
+                assistWeight = null,
+                bodyWeight = null,
+                extraWeight = null,
                 repetitions = repetitions
             )
         }

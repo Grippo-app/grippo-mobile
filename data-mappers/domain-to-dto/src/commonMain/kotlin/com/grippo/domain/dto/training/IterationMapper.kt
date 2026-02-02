@@ -10,6 +10,9 @@ public fun List<SetIteration>.toBody(): List<IterationBody> {
 public fun SetIteration.toBody(): IterationBody {
     return IterationBody(
         repetitions = repetitions,
-        weight = volume
+        extraWeight = extraWeight,
+        externalWeight = externalWeight,
+        bodyWeight = bodyWeight,
+        assistWeight = assistWeight
     )
 }

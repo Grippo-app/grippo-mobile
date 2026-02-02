@@ -41,7 +41,10 @@ public class TrainingTotalUseCase {
     private fun List<Iteration>.toSetIterations(): List<SetIteration> {
         return map { iteration ->
             SetIteration(
-                volume = iteration.volume,
+                extraWeight = iteration.extraWeight,
+                externalWeight = iteration.externalWeight,
+                assistWeight = iteration.assistWeight,
+                bodyWeight = iteration.bodyWeight,
                 repetitions = iteration.repetitions,
             )
         }

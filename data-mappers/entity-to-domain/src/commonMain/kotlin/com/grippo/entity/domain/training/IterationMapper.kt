@@ -26,7 +26,10 @@ public fun List<DraftIterationEntity>.toSetDomain(): List<SetIteration> {
 
 public fun DraftIterationEntity.toSetDomain(): SetIteration {
     return SetIteration(
-        volume = volume,
+        externalWeight = externalWeight,
+        extraWeight = extraWeight,
+        assistWeight = assistWeight,
+        bodyWeight = bodyWeight,
         repetitions = repetitions
     )
 }

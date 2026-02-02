@@ -10,7 +10,10 @@ public fun List<IterationState>.toDomain(): List<SetIteration> {
 
 public fun IterationState.toDomain(): SetIteration? {
     return SetIteration(
-        volume = external.value ?: return null,
+        externalWeight = externalWeight.value,
+        extraWeight = extraWeight.value,
+        assistWeight = assistWeight.value,
+        bodyWeight = bodyWeight.value,
         repetitions = repetitions.value ?: return null
     )
 }

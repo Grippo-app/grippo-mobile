@@ -137,7 +137,7 @@ internal fun IterationPickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(volumeRequester),
-                value = state.value.external,
+                value = state.value.externalWeight,
                 onValueChange = contract::onVolumeChange,
             )
 
@@ -145,7 +145,7 @@ internal fun IterationPickerScreen(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = state.value.external.hint(),
+                text = state.value.externalWeight.hint(),
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.tertiary,
                 textAlign = TextAlign.End
@@ -193,7 +193,7 @@ internal fun IterationPickerScreen(
                     Chip(
                         label = ChipLabel.Empty,
                         stype = ChipStype.Clickable(clickProvider),
-                        value = "${item.external.short()} ${item.repetitions.short()}",
+                        value = "${item.externalWeight.short()} ${item.repetitions.short()}",
                         trailing = ChipTrailing.Empty,
                         textColor = AppTokens.colors.text.secondary,
                         iconColor = AppTokens.colors.text.secondary,
@@ -207,12 +207,12 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-    val buttonState = remember(loaders, state.value.repetitions, state.value.external) {
+    val buttonState = remember(loaders, state.value.repetitions, state.value.externalWeight) {
         when {
             state.value.repetitions is RepetitionsFormatState.Invalid -> ButtonState.Disabled
             state.value.repetitions is RepetitionsFormatState.Empty -> ButtonState.Disabled
-            state.value.external is VolumeFormatState.Invalid -> ButtonState.Disabled
-            state.value.external is VolumeFormatState.Empty -> ButtonState.Disabled
+            state.value.externalWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
+            state.value.externalWeight is VolumeFormatState.Empty -> ButtonState.Disabled
             else -> ButtonState.Enabled
         }
     }

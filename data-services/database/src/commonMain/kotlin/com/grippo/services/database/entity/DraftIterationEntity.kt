@@ -22,6 +22,9 @@ import androidx.room.PrimaryKey
 public data class DraftIterationEntity(
     @PrimaryKey val id: String,
     val exerciseId: String,
-    val volume: Float,
+    val externalWeight: Float?,
+    val assistWeight: Float?,
+    val extraWeight: Float?,
+    val bodyWeight: Float?,
     val repetitions: Int,
 )
