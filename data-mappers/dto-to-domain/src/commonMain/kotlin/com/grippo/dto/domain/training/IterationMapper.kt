@@ -13,17 +13,16 @@ public fun IterationResponse.toDomainOrNull(): Iteration? {
         "IterationResponse.id is null"
     } ?: return null
 
-    val domainWeight = AppLogger.Mapping.log(weight) {
-        "IterationResponse.weight is null"
-    } ?: return null
-
     val domainRepetitions = AppLogger.Mapping.log(repetitions) {
         "IterationResponse.repetitions is null"
     } ?: return null
 
     return Iteration(
         id = domainId,
-        volume = domainWeight,
+        externalWeight = externalWeight,
+        extraWeight = extraWeight,
+        assistWeight = assistWeight,
+        bodyWeight = bodyWeight,
         repetitions = domainRepetitions,
     )
 }

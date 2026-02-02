@@ -17,10 +17,6 @@ public fun IterationResponse.toEntityOrNull(): IterationEntity? {
         "IterationResponse.exerciseId is null"
     } ?: return null
 
-    val entityWeight = AppLogger.Mapping.log(weight) {
-        "IterationResponse.weight is null"
-    } ?: return null
-
     val entityRepetitions = AppLogger.Mapping.log(repetitions) {
         "IterationResponse.repetitions is null"
     } ?: return null
@@ -36,7 +32,10 @@ public fun IterationResponse.toEntityOrNull(): IterationEntity? {
     return IterationEntity(
         id = entityId,
         exerciseId = entityExerciseId,
-        volume = entityWeight,
+        externalWeight = externalWeight,
+        extraWeight = extraWeight,
+        assistWeight = assistWeight,
+        bodyWeight = bodyWeight,
         repetitions = entityRepetitions,
         createdAt = entityCreatedAt,
         updatedAt = entityUpdatedAt,

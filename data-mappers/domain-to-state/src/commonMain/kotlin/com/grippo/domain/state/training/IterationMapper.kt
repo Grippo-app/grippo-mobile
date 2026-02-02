@@ -14,10 +14,10 @@ public fun List<Iteration>.toState(): PersistentList<IterationState> {
 public fun Iteration.toState(): IterationState {
     return IterationState(
         id = id,
-        external = VolumeFormatState.of(volume),
-        extra = VolumeFormatState.of(0f),
-        assist = VolumeFormatState.of(0f),
-        body = VolumeFormatState.of(0f),
+        external = VolumeFormatState.of(externalWeight),
+        extra = VolumeFormatState.of(extraWeight),
+        assist = VolumeFormatState.of(assistWeight),
+        body = VolumeFormatState.of(bodyWeight),
         repetitions = RepetitionsFormatState.of(repetitions),
     )
 }

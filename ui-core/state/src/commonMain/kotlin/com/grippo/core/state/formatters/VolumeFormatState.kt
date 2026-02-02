@@ -67,6 +67,8 @@ public sealed class VolumeFormatState : FormatState<Float> {
 
         public fun of(value: Float): VolumeFormatState {
             return when {
+                value == null -> Empty()
+
                 value == 0f -> Empty()
 
                 VolumeValidator.isValid(value) -> Valid(

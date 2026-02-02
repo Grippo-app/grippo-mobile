@@ -65,6 +65,12 @@ public data class IterationResponse(
     val repetitions: Int? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null,
-    @SerialName("weight")
-    val weight: Float? = null
+    @SerialName("extraWeight")
+    val extraWeight: Float? = null,
+    @SerialName("bodyWeight")
+    val bodyWeight: Float? = null,
+    @SerialName("assistWeight")
+    val assistWeight: Float? = null,
+    @SerialName("externalWeight")
+    val externalWeight: Float? = null,
 )
