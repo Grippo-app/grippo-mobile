@@ -243,8 +243,8 @@ private fun ScreenPreviewEmpty() {
     PreviewContainer {
         LoginScreen(
             state = LoginState(
-                email = EmailFormatState.of(""),
-                password = PasswordFormatState.of(""),
+                email = EmailFormatState.Empty(),
+                password = PasswordFormatState.Empty(),
                 isGoogleLoginAvailable = true,
                 isAppleLoginAvailable = true,
             ),

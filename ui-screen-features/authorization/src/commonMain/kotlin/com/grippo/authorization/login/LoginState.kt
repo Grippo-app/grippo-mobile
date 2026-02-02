@@ -6,8 +6,8 @@ import com.grippo.core.state.formatters.PasswordFormatState
 
 @Immutable
 internal data class LoginState(
-    val email: EmailFormatState = EmailFormatState.of(""),
-    val password: PasswordFormatState = PasswordFormatState.of(""),
+    val email: EmailFormatState = EmailFormatState.Empty(),
+    val password: PasswordFormatState = PasswordFormatState.Empty(),
     val isGoogleLoginAvailable: Boolean = false,
     val isAppleLoginAvailable: Boolean = false,
 )

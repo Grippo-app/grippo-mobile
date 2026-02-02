@@ -7,7 +7,7 @@ import com.grippo.core.state.formatters.WeightFormatState
 
 @Immutable
 internal data class UserState(
-    val name: NameFormatState = NameFormatState.of(""),
+    val name: NameFormatState = NameFormatState.Empty(),
     val weight: WeightFormatState = WeightFormatState.of(70.0F),
     val height: HeightFormatState = HeightFormatState.of(175),
 )

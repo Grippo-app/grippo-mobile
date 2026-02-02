@@ -43,6 +43,7 @@ public sealed class Leading {
     @Immutable
     public data class Profile(val onClick: (() -> Unit)) : Leading()
 
+    @Immutable
     public data object Nothing : Leading()
 }
 

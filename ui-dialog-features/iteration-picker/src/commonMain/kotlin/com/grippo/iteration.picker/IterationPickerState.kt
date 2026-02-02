@@ -14,5 +14,5 @@ public data class IterationPickerState(
     val value: IterationState,
     val suggestions: ImmutableList<IterationState>,
     val focus: IterationFocusState,
-    val userWeight: WeightFormatState? = null
+    val userWeight: WeightFormatState = WeightFormatState.Empty()
 )

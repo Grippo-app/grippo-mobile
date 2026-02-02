@@ -139,8 +139,8 @@ private fun ScreenPreviewEmpty() {
     PreviewContainer {
         CredentialScreen(
             state = CredentialState(
-                email = EmailFormatState.of(""),
-                password = PasswordFormatState.of("")
+                email = EmailFormatState.Empty(),
+                password = PasswordFormatState.Empty()
             ),
             loaders = persistentSetOf(),
             contract = CredentialContract.Empty
