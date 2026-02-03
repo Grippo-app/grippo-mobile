@@ -118,7 +118,7 @@ public fun stubExerciseExample(): ExerciseExampleState {
         value = stubExerciseExampleValueState(),
         components = ExerciseExampleComponentsState.BodyAndExtra(
             bodyRequired = true,
-            bodyMultiplier = 0.8,
+            bodyMultiplier = 0.8f,
             extraRequired = false
         ),
         bundles = stubExerciseExampleBundles(),

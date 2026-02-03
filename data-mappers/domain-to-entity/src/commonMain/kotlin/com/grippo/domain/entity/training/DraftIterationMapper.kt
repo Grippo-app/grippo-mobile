@@ -12,6 +12,7 @@ public fun SetIteration.toEntity(exerciseId: String): DraftIterationEntity {
         extraWeight = extraWeight,
         assistWeight = assistWeight,
         bodyWeight = bodyWeight,
+        bodyMultiplier = bodyMultiplier,
         repetitions = repetitions
     )
 }

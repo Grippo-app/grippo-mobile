@@ -5,6 +5,7 @@ public data class SetIteration(
     val extraWeight: Float?,
     val externalWeight: Float?,
     val bodyWeight: Float?,
+    val bodyMultiplier: Float?,
     val repetitions: Int
 ) {
     val volume: Float

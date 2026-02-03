@@ -38,5 +38,5 @@ public data class BodyWeightResponse(
     @SerialName("required")
     val required: Boolean? = null,
     @SerialName("multiplier")
-    val multiplier: Double? = null,
+    val multiplier: Float? = null,
 )

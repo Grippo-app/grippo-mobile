@@ -120,10 +120,11 @@ public class GenerateTrainingUseCase(
             val weight = (weightUnits / 2f).toSingleDecimal()
             SetIteration(
                 externalWeight = weight,
+                repetitions = repetitions,
                 assistWeight = null,
                 bodyWeight = null,
                 extraWeight = null,
-                repetitions = repetitions
+                bodyMultiplier = null,
             )
         }
     }

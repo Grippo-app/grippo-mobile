@@ -46,6 +46,7 @@ public class TrainingTotalUseCase {
                 assistWeight = iteration.assistWeight,
                 bodyWeight = iteration.bodyWeight,
                 repetitions = iteration.repetitions,
+                bodyMultiplier = iteration.bodyMultiplier
             )
         }
     }

@@ -41,6 +41,8 @@ public data class IterationBody(
     val extraWeight: Float?,
     @SerialName("bodyWeight")
     val bodyWeight: Float?,
+    @SerialName("bodyMultiplier")
+    val bodyMultiplier: Float?,
     @SerialName("assistWeight")
     val assistWeight: Float?,
     @SerialName("externalWeight")

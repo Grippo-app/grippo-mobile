@@ -14,6 +14,7 @@ public fun IterationState.toDomain(): SetIteration? {
         extraWeight = extraWeight.value,
         assistWeight = assistWeight.value,
         bodyWeight = bodyWeight.value,
+        bodyMultiplier = bodyMultiplier.value,
         repetitions = repetitions.value ?: return null
     )
 }

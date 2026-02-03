@@ -16,7 +16,8 @@ public fun IterationEntity.toDomain(): Iteration {
         extraWeight = extraWeight,
         assistWeight = assistWeight,
         bodyWeight = bodyWeight,
-        repetitions = repetitions
+        repetitions = repetitions,
+        bodyMultiplier = bodyMultiplier
     )
 }
 
@@ -30,6 +31,7 @@ public fun DraftIterationEntity.toSetDomain(): SetIteration {
         extraWeight = extraWeight,
         assistWeight = assistWeight,
         bodyWeight = bodyWeight,
-        repetitions = repetitions
+        repetitions = repetitions,
+        bodyMultiplier = bodyMultiplier
     )
 }

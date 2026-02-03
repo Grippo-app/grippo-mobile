@@ -23,6 +23,7 @@ public fun IterationResponse.toDomainOrNull(): Iteration? {
         extraWeight = extraWeight,
         assistWeight = assistWeight,
         bodyWeight = bodyWeight,
+        bodyMultiplier = bodyMultiplier,
         repetitions = domainRepetitions,
     )
 }

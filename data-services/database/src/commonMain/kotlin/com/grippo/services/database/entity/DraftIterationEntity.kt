@@ -26,5 +26,6 @@ public data class DraftIterationEntity(
     val assistWeight: Float?,
     val extraWeight: Float?,
     val bodyWeight: Float?,
+    val bodyMultiplier: Float?,
     val repetitions: Int,
 )

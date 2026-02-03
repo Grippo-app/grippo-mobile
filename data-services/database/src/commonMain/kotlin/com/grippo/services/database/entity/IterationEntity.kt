@@ -26,6 +26,7 @@ public data class IterationEntity(
     val assistWeight: Float?,
     val extraWeight: Float?,
     val bodyWeight: Float?,
+    val bodyMultiplier: Float?,
     val repetitions: Int,
     val createdAt: String,
     val updatedAt: String,

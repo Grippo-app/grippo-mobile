@@ -13,6 +13,7 @@ public fun SetIteration.toBody(): IterationBody {
         extraWeight = extraWeight,
         externalWeight = externalWeight,
         bodyWeight = bodyWeight,
-        assistWeight = assistWeight
+        assistWeight = assistWeight,
+        bodyMultiplier = bodyMultiplier
     )
 }

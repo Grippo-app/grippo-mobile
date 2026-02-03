@@ -1,8 +1,11 @@
 package com.grippo.training.exercise
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.examples.ExerciseExampleComponentsState
+import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocusState
@@ -10,12 +13,14 @@ import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
+import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.state.domain.training.toDomain
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
@@ -25,9 +30,10 @@ internal class ExerciseViewModel(
     exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
+    private val weightHistoryFeature: WeightHistoryFeature,
 ) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
     ScreenExerciseState(
-        exercise = exercise,
+        exercise = exercise
     )
 ), ExerciseContract {
 
@@ -44,50 +50,70 @@ internal class ExerciseViewModel(
     }
 
     override fun onAddIteration() {
-        val value = IterationState(
-            id = Uuid.random().toString(),
-            externalWeight = VolumeFormatState.Empty(),
-            extraWeight = VolumeFormatState.Empty(),
-            assistWeight = VolumeFormatState.Empty(),
-            bodyWeight = VolumeFormatState.Empty(),
-            repetitions = RepetitionsFormatState.Empty(),
-        )
+        safeLaunch {
+            val example = state.value.exerciseExample ?: return@safeLaunch
 
-        val number = state.value.exercise.iterations.count() + 1
+            val weight = when (example.components) {
+                is ExerciseExampleComponentsState.BodyAndAssist,
+                is ExerciseExampleComponentsState.BodyAndExtra,
+                is ExerciseExampleComponentsState.BodyOnly -> weightHistoryFeature
+                    .observeLastWeight()
+                    .firstOrNull()
 
-        val suggestions = state.value.exercise.iterations
-            .reversed()
-            .distinctBy { it.externalWeight.value to it.repetitions.value }
-
-        val example = state.value.exerciseExample ?: return
-
-        val dialog = DialogConfig.Iteration(
-            initial = value,
-            number = number,
-            suggestions = suggestions,
-            focus = IterationFocusState.UNIDENTIFIED,
-            example = example,
-            onResult = { iteration ->
-                update { s ->
-                    // Build new iterations
-                    val iterations = s.exercise.iterations
-                        .toMutableList()
-                        .apply { add(iteration) }
-                        .toPersistentList()
-
-                    // Recompute metrics for this exercise
-                    val total = recalculateTotal(iterations)
-
-                    val exercise = s.exercise.copy(
-                        iterations = iterations,
-                        total = total
-                    )
-                    s.copy(exercise = exercise)
-                }
+                is ExerciseExampleComponentsState.External -> null
             }
-        )
 
-        dialogController.show(dialog)
+            val multiplier = when (val c = example.components) {
+                is ExerciseExampleComponentsState.BodyAndAssist -> c.bodyMultiplier
+                is ExerciseExampleComponentsState.BodyAndExtra -> c.bodyMultiplier
+                is ExerciseExampleComponentsState.BodyOnly -> c.bodyMultiplier
+                is ExerciseExampleComponentsState.External -> null
+            }
+
+            val value = IterationState(
+                id = Uuid.random().toString(),
+                externalWeight = VolumeFormatState.Empty(),
+                extraWeight = VolumeFormatState.Empty(),
+                assistWeight = VolumeFormatState.Empty(),
+                bodyMultiplier = MultiplierFormatState.of(multiplier),
+                bodyWeight = WeightFormatState.of(weight?.weight),
+                repetitions = RepetitionsFormatState.Empty(),
+            )
+
+            val number = state.value.exercise.iterations.count() + 1
+
+            val suggestions = state.value.exercise.iterations
+                .reversed()
+                .distinctBy { it.externalWeight.value to it.repetitions.value }
+
+            val dialog = DialogConfig.Iteration(
+                initial = value,
+                number = number,
+                suggestions = suggestions,
+                focus = IterationFocusState.UNIDENTIFIED,
+                example = example,
+                onResult = { iteration ->
+                    update { s ->
+                        // Build new iterations
+                        val iterations = s.exercise.iterations
+                            .toMutableList()
+                            .apply { add(iteration) }
+                            .toPersistentList()
+
+                        // Recompute metrics for this exercise
+                        val total = recalculateTotal(iterations)
+
+                        val exercise = s.exercise.copy(
+                            iterations = iterations,
+                            total = total
+                        )
+                        s.copy(exercise = exercise)
+                    }
+                }
+            )
+
+            dialogController.show(dialog)
+        }
     }
 
     override fun onDeleteIteration(id: String) {
@@ -114,6 +140,7 @@ internal class ExerciseViewModel(
 
     override fun onEditVolume(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
+
         val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
 
         val suggestions = state.value.exercise.iterations
@@ -153,6 +180,7 @@ internal class ExerciseViewModel(
 
     override fun onEditRepetition(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
+
         val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
 
         val suggestions = state.value.exercise.iterations
@@ -234,6 +262,4 @@ internal class ExerciseViewModel(
         val domainMetrics = trainingTotalUseCase.fromSetIterations(domainIterations)
         return domainMetrics.toState()
     }
-
-
 }

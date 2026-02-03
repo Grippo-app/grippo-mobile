@@ -114,12 +114,12 @@ internal fun IterationPickerScreen(
                     modifier = Modifier.weight(1f),
                     onClick = contract::onWeightPickerClick,
                     placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
-                    value = state.userWeight.display
+                    value = state.value.bodyWeight.display
                 )
 
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = components.bodyPercent(),
+                    text = state.value.bodyMultiplier.short(),
                     style = AppTokens.typography.b14Bold(),
                     color = AppTokens.colors.text.tertiary,
                 )
@@ -138,12 +138,12 @@ internal fun IterationPickerScreen(
                     modifier = Modifier.weight(1f),
                     onClick = contract::onWeightPickerClick,
                     placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
-                    value = state.userWeight.display
+                    value = state.value.bodyWeight.display
                 )
 
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = components.bodyPercent(),
+                    text = state.value.bodyMultiplier.short(),
                     style = AppTokens.typography.b14Bold(),
                     color = AppTokens.colors.text.tertiary,
                 )
@@ -162,12 +162,12 @@ internal fun IterationPickerScreen(
                     modifier = Modifier.weight(1f),
                     onClick = contract::onWeightPickerClick,
                     placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
-                    value = state.userWeight.display
+                    value = state.value.bodyWeight.display
                 )
 
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = components.bodyPercent(),
+                    text = state.value.bodyMultiplier.short(),
                     style = AppTokens.typography.b14Bold(),
                     color = AppTokens.colors.text.tertiary,
                 )
@@ -305,7 +305,7 @@ internal fun IterationPickerScreen(
                     Chip(
                         label = ChipLabel.Empty,
                         stype = ChipStype.Clickable(clickProvider),
-                        value = "${item.externalWeight.short()} ${item.repetitions.short()}",
+                        value = "${item.volume().short()} ${item.repetitions.short()}",
                         trailing = ChipTrailing.Empty,
                         textColor = AppTokens.colors.text.secondary,
                         iconColor = AppTokens.colors.text.secondary,

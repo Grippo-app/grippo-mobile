@@ -23,7 +23,7 @@ public data class ExerciseExampleComponentsEntity(
     @PrimaryKey val exerciseExampleId: String,
     val assistWeightRequired: Boolean?,
     val bodyWeightRequired: Boolean?,
-    val bodyWeightMultiplier: Double?,
+    val bodyWeightMultiplier: Float?,
     val externalWeightRequired: Boolean?,
     val extraWeightRequired: Boolean?,
 )

@@ -67,6 +67,8 @@ public data class IterationResponse(
     val updatedAt: String? = null,
     @SerialName("extraWeight")
     val extraWeight: Float? = null,
+    @SerialName("bodyMultiplier")
+    val bodyMultiplier: Float? = null,
     @SerialName("bodyWeight")
     val bodyWeight: Float? = null,
     @SerialName("assistWeight")

@@ -36,6 +36,7 @@ public fun IterationResponse.toEntityOrNull(): IterationEntity? {
         extraWeight = extraWeight,
         assistWeight = assistWeight,
         bodyWeight = bodyWeight,
+        bodyMultiplier = bodyMultiplier,
         repetitions = entityRepetitions,
         createdAt = entityCreatedAt,
         updatedAt = entityUpdatedAt,
