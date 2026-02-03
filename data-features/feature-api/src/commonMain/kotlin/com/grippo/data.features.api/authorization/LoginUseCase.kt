@@ -38,6 +38,7 @@ public class LoginUseCase(
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            weightHistoryFeature.getWeightHistory().getOrThrow()
         }
 
         return hasProfile
@@ -52,6 +53,7 @@ public class LoginUseCase(
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            weightHistoryFeature.getWeightHistory().getOrThrow()
         }
 
         return hasProfile

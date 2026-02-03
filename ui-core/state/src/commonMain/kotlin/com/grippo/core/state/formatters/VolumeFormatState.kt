@@ -63,12 +63,12 @@ public sealed class VolumeFormatState : FormatState<Float> {
                     normalized == 0f -> Empty()
 
                     VolumeValidator.isValid(normalized) -> Valid(
-                        display = display1dp(normalized),
+                        display = display,
                         value = normalized
                     )
 
                     else -> Invalid(
-                        display = display1dp(normalized),
+                        display = display,
                         value = normalized
                     )
                 }
@@ -104,23 +104,47 @@ public sealed class VolumeFormatState : FormatState<Float> {
     }
 
     private fun Float.short(): String {
+        val normalized = ((this * 10).roundToInt() / 10.0f)
+        val hasFraction = abs(normalized % 1.0f) > 0f
+
         return when {
-            this == 0f -> "0"
-            abs(this) < 1f -> ((this * 10).roundToInt() / 10.0f).toString()
-            abs(this) < 10f -> ((this * 10).roundToInt() / 10.0f).toString()
-            abs(this) < 100f -> this.roundToInt().toString()
+            normalized == 0f -> "0"
+            abs(normalized) < 1f -> normalized.toString()
+            abs(normalized) < 10f -> normalized.toString()
+            abs(normalized) < 100f -> normalized.roundToInt().toString()
             else -> {
-                val value = this.roundToInt()
-                val isNegative = value < 0
-                val digits = abs(value).toString()
+                if (hasFraction) {
+                    val t = tenths(normalized)
+                    val absT = abs(t)
+                    val intPart = absT / 10
+                    val frac = absT % 10
+                    val sign = if (t < 0) "-" else ""
+                    val digits = abs(intPart).toString()
 
-                val grouped = digits
-                    .reversed()
-                    .chunked(3)
-                    .joinToString(" ")
-                    .reversed()
+                    val grouped = if (intPart >= 1000) {
+                        digits
+                            .reversed()
+                            .chunked(3)
+                            .joinToString(" ")
+                            .reversed()
+                    } else {
+                        digits
+                    }
 
-                if (isNegative) "-$grouped" else grouped
+                    "$sign$grouped.$frac"
+                } else {
+                    val value = normalized.roundToInt()
+                    val isNegative = value < 0
+                    val digits = abs(value).toString()
+
+                    val grouped = digits
+                        .reversed()
+                        .chunked(3)
+                        .joinToString(" ")
+                        .reversed()
+
+                    if (isNegative) "-$grouped" else grouped
+                }
             }
         }
     }
