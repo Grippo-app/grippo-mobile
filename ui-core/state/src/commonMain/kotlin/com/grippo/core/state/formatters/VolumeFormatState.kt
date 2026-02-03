@@ -36,49 +36,62 @@ public sealed class VolumeFormatState : FormatState<Float> {
     ) : VolumeFormatState()
 
     public companion object {
+        private fun tenths(value: Float): Int = (value * 10f).roundToInt()
+
+        private fun normalize1dp(value: Float): Float {
+            val t = tenths(value)
+            return t / 10f
+        }
+
+        private fun display1dp(value: Float): String {
+            val t = tenths(value)
+            val absT = abs(t)
+            val intPart = absT / 10
+            val frac = absT % 10
+            val sign = if (t < 0) "-" else ""
+            return "$sign$intPart.$frac"
+        }
+
         public fun of(display: String): VolumeFormatState {
-            if (display.isEmpty()) {
-                return Empty()
-            }
+            if (display.isEmpty()) return Empty()
 
             return try {
-                val volume = display.toFloat()
+                val parsed = display.replace(',', '.').toFloat()
+                val normalized = normalize1dp(parsed)
 
                 when {
-                    volume == 0f -> Empty()
+                    normalized == 0f -> Empty()
 
-                    VolumeValidator.isValid(volume) -> Valid(
-                        display = display,
-                        value = volume
+                    VolumeValidator.isValid(normalized) -> Valid(
+                        display = display1dp(normalized),
+                        value = normalized
                     )
 
                     else -> Invalid(
-                        display = display,
-                        value = volume
+                        display = display1dp(normalized),
+                        value = normalized
                     )
                 }
             } catch (_: NumberFormatException) {
-                Invalid(
-                    display = display,
-                    value = null
-                )
+                Invalid(display = display, value = null)
             }
         }
 
         public fun of(value: Float?): VolumeFormatState {
+            val normalized = value?.let(::normalize1dp)
+
             return when {
-                value == null -> Empty()
+                normalized == null -> Empty()
+                normalized == 0f -> Empty()
 
-                value == 0f -> Empty()
-
-                VolumeValidator.isValid(value) -> Valid(
-                    display = value.toString(),
-                    value = value
+                VolumeValidator.isValid(normalized) -> Valid(
+                    display = display1dp(normalized),
+                    value = normalized
                 )
 
                 else -> Invalid(
-                    display = value.toString(),
-                    value = value
+                    display = display1dp(normalized),
+                    value = normalized
                 )
             }
         }

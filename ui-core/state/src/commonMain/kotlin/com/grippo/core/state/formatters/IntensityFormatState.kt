@@ -6,6 +6,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.percent
 import kotlinx.serialization.Serializable
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Immutable
@@ -34,26 +35,49 @@ public sealed class IntensityFormatState : FormatState<Float> {
     ) : IntensityFormatState()
 
     public companion object {
-        public fun of(value: Float): IntensityFormatState {
-            if (!value.isFinite()) {
-                return Invalid(
-                    display = value.toString(),
-                    value = null
-                )
+
+        private const val SCALE: Int = 10 // 10 = 1dp, 100 = 2dp
+
+        private fun scaled(value: Float): Int = (value * SCALE.toFloat()).roundToInt()
+
+        private fun normalize(value: Float): Float {
+            val s = scaled(value)
+            return s / SCALE.toFloat()
+        }
+
+        private fun display(value: Float): String {
+            val s = scaled(value)
+            val absS = abs(s)
+            val intPart = absS / SCALE
+            val frac = absS % SCALE
+            val sign = if (s < 0) "-" else ""
+
+            val fracStr = when (SCALE) {
+                10 -> frac.toString()
+                100 -> if (frac < 10) "0$frac" else frac.toString()
+                else -> frac.toString()
             }
 
-            val trimmed = kotlin.math.round(value * 100f) / 100f
+            return "$sign$intPart.$fracStr"
+        }
+
+        public fun of(value: Float): IntensityFormatState {
+            if (!value.isFinite()) {
+                return Invalid(display = value.toString(), value = null)
+            }
+
+            val trimmed = normalize(value)
 
             return when {
                 trimmed == 0f -> Empty()
 
                 IntensityValidator.isValid(trimmed) -> Valid(
-                    display = value.toString(),
+                    display = display(trimmed),
                     value = trimmed
                 )
 
                 else -> Invalid(
-                    display = value.toString(),
+                    display = display(trimmed),
                     value = trimmed
                 )
             }

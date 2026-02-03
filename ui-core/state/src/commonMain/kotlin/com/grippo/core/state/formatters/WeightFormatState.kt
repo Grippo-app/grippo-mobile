@@ -2,6 +2,8 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Immutable
 @Serializable
@@ -31,49 +33,62 @@ public sealed class WeightFormatState : FormatState<Float> {
     public companion object {
         public val WeightLimitation: ClosedFloatingPointRange<Float> = 30.0f..150.0f
 
+        private fun tenths(value: Float): Int = (value * 10f).roundToInt()
+
+        private fun normalize1dp(value: Float): Float {
+            val t = tenths(value)
+            return t / 10f
+        }
+
+        private fun display1dp(value: Float): String {
+            val t = tenths(value)
+            val absT = abs(t)
+            val intPart = absT / 10
+            val frac = absT % 10
+            val sign = if (t < 0) "-" else ""
+            return "$sign$intPart.$frac"
+        }
+
         public fun of(display: String): WeightFormatState {
-            if (display.isEmpty()) {
-                return Empty()
-            }
+            if (display.isEmpty()) return Empty()
 
             return try {
-                val weight = display.toFloat()
+                val parsed = display.replace(',', '.').toFloat()
+                val normalized = normalize1dp(parsed)
 
                 when {
-                    weight == 0f -> Empty()
+                    normalized == 0f -> Empty()
 
-                    WeightValidator.isValid(weight) -> Valid(
-                        display = display,
-                        value = weight
+                    WeightValidator.isValid(normalized) -> Valid(
+                        display = display1dp(normalized),
+                        value = normalized
                     )
 
                     else -> Invalid(
-                        display = display,
-                        value = weight
+                        display = display1dp(normalized),
+                        value = normalized
                     )
                 }
             } catch (_: NumberFormatException) {
-                Invalid(
-                    display = display,
-                    value = null
-                )
+                Invalid(display = display, value = null)
             }
         }
 
         public fun of(value: Float?): WeightFormatState {
+            val normalized = value?.let(::normalize1dp)
+
             return when {
-                value == null -> Empty()
+                normalized == null -> Empty()
+                normalized == 0f -> Empty()
 
-                value == 0f -> Empty()
-
-                WeightValidator.isValid(value) -> Valid(
-                    display = value.toString(),
-                    value = value
+                WeightValidator.isValid(normalized) -> Valid(
+                    display = display1dp(normalized),
+                    value = normalized
                 )
 
                 else -> Invalid(
-                    display = value.toString(),
-                    value = value
+                    display = display1dp(normalized),
+                    value = normalized
                 )
             }
         }
@@ -82,7 +97,9 @@ public sealed class WeightFormatState : FormatState<Float> {
     private object WeightValidator {
         fun isValid(value: Float): Boolean {
             val withinRange = value in WeightLimitation
-            val hasOneDecimal = (value * 10).rem(1f) == 0f
+            val t = (value * 10f).roundToInt()
+            val normalized = t / 10f
+            val hasOneDecimal = abs(value - normalized) < 0.0001f
             return withinRange && hasOneDecimal
         }
     }

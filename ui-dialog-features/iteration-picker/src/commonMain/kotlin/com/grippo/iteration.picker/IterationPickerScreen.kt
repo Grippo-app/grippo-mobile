@@ -101,55 +101,9 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-    when (val components = state.example.components) {
-        is ExerciseExampleComponentsState.BodyAndAssist -> {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                InputWeight(
-                    modifier = Modifier.weight(1f),
-                    onClick = contract::onWeightPickerClick,
-                    placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
-                    value = state.value.bodyWeight.display
-                )
-
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = state.value.bodyMultiplier.short(),
-                    style = AppTokens.typography.b14Bold(),
-                    color = AppTokens.colors.text.tertiary,
-                )
-            }
-        }
-
-        is ExerciseExampleComponentsState.BodyAndExtra -> {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                InputWeight(
-                    modifier = Modifier.weight(1f),
-                    onClick = contract::onWeightPickerClick,
-                    placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
-                    value = state.value.bodyWeight.display
-                )
-
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = state.value.bodyMultiplier.short(),
-                    style = AppTokens.typography.b14Bold(),
-                    color = AppTokens.colors.text.tertiary,
-                )
-            }
-        }
-
+    when (state.example.components) {
+        is ExerciseExampleComponentsState.BodyAndAssist,
+        is ExerciseExampleComponentsState.BodyAndExtra,
         is ExerciseExampleComponentsState.BodyOnly -> {
             Row(
                 modifier = Modifier

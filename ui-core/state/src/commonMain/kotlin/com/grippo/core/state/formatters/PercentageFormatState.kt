@@ -6,6 +6,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.percent
 import kotlinx.serialization.Serializable
+import kotlin.math.roundToInt
 
 @Immutable
 @Serializable
@@ -33,31 +34,28 @@ public sealed class PercentageFormatState : FormatState<Int> {
     ) : PercentageFormatState()
 
     public companion object {
+
+        private fun normalize(value: Float): Int = value.roundToInt()
+
         public fun of(display: String): PercentageFormatState {
-            if (display.isEmpty()) {
-                return Empty()
-            }
+            val raw = display.trim()
+            if (raw.isEmpty()) return Empty()
 
-            return try {
-                val percentage = display.toInt()
+            val parsed: Float? = raw.replace(',', '.').toFloatOrNull()
+            val normalized: Int? = parsed?.let(::normalize) ?: raw.toIntOrNull()
 
-                when {
-                    percentage == 0 -> Empty()
+            return when {
+                normalized == null -> Invalid(display = display, value = null)
+                normalized == 0 -> Empty()
 
-                    PercentageValidator.isValid(percentage) -> Valid(
-                        display = display,
-                        value = percentage
-                    )
+                PercentageValidator.isValid(normalized) -> Valid(
+                    display = normalized.toString(),
+                    value = normalized
+                )
 
-                    else -> Invalid(
-                        display = display,
-                        value = percentage
-                    )
-                }
-            } catch (_: NumberFormatException) {
-                Invalid(
-                    display = display,
-                    value = null
+                else -> Invalid(
+                    display = normalized.toString(),
+                    value = normalized
                 )
             }
         }
