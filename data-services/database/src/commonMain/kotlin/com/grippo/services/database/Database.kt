@@ -62,7 +62,7 @@ import com.grippo.services.database.entity.WeightHistoryEntity
         UserExcludedEquipmentEntity::class,
         WeightHistoryEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @ConstructedBy(DatabaseConstructor::class)
