@@ -73,13 +73,7 @@ public sealed class MultiplierFormatState : FormatState<Float> {
     @Composable
     public fun short(): String {
         val percent = (value ?: 0f) * 100f
-        val normalizedPercent = ((percent * 100f).roundToInt() / 100f)
-        val absH = abs((normalizedPercent * 100f).roundToInt())
-        val intPart = absH / 100
-        val frac = absH % 100
-        val sign = if (normalizedPercent < 0f) "-" else ""
-        val fracStr = if (frac < 10) "0$frac" else frac.toString()
-        return "$sign$intPart.$fracStr%"
+        return "${percent.roundToInt()}%"
     }
 
     private object MultiplierValidator {
