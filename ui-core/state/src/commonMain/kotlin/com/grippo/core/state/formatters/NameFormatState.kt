@@ -29,6 +29,8 @@ public sealed class NameFormatState : FormatState<String> {
     ) : NameFormatState()
 
     public companion object {
+        public val NameLimitation: IntRange = 1..60
+
         public fun of(display: String): NameFormatState {
             if (display.isEmpty()) {
                 return Empty()
@@ -50,7 +52,7 @@ public sealed class NameFormatState : FormatState<String> {
 
     private object NameValidator {
         fun isValid(value: String): Boolean {
-            return value.length > 3
+            return value.length in NameLimitation
         }
     }
 }
