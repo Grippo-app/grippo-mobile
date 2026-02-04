@@ -10,7 +10,7 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.authorization.profile.creation.completed.CompletedComponent
+import com.grippo.authorization.profile.creation.completed.ProfileCompletedComponent
 import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesComponent
 import com.grippo.authorization.profile.creation.experience.ExperienceComponent
 import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsComponent
@@ -111,7 +111,7 @@ internal class ProfileCreationComponent(
             )
 
             ProfileCreationRouter.Completed -> Child.Completed(
-                CompletedComponent(
+                ProfileCompletedComponent(
                     componentContext = context,
                     name = viewModel.state.value.name,
                     experience = viewModel.state.value.experience,
@@ -146,7 +146,7 @@ internal class ProfileCreationComponent(
         data class MussingEquipments(override val component: MissingEquipmentsComponent) :
             Child(component)
 
-        data class Completed(override val component: CompletedComponent) :
+        data class Completed(override val component: ProfileCompletedComponent) :
             Child(component)
     }
 }

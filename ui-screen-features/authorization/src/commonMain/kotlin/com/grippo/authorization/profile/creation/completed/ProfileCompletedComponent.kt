@@ -9,7 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 
-internal class CompletedComponent(
+internal class ProfileCompletedComponent(
     componentContext: ComponentContext,
     private val name: String,
     private val weight: Float,
@@ -19,10 +19,10 @@ internal class CompletedComponent(
     private val missingEquipmentIds: ImmutableList<String>,
     private val toHome: () -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<CompletedDirection>(componentContext) {
+) : BaseComponent<ProfileCompletedDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        CompletedViewModel(
+        ProfileCompletedViewModel(
             name = name,
             weight = weight,
             height = height,
@@ -40,10 +40,10 @@ internal class CompletedComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: CompletedDirection) {
+    override suspend fun eventListener(direction: ProfileCompletedDirection) {
         when (direction) {
-            CompletedDirection.Home -> toHome.invoke()
-            CompletedDirection.Back -> back.invoke()
+            ProfileCompletedDirection.Home -> toHome.invoke()
+            ProfileCompletedDirection.Back -> back.invoke()
         }
     }
 
@@ -51,6 +51,6 @@ internal class CompletedComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        CompletedScreen(state.value, loaders.value, viewModel)
+        ProfileCompletedScreen(state.value, loaders.value, viewModel)
     }
 }

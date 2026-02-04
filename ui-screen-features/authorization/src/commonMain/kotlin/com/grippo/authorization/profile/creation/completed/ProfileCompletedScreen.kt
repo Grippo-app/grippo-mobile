@@ -47,17 +47,17 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun CompletedScreen(
-    state: CompletedState,
-    loaders: ImmutableSet<CompletedLoader>,
-    contract: CompletedContract
+internal fun ProfileCompletedScreen(
+    state: ProfileCompletedState,
+    loaders: ImmutableSet<ProfileCompletedLoader>,
+    contract: ProfileCompletedContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
     )
 ) {
 
-    if (loaders.contains(CompletedLoader.ProfileCreation)) {
+    if (loaders.contains(ProfileCompletedLoader.ProfileCreation)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen
     }
@@ -65,7 +65,7 @@ internal fun CompletedScreen(
     val cardVisible = remember { mutableStateOf(false) }
 
     LaunchedEffect(state.user, loaders) {
-        val hasLoader = loaders.contains(CompletedLoader.ProfileCreation)
+        val hasLoader = loaders.contains(ProfileCompletedLoader.ProfileCreation)
         val hasUser = state.user != null
         cardVisible.value = hasUser && hasLoader.not()
     }
@@ -149,12 +149,12 @@ internal fun CompletedScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        CompletedScreen(
-            state = CompletedState(
+        ProfileCompletedScreen(
+            state = ProfileCompletedState(
                 user = stubUser()
             ),
             loaders = persistentSetOf(),
-            contract = CompletedContract.Empty
+            contract = ProfileCompletedContract.Empty
         )
     }
 }
@@ -163,12 +163,12 @@ private fun ScreenPreview() {
 @Composable
 private fun ScreenPreviewLoading() {
     PreviewContainer {
-        CompletedScreen(
-            state = CompletedState(
+        ProfileCompletedScreen(
+            state = ProfileCompletedState(
                 user = stubUser()
             ),
-            loaders = persistentSetOf(CompletedLoader.ProfileCreation),
-            contract = CompletedContract.Empty
+            loaders = persistentSetOf(ProfileCompletedLoader.ProfileCreation),
+            contract = ProfileCompletedContract.Empty
         )
     }
 }

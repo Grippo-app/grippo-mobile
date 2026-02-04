@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader
 
 @Immutable
-internal sealed interface CompletedLoader : BaseLoader {
+internal sealed interface ProfileCompletedLoader : BaseLoader {
     @Immutable
-    data object ProfileCreation : CompletedLoader
+    data object ProfileCreation : ProfileCompletedLoader
 }

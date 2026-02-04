@@ -13,7 +13,7 @@ import com.grippo.state.domain.user.toDomain
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.onEach
 
-internal class CompletedViewModel(
+internal class ProfileCompletedViewModel(
     name: String,
     weight: Float,
     height: Int,
@@ -22,9 +22,9 @@ internal class CompletedViewModel(
     missingEquipmentIds: ImmutableList<String>,
     userFeature: UserFeature,
     private val createProfileUseCase: CreateProfileUseCase,
-) : BaseViewModel<CompletedState, CompletedDirection, CompletedLoader>(
-    CompletedState()
-), CompletedContract {
+) : BaseViewModel<ProfileCompletedState, ProfileCompletedDirection, ProfileCompletedLoader>(
+    ProfileCompletedState()
+), ProfileCompletedContract {
 
     init {
         FirebaseProvider.logEvent(Event.REGISTRATION_COMPLETED)
@@ -34,7 +34,7 @@ internal class CompletedViewModel(
             .onEach(::provideUser)
             .safeLaunch()
 
-        safeLaunch(loader = CompletedLoader.ProfileCreation) {
+        safeLaunch(loader = ProfileCompletedLoader.ProfileCreation) {
             val mappedExperience = experience?.toDomain() ?: return@safeLaunch
 
             val profile = CreateUserProfile(
@@ -56,10 +56,10 @@ internal class CompletedViewModel(
     }
 
     override fun onCompleteClick() {
-        navigateTo(CompletedDirection.Home)
+        navigateTo(ProfileCompletedDirection.Home)
     }
 
     override fun onBack() {
-        navigateTo(CompletedDirection.Back)
+        navigateTo(ProfileCompletedDirection.Back)
     }
 }
