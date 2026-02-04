@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
@@ -133,7 +134,9 @@ public fun PerformanceMetricCard(
             Text(
                 modifier = Modifier.weight(1f),
                 text = delta,
-                style = AppTokens.typography.h5(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = AppTokens.typography.h6(),
                 color = performanceStatusColor(metric.status)
             )
 
@@ -150,6 +153,8 @@ public fun PerformanceMetricCard(
 
         Text(
             text = bestLabel,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.tertiary
         )
@@ -213,6 +218,11 @@ private fun formatTrendDelta(delta: Int): String {
 @Composable
 private fun PerformanceTrendCardPreviewCard() {
     PreviewContainer {
+        PerformanceMetricCard(
+            modifier = Modifier.size(150.dp),
+            metric = stubPerformanceMetrics().random()
+        )
+
         PerformanceMetricCard(
             metric = stubPerformanceMetrics().random()
         )

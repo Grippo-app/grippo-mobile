@@ -87,10 +87,10 @@
     <string name="highlight_type_comeback_hint">Back to routine</string>
     <string name="highlight_vs_average">vs avg</string>
     <string name="highlight_best_value">Best %1$s</string>
-    <string name="highlight_status_record">New record</string>
-    <string name="highlight_status_improved">Trending up</string>
-    <string name="highlight_status_stable">On track</string>
-    <string name="highlight_status_declined">Needs focus</string>
+    <string name="highlight_status_record">Record</string>
+    <string name="highlight_status_improved">Uptrend</string>
+    <string name="highlight_status_stable">Steady</string>
+    <string name="highlight_status_declined">Focus</string>
     <string name="highlight_focus_exercise">Focus exercise</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
     <string name="highlight_streaks">Streaks</string>

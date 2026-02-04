@@ -28,6 +28,7 @@ import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.core.state.trainings.stubIteration
@@ -49,10 +50,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.assist_weight_placeholder
 import com.grippo.design.resources.provider.body_weight_placeholder
-import com.grippo.design.resources.provider.external_weight_placeholder
 import com.grippo.design.resources.provider.extra_weight_placeholder
 import com.grippo.design.resources.provider.set_value
 import com.grippo.design.resources.provider.submit_btn
+import com.grippo.design.resources.provider.volume_placeholder
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
@@ -197,7 +198,7 @@ internal fun IterationPickerScreen(
                             .fillMaxWidth()
                             .focusRequester(weightRequester),
                         value = state.value.externalWeight,
-                        placeholder = AppTokens.strings.res(Res.string.external_weight_placeholder),
+                        placeholder = AppTokens.strings.res(Res.string.volume_placeholder),
                         onValueChange = contract::onExternalWeightChange,
                     )
 
@@ -280,22 +281,22 @@ internal fun IterationPickerScreen(
 
             when (state.example.components) {
                 is ExerciseExampleComponentsState.BodyAndAssist -> when {
-                    state.value.bodyWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
-                    state.value.bodyWeight is VolumeFormatState.Empty -> ButtonState.Disabled
+                    state.value.bodyWeight is WeightFormatState.Invalid -> ButtonState.Disabled
+                    state.value.bodyWeight is WeightFormatState.Empty -> ButtonState.Disabled
                     state.value.assistWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
                     else -> ButtonState.Enabled
                 }
 
                 is ExerciseExampleComponentsState.BodyAndExtra -> when {
-                    state.value.bodyWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
-                    state.value.bodyWeight is VolumeFormatState.Empty -> ButtonState.Disabled
+                    state.value.bodyWeight is WeightFormatState.Invalid -> ButtonState.Disabled
+                    state.value.bodyWeight is WeightFormatState.Empty -> ButtonState.Disabled
                     state.value.extraWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
                     else -> ButtonState.Enabled
                 }
 
                 is ExerciseExampleComponentsState.BodyOnly -> when (state.value.bodyWeight) {
-                    is VolumeFormatState.Invalid -> ButtonState.Disabled
-                    is VolumeFormatState.Empty -> ButtonState.Disabled
+                    is WeightFormatState.Invalid -> ButtonState.Disabled
+                    is WeightFormatState.Empty -> ButtonState.Disabled
                     else -> ButtonState.Enabled
                 }
 

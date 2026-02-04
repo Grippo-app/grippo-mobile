@@ -87,10 +87,10 @@
     <string name="highlight_type_comeback_hint">Возвращение к рутине</string>
     <string name="highlight_vs_average">vs ср.</string>
     <string name="highlight_best_value">Лучшее %1$s</string>
-    <string name="highlight_status_record">Новый рекорд</string>
-    <string name="highlight_status_improved">Тренд вверх</string>
-    <string name="highlight_status_stable">В норме</string>
-    <string name="highlight_status_declined">Нужно внимание</string>
+    <string name="highlight_status_record">Рекорд</string>
+    <string name="highlight_status_improved">Рост</string>
+    <string name="highlight_status_stable">Стабильно</string>
+    <string name="highlight_status_declined">Фокус</string>
     <string name="highlight_focus_exercise">Фокус-упражнение</string>
     <string name="highlight_muscle_focus">Фокус на мышцы</string>
     <string name="highlight_streaks">Серии</string>
