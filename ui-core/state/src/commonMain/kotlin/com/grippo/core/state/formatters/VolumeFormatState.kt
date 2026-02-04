@@ -105,47 +105,28 @@ public sealed class VolumeFormatState : FormatState<Float> {
 
     private fun Float.short(): String {
         val normalized = ((this * 10).roundToInt() / 10.0f)
-        val hasFraction = abs(normalized % 1.0f) > 0f
+        if (normalized == 0f) return "0"
 
-        return when {
-            normalized == 0f -> "0"
-            abs(normalized) < 1f -> normalized.toString()
-            abs(normalized) < 10f -> normalized.toString()
-            abs(normalized) < 100f -> normalized.roundToInt().toString()
-            else -> {
-                if (hasFraction) {
-                    val t = tenths(normalized)
-                    val absT = abs(t)
-                    val intPart = absT / 10
-                    val frac = absT % 10
-                    val sign = if (t < 0) "-" else ""
-                    val digits = abs(intPart).toString()
+        val t = tenths(normalized)
+        val absT = abs(t)
+        val intPart = absT / 10
+        val frac = absT % 10
+        val sign = if (t < 0) "-" else ""
+        val digits = intPart.toString()
+        val grouped = if (intPart >= 1000) {
+            digits
+                .reversed()
+                .chunked(3)
+                .joinToString(" ")
+                .reversed()
+        } else {
+            digits
+        }
 
-                    val grouped = if (intPart >= 1000) {
-                        digits
-                            .reversed()
-                            .chunked(3)
-                            .joinToString(" ")
-                            .reversed()
-                    } else {
-                        digits
-                    }
-
-                    "$sign$grouped.$frac"
-                } else {
-                    val value = normalized.roundToInt()
-                    val isNegative = value < 0
-                    val digits = abs(value).toString()
-
-                    val grouped = digits
-                        .reversed()
-                        .chunked(3)
-                        .joinToString(" ")
-                        .reversed()
-
-                    if (isNegative) "-$grouped" else grouped
-                }
-            }
+        return if (frac == 0) {
+            "$sign$grouped"
+        } else {
+            "$sign$grouped,$frac"
         }
     }
 
