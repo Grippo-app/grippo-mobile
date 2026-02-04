@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
+import kotlinx.datetime.plus
 
 internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature,
@@ -213,16 +214,23 @@ internal class TrainingsViewModel(
         if (direction == 0) return
 
         val current = state.value
-        val span = current.date.run {
-            val days = from.date.daysUntil(to.date) + 1
-            if (days <= 0) 1 else days
-        }
-        val shiftPeriod = when (current.period) {
-            TrainingsTimelinePeriod.Monthly -> DatePeriod(months = direction)
-            TrainingsTimelinePeriod.Daily -> DatePeriod(days = span * direction)
-        }
-        val shifted =
-            DateTimeUtils.shift(current.date, shiftPeriod).coerceWithin(current.limitations)
+
+        val shifted = when (current.period) {
+            TrainingsTimelinePeriod.Monthly -> {
+                val anchorDate = current.date.from.date.plus(DatePeriod(months = direction))
+                val anchor = DateTimeUtils.startOfDay(anchorDate)
+                TrainingsTimelinePeriod.Monthly.rangeFor(anchor)
+            }
+
+            TrainingsTimelinePeriod.Daily -> {
+                val span = current.date.run {
+                    val days = from.date.daysUntil(to.date) + 1
+                    if (days <= 0) 1 else days
+                }
+                val shiftPeriod = DatePeriod(days = span * direction)
+                DateTimeUtils.shift(current.date, shiftPeriod)
+            }
+        }.coerceWithin(current.limitations)
 
         if (shifted == current.date) return
 

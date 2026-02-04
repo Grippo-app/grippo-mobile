@@ -85,7 +85,7 @@ internal enum class TrainingsTimelinePeriod(
 
             DateRange(
                 from = DateTimeUtils.startOfDay(startOfMonth),
-                to = DateTimeUtils.startOfDay(lastDay)
+                to = DateTimeUtils.endOfDay(lastDay)
             )
         }
     }
