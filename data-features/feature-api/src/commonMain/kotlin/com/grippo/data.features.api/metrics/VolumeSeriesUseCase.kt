@@ -46,15 +46,6 @@ public class VolumeSeriesUseCase {
         if (start > end) return VolumeSeries(emptyList())
 
         return when (val scale = deriveScale(start, end)) {
-            BucketScale.Exercise -> {
-                val exercises = trainings.flatMap(Training::exercises)
-                if (exercises.isEmpty()) {
-                    VolumeSeries(emptyList())
-                } else {
-                    fromExercises(exercises)
-                }
-            }
-
             else -> {
                 val buckets = buildBuckets(start, end, scale)
                 if (buckets.isEmpty()) return VolumeSeries(emptyList())
@@ -110,7 +101,6 @@ public class VolumeSeriesUseCase {
 
     private fun deriveScale(start: LocalDateTime, end: LocalDateTime): BucketScale {
         val days = max(1, start.date.daysUntil(end.date) + 1)
-        if (days <= 1) return BucketScale.Exercise
         val weeks = (days + DayOfWeek.entries.size - 1) / DayOfWeek.entries.size
         return when {
             days <= TARGET_BUCKETS -> BucketScale.Day
@@ -151,16 +141,12 @@ public class VolumeSeriesUseCase {
         to: LocalDateTime,
     ): List<Bucket> {
         val buckets = mutableListOf<Bucket>()
-        var current = from.date
+        var current = DateTimeUtils.startOfDay(from.date).date
 
         while (current <= to.date) {
             val dayStart = DateTimeUtils.startOfDay(current)
             val dayEnd = DateTimeUtils.endOfDay(current)
-
-            val start = maxOf(dayStart, from)
-            val end = minOf(dayEnd, to)
-
-            buckets += Bucket(start = start, end = end)
+            buckets += Bucket(start = dayStart, end = dayEnd)
             current = current.plus(DatePeriod(days = 1))
         }
 
@@ -177,11 +163,7 @@ public class VolumeSeriesUseCase {
         while (weekStart <= to) {
             val weekEndDate = weekStart.date.plus(DatePeriod(days = 6))
             val weekEnd = DateTimeUtils.endOfDay(weekEndDate)
-
-            val start = maxOf(weekStart, from)
-            val end = minOf(weekEnd, to)
-
-            buckets += Bucket(start = start, end = end)
+            buckets += Bucket(start = weekStart, end = weekEnd)
             val nextWeekStartDate = weekStart.date.plus(DatePeriod(days = 7))
             weekStart = DateTimeUtils.startOfDay(nextWeekStartDate)
         }
@@ -201,11 +183,7 @@ public class VolumeSeriesUseCase {
                 .plus(DatePeriod(months = 1))
             val lastDay = firstOfNext.minus(DatePeriod(days = 1))
             val monthEnd = DateTimeUtils.endOfDay(lastDay)
-
-            val start = maxOf(monthStart, from)
-            val end = minOf(monthEnd, to)
-
-            buckets += Bucket(start = start, end = end)
+            buckets += Bucket(start = monthStart, end = monthEnd)
             val nextMonthStartDate = monthStart.date.plus(DatePeriod(months = 1))
             monthStart = DateTimeUtils.startOfDay(nextMonthStartDate)
         }
