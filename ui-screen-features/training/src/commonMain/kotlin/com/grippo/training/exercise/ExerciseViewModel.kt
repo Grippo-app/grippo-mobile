@@ -82,9 +82,7 @@ internal class ExerciseViewModel(
 
             val number = state.value.exercise.iterations.count() + 1
 
-            val suggestions = state.value.exercise.iterations
-                .reversed()
-                .distinctBy { it.externalWeight.value to it.repetitions.value }
+            val suggestions = suggestedIterations()
 
             val dialog = DialogConfig.Iteration(
                 initial = value,
@@ -143,9 +141,7 @@ internal class ExerciseViewModel(
 
         val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
 
-        val suggestions = state.value.exercise.iterations
-            .reversed()
-            .distinctBy { it.externalWeight.value to it.repetitions.value }
+        val suggestions = suggestedIterations()
 
         val example = state.value.exerciseExample ?: return
 
@@ -183,9 +179,7 @@ internal class ExerciseViewModel(
 
         val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
 
-        val suggestions = state.value.exercise.iterations
-            .reversed()
-            .distinctBy { it.externalWeight.value to it.repetitions.value }
+        val suggestions = suggestedIterations()
 
         val example = state.value.exerciseExample ?: return
 
@@ -249,6 +243,21 @@ internal class ExerciseViewModel(
             exercise = state.value.exercise
         )
         navigateTo(direction)
+    }
+
+    private fun suggestedIterations(): List<IterationState> {
+        return state.value.exercise.iterations
+            .reversed()
+            .distinctBy {
+                listOf(
+                    it.externalWeight.value,
+                    it.extraWeight.value,
+                    it.assistWeight.value,
+                    it.bodyWeight.value,
+                    it.bodyMultiplier.value,
+                    it.repetitions.value,
+                )
+            }
     }
 
     override fun onBack() {

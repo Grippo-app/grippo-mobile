@@ -286,7 +286,7 @@ public data object AppDp {
 
         public data object Small {
             val height: Dp = size.small
-            val horizontalPadding: Dp = padding.small
+            val horizontalPadding: Dp = padding.medium
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.extraSmall

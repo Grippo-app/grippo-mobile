@@ -75,6 +75,7 @@ public class IterationPickerViewModel(
     override fun onIterationClick(id: String) {
         update {
             val selected = it.suggestions.find { f -> f.id == id } ?: return@update it
+
             val iteration = it.value.copy(
                 externalWeight = selected.externalWeight,
                 bodyWeight = selected.bodyWeight,
@@ -83,6 +84,7 @@ public class IterationPickerViewModel(
                 extraWeight = selected.extraWeight,
                 repetitions = selected.repetitions
             )
+
             it.copy(value = iteration)
         }
     }

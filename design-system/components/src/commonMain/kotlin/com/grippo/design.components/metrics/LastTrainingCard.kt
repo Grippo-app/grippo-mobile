@@ -25,7 +25,6 @@ import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.spot
@@ -34,7 +33,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
-import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.last_workout
 import com.grippo.design.resources.provider.plate
 import com.grippo.design.resources.provider.plus_value_more
@@ -148,10 +146,7 @@ public fun LastTrainingCard(
             Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
 
             Button(
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.calendar),
-                    endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
-                ),
+                content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.calendar)),
                 size = ButtonSize.Small,
                 style = ButtonStyle.Secondary,
                 onClick = onClick
