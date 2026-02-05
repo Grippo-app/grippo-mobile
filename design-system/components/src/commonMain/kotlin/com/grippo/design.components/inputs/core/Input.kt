@@ -195,7 +195,9 @@ internal fun Input(
                 is InputStyle.Clickable -> {}
 
                 is InputStyle.Default -> {
-                    inputStyle.onValueChange(new.text)
+                    if (new.text != value) {
+                        inputStyle.onValueChange(new.text)
+                    }
                 }
             }
         },

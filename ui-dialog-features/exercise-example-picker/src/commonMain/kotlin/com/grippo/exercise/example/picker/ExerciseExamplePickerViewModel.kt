@@ -8,7 +8,6 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.toPersistentList
@@ -21,7 +20,6 @@ public class ExerciseExamplePickerViewModel(
     targetMuscleGroupId: String?,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     muscleFeature: MuscleFeature,
-    private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState(queries = Queries(selectedMuscleGroupId = targetMuscleGroupId))
 ), ExerciseExamplePickerContract {

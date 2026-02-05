@@ -88,7 +88,7 @@ public fun InputSearch(
             focusManager.clearFocus(force = true)
         },
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words,
+            capitalization = KeyboardCapitalization.Sentences,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
         )

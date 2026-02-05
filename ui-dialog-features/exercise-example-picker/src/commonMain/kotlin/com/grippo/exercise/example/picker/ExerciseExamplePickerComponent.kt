@@ -20,7 +20,6 @@ public class ExerciseExamplePickerComponent(
             targetMuscleGroupId = targetMuscleGroupId,
             userExerciseExamplesUseCase = getKoin().get(),
             muscleFeature = getKoin().get(),
-            dialogController = getKoin().get(),
         )
     }
 
