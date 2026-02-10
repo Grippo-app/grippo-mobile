@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.design.components.wheel.WheelItemRow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -20,8 +21,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.hours_short
 import com.grippo.design.resources.provider.minutes_short
+import com.grippo.duration.picker.DefaultDurationHours
 import com.grippo.duration.picker.DefaultDurationMinutes
-import com.grippo.duration.picker.resolveDurationHours
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
@@ -35,7 +36,7 @@ internal fun DurationWheelPicker(
     modifier: Modifier = Modifier,
     hours: PersistentList<Int>,
     minutes: PersistentList<Int>,
-    value: Duration,
+    value: DurationFormatState,
     select: (Duration) -> Unit
 ) {
     val hoursState = rememberLazyListState()
@@ -44,17 +45,38 @@ internal fun DurationWheelPicker(
     val hourLabel = AppTokens.strings.res(Res.string.hours_short)
     val minuteLabel = AppTokens.strings.res(Res.string.minutes_short)
 
-    val resolvedHours = remember(value, hours) {
-        val min = hours.firstOrNull() ?: 0
-        val max = hours.lastOrNull() ?: 0
-        value.inWholeHours.toInt().coerceIn(min, max)
+    val durationValue = remember(value) {
+        value.value ?: DurationFormatState.DurationLimitation.start
     }
 
-    val resolvedMinutes = remember(value, resolvedHours, minutes) {
-        val min = minutes.firstOrNull() ?: 0
-        val max = minutes.lastOrNull() ?: 0
-        val remainder = (value - resolvedHours.hours).inWholeMinutes.toInt()
-        remainder.coerceIn(min, max)
+    val minTotalMinutes = remember {
+        DurationFormatState.DurationLimitation.start.inWholeMinutes.toInt()
+    }
+    val maxTotalMinutes = remember {
+        DurationFormatState.DurationLimitation.endInclusive.inWholeMinutes.toInt()
+    }
+    val minHours = remember(hours) { hours.firstOrNull() ?: 0 }
+    val maxHours = remember(hours) { hours.lastOrNull() ?: 0 }
+
+    fun validMinutesRangeForHour(hour: Int): IntRange {
+        val minMinute = if (hour == minHours) {
+            (minTotalMinutes - hour * 60).coerceAtLeast(0)
+        } else 0
+        val maxMinute = if (hour == maxHours) {
+            (maxTotalMinutes - hour * 60).coerceAtMost(59)
+        } else 59
+        return minMinute.coerceAtMost(maxMinute)..maxMinute
+    }
+
+    val resolvedHours = remember(durationValue, hours) {
+        val h = durationValue.inWholeHours.toInt()
+        h.coerceIn(minHours, maxHours)
+    }
+
+    val resolvedMinutes = remember(durationValue, resolvedHours, minutes) {
+        val remainder = (durationValue - resolvedHours.hours).inWholeMinutes.toInt()
+        val range = validMinutesRangeForHour(resolvedHours)
+        remainder.coerceIn(range.first, range.last)
     }
 
     var selectedHours by remember { mutableStateOf(resolvedHours) }
@@ -73,8 +95,16 @@ internal fun DurationWheelPicker(
         id = "duration_hours",
         items = hours,
         selected = selectedHours,
-        onSelect = { selectedHours = it },
-        isValid = { true },
+        onSelect = { hour ->
+            selectedHours = hour
+            val validRange = validMinutesRangeForHour(hour)
+            if (selectedMinutes !in validRange) {
+                selectedMinutes = selectedMinutes.coerceIn(validRange.first, validRange.last)
+            }
+        },
+        isValid = { hour ->
+            !validMinutesRangeForHour(hour).isEmpty()
+        },
         itemContent = { item, _ ->
             WheelItemRow(
                 modifier = Modifier.fillMaxWidth()
@@ -92,8 +122,14 @@ internal fun DurationWheelPicker(
         id = "duration_minutes",
         items = minutes,
         selected = selectedMinutes,
-        onSelect = { selectedMinutes = it },
-        isValid = { true },
+        onSelect = { minute ->
+            if (minute in validMinutesRangeForHour(selectedHours)) {
+                selectedMinutes = minute
+            }
+        },
+        isValid = { minute ->
+            minute in validMinutesRangeForHour(selectedHours)
+        },
         itemContent = { item, _ ->
             WheelItemRow(
                 modifier = Modifier
@@ -125,9 +161,9 @@ internal fun DurationWheelPicker(
 private fun DurationWheelPickerPreview() {
     PreviewContainer {
         DurationWheelPicker(
-            hours = resolveDurationHours(1.hours + 30.minutes),
+            hours = DefaultDurationHours,
             minutes = DefaultDurationMinutes,
-            value = 1.hours + 30.minutes,
+            value = DurationFormatState.of(1.hours + 30.minutes),
             select = {},
         )
     }

@@ -1,19 +1,19 @@
 package com.grippo.duration.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DurationFormatState
 import kotlin.time.Duration
 
 public class DurationPickerViewModel(
-    initial: Duration
+    initial: DurationFormatState
 ) : BaseViewModel<DurationPickerState, DurationPickerDirection, DurationPickerLoader>(
     DurationPickerState(
-        hours = resolveDurationHours(initial),
         value = initial
     )
 ), DurationPickerContract {
 
     override fun onSelectDuration(value: Duration) {
-        update { it.copy(value = value) }
+        update { it.copy(value = DurationFormatState.of(value)) }
     }
 
     override fun onSubmitClick() {

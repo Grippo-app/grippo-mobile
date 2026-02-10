@@ -12,6 +12,7 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
+        implementation(projects.uiCore.state)
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)

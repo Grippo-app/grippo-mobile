@@ -6,12 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import kotlin.time.Duration
+import com.grippo.core.state.formatters.DurationFormatState
 
 public class DurationPickerComponent(
     componentContext: ComponentContext,
-    private val initial: Duration,
-    private val onResult: (value: Duration) -> Unit,
+    private val initial: DurationFormatState,
+    private val onResult: (value: DurationFormatState) -> Unit,
     private val back: () -> Unit
 ) : BaseComponent<DurationPickerDirection>(componentContext) {
 
