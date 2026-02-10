@@ -15,6 +15,10 @@ public class ConfirmTrainingCompletionViewModel(
         navigateTo(ConfirmTrainingCompletionDirection.Confirm)
     }
 
+    override fun onDurationInputClick() {
+
+    }
+
     override fun onBack() {
         navigateTo(ConfirmTrainingCompletionDirection.Back)
     }

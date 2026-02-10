@@ -212,6 +212,21 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
+        val duration = DateTimeUtils.ago(state.value.startAt)
+
+        val config = DialogConfig.ConfirmTrainingCompletion(
+            value = duration,
+            onResult = { result ->
+                val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
+                update { it.copy(startAt = startAt) }
+                toCompleteTraining()
+            }
+        )
+
+        dialogController.show(config)
+    }
+
+    private fun toCompleteTraining() {
         val direction = TrainingRecordingDirection.ToCompleted(
             stage = state.value.stage,
             exercises = state.value.exercises,

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,21 +11,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.inputs.InputDuration
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cancel_btn
 import com.grippo.design.resources.provider.confirm_btn
-import com.grippo.design.resources.provider.confirm_training_completion_description
 import com.grippo.design.resources.provider.confirm_training_completion_title
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlin.time.Duration.Companion.minutes
@@ -49,20 +46,14 @@ internal fun ConfirmTrainingCompletionScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    Text(
+    InputDuration(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth()
-            .heightIn(max = 400.dp),
-        text = AppTokens.strings.res(
-            Res.string.confirm_training_completion_description,
-            DateTimeUtils.format(state.duration)
-        ),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
+            .fillMaxWidth(),
+        value = state.duration,
+        onClick = contract::onDurationInputClick
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
