@@ -18,6 +18,7 @@ public class ConfirmTrainingCompletionComponent(
     override val viewModel: ConfirmTrainingCompletionViewModel = componentContext.retainedInstance {
         ConfirmTrainingCompletionViewModel(
             duration = value,
+            dialogController = getKoin().get(),
         )
     }
 
@@ -29,7 +30,7 @@ public class ConfirmTrainingCompletionComponent(
 
     override suspend fun eventListener(direction: ConfirmTrainingCompletionDirection) {
         when (direction) {
-            ConfirmTrainingCompletionDirection.Confirm -> onResult.invoke(value)
+            is ConfirmTrainingCompletionDirection.Confirm -> onResult.invoke(direction.value)
             ConfirmTrainingCompletionDirection.Back -> back.invoke()
         }
     }

@@ -218,6 +218,9 @@
 
     <string name="weight_picker_title">Оберіть свою вагу</string>
     <string name="weight_picker_description">Використовується для розрахунку показників на кшталт ІМТ та оптимізації тренувань.</string>
+    <string name="duration_picker_title">Оберіть тривалість</string>
+    <string name="hours_short">год</string>
+    <string name="minutes_short">хв</string>
 
     <string name="experience_beginner_title">Початківець</string>
     <string name="experience_intermediate_title">Середній</string>

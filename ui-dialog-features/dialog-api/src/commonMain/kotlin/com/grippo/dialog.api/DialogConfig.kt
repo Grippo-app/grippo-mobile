@@ -103,6 +103,15 @@ public sealed class DialogConfig(
     )
 
     @Serializable
+    public data class DurationPicker(
+        val initial: Duration,
+        @Transient val onResult: (value: Duration) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
     public data class HeightPicker(
         val initial: HeightFormatState,
         @Transient val onResult: (value: HeightFormatState) -> Unit = {},

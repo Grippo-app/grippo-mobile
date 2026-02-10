@@ -66,6 +66,7 @@ kotlin {
 
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiDialogFeatures.weightPicker)
+        implementation(projects.uiDialogFeatures.durationPicker)
         implementation(projects.uiDialogFeatures.heightPicker)
         implementation(projects.uiDialogFeatures.datePicker)
         implementation(projects.uiDialogFeatures.monthPicker)

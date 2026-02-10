@@ -220,6 +220,9 @@
 
     <string name="weight_picker_title">Выберите свой вес</string>
     <string name="weight_picker_description">Используется для расчёта показателей вроде ИМТ и оптимизации тренировок.</string>
+    <string name="duration_picker_title">Выберите длительность</string>
+    <string name="hours_short">ч</string>
+    <string name="minutes_short">мин</string>
 
     <string name="experience_beginner_title">Новичок</string>
     <string name="experience_intermediate_title">Средний</string>

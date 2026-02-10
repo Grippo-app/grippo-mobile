@@ -221,6 +221,9 @@
 
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
+    <string name="duration_picker_title">Select duration</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_short">min</string>
 
     <string name="experience_beginner_title">Beginner</string>
     <string name="experience_intermediate_title">Intermediate</string>

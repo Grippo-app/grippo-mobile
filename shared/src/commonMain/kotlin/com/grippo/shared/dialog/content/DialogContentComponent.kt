@@ -16,6 +16,7 @@ import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.profile.ProfileComponent
 import com.grippo.draft.training.DraftTrainingComponent
+import com.grippo.duration.picker.DurationPickerComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
@@ -72,6 +73,15 @@ internal class DialogContentComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = { weight -> viewModel.onBack { router.onResult.invoke(weight) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.DurationPicker -> Child.DurationPicker(
+                DurationPickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    onResult = { duration -> viewModel.onBack { router.onResult.invoke(duration) } },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -273,6 +283,9 @@ internal class DialogContentComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class WeightPicker(override val component: WeightPickerComponent) :
+            Child(component)
+
+        data class DurationPicker(override val component: DurationPickerComponent) :
             Child(component)
 
         data class HeightPicker(override val component: HeightPickerComponent) :
