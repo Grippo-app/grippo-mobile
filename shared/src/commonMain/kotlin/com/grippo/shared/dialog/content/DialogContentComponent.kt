@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.confirm.training.completion.ConfirmTrainingCompletionComponent
 import com.grippo.confirmation.ConfirmationComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
@@ -244,6 +245,15 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.ConfirmTrainingCompletion -> Child.ConfirmTrainingCompletion(
+                ConfirmTrainingCompletionComponent(
+                    componentContext = context,
+                    value = router.value,
+                    onResult = { duration -> viewModel.onBack { router.onResult.invoke(duration) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.Statistics -> Child.Statistics(
                 StatisticsComponent(
                     config = router,
@@ -308,6 +318,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class Confirmation(override val component: ConfirmationComponent) :
+            Child(component)
+
+        data class ConfirmTrainingCompletion(override val component: ConfirmTrainingCompletionComponent) :
             Child(component)
 
         data class DraftTraining(override val component: DraftTrainingComponent) :

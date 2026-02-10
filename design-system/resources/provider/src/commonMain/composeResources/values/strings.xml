@@ -314,6 +314,8 @@
     <string name="sets_label">Sets:</string>
     <string name="training_progress_lost_title">Exit Training</string>
     <string name="training_progress_lost_description">Closing now will cause all your progress in this session to be lost.</string>
+    <string name="confirm_training_completion_title">Finish training</string>
+    <string name="confirm_training_completion_description">Training duration: %1$s</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>

@@ -73,6 +73,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.profile)
         implementation(projects.uiDialogFeatures.errorDisplay)
         implementation(projects.uiDialogFeatures.confirmation)
+        implementation(projects.uiDialogFeatures.confirmTrainingCompletion)
         implementation(projects.uiDialogFeatures.exerciseExample)
         implementation(projects.uiDialogFeatures.exercise)
         implementation(projects.uiDialogFeatures.iterationPicker)
