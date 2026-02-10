@@ -99,7 +99,9 @@ internal fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            onStartTraining = contract::onStartTraining
+            onStartTraining = contract::onStartTraining,
+            onResumeTraining = contract::onResumeTraining,
+            hasDraftTraining = state.hasDraftTraining
         )
         return@BaseComposeScreen
     }

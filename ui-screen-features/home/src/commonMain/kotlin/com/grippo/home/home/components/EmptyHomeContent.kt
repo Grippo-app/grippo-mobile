@@ -22,12 +22,15 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.home_empty_subtitle
 import com.grippo.design.resources.provider.home_empty_title
+import com.grippo.design.resources.provider.resume_training_btn
 import com.grippo.design.resources.provider.start_workout
 
 @Composable
 internal fun EmptyHomeContent(
     modifier: Modifier,
-    onStartTraining: () -> Unit
+    hasDraftTraining: Boolean,
+    onStartTraining: () -> Unit,
+    onResumeTraining: () -> Unit
 ) {
     val title = AppTokens.strings.res(Res.string.home_empty_title)
     val subtitle = AppTokens.strings.res(Res.string.home_empty_subtitle)
@@ -64,14 +67,25 @@ internal fun EmptyHomeContent(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.start_workout),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = onStartTraining
-            )
+            if (hasDraftTraining) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onResumeTraining,
+                    style = ButtonStyle.Error,
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.resume_training_btn)
+                    )
+                )
+            } else {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.start_workout),
+                    ),
+                    style = ButtonStyle.Primary,
+                    onClick = onStartTraining
+                )
+            }
         }
     }
 }
@@ -82,7 +96,16 @@ private fun EmptyHomeContentPreview() {
     PreviewContainer {
         EmptyHomeContent(
             modifier = Modifier.fillMaxSize(),
-            onStartTraining = {}
+            onStartTraining = {},
+            onResumeTraining = {},
+            hasDraftTraining = true
+        )
+
+        EmptyHomeContent(
+            modifier = Modifier.fillMaxSize(),
+            onStartTraining = {},
+            onResumeTraining = {},
+            hasDraftTraining = false
         )
     }
 }
