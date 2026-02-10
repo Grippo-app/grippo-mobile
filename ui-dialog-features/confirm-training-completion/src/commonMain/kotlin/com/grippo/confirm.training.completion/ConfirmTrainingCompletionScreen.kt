@@ -23,6 +23,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cancel_btn
 import com.grippo.design.resources.provider.confirm_btn
+import com.grippo.design.resources.provider.confirm_training_completion_hint
+import com.grippo.design.resources.provider.confirm_training_completion_subtitle
 import com.grippo.design.resources.provider.confirm_training_completion_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -46,7 +48,31 @@ internal fun ConfirmTrainingCompletionScreen(
         textAlign = TextAlign.Center
     )
 
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.confirm_training_completion_subtitle),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary,
+        textAlign = TextAlign.Center
+    )
+
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.confirm_training_completion_hint),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.tertiary,
+        textAlign = TextAlign.Start
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
     InputDuration(
         modifier = Modifier

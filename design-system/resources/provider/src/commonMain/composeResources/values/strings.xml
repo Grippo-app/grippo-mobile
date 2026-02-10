@@ -319,6 +319,8 @@
     <string name="training_progress_lost_description">Closing now will cause all your progress in this session to be lost.</string>
     <string name="confirm_training_completion_title">Finish training</string>
     <string name="confirm_training_completion_description">Training duration: %1$s</string>
+    <string name="confirm_training_completion_subtitle">Great work! Ready to finish the workout?</string>
+    <string name="confirm_training_completion_hint">You can edit the duration.</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>
