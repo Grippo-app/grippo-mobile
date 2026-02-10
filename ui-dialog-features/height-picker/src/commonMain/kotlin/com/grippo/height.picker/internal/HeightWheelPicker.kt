@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.wheel.WheelItem
+import com.grippo.design.components.wheel.WheelItemRow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -34,7 +34,7 @@ internal fun HeightWheelPicker(
         onSelect = select,
         isValid = { true },
         itemContent = { item, _ ->
-            WheelItem(
+            WheelItemRow(
                 text = item.toString(),
                 subText = AppTokens.strings.res(Res.string.cm),
                 isValid = true

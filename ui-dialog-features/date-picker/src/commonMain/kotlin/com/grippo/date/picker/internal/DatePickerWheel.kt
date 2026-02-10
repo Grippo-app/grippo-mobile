@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.wheel.WheelItem
+import com.grippo.design.components.wheel.WheelItemRow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -130,7 +130,7 @@ internal fun DateWheelPicker(
             )
         },
         itemContent = { d, valid ->
-            WheelItem(text = d.toString(), isValid = valid)
+            WheelItemRow(text = d.toString(), isValid = valid)
         },
         listState = dayState
     )
@@ -146,7 +146,7 @@ internal fun DateWheelPicker(
                 LocalDateTime(selectedYear, m.ordinal + 1, 1, 0, 0)
             }
             val monthName = rememberFormat(value = template, format = DateFormat.DateOnly.MonthFull)
-            WheelItem(text = monthName, isValid = valid)
+            WheelItemRow(text = monthName, isValid = valid)
         },
         listState = monthState
     )
@@ -158,7 +158,7 @@ internal fun DateWheelPicker(
         onSelect = { selectedYear = it },
         isValid = { y -> checkYearValidity(y, limitations) },
         itemContent = { y, valid ->
-            WheelItem(text = y.toString(), isValid = valid)
+            WheelItemRow(text = y.toString(), isValid = valid)
         },
         listState = yearState
     )

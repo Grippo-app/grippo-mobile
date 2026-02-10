@@ -2,23 +2,29 @@ package com.grippo.design.components.wheel
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-public fun WheelItem(
+public fun WheelItemRow(
     modifier: Modifier = Modifier,
     text: String,
     subText: String? = null,
-    isValid: Boolean
+    isValid: Boolean,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    verticalAlignment: Alignment.Vertical = Alignment.Top,
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+        verticalAlignment = verticalAlignment,
+        horizontalArrangement = horizontalArrangement
     ) {
         Text(
             modifier = Modifier,
@@ -28,6 +34,7 @@ public fun WheelItem(
         )
 
         subText?.let {
+            Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
             Text(
                 modifier = Modifier,
                 text = subText,
@@ -40,9 +47,9 @@ public fun WheelItem(
 
 @AppPreview
 @Composable
-private fun WheelItemValidPreview() {
+private fun WheelItemRowValidPreview() {
     PreviewContainer {
-        WheelItem(
+        WheelItemRow(
             text = "100",
             subText = "cm",
             isValid = true
@@ -52,9 +59,9 @@ private fun WheelItemValidPreview() {
 
 @AppPreview
 @Composable
-private fun WheelItemInvalidPreview() {
+private fun WheelItemRowInvalidPreview() {
     PreviewContainer {
-        WheelItem(
+        WheelItemRow(
             text = "0",
             subText = "kg",
             isValid = false
