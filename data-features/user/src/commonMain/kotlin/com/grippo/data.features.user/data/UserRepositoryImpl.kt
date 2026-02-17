@@ -8,6 +8,7 @@ import com.grippo.domain.dto.user.toBody
 import com.grippo.dto.entity.user.toEntityOrNull
 import com.grippo.entity.domain.user.toDomain
 import com.grippo.services.backend.GrippoApi
+import com.grippo.services.backend.dto.user.HeightBody
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.dao.UserDao
@@ -66,6 +67,18 @@ internal class UserRepositoryImpl(
     override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
         val response = api.updateExperience(
             com.grippo.services.backend.dto.user.ExperienceBody(experience = experience.key)
+        )
+
+        return response.map { dto ->
+            val user = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(user)
+            true
+        }
+    }
+
+    override suspend fun setHeight(height: Int): Result<Boolean> {
+        val response = api.updateHeight(
+            HeightBody(height = height)
         )
 
         return response.map { dto ->

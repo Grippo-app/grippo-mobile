@@ -31,4 +31,8 @@ internal class UserFeatureImpl(
     override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
         return repository.setExperience(experience)
     }
+
+    override suspend fun setHeight(height: Int): Result<Boolean> {
+        return repository.setHeight(height)
+    }
 }

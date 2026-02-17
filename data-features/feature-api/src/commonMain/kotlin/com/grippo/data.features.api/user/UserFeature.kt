@@ -16,4 +16,6 @@ public interface UserFeature {
     public suspend fun deleteProfile(): Result<Unit>
 
     public suspend fun setExperience(experience: ExperienceEnum): Result<Boolean>
+
+    public suspend fun setHeight(height: Int): Result<Boolean>
 }

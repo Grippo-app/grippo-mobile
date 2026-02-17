@@ -16,6 +16,7 @@ import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
+import com.grippo.data.features.api.weight.history.UpdateWeightUseCase
 import org.koin.core.annotation.Module
 import org.koin.dsl.module
 import kotlin.jvm.JvmName
@@ -33,6 +34,13 @@ public class FeatureApiModule {
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
                 exerciseExampleFeature = get(),
+                weightHistoryFeature = get()
+            )
+        }
+
+        single {
+            UpdateWeightUseCase(
+                userFeature = get(),
                 weightHistoryFeature = get()
             )
         }

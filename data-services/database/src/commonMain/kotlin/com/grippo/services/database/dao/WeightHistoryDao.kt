@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 public interface WeightHistoryDao {
 
-    @Query("SELECT * FROM weight_history ORDER BY createdAt")
+    @Query("SELECT * FROM weight_history ORDER BY createdAt DESC")
     public fun get(): Flow<List<WeightHistoryEntity>>
 
     @Query("SELECT * FROM weight_history ORDER BY createdAt DESC LIMIT 1")

@@ -13,7 +13,10 @@ internal class ProfileBodyComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileBodyViewModel(
-            dialogController = getKoin().get()
+            dialogController = getKoin().get(),
+            weightHistoryFeature = getKoin().get(),
+            userFeature = getKoin().get(),
+            updateWeightUseCase = getKoin().get()
         )
     }
 

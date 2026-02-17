@@ -24,6 +24,7 @@
     <string name="low_confidence">Низька впевненість</string>
     <string name="repetitions_input_hint">1 - 99 повторень</string>
     <string name="exercise_details_btn">Деталі вправи</string>
+    <string name="and">І</string>
     <string name="resume_training_btn">Продовжити тренування</string>
     <string name="start_new">Почати нове</string>
     <string name="weight_input_hint">1 - 999 кг</string>
