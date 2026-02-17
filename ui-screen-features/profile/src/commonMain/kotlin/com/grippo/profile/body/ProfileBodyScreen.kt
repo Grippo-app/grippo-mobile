@@ -1,4 +1,4 @@
-package com.grippo.profile.weight.history
+package com.grippo.profile.body
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,10 +27,10 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun WeightHistoryScreen(
-    state: WeightHistoryState,
-    loaders: ImmutableSet<WeightHistoryLoader>,
-    contract: WeightHistoryContract
+internal fun ProfileBodyScreen(
+    state: ProfileBodyState,
+    loaders: ImmutableSet<ProfileBodyLoader>,
+    contract: ProfileBodyContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
@@ -76,12 +76,12 @@ internal fun WeightHistoryScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        WeightHistoryScreen(
-            state = WeightHistoryState(
+        ProfileBodyScreen(
+            state = ProfileBodyState(
                 weight = WeightFormatState.of(33f)
             ),
             loaders = persistentSetOf(),
-            contract = WeightHistoryContract.Empty
+            contract = ProfileBodyContract.Empty
         )
     }
 }

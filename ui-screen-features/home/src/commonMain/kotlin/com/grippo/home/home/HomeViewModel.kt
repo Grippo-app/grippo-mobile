@@ -175,7 +175,7 @@ internal class HomeViewModel(
                     ProfileMenu.Equipment -> navigateTo(HomeDirection.MissingEquipment)
                     ProfileMenu.Experience -> navigateTo(HomeDirection.Experience)
                     ProfileMenu.Settings -> navigateTo(HomeDirection.Settings)
-                    ProfileMenu.Body -> navigateTo(HomeDirection.WeightAndHeight)
+                    ProfileMenu.Body -> navigateTo(HomeDirection.Body)
                 }
             },
             onSettingsResult = {

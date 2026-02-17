@@ -1,4 +1,4 @@
-package com.grippo.profile.weight.history
+package com.grippo.profile.body
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,20 +6,20 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
-internal class WeightHistoryComponent(
+internal class ProfileBodyComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit
-) : BaseComponent<WeightHistoryDirection>(componentContext) {
+) : BaseComponent<ProfileBodyDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        WeightHistoryViewModel(
+        ProfileBodyViewModel(
             dialogController = getKoin().get()
         )
     }
 
-    override suspend fun eventListener(direction: WeightHistoryDirection) {
+    override suspend fun eventListener(direction: ProfileBodyDirection) {
         when (direction) {
-            WeightHistoryDirection.Back -> back.invoke()
+            ProfileBodyDirection.Back -> back.invoke()
         }
     }
 
@@ -27,6 +27,6 @@ internal class WeightHistoryComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        WeightHistoryScreen(state.value, loaders.value, viewModel)
+        ProfileBodyScreen(state.value, loaders.value, viewModel)
     }
 }

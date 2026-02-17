@@ -1,7 +1,7 @@
-package com.grippo.profile.weight.history
+package com.grippo.profile.body
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader
 
 @Immutable
-internal sealed interface WeightHistoryLoader : BaseLoader
+internal sealed interface ProfileBodyLoader : BaseLoader

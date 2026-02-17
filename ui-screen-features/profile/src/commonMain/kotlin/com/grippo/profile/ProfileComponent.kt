@@ -13,13 +13,13 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.profile.ProfileComponent.Child.Equipments
 import com.grippo.profile.ProfileComponent.Child.Experience
 import com.grippo.profile.ProfileComponent.Child.Muscles
+import com.grippo.profile.ProfileComponent.Child.ProfileBody
 import com.grippo.profile.ProfileComponent.Child.Settings
-import com.grippo.profile.ProfileComponent.Child.WeightHistory
+import com.grippo.profile.body.ProfileBodyComponent
 import com.grippo.profile.equipments.ProfileEquipmentsComponent
 import com.grippo.profile.experience.ProfileExperienceComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
 import com.grippo.profile.settings.ProfileSettingsComponent
-import com.grippo.profile.weight.history.WeightHistoryComponent
 import com.grippo.screen.api.ProfileRouter
 
 public class ProfileComponent(
@@ -71,8 +71,8 @@ public class ProfileComponent(
                 ),
             )
 
-            ProfileRouter.WeightHistory -> WeightHistory(
-                WeightHistoryComponent(
+            ProfileRouter.Body -> ProfileBody(
+                ProfileBodyComponent(
                     componentContext = context,
                     back = viewModel::onBack
                 )
@@ -104,7 +104,7 @@ public class ProfileComponent(
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
         data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
-        data class WeightHistory(override val component: WeightHistoryComponent) : Child(component)
+        data class ProfileBody(override val component: ProfileBodyComponent) : Child(component)
         data class Experience(override val component: ProfileExperienceComponent) : Child(component)
         data class Settings(override val component: ProfileSettingsComponent) : Child(component)
     }

@@ -1,14 +1,14 @@
-package com.grippo.profile.weight.history
+package com.grippo.profile.body
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 
-internal class WeightHistoryViewModel(
+internal class ProfileBodyViewModel(
     private val dialogController: DialogController
-) : BaseViewModel<WeightHistoryState, WeightHistoryDirection, WeightHistoryLoader>(
-    WeightHistoryState()
-), WeightHistoryContract {
+) : BaseViewModel<ProfileBodyState, ProfileBodyDirection, ProfileBodyLoader>(
+    ProfileBodyState()
+), ProfileBodyContract {
 
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
@@ -19,6 +19,6 @@ internal class WeightHistoryViewModel(
     }
 
     override fun onBack() {
-        navigateTo(WeightHistoryDirection.Back)
+        navigateTo(ProfileBodyDirection.Back)
     }
 }

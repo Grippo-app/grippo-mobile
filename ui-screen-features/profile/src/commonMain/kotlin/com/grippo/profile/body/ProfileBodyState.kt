@@ -1,9 +1,9 @@
-package com.grippo.profile.weight.history
+package com.grippo.profile.body
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.WeightFormatState
 
 @Immutable
-internal data class WeightHistoryState(
+internal data class ProfileBodyState(
     val weight: WeightFormatState = WeightFormatState.of(70.0F),
 )

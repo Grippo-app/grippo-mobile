@@ -38,8 +38,8 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
         navigateTo(HomeRootDirection.DraftTraining)
     }
 
-    override fun toWeightAndHeight() {
-        navigateTo(HomeRootDirection.WeightAndHeight)
+    override fun toBody() {
+        navigateTo(HomeRootDirection.Body)
     }
 
     override fun toSettings() {

@@ -80,7 +80,7 @@ public class RootComponent(
             )
 
             RootDirection.Profile -> navigation.push(
-                RootRouter.Profile(ProfileRouter.WeightHistory)
+                RootRouter.Profile(ProfileRouter.Body)
             )
 
             RootDirection.Debug -> navigation.push(
@@ -92,7 +92,7 @@ public class RootComponent(
             )
 
             RootDirection.WeightHistory -> navigation.push(
-                RootRouter.Profile(ProfileRouter.WeightHistory)
+                RootRouter.Profile(ProfileRouter.Body)
             )
 
             RootDirection.MissingEquipment -> navigation.push(
@@ -135,7 +135,7 @@ public class RootComponent(
                 HomeRootComponent(
                     componentContext = context,
                     initial = HomeRouter.Home,
-                    toWeightAndHeight = viewModel::toWeightHistory,
+                    toBody = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toExperience = viewModel::toExperience,

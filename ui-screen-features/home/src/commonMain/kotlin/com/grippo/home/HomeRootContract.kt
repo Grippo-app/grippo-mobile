@@ -13,12 +13,12 @@ internal interface HomeRootContract {
     fun toAddTraining()
     fun toDraftTraining()
     fun toSettings()
-    fun toWeightAndHeight()
+    fun toBody()
 
     @Immutable
     companion object Empty : HomeRootContract {
         override fun onBack() {}
-        override fun toWeightAndHeight() {}
+        override fun toBody() {}
         override fun toExcludedMuscles() {}
         override fun toMissingEquipment() {}
         override fun toExperience() {}

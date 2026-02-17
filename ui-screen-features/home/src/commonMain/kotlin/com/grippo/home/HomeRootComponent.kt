@@ -19,7 +19,7 @@ public class HomeRootComponent(
     componentContext: ComponentContext,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
-    private val toWeightAndHeight: () -> Unit,
+    private val toBody: () -> Unit,
     private val toExperience: () -> Unit,
     private val toDebug: () -> Unit,
     private val toTraining: (stage: StageState) -> Unit,
@@ -43,7 +43,7 @@ public class HomeRootComponent(
             HomeRootDirection.Back -> close.invoke()
             HomeRootDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
             HomeRootDirection.MissingEquipment -> toMissingEquipment.invoke()
-            HomeRootDirection.WeightAndHeight -> toWeightAndHeight.invoke()
+            HomeRootDirection.Body -> toBody.invoke()
             HomeRootDirection.Experience -> toExperience.invoke()
             HomeRootDirection.Debug -> toDebug.invoke()
             HomeRootDirection.AddTraining -> toTraining.invoke(StageState.Add)
@@ -75,7 +75,7 @@ public class HomeRootComponent(
                     componentContext = context,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toMissingEquipment = viewModel::toMissingEquipment,
-                    toWeightAndHeight = viewModel::toWeightAndHeight,
+                    toBody = viewModel::toBody,
                     toExperience = viewModel::toExperience,
                     toAddTraining = viewModel::toAddTraining,
                     toDraftTraining = viewModel::toDraftTraining,
