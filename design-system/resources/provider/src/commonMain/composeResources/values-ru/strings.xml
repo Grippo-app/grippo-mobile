@@ -13,6 +13,7 @@
     <string name="plus_value_more">+ ещё %1$s</string>
     <string name="body_weight_placeholder">Вес тела</string>
     <string name="view_workout">Просмотреть тренировку</string>
+    <string name="weight_and_height">Вес и рост</string>
     <string name="external_weight_placeholder">Внешний вес</string>
     <string name="extra_weight_placeholder">Дополнительный вес</string>
     <string name="assist_weight_placeholder">Ассистированный вес</string>

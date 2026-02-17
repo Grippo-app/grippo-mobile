@@ -12,13 +12,13 @@ internal class HomeComponent(
     private val back: () -> Unit,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
-    private val toWeightHistory: () -> Unit,
     private val toExperience: () -> Unit,
     private val toDebug: () -> Unit,
     private val toAddTraining: () -> Unit,
     private val toTrainings: () -> Unit,
     private val toDraftTraining: () -> Unit,
     private val toSettings: () -> Unit,
+    private val toWeightAndHeight: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -50,10 +50,10 @@ internal class HomeComponent(
             HomeDirection.Debug -> toDebug.invoke()
             HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
             HomeDirection.MissingEquipment -> toMissingEquipment.invoke()
-            HomeDirection.WeightHistory -> toWeightHistory.invoke()
             HomeDirection.Experience -> toExperience.invoke()
             HomeDirection.Trainings -> toTrainings.invoke()
             HomeDirection.Settings -> toSettings.invoke()
+            HomeDirection.WeightAndHeight -> toWeightAndHeight.invoke()
         }
     }
 

@@ -18,10 +18,6 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
         navigateTo(HomeRootDirection.MissingEquipment)
     }
 
-    override fun toWeightHistory() {
-        navigateTo(HomeRootDirection.WeightHistory)
-    }
-
     override fun toExperience() {
         navigateTo(HomeRootDirection.Experience)
     }
@@ -40,6 +36,10 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
 
     override fun toDraftTraining() {
         navigateTo(HomeRootDirection.DraftTraining)
+    }
+
+    override fun toWeightAndHeight() {
+        navigateTo(HomeRootDirection.WeightAndHeight)
     }
 
     override fun toSettings() {

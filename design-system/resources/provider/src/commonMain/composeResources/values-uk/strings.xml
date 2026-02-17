@@ -13,6 +13,7 @@
     <string name="plus_value_more">+ ще %1$s</string>
     <string name="body_weight_placeholder">Вага тіла</string>
     <string name="view_workout">Переглянути тренування</string>
+    <string name="weight_and_height">Вага та зріст</string>
     <string name="external_weight_placeholder">Зовнішня вага</string>
     <string name="extra_weight_placeholder">Додаткова вага</string>
     <string name="assist_weight_placeholder">Асистована вага</string>

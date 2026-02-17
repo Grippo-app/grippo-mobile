@@ -135,7 +135,7 @@ public class RootComponent(
                 HomeRootComponent(
                     componentContext = context,
                     initial = HomeRouter.Home,
-                    toWeightHistory = viewModel::toWeightHistory,
+                    toWeightAndHeight = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toExperience = viewModel::toExperience,

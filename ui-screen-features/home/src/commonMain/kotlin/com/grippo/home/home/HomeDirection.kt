@@ -10,8 +10,8 @@ internal sealed interface HomeDirection : BaseDirection {
 
     data object ExcludedMuscles : HomeDirection
     data object MissingEquipment : HomeDirection
-    data object WeightHistory : HomeDirection
     data object Experience : HomeDirection
+    data object WeightAndHeight : HomeDirection
     data object Debug : HomeDirection
     data object Settings : HomeDirection
 }

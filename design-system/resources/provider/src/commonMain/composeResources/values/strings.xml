@@ -13,6 +13,7 @@
     <string name="plus_value_more">+ %1$s more</string>
     <string name="body_weight_placeholder">Body weight</string>
     <string name="view_workout">View Workout</string>
+    <string name="weight_and_height">Weight &amp; Height</string>
     <string name="external_weight_placeholder">External weight</string>
     <string name="extra_weight_placeholder">Extra weight</string>
     <string name="assist_weight_placeholder">Assist weight</string>
