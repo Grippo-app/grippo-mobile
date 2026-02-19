@@ -27,7 +27,7 @@ import com.grippo.design.resources.provider.delete_account
 @Composable
 public fun DeleteUserCard(
     modifier: Modifier = Modifier,
-    isLoading: Boolean,
+    isDeleteLoading: Boolean,
     onDeleteClick: () -> Unit
 ) {
     Column(
@@ -60,9 +60,9 @@ public fun DeleteUserCard(
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
 
-        val deleteState = remember(isLoading) {
+        val deleteState = remember(isDeleteLoading) {
             when {
-                isLoading -> ButtonState.Loading
+                isDeleteLoading -> ButtonState.Loading
                 else -> ButtonState.Enabled
             }
         }
@@ -84,12 +84,12 @@ public fun DeleteUserCard(
 private fun DeleteUserCardPreview() {
     PreviewContainer {
         DeleteUserCard(
-            isLoading = true,
+            isDeleteLoading = true,
             onDeleteClick = {}
         )
 
         DeleteUserCard(
-            isLoading = false,
+            isDeleteLoading = false,
             onDeleteClick = {}
         )
     }

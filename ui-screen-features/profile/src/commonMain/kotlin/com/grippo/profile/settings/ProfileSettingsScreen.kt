@@ -43,7 +43,7 @@ internal fun ProfileSettingsScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
-        isLoading = loaders.contains(ProfileSettingsLoader.DeleteAccountButton),
+        isDeleteLoading = loaders.contains(ProfileSettingsLoader.DeleteAccountButton),
         onDeleteClick = contract::onDeleteAccount
     )
 
