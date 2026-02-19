@@ -29,6 +29,8 @@
     <string name="start_new">Start new</string>
     <string name="weight">Weight</string>
     <string name="height">Height</string>
+    <string name="current_weight">Current weight</string>
+    <string name="current_height">Current height</string>
     <string name="weight_input_hint">1 - 999 kg</string>
     <string name="advice">Advice</string>
     <string name="medium_confidence">Medium confidence</string>

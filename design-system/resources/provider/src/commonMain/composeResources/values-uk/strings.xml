@@ -29,6 +29,8 @@
     <string name="start_new">Почати нове</string>
     <string name="weight">Вага</string>
     <string name="height">Зріст</string>
+    <string name="current_weight">Поточна вага</string>
+    <string name="current_height">Поточний зріст</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Порада</string>
     <string name="medium_confidence">Середня впевненість</string>

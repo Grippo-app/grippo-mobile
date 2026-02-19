@@ -27,6 +27,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.inputs.InputHeight
 import com.grippo.design.components.inputs.InputWeight
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -37,8 +38,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
-import com.grippo.design.resources.provider.height
-import com.grippo.design.resources.provider.weight
+import com.grippo.design.resources.provider.current_height
+import com.grippo.design.resources.provider.current_weight
+import com.grippo.design.resources.provider.history
 import com.grippo.design.resources.provider.weight_and_height
 import com.grippo.design.resources.provider.weight_history
 import kotlinx.collections.immutable.ImmutableSet
@@ -62,7 +64,7 @@ internal fun ProfileBodyScreen(
 
     Text(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        text = AppTokens.strings.res(Res.string.height),
+        text = AppTokens.strings.res(Res.string.current_height),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.primary
     )
@@ -79,7 +81,7 @@ internal fun ProfileBodyScreen(
 
     Text(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        text = AppTokens.strings.res(Res.string.weight),
+        text = AppTokens.strings.res(Res.string.current_weight),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.primary
     )
@@ -90,6 +92,12 @@ internal fun ProfileBodyScreen(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         value = state.weight.display,
         onClick = contract::onWeightPickerClick
+    )
+
+    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+
+    ContentSpliter(
+        text = AppTokens.strings.res(Res.string.history)
     )
 
     Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
