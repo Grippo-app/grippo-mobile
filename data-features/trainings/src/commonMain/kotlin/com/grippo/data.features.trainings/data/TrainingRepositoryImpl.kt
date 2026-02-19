@@ -51,13 +51,21 @@ internal class TrainingRepositoryImpl(
     }
 
     override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
+        val startUtc = DateTimeUtils.toUtcIso(start)
+        val endUtc = DateTimeUtils.toUtcIso(end)
         val response = api.getTrainings(
-            start = DateTimeUtils.toUtcIso(start),
-            end = DateTimeUtils.toUtcIso(end)
+            start = startUtc,
+            end = endUtc
         )
 
         response.onSuccess { r ->
-            r.forEach { training -> provideTraining(training) }
+            val actualIds = r.mapNotNull { training -> provideTraining(training) }
+
+            if (actualIds.isEmpty()) {
+                trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
+            } else {
+                trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
+            }
         }
 
         return response.map {}
@@ -101,11 +109,12 @@ internal class TrainingRepositoryImpl(
         return response
     }
 
-    private suspend fun provideTraining(value: TrainingResponse) {
-        val training = value.toEntityOrNull() ?: return
+    private suspend fun provideTraining(value: TrainingResponse): String? {
+        val training = value.toEntityOrNull() ?: return null
         val exercises = value.exercises.toEntities()
         val iterations = value.exercises.flatMap { f -> f.iterations }.toEntities()
         trainingDao.insertOrReplace(training, exercises, iterations)
+        return training.id
     }
 
     override fun getDraftTraining(): Flow<SetDraftTraining?> {

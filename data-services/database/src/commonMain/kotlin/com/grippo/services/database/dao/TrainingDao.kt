@@ -87,4 +87,21 @@ public interface TrainingDao {
 
     @Query("DELETE FROM training WHERE id = :id")
     public suspend fun deleteById(id: String)
+
+    @Query(
+        """
+        DELETE FROM training
+        WHERE createdAt BETWEEN :from AND :to
+        """
+    )
+    public suspend fun deleteByCreatedAtRange(from: String, to: String)
+
+    @Query(
+        """
+        DELETE FROM training
+        WHERE createdAt BETWEEN :from AND :to
+        AND id NOT IN (:ids)
+        """
+    )
+    public suspend fun deleteByCreatedAtRangeExceptIds(from: String, to: String, ids: List<String>)
 }
