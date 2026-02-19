@@ -1,5 +1,8 @@
 package com.grippo.chart.sparkline
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,16 +52,48 @@ public fun Sparkline(
 ) {
     val density = LocalDensity.current
     val textMeasurer = rememberTextMeasurer()
+    val sortedCurrentPoints = remember(data.points) { data.points.sortedBy { it.x } }
 
     var sizePx by remember { mutableStateOf(IntSize.Zero) }
     var selectedIndex by remember(data.points) { mutableStateOf<Int?>(null) }
+    var settledPoints by remember { mutableStateOf<List<SparklinePoint>>(emptyList()) }
+    val previousPoints = settledPoints
+    val drawProgress = remember(sortedCurrentPoints) { Animatable(0f) }
+
+    LaunchedEffect(sortedCurrentPoints) {
+        drawProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 520,
+                easing = FastOutSlowInEasing
+            )
+        )
+        settledPoints = sortedCurrentPoints
+    }
 
     val layout = remember(sizePx, data.points, style, density) {
         buildLayout(
             sizePx = sizePx,
-            data = data,
+            data = SparklineData(points = sortedCurrentPoints),
             style = style,
             density = density,
+        )
+    }
+    val previousLayout = remember(sizePx, previousPoints, style, density) {
+        buildLayout(
+            sizePx = sizePx,
+            data = SparklineData(points = previousPoints),
+            style = style,
+            density = density
+        )
+    }
+    val transitionFromOffsets = remember(layout, previousLayout, previousPoints, data.points) {
+        val currentLayout = layout ?: return@remember emptyList()
+        buildTransitionFromOffsets(
+            currentLayout = currentLayout,
+            previousLayout = previousLayout,
+            previousPoints = previousPoints,
+            currentPoints = sortedCurrentPoints
         )
     }
 
@@ -157,20 +193,27 @@ public fun Sparkline(
             if (current.isEmpty()) return@Canvas
 
             val currentOffsets = current.map { it.offset }
+            val progress = drawProgress.value
+            val revealAlpha = if (previousPoints.isEmpty()) progress else 1f
+            val animatedOffsets = interpolateOffsets(
+                from = transitionFromOffsets,
+                to = currentOffsets,
+                progress = progress
+            )
 
             if (current.size == 1) {
-                val c = current.first()
+                val c = animatedOffsets.first()
 
                 drawSinglePointHero(
-                    center = c.offset,
-                    color = style.line.color,
+                    center = c,
+                    color = style.line.color.copy(alpha = revealAlpha),
                     strokePx = style.line.stroke.toPx(),
                     chart = chart
                 )
 
                 if (peek is SparklineStyle.Peek.Visible && selectedIndex == 0) {
                     drawPeekOverlay(
-                        point = c.offset,
+                        point = c,
                         focusColor = peek.focusColor ?: style.line.color,
                         guideColor = peek.guideColor,
                         guideWidthPx = peek.guideWidth.toPx(),
@@ -187,7 +230,7 @@ public fun Sparkline(
             }
 
             val currentPath = buildLinePath(
-                points = currentOffsets,
+                points = animatedOffsets,
                 curved = style.line.curved,
                 smoothness = style.line.curveSmoothness,
                 clampOvershoot = style.line.clampOvershoot
@@ -196,11 +239,11 @@ public fun Sparkline(
             style.fill?.provider?.let { provider ->
                 val area = Path().apply {
                     addPath(currentPath)
-                    lineTo(currentOffsets.last().x, chart.bottom)
-                    lineTo(currentOffsets.first().x, chart.bottom)
+                    lineTo(animatedOffsets.last().x, chart.bottom)
+                    lineTo(animatedOffsets.first().x, chart.bottom)
                     close()
                 }
-                drawPath(area, brush = provider(chart))
+                drawPath(area, brush = provider(chart), alpha = revealAlpha)
             }
 
             val sw = style.line.stroke.toPx()
@@ -208,12 +251,13 @@ public fun Sparkline(
                 drawPath(
                     path = currentPath,
                     brush = provider(chart),
+                    alpha = revealAlpha,
                     style = Stroke(width = sw, cap = StrokeCap.Round)
                 )
             } ?: run {
                 drawPath(
                     path = currentPath,
-                    color = style.line.color,
+                    color = style.line.color.copy(alpha = revealAlpha),
                     style = Stroke(width = sw, cap = StrokeCap.Round)
                 )
             }
@@ -223,7 +267,13 @@ public fun Sparkline(
                 is SparklineStyle.Dots.Visible -> {
                     val r = d.radius.toPx()
                     val dc = d.color ?: style.line.color
-                    currentOffsets.forEach { drawCircle(color = dc, radius = r, center = it) }
+                    animatedOffsets.forEach {
+                        drawCircle(
+                            color = dc.copy(alpha = revealAlpha),
+                            radius = r,
+                            center = it
+                        )
+                    }
                 }
             }
 
@@ -237,20 +287,20 @@ public fun Sparkline(
 
                         if (minIdx == maxIdx) {
                             drawCircle(
-                                color = ex.maxColor,
+                                color = ex.maxColor.copy(alpha = revealAlpha),
                                 radius = rr,
-                                center = current[maxIdx].offset
+                                center = animatedOffsets[maxIdx]
                             )
                         } else {
                             drawCircle(
-                                color = ex.minColor,
+                                color = ex.minColor.copy(alpha = revealAlpha),
                                 radius = rr,
-                                center = current[minIdx].offset
+                                center = animatedOffsets[minIdx]
                             )
                             drawCircle(
-                                color = ex.maxColor,
+                                color = ex.maxColor.copy(alpha = revealAlpha),
                                 radius = rr,
-                                center = current[maxIdx].offset
+                                center = animatedOffsets[maxIdx]
                             )
                         }
                     }
@@ -260,7 +310,7 @@ public fun Sparkline(
             if (peek is SparklineStyle.Peek.Visible) {
                 val idx = selectedIndex
                 if (idx != null && idx in current.indices) {
-                    val p = current[idx].offset
+                    val p = animatedOffsets[idx]
                     drawPeekOverlay(
                         point = p,
                         focusColor = peek.focusColor ?: style.line.color,
@@ -701,4 +751,97 @@ private fun pow10(n: Int): Float {
     var r = 1f
     repeat(n) { r *= 10f }
     return r
+}
+
+private fun interpolateOffsets(
+    from: List<Offset>,
+    to: List<Offset>,
+    progress: Float,
+): List<Offset> {
+    if (to.isEmpty()) return emptyList()
+    if (from.isEmpty()) return to
+
+    val t = progress.coerceIn(0f, 1f)
+    return List(to.size) { i ->
+        val start = if (i < from.size) from[i] else from.last()
+        lerpOffset(start, to[i], t)
+    }
+}
+
+private fun lerpOffset(from: Offset, to: Offset, fraction: Float): Offset {
+    val t = fraction.coerceIn(0f, 1f)
+    return Offset(
+        x = from.x + (to.x - from.x) * t,
+        y = from.y + (to.y - from.y) * t
+    )
+}
+
+private fun buildTransitionFromOffsets(
+    currentLayout: SparklineLayout,
+    previousLayout: SparklineLayout?,
+    previousPoints: List<SparklinePoint>,
+    currentPoints: List<SparklinePoint>,
+): List<Offset> {
+    if (previousPoints.isEmpty() || currentPoints.isEmpty()) return emptyList()
+
+    val previousSorted = previousPoints.sortedBy { it.x }
+    val currentSorted = currentPoints.sortedBy { it.x }
+
+    if (isAppendTransition(previousSorted, currentSorted)) {
+        val previousOffsets = previousLayout?.currentPoints?.map { it.offset }.orEmpty()
+        if (previousOffsets.isNotEmpty()) {
+            return List(currentSorted.size) { index ->
+                if (index < previousOffsets.size) {
+                    previousOffsets[index]
+                } else {
+                    previousOffsets.last()
+                }
+            }
+        }
+    }
+
+    if (previousSorted.size == 1) {
+        val y = previousSorted.first().y
+        return currentSorted.map { point ->
+            Offset(x = currentLayout.mx(point.x), y = currentLayout.my(y))
+        }
+    }
+
+    return currentSorted.map { point ->
+        val py = samplePreviousY(previousSorted, point.x)
+        Offset(x = currentLayout.mx(point.x), y = currentLayout.my(py))
+    }
+}
+
+private fun isAppendTransition(
+    previousSorted: List<SparklinePoint>,
+    currentSorted: List<SparklinePoint>,
+): Boolean {
+    if (previousSorted.isEmpty()) return false
+    if (currentSorted.size != previousSorted.size + 1) return false
+
+    return previousSorted.indices.all { index ->
+        val prev = previousSorted[index]
+        val curr = currentSorted[index]
+        prev.x == curr.x && prev.y == curr.y && prev.label == curr.label
+    }
+}
+
+private fun samplePreviousY(points: List<SparklinePoint>, x: Float): Float {
+    val first = points.first()
+    val last = points.last()
+
+    if (x <= first.x) return first.y
+    if (x >= last.x) return last.y
+
+    val rightIndex = points.indexOfFirst { it.x >= x }
+    if (rightIndex <= 0) return first.y
+
+    val left = points[rightIndex - 1]
+    val right = points[rightIndex]
+    val span = right.x - left.x
+    if (span <= 1e-6f) return right.y
+
+    val t = ((x - left.x) / span).coerceIn(0f, 1f)
+    return left.y + (right.y - left.y) * t
 }
