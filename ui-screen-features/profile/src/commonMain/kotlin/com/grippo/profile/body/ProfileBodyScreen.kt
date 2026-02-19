@@ -66,7 +66,7 @@ internal fun ProfileBodyScreen(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         text = AppTokens.strings.res(Res.string.current_height),
         style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.primary
+        color = AppTokens.colors.text.secondary
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
@@ -83,7 +83,7 @@ internal fun ProfileBodyScreen(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         text = AppTokens.strings.res(Res.string.current_weight),
         style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.primary
+        color = AppTokens.colors.text.secondary
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
@@ -106,7 +106,7 @@ internal fun ProfileBodyScreen(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         text = AppTokens.strings.res(Res.string.weight_history),
         style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.primary
+        color = AppTokens.colors.text.secondary
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))

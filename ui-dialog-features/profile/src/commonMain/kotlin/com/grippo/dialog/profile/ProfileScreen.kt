@@ -61,8 +61,8 @@ internal fun ProfileScreen(
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .padding(start = AppTokens.dp.contentPadding.subContent),
         text = ProfileMenu.title(),
-        style = AppTokens.typography.b14Semi(),
-        color = AppTokens.colors.text.tertiary
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
@@ -87,8 +87,8 @@ internal fun ProfileScreen(
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .padding(start = AppTokens.dp.contentPadding.subContent),
             text = SettingsMenu.title(),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.tertiary
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
