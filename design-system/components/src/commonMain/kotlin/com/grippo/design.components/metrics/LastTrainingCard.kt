@@ -93,6 +93,9 @@ public fun LastTrainingCard(
                     horizontal = AppTokens.dp.metrics.lastTraining.horizontalPadding
                 )
         ) {
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = AppTokens.strings.res(Res.string.last_workout),
