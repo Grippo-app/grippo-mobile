@@ -27,6 +27,8 @@
     <string name="and">І</string>
     <string name="resume_training_btn">Продовжити тренування</string>
     <string name="start_new">Почати нове</string>
+    <string name="weight">Вага</string>
+    <string name="height">Зріст</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Порада</string>
     <string name="medium_confidence">Середня впевненість</string>

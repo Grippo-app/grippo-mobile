@@ -9,6 +9,7 @@ import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileBodyViewModel(
@@ -90,6 +91,10 @@ internal class ProfileBodyViewModel(
             if (hasNewHeight) {
                 userFeature.setHeight(height).getOrThrow()
             }
+
+            delay(500)
+
+            navigateTo(ProfileBodyDirection.Back)
         }
     }
 
