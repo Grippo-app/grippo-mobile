@@ -31,6 +31,7 @@
     <string name="height">Рост</string>
     <string name="current_weight">Текущий вес</string>
     <string name="current_height">Текущий рост</string>
+    <string name="choose_your_experience_level">Выберите свой уровень опыта — мы порекомендуем упражнения, которые подходят вам лучше всего.</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Совет</string>
     <string name="medium_confidence">Средняя уверенность</string>

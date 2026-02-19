@@ -31,6 +31,7 @@
     <string name="height">Height</string>
     <string name="current_weight">Current weight</string>
     <string name="current_height">Current height</string>
+    <string name="choose_your_experience_level">Choose your experience level — we’ll recommend exercises that fit you best.</string>
     <string name="weight_input_hint">1 - 999 kg</string>
     <string name="advice">Advice</string>
     <string name="medium_confidence">Medium confidence</string>

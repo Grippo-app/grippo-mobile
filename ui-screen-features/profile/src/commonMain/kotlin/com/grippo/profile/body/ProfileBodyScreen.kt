@@ -40,7 +40,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
 import com.grippo.design.resources.provider.current_height
 import com.grippo.design.resources.provider.current_weight
-import com.grippo.design.resources.provider.history
+import com.grippo.design.resources.provider.more
 import com.grippo.design.resources.provider.weight_and_height
 import com.grippo.design.resources.provider.weight_history
 import kotlinx.collections.immutable.ImmutableSet
@@ -97,7 +97,8 @@ internal fun ProfileBodyScreen(
     Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
     ContentSpliter(
-        text = AppTokens.strings.res(Res.string.history)
+        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+        text = AppTokens.strings.res(Res.string.more)
     )
 
     Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))

@@ -31,6 +31,7 @@
     <string name="height">Зріст</string>
     <string name="current_weight">Поточна вага</string>
     <string name="current_height">Поточний зріст</string>
+    <string name="choose_your_experience_level">Оберіть свій рівень досвіду — ми порекомендуємо вправи, які найкраще вам підходять.</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Порада</string>
     <string name="medium_confidence">Середня впевненість</string>
