@@ -211,10 +211,10 @@
     <string name="registration_experience_description">Без паніки — у нас є плани для будь-якого рівня.</string>
 
     <string name="registration_muscles_title">Хочете щось пропустити?</string>
-    <string name="registration_muscles_description">Виберіть групи м’язів, які не хочете тренувати.</string>
+    <string name="registration_muscles_description">Якщо хочете пропустити певні групи м’язів, просто виключіть їх.</string>
 
     <string name="registration_equipment_title">Чого немає у вашому залі?</string>
-    <string name="registration_equipment_description">Ми приберемо вправи, що потребують цього обладнання.</string>
+    <string name="registration_equipment_description">Якщо якогось обладнання немає, виключіть його, і ми приберемо такі вправи.</string>
 
     <string name="registration_completed_title">🎉 Усе готово!</string>
 

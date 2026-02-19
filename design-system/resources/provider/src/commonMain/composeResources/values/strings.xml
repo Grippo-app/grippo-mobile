@@ -212,10 +212,10 @@
     <string name="registration_experience_description">No worries — we’ve got plans for every level.</string>
 
     <string name="registration_muscles_title">Anything you’d rather skip?</string>
-    <string name="registration_muscles_description">Pick muscle groups you don’t want to train.</string>
+    <string name="registration_muscles_description">If you prefer to skip certain muscle groups, simply deselect them.</string>
 
     <string name="registration_equipment_title">What’s not in your gym?</string>
-    <string name="registration_equipment_description">We’ll leave out exercises that need that equipment.</string>
+    <string name="registration_equipment_description">If some equipment is unavailable, deselect it and we’ll exclude those exercises.</string>
 
     <string name="registration_completed_title">🎉 You are all set!</string>
 
