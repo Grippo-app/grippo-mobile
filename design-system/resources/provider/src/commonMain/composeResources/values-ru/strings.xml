@@ -141,6 +141,7 @@
     <string name="weekly_digest">Еженедельный дайджест</string>
     <string name="danger_zone">Опасная зона</string>
     <string name="digest">Дайджест</string>
+    <string name="of_body_weight">от массы тела</string>
     <string name="weekly">Еженедельно</string>
     <string name="monthly">Ежемесячно</string>
     <string name="monthly_digest_template">Дайджест за %1$s</string>

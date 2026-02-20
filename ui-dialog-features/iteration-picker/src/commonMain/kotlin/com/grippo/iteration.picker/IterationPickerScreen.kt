@@ -51,6 +51,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.assist_weight_placeholder
 import com.grippo.design.resources.provider.body_weight_placeholder
 import com.grippo.design.resources.provider.extra_weight_placeholder
+import com.grippo.design.resources.provider.of_body_weight
 import com.grippo.design.resources.provider.set_value
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.design.resources.provider.volume_placeholder
@@ -120,12 +121,25 @@ internal fun IterationPickerScreen(
                     value = state.value.bodyWeight.display
                 )
 
-                Text(
+                Row(
                     modifier = Modifier.weight(1f),
-                    text = state.value.bodyMultiplier.short(),
-                    style = AppTokens.typography.b14Bold(),
-                    color = AppTokens.colors.text.tertiary,
-                )
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                ) {
+
+                    Text(
+                        text = state.value.bodyMultiplier.short(),
+                        style = AppTokens.typography.b14Bold(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = AppTokens.strings.res(Res.string.of_body_weight),
+                        style = AppTokens.typography.b14Bold(),
+                        color = AppTokens.colors.text.tertiary,
+                    )
+                }
             }
         }
 
