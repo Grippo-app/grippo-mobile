@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -92,8 +93,10 @@ public fun Chip(
     Row(
         modifier = modifier
             .animateContentSize()
-            .background(brush = brush, shape = shape)
-            .let {
+            .background(
+                brush = brush,
+                shape = shape
+            ).let {
                 if (stype is ChipStype.Clickable) it.scalableClick(onClick = stype.onClick) else it
             }.padding(
                 horizontal = tokens.horizontalPadding,
@@ -103,41 +106,44 @@ public fun Chip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.weight(weight = 1f, fill = false),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             when (trailing) {
                 is ChipTrailing.Content -> {
                     Box(modifier = Modifier.size(tokens.trailingSize)) {
                         trailing.lambda.invoke()
                     }
-                    Spacer(modifier = Modifier.width(tokens.spaceBetween))
                 }
 
                 is ChipTrailing.Icon -> {
-                    Box(modifier = Modifier.size(tokens.trailingSize)) {
-                        Icon(
-                            modifier = Modifier.size(tokens.trailingSize),
-                            imageVector = trailing.icon,
-                            contentDescription = null,
-                            tint = iconColor
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(tokens.spaceBetween))
+                    Icon(
+                        modifier = Modifier.size(tokens.trailingSize),
+                        imageVector = trailing.icon,
+                        contentDescription = null,
+                        tint = iconColor
+                    )
                 }
 
                 ChipTrailing.Empty -> Unit
+            }
+            if (trailing != ChipTrailing.Empty) {
+                Spacer(modifier = Modifier.width(tokens.spaceBetween))
             }
 
             when (label) {
                 is ChipLabel.Text -> {
                     Text(
+                        modifier = Modifier
+                            .weight(weight = 1f, fill = false)
+                            .padding(end = AppTokens.dp.contentPadding.text),
                         text = label.uiText.text(),
                         style = tokens.labelTextStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = textColor
                     )
-                    Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
                 }
 
                 ChipLabel.Empty -> Unit
@@ -160,7 +166,43 @@ public fun Chip(
 private fun ChipPreview() {
     PreviewContainer {
         Chip(
-            label = ChipLabel.Text(UiText.Str(value = "Label")),
+            modifier = Modifier.fillMaxWidth(),
+            label = ChipLabel.Text(UiText.Str(value = "Label label label")),
+            value = "Value",
+            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
+            textColor = Color.Black,
+            iconColor = Color.Black,
+            stype = ChipStype.Default,
+            size = ChipSize.Medium
+        )
+
+        Chip(
+            label = ChipLabel.Text(UiText.Str(value = "Label label label")),
+            value = "Value",
+            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
+            textColor = Color.Black,
+            iconColor = Color.Black,
+            stype = ChipStype.Default,
+            size = ChipSize.Medium
+        )
+
+        Chip(
+            modifier = Modifier.width(150.dp),
+            label = ChipLabel.Text(UiText.Str(value = "Label Label Label")),
+            value = "value",
+            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
+            textColor = Color.Black,
+            iconColor = Color.Black,
+            stype = ChipStype.Default,
+            size = ChipSize.Medium
+        )
+
+        Chip(
+            modifier = Modifier.fillMaxWidth(),
+            label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
@@ -170,19 +212,27 @@ private fun ChipPreview() {
             size = ChipSize.Small
         )
 
-
-
-
         Chip(
-            modifier = Modifier.width(300.dp),
-            label = ChipLabel.Text(UiText.Str(value = "Label")),
+            label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
             textColor = Color.Black,
             iconColor = Color.Black,
             stype = ChipStype.Default,
-            size = ChipSize.Medium
+            size = ChipSize.Small
+        )
+
+        Chip(
+            modifier = Modifier.width(100.dp),
+            label = ChipLabel.Text(UiText.Str(value = "Label Label Label")),
+            value = "value",
+            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
+            textColor = Color.Black,
+            iconColor = Color.Black,
+            stype = ChipStype.Default,
+            size = ChipSize.Small
         )
     }
 }
