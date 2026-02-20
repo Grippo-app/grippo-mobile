@@ -75,6 +75,17 @@ internal fun MuscleLoadingScreen(
             .toPersistentList()
     }
 
+    state.summary?.let { summary ->
+        MuscleLoadingBalanceCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            summary = summary
+        )
+    }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
     Segment(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,10 +94,8 @@ internal fun MuscleLoadingScreen(
         selected = state.mode,
         onSelect = contract::onSelectMode,
         segmentWidth = SegmentWidth.EqualFill,
-        style = SegmentStyle.Fill
+        style = SegmentStyle.Outline
     )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     LazyColumn(
         modifier = Modifier
@@ -96,13 +105,6 @@ internal fun MuscleLoadingScreen(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.summary?.let { summary ->
-            item(key = "summary") {
-                MuscleLoadingBalanceCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    summary = summary
-                )
-            }
-
             item(key = "overview") {
                 MuscleLoadOverviewCard(
                     modifier = Modifier.fillMaxWidth(),
