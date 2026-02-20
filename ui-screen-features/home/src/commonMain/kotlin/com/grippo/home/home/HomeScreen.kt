@@ -73,6 +73,7 @@ internal fun HomeScreen(
     )
 ) {
     val isEmptyState = state.lastTraining == null
+    val isTrainingsLoading = loaders.contains(HomeLoader.Trainings)
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -89,12 +90,12 @@ internal fun HomeScreen(
         },
     )
 
-    if (isEmptyState && loaders.contains(HomeLoader.Trainings)) {
+    if (isEmptyState && isTrainingsLoading) {
         Loader(modifier = Modifier.fillMaxWidth().weight(1f))
         return@BaseComposeScreen
     }
 
-    if (isEmptyState && loaders.contains(HomeLoader.Trainings).not()) {
+    if (isEmptyState) {
         EmptyHomeContent(
             modifier = Modifier
                 .fillMaxWidth()
@@ -143,14 +144,12 @@ internal fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-                if (state.lastTraining != null) {
-                    item(key = "last_training", span = { GridItemSpan(2) }) {
-                        LastTrainingCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.lastTraining,
-                            onClick = contract::onOpenTrainings
-                        )
-                    }
+                item(key = "last_training", span = { GridItemSpan(2) }) {
+                    LastTrainingCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.lastTraining,
+                        onClick = contract::onOpenTrainings
+                    )
                 }
 
                 item(key = "highlights_header", span = { GridItemSpan(2) }) {
