@@ -3,13 +3,13 @@ package com.grippo.design.components.metrics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.IntensityChip
-import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
@@ -34,7 +34,7 @@ public fun TrainingTotalSection(
                 VolumeChip(
                     modifier = Modifier.weight(1f),
                     value = value,
-                    style = VolumeChipStyle.SHORT,
+                    style = VolumeChipStyle.LONG,
                     size = size,
                 )
             }
@@ -45,18 +45,7 @@ public fun TrainingTotalSection(
                 RepetitionsChip(
                     modifier = Modifier.weight(1f),
                     value = value,
-                    style = RepetitionsChipStyle.SHORT,
-                    size = size,
-                )
-            }
-
-        value.intensity
-            .takeIf { it.value != null }
-            ?.let { value ->
-                IntensityChip(
-                    modifier = Modifier.weight(1f),
-                    value = value,
-                    style = IntensityChipStyle.SHORT,
+                    style = RepetitionsChipStyle.LONG,
                     size = size,
                 )
             }
@@ -67,6 +56,14 @@ public fun TrainingTotalSection(
 @Composable
 private fun TrainingTotalSectionPreview() {
     PreviewContainer {
-        TrainingTotalSection(value = stubTotal())
+        TrainingTotalSection(
+            modifier = Modifier.fillMaxWidth(),
+            value = stubTotal()
+        )
+
+        TrainingTotalSection(
+            modifier = Modifier.width(300.dp),
+            value = stubTotal()
+        )
     }
 }
