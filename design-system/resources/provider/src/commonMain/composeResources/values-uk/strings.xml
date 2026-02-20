@@ -264,7 +264,8 @@
     <string name="muscle_load_balance_status_balanced">рівномірно</string>
     <string name="muscle_load_balance_status_moderate">помірний перекіс</string>
     <string name="muscle_load_balance_status_strong">сильний перекіс</string>
-    <string name="muscle_load_balance_description">Показує, наскільки рівномірно розподілялось навантаження. 100 — ідеальний баланс, 0 — перекіс в одну групу.</string>
+    <string name="muscle_load_balance_description_1">Показує, наскільки рівномірно були натреновані ваші м’язи.</string>
+    <string name="muscle_load_balance_description_2">100 = ідеальний баланс, 0 = перекіс в одну групу.</string>
     <string name="muscle_load_bias">Перекіс: %1$s +%2$d%</string>
     <string name="muscle_load_gap">Прогалина: %1$s %2$s</string>
     <string name="muscle_load_trainings_count">%1$d тренувань</string>
