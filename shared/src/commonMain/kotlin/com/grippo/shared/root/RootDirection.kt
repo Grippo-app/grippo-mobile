@@ -16,5 +16,6 @@ public sealed interface RootDirection : BaseDirection {
     public data object ExcludedMuscles : RootDirection
     public data object Experience : RootDirection
     public data object Settings : RootDirection
+    public data object Social : RootDirection
     public data object Back : RootDirection
 }

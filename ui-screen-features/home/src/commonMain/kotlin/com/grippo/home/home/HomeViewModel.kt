@@ -175,13 +175,14 @@ internal class HomeViewModel(
                     ProfileMenu.Muscles -> navigateTo(HomeDirection.ExcludedMuscles)
                     ProfileMenu.Equipment -> navigateTo(HomeDirection.MissingEquipment)
                     ProfileMenu.Experience -> navigateTo(HomeDirection.Experience)
-                    ProfileMenu.Settings -> navigateTo(HomeDirection.Settings)
                     ProfileMenu.Body -> navigateTo(HomeDirection.Body)
                 }
             },
             onSettingsResult = {
                 when (it) {
                     SettingsMenu.Debug -> navigateTo(HomeDirection.Debug)
+                    SettingsMenu.Settings -> navigateTo(HomeDirection.Settings)
+                    SettingsMenu.Social -> navigateTo(HomeDirection.Social)
                 }
             }
         )

@@ -256,6 +256,11 @@
     <string name="density">Плотность</string>
     <string name="sets">Подходы</string>
     <string name="statistics">Статистика</string>
+    <string name="follow_us">Следите за нами</string>
+    <string name="instagram">Instagram</string>
+    <string name="tiktok">TikTok</string>
+    <string name="youtube">YouTube</string>
+    <string name="official_grippo_channels">Официальные каналы Grippo</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — мышечная нагрузка</string>
     <string name="muscle_loading">Мышечная нагрузка</string>

@@ -13,4 +13,5 @@ public sealed interface HomeRootDirection : BaseDirection {
     public data object AddTraining : HomeRootDirection
     public data object DraftTraining : HomeRootDirection
     public data object Settings : HomeRootDirection
+    public data object Social : HomeRootDirection
 }

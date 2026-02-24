@@ -25,6 +25,7 @@ public class HomeRootComponent(
     private val toTraining: (stage: StageState) -> Unit,
     private val toTrainings: () -> Unit,
     private val toSettings: () -> Unit,
+    private val toSocial: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<HomeRootDirection>(componentContext) {
 
@@ -50,6 +51,7 @@ public class HomeRootComponent(
             HomeRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft)
             HomeRootDirection.Trainings -> toTrainings.invoke()
             HomeRootDirection.Settings -> toSettings.invoke()
+            HomeRootDirection.Social -> toSocial.invoke()
         }
     }
 
@@ -82,6 +84,7 @@ public class HomeRootComponent(
                     toDebug = viewModel::toDebug,
                     toTrainings = viewModel::toTrainings,
                     toSettings = viewModel::toSettings,
+                    toSocial = viewModel::toSocial,
                     back = viewModel::onBack
                 ),
             )

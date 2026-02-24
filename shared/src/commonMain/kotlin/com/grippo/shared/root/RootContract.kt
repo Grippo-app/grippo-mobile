@@ -16,6 +16,7 @@ public interface RootContract {
     public fun toExcludedMuscles()
     public fun toExperience()
     public fun toSettings()
+    public fun toSocial()
     public fun onBack()
 
     @Immutable
@@ -31,6 +32,7 @@ public interface RootContract {
         override fun toExcludedMuscles() {}
         override fun toExperience() {}
         override fun toSettings() {}
+        override fun toSocial() {}
         override fun onBack() {}
     }
 }

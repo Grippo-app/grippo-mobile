@@ -45,4 +45,8 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
     override fun toSettings() {
         navigateTo(HomeRootDirection.Settings)
     }
+
+    override fun toSocial() {
+        navigateTo(HomeRootDirection.Social)
+    }
 }

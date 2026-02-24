@@ -18,6 +18,7 @@ internal class HomeComponent(
     private val toTrainings: () -> Unit,
     private val toDraftTraining: () -> Unit,
     private val toSettings: () -> Unit,
+    private val toSocial: () -> Unit,
     private val toBody: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
@@ -53,6 +54,7 @@ internal class HomeComponent(
             HomeDirection.Experience -> toExperience.invoke()
             HomeDirection.Trainings -> toTrainings.invoke()
             HomeDirection.Settings -> toSettings.invoke()
+            HomeDirection.Social -> toSocial.invoke()
             HomeDirection.Body -> toBody.invoke()
         }
     }

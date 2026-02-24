@@ -255,6 +255,11 @@
     <string name="density">Щільність</string>
     <string name="sets">Підходи</string>
     <string name="statistics">Статистика</string>
+    <string name="follow_us">Слідкуйте за нами</string>
+    <string name="instagram">Instagram</string>
+    <string name="tiktok">TikTok</string>
+    <string name="youtube">YouTube</string>
+    <string name="official_grippo_channels">Офіційні канали Grippo</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
     <string name="muscle_loading">М’язове навантаження</string>

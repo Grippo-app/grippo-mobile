@@ -13,6 +13,7 @@ internal interface HomeRootContract {
     fun toAddTraining()
     fun toDraftTraining()
     fun toSettings()
+    fun toSocial()
     fun toBody()
 
     @Immutable
@@ -27,5 +28,6 @@ internal interface HomeRootContract {
         override fun toAddTraining() {}
         override fun toDraftTraining() {}
         override fun toSettings() {}
+        override fun toSocial() {}
     }
 }

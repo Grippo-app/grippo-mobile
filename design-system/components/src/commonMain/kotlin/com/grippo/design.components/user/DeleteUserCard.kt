@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -43,10 +44,12 @@ public fun DeleteUserCard(
     ) {
 
         Text(
+            modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.danger_zone),
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.semantic.error,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))

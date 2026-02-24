@@ -14,4 +14,5 @@ internal sealed interface HomeDirection : BaseDirection {
     data object Body : HomeDirection
     data object Debug : HomeDirection
     data object Settings : HomeDirection
+    data object Social : HomeDirection
 }

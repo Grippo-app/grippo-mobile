@@ -19,4 +19,7 @@ public sealed class ProfileRouter : BaseRouter {
 
     @Serializable
     public data object Settings : ProfileRouter()
+
+    @Serializable
+    public data object Social : ProfileRouter()
 }

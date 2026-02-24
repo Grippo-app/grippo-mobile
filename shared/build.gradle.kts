@@ -31,6 +31,7 @@ kotlin {
         implementation(projects.toolkit.serialization)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.imageLoader)
+        implementation(projects.toolkit.browser)
 
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
