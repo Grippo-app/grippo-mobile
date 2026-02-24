@@ -13,18 +13,22 @@ internal data object ProfileSocialState
 @Immutable
 internal enum class SocialChannel(
     val title: UiText,
-    val url: String,
+    val urls: List<String>,
 ) {
     Instagram(
         title = UiText.Res(Res.string.instagram),
-        url = "https://www.instagram.com/grippo.app/"
+        urls = listOf("https://www.instagram.com/grippo.app/")
     ),
     TikTok(
         title = UiText.Res(Res.string.tiktok),
-        url = "https://www.tiktok.com/@grippoapp"
+        urls = listOf("https://www.tiktok.com/@grippoapp")
     ),
     YouTube(
         title = UiText.Res(Res.string.youtube),
-        url = "https://www.youtube.com/@GrippoApp"
+        urls = listOf(
+            "https://www.youtube.com/@GrippoApp",
+            "https://www.youtube.com/@GrippoApp/videos",
+            "https://www.youtube.com/results?search_query=GrippoApp"
+        )
     )
 }

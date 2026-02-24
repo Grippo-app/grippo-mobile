@@ -12,7 +12,7 @@ internal class ProfileSocialViewModel(
     ProfileSocialContract {
 
     override fun onOpenLink(value: SocialChannel) {
-        browserRedirector.open(value.url)
+        value.urls.any(browserRedirector::open)
     }
 
     override fun onBack() {
