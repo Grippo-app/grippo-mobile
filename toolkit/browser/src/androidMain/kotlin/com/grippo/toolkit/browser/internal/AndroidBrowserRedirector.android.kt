@@ -74,8 +74,11 @@ internal class AndroidBrowserRedirector(
             return null
         }
 
-        val route =
-            if (browserPackage == null) BrowserOpenRoute.System else BrowserOpenRoute.Browser
+        val route = if (browserPackage == null) {
+            BrowserOpenRoute.System
+        } else {
+            BrowserOpenRoute.Browser
+        }
 
         return startActivity(
             intent = intent,
@@ -124,8 +127,7 @@ internal class AndroidBrowserRedirector(
     }
 
     private fun isKnownNonBrowserHandler(packageName: String): Boolean {
-        return packageName == "com.google.android.youtube" ||
-                packageName.contains("youtube", ignoreCase = true) ||
+        return packageName.contains("youtube", ignoreCase = true) ||
                 packageName.contains("instagram", ignoreCase = true) ||
                 packageName.contains("tiktok", ignoreCase = true)
     }
