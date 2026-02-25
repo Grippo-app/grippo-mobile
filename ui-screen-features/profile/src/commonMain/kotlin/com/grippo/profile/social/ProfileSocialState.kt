@@ -26,6 +26,7 @@ internal enum class SocialChannel(
     YouTube(
         title = UiText.Res(Res.string.youtube),
         urls = listOf(
+            "https://www.youtube.com/channel/UCDSepIFM7EbQU5m6IjaO8Aw",
             "https://www.youtube.com/@GrippoApp",
             "https://www.youtube.com/@GrippoApp/videos",
             "https://www.youtube.com/results?search_query=GrippoApp"
