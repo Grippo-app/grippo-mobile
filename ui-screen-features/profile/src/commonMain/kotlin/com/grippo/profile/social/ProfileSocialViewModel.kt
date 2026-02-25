@@ -5,14 +5,12 @@ import com.grippo.toolkit.browser.BrowserRedirector
 
 internal class ProfileSocialViewModel(
     private val browserRedirector: BrowserRedirector
-) :
-    BaseViewModel<ProfileSocialState, ProfileSocialDirection, ProfileSocialLoader>(
-        ProfileSocialState
-    ),
-    ProfileSocialContract {
+) : BaseViewModel<ProfileSocialState, ProfileSocialDirection, ProfileSocialLoader>(
+    ProfileSocialState
+), ProfileSocialContract {
 
     override fun onOpenLink(value: SocialChannel) {
-        value.urls.any(browserRedirector::open)
+        value.urls.any { url -> browserRedirector.open(url).isOpened }
     }
 
     override fun onBack() {

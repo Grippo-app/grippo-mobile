@@ -1,6 +1,5 @@
 package com.grippo.toolkit.browser.internal
 
-import com.grippo.toolkit.browser.BrowserOpenRequest
 import com.grippo.toolkit.browser.BrowserOpenResult
 import com.grippo.toolkit.browser.BrowserRedirector
 import platform.Foundation.NSURL
@@ -8,14 +7,13 @@ import platform.UIKit.UIApplication
 
 internal class AppleBrowserRedirector : BrowserRedirector {
 
-    override fun tryOpen(request: BrowserOpenRequest): BrowserOpenResult {
-        val nsUrl = NSURL(string = request.url)
+    override fun open(url: String): BrowserOpenResult {
+        val nsUrl = NSURL(string = url)
         val application = UIApplication.sharedApplication
 
         if (!application.canOpenURL(nsUrl)) {
             return BrowserOpenResult(
                 isOpened = false,
-                target = request.target,
             )
         }
 
@@ -30,7 +28,6 @@ internal class AppleBrowserRedirector : BrowserRedirector {
 
         return BrowserOpenResult(
             isOpened = opened,
-            target = request.target,
         )
     }
 }
