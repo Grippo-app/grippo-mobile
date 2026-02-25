@@ -7,13 +7,13 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.Thread: ImageVector
+public val AppIcon.Threads: ImageVector
     get() {
-        if (_Thread != null) {
-            return _Thread!!
+        if (_Threads != null) {
+            return _Threads!!
         }
-        _Thread = ImageVector.Builder(
-            name = "Thread",
+        _Threads = ImageVector.Builder(
+            name = "Threads",
             defaultWidth = 56.dp,
             defaultHeight = 64.dp,
             viewportWidth = 56f,
@@ -74,8 +74,8 @@ public val AppIcon.Thread: ImageVector
             }
         }.build()
 
-        return _Thread!!
+        return _Threads!!
     }
 
 @Suppress("ObjectPropertyName")
-private var _Thread: ImageVector? = null
+private var _Threads: ImageVector? = null

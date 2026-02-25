@@ -7,9 +7,11 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Instagram
+import com.grippo.design.resources.provider.icons.Threads
 import com.grippo.design.resources.provider.icons.Tiktok
 import com.grippo.design.resources.provider.icons.Youtube
 import com.grippo.design.resources.provider.instagram
+import com.grippo.design.resources.provider.threads
 import com.grippo.design.resources.provider.tiktok
 import com.grippo.design.resources.provider.youtube
 
@@ -31,12 +33,11 @@ internal enum class SocialChannel(
     ),
     YouTube(
         title = UiText.Res(Res.string.youtube),
-        urls = listOf(
-            "https://www.youtube.com/channel/UCDSepIFM7EbQU5m6IjaO8Aw",
-            "https://www.youtube.com/@GrippoApp",
-            "https://www.youtube.com/@GrippoApp/videos",
-            "https://www.youtube.com/results?search_query=GrippoApp"
-        )
+        urls = listOf("https://www.youtube.com/@GrippoApp")
+    ),
+    Threads(
+        title = UiText.Res(Res.string.threads),
+        urls = listOf("https://www.threads.com/@grippo.app")
     );
 
     @Composable
@@ -45,6 +46,7 @@ internal enum class SocialChannel(
             Instagram -> AppTokens.icons.Instagram
             TikTok -> AppTokens.icons.Tiktok
             YouTube -> AppTokens.icons.Youtube
+            Threads -> AppTokens.icons.Threads
         }
     }
 }
