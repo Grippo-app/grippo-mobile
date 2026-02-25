@@ -6,8 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import com.grippo.toolkit.browser.BrowserOpenRequest
 import com.grippo.toolkit.browser.BrowserOpenResult
-import com.grippo.toolkit.browser.BrowserOpenRoute
-import com.grippo.toolkit.browser.BrowserOpenStrategy
+import com.grippo.toolkit.browser.BrowserOpenTarget
 import com.grippo.toolkit.browser.BrowserRedirector
 
 internal class AndroidBrowserRedirector(
@@ -20,26 +19,21 @@ internal class AndroidBrowserRedirector(
             ?.takeIf { !it.scheme.isNullOrBlank() }
             ?: return BrowserOpenResult(
                 isOpened = false,
-                strategy = BrowserOpenStrategyResolver.resolve(request.url, request.policy),
+                target = request.target,
             )
 
-        val strategy = BrowserOpenStrategyResolver.resolve(request.url, request.policy)
-
-        val result = when (strategy) {
-            BrowserOpenStrategy.BrowserFirst -> openInBrowser(uri, strategy)
-                ?: openGeneric(uri, strategy)
-
-            BrowserOpenStrategy.AppFirst -> openGeneric(uri, strategy)
-                ?: openInBrowser(uri, strategy)
+        val result = when (request.target) {
+            BrowserOpenTarget.Browser -> openInBrowser(uri)
+            BrowserOpenTarget.System -> openSystem(uri)
         }
 
         return result ?: BrowserOpenResult(
             isOpened = false,
-            strategy = strategy,
+            target = request.target,
         )
     }
 
-    private fun openGeneric(uri: Uri, strategy: BrowserOpenStrategy): BrowserOpenResult? {
+    private fun openSystem(uri: Uri): BrowserOpenResult? {
         val pm = context.packageManager
         val intent = baseViewIntent(uri)
 
@@ -53,55 +47,36 @@ internal class AndroidBrowserRedirector(
 
         return startActivity(
             intent = intent,
-            strategy = strategy,
-            strategyRoute = BrowserOpenRoute.App,
+            target = BrowserOpenTarget.System,
             resolvedHandler = resolvedPackage,
         )
     }
 
-    private fun openInBrowser(uri: Uri, strategy: BrowserOpenStrategy): BrowserOpenResult? {
+    private fun openInBrowser(uri: Uri): BrowserOpenResult? {
         val pm = context.packageManager
-        val baseIntent = baseViewIntent(uri)
         val browserPackage = findBrowserPackage(pm = pm, uri = uri)
-
-        val intent = if (browserPackage != null) {
-            Intent(baseIntent).apply { `package` = browserPackage }
-        } else {
-            baseIntent
-        }
+            ?: return null
+        val intent = Intent(baseViewIntent(uri)).apply { `package` = browserPackage }
 
         if (intent.resolveActivity(pm) == null) {
             return null
         }
 
-        val route = if (browserPackage == null) {
-            BrowserOpenRoute.System
-        } else {
-            BrowserOpenRoute.Browser
-        }
-
         return startActivity(
             intent = intent,
-            strategy = strategy,
-            strategyRoute = route,
+            target = BrowserOpenTarget.Browser,
             resolvedHandler = browserPackage,
         )
     }
 
     private fun startActivity(
         intent: Intent,
-        strategy: BrowserOpenStrategy,
-        strategyRoute: BrowserOpenRoute,
-        resolvedHandler: String?,
+        target: BrowserOpenTarget,
+        resolvedHandler: String?
     ): BrowserOpenResult? {
         return runCatching {
             context.startActivity(intent)
-            BrowserOpenResult(
-                isOpened = true,
-                strategy = strategy,
-                route = strategyRoute,
-                resolvedHandler = resolvedHandler,
-            )
+            BrowserOpenResult(isOpened = true, target = target, resolvedHandler = resolvedHandler)
         }.getOrNull()
     }
 
@@ -122,33 +97,12 @@ internal class AndroidBrowserRedirector(
         val filteredHandlers = handlers.filterNot(::isKnownNonBrowserHandler)
 
         return KnownBrowserPackages.firstOrNull(filteredHandlers::contains)
-            ?: filteredHandlers.firstOrNull(::looksLikeBrowserPackage)
-            ?: filteredHandlers.firstOrNull()
     }
 
     private fun isKnownNonBrowserHandler(packageName: String): Boolean {
         return packageName.contains("youtube", ignoreCase = true) ||
                 packageName.contains("instagram", ignoreCase = true) ||
                 packageName.contains("tiktok", ignoreCase = true)
-    }
-
-    private fun looksLikeBrowserPackage(packageName: String): Boolean {
-        val candidates = listOf(
-            "browser",
-            "chrome",
-            "firefox",
-            "brave",
-            "opera",
-            "vivaldi",
-            "duckduckgo",
-            "edge",
-            "emmx",
-            "sbrowser",
-        )
-
-        return candidates.any { token ->
-            packageName.contains(token, ignoreCase = true)
-        }
     }
 
     private companion object {

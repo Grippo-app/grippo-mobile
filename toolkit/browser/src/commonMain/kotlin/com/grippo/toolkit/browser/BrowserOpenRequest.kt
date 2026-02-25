@@ -2,5 +2,5 @@ package com.grippo.toolkit.browser
 
 public data class BrowserOpenRequest(
     public val url: String,
-    public val policy: BrowserOpenPolicy = BrowserOpenPolicy.Automatic,
+    public val target: BrowserOpenTarget = BrowserOpenTarget.Browser,
 )
