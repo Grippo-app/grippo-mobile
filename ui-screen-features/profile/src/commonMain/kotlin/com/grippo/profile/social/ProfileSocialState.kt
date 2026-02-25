@@ -1,8 +1,14 @@
 package com.grippo.profile.social
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
+import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Instagram
+import com.grippo.design.resources.provider.icons.Tiktok
+import com.grippo.design.resources.provider.icons.Youtube
 import com.grippo.design.resources.provider.instagram
 import com.grippo.design.resources.provider.tiktok
 import com.grippo.design.resources.provider.youtube
@@ -31,5 +37,14 @@ internal enum class SocialChannel(
             "https://www.youtube.com/@GrippoApp/videos",
             "https://www.youtube.com/results?search_query=GrippoApp"
         )
-    )
+    );
+
+    @Composable
+    fun icon(): ImageVector {
+        return when (this) {
+            Instagram -> AppTokens.icons.Instagram
+            TikTok -> AppTokens.icons.Tiktok
+            YouTube -> AppTokens.icons.Youtube
+        }
+    }
 }

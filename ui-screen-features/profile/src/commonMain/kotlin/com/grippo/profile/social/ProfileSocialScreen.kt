@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -53,11 +52,13 @@ internal fun ProfileSocialScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-    val items = remember {
-        SocialChannel.entries
-            .map { channel -> channel to MenuItem(title = channel.title) }
-            .toPersistentList()
-    }
+    val items = SocialChannel.entries
+        .map { channel ->
+            channel to MenuItem(
+                title = channel.title,
+                icon = channel.icon()
+            )
+        }.toPersistentList()
 
     Menu(
         modifier = Modifier

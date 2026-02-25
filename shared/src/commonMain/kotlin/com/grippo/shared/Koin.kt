@@ -19,11 +19,11 @@ import com.grippo.services.apple.auth.AppleAuthModule
 import com.grippo.services.backend.BackendModule
 import com.grippo.services.database.DatabaseModule
 import com.grippo.services.google.auth.GoogleAuthModule
-import com.grippo.toolkit.browser.BrowserModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
 import com.grippo.toolkit.http.client.HttpModule
 import com.grippo.toolkit.image.loader.ImageLoaderModule
+import com.grippo.toolkit.link.opener.LinkOpenerModule
 import com.grippo.toolkit.serialization.SerializationModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
@@ -55,7 +55,7 @@ public object Koin {
             ExcludedEquipmentFeatureModule().module,
             FeatureApiModule().module,
             ConnectivityModule().module,
-            BrowserModule().module,
+            LinkOpenerModule().module,
             ResourcesProviderModule().module,
             SerializationModule().module,
             ExerciseMetricsFeatureModule().module,

@@ -107,7 +107,7 @@ include(":toolkit:logger")
 include(":toolkit:connectivity")
 include(":toolkit:serialization")
 include(":toolkit:date-utils")
-include(":toolkit:browser")
+include(":toolkit:link-opener")
 
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")
