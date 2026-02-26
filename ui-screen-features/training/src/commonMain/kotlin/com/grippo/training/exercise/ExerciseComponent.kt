@@ -34,6 +34,10 @@ internal class ExerciseComponent(
     override suspend fun eventListener(direction: ExerciseDirection) {
         when (direction) {
             ExerciseDirection.Back -> back.invoke()
+            is ExerciseDirection.Update -> {
+                sendResult(ResultKeys.create("exercise"), direction.exercise)
+            }
+
             is ExerciseDirection.Save -> {
                 sendResult(ResultKeys.create("exercise"), direction.exercise)
                 back.invoke()

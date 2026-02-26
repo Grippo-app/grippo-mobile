@@ -90,24 +90,7 @@ internal class ExerciseViewModel(
                 suggestions = suggestions,
                 focus = IterationFocusState.UNIDENTIFIED,
                 example = example,
-                onResult = { iteration ->
-                    update { s ->
-                        // Build new iterations
-                        val iterations = s.exercise.iterations
-                            .toMutableList()
-                            .apply { add(iteration) }
-                            .toPersistentList()
-
-                        // Recompute metrics for this exercise
-                        val total = recalculateTotal(iterations)
-
-                        val exercise = s.exercise.copy(
-                            iterations = iterations,
-                            total = total
-                        )
-                        s.copy(exercise = exercise)
-                    }
-                }
+                onResult = ::addIteration
             )
 
             dialogController.show(dialog)
@@ -115,25 +98,7 @@ internal class ExerciseViewModel(
     }
 
     override fun onDeleteIteration(id: String) {
-        update { s ->
-            // Remove by index if present
-            val iterations = s.exercise.iterations
-                .toMutableList()
-                .apply {
-                    val idx = indexOfFirst { it.id == id }
-                    if (idx >= 0) removeAt(idx)
-                }
-                .toPersistentList()
-
-            // Recompute metrics after deletion
-            val metrics = recalculateTotal(iterations)
-
-            val exercise = s.exercise.copy(
-                iterations = iterations,
-                total = metrics
-            )
-            s.copy(exercise = exercise)
-        }
+        removeIteration(id)
     }
 
     override fun onEditVolume(id: String) {
@@ -151,24 +116,7 @@ internal class ExerciseViewModel(
             number = number,
             focus = IterationFocusState.VOLUME,
             example = example,
-            onResult = { iteration ->
-                update { s ->
-                    // Replace updated iteration
-                    val iterations = s.exercise.iterations
-                        .toMutableList()
-                        .map { m -> if (m.id == id) iteration else m }
-                        .toPersistentList()
-
-                    // Recompute metrics after edit
-                    val metrics = recalculateTotal(iterations)
-
-                    val exercise = s.exercise.copy(
-                        iterations = iterations,
-                        total = metrics
-                    )
-                    s.copy(exercise = exercise)
-                }
-            }
+            onResult = { iteration -> replaceIteration(id = id, value = iteration) }
         )
 
         dialogController.show(dialog)
@@ -189,45 +137,14 @@ internal class ExerciseViewModel(
             number = number,
             example = example,
             focus = IterationFocusState.REPETITIONS,
-            onResult = { iteration ->
-                update { s ->
-                    // Replace updated iteration
-                    val iterations = s.exercise.iterations
-                        .toMutableList()
-                        .map { m -> if (m.id == id) iteration else m }
-                        .toPersistentList()
-
-                    // Recompute metrics after edit
-                    val metrics = recalculateTotal(iterations)
-
-                    val exercise = s.exercise.copy(
-                        iterations = iterations,
-                        total = metrics
-                    )
-                    s.copy(exercise = exercise)
-                }
-            }
+            onResult = { iteration -> replaceIteration(id = id, value = iteration) }
         )
 
         dialogController.show(dialog)
     }
 
     override fun onRemoveIteration(id: String) {
-        update { s ->
-            // Filter out the iteration by id
-            val iterations = s.exercise.iterations
-                .filter { it.id != id }
-                .toPersistentList()
-
-            // Recompute metrics after removal
-            val metrics = recalculateTotal(iterations)
-
-            val exercise = s.exercise.copy(
-                iterations = iterations,
-                total = metrics
-            )
-            s.copy(exercise = exercise)
-        }
+        removeIteration(id)
     }
 
     override fun onExampleClick() {
@@ -262,6 +179,52 @@ internal class ExerciseViewModel(
 
     override fun onBack() {
         navigateTo(ExerciseDirection.Back)
+    }
+
+    private fun addIteration(iteration: IterationState) {
+        val currentExercise = state.value.exercise
+
+        val iterations = (currentExercise.iterations + iteration).toPersistentList()
+
+        val updatedExercise = currentExercise.copy(
+            iterations = iterations,
+            total = recalculateTotal(iterations)
+        )
+
+        update { screenState -> screenState.copy(exercise = updatedExercise) }
+        navigateTo(ExerciseDirection.Update(updatedExercise))
+    }
+
+    private fun replaceIteration(id: String, value: IterationState) {
+        val currentExercise = state.value.exercise
+
+        val iterations = currentExercise.iterations
+            .map { iteration -> if (iteration.id == id) value else iteration }
+            .toPersistentList()
+
+        val updatedExercise = currentExercise.copy(
+            iterations = iterations,
+            total = recalculateTotal(iterations)
+        )
+
+        update { screenState -> screenState.copy(exercise = updatedExercise) }
+        navigateTo(ExerciseDirection.Update(updatedExercise))
+    }
+
+    private fun removeIteration(id: String) {
+        val currentExercise = state.value.exercise
+
+        val iterations = currentExercise.iterations
+            .filter { iteration -> iteration.id != id }
+            .toPersistentList()
+
+        val updatedExercise = currentExercise.copy(
+            iterations = iterations,
+            total = recalculateTotal(iterations)
+        )
+
+        update { screenState -> screenState.copy(exercise = updatedExercise) }
+        navigateTo(ExerciseDirection.Update(updatedExercise))
     }
 
     private fun recalculateTotal(
