@@ -1,6 +1,7 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.toolkit.date.utils.DateRange
@@ -18,6 +19,7 @@ public data class TrainingState(
     val id: String,
     val duration: Duration,
     val createdAt: LocalDateTime,
+    @Serializable(with = ImmutableListSerializer::class)
     val exercises: ImmutableList<ExerciseState>,
     val total: TrainingTotalState
 )

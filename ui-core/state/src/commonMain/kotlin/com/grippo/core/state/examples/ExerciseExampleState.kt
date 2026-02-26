@@ -3,6 +3,7 @@ package com.grippo.core.state.examples
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.equipments.stubEquipments
@@ -19,7 +20,9 @@ import kotlinx.serialization.Serializable
 public data class ExerciseExampleState(
     val value: ExerciseExampleValueState,
     val components: ExerciseExampleComponentsState,
+    @Serializable(with = ImmutableListSerializer::class)
     val bundles: ImmutableList<ExerciseExampleBundleState>,
+    @Serializable(with = ImmutableListSerializer::class)
     val equipments: ImmutableList<EquipmentState>,
 ) {
     @Composable

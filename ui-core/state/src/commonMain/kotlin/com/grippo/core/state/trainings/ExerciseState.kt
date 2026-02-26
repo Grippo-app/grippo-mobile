@@ -1,6 +1,7 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExampleValueState
 import com.grippo.core.state.metrics.TrainingTotalState
@@ -20,6 +21,7 @@ import kotlin.uuid.Uuid
 public data class ExerciseState(
     val id: String,
     val name: String,
+    @Serializable(with = ImmutableListSerializer::class)
     val iterations: ImmutableList<IterationState>,
     val exerciseExample: ExerciseExampleValueState,
     val createdAt: LocalDateTime,
