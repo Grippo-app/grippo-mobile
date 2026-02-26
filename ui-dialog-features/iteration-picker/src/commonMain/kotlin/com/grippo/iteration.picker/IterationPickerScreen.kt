@@ -175,7 +175,7 @@ internal fun IterationPickerScreen(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = state.value.externalWeight.hint(),
-                        style = AppTokens.typography.b14Med(),
+                        style = AppTokens.typography.b12Semi(),
                         color = AppTokens.colors.text.tertiary,
                         textAlign = TextAlign.End
                     )
@@ -198,7 +198,7 @@ internal fun IterationPickerScreen(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = state.value.externalWeight.hint(),
-                        style = AppTokens.typography.b14Med(),
+                        style = AppTokens.typography.b12Semi(),
                         color = AppTokens.colors.text.tertiary,
                         textAlign = TextAlign.End
                     )
@@ -221,7 +221,7 @@ internal fun IterationPickerScreen(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = state.value.externalWeight.hint(),
-                        style = AppTokens.typography.b14Med(),
+                        style = AppTokens.typography.b12Semi(),
                         color = AppTokens.colors.text.tertiary,
                         textAlign = TextAlign.End
                     )
@@ -247,7 +247,7 @@ internal fun IterationPickerScreen(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = state.value.repetitions.hint(),
-                style = AppTokens.typography.b14Med(),
+                style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.tertiary,
                 textAlign = TextAlign.End
             )

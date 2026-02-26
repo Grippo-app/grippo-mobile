@@ -135,15 +135,17 @@ internal fun LoginScreen(
             style = ButtonStyle.Primary,
             onClick = contract::onLoginByEmailClick
         )
+        if (state.isGoogleLoginAvailable || state.isAppleLoginAvailable) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        ContentSpliter(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.or_continue_with)
-        )
+            ContentSpliter(
+                modifier = Modifier.fillMaxWidth(),
+                text = AppTokens.strings.res(Res.string.or_continue_with)
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        }
 
         Row(
             Modifier.fillMaxWidth(),

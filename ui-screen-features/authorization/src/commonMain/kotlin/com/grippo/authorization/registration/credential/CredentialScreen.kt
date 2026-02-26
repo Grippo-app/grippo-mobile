@@ -99,7 +99,7 @@ internal fun CredentialScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = state.password.hint(),
-            style = AppTokens.typography.b14Med(),
+            style = AppTokens.typography.b12Semi(),
             color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.End
         )
