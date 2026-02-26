@@ -1,5 +1,12 @@
 package com.grippo.services.database.search
 
+/**
+ * Shared utilities for local prefix-based search indexing and query parsing.
+ *
+ * Normalizes text (lowercase + separator collapsing), extracts unique tokens, and builds
+ * token prefixes starting from [DEFAULT_MIN_PREFIX_LENGTH]. Repository/DAO code decides when
+ * to use prefix search vs fallback list queries.
+ */
 public object PrefixSearch {
 
     private const val DEFAULT_MIN_PREFIX_LENGTH: Int = 3
