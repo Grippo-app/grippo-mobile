@@ -2,6 +2,7 @@ package com.grippo.services.database
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.grippo.services.database.migrations.DatabaseMigrations
 import com.grippo.toolkit.context.NativeContext
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,7 @@ internal actual fun NativeContext.getDatabaseBuilder(): Database {
     return Room.databaseBuilder<Database>(
         name = dbFilePath,
     )
+        .addMigrations(*DatabaseMigrations.all)
         .fallbackToDestructiveMigration(dropAllTables = true)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)

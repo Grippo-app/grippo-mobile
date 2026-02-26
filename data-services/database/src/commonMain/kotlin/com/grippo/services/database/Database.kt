@@ -22,6 +22,7 @@ import com.grippo.services.database.entity.ExerciseExampleBundleEntity
 import com.grippo.services.database.entity.ExerciseExampleComponentsEntity
 import com.grippo.services.database.entity.ExerciseExampleEntity
 import com.grippo.services.database.entity.ExerciseExampleEquipmentEntity
+import com.grippo.services.database.entity.ExerciseExampleSearchPrefixEntity
 import com.grippo.services.database.entity.IterationEntity
 import com.grippo.services.database.entity.MuscleEntity
 import com.grippo.services.database.entity.MuscleGroupEntity
@@ -48,6 +49,7 @@ import com.grippo.services.database.entity.WeightHistoryEntity
         ExerciseExampleBundleEntity::class,
         ExerciseExampleComponentsEntity::class,
         ExerciseExampleEquipmentEntity::class,
+        ExerciseExampleSearchPrefixEntity::class,
 
         TrainingEntity::class,
         ExerciseEntity::class,
@@ -62,7 +64,7 @@ import com.grippo.services.database.entity.WeightHistoryEntity
         UserExcludedEquipmentEntity::class,
         WeightHistoryEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @ConstructedBy(DatabaseConstructor::class)
