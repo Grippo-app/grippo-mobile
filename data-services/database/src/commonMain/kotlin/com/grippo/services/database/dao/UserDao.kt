@@ -11,6 +11,8 @@ import com.grippo.services.database.entity.MuscleEntity
 import com.grippo.services.database.entity.UserEntity
 import com.grippo.services.database.entity.UserExcludedEquipmentEntity
 import com.grippo.services.database.entity.UserExcludedMuscleEntity
+import com.grippo.services.database.entity.UserStatsEntity
+import com.grippo.services.database.models.UserPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -38,7 +40,28 @@ public interface UserDao {
     @Query("SELECT * FROM user WHERE id = :id LIMIT 1")
     public fun getById(id: String): Flow<UserEntity?>
 
+    @Transaction
+    @Query("SELECT * FROM user WHERE id = :id LIMIT 1")
+    public fun getPackById(id: String): Flow<UserPack?>
+
+    @Query("SELECT * FROM user_stats WHERE userId = :userId LIMIT 1")
+    public fun getStatsByUserId(userId: String): Flow<UserStatsEntity?>
+
     // ────────────── INSERT ──────────────
+
+    @Transaction
+    public suspend fun insertOrUpdate(pack: UserPack) {
+        insertOrUpdate(pack.user)
+
+        val stats = pack.stats ?: return
+        val existingStats = getStatsByUserId(pack.user.id).firstOrNull()
+
+        if (existingStats != null) {
+            updateUserStats(stats)
+        } else {
+            insertUserStats(stats)
+        }
+    }
 
     @Transaction
     public suspend fun insertOrReplaceExcludedEquipments(
@@ -79,6 +102,12 @@ public interface UserDao {
 
     @Update
     public suspend fun updateUser(user: UserEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertUserStats(stats: UserStatsEntity)
+
+    @Update
+    public suspend fun updateUserStats(stats: UserStatsEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertExcludedEquipments(equipments: List<UserExcludedEquipmentEntity>)

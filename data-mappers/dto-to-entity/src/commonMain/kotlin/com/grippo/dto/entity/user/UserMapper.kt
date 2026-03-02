@@ -2,13 +2,10 @@ package com.grippo.dto.entity.user
 
 import com.grippo.services.backend.dto.user.UserResponse
 import com.grippo.services.database.entity.UserEntity
+import com.grippo.services.database.models.UserPack
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<UserResponse>.toEntities(): List<UserEntity> {
-    return mapNotNull { it.toEntityOrNull() }
-}
-
-public fun UserResponse.toEntityOrNull(): UserEntity? {
+public fun UserResponse.toEntityOrNull(): UserPack? {
     val entityId = AppLogger.Mapping.log(id) {
         "UserResponse.id is null"
     } ?: return null
@@ -53,16 +50,21 @@ public fun UserResponse.toEntityOrNull(): UserEntity? {
         "UserResponse.role is null"
     } ?: return null
 
-    return UserEntity(
-        id = entityId,
-        profileId = entityProfileId,
-        weight = entityWeight,
-        height = entityHeight,
-        email = entityEmail,
-        experience = entityExperience,
-        name = entityName,
-        createdAt = entityCreatedAt,
-        updatedAt = entityUpdatedAt,
-        role = entityRole
+    return UserPack(
+        user = UserEntity(
+            id = entityId,
+            profileId = entityProfileId,
+            weight = entityWeight,
+            height = entityHeight,
+            email = entityEmail,
+            experience = entityExperience,
+            name = entityName,
+            createdAt = entityCreatedAt,
+            updatedAt = entityUpdatedAt,
+            role = entityRole
+        ),
+        stats = stats.toEntityOrNull(
+            userId = entityId
+        )
     )
 }

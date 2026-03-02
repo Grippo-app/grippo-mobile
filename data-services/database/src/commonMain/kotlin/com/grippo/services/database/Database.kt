@@ -32,6 +32,7 @@ import com.grippo.services.database.entity.UserActiveEntity
 import com.grippo.services.database.entity.UserEntity
 import com.grippo.services.database.entity.UserExcludedEquipmentEntity
 import com.grippo.services.database.entity.UserExcludedMuscleEntity
+import com.grippo.services.database.entity.UserStatsEntity
 import com.grippo.services.database.entity.WeightHistoryEntity
 
 @Database(
@@ -60,6 +61,7 @@ import com.grippo.services.database.entity.WeightHistoryEntity
         DraftIterationEntity::class,
 
         UserEntity::class,
+        UserStatsEntity::class,
         UserExcludedMuscleEntity::class,
         UserExcludedEquipmentEntity::class,
         WeightHistoryEntity::class,

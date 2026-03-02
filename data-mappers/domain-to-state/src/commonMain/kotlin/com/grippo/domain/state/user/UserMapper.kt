@@ -14,6 +14,7 @@ public fun User.toState(): UserState {
         height = HeightFormatState.of(height),
         createdAt = createAt,
         experience = experience.toState(),
-        role = role.toState()
+        role = role.toState(),
+        stats = stats.toState()
     )
 }

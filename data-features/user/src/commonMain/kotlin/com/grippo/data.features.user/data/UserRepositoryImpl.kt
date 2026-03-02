@@ -31,7 +31,7 @@ internal class UserRepositoryImpl(
         return userActiveDao.get()
             .flatMapLatest { activeId ->
                 if (activeId == null) flowOf(null)
-                else userDao.getById(activeId)
+                else userDao.getPackById(activeId)
             }.map { it?.toDomain() }
     }
 
@@ -39,8 +39,8 @@ internal class UserRepositoryImpl(
         val response = api.getUser()
 
         return response.map { dto ->
-            val user = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(user)
+            val pack = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(pack)
             true
         }
     }
@@ -49,8 +49,8 @@ internal class UserRepositoryImpl(
         val response = api.createProfile(profile.toBody())
 
         return response.map { dto ->
-            val user = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(user)
+            val pack = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(pack)
             true
         }
     }
@@ -70,8 +70,8 @@ internal class UserRepositoryImpl(
         )
 
         return response.map { dto ->
-            val user = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(user)
+            val pack = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(pack)
             true
         }
     }
@@ -82,8 +82,8 @@ internal class UserRepositoryImpl(
         )
 
         return response.map { dto ->
-            val user = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(user)
+            val pack = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(pack)
             true
         }
     }

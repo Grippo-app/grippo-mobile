@@ -3,11 +3,12 @@ package com.grippo.entity.domain.user
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.RoleEnum
 import com.grippo.data.features.api.user.models.User
+import com.grippo.data.features.api.user.models.UserStats
 import com.grippo.services.database.entity.UserEntity
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.logger.AppLogger
 
-public fun UserEntity.toDomain(): User? {
+public fun UserEntity.toDomain(stats: UserStats): User? {
     val mappedExperience = AppLogger.Mapping.log(ExperienceEnum.of(experience)) {
         "UserEntity $id has unrecognized experience: $experience"
     } ?: return null
@@ -20,6 +21,7 @@ public fun UserEntity.toDomain(): User? {
         experience = mappedExperience,
         height = height,
         createAt = DateTimeUtils.toLocalDateTime(createdAt),
-        role = RoleEnum.of(role)
+        role = RoleEnum.of(role),
+        stats = stats
     )
 }

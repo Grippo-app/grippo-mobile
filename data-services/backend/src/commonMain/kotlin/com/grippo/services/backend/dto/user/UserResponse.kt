@@ -17,4 +17,6 @@ public data class UserResponse(
     val updatedAt: String? = null,
     @SerialName("profile")
     val profile: UserProfileResponse? = null,
+    @SerialName("stats")
+    val stats: UserStatsResponse? = null,
 )

@@ -32,6 +32,39 @@ internal object Migration2To3 : Migration(2, 3) {
             """.trimIndent()
         )
 
+        connection.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `user_stats` (
+                `userId` TEXT NOT NULL,
+                `trainingsCount` INTEGER NOT NULL,
+                `totalDuration` INTEGER NOT NULL,
+                `totalVolume` REAL NOT NULL,
+                `totalRepetitions` INTEGER NOT NULL,
+                PRIMARY KEY(`userId`),
+                FOREIGN KEY(`userId`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+
+        connection.execSQL(
+            """
+            INSERT OR IGNORE INTO `user_stats` (
+                `userId`,
+                `trainingsCount`,
+                `totalDuration`,
+                `totalVolume`,
+                `totalRepetitions`
+            )
+            SELECT
+                `id`,
+                0,
+                0,
+                0.0,
+                0
+            FROM `user`
+            """.trimIndent()
+        )
+
         // Backfill prefix index for existing records using SQL-only tokenization.
         // Mirrors the runtime search index strategy with minimum prefix length = 3.
         connection.execSQL(

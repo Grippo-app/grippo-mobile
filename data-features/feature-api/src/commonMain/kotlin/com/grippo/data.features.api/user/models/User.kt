@@ -11,5 +11,6 @@ public data class User(
     val weight: Float,
     val height: Int,
     val createAt: LocalDateTime,
-    val role: RoleEnum
+    val role: RoleEnum,
+    val stats: UserStats,
 )

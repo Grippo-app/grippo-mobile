@@ -73,6 +73,7 @@ public data object AppDp {
     val suggestionCard: SuggestionCard = SuggestionCard
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
+    val userCard: UserCard = UserCard
     val empty: Empty = Empty
     val tip: Tip = Tip
 
@@ -252,6 +253,43 @@ public data object AppDp {
 
         public data object TrainingSummary {
             val spot: Dp = icon.xxxxLarge
+        }
+    }
+
+    public data object UserCard {
+        val layout: Layout = Layout
+        val chip: Chip = Chip
+        val summary: Summary = Summary
+        val highlight: Highlight = Highlight
+
+        public data object Layout {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val content: Dp = padding.medium
+            val subContent: Dp = padding.small
+        }
+
+        public data object Chip {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.small
+            val icon: Dp = AppDp.icon.extraSmall
+            val space: Dp = padding.extraSmall
+        }
+
+        public data object Summary {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val space: Dp = padding.medium
+        }
+
+        public data object Highlight {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val space: Dp = padding.extraSmall
         }
     }
 
