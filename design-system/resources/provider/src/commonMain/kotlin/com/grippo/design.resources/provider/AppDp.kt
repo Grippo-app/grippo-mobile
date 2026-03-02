@@ -261,6 +261,7 @@ public data object AppDp {
         val chip: Chip = Chip
         val summary: Summary = Summary
         val highlight: Highlight = Highlight
+        val empty: Empty = Empty
 
         public data object Layout {
             val radius: Dp = AppDp.radius.medium
@@ -275,7 +276,7 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.small
             val icon: Dp = AppDp.icon.extraSmall
-            val space: Dp = padding.extraSmall
+            val space: Dp = padding.small
         }
 
         public data object Summary {
@@ -290,6 +291,10 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
             val space: Dp = padding.extraSmall
+        }
+
+        public data object Empty {
+            val space: Dp = padding.small
         }
     }
 

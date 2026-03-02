@@ -12,13 +12,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.profile.UserState
+import com.grippo.core.state.profile.UserStatsState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -31,13 +34,14 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.edit_btn
+import com.grippo.design.resources.provider.home_empty_subtitle
+import com.grippo.design.resources.provider.home_empty_title
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlin.math.roundToInt
 
 @Immutable
 public sealed interface UserCardStyle {
@@ -56,12 +60,13 @@ public fun UserCard(
     value: UserState,
     style: UserCardStyle = UserCardStyle.Preview
 ) {
-    val cardShape = RoundedCornerShape(AppTokens.dp.userCard.layout.radius)
     val accentColor = value.experience.color()
     val stats = value.stats
-    val joinedLabel = remember(value.createdAt) {
-        DateTimeUtils.format(value.createdAt, DateFormat.DateOnly.DateMmmDdYyyy)
-    }
+
+    val joinedLabel = DateCompose.rememberFormat(
+        value = value.createdAt,
+        format = DateFormat.DateOnly.DateMmmDdYyyy
+    )
 
     val heightUnit = AppTokens.strings.res(Res.string.cm)
     val weightUnit = AppTokens.strings.res(Res.string.kg)
@@ -69,37 +74,50 @@ public fun UserCard(
     val durationLabel = AppTokens.strings.res(Res.string.duration)
     val volumeLabel = AppTokens.strings.res(Res.string.volume)
     val repetitionsLabel = AppTokens.strings.res(Res.string.repetitions)
+    val emptyTitle = AppTokens.strings.res(Res.string.home_empty_title)
+    val emptySubtitle = AppTokens.strings.res(Res.string.home_empty_subtitle)
 
-    val physicalLabel =
-        remember(value.height.display, value.weight.display, heightUnit, weightUnit) {
-            listOfNotNull(
-                value.height.value?.let { "$it $heightUnit" },
-                value.weight.value?.let { "${formatDecimal(it)} $weightUnit" }
-            ).joinToString(separator = " • ")
+    val hasDuration = stats.totalDuration.display.isNotBlank()
+    val hasVolume = stats.totalVolume.display.isNotBlank()
+    val hasRepetitions = stats.totalRepetitions.display.isNotBlank()
+    val hasStatsProgress = stats.trainingsCount > 0 || hasDuration || hasVolume || hasRepetitions
+
+    val physicalSummary = listOfNotNull(
+        value.height.display
+            .takeIf { it.isNotBlank() }
+            ?.let { "$it $heightUnit" },
+        value.weight.display
+            .takeIf { it.isNotBlank() }
+            ?.let { "$it $weightUnit" }
+    ).joinToString(separator = " • ")
+
+    val summaryLine = listOfNotNull(
+        physicalSummary.takeIf { it.isNotBlank() },
+        joinedLabel.takeIf { it.isNotBlank() }
+    ).joinToString(separator = " • ")
+
+    val volumeValue = if (hasVolume) stats.totalVolume.short() else null
+    val repetitionsValue = if (hasRepetitions) stats.totalRepetitions.short() else null
+
+    val primaryMetrics = buildList<Pair<String, String>> {
+        if (stats.trainingsCount > 0) {
+            add(trainingsLabel to stats.trainingsCount.toString())
         }
-    val summaryLine = remember(physicalLabel, joinedLabel) {
-        listOfNotNull(
-            physicalLabel.takeIf { it.isNotBlank() },
-            joinedLabel.takeIf { it.isNotBlank() }
-        ).joinToString(separator = " • ")
-    }
-    val footerLine = remember(
-        stats,
-        volumeLabel,
-        repetitionsLabel,
-        weightUnit
-    ) {
-        stats?.let {
-            "$volumeLabel: ${formatVolume(it.totalVolume.value, weightUnit)} • " +
-                    "$repetitionsLabel: ${formatCount(it.totalRepetitions.value ?: 0)}"
+        if (hasDuration) {
+            add(durationLabel to stats.totalDuration.display)
         }
     }
+
+    val footerLine = listOfNotNull(
+        volumeValue?.let { "$volumeLabel $it" },
+        repetitionsValue?.let { "$repetitionsLabel $it" }
+    ).joinToString(separator = " • ")
 
     Column(
         modifier = modifier
             .background(
                 color = AppTokens.colors.background.card,
-                shape = cardShape
+                shape = RoundedCornerShape(AppTokens.dp.userCard.layout.radius)
             )
             .padding(
                 horizontal = AppTokens.dp.userCard.layout.horizontalPadding,
@@ -154,53 +172,60 @@ public fun UserCard(
             }
         }
 
-        if (summaryLine.isNotBlank() || stats != null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = accentColor.copy(alpha = 0.06f),
-                        shape = RoundedCornerShape(AppTokens.dp.userCard.summary.radius)
-                    )
-                    .padding(
-                        horizontal = AppTokens.dp.userCard.summary.horizontalPadding,
-                        vertical = AppTokens.dp.userCard.summary.verticalPadding
-                    ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.summary.space)
-            ) {
-                if (summaryLine.isNotBlank()) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = summaryLine,
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = AppTokens.colors.text.primary.copy(alpha = 0.03f),
+                    shape = RoundedCornerShape(AppTokens.dp.userCard.summary.radius)
+                )
+                .padding(
+                    horizontal = AppTokens.dp.userCard.summary.horizontalPadding,
+                    vertical = AppTokens.dp.userCard.summary.verticalPadding
+                ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.summary.space)
+        ) {
+            if (summaryLine.isNotBlank()) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = summaryLine,
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
 
-                if (stats != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.summary.space)
-                    ) {
-                        UserMetricPanel(
-                            modifier = Modifier.weight(1f),
-                            label = trainingsLabel,
-                            value = formatCount(stats.trainingsCount),
-                            accentColor = accentColor
-                        )
+            if (hasStatsProgress) {
+                when (primaryMetrics.size) {
+                    0 -> Unit
 
+                    1 -> {
+                        val (label, metricValue) = primaryMetrics.first()
                         UserMetricPanel(
-                            modifier = Modifier.weight(1f),
-                            label = durationLabel,
-                            value = DateTimeUtils.format(stats.totalDuration),
-                            accentColor = accentColor
+                            modifier = Modifier.fillMaxWidth(),
+                            label = label,
+                            value = metricValue
                         )
+                    }
+
+                    else -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.summary.space)
+                        ) {
+                            primaryMetrics.take(2).forEach { (label, metricValue) ->
+                                UserMetricPanel(
+                                    modifier = Modifier.weight(1f),
+                                    label = label,
+                                    value = metricValue
+                                )
+                            }
+                        }
                     }
                 }
 
-                if (footerLine != null) {
+                if (footerLine.isNotBlank()) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = footerLine,
@@ -210,6 +235,11 @@ public fun UserCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
+            } else {
+                UserEmptyState(
+                    title = emptyTitle,
+                    subtitle = emptySubtitle
+                )
             }
         }
     }
@@ -225,7 +255,7 @@ private fun UserMetaChip(
     Row(
         modifier = modifier
             .background(
-                color = accentColor.copy(alpha = 0.12f),
+                color = AppTokens.colors.text.primary.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(AppTokens.dp.userCard.chip.radius)
             )
             .padding(
@@ -257,12 +287,11 @@ private fun UserMetricPanel(
     modifier: Modifier = Modifier,
     label: String,
     value: String,
-    accentColor: Color,
 ) {
     Column(
         modifier = modifier
             .background(
-                color = accentColor.copy(alpha = 0.10f),
+                color = AppTokens.colors.text.primary.copy(alpha = 0.04f),
                 shape = RoundedCornerShape(AppTokens.dp.userCard.highlight.radius)
             )
             .padding(
@@ -289,39 +318,29 @@ private fun UserMetricPanel(
     }
 }
 
-private fun formatCount(value: Int): String {
-    return value.toString()
-        .reversed()
-        .chunked(3)
-        .joinToString(" ")
-        .reversed()
-}
+@Composable
+private fun UserEmptyState(
+    title: String,
+    subtitle: String,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.empty.space)
+    ) {
+        Text(
+            text = title,
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
 
-private fun formatVolume(value: Float?, unit: String): String {
-    val normalized = value
-        ?.times(10f)
-        ?.roundToInt()
-        ?.div(10f)
-        ?: 0f
-    val intPart = normalized.toInt()
-    val fraction = ((normalized - intPart) * 10f).roundToInt()
-    val number = if (fraction == 0) {
-        formatCount(intPart)
-    } else {
-        "${formatCount(intPart)},$fraction"
-    }
-    return "$number $unit"
-}
-
-private fun formatDecimal(value: Float): String {
-    val rounded = value
-        .times(10f)
-        .roundToInt() / 10f
-    val text = rounded.toString()
-    return if (text.endsWith(".0")) {
-        text.removeSuffix(".0")
-    } else {
-        text
+        Text(
+            text = subtitle,
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -335,7 +354,15 @@ private fun UserCardPreview() {
         )
 
         UserCard(
-            value = stubUser(),
+            value = stubUser()
+                .copy(
+                    stats = UserStatsState(
+                        totalVolume = VolumeFormatState.Empty(),
+                        totalRepetitions = RepetitionsFormatState.Empty(),
+                        totalDuration = DurationFormatState.Empty(),
+                        trainingsCount = 0
+                    )
+                ),
             style = UserCardStyle.Interactive(onEditClick = {})
         )
     }

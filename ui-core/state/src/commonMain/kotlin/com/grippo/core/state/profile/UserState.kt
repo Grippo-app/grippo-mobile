@@ -1,6 +1,7 @@
 package com.grippo.core.state.profile
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -31,11 +32,11 @@ public fun stubUser(): UserState = UserState(
     height = HeightFormatState.of(Random.nextInt(140, 200)),
     weight = WeightFormatState.of(Random.nextInt(60, 100).toFloat()),
     createdAt = DateRange.Range.Daily().range.from,
-    experience = ExperienceEnumState.INTERMEDIATE,
+    experience = ExperienceEnumState.ADVANCED,
     role = RoleEnumState.ADMIN,
     stats = UserStatsState(
         trainingsCount = Random.nextInt(12, 96),
-        totalDuration = Random.nextInt(180, 4_800).minutes,
+        totalDuration = DurationFormatState.of(Random.nextInt(180, 4_800).minutes),
         totalVolume = VolumeFormatState.of(Random.nextInt(80, 640).toFloat()),
         totalRepetitions = RepetitionsFormatState.of(Random.nextInt(20, 100))
     )
