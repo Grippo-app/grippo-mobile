@@ -257,19 +257,9 @@ public data object AppDp {
     }
 
     public data object UserCard {
-        val layout: Layout = Layout
         val chip: Chip = Chip
         val summary: Summary = Summary
-        val highlight: Highlight = Highlight
         val empty: Empty = Empty
-
-        public data object Layout {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
-            val content: Dp = padding.medium
-            val subContent: Dp = padding.small
-        }
 
         public data object Chip {
             val radius: Dp = AppDp.radius.small

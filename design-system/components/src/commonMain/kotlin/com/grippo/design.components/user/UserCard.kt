@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,21 +25,18 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.UserStatsState
 import com.grippo.core.state.profile.stubUser
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.duration
-import com.grippo.design.resources.provider.edit_btn
 import com.grippo.design.resources.provider.home_empty_subtitle
 import com.grippo.design.resources.provider.home_empty_title
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.repetitions
+import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateCompose
@@ -47,11 +46,6 @@ import com.grippo.toolkit.date.utils.DateFormat
 public sealed interface UserCardStyle {
     @Immutable
     public data object Preview : UserCardStyle
-
-    @Immutable
-    public data class Interactive(
-        val onEditClick: () -> Unit
-    ) : UserCardStyle
 }
 
 @Composable
@@ -99,7 +93,7 @@ public fun UserCard(
     val volumeValue = if (hasVolume) stats.totalVolume.short() else null
     val repetitionsValue = if (hasRepetitions) stats.totalRepetitions.short() else null
 
-    val primaryMetrics = buildList<Pair<String, String>> {
+    val primaryMetrics = buildList {
         if (stats.trainingsCount > 0) {
             add(trainingsLabel to stats.trainingsCount.toString())
         }
@@ -114,32 +108,10 @@ public fun UserCard(
     ).joinToString(separator = " • ")
 
     Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.userCard.layout.radius)
-            )
-            .padding(
-                horizontal = AppTokens.dp.userCard.layout.horizontalPadding,
-                vertical = AppTokens.dp.userCard.layout.verticalPadding
-            ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.layout.content)
+        modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.layout.content),
-            verticalAlignment = Alignment.Top
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.layout.subContent)
-            ) {
-                UserMetaChip(
-                    title = value.experience.title().text(),
-                    icon = value.experience.icon(),
-                    accentColor = accentColor
-                )
-
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = value.name,
@@ -148,7 +120,6 @@ public fun UserCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = value.email,
@@ -159,30 +130,24 @@ public fun UserCard(
                 )
             }
 
-            if (style is UserCardStyle.Interactive) {
-                Button(
-                    style = ButtonStyle.Transparent,
-                    size = ButtonSize.Small,
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.edit_btn)
-                    ),
-                    onClick = style.onEditClick,
-                    textStyle = AppTokens.typography.b12Semi()
-                )
-            }
+            UserMetaChip(
+                title = value.experience.title().text(),
+                icon = value.experience.icon(),
+                accentColor = accentColor
+            )
         }
 
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+        ContentSpliter(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.statistics)
+        )
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = AppTokens.colors.text.primary.copy(alpha = 0.03f),
-                    shape = RoundedCornerShape(AppTokens.dp.userCard.summary.radius)
-                )
-                .padding(
-                    horizontal = AppTokens.dp.userCard.summary.horizontalPadding,
-                    vertical = AppTokens.dp.userCard.summary.verticalPadding
-                ),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.summary.space)
         ) {
             if (summaryLine.isNotBlank()) {
@@ -289,16 +254,7 @@ private fun UserMetricPanel(
     value: String,
 ) {
     Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.text.primary.copy(alpha = 0.04f),
-                shape = RoundedCornerShape(AppTokens.dp.userCard.highlight.radius)
-            )
-            .padding(
-                horizontal = AppTokens.dp.userCard.highlight.horizontalPadding,
-                vertical = AppTokens.dp.userCard.highlight.verticalPadding
-            ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.userCard.highlight.space)
+        modifier = modifier,
     ) {
         Text(
             text = label,
@@ -363,7 +319,6 @@ private fun UserCardPreview() {
                         trainingsCount = 0
                     )
                 ),
-            style = UserCardStyle.Interactive(onEditClick = {})
         )
     }
 }
