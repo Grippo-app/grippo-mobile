@@ -258,32 +258,12 @@ public data object AppDp {
 
     public data object UserCard {
         val chip: Chip = Chip
-        val summary: Summary = Summary
-        val empty: Empty = Empty
 
         public data object Chip {
             val radius: Dp = AppDp.radius.small
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.small
             val icon: Dp = AppDp.icon.extraSmall
-            val space: Dp = padding.small
-        }
-
-        public data object Summary {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val space: Dp = padding.medium
-        }
-
-        public data object Highlight {
-            val radius: Dp = AppDp.radius.small
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val space: Dp = padding.extraSmall
-        }
-
-        public data object Empty {
             val space: Dp = padding.small
         }
     }

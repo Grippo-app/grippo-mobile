@@ -116,8 +116,8 @@ public object DarkColor : AppColor {
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val screen = AppPalette.NeutralDark.N100
-        override val dialog = AppPalette.NeutralDark.N150
-        override val card = AppPalette.NeutralDark.N250.copy(0.45f)
+        override val dialog = AppPalette.NeutralDark.N100
+        override val card = AppPalette.NeutralDark.N250.copy(0.35f)
     }
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {

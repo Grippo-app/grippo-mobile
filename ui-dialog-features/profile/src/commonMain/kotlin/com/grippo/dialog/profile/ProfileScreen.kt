@@ -73,9 +73,9 @@ internal fun ProfileScreen(
                 contentPadding = resolvedPadding
             ) {
                 item {
-                    val profileMenu = ProfileMenu.entries.map {
-                        it to MenuItem(UiText.Str(it.text()), it.icon())
-                    }.toPersistentList()
+                    val profileMenu = ProfileMenu.entries
+                        .map { it to MenuItem(UiText.Str(it.text()), it.icon()) }
+                        .toPersistentList()
 
                     Text(
                         modifier = Modifier
@@ -93,29 +93,28 @@ internal fun ProfileScreen(
                         onClick = contract::onProfileMenuClick
                     )
 
-                    if (state.user?.role == RoleEnumState.ADMIN) {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-                        val settingsMenu = SettingsMenu.entries.map {
-                            it to MenuItem(UiText.Str(it.text()), it.icon())
-                        }.toPersistentList()
+                    val settingsMenu = SettingsMenu.entries
+                        .filter { !(state.user?.role != RoleEnumState.ADMIN && it == SettingsMenu.Debug) }
+                        .map { it to MenuItem(UiText.Str(it.text()), it.icon()) }
+                        .toPersistentList()
 
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = AppTokens.dp.contentPadding.subContent),
-                            text = SettingsMenu.title(),
-                            style = AppTokens.typography.b14Med(),
-                            color = AppTokens.colors.text.secondary
-                        )
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = AppTokens.dp.contentPadding.subContent),
+                        text = SettingsMenu.title(),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary
+                    )
 
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-                        Menu(
-                            items = settingsMenu,
-                            onClick = contract::onSettingsMenuClick
-                        )
-                    }
+                    Menu(
+                        items = settingsMenu,
+                        onClick = contract::onSettingsMenuClick
+                    )
 
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
