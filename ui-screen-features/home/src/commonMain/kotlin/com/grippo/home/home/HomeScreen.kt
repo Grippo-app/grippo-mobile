@@ -14,8 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
@@ -36,7 +43,6 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
@@ -74,6 +80,17 @@ internal fun HomeScreen(
 ) {
     val isEmptyState = state.lastTraining == null
 
+    var showEmptyState by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isEmptyState) {
+        if (isEmptyState) {
+            delay(500)
+            showEmptyState = true
+        } else {
+            showEmptyState = false
+        }
+    }
+
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
@@ -89,15 +106,20 @@ internal fun HomeScreen(
         },
     )
 
-    if (isEmptyState) {
+    AnimatedVisibility(
+        visible = isEmptyState && showEmptyState,
+        enter = fadeIn(),
+    ) {
         EmptyHomeContent(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                .fillMaxWidth(),
             onStartTraining = contract::onStartTraining,
             onResumeTraining = contract::onResumeTraining,
             hasDraftTraining = state.hasDraftTraining
         )
+    }
+
+    if (isEmptyState) {
         return@BaseComposeScreen
     }
 

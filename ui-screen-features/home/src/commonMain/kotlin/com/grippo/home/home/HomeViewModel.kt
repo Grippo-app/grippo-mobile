@@ -62,7 +62,6 @@ internal class HomeViewModel(
             .onEach { period ->
                 trainingFeature
                     .getTrainings(start = period.from, end = period.to)
-                    .getOrThrow()
             }
             .safeLaunch()
 
