@@ -23,8 +23,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -135,8 +135,11 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     // ------------ ACTIVATION API ------------
 
-    private val _activation = MutableStateFlow(flowOf(false))
-    internal val activation: Flow<Boolean> = _activation.flatMapLatest { it }.distinctUntilChanged()
+    private val _activation = MutableStateFlow<Flow<Boolean>?>(null)
+    internal val activation: Flow<Boolean> = _activation
+        .filterNotNull()
+        .flatMapLatest { it }
+        .distinctUntilChanged()
 
     internal fun attachActivation(activationFlow: Flow<Boolean>) {
         _activation.value = activationFlow
@@ -145,7 +148,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     internal fun detachActivation() {
-        _activation.value = flowOf(false)
+        _activation.value = null
     }
 
     // ------------ ERROR API ------------
