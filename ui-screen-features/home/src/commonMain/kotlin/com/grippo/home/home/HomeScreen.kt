@@ -73,7 +73,6 @@ internal fun HomeScreen(
     )
 ) {
     val isEmptyState = state.lastTraining == null
-    val isTrainingsLoading = loaders.contains(HomeLoader.Trainings)
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -89,11 +88,6 @@ internal fun HomeScreen(
             )
         },
     )
-
-    if (isEmptyState && isTrainingsLoading) {
-        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-        return@BaseComposeScreen
-    }
 
     if (isEmptyState) {
         EmptyHomeContent(

@@ -64,7 +64,7 @@ internal class HomeViewModel(
                     .getTrainings(start = period.from, end = period.to)
                     .getOrThrow()
             }
-            .safeLaunch(loader = HomeLoader.Trainings)
+            .safeLaunch()
 
         safeLaunch {
             exerciseExampleFeature.getExerciseExamples()
