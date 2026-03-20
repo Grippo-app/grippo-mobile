@@ -15,7 +15,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -84,7 +86,7 @@ internal fun HomeScreen(
 
     LaunchedEffect(isEmptyState) {
         if (isEmptyState) {
-            delay(500)
+            delay(350)
             showEmptyState = true
         } else {
             showEmptyState = false
@@ -107,8 +109,14 @@ internal fun HomeScreen(
     )
 
     AnimatedVisibility(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
         visible = isEmptyState && showEmptyState,
-        enter = fadeIn(),
+        enter = fadeIn(animationSpec = tween(500)) + scaleIn(
+            initialScale = 1.03f,
+            animationSpec = tween(500),
+        ),
     ) {
         EmptyHomeContent(
             modifier = Modifier
