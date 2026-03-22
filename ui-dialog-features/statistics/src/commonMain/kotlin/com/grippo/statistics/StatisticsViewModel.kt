@@ -1,7 +1,6 @@
 package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
@@ -16,7 +15,6 @@ public class StatisticsViewModel(
     config: DialogConfig.Statistics,
     private val trainingFeature: TrainingFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
-    private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
@@ -71,18 +69,6 @@ public class StatisticsViewModel(
             .fromTrainings(trainings)
             .toState()
 
-        val categoryDistribution = exerciseDistributionUseCase
-            .categoriesFromTrainings(trainings)
-            .toState()
-
-        val weightTypeDistribution = exerciseDistributionUseCase
-            .weightTypesFromTrainings(trainings)
-            .toState()
-
-        val forceTypeDistribution = exerciseDistributionUseCase
-            .forceTypesFromTrainings(trainings)
-            .toState()
-
         val muscleLoad = muscleLoadingSummaryUseCase
             .fromTrainings(trainings)
             .toState()
@@ -96,9 +82,6 @@ public class StatisticsViewModel(
                 mode = StatisticsMode.Trainings(range = range),
                 exerciseVolume = volume,
                 total = totalMetrics,
-                categoryDistribution = categoryDistribution,
-                weightTypeDistribution = weightTypeDistribution,
-                forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
             )
         }
@@ -114,18 +97,6 @@ public class StatisticsViewModel(
             .fromExercises(training.exercises)
             .toState()
 
-        val categoryDistribution = exerciseDistributionUseCase
-            .categoriesFromExercises(training.exercises)
-            .toState()
-
-        val weightTypeDistribution = exerciseDistributionUseCase
-            .weightTypesFromExercises(training.exercises)
-            .toState()
-
-        val forceTypeDistribution = exerciseDistributionUseCase
-            .forceTypesFromExercises(training.exercises)
-            .toState()
-
         val muscleLoad = muscleLoadingSummaryUseCase
             .fromExercises(training.exercises)
             .toState()
@@ -139,9 +110,6 @@ public class StatisticsViewModel(
                 mode = StatisticsMode.Exercises,
                 exerciseVolume = volume,
                 total = totalMetrics,
-                categoryDistribution = categoryDistribution,
-                weightTypeDistribution = weightTypeDistribution,
-                forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
             )
         }
@@ -153,9 +121,6 @@ public class StatisticsViewModel(
                 mode = mode ?: it.mode,
                 total = null,
                 exerciseVolume = null,
-                categoryDistribution = null,
-                weightTypeDistribution = null,
-                forceTypeDistribution = null,
                 muscleLoad = null,
             )
         }

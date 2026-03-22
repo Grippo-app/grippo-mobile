@@ -2,7 +2,6 @@ package com.grippo.statistics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -22,11 +21,8 @@ import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.ExerciseDistributionChart
-import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
-import com.grippo.design.components.metrics.WeightTypeDistributionChart
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
@@ -118,40 +114,6 @@ internal fun StatisticsScreen(
                     }
                 }
 
-            item(key = "distribution") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                ) {
-                    state.categoryDistribution
-                        ?.takeIf { it.entries.isNotEmpty() }
-                        ?.let { distribution ->
-                            ExerciseDistributionChart(
-                                modifier = Modifier.weight(1f),
-                                value = distribution
-                            )
-                        }
-
-                    state.weightTypeDistribution
-                        ?.takeIf { it.entries.isNotEmpty() }
-                        ?.let { distribution ->
-                            WeightTypeDistributionChart(
-                                modifier = Modifier.weight(1f),
-                                value = distribution
-                            )
-                        }
-
-                    state.forceTypeDistribution
-                        ?.takeIf { it.entries.isNotEmpty() }
-                        ?.let { distribution ->
-                            ForceTypeDistributionChart(
-                                modifier = Modifier.weight(1f),
-                                value = distribution
-                            )
-                        }
-                }
-            }
-
             item(key = "muscles_spliter") {
                 ContentSpliter(
                     text = AppTokens.strings.res(Res.string.muscles)
@@ -192,9 +154,6 @@ private fun ScreenPreview() {
                 mode = StatisticsMode.Trainings(range = DateRange.Range.Weekly().range),
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
-                categoryDistribution = stubCategoryDistribution(),
-                weightTypeDistribution = stubWeightDistribution(),
-                forceTypeDistribution = stubForceDistribution(),
                 muscleLoad = stubMuscleLoadSummary(),
             ),
             loaders = persistentSetOf(),

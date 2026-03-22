@@ -19,7 +19,6 @@ public class StatisticsComponent(
             config = config,
             trainingFeature = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
-            exerciseDistributionUseCase = getKoin().get(),
             volumeSeriesUseCase = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
         )
