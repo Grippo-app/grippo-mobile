@@ -27,7 +27,7 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
         }
 
         extensions.getByType<KspExtension>().apply {
-            arg("KOIN_CONFIG_CHECK", "true")
+            arg("KOIN_CONFIG_CHECK", "false") // todo wait until next version of Koin Annotations
         }
 
         project.afterEvaluate {
