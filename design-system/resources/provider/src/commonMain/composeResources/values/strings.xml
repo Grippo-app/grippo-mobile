@@ -535,4 +535,7 @@
     <string name="equipment_hint_squat_rack">Enter total barbell weight in the rack.</string>
     <string name="equipment_hint_preacher_curl_bench">Enter the weight you lift in the exercise.</string>
     <string name="equipment_hint_row_bench">Enter the weight you use in the exercise.</string>
+
+    <string name="notification_forgot_training_title">Don't forget your workout 💪</string>
+    <string name="notification_forgot_training_description">Pop back in to finish or save your progress</string>
 </resources>

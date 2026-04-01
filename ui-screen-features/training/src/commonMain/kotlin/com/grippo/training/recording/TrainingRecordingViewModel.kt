@@ -18,6 +18,8 @@ import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.notification_forgot_training_description
+import com.grippo.design.resources.provider.notification_forgot_training_title
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
@@ -39,7 +41,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
@@ -50,21 +52,23 @@ internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val trainingTotalUseCase: TrainingTotalUseCase,
-    notificationManager: NotificationManager
+    notificationManager: NotificationManager,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
 
     init {
-        notificationManager.show(
-            AppNotification(
-                id = 1,
-                title = "Hello World",
-                body = "Text body",
-                deeplink = "weight_history"
-            ),
-            delay = 2.minutes
-        )
+        safeLaunch{
+            notificationManager.show(
+                AppNotification(
+                    id = 1,
+                    title = stringProvider.get(Res.string.notification_forgot_training_title),
+                    body = stringProvider.get(Res.string.notification_forgot_training_description),
+                    deeplink = "weight_history"
+                ),
+                delay = Duration.ZERO
+            )
+        }
 
         FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
 

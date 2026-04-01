@@ -534,4 +534,6 @@
     <string name="equipment_hint_squat_rack">Укажи общий вес штанги в раме.</string>
     <string name="equipment_hint_preacher_curl_bench">Укажи вес, который поднимаешь в упражнении.</string>
     <string name="equipment_hint_row_bench">Укажи вес, который используешь в упражнении.</string>
+    <string name="notification_forgot_training_title">Не забудь про тренировку 💪</string>
+    <string name="notification_forgot_training_description">Вернись, чтобы завершить или сохранить прогресс</string>
 </resources>
