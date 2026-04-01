@@ -30,6 +30,8 @@ import com.grippo.domain.state.training.toState
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -37,6 +39,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
@@ -47,11 +50,22 @@ internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val trainingTotalUseCase: TrainingTotalUseCase,
+    notificationManager: NotificationManager
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
 
     init {
+        notificationManager.show(
+            AppNotification(
+                id = 1,
+                title = "Hello World",
+                body = "Text body",
+                deeplink = "weight_history"
+            ),
+            delay = 2.minutes
+        )
+
         FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
 
         muscleFeature.observeMuscles()
