@@ -69,6 +69,24 @@ public class RootComponent(
         backHandler.register(backCallback)
     }
 
+    /**
+     * Entry point for notification-tap deeplinks.
+     *
+     * **Android** — call from `MainActivity.onNewIntent` (warm start) or
+     * `MainActivity.onCreate` (cold start) after reading the
+     * `"grippo_local_notification_deeplink"` Intent extra.
+     *
+     * **iOS** — call from
+     * `UNUserNotificationCenterDelegate.didReceive(_:withCompletionHandler:)`
+     * after reading `response.notification.request.content.userInfo["deeplink"]`.
+     *
+     * The method is safe to call at any time; routing is deferred automatically
+     * if the auth flow has not yet completed.
+     */
+    public fun handleDeeplink(deeplink: String) {
+        viewModel.handleDeeplink(deeplink)
+    }
+
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
             RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
