@@ -3,6 +3,7 @@ package com.grippo.toolkit.local.notification.internal
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import com.grippo.toolkit.local.notification.LocalNotificationExtras
 
 internal const val NOTIFICATION_CHANNEL_ID = "grippo_local_notifications"
 private const val NOTIFICATION_CHANNEL_NAME = "Grippo Notifications"
@@ -18,7 +19,7 @@ internal const val EXTRA_NOTIFICATION_BODY = "grippo_local_notification_body"
  * it without depending on this module's internals:
  *   `intent.getStringExtra("grippo_local_notification_deeplink")`
  */
-internal const val EXTRA_NOTIFICATION_DEEPLINK = "grippo_local_notification_deeplink"
+internal const val EXTRA_NOTIFICATION_DEEPLINK = LocalNotificationExtras.DEEPLINK
 
 /**
  * Creates the notification channel if it does not already exist.
