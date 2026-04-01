@@ -19,7 +19,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
             // ❌ Hard close app
             // exit(0)
-        }
+        },
+        deeplink: nil
     )
 
     func application(
