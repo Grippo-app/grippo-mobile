@@ -2,30 +2,27 @@ package com.grippo.toolkit.local.notification.internal
 
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationManager
-import platform.Foundation.NSDate
-import platform.Foundation.timeIntervalSince1970
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNTimeIntervalNotificationTrigger
 import platform.UserNotifications.UNUserNotificationCenter
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.Duration
 
 internal class IosNotificationManager : NotificationManager {
 
     private val center = UNUserNotificationCenter.currentNotificationCenter()
 
-    override fun show(notification: AppNotification) {
-        // Trigger with a minimal interval — effectively immediate.
-        // UNUserNotificationCenter requires a non-zero interval.
-        post(notification, triggerIntervalSeconds = 0.1)
-    }
-
-    override fun schedule(notification: AppNotification, deliverAtEpochMillis: Long) {
-        val nowMs = (NSDate().timeIntervalSince1970 * 1_000.0).toLong()
-        val delaySeconds = (deliverAtEpochMillis - nowMs) / 1_000.0
-        if (delaySeconds <= 0.0) return
-        post(notification, triggerIntervalSeconds = delaySeconds)
+    override fun show(notification: AppNotification, delay: Duration): Int {
+        val triggerIntervalSeconds = if (delay == Duration.ZERO) {
+            // UNUserNotificationCenter requires a non-zero interval — use minimal value.
+            0.1
+        } else {
+            delay.inWholeMilliseconds / 1_000.0
+        }
+        post(notification, triggerIntervalSeconds = triggerIntervalSeconds)
+        return notification.id
     }
 
     override fun cancel(id: Int) {
