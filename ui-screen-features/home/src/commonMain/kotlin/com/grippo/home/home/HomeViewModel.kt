@@ -21,6 +21,8 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.toolkit.permission.AppPermission
+import com.grippo.toolkit.permission.PermissionManager
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,11 +42,16 @@ internal class HomeViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
     private val stringProvider: StringProvider,
+    private val permissionManager: PermissionManager
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
 
     init {
+        safeLaunch {
+            permissionManager.request(AppPermission.Notifications)
+        }
+
         state
             .map { it.range.range }
             .filterNotNull()

@@ -10,17 +10,17 @@ import com.arkivanov.essenty.instancekeeper.InstanceKeeper
  * consumed inside [com.grippo.shared.root.RootViewModel.toHome] once the stack
  * has settled on the Home screen.
  */
-internal class DeeplinkQueue : InstanceKeeper.Instance {
+public class DeeplinkQueue : InstanceKeeper.Instance {
 
     private var pending: String? = null
 
     /** Store [deeplink] to be handled as soon as the user reaches Home. */
-    fun enqueue(deeplink: String) {
+    public fun enqueue(deeplink: String) {
         pending = deeplink
     }
 
     /** Returns and clears the pending deeplink, or `null` if none is queued. */
-    fun consume(): String? = pending.also { pending = null }
+    public fun consume(): String? = pending.also { pending = null }
 
     override fun onDestroy() {
         pending = null

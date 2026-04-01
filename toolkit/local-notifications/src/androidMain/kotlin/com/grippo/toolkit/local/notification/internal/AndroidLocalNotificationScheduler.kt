@@ -45,7 +45,7 @@ internal class AndroidLocalNotificationScheduler(
             notification.deeplink?.let { putExtra(EXTRA_NOTIFICATION_DEEPLINK, it) }
         }
 
-        scheduleAlarm(notification.deliverAtEpochMillis, pendingIntent)
+        scheduleAlarm(notification.deliverAtEpochMillis, pendingIntent ?: return)
     }
 
     override fun cancel(id: Int) {
