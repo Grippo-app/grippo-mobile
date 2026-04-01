@@ -3,7 +3,6 @@ package com.grippo.shared.root
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
-import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
 import com.grippo.shared.deeplink.DeeplinkParser
 import com.grippo.toolkit.connectivity.Connectivity
 import kotlinx.coroutines.flow.onEach
@@ -11,9 +10,9 @@ import kotlinx.coroutines.flow.onEach
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
     connectivity: Connectivity,
-) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState()), RootContract {
-
-    private var pendingDeeplink: String? = null
+    deeplink: String? = null,
+) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState(deeplink = deeplink)),
+    RootContract {
 
     init {
         authorizationFeature
@@ -27,13 +26,7 @@ public class RootViewModel(
             .safeLaunch()
     }
 
-    private fun provideConnectionStatus(value: Connectivity.Status) {
-        when (value) {
-            is Connectivity.Status.Connected -> ConnectionSnackbarState.Hidden
-            Connectivity.Status.Disconnected -> ConnectionSnackbarState.Visible
-        }
-        // update { it.copy(connection = connection) }
-    }
+    private fun provideConnectionStatus(value: Connectivity.Status) {}
 
     override fun onClose() {
         navigateTo(RootDirection.Close)
@@ -41,12 +34,18 @@ public class RootViewModel(
 
     override fun toHome() {
         navigateTo(RootDirection.Home)
-        pendingDeeplink?.let { DeeplinkParser.parse(it)?.let { dir -> navigateTo(dir) } }
-        pendingDeeplink = null
+        state.value.deeplink?.let { DeeplinkParser.parse(it)?.let { dir -> navigateTo(dir) } }
+        update { it.copy(deeplink = null) }
     }
 
-    internal fun handleDeeplink(deeplink: String) {
-        pendingDeeplink = deeplink
+    /** Cold start — queue for consumption when [toHome] is called. */
+    internal fun enqueueDeeplink(deeplink: String) {
+        update { it.copy(deeplink = deeplink) }
+    }
+
+    /** Warm start — already on Home, apply immediately. */
+    internal fun applyDeeplink(deeplink: String) {
+        DeeplinkParser.parse(deeplink)?.let { navigateTo(it) }
     }
 
     override fun toProfile() {

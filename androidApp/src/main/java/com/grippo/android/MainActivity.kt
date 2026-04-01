@@ -3,6 +3,7 @@ package com.grippo.android
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,12 +13,24 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.retainedComponent
 import com.grippo.shared.root.RootComponent
+import com.grippo.toolkit.local.notification.LocalNotificationExtras
 
 class MainActivity : ComponentActivity() {
+
+    private val root: RootComponent by lazy {
+        retainedComponent {
+            RootComponent(
+                componentContext = it,
+                close = ::finishAffinity,
+                deeplink = intent.getStringExtra(LocalNotificationExtras.DEEPLINK),
+            )
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -27,17 +40,17 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
         )
 
-        val rootComponent: RootComponent = retainedComponent("RootComponentContext") {
-            RootComponent(
-                componentContext = it,
-                close = ::finishAffinity
-            )
-        }
-
         setContent {
             SystemBarsIcons()
-            rootComponent.Render()
+            root.Render()
         }
+    }
+
+    // Warm start: app already running, user tapped a notification
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra(LocalNotificationExtras.DEEPLINK)
+            ?.let { root.handleDeeplink(it) }
     }
 }
 
