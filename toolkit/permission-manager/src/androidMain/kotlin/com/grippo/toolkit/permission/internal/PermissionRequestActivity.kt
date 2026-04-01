@@ -2,8 +2,8 @@ package com.grippo.toolkit.permission.internal
 
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Transparent, animation-less activity that hosts the system permission dialog
@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
  * Finishes itself as soon as the result is received — the user only ever sees
  * the system dialog overlay, not this activity.
  */
-internal class PermissionRequestActivity : AppCompatActivity() {
+internal class PermissionRequestActivity : ComponentActivity() {
 
     private val launcher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()

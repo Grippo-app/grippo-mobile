@@ -28,8 +28,6 @@ internal class IosPermissionManager : PermissionManager {
         AppPermission.Notifications -> requestNotifications()
     }
 
-    // -------------------------------------------------------------------------
-
     private suspend fun checkNotificationStatus(): PermissionStatus = suspendCoroutine { cont ->
         notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
             val status = settings?.authorizationStatus ?: UNAuthorizationStatusNotDetermined

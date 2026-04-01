@@ -8,21 +8,8 @@ import android.os.Build
 import com.grippo.toolkit.local.notification.LocalNotification
 import com.grippo.toolkit.local.notification.LocalNotificationScheduler
 
-/**
- * Android implementation of [LocalNotificationScheduler].
- *
- * Delivery strategy (in priority order):
- * 1. `AlarmManager.setExactAndAllowWhileIdle` when exact alarms are permitted
- *    (always on API < 31; requires user consent via Settings on API 31+).
- * 2. `AlarmManager.setAndAllowWhileIdle` (inexact, OS may delay by minutes) when
- *    the exact-alarm permission has not been granted.
- *
- * Notifications whose [LocalNotification.deliverAtEpochMillis] is in the past
- * are silently dropped to avoid an immediate flood of stale notifications.
- */
-internal class AndroidLocalNotificationScheduler(
-    private val context: Context,
-) : LocalNotificationScheduler {
+internal class AndroidLocalNotificationScheduler(private val context: Context) :
+    LocalNotificationScheduler {
 
     private val alarmManager: AlarmManager =
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -35,10 +22,7 @@ internal class AndroidLocalNotificationScheduler(
         val nowMs = System.currentTimeMillis()
         if (notification.deliverAtEpochMillis <= nowMs) return
 
-        val pendingIntent = buildPendingIntent(
-            id = notification.id,
-            updateExisting = true,
-        ) {
+        val pendingIntent = buildPendingIntent(id = notification.id, updateExisting = true) {
             putExtra(EXTRA_NOTIFICATION_ID, notification.id)
             putExtra(EXTRA_NOTIFICATION_TITLE, notification.title)
             putExtra(EXTRA_NOTIFICATION_BODY, notification.body)
@@ -49,11 +33,7 @@ internal class AndroidLocalNotificationScheduler(
     }
 
     override fun cancel(id: Int) {
-        val pendingIntent = buildPendingIntent(
-            id = id,
-            updateExisting = false,
-        ) {} ?: return
-
+        val pendingIntent = buildPendingIntent(id = id, updateExisting = false) {} ?: return
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
     }
@@ -74,8 +54,6 @@ internal class AndroidLocalNotificationScheduler(
         )
         return pendingIntent != null
     }
-
-    // -------------------------------------------------------------------------
 
     private fun scheduleAlarm(triggerAtMs: Long, pendingIntent: PendingIntent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -103,14 +81,6 @@ internal class AndroidLocalNotificationScheduler(
         }
     }
 
-    /**
-     * Returns a [PendingIntent] for [LocalNotificationReceiver].
-     *
-     * @param updateExisting  When `true`, uses `FLAG_UPDATE_CURRENT` so re-scheduling
-     *                        the same [id] replaces the previous extras.
-     *                        When `false`, uses `FLAG_NO_CREATE` and returns `null` if
-     *                        no matching intent exists (used by [cancel]).
-     */
     private fun buildPendingIntent(
         id: Int,
         updateExisting: Boolean,

@@ -4,6 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
+import com.grippo.shared.deeplink.DeeplinkParser
 import com.grippo.toolkit.connectivity.Connectivity
 import kotlinx.coroutines.flow.onEach
 
@@ -11,6 +12,8 @@ public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
     connectivity: Connectivity,
 ) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState()), RootContract {
+
+    private var pendingDeeplink: String? = null
 
     init {
         authorizationFeature
@@ -38,6 +41,12 @@ public class RootViewModel(
 
     override fun toHome() {
         navigateTo(RootDirection.Home)
+        pendingDeeplink?.let { DeeplinkParser.parse(it)?.let { dir -> navigateTo(dir) } }
+        pendingDeeplink = null
+    }
+
+    internal fun handleDeeplink(deeplink: String) {
+        pendingDeeplink = deeplink
     }
 
     override fun toProfile() {

@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--
-        POST_NOTIFICATIONS is a runtime permission on API 33+.
-        The host Activity is responsible for calling
-        ActivityCompat.requestPermissions() before notifications will appear.
-    -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <!--
-        SCHEDULE_EXACT_ALARM is a special permission the user must grant from
-        Settings on API 31+. The scheduler falls back to an inexact alarm if
-        this has not been granted.
-    -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application>

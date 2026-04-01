@@ -5,6 +5,6 @@ package com.grippo.toolkit.permission
  * Add new entries here as features require them.
  */
 public enum class AppPermission {
-    /** Android POST_NOTIFICATIONS (API 33+) / iOS UNUserNotificationCenter. */
+    /** Android POST_NOTIFICATIONS / iOS UNUserNotificationCenter. */
     Notifications,
 }

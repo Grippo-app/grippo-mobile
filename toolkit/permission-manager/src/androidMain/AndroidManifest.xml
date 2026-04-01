@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <!--
-            Transparent, task-less activity used to host the system permission dialog.
-            It starts with no animation, requests the permission, then finishes silently.
-        -->
         <activity
             android:name="com.grippo.toolkit.permission.internal.PermissionRequestActivity"
             android:excludeFromRecents="true"

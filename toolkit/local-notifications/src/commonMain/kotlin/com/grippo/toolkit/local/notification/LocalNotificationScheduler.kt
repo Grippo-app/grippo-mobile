@@ -1,27 +1,5 @@
 package com.grippo.toolkit.local.notification
 
-/**
- * Schedules and cancels device-local notifications without requiring a network round-trip.
- *
- * Platform requirements
- * ---------------------
- * **Android:** The module manifest declares `POST_NOTIFICATIONS` (API 33+) and
- * `SCHEDULE_EXACT_ALARM` (API 31+).  On API 31+ the scheduler checks
- * [AlarmManager.canScheduleExactAlarms] and falls back to an inexact alarm when
- * the user has not granted the exact-alarm permission.
- * The `POST_NOTIFICATIONS` runtime permission must be requested by the host
- * Activity before delivered notifications will appear on API 33+ devices.
- *
- * **iOS:** `UNUserNotificationCenter` authorization is requested once on first
- * use. The user will see the system authorization dialog if it has not been
- * shown before.
- *
- * Persistence note
- * ----------------
- * Pending alarms do **not** survive a device reboot (Android) or a full app
- * reinstall (iOS). Re-schedule any outstanding notifications after the app
- * starts if boot-time persistence is required.
- */
 public interface LocalNotificationScheduler {
 
     /**

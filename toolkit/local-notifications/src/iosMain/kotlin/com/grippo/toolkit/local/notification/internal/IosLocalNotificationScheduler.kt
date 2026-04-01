@@ -17,18 +17,6 @@ import kotlin.coroutines.suspendCoroutine
 /** Key used in `UNNotificationContent.userInfo` to carry the deeplink string. */
 private const val USER_INFO_DEEPLINK_KEY = "deeplink"
 
-/**
- * iOS implementation of [LocalNotificationScheduler] backed by
- * [UNUserNotificationCenter].
- *
- * Authorization is requested once on first instantiation. The system will
- * prompt the user with the standard iOS notification-permission dialog if the
- * app has not done so before. Notifications are silently dropped by the OS
- * when the user has denied permission.
- *
- * Pending notification requests do **not** survive a full app reinstall;
- * callers are responsible for re-scheduling after such events.
- */
 internal class IosLocalNotificationScheduler : LocalNotificationScheduler {
 
     private val notificationCenter: UNUserNotificationCenter =
@@ -72,9 +60,7 @@ internal class IosLocalNotificationScheduler : LocalNotificationScheduler {
     }
 
     override fun cancel(id: Int) {
-        notificationCenter.removePendingNotificationRequestsWithIdentifiers(
-            listOf(id.toString()),
-        )
+        notificationCenter.removePendingNotificationRequestsWithIdentifiers(listOf(id.toString()))
     }
 
     /**

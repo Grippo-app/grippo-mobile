@@ -10,9 +10,7 @@ import com.grippo.toolkit.permission.PermissionManager
 import com.grippo.toolkit.permission.PermissionStatus
 import kotlinx.coroutines.CompletableDeferred
 
-internal class AndroidPermissionManager(
-    private val context: Context,
-) : PermissionManager {
+internal class AndroidPermissionManager(private val context: Context) : PermissionManager {
 
     override suspend fun check(permission: AppPermission): PermissionStatus {
         val androidPermission = permission.toAndroidPermission()
@@ -60,8 +58,6 @@ internal class AndroidPermissionManager(
             else -> PermissionStatus.DeniedPermanently
         }
     }
-
-    // -------------------------------------------------------------------------
 
     private fun AppPermission.toAndroidPermission(): String? = when (this) {
         AppPermission.Notifications -> {
