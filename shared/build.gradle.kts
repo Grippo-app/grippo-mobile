@@ -32,6 +32,7 @@ kotlin {
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.imageLoader)
         implementation(projects.toolkit.linkOpener)
+        implementation(projects.toolkit.localNotifications)
 
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
