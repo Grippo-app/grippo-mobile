@@ -109,6 +109,7 @@ include(":toolkit:serialization")
 include(":toolkit:date-utils")
 include(":toolkit:link-opener")
 include(":toolkit:local-notifications")
+include(":toolkit:permission-manager")
 
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")

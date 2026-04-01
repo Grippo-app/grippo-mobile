@@ -33,6 +33,7 @@ kotlin {
         implementation(projects.toolkit.imageLoader)
         implementation(projects.toolkit.linkOpener)
         implementation(projects.toolkit.localNotifications)
+        implementation(projects.toolkit.permissionManager)
 
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
