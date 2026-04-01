@@ -3,7 +3,7 @@ package com.grippo.shared.root
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
-import com.grippo.shared.deeplink.DeeplinkParser
+import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.toolkit.connectivity.Connectivity
 import kotlinx.coroutines.flow.onEach
 
@@ -34,7 +34,7 @@ public class RootViewModel(
 
     override fun toHome() {
         navigateTo(RootDirection.Home)
-        state.value.deeplink?.let { DeeplinkParser.parse(it)?.let { dir -> navigateTo(dir) } }
+        state.value.deeplink?.let { parseDeeplink(it)?.let { dir -> navigateTo(dir) } }
         update { it.copy(deeplink = null) }
     }
 
@@ -45,7 +45,13 @@ public class RootViewModel(
 
     /** Warm start — already on Home, apply immediately. */
     internal fun applyDeeplink(deeplink: String) {
-        DeeplinkParser.parse(deeplink)?.let { navigateTo(it) }
+        parseDeeplink(deeplink)?.let { navigateTo(it) }
+    }
+
+    private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(raw)) {
+        Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft)
+        Deeplink.WeightHistory -> RootDirection.WeightHistory
+        null -> null
     }
 
     override fun toProfile() {

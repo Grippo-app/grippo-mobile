@@ -29,6 +29,7 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -41,7 +42,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
@@ -52,24 +53,12 @@ internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val trainingTotalUseCase: TrainingTotalUseCase,
-    notificationManager: NotificationManager,
+    private val notificationManager: NotificationManager,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
 
     init {
-        safeLaunch{
-            notificationManager.show(
-                AppNotification(
-                    id = 1,
-                    title = stringProvider.get(Res.string.notification_forgot_training_title),
-                    body = stringProvider.get(Res.string.notification_forgot_training_description),
-                    deeplink = "weight_history"
-                ),
-                delay = Duration.ZERO
-            )
-        }
-
         FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
 
         muscleFeature.observeMuscles()
@@ -237,6 +226,7 @@ internal class TrainingRecordingViewModel(
             onResult = { result ->
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
                 update { it.copy(startAt = startAt) }
+                cancelNotificationReminder()
                 toCompleteTraining()
             }
         )
@@ -303,6 +293,25 @@ internal class TrainingRecordingViewModel(
             )
 
             trainingFeature.setDraftTraining(draft).getOrThrow()
+            scheduleNotificationReminder()
         }
+    }
+
+    private suspend fun scheduleNotificationReminder() {
+        val notification = AppNotification(
+            id = REMINDER_NOTIFICATION_ID,
+            title = stringProvider.get(Res.string.notification_forgot_training_title),
+            body = stringProvider.get(Res.string.notification_forgot_training_description),
+            deeplink = Deeplink.TrainingDraft.key
+        )
+        notificationManager.show(notification = notification, delay = 45.minutes)
+    }
+
+    private fun cancelNotificationReminder() {
+        notificationManager.cancel(REMINDER_NOTIFICATION_ID)
+    }
+
+    companion object {
+        const val REMINDER_NOTIFICATION_ID = 678
     }
 }
