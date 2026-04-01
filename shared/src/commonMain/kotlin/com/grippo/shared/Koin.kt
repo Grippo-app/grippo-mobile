@@ -24,7 +24,7 @@ import com.grippo.toolkit.context.ContextModule
 import com.grippo.toolkit.http.client.HttpModule
 import com.grippo.toolkit.image.loader.ImageLoaderModule
 import com.grippo.toolkit.link.opener.LinkOpenerModule
-import com.grippo.toolkit.local.notification.LocalNotificationModule
+import com.grippo.toolkit.local.notification.NotificationManagerModule
 import com.grippo.toolkit.permission.PermissionManagerModule
 import com.grippo.toolkit.serialization.SerializationModule
 import org.koin.core.KoinApplication
@@ -58,7 +58,7 @@ public object Koin {
             FeatureApiModule().module,
             ConnectivityModule().module,
             LinkOpenerModule().module,
-            LocalNotificationModule().module,
+            NotificationManagerModule().module,
             PermissionManagerModule().module,
             ResourcesProviderModule().module,
             SerializationModule().module,

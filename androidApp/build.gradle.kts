@@ -32,7 +32,7 @@ dependencies {
     implementation(projects.uiCore.foundation)
     implementation(projects.toolkit.dateUtils)
     implementation(projects.toolkit.theme)
-    implementation(projects.toolkit.localNotifications)
+    implementation(projects.toolkit.notificationManager)
     implementation(projects.designSystem.core)
 
     implementation(compose.foundation)
