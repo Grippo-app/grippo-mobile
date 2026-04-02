@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import com.grippo.toolkit.notification.manager.R
 
 /**
  * Builds and posts a notification. Shared between [AndroidNotificationManager.show]
@@ -23,10 +24,8 @@ internal fun Context.buildAndPostNotification(
         if (granted != PackageManager.PERMISSION_GRANTED) return
     }
 
-    val iconRes = applicationInfo.icon.takeIf { it != 0 } ?: android.R.drawable.ic_dialog_info
-
     val builder = Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-        .setSmallIcon(iconRes)
+        .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(title)
         .setContentText(body)
         .setAutoCancel(true)

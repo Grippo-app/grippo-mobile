@@ -9,6 +9,10 @@ kotlin {
         namespace = "com.grippo.toolkit.notification.manager"
     }
 
+    androidLibrary {
+        androidResources.enable = true
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.context)
     }
