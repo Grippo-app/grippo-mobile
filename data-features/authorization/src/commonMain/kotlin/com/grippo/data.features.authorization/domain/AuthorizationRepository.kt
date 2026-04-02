@@ -15,4 +15,10 @@ internal interface AuthorizationRepository {
     suspend fun logout()
 
     fun getToken(): Flow<String?>
+
+    suspend fun updatePushToken(token: String): Result<Unit>
+
+    suspend fun getPushToken(): String?
+
+    suspend fun deletePushToken(): Result<Unit>
 }

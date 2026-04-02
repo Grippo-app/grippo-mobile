@@ -33,7 +33,6 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
-            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -46,7 +45,6 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
-            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -59,7 +57,6 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
-            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -72,7 +69,6 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
-            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -90,11 +86,18 @@ internal class AuthorizationRepositoryImpl(
 
     override suspend fun logout() {
         val activeId = userActiveDao.get().firstOrNull() ?: return
-        api.deletePushToken()
         tokenDao.delete(activeId)
     }
 
-    private suspend fun pushToken(): String? {
+    override suspend fun updatePushToken(token: String): Result<Unit> {
+        return api.sendPushToken(PushTokenBody(token = token))
+    }
+
+    override suspend fun getPushToken(): String? {
         return FirebaseProvider.getMessagingToken()
+    }
+
+    override suspend fun deletePushToken(): Result<Unit> {
+        return api.deletePushToken()
     }
 }

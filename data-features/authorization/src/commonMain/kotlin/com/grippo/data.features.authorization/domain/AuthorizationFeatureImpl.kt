@@ -32,4 +32,16 @@ internal class AuthorizationFeatureImpl(
     override suspend fun logout() {
         return repository.logout()
     }
+
+    override suspend fun updatePushToken(token: String): Result<Unit> {
+        return repository.updatePushToken(token)
+    }
+
+    override suspend fun deletePushToken(): Result<Unit> {
+        return repository.deletePushToken()
+    }
+
+    override suspend fun getPushToken(): String? {
+        return repository.getPushToken()
+    }
 }

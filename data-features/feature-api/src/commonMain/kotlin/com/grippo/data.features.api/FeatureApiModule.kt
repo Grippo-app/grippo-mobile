@@ -1,6 +1,7 @@
 package com.grippo.data.features.api
 
 import com.grippo.data.features.api.authorization.LoginUseCase
+import com.grippo.data.features.api.authorization.LogoutUseCase
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
@@ -35,6 +36,12 @@ public class FeatureApiModule {
                 excludedEquipmentsFeature = get(),
                 exerciseExampleFeature = get(),
                 weightHistoryFeature = get()
+            )
+        }
+
+        single {
+            LogoutUseCase(
+                authorizationFeature = get(),
             )
         }
 
