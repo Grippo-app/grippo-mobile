@@ -7,9 +7,11 @@ import com.grippo.services.backend.dto.auth.AppleBody
 import com.grippo.services.backend.dto.auth.EmailAuthBody
 import com.grippo.services.backend.dto.auth.GoogleBody
 import com.grippo.services.backend.dto.auth.RegisterBody
+import com.grippo.services.backend.dto.push.PushTokenBody
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.entity.UserActiveEntity
+import com.grippo.services.firebase.FirebaseProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -31,6 +33,7 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -43,6 +46,7 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -55,6 +59,7 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -67,6 +72,7 @@ internal class AuthorizationRepositoryImpl(
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+            api.sendPushToken(PushTokenBody(token = pushToken() ?: return@onSuccess))
         }
 
         return response.map { }
@@ -84,6 +90,11 @@ internal class AuthorizationRepositoryImpl(
 
     override suspend fun logout() {
         val activeId = userActiveDao.get().firstOrNull() ?: return
+        api.deletePushToken()
         tokenDao.delete(activeId)
+    }
+
+    private suspend fun pushToken(): String? {
+        return FirebaseProvider.getMessagingToken()
     }
 }

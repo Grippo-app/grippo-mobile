@@ -1,7 +1,7 @@
 import UserNotifications
 import shared
 
-/// Handles user notification events:
+/// Handles UNUserNotificationCenter events:
 /// - deeplink navigation when the user taps a notification
 /// - foreground banner presentation when a notification arrives while the app is open
 extension AppDelegate: UNUserNotificationCenterDelegate {

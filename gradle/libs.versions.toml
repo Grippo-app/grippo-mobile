@@ -30,6 +30,7 @@ immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-im
 
 #KotlinX
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 #AndroidX
@@ -50,6 +51,7 @@ ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-pl
 android-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 android-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+android-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 #Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
