@@ -23,10 +23,7 @@ internal fun Context.buildAndPostNotification(
         if (granted != PackageManager.PERMISSION_GRANTED) return
     }
 
-    val iconRes = resources
-        .getIdentifier("ic_notification", "drawable", packageName)
-        .takeIf { it != 0 }
-        ?: android.R.drawable.ic_dialog_info
+    val iconRes = applicationInfo.icon.takeIf { it != 0 } ?: android.R.drawable.ic_dialog_info
 
     val builder = Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
         .setSmallIcon(iconRes)

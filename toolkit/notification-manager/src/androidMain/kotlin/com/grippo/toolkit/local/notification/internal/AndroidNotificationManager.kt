@@ -56,8 +56,6 @@ internal class AndroidNotificationManager(private val context: Context) : Notifi
         return pendingIntent != null
     }
 
-    // -------------------------------------------------------------------------
-
     private fun scheduleAlarm(triggerAtMs: Long, pendingIntent: PendingIntent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms()) {
             alarmManager.setExactAndAllowWhileIdle(
