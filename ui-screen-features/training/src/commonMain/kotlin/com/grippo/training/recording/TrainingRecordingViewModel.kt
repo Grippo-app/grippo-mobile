@@ -34,6 +34,7 @@ import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -299,7 +300,7 @@ internal class TrainingRecordingViewModel(
 
     private suspend fun scheduleNotificationReminder() {
         val notification = AppNotification(
-            id = REMINDER_NOTIFICATION_ID,
+            id = NotificationKey.FinishWorkout,
             title = stringProvider.get(Res.string.notification_forgot_training_title),
             body = stringProvider.get(Res.string.notification_forgot_training_description),
             deeplink = Deeplink.TrainingDraft.key
@@ -308,10 +309,6 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun cancelNotificationReminder() {
-        notificationManager.cancel(REMINDER_NOTIFICATION_ID)
-    }
-
-    companion object {
-        const val REMINDER_NOTIFICATION_ID = 678
+        notificationManager.cancel(NotificationKey.FinishWorkout)
     }
 }

@@ -1,6 +1,7 @@
 package com.grippo.toolkit.local.notification.internal
 
 import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
@@ -14,7 +15,7 @@ internal class IosNotificationManager : NotificationManager {
 
     private val center = UNUserNotificationCenter.currentNotificationCenter()
 
-    override fun show(notification: AppNotification, delay: Duration): Int {
+    override fun show(notification: AppNotification, delay: Duration): NotificationKey {
         val triggerIntervalSeconds = if (delay == Duration.ZERO) {
             // UNUserNotificationCenter requires a non-zero interval — use minimal value.
             0.1
@@ -25,11 +26,11 @@ internal class IosNotificationManager : NotificationManager {
         return notification.id
     }
 
-    override fun cancel(id: Int) {
+    override fun cancel(id: NotificationKey) {
         center.removePendingNotificationRequestsWithIdentifiers(listOf(id.toString()))
     }
 
-    override suspend fun isPending(id: Int): Boolean = suspendCoroutine { cont ->
+    override suspend fun isPending(id: NotificationKey): Boolean = suspendCoroutine { cont ->
         center.getPendingNotificationRequestsWithCompletionHandler { requests ->
             val found = requests
                 ?.filterIsInstance<UNNotificationRequest>()

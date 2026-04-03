@@ -3,6 +3,7 @@ package com.grippo.services.firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,7 @@ public class MessagingService : FirebaseMessagingService(), KoinComponent {
         super.onMessageReceived(message)
         notificationManager.show(
             AppNotification(
-                id = message.messageId.hashCode(),
+                id = NotificationKey.Custom(message.messageId.hashCode()),
                 title = message.notification?.title ?: return,
                 body = message.notification?.body ?: return,
                 deeplink = message.data["deeplink"],

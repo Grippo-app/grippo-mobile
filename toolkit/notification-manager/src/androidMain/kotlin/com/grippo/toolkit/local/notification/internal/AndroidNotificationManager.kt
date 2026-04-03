@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import kotlin.time.Duration
 
@@ -18,18 +19,18 @@ internal class AndroidNotificationManager(private val context: Context) : Notifi
         context.ensureNotificationChannel()
     }
 
-    override fun show(notification: AppNotification, delay: Duration): Int {
+    override fun show(notification: AppNotification, delay: Duration): NotificationKey {
         if (delay == Duration.ZERO) {
             context.buildAndPostNotification(
-                id = notification.id,
+                id = notification.id.key,
                 title = notification.title,
                 body = notification.body,
                 deeplink = notification.deeplink,
             )
         } else {
             val deliverAtEpochMillis = System.currentTimeMillis() + delay.inWholeMilliseconds
-            val pendingIntent = buildAlarmIntent(id = notification.id, updateExisting = true) {
-                putExtra(EXTRA_NOTIFICATION_ID, notification.id)
+            val pendingIntent = buildAlarmIntent(id = notification.id.key, updateExisting = true) {
+                putExtra(EXTRA_NOTIFICATION_ID, notification.id.key)
                 putExtra(EXTRA_NOTIFICATION_TITLE, notification.title)
                 putExtra(EXTRA_NOTIFICATION_BODY, notification.body)
                 notification.deeplink?.let { putExtra(EXTRA_NOTIFICATION_DEEPLINK, it) }
@@ -39,17 +40,17 @@ internal class AndroidNotificationManager(private val context: Context) : Notifi
         return notification.id
     }
 
-    override fun cancel(id: Int) {
-        val pendingIntent = buildAlarmIntent(id = id, updateExisting = false) {} ?: return
+    override fun cancel(id: NotificationKey) {
+        val pendingIntent = buildAlarmIntent(id = id.key, updateExisting = false) {} ?: return
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
     }
 
-    override suspend fun isPending(id: Int): Boolean {
+    override suspend fun isPending(id: NotificationKey): Boolean {
         val intent = Intent(context, ScheduledNotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            id,
+            id.key,
             intent,
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE,
         )
