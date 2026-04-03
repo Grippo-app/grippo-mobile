@@ -1,3 +1,4 @@
+import FirebaseCore
 import FirebaseMessaging
 import UIKit
 import UserNotifications
@@ -28,6 +29,18 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Firebase must be configured here — BEFORE any other Firebase calls.
+        // Calling FirebaseApp.configure() in iOSApp.init() is too early:
+        // at that point AppDelegate is not yet set as UIApplication.delegate,
+        // so AppDelegateSwizzler cannot find it and logs:
+        // "App Delegate does not conform to UIApplicationDelegate protocol."
+        FirebaseApp.configure()
+        FirebaseProvider.shared.setup(
+            analytics: IosFirebaseAnalytics(),
+            crashlytics: IosFirebaseCrashlytics(),
+            messaging: IosFirebaseMessaging()
+        )
+
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
 
@@ -48,6 +61,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
         Messaging.messaging().apnsToken = deviceToken
+    }
+
+    // Required for Firebase to handle data messages and silent pushes (e.g. token refresh via APNs).
+    // Without this, FCM data-only messages and content-available payloads are silently dropped.
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        completionHandler(.newData)
     }
 
     func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool {

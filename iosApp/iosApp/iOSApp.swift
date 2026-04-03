@@ -1,4 +1,3 @@
-import FirebaseCore
 import SwiftUI
 import shared
 
@@ -10,13 +9,6 @@ struct iOSApp: App {
 
     init() {
         Koin().doInit(appDeclaration: { _ in })
-
-        FirebaseApp.configure()
-        FirebaseProvider.shared.setup(
-            analytics: IosFirebaseAnalytics(),
-            crashlytics: IosFirebaseCrashlytics(),
-            messaging: IosFirebaseMessaging()
-        )
     }
 
     var body: some Scene {
