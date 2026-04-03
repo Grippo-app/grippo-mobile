@@ -1,5 +1,6 @@
 package com.grippo.debug.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -51,7 +52,8 @@ internal fun GeneralPage(
             contentPadding = PaddingValues(
                 vertical = AppTokens.dp.contentPadding.content,
                 horizontal = AppTokens.dp.screen.horizontalPadding
-            )
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             item(key = "push_token") {
                 InputToken(

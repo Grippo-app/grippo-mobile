@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -23,6 +24,7 @@ import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.utils.rememberClipboardCopyAction
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -37,6 +39,7 @@ public fun InputToken(
     placeholder: String = AppTokens.strings.res(Res.string.push_token),
     onValueChange: (String) -> Unit
 ) {
+    val copyToClipboard = rememberClipboardCopyAction()
     val focusManager = LocalFocusManager.current
 
     Input(
@@ -49,10 +52,14 @@ public fun InputToken(
         ),
         trailing = { color ->
             Box {
+                val clickProvider = remember(value) {
+                    { copyToClipboard(value) }
+                }
+
                 AnimatedVisibility(
                     modifier = Modifier
                         .size(40.dp)
-                        .scalableClick { /*copy to clipboard*/ },
+                        .scalableClick(onClick = clickProvider),
                     visible = value.isNotEmpty(),
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),
