@@ -14,6 +14,7 @@ kotlin {
         implementation(projects.uiCore.foundation)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.permissionManager)
+        implementation(projects.toolkit.notificationManager)
         implementation(projects.uiCore.state)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.stateToDomain)

@@ -15,12 +15,18 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.notification_weight_description
+import com.grippo.design.resources.provider.notification_weight_title
 import com.grippo.design.resources.provider.period_picker_title
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.screen.api.deeplink.Deeplink
+import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationKey
+import com.grippo.toolkit.local.notification.NotificationManager
 import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,6 +36,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
@@ -42,7 +49,8 @@ internal class HomeViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
     private val stringProvider: StringProvider,
-    private val permissionManager: PermissionManager
+    private val permissionManager: PermissionManager,
+    private val notificationManager: NotificationManager
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -50,6 +58,20 @@ internal class HomeViewModel(
     init {
         safeLaunch {
             permissionManager.request(AppPermission.Notifications)
+        }
+
+        safeLaunch {
+            val weightNotificationKey = NotificationKey.ChangeWeight
+
+            if (notificationManager.isPending(weightNotificationKey).not()) {
+                val notification = AppNotification(
+                    id = NotificationKey.FinishWorkout,
+                    title = stringProvider.get(Res.string.notification_weight_title),
+                    body = stringProvider.get(Res.string.notification_weight_description),
+                    deeplink = Deeplink.WeightHistory.key
+                )
+                notificationManager.show(notification, 3.days)
+            }
         }
 
         state

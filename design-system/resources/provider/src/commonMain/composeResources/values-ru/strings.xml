@@ -537,4 +537,6 @@
     <string name="equipment_hint_row_bench">Укажи вес, который используешь в упражнении.</string>
     <string name="notification_forgot_training_title">Не забудь про тренировку 💪</string>
     <string name="notification_forgot_training_description">Вернись, чтобы завершить или сохранить прогресс</string>
+    <string name="notification_weight_title">Проверь свой вес сегодня 👋</string>
+    <string name="notification_weight_description">Обнови данные о прогрессе с помощью быстрого взвешивания.</string>
 </resources>

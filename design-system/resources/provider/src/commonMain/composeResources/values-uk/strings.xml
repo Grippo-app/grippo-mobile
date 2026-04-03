@@ -536,4 +536,6 @@
     <string name="equipment_hint_row_bench">Вкажіть вагу, яку використовуєте у вправі.</string>
     <string name="notification_forgot_training_title">Не забудь про тренування 💪</string>
     <string name="notification_forgot_training_description">Повернись, щоб завершити або зберегти прогрес</string>
+    <string name="notification_weight_title">Перевір свою вагу сьогодні 👋</string>
+    <string name="notification_weight_description">Онови дані про прогрес за допомогою швидкого зважування.</string>
 </resources>
