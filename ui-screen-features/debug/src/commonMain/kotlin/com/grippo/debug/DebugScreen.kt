@@ -62,7 +62,7 @@ internal fun DebugScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                state = state.logger,
+                pushToken = state.pushToken,
                 contract = contract,
                 loaders = loaders
             )
@@ -86,7 +86,9 @@ internal fun DebugScreen(
 private fun ScreenPreview() {
     PreviewContainer {
         DebugScreen(
-            state = DebugState(),
+            state = DebugState(
+                pushToken = "FCM-TOKEN"
+            ),
             loaders = persistentSetOf(),
             contract = DebugContract.Empty
         )
