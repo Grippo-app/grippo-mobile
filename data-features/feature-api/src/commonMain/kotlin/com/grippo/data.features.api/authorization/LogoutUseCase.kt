@@ -4,7 +4,7 @@ public class LogoutUseCase(
     private val authorizationFeature: AuthorizationFeature,
 ) {
     public suspend fun execute() {
-        authorizationFeature.deletePushToken().getOrThrow()
+        authorizationFeature.deletePushToken() // todo add .getOrThrow()
         authorizationFeature.logout()
     }
 }
