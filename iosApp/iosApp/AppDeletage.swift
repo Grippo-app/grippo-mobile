@@ -44,12 +44,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
 
-        // Request permission to show notifications (banners, sound, badge).
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: [.alert, .badge, .sound]
-        ) { _, _ in }
-
         // Register with APNs so Firebase can obtain an FCM token.
+        // Note: this does NOT show a permission prompt — it only fetches the APNs device token.
+        // The user-facing notification permission dialog is requested later via PermissionManager
+        // (inside HomeViewModel), so it appears only after the user has logged in.
         application.registerForRemoteNotifications()
 
         return true
