@@ -42,8 +42,10 @@ internal class IosNotificationManager : NotificationManager {
 
     private fun post(notification: AppNotification, triggerIntervalSeconds: Double) {
         val content = UNMutableNotificationContent()
+
         content.setTitle(notification.title)
         content.setBody(notification.body)
+
         if (notification.deeplink != null) {
             content.setUserInfo(mapOf<Any?, Any?>("deeplink" to notification.deeplink))
         }

@@ -65,7 +65,11 @@ internal class AndroidNotificationManager(private val context: Context) : Notifi
                 pendingIntent
             )
         } else {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerAtMs,
+                pendingIntent
+            )
         }
     }
 
