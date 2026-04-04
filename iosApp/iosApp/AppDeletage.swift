@@ -68,6 +68,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
+        // Required when swizzling is disabled: lets Firebase handle data messages
+        // and silent pushes (e.g. FCM token refresh via APNs).
+        Messaging.messaging().appDidReceiveMessage(userInfo)
         completionHandler(.newData)
     }
 

@@ -18,12 +18,6 @@
 		<string>uk</string>
 		<string>ru</string>
 	</array>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
@@ -70,6 +64,8 @@
 	<string>YOUR_GID_REDIRECT_URI</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
