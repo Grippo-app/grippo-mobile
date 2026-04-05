@@ -37,8 +37,6 @@ internal fun ProfileSettingsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    Spacer(modifier = Modifier.weight(1f))
-
     DeleteUserCard(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
@@ -46,6 +44,8 @@ internal fun ProfileSettingsScreen(
         isDeleteLoading = loaders.contains(ProfileSettingsLoader.DeleteAccountButton),
         onDeleteClick = contract::onDeleteAccount
     )
+
+    Spacer(modifier = Modifier.weight(1f))
 
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 

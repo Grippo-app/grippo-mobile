@@ -358,7 +358,7 @@ public data object AppDp {
 
     public data object DeleteUserCard {
         val radius: Dp = AppDp.radius.large
-        val horizontalPadding: Dp = padding.medium
+        val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium
     }
 
