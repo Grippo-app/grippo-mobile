@@ -23,6 +23,12 @@ public class RegisterUseCase(
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
         }
 
+        val pushToken = authorizationFeature.getPushToken()
+
+        if (pushToken != null) {
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
+        }
+
         return hasProfile
     }
 }

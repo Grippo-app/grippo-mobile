@@ -174,7 +174,7 @@
     <string name="email_placeholder">Введите email</string>
     <string name="password_placeholder_default">Введите пароль</string>
     <string name="password_placeholder_repeat">Повторите пароль</string>
-    <string name="name_placeholder">например, Алекс</string>
+    <string name="name_placeholder">Введите своё имя</string>
     <string name="weight_placeholder">Введите свой вес</string>
     <string name="volume_placeholder">Вес</string>
     <string name="repetitions_placeholder">Повторения</string>
