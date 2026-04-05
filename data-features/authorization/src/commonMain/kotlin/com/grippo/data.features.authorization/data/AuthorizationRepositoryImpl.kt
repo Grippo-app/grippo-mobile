@@ -7,9 +7,11 @@ import com.grippo.services.backend.dto.auth.AppleBody
 import com.grippo.services.backend.dto.auth.EmailAuthBody
 import com.grippo.services.backend.dto.auth.GoogleBody
 import com.grippo.services.backend.dto.auth.RegisterBody
+import com.grippo.services.backend.dto.push.PushTokenBody
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.entity.UserActiveEntity
+import com.grippo.services.firebase.FirebaseProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -85,5 +87,17 @@ internal class AuthorizationRepositoryImpl(
     override suspend fun logout() {
         val activeId = userActiveDao.get().firstOrNull() ?: return
         tokenDao.delete(activeId)
+    }
+
+    override suspend fun updatePushToken(token: String): Result<Unit> {
+        return api.sendPushToken(PushTokenBody(token = token))
+    }
+
+    override suspend fun getPushToken(): String? {
+        return FirebaseProvider.getMessagingToken()
+    }
+
+    override suspend fun deletePushToken(): Result<Unit> {
+        return api.deletePushToken()
     }
 }

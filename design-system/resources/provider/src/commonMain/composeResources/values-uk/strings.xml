@@ -25,6 +25,7 @@
     <string name="repetitions_input_hint">1 - 99 повторень</string>
     <string name="exercise_details_btn">Деталі вправи</string>
     <string name="and">І</string>
+    <string name="push_token">Пуш-токен</string>
     <string name="resume_training_btn">Продовжити тренування</string>
     <string name="start_new">Почати нове</string>
     <string name="weight">Вага</string>
@@ -173,7 +174,7 @@
     <string name="email_placeholder">Введіть електронну адресу</string>
     <string name="password_placeholder_default">Введіть пароль</string>
     <string name="password_placeholder_repeat">Повторіть пароль</string>
-    <string name="name_placeholder">наприклад, Олексій</string>
+    <string name="name_placeholder">Введіть своє ім&apos;я</string>
     <string name="weight_placeholder">Вкажіть свою вагу</string>
     <string name="volume_placeholder">Вага</string>
     <string name="repetitions_placeholder">Повторення</string>
@@ -533,4 +534,8 @@
     <string name="equipment_hint_squat_rack">Вкажіть загальну вагу штанги в рамі.</string>
     <string name="equipment_hint_preacher_curl_bench">Вкажіть вагу, яку піднімаєте у вправі.</string>
     <string name="equipment_hint_row_bench">Вкажіть вагу, яку використовуєте у вправі.</string>
+    <string name="notification_forgot_training_title">Не забудь про тренування 💪</string>
+    <string name="notification_forgot_training_description">Повернись, щоб завершити або зберегти прогрес</string>
+    <string name="notification_weight_title">Перевір свою вагу сьогодні 👋</string>
+    <string name="notification_weight_description">Онови дані про прогрес за допомогою швидкого зважування.</string>
 </resources>

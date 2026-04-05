@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0377D59153A64B33A7C93C96 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 7D30A510752A46AD81BF482F /* FirebaseMessaging */; };
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		19B4E580717143CBAA477F29 /* IosFirebaseMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7AD9C81ABB4D679CDC57B2 /* IosFirebaseMessaging.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
+		4379EAAEF18A41F29EC1BD3A /* MessagingHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DCB79FAF80499C8E44D39B /* MessagingHandler.swift */; };
 		BA393ADD2F11A8AF00DE3DF3 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BA393ADC2F11A8AF00DE3DF3 /* FirebaseAnalytics */; };
 		BA393ADF2F11A8AF00DE3DF3 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA393ADE2F11A8AF00DE3DF3 /* FirebaseAnalyticsCore */; };
 		BA393AE12F11A8AF00DE3DF3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA393AE02F11A8AF00DE3DF3 /* FirebaseCore */; };
@@ -20,10 +23,8 @@
 		BAB5713F2F1164EF00147ABC /* shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAB5713E2F1164EF00147ABC /* shared.xcframework */; };
 		BAB571402F1164EF00147ABC /* shared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAB5713E2F1164EF00147ABC /* shared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */; };
+		BAD1E6012FC0000000AAA111 /* NotificationsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD1E6002FC0000000AAA111 /* NotificationsHandler.swift */; };
 		BAFDC8BD2F11697600971CAB /* IosFirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */; };
-		BAFDC8C02F116A8C00971CAB /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BAFDC8BF2F116A8C00971CAB /* FirebaseAnalytics */; };
-		BAFDC8C22F116A8C00971CAB /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = BAFDC8C12F116A8C00971CAB /* FirebaseAnalyticsCore */; };
-		BAFDC8C42F116A8C00971CAB /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BAFDC8C32F116A8C00971CAB /* FirebaseCore */; };
 		D3D0B9802FA23C2C00AA1234 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
 
@@ -45,13 +46,17 @@
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
+		2F7AD9C81ABB4D679CDC57B2 /* IosFirebaseMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseMessaging.swift; sourceTree = "<group>"; };
+		61DCB79FAF80499C8E44D39B /* MessagingHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingHandler.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Grippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Grippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA393AE62F11B00700DE3DF3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BA853F492DC657D300A34846 /* AppDeletage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDeletage.swift; sourceTree = "<group>"; };
 		BA853F4B2DC658AF00A34846 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		BA9C51052F80496E00A08466 /* iosAppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosAppDebug.entitlements; sourceTree = "<group>"; };
 		BAB5713E2F1164EF00147ABC /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = "../shared/build/XCFrameworks/$(SHARED_XCFRAMEWORK_CONFIGURATION)/shared.xcframework"; sourceTree = "<group>"; };
 		BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseCrashlytics.swift; sourceTree = "<group>"; };
+		BAD1E6002FC0000000AAA111 /* NotificationsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsHandler.swift; sourceTree = "<group>"; };
 		BAF4660E2F2565D70039B478 /* iosAppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosAppRelease.entitlements; sourceTree = "<group>"; };
 		BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseAnalytics.swift; sourceTree = "<group>"; };
 		D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
@@ -64,14 +69,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				BAB5713F2F1164EF00147ABC /* shared.xcframework in Frameworks */,
-				BAFDC8C42F116A8C00971CAB /* FirebaseCore in Frameworks */,
 				BA393ADD2F11A8AF00DE3DF3 /* FirebaseAnalytics in Frameworks */,
 				D3D0B9802FA23C2C00AA1234 /* libsqlite3.tbd in Frameworks */,
-				BAFDC8C02F116A8C00971CAB /* FirebaseAnalytics in Frameworks */,
 				BA393ADF2F11A8AF00DE3DF3 /* FirebaseAnalyticsCore in Frameworks */,
 				BA393AE32F11A8AF00DE3DF3 /* FirebaseCrashlytics in Frameworks */,
 				BA393AE12F11A8AF00DE3DF3 /* FirebaseCore in Frameworks */,
-				BAFDC8C22F116A8C00971CAB /* FirebaseAnalyticsCore in Frameworks */,
+				0377D59153A64B33A7C93C96 /* FirebaseMessaging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,9 +111,13 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				BA9C51052F80496E00A08466 /* iosAppDebug.entitlements */,
 				BAF4660E2F2565D70039B478 /* iosAppRelease.entitlements */,
+				BAD1E6002FC0000000AAA111 /* NotificationsHandler.swift */,
+				61DCB79FAF80499C8E44D39B /* MessagingHandler.swift */,
 				BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */,
 				BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */,
+				2F7AD9C81ABB4D679CDC57B2 /* IosFirebaseMessaging.swift */,
 				BA853F4B2DC658AF00A34846 /* RootView.swift */,
 				BA853F492DC657D300A34846 /* AppDeletage.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
@@ -155,6 +162,13 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				BA393ADC2F11A8AF00DE3DF3 /* FirebaseAnalytics */,
+				BA393ADE2F11A8AF00DE3DF3 /* FirebaseAnalyticsCore */,
+				BA393AE02F11A8AF00DE3DF3 /* FirebaseCore */,
+				BA393AE22F11A8AF00DE3DF3 /* FirebaseCrashlytics */,
+				7D30A510752A46AD81BF482F /* FirebaseMessaging */,
+			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* Grippo.app */;
 			productType = "com.apple.product-type.application";
@@ -165,8 +179,9 @@
 		7555FF73242A565900829871 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 2610;
 				ORGANIZATIONNAME = orgName;
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
@@ -218,6 +233,9 @@
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				BA853F4A2DC657D900A34846 /* AppDeletage.swift in Sources */,
 				BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */,
+				BAD1E6012FC0000000AAA111 /* NotificationsHandler.swift in Sources */,
+				19B4E580717143CBAA477F29 /* IosFirebaseMessaging.swift in Sources */,
+				4379EAAEF18A41F29EC1BD3A /* MessagingHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,8 +278,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -282,6 +302,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SHARED_XCFRAMEWORK_CONFIGURATION = debug;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -323,8 +344,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -338,6 +361,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SHARED_XCFRAMEWORK_CONFIGURATION = release;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -349,6 +373,7 @@
 			baseConfigurationReference = F0054F872EE5B3C300F40B1C /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosAppDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
@@ -356,6 +381,8 @@
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Grippo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -387,6 +414,8 @@
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Grippo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -438,17 +467,14 @@
 				minimumVersion = 12.7.0;
 			};
 		};
-		BAFDC8BE2F116A8C00971CAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.7.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7D30A510752A46AD81BF482F /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA393ADB2F11A8AF00DE3DF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		BA393ADC2F11A8AF00DE3DF3 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BA393ADB2F11A8AF00DE3DF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -468,21 +494,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BA393ADB2F11A8AF00DE3DF3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
-		};
-		BAFDC8BF2F116A8C00971CAB /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BAFDC8BE2F116A8C00971CAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		BAFDC8C12F116A8C00971CAB /* FirebaseAnalyticsCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BAFDC8BE2F116A8C00971CAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsCore;
-		};
-		BAFDC8C32F116A8C00971CAB /* FirebaseCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BAFDC8BE2F116A8C00971CAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

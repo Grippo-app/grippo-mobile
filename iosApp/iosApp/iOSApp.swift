@@ -1,6 +1,5 @@
 import SwiftUI
 import shared
-import FirebaseCore
 
 @main
 struct iOSApp: App {
@@ -10,18 +9,12 @@ struct iOSApp: App {
 
     init() {
         Koin().doInit(appDeclaration: { _ in })
-
-        FirebaseApp.configure()
-        FirebaseProvider.shared.setup(
-            analytics: IosFirebaseAnalytics(),
-            crashlytics: IosFirebaseCrashlytics()
-        )
     }
 
     var body: some Scene {
         WindowGroup {
             RootView(root: appDelegate.root, backDispatcher: appDelegate.backDispatcher)
-                .ignoresSafeArea(edges: .all) // Solving issue: https://youtrack.jetbrains.com/issue/CMP-3621
+                .ignoresSafeArea(edges: .all)  // Solving issue: https://youtrack.jetbrains.com/issue/CMP-3621
         }
     }
 }

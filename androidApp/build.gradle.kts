@@ -32,6 +32,7 @@ dependencies {
     implementation(projects.uiCore.foundation)
     implementation(projects.toolkit.dateUtils)
     implementation(projects.toolkit.theme)
+    implementation(projects.toolkit.notificationManager)
     implementation(projects.designSystem.core)
 
     implementation(compose.foundation)
@@ -46,4 +47,5 @@ dependencies {
     implementation(project.dependencies.platform(libs.android.firebase.bom))
     implementation(libs.android.firebase.analytics)
     implementation(libs.android.firebase.crashlytics)
+    implementation(libs.android.firebase.messaging)
 }

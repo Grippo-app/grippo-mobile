@@ -1,5 +1,6 @@
 package com.grippo.debug.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.debug.DebugContract
 import com.grippo.debug.DebugLoader
-import com.grippo.debug.LoggerState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.inputs.InputToken
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
@@ -27,7 +28,7 @@ import kotlinx.collections.immutable.ImmutableSet
 @Composable
 internal fun GeneralPage(
     modifier: Modifier = Modifier,
-    state: LoggerState,
+    pushToken: String?,
     contract: DebugContract,
     loaders: ImmutableSet<DebugLoader>
 ) {
@@ -51,8 +52,17 @@ internal fun GeneralPage(
             contentPadding = PaddingValues(
                 vertical = AppTokens.dp.contentPadding.content,
                 horizontal = AppTokens.dp.screen.horizontalPadding
-            )
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
+            item(key = "push_token") {
+                InputToken(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = pushToken.toString(),
+                    onValueChange = {}
+                )
+            }
+
             item(key = "generate_training_btn") {
                 Button(
                     modifier = Modifier.fillMaxWidth(),

@@ -14,6 +14,7 @@ import com.grippo.services.backend.dto.equipment.EquipmentResponse
 import com.grippo.services.backend.dto.exercise.example.GetExerciseExampleResponse
 import com.grippo.services.backend.dto.muscle.MuscleGroupResponse
 import com.grippo.services.backend.dto.muscle.MuscleResponse
+import com.grippo.services.backend.dto.push.PushTokenBody
 import com.grippo.services.backend.dto.training.ExerciseResponse
 import com.grippo.services.backend.dto.training.TrainingBody
 import com.grippo.services.backend.dto.training.TrainingResponse
@@ -71,6 +72,25 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
             method = HttpMethod.Post,
             path = "/auth/refresh",
             body = body
+        )
+    }
+
+    /* * * * * * * * * * * * * * * * *
+     * Push token service
+     * * * * * * * * * * * * * * * * */
+
+    public suspend fun sendPushToken(body: PushTokenBody): Result<Unit> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/push-tokens",
+            body = body,
+        )
+    }
+
+    public suspend fun deletePushToken(): Result<Unit> {
+        return request(
+            method = HttpMethod.Delete,
+            path = "/push-tokens",
         )
     }
 

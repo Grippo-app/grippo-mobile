@@ -68,7 +68,6 @@ public data object AppDp {
     val iterationCard: IterationCard = IterationCard
     val iterationsCard: IterationsCard = IterationsCard
     val chip: Chip = Chip
-    val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
     val suggestionCard: SuggestionCard = SuggestionCard
     val calendar: Calendar = Calendar
@@ -359,7 +358,7 @@ public data object AppDp {
 
     public data object DeleteUserCard {
         val radius: Dp = AppDp.radius.large
-        val horizontalPadding: Dp = padding.medium
+        val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium
     }
 
@@ -493,11 +492,6 @@ public data object AppDp {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
         }
-    }
-
-    public data object ConnectionSnackbar {
-        val horizontalPadding: Dp = padding.xLarge
-        val verticalPadding: Dp = padding.small
     }
 
     public data object WheelPicker {

@@ -16,7 +16,6 @@ import com.grippo.authorization.AuthComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
-import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
 import com.grippo.home.HomeRootComponent
 import com.grippo.profile.ProfileComponent
@@ -42,6 +41,7 @@ import com.grippo.trainings.TrainingsRootComponent
 public class RootComponent(
     componentContext: ComponentContext,
     private val close: () -> Unit,
+    deeplink: String? = null,
 ) : BaseComponent<RootDirection>(componentContext) {
 
     private val dialogComponent = DialogComponent(componentContext)
@@ -49,11 +49,13 @@ public class RootComponent(
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel(
             authorizationFeature = getKoin().get(),
-            connectivity = getKoin().get()
+            connectivity = getKoin().get(),
+            deeplink = deeplink,
         )
     }
 
     private val navigation = StackNavigation<RootRouter>()
+
     internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
         source = navigation,
         serializer = RootRouter.serializer(),
@@ -67,6 +69,14 @@ public class RootComponent(
 
     init {
         backHandler.register(backCallback)
+    }
+
+    public fun handleDeeplink(deeplink: String) {
+        if (childStack.value.active.configuration is RootRouter.Home) {
+            viewModel.applyDeeplink(deeplink)
+        } else {
+            viewModel.enqueueDeeplink(deeplink)
+        }
     }
 
     override suspend fun eventListener(direction: RootDirection) {
@@ -200,7 +210,6 @@ public class RootComponent(
 
         AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
             RootScreen(this, state.value, loaders.value, viewModel)
-            ConnectionSnackbar(state = state.value.connection)
             dialogComponent.Render()
         }
     }

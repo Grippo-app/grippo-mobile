@@ -16,7 +16,9 @@ internal class ProfileBodyComponent(
             dialogController = getKoin().get(),
             weightHistoryFeature = getKoin().get(),
             userFeature = getKoin().get(),
-            updateWeightUseCase = getKoin().get()
+            updateWeightUseCase = getKoin().get(),
+            stringProvider = getKoin().get(),
+            notificationManager = getKoin().get()
         )
     }
 

@@ -26,6 +26,12 @@ public class LoginUseCase(
             weightHistoryFeature.getWeightHistory().getOrThrow()
         }
 
+        val pushToken = authorizationFeature.getPushToken()
+
+        if (pushToken != null) {
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
+        }
+
         return hasProfile
     }
 
@@ -41,6 +47,12 @@ public class LoginUseCase(
             weightHistoryFeature.getWeightHistory().getOrThrow()
         }
 
+        val pushToken = authorizationFeature.getPushToken()
+
+        if (pushToken != null) {
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
+        }
+
         return hasProfile
     }
 
@@ -54,6 +66,12 @@ public class LoginUseCase(
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
             weightHistoryFeature.getWeightHistory().getOrThrow()
+        }
+
+        val pushToken = authorizationFeature.getPushToken()
+
+        if (pushToken != null) {
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
         }
 
         return hasProfile

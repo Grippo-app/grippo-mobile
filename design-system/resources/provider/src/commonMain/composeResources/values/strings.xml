@@ -25,6 +25,7 @@
     <string name="repetitions_input_hint">1 - 99 reps</string>
     <string name="exercise_details_btn">Exercise details</string>
     <string name="and">And</string>
+    <string name="push_token">Push token</string>
     <string name="resume_training_btn">Resume workout</string>
     <string name="start_new">Start new</string>
     <string name="weight">Weight</string>
@@ -173,7 +174,7 @@
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder_default">Enter password</string>
     <string name="password_placeholder_repeat">Repeat password</string>
-    <string name="name_placeholder">e.g. Alex</string>
+    <string name="name_placeholder">Enter your name</string>
     <string name="weight_placeholder">Enter your weight</string>
     <string name="volume_placeholder">Weight</string>
     <string name="repetitions_placeholder">Repetitions</string>
@@ -535,4 +536,10 @@
     <string name="equipment_hint_squat_rack">Enter total barbell weight in the rack.</string>
     <string name="equipment_hint_preacher_curl_bench">Enter the weight you lift in the exercise.</string>
     <string name="equipment_hint_row_bench">Enter the weight you use in the exercise.</string>
+
+    <string name="notification_forgot_training_title">Don't forget your workout 💪</string>
+    <string name="notification_forgot_training_description">Pop back in to finish or save your progress</string>
+
+    <string name="notification_weight_title">Check your weight today 👋</string>
+    <string name="notification_weight_description">Keep your progress data up to date with a quick weigh-in.</string>
 </resources>

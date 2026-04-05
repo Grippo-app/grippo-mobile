@@ -1,6 +1,7 @@
 package com.grippo.debug
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -10,12 +11,18 @@ import kotlinx.collections.immutable.toPersistentMap
 
 public class DebugViewModel(
     private val trainingFeature: TrainingFeature,
+    private val authorizationFeature: AuthorizationFeature,
     private val generateTrainingUseCase: GenerateTrainingUseCase,
 ) : BaseViewModel<DebugState, DebugDirection, DebugLoader>(DebugState()),
     DebugContract {
 
     init {
         loadLogs()
+
+        safeLaunch {
+            val token = authorizationFeature.getPushToken()
+            update { it.copy(pushToken = token) }
+        }
     }
 
     override fun onBack() {

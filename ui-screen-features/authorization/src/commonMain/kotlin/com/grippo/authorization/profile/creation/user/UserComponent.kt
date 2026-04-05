@@ -16,7 +16,7 @@ internal class UserComponent(
     override val viewModel = componentContext.retainedInstance {
         UserViewModel(
             dialogController = getKoin().get(),
-            authorizationFeature = getKoin().get()
+            logoutUseCase = getKoin().get()
         )
     }
 

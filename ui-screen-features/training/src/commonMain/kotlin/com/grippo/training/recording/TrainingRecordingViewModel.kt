@@ -18,6 +18,8 @@ import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.notification_forgot_training_description
+import com.grippo.design.resources.provider.notification_forgot_training_title
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
@@ -27,9 +29,13 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.local.notification.AppNotification
+import com.grippo.toolkit.local.notification.NotificationKey
+import com.grippo.toolkit.local.notification.NotificationManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -37,6 +43,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
@@ -47,6 +54,7 @@ internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val trainingTotalUseCase: TrainingTotalUseCase,
+    private val notificationManager: NotificationManager,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
@@ -219,6 +227,7 @@ internal class TrainingRecordingViewModel(
             onResult = { result ->
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
                 update { it.copy(startAt = startAt) }
+                cancelNotificationReminder()
                 toCompleteTraining()
             }
         )
@@ -285,6 +294,21 @@ internal class TrainingRecordingViewModel(
             )
 
             trainingFeature.setDraftTraining(draft).getOrThrow()
+            scheduleNotificationReminder()
         }
+    }
+
+    private suspend fun scheduleNotificationReminder() {
+        val notification = AppNotification(
+            id = NotificationKey.FinishWorkout,
+            title = stringProvider.get(Res.string.notification_forgot_training_title),
+            body = stringProvider.get(Res.string.notification_forgot_training_description),
+            deeplink = Deeplink.TrainingDraft.key
+        )
+        notificationManager.show(notification = notification, delay = 45.minutes)
+    }
+
+    private fun cancelNotificationReminder() {
+        notificationManager.cancel(NotificationKey.FinishWorkout)
     }
 }

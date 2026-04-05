@@ -36,6 +36,7 @@ internal class TrainingRecordingComponent(
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
+            notificationManager = getKoin().get()
         )
     }
 

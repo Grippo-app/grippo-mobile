@@ -15,4 +15,10 @@ public interface AuthorizationFeature {
     public suspend fun logout()
 
     public fun getToken(): Flow<String?>
+
+    public suspend fun updatePushToken(token: String): Result<Unit>
+
+    public suspend fun getPushToken(): String?
+
+    public suspend fun deletePushToken(): Result<Unit>
 }

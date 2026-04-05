@@ -9,7 +9,8 @@ import kotlinx.collections.immutable.persistentMapOf
 @Immutable
 public data class DebugState(
     val selected: DebugMenu = DebugMenu.Logger,
-    val logger: LoggerState = LoggerState()
+    val logger: LoggerState = LoggerState(),
+    val pushToken: String? = null
 )
 
 @Immutable

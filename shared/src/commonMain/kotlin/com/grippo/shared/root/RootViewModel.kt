@@ -3,14 +3,16 @@ package com.grippo.shared.root
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
-import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
+import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.toolkit.connectivity.Connectivity
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
     connectivity: Connectivity,
-) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState()), RootContract {
+    deeplink: String? = null,
+) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState(deeplink = deeplink)),
+    RootContract {
 
     init {
         authorizationFeature
@@ -24,13 +26,7 @@ public class RootViewModel(
             .safeLaunch()
     }
 
-    private fun provideConnectionStatus(value: Connectivity.Status) {
-        when (value) {
-            is Connectivity.Status.Connected -> ConnectionSnackbarState.Hidden
-            Connectivity.Status.Disconnected -> ConnectionSnackbarState.Visible
-        }
-        // update { it.copy(connection = connection) }
-    }
+    private fun provideConnectionStatus(value: Connectivity.Status) {}
 
     override fun onClose() {
         navigateTo(RootDirection.Close)
@@ -38,6 +34,24 @@ public class RootViewModel(
 
     override fun toHome() {
         navigateTo(RootDirection.Home)
+        state.value.deeplink?.let { parseDeeplink(it)?.let { dir -> navigateTo(dir) } }
+        update { it.copy(deeplink = null) }
+    }
+
+    /** Cold start — queue for consumption when [toHome] is called. */
+    internal fun enqueueDeeplink(deeplink: String) {
+        update { it.copy(deeplink = deeplink) }
+    }
+
+    /** Warm start — already on Home, apply immediately. */
+    internal fun applyDeeplink(deeplink: String) {
+        parseDeeplink(deeplink)?.let { navigateTo(it) }
+    }
+
+    private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(raw)) {
+        Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft)
+        Deeplink.WeightHistory -> RootDirection.WeightHistory
+        null -> null
     }
 
     override fun toProfile() {
