@@ -29,7 +29,7 @@ public class LoginUseCase(
         val pushToken = authorizationFeature.getPushToken()
 
         if (pushToken != null) {
-            authorizationFeature.updatePushToken(pushToken) // todo add .getOrThrow()
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
         }
 
         return hasProfile
@@ -50,7 +50,7 @@ public class LoginUseCase(
         val pushToken = authorizationFeature.getPushToken()
 
         if (pushToken != null) {
-            authorizationFeature.updatePushToken(pushToken) // todo add .getOrThrow()
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
         }
 
         return hasProfile
@@ -71,7 +71,7 @@ public class LoginUseCase(
         val pushToken = authorizationFeature.getPushToken()
 
         if (pushToken != null) {
-            authorizationFeature.updatePushToken(pushToken) // todo add .getOrThrow()
+            authorizationFeature.updatePushToken(pushToken).getOrThrow()
         }
 
         return hasProfile
