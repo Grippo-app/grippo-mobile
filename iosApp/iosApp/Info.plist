@@ -64,8 +64,8 @@
 	<string>YOUR_GID_REDIRECT_URI</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-    <key>FirebaseAppDelegateProxyEnabled</key>
-    <false/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
