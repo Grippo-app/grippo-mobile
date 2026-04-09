@@ -22,8 +22,6 @@ import com.grippo.core.state.metrics.stubExerciseSpotlightComebackMissing
 import com.grippo.core.state.metrics.stubExerciseSpotlightMostConsistent
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -40,9 +38,9 @@ public fun ExerciseSpotlightsCard(
     value: ImmutableList<ExerciseSpotlightState>,
     onExampleClick: (id: String) -> Unit
 ) {
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Small,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         Row(
             modifier = Modifier.padding(bottom = AppTokens.dp.contentPadding.text),

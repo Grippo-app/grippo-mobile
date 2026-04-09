@@ -51,7 +51,7 @@
     <string name="training_profile_kind_mixed">Змішаний</string>
     <string name="training_profile_kind_easy">Легкий</string>
     <string name="training_profile_title_easy_session">Легке тренування</string>
-    <string name="training_profile_title_with_confidence">%1$s • %2$s</string>
+    <string name="training_profile_title_with_confidence">%1$s</string>
     <string name="training_profile_focus_dominant">%1$s — домінує</string>
     <string name="training_profile_focus_leaning">%1$s — з ухилом</string>
     <string name="training_profile_focus_low_confidence">%1$s (%2$s)</string>

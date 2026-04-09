@@ -51,7 +51,7 @@
     <string name="training_profile_kind_mixed">Mixed</string>
     <string name="training_profile_kind_easy">Easy</string>
     <string name="training_profile_title_easy_session">Easy session</string>
-    <string name="training_profile_title_with_confidence">%1$s • %2$s</string>
+    <string name="training_profile_title_with_confidence">%1$s</string>
     <string name="training_profile_focus_dominant">%1$s-dominant</string>
     <string name="training_profile_focus_leaning">%1$s-leaning</string>
     <string name="training_profile_focus_low_confidence">%1$s (%2$s)</string>

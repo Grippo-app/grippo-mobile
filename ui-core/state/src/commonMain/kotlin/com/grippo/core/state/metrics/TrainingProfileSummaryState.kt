@@ -47,7 +47,6 @@ import com.grippo.design.resources.provider.training_profile_tip_strength_high
 import com.grippo.design.resources.provider.training_profile_tip_strength_low
 import com.grippo.design.resources.provider.training_profile_tip_strength_medium
 import com.grippo.design.resources.provider.training_profile_title_easy_session
-import com.grippo.design.resources.provider.training_profile_title_with_confidence
 
 @Immutable
 public data class TrainingLoadProfileState(
@@ -184,35 +183,11 @@ public enum class TrainingProfileKindState {
     public fun title(profile: TrainingLoadProfileState): String {
         return when (this) {
             Easy -> AppTokens.strings.res(Res.string.training_profile_title_easy_session)
-            Powerbuilding -> AppTokens.strings.res(
-                Res.string.training_profile_title_with_confidence,
-                label(),
-                profile.confidenceLabel(),
-            )
-
-            Mixed -> AppTokens.strings.res(
-                Res.string.training_profile_title_with_confidence,
-                label(),
-                profile.confidenceLabel(),
-            )
-
-            Strength -> AppTokens.strings.res(
-                Res.string.training_profile_title_with_confidence,
-                profile.focusTitleForAxis(TrainingDimensionKindState.Strength),
-                profile.confidenceLabel(),
-            )
-
-            Hypertrophy -> AppTokens.strings.res(
-                Res.string.training_profile_title_with_confidence,
-                profile.focusTitleForAxis(TrainingDimensionKindState.Hypertrophy),
-                profile.confidenceLabel(),
-            )
-
-            Endurance -> AppTokens.strings.res(
-                Res.string.training_profile_title_with_confidence,
-                profile.focusTitleForAxis(TrainingDimensionKindState.Endurance),
-                profile.confidenceLabel(),
-            )
+            Powerbuilding -> label()
+            Mixed -> label()
+            Strength -> label()
+            Hypertrophy -> label()
+            Endurance -> label()
         }
     }
 
