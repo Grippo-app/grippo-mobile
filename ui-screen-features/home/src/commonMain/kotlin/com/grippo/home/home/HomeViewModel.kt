@@ -29,6 +29,7 @@ import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -116,7 +117,9 @@ internal class HomeViewModel(
             return
         }
 
-        val trainings = list.toState()
+        val sortedTrainingsDesc = list.sortedByDescending { it.createdAt }
+
+        val trainings = sortedTrainingsDesc.toState()
 
         val last = trainings.firstOrNull() ?: return
 
@@ -132,17 +135,9 @@ internal class HomeViewModel(
             .digest(list, range = range)
             .toState()
 
-        val consistent = exerciseSpotlightUseCase
-            .mostConsistent(list)
-            ?.toState()
-
-        val best = exerciseSpotlightUseCase
-            .bestProgress(list)
-            ?.toState()
-
-        val missing = exerciseSpotlightUseCase
-            .comebackMissing(list)
-            ?.toState()
+        val spotlights = exerciseSpotlightUseCase
+            .buildSpotlights(list)
+            .toState()
 
         val performance = performanceTrendUseCase
             .fromTrainings(list)
@@ -160,9 +155,7 @@ internal class HomeViewModel(
             it.copy(
                 digest = digest,
                 totalDuration = totalDuration,
-                missing = missing,
-                best = best,
-                consistent = consistent,
+                spotlights = spotlights,
                 muscleLoad = muscleLoadSummary,
                 streak = streak,
                 performance = performance,
@@ -290,12 +283,10 @@ internal class HomeViewModel(
             it.copy(
                 digest = null,
                 totalDuration = null,
-                missing = null,
-                best = null,
-                consistent = null,
+                spotlights = persistentListOf(),
                 muscleLoad = null,
                 streak = null,
-                performance = emptyList(),
+                performance = persistentListOf(),
                 lastTraining = null,
                 profile = null
             )

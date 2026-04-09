@@ -9,6 +9,8 @@ import com.grippo.core.state.metrics.TrainingLoadProfileState
 import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRange
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.time.Duration
 
 @Immutable
@@ -20,9 +22,7 @@ internal data class HomeState(
     val totalDuration: Duration? = null,
     val muscleLoad: MuscleLoadSummaryState? = null,
     val streak: TrainingStreakState? = null,
-    val performance: List<PerformanceMetricState> = emptyList(),
+    val performance: ImmutableList<PerformanceMetricState> = persistentListOf(),
     val profile: TrainingLoadProfileState? = null,
-    val consistent: ExerciseSpotlightState.MostConsistentState? = null,
-    val missing: ExerciseSpotlightState.ComebackMissingState? = null,
-    val best: ExerciseSpotlightState.BestProgressState? = null,
+    val spotlights: ImmutableList<ExerciseSpotlightState> = persistentListOf(),
 )

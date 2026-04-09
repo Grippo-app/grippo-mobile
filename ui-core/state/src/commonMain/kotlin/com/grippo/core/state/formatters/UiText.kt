@@ -27,7 +27,7 @@ public sealed interface UiText {
     public suspend fun text(stringProvider: StringProvider): String {
         return when (this) {
             is Str -> value
-            is Res -> stringProvider.get(value)
+            is Res -> stringProvider.get(value, *formatArgs.toTypedArray())
         }
     }
 }

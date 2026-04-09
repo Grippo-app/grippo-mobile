@@ -7,9 +7,11 @@ import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
 import com.grippo.data.features.api.metrics.models.PerformanceMetric
 import com.grippo.data.features.api.metrics.models.PerformanceTrendStatus
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
-public fun List<PerformanceMetric>.toState(): List<PerformanceMetricState> {
-    return map { it.toState() }
+public fun List<PerformanceMetric>.toState(): ImmutableList<PerformanceMetricState> {
+    return map { it.toState() }.toPersistentList()
 }
 
 private fun PerformanceMetric.toState(): PerformanceMetricState {

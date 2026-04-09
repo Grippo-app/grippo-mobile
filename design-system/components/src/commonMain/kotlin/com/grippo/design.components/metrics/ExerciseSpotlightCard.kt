@@ -2,11 +2,14 @@ package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -17,17 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.ExerciseSpotlightState
-import com.grippo.core.state.metrics.stubExerciseSpotlightBestProgress
-import com.grippo.core.state.metrics.stubExerciseSpotlightComebackMissing
-import com.grippo.core.state.metrics.stubExerciseSpotlightMostConsistent
+import com.grippo.core.state.metrics.stubExerciseSpotlightGoodFrequency
+import com.grippo.core.state.metrics.stubExerciseSpotlightNearBest
+import com.grippo.core.state.metrics.stubExerciseSpotlightNeedsAttention
+import com.grippo.core.state.metrics.stubExerciseSpotlightProgressWin
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Warning
+import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.spotlight
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -49,7 +55,7 @@ public fun ExerciseSpotlightsCard(
         ) {
             Icon(
                 modifier = Modifier.size(AppTokens.dp.metrics.spotlightCard.icon),
-                imageVector = AppTokens.icons.Warning,
+                imageVector = AppTokens.icons.Trophy,
                 tint = AppTokens.colors.icon.secondary,
                 contentDescription = null
             )
@@ -84,37 +90,70 @@ private fun ExerciseSpotlightCard(
     value: ExerciseSpotlightState,
 ) {
     val color = value.color()
-
     val shape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
 
-    Row(
+    MetricSectionPanel(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalAlignment = Alignment.CenterVertically
+        style = MetricSectionPanelStyle.Small,
+        decoration = {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .fillMaxHeight()
+                    .width(AppTokens.dp.metrics.status.verticalPadding)
+                    .background(color.copy(alpha = 0.7f))
+            )
+        }
     ) {
-        ExerciseExampleCard(
-            modifier = Modifier.weight(1f),
-            style = ExerciseExampleCardStyle.Small(value = value.example)
-        )
-
-        Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            ExerciseExampleCard(
+                modifier = Modifier.weight(1f),
+                style = ExerciseExampleCardStyle.Small(value = value.example)
+            )
+
             Text(
                 modifier = Modifier
                     .clip(shape)
-                    .background(color.copy(alpha = 0.2f), shape = shape)
+                    .background(color.copy(alpha = 0.20f), shape = shape)
                     .padding(
                         horizontal = AppTokens.dp.metrics.status.horizontalPadding,
                         vertical = AppTokens.dp.metrics.status.verticalPadding
                     ),
-                text = value.title(),
+                text = value.chipLabel().text(),
                 style = AppTokens.typography.b11Semi(),
-                color = color
+                color = color,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
+
+        Text(
+            text = value.metricText().text(),
+            style = AppTokens.typography.h6(),
+            color = color,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = value.contextText().text(),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = value.actionText().text(),
+            style = AppTokens.typography.b11Semi(),
+            color = color,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -124,14 +163,15 @@ private fun ExerciseSpotlightCardPreview() {
     PreviewContainer {
         ExerciseSpotlightsCard(
             value = persistentListOf(
-                stubExerciseSpotlightMostConsistent(),
-                stubExerciseSpotlightBestProgress(),
-                stubExerciseSpotlightComebackMissing()
+                stubExerciseSpotlightNeedsAttention(),
+                stubExerciseSpotlightProgressWin(),
+                stubExerciseSpotlightGoodFrequency(),
+                stubExerciseSpotlightNearBest(),
             ),
             onExampleClick = {}
         )
         ExerciseSpotlightCard(
-            value = stubExerciseSpotlightMostConsistent(),
+            value = stubExerciseSpotlightProgressWin(),
         )
     }
 }

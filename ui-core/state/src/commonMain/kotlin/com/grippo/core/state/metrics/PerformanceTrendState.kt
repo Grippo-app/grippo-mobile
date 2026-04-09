@@ -164,8 +164,8 @@ public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryE
     )
 }
 
-public fun stubPerformanceMetrics(): List<PerformanceMetricState> {
-    return listOf(
+public fun stubPerformanceMetrics(): ImmutableList<PerformanceMetricState> {
+    return persistentListOf(
         PerformanceMetricState.Volume(
             deltaPercentage = 24,
             current = VolumeFormatState.of(1_200f),

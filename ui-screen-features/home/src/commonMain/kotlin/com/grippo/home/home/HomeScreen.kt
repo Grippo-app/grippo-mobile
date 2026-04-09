@@ -1,5 +1,9 @@
 package com.grippo.home.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,26 +18,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubDigest
-import com.grippo.core.state.metrics.stubExerciseSpotlightBestProgress
-import com.grippo.core.state.metrics.stubExerciseSpotlightComebackMissing
-import com.grippo.core.state.metrics.stubExerciseSpotlightMostConsistent
+import com.grippo.core.state.metrics.stubExerciseSpotlightGoodFrequency
+import com.grippo.core.state.metrics.stubExerciseSpotlightNearBest
+import com.grippo.core.state.metrics.stubExerciseSpotlightNeedsAttention
+import com.grippo.core.state.metrics.stubExerciseSpotlightProgressWin
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
@@ -66,8 +66,10 @@ import com.grippo.design.resources.provider.resume_training_btn
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.components.EmptyHomeContent
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.hours
 
 @Composable
@@ -223,10 +225,10 @@ internal fun HomeScreen(
                     }
                 }
 
-                if (state.missing != null || state.best != null || state.consistent != null) {
+                if (state.spotlights.isNotEmpty()) {
                     item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
-                        val list = remember(state.missing, state.best, state.consistent) {
-                            listOfNotNull(state.missing, state.best, state.consistent)
+                        val list = remember(state.spotlights) {
+                            state.spotlights
                                 .toPersistentList()
                         }
 
@@ -370,9 +372,12 @@ private fun HomeScreenPreview() {
                 lastTraining = stubTraining(),
                 digest = stubDigest(),
                 totalDuration = 28.hours,
-                best = stubExerciseSpotlightBestProgress(),
-                missing = stubExerciseSpotlightComebackMissing(),
-                consistent = stubExerciseSpotlightMostConsistent(),
+                spotlights = persistentListOf(
+                    stubExerciseSpotlightNeedsAttention(),
+                    stubExerciseSpotlightProgressWin(),
+                    stubExerciseSpotlightGoodFrequency(),
+                    stubExerciseSpotlightNearBest(),
+                ),
                 muscleLoad = stubMuscleLoadSummary(),
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
