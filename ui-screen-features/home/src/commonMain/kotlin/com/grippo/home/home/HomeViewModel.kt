@@ -5,6 +5,8 @@ import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
@@ -22,8 +24,10 @@ import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.range.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.deeplink.Deeplink
+import com.grippo.state.domain.range.toDomain
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
@@ -41,6 +45,7 @@ import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
+    private val localSettingsFeature: LocalSettingsFeature,
     private val dialogController: DialogController,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
@@ -57,6 +62,10 @@ internal class HomeViewModel(
 ), HomeContract {
 
     init {
+        localSettingsFeature.observeRange()
+            .onEach(::provideRange)
+            .safeLaunch()
+
         safeLaunch {
             permissionManager.request(AppPermission.Notifications)
         }
@@ -102,6 +111,11 @@ internal class HomeViewModel(
         trainingFeature.getDraftTraining()
             .onEach(::provideDraftTraining)
             .safeLaunch()
+    }
+
+    private fun provideRange(value: Range?) {
+        val range = value?.toState() ?: return
+        update { it.copy(range = range) }
     }
 
     private fun provideDraftTraining(value: SetDraftTraining?) {
@@ -220,7 +234,11 @@ internal class HomeViewModel(
             val dialog = DialogConfig.PeriodPicker(
                 title = stringProvider.get(Res.string.period_picker_title),
                 initial = state.value.range,
-                onResult = { result -> update { s -> s.copy(range = result) } }
+                onResult = { result ->
+                    safeLaunch {
+                        localSettingsFeature.setRange(result.toDomain()).getOrThrow()
+                    }
+                }
             )
 
             dialogController.show(dialog)

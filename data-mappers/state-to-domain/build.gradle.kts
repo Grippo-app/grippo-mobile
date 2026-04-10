@@ -11,6 +11,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.uiCore.state)
+        implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.logger)
 
         implementation(libs.immutable.collections)

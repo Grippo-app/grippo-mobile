@@ -40,6 +40,7 @@ kotlin {
         implementation(projects.uiCore.error.errorProviderImpl)
 
         implementation(projects.dataServices.database)
+        implementation(projects.dataServices.datastore)
         implementation(projects.dataServices.backend)
         implementation(projects.dataServices.googleAuth)
         implementation(projects.dataServices.appleAuth)
@@ -56,6 +57,7 @@ kotlin {
         implementation(projects.dataFeatures.trainings)
         implementation(projects.dataFeatures.exerciseExamples)
         implementation(projects.dataFeatures.exerciseMetrics)
+        implementation(projects.dataFeatures.localSettings)
 
         implementation(projects.dataMappers.domainToState)
 

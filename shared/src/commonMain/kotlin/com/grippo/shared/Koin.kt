@@ -9,6 +9,7 @@ import com.grippo.data.features.excluded.equipments.ExcludedEquipmentFeatureModu
 import com.grippo.data.features.excluded.muscles.ExcludedMusclesFeatureModule
 import com.grippo.data.features.exercise.examples.ExerciseExamplesFeatureModule
 import com.grippo.data.features.exercise.metrics.ExerciseMetricsFeatureModule
+import com.grippo.data.features.local.settings.LocalSettingsFeatureModule
 import com.grippo.data.features.muscle.MusclesFeatureModule
 import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
@@ -18,6 +19,7 @@ import com.grippo.dialog.api.DialogModule
 import com.grippo.services.apple.auth.AppleAuthModule
 import com.grippo.services.backend.BackendModule
 import com.grippo.services.database.DatabaseModule
+import com.grippo.services.datastore.DataStoreModule
 import com.grippo.services.google.auth.GoogleAuthModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
@@ -40,6 +42,7 @@ public object Koin {
         modules(
             ContextModule().module,
             DatabaseModule().module,
+            DataStoreModule().module,
             BackendModule().module,
             GoogleAuthModule().module,
             AppleAuthModule().module,
@@ -63,6 +66,7 @@ public object Koin {
             ResourcesProviderModule().module,
             SerializationModule().module,
             ExerciseMetricsFeatureModule().module,
+            LocalSettingsFeatureModule().module,
             HttpModule().module,
             ImageLoaderModule().module,
         )
