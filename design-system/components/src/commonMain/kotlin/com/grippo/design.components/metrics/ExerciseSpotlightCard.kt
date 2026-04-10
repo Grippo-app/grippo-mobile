@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,9 +30,6 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Trophy
-import com.grippo.design.resources.provider.spotlight
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -48,27 +43,6 @@ public fun ExerciseSpotlightsCard(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        Row(
-            modifier = Modifier.padding(bottom = AppTokens.dp.contentPadding.text),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.metrics.spotlightCard.icon),
-                imageVector = AppTokens.icons.Trophy,
-                tint = AppTokens.colors.icon.secondary,
-                contentDescription = null
-            )
-
-            Text(
-                text = AppTokens.strings.res(Res.string.spotlight),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-
         value.forEach { item ->
             val onExampleClickProvider = remember(item.example.id) {
                 { onExampleClick.invoke(item.example.id) }

@@ -83,7 +83,7 @@
     <string name="training_profile_confidence">Впевненість %1$d%% • %2$s</string>
     <string name="training_profile_tip_label">Порада</string>
     <string name="training_profile_segment">%1$s %2$d</string>
-    <string name="spotlight_progress_win_metric">+%1$s до останніх %2$d сесій</string>
+    <string name="spotlight_progress_win_metric">+%1$s% до останніх %2$d сесій</string>
     <string name="spotlight_progress_win_context">Зараз %1$s кг проти звичних %2$s кг</string>
     <string name="spotlight_progress_win_action">Повтори цю вагу ще раз, потім підвищуй.</string>
     <string name="spotlight_needs_attention_metric">%1$d дн. без сесій</string>
