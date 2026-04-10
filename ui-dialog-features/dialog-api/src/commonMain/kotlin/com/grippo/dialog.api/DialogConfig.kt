@@ -22,6 +22,19 @@ public sealed class DialogConfig(
     @Transient public open val onDismiss: (() -> Unit)? = null,
     public open val dismissBySwipe: Boolean = true,
 ) {
+    public abstract val key: String
+
+    protected fun buildKey(vararg parts: Any?): String {
+        return buildString {
+            parts.forEachIndexed { index, part ->
+                if (index > 0) append('|')
+                val value = part?.toString() ?: "<null>"
+                append(value.length)
+                append(':')
+                append(value)
+            }
+        }
+    }
 
     @Serializable
     public data class ErrorDisplay(
@@ -30,7 +43,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = onClose,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(error)
+    }
 
     @Serializable
     public data class ExerciseExample(
@@ -38,7 +54,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(id)
+    }
 
     @Serializable
     public data class Exercise(
@@ -46,7 +65,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(id)
+    }
 
     @Serializable
     public data class MuscleLoading(
@@ -54,7 +76,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(range)
+    }
 
     @Serializable
     public data class TrainingStreak(
@@ -62,7 +87,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(range)
+    }
 
     @Serializable
     public data class TrainingProfile(
@@ -70,7 +98,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(range)
+    }
 
     @Serializable
     public data class PerformanceTrend(
@@ -79,7 +110,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(range, metricType)
+    }
 
     @Serializable
     public data class Iteration(
@@ -92,7 +126,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial, number, example, focus, suggestions)
+    }
 
     @Serializable
     public data class WeightPicker(
@@ -101,7 +138,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial)
+    }
 
     @Serializable
     public data class DurationPicker(
@@ -110,7 +150,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial)
+    }
 
     @Serializable
     public data class HeightPicker(
@@ -119,7 +162,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial)
+    }
 
     @Serializable
     public data class DatePicker(
@@ -130,7 +176,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial, limitations, title)
+    }
 
     @Serializable
     public data class PeriodPicker(
@@ -140,7 +189,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial, title)
+    }
 
     @Serializable
     public data class MonthPicker(
@@ -151,7 +203,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(initial, limitations, title)
+    }
 
     @Serializable
     public data class DraftTraining(
@@ -160,7 +215,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey()
+    }
 
     @Serializable
     public data class ExerciseExamplePicker(
@@ -169,7 +227,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(targetMuscleGroupId)
+    }
 
     @Serializable
     public data class MenuPicker(
@@ -178,7 +239,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(items)
+    }
 
     @Serializable
     public data class Profile(
@@ -187,7 +251,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey()
+    }
 
     @Serializable
     public data class Confirmation(
@@ -197,7 +264,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(title, description)
+    }
 
     @Serializable
     public data class ConfirmTrainingCompletion(
@@ -206,7 +276,10 @@ public sealed class DialogConfig(
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
-    )
+    ) {
+        override val key: String
+            get() = buildKey(value)
+    }
 
     @Serializable
     public sealed class Statistics : DialogConfig(
@@ -216,11 +289,17 @@ public sealed class DialogConfig(
         @Serializable
         public data class Trainings(
             public val range: DateRange,
-        ) : Statistics()
+        ) : Statistics() {
+            override val key: String
+                get() = buildKey(range)
+        }
 
         @Serializable
         public data class Training(
             public val id: String,
-        ) : Statistics()
+        ) : Statistics() {
+            override val key: String
+                get() = buildKey(id)
+        }
     }
 }

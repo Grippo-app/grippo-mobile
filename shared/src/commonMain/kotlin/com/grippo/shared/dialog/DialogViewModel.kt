@@ -55,9 +55,10 @@ internal class DialogViewModel(
 
     private fun show(config: DialogConfig) {
         val stack = state.value.stack
+        val configType = config::class
+        val configKey = config.key
 
-        // Sensitive to fix crash double open the same alert
-        if (stack.any { it.config == config }) {
+        if (stack.any { it.config::class == configType && it.config.key == configKey }) {
             return
         }
 
