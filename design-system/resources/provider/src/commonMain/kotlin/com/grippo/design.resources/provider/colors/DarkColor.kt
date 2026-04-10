@@ -151,6 +151,7 @@ public object DarkColor : AppColor {
         override val error = AppPalette.Unique.Red
         override val warning = AppPalette.Unique.Orange
         override val info = AppPalette.Common.White
+        override val notice = AppPalette.Unique.Yellow
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {

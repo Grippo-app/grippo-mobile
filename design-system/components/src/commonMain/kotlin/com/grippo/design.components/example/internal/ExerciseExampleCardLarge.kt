@@ -86,8 +86,8 @@ internal fun ExerciseExampleCardLarge(
 
                 Text(
                     text = lastUsedDate,
-                    style = AppTokens.typography.b12Semi(),
-                    color = AppTokens.colors.text.secondary
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.semantic.notice
                 )
             } ?: Text(
                 text = AppTokens.strings.res(Res.string.not_used_before),

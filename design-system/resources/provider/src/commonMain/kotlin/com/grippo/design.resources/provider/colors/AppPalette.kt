@@ -41,6 +41,10 @@ internal object AppPalette {
         val Red = Color(0xFFFF4C4C)
         val Orange = Color(0xFFFF7A29)
         val Coral = Color(0xFFFF7F50)
+
+        val Yellow = Color(0xFFFDD835)
+        val Gold = Color(0xFFFFC107)
+        val Mustard = Color(0xFFFFB300)
         val Amber = Color(0xFFF57F17)
 
         // Green / Teal / Olive

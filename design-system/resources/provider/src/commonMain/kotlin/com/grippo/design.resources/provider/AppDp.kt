@@ -224,6 +224,7 @@ public data object AppDp {
         }
 
         public data object TrainingProfile {
+            val icon: Dp = AppDp.icon.xLarge
             val radar: Radar = Radar
             val details: Details = Details
 

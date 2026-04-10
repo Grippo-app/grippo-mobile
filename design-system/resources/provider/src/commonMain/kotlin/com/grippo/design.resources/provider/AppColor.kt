@@ -138,6 +138,7 @@ public interface AppColor {
         public val error: Color
         public val warning: Color
         public val info: Color
+        public val notice: Color
     }
 
     public interface OverlayColors {

@@ -41,8 +41,8 @@ public fun TrainingLoadProfileCard(
         ) {
             Text(
                 text = value.title(),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.semantic.notice,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -50,7 +50,7 @@ public fun TrainingLoadProfileCard(
             Text(
                 text = value.subtitle(),
                 style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary,
+                color = AppTokens.colors.semantic.notice.copy(alpha = 0.5f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
