@@ -93,7 +93,7 @@ internal class TrainingRecordingViewModel(
             }
         }
 
-        if (state.value.exercises.isEmpty()) {
+        if (state.value.exercises.isEmpty() && stage is StageState.Add) {
             safeLaunch {
                 delay(400)
                 onAddExercise()
@@ -254,13 +254,11 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onBack() {
-        if (state.value.exercises.isEmpty()) {
-            safeLaunch {
+        safeLaunch {
+            if (state.value.exercises.isEmpty()) {
                 trainingFeature.deleteDraftTraining().getOrThrow()
                 navigateTo(TrainingRecordingDirection.Back)
-            }
-        } else {
-            safeLaunch {
+            } else {
                 val dialog = DialogConfig.Confirmation(
                     title = stringProvider.get(Res.string.training_progress_lost_title),
                     description = stringProvider.get(Res.string.training_progress_lost_description),

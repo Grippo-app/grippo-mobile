@@ -13,6 +13,8 @@ import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
+import com.grippo.data.features.api.training.ExerciseValidatorUseCase
+import com.grippo.data.features.api.training.models.ExerciseArtifacts
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
@@ -20,7 +22,9 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.state.domain.training.toDomain
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
@@ -31,6 +35,7 @@ internal class ExerciseViewModel(
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
+    private val exerciseValidatorUseCase: ExerciseValidatorUseCase
 ) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
     ScreenExerciseState(
         exercise = exercise
@@ -42,6 +47,18 @@ internal class ExerciseViewModel(
             .observeExerciseExample(exercise.exerciseExample.id)
             .onEach(::provideExerciseExample)
             .safeLaunch()
+
+        state
+            .map { it.exercise.toDomain() }
+            .filterNotNull()
+            .map { exerciseValidatorUseCase.execute(it) }
+            .onEach(::validateExercise)
+            .safeLaunch()
+    }
+
+    private fun validateExercise(value: ExerciseArtifacts?) {
+        value ?: return
+
     }
 
     private fun provideExerciseExample(value: ExerciseExample?) {

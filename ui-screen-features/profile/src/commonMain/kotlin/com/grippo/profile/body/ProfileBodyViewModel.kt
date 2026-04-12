@@ -106,7 +106,7 @@ internal class ProfileBodyViewModel(
             delay(500)
 
             val notification = AppNotification(
-                id = NotificationKey.FinishWorkout,
+                id = NotificationKey.ChangeWeight,
                 title = stringProvider.get(Res.string.notification_weight_title),
                 body = stringProvider.get(Res.string.notification_weight_description),
                 deeplink = Deeplink.WeightHistory.key

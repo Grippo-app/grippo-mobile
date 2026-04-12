@@ -75,7 +75,7 @@ internal class HomeViewModel(
 
             if (notificationManager.isPending(weightNotificationKey).not()) {
                 val notification = AppNotification(
-                    id = NotificationKey.FinishWorkout,
+                    id = weightNotificationKey,
                     title = stringProvider.get(Res.string.notification_weight_title),
                     body = stringProvider.get(Res.string.notification_weight_description),
                     deeplink = Deeplink.WeightHistory.key

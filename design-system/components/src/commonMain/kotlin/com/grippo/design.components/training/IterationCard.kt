@@ -1,5 +1,6 @@
 package com.grippo.design.components.training
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -20,6 +21,8 @@ public sealed interface IterationCardStyle {
         val label: String,
         val onVolumeClick: () -> Unit,
         val onRepetitionClick: () -> Unit,
+        val volumeDecorator: @Composable BoxScope.() -> Unit,
+        val repetitionDecorator: @Composable BoxScope.() -> Unit
     ) : IterationCardStyle
 }
 
@@ -40,7 +43,9 @@ public fun IterationCard(
             label = style.label,
             value = value,
             onVolumeClick = style.onVolumeClick,
-            onRepetitionClick = style.onRepetitionClick
+            onRepetitionClick = style.onRepetitionClick,
+            volumeDecorator = style.volumeDecorator,
+            repetitionDecorator = style.repetitionDecorator
         )
     }
 }
@@ -77,7 +82,9 @@ private fun IterationCardEditablePreview() {
             style = IterationCardStyle.Editable(
                 label = "1",
                 onVolumeClick = {},
-                onRepetitionClick = {}
+                onRepetitionClick = {},
+                volumeDecorator = {},
+                repetitionDecorator = {}
             )
         )
         IterationCard(
@@ -85,7 +92,9 @@ private fun IterationCardEditablePreview() {
             style = IterationCardStyle.Editable(
                 label = "2",
                 onVolumeClick = {},
-                onRepetitionClick = {}
+                onRepetitionClick = {},
+                volumeDecorator = {},
+                repetitionDecorator = {}
             ),
         )
         IterationCard(
@@ -93,7 +102,9 @@ private fun IterationCardEditablePreview() {
             style = IterationCardStyle.Editable(
                 label = "3",
                 onVolumeClick = {},
-                onRepetitionClick = {}
+                onRepetitionClick = {},
+                volumeDecorator = {},
+                repetitionDecorator = {}
             ),
         )
         IterationCard(
@@ -101,7 +112,9 @@ private fun IterationCardEditablePreview() {
             style = IterationCardStyle.Editable(
                 label = "4",
                 onVolumeClick = {},
-                onRepetitionClick = {}
+                onRepetitionClick = {},
+                volumeDecorator = {},
+                repetitionDecorator = {}
             ),
         )
     }

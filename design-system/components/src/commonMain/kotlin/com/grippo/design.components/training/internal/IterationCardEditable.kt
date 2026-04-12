@@ -2,7 +2,10 @@ package com.grippo.design.components.training.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -27,8 +30,11 @@ internal fun IterationCardEditable(
     label: String,
     value: IterationState,
     onVolumeClick: () -> Unit,
-    onRepetitionClick: () -> Unit
+    onRepetitionClick: () -> Unit,
+    volumeDecorator: @Composable BoxScope.() -> Unit,
+    repetitionDecorator: @Composable BoxScope.() -> Unit,
 ) {
+
     val shape = RoundedCornerShape(AppTokens.dp.iterationCard.editable.radius)
 
     Row(
@@ -49,33 +55,46 @@ internal fun IterationCardEditable(
             color = AppTokens.colors.text.primary
         )
 
-        Text(
+        Box(
             modifier = Modifier
                 .scalableClick(onClick = onVolumeClick)
                 .weight(0.6f)
-                .background(AppTokens.colors.background.card, shape)
-                .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
-                .height(AppTokens.dp.iterationCard.editable.height)
-                .wrapContentHeight(),
-            text = value.volume().short(),
-            textAlign = TextAlign.Center,
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppTokens.colors.background.card, shape)
+                    .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
+                    .height(AppTokens.dp.iterationCard.editable.height)
+                    .wrapContentHeight(),
+                text = value.volume().short(),
+                textAlign = TextAlign.Center,
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.primary
+            )
 
-        Text(
+            volumeDecorator.invoke(this)
+        }
+
+        Box(
             modifier = Modifier
                 .scalableClick(onClick = onRepetitionClick)
                 .weight(0.4f)
-                .background(AppTokens.colors.background.card, shape)
-                .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
-                .height(AppTokens.dp.iterationCard.editable.height)
-                .wrapContentHeight(),
-            textAlign = TextAlign.Center,
-            text = value.repetitions.short(),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppTokens.colors.background.card, shape)
+                    .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
+                    .height(AppTokens.dp.iterationCard.editable.height)
+                    .wrapContentHeight(),
+                textAlign = TextAlign.Center,
+                text = value.repetitions.short(),
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.primary
+            )
+            repetitionDecorator.invoke(this)
+        }
     }
 }
 
@@ -87,25 +106,33 @@ private fun IterationCardEditablePreview() {
             label = "1",
             value = stubIteration(),
             onVolumeClick = {},
-            onRepetitionClick = {}
+            onRepetitionClick = {},
+            volumeDecorator = {},
+            repetitionDecorator = {}
         )
         IterationCardEditable(
             label = "2",
             value = stubIteration(),
             onVolumeClick = {},
-            onRepetitionClick = {}
+            onRepetitionClick = {},
+            volumeDecorator = {},
+            repetitionDecorator = {}
         )
         IterationCardEditable(
             label = "3",
             value = stubIteration(),
             onVolumeClick = {},
-            onRepetitionClick = {}
+            onRepetitionClick = {},
+            volumeDecorator = {},
+            repetitionDecorator = {}
         )
         IterationCardEditable(
             label = "4",
             value = stubIteration(),
             onVolumeClick = {},
-            onRepetitionClick = {}
+            onRepetitionClick = {},
+            volumeDecorator = {},
+            repetitionDecorator = {}
         )
     }
 }

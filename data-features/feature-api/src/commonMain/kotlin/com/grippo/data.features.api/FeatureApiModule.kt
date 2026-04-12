@@ -14,6 +14,7 @@ import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
+import com.grippo.data.features.api.training.ExerciseValidatorUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
@@ -43,6 +44,10 @@ public class FeatureApiModule {
             LogoutUseCase(
                 authorizationFeature = get(),
             )
+        }
+
+        single {
+            ExerciseValidatorUseCase()
         }
 
         single {
