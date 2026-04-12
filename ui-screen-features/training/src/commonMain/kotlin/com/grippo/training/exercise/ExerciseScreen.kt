@@ -5,9 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,18 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercise
+import com.grippo.design.components.badge.Badge
+import com.grippo.design.components.badge.BadgeStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -178,19 +176,22 @@ internal fun ExerciseScreen(
                                         onVolumeClick = editVolumeProvider,
                                         onRepetitionClick = editRepetitionProvider,
                                         volumeDecorator = {
-                                            Box(
+                                            Badge(
                                                 modifier = Modifier
-                                                    .padding(12.dp)
-                                                    .size(8.dp)
-                                                    .background(
-                                                        AppTokens.colors.semantic.warning,
-                                                        CircleShape
-                                                    )
-                                                    .align(Alignment.TopEnd)
+                                                    .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                    .align(Alignment.CenterEnd),
+                                                style = BadgeStyle.Warning,
+                                                onClick = {}
                                             )
                                         },
                                         repetitionDecorator = {
-
+                                            Badge(
+                                                modifier = Modifier
+                                                    .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                    .align(Alignment.CenterEnd),
+                                                style = BadgeStyle.Error,
+                                                onClick = {}
+                                            )
                                         }
                                     )
                                 )

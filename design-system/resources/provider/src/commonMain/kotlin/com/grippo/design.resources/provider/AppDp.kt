@@ -75,6 +75,7 @@ public data object AppDp {
     val userCard: UserCard = UserCard
     val empty: Empty = Empty
     val tip: Tip = Tip
+    val badge: Badge = Badge
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -270,6 +271,13 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
         val image: Dp = icon.large
+    }
+
+    public data object Badge {
+        val horizontalPadding: Dp = padding.small
+        val verticalPadding: Dp = padding.extraSmall
+        val icon: Dp = AppDp.icon.extraSmall
+        val spaceBetween: Dp = padding.extraSmall
     }
 
     public data object Empty {
