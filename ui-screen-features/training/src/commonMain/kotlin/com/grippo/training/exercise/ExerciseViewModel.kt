@@ -22,6 +22,7 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.state.domain.training.toDomain
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -57,8 +58,27 @@ internal class ExerciseViewModel(
     }
 
     private fun validateExercise(value: ExerciseArtifacts?) {
-        value ?: return
+        update {
+            val volumeIds = mutableSetOf<String>()
+            val repetitionIds = mutableSetOf<String>()
+            val iterations = it.exercise.iterations
 
+            value?.iterations?.forEachIndexed { index, (_, artifact) ->
+                val id = iterations.getOrNull(index)?.id ?: return@forEachIndexed
+                when (artifact) {
+                    is ExerciseArtifacts.Artifact.SuspiciousWeight,
+                    is ExerciseArtifacts.Artifact.SuspiciousVolume -> volumeIds += id
+
+                    is ExerciseArtifacts.Artifact.SuspiciousRepetitions -> repetitionIds += id
+                    null -> Unit
+                }
+            }
+
+            it.copy(
+                volumeArtifactIds = volumeIds.toPersistentSet(),
+                repetitionArtifactIds = repetitionIds.toPersistentSet()
+            )
+        }
     }
 
     private fun provideExerciseExample(value: ExerciseExample?) {

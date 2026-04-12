@@ -176,22 +176,26 @@ internal fun ExerciseScreen(
                                         onVolumeClick = editVolumeProvider,
                                         onRepetitionClick = editRepetitionProvider,
                                         volumeDecorator = {
-                                            Badge(
-                                                modifier = Modifier
-                                                    .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                    .align(Alignment.CenterEnd),
-                                                style = BadgeStyle.Warning,
-                                                onClick = {}
-                                            )
+                                            if (iteration.id in state.volumeArtifactIds) {
+                                                Badge(
+                                                    modifier = Modifier
+                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                        .align(Alignment.CenterEnd),
+                                                    style = BadgeStyle.Warning,
+                                                    onClick = {}
+                                                )
+                                            }
                                         },
                                         repetitionDecorator = {
-                                            Badge(
-                                                modifier = Modifier
-                                                    .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                    .align(Alignment.CenterEnd),
-                                                style = BadgeStyle.Error,
-                                                onClick = {}
-                                            )
+                                            if (iteration.id in state.repetitionArtifactIds) {
+                                                Badge(
+                                                    modifier = Modifier
+                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                        .align(Alignment.CenterEnd),
+                                                    style = BadgeStyle.Warning,
+                                                    onClick = {}
+                                                )
+                                            }
                                         }
                                     )
                                 )
