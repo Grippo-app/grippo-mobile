@@ -552,4 +552,9 @@
 
     <string name="notification_weight_title">Check your weight today 👋</string>
     <string name="notification_weight_description">Keep your progress data up to date with a quick weigh-in.</string>
+
+    <string name="tooltip_suspicious_weight_title">Unusual weight</string>
+    <string name="tooltip_suspicious_weight_subtitle">Possible missing or extra digit</string>
+    <string name="tooltip_suspicious_reps_title">Unusual rep count</string>
+    <string name="tooltip_suspicious_reps_subtitle">Possible missing or extra digit</string>
 </resources>

@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +43,10 @@ import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
+import com.grippo.design.components.tooltip.Tooltip
+import com.grippo.design.components.tooltip.TooltipContent
+import com.grippo.design.components.tooltip.TooltipPlacement
+import com.grippo.design.components.tooltip.TooltipVariant
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
@@ -52,8 +58,13 @@ import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.sets_value
+import com.grippo.design.resources.provider.tooltip_suspicious_reps_subtitle
+import com.grippo.design.resources.provider.tooltip_suspicious_reps_title
+import com.grippo.design.resources.provider.tooltip_suspicious_weight_subtitle
+import com.grippo.design.resources.provider.tooltip_suspicious_weight_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun ExerciseScreen(
@@ -177,24 +188,50 @@ internal fun ExerciseScreen(
                                         onRepetitionClick = editRepetitionProvider,
                                         volumeDecorator = {
                                             if (iteration.id in state.volumeArtifactIds) {
-                                                Badge(
-                                                    modifier = Modifier
-                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                        .align(Alignment.CenterEnd),
-                                                    style = BadgeStyle.Warning,
-                                                    onClick = {}
-                                                )
+                                                val tooltipState = rememberTooltipState()
+                                                val scope = rememberCoroutineScope()
+
+                                                Tooltip(
+                                                    state = tooltipState,
+                                                    tooltipContent = TooltipContent.Rich(
+                                                        title = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_title),
+                                                        subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_subtitle),
+                                                    ),
+                                                    placement = TooltipPlacement.Top,
+                                                    variant = TooltipVariant.Warning,
+                                                ) {
+                                                    Badge(
+                                                        modifier = Modifier
+                                                            .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                            .align(Alignment.CenterEnd),
+                                                        style = BadgeStyle.Warning,
+                                                        onClick = { scope.launch { tooltipState.show() } }
+                                                    )
+                                                }
                                             }
                                         },
                                         repetitionDecorator = {
                                             if (iteration.id in state.repetitionArtifactIds) {
-                                                Badge(
-                                                    modifier = Modifier
-                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                        .align(Alignment.CenterEnd),
-                                                    style = BadgeStyle.Warning,
-                                                    onClick = {}
-                                                )
+                                                val tooltipState = rememberTooltipState()
+                                                val scope = rememberCoroutineScope()
+
+                                                Tooltip(
+                                                    state = tooltipState,
+                                                    tooltipContent = TooltipContent.Rich(
+                                                        title = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_title),
+                                                        subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_subtitle),
+                                                    ),
+                                                    placement = TooltipPlacement.Top,
+                                                    variant = TooltipVariant.Warning,
+                                                ) {
+                                                    Badge(
+                                                        modifier = Modifier
+                                                            .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                            .align(Alignment.CenterEnd),
+                                                        style = BadgeStyle.Warning,
+                                                        onClick = { scope.launch { tooltipState.show() } }
+                                                    )
+                                                }
                                             }
                                         }
                                     )

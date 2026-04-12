@@ -548,4 +548,9 @@
     <string name="notification_forgot_training_description">Повернись, щоб завершити або зберегти прогрес</string>
     <string name="notification_weight_title">Перевір свою вагу сьогодні 👋</string>
     <string name="notification_weight_description">Онови дані про прогрес за допомогою швидкого зважування.</string>
+
+    <string name="tooltip_suspicious_weight_title">Незвичайна вага</string>
+    <string name="tooltip_suspicious_weight_subtitle">Можливо, пропущена або зайва цифра</string>
+    <string name="tooltip_suspicious_reps_title">Незвичайна кількість повторень</string>
+    <string name="tooltip_suspicious_reps_subtitle">Можливо, пропущена або зайва цифра</string>
 </resources>

@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,16 +20,16 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-@Stable
+@Immutable
 public sealed interface BadgeStyle {
 
-    @Stable
+    @Immutable
     public data object Error : BadgeStyle
 
-    @Stable
+    @Immutable
     public data object Warning : BadgeStyle
 
-    @Stable
+    @Immutable
     public data object Success : BadgeStyle
 }
 
@@ -41,12 +41,14 @@ public fun Badge(
     onClick: (() -> Unit)? = null,
 ) {
     val tokens = resolveBadgeTokens(style)
+
     val dp = AppTokens.dp.badge
 
     val verticalPadding = when {
         label == null -> dp.horizontalPadding
         else -> dp.verticalPadding
     }
+
     Row(
         modifier = modifier
             .background(color = tokens.background, shape = CircleShape)
@@ -61,6 +63,7 @@ public fun Badge(
             contentDescription = null,
             tint = tokens.content,
         )
+
         if (label != null) {
             Text(
                 text = label.text(),

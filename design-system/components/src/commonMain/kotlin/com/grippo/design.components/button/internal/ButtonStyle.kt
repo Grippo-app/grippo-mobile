@@ -1,10 +1,14 @@
-package com.grippo.design.components.button
+package com.grippo.design.components.button.internal
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.components.button.ButtonState
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 
-public data class ButtonColorTokens(
+@Immutable
+internal data class ButtonColorTokens(
     val background1: Color,
     val background2: Color,
     val content: Color,

@@ -76,6 +76,7 @@ public data object AppDp {
     val empty: Empty = Empty
     val tip: Tip = Tip
     val badge: Badge = Badge
+    val tooltip: Tooltip = Tooltip
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -278,6 +279,19 @@ public data object AppDp {
         val verticalPadding: Dp = padding.extraSmall
         val icon: Dp = AppDp.icon.extraSmall
         val spaceBetween: Dp = padding.extraSmall
+    }
+
+    public data object Tooltip {
+        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.small
+        val arrowSize: Dp = 8.dp
+        val arrowWidth: Dp = 14.dp
+        val maxWidth: Dp = 240.dp
+        val iconSize: Dp = icon.small
+        val spaceBetween: Dp = padding.small
+        val borderWidth: Dp = 1.dp
+        val elevation: Dp = 8.dp
     }
 
     public data object Empty {
