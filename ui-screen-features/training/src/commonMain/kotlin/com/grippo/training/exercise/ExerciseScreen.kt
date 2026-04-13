@@ -230,7 +230,7 @@ internal fun ExerciseScreen(
                                                             title = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_title),
                                                             subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_subtitle),
                                                         ),
-                                                        placement = TooltipPlacement.Top,
+                                                        placement = TooltipPlacement.Start,
                                                         variant = TooltipVariant.Warning,
                                                     ) {
                                                         Badge(

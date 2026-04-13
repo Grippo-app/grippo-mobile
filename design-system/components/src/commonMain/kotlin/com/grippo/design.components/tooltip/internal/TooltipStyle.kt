@@ -37,24 +37,24 @@ internal fun resolveTooltipColors(variant: TooltipVariant): TooltipColorTokens {
         TooltipVariant.Success -> TooltipColorTokens(
             background = AppTokens.colors.semantic.success.copy(alpha = 0.15f),
             border = AppTokens.colors.semantic.success.copy(alpha = 0.40f),
-            text = AppTokens.colors.text.primary,
-            subtext = AppTokens.colors.text.secondary,
+            text = AppTokens.colors.semantic.success,
+            subtext = AppTokens.colors.text.primary,
             icon = AppTokens.colors.semantic.success,
         )
 
         TooltipVariant.Error -> TooltipColorTokens(
             background = AppTokens.colors.semantic.error.copy(alpha = 0.15f),
             border = AppTokens.colors.semantic.error.copy(alpha = 0.40f),
-            text = AppTokens.colors.text.primary,
-            subtext = AppTokens.colors.text.secondary,
+            text = AppTokens.colors.semantic.error,
+            subtext = AppTokens.colors.text.primary,
             icon = AppTokens.colors.semantic.error,
         )
 
         TooltipVariant.Warning -> TooltipColorTokens(
             background = AppTokens.colors.semantic.warning.copy(alpha = 0.15f),
             border = AppTokens.colors.semantic.warning.copy(alpha = 0.40f),
-            text = AppTokens.colors.text.primary,
-            subtext = AppTokens.colors.text.secondary,
+            text = AppTokens.colors.semantic.warning,
+            subtext = AppTokens.colors.text.primary,
             icon = AppTokens.colors.semantic.warning,
         )
 
