@@ -130,7 +130,7 @@ internal fun IterationPickerScreen(
                     Text(
                         text = state.value.bodyMultiplier.short(),
                         style = AppTokens.typography.b14Bold(),
-                        color = AppTokens.colors.text.secondary,
+                        color = AppTokens.colors.text.primary,
                     )
 
                     Text(
@@ -322,13 +322,21 @@ internal fun IterationPickerScreen(
             }
         }
 
+    val volume = state.value.volume()
+
+    val repeats = state.value.repetitions
+
+    val buttonText = if (volume.value == null || repeats.value == null) {
+        AppTokens.strings.res(Res.string.submit_btn)
+    } else {
+        AppTokens.strings.res(Res.string.submit_btn) + " " + volume.short() + " " + repeats.short()
+    }
+
     Button(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.submit_btn),
-        ),
+        content = ButtonContent.Text(text = buttonText),
         style = ButtonStyle.Primary,
         state = buttonState,
         onClick = contract::onSubmit

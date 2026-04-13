@@ -1,7 +1,9 @@
 package com.grippo.iteration.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -29,10 +31,8 @@ public class IterationPickerViewModel(
 ), IterationPickerContract {
 
     override fun onWeightPickerClick() {
-        val weight = WeightFormatState.of(state.value.value.bodyWeight.value)
-
         val dialog = DialogConfig.WeightPicker(
-            initial = weight,
+            initial = state.value.value.bodyWeight,
             onResult = { result ->
                 update { s ->
                     val iteration = s.value.copy(bodyWeight = result)
@@ -75,13 +75,45 @@ public class IterationPickerViewModel(
     override fun onIterationClick(id: String) {
         update {
             val selected = it.suggestions.find { f -> f.id == id } ?: return@update it
+            val components = it.example.components
+
+            val hasBodyWeightInput = when (components) {
+                is ExerciseExampleComponentsState.BodyAndAssist,
+                is ExerciseExampleComponentsState.BodyAndExtra,
+                is ExerciseExampleComponentsState.BodyOnly -> true
+
+                is ExerciseExampleComponentsState.External -> false
+            }
+
+            val bodyWeight = when {
+                !hasBodyWeightInput -> selected.bodyWeight
+                selected.bodyWeight is WeightFormatState.Empty -> it.value.bodyWeight
+                else -> selected.bodyWeight
+            }
+            val bodyMultiplier = when {
+                !hasBodyWeightInput -> selected.bodyMultiplier
+                selected.bodyMultiplier is MultiplierFormatState.Empty -> it.value.bodyMultiplier
+                else -> selected.bodyMultiplier
+            }
+            val externalWeight = when (components) {
+                is ExerciseExampleComponentsState.External -> selected.externalWeight
+                else -> VolumeFormatState.Empty()
+            }
+            val assistWeight = when (components) {
+                is ExerciseExampleComponentsState.BodyAndAssist -> selected.assistWeight
+                else -> VolumeFormatState.Empty()
+            }
+            val extraWeight = when (components) {
+                is ExerciseExampleComponentsState.BodyAndExtra -> selected.extraWeight
+                else -> VolumeFormatState.Empty()
+            }
 
             val iteration = it.value.copy(
-                externalWeight = selected.externalWeight,
-                bodyWeight = selected.bodyWeight,
-                bodyMultiplier = selected.bodyMultiplier,
-                assistWeight = selected.assistWeight,
-                extraWeight = selected.extraWeight,
+                externalWeight = externalWeight,
+                bodyWeight = bodyWeight,
+                bodyMultiplier = bodyMultiplier,
+                assistWeight = assistWeight,
+                extraWeight = extraWeight,
                 repetitions = selected.repetitions
             )
 

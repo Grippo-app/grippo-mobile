@@ -17,11 +17,11 @@ public fun List<SetIteration>.toState(): PersistentList<IterationState> {
 public fun SetIteration.toState(): IterationState {
     return IterationState(
         id = Uuid.random().toString(),
-        externalWeight = VolumeFormatState.of(volume),
-        extraWeight = VolumeFormatState.Empty(),
-        assistWeight = VolumeFormatState.Empty(),
-        bodyWeight = WeightFormatState.Empty(),
-        bodyMultiplier = MultiplierFormatState.Empty(),
+        externalWeight = VolumeFormatState.of(externalWeight),
+        extraWeight = VolumeFormatState.of(extraWeight),
+        assistWeight = VolumeFormatState.of(assistWeight),
+        bodyWeight = WeightFormatState.of(bodyWeight),
+        bodyMultiplier = MultiplierFormatState.of(bodyMultiplier),
         repetitions = RepetitionsFormatState.of(repetitions)
     )
 }
