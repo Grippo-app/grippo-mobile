@@ -103,7 +103,7 @@
     <string name="highlight_type_consistency_hint">Активні дні та серія</string>
     <string name="highlight_type_momentum_hint">Краще за ваше середнє</string>
     <string name="highlight_type_comeback_hint">Повернення до рутини</string>
-    <string name="highlight_vs_average">vs сер.</string>
+    <string name="highlight_vs_average">сер.</string>
     <string name="highlight_best_value">Найкраще %1$s</string>
     <string name="highlight_status_record">Рекорд</string>
     <string name="highlight_status_improved">Зріст</string>
@@ -129,9 +129,9 @@
     <string name="highlight_streak_mood_restart">🚀 Почніть заново. Достатньо одного кроку.</string>
     <string name="performance_trend_desc_duration">Це ваш прогрес за тривалістю — скільки часу зазвичай триває тренування. Дивіться: якщо лінія зростає — тренування стають довшими. Якщо падає — ви закінчуєте швидше, і це нормально.</string>
     <string name="performance_trend_desc_volume">Це ваш прогрес за обсягом — скільки роботи ви зробили за тренування. Дивіться: якщо лінія зростає — ви робите більше роботи. Якщо падає кілька разів поспіль — зменште навантаження або додайте відпочинку.</string>
-    <string name="performance_trend_desc_density">Це ваш прогрес за ефективністю — наскільки продуктивно проходить тренування з урахуванням часу: скільки роботи ви встигаєте зробити за тренування. Дивіться: якщо лінія зростає — ви тренуєтеся краще. Якщо падає кілька разів поспіль — варто відновитися або спростити навантаження.</string>
+    <string name="performance_trend_desc_density">Це ваш темп роботи — скільки обсягу ви виконуєте за хвилину. Використовуйте як сигнал ефективності: вище — більше роботи за той самий час, нижче — спокійніше тренування або більше відпочинку.</string>
     <string name="performance_trend_desc_repetitions">Це ваш прогрес за повтореннями — скільки повторень ви зробили за тренування. Дивіться: якщо лінія зростає — ви витримуєте більше роботи. Якщо падає кілька разів поспіль — ймовірно накопичилась втома.</string>
-    <string name="performance_trend_desc_intensity">Це ваш прогрес за інтенсивністю — наскільки важко ви тренуєтеся в середньому. Дивіться: якщо лінія зростає — тренування стають важчими. Якщо падає кілька разів поспіль — можливо, ви не відновилися або знизили робочі ваги.</string>
+    <string name="performance_trend_desc_intensity">Це середня робоча вага на повторення з вагою. Використовуйте як сигнал важкості: вище — у тренуванні в середньому були важчі робочі ваги.</string>
     <string name="sets_value">Підходи (%1$s)</string>
     <string name="value_sets">%1$s підходів</string>
     <string name="one_set">1 підхід</string>
@@ -337,6 +337,8 @@
     <string name="insights">Інсайти</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Інтенсивність</string>
+    <string name="performance_metric_density">Темп роботи</string>
+    <string name="performance_metric_intensity">Сер. вага</string>
     <string name="repetitions_chip">Повторення</string>
     <string name="volume">Обсяг</string>
     <string name="sets_label">Підходи:</string>

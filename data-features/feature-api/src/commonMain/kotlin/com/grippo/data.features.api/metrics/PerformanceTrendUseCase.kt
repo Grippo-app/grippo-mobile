@@ -14,6 +14,7 @@ public class PerformanceTrendUseCase(
 ) {
 
     private companion object {
+        private const val MIN_TREND_POINTS: Int = 3
         private const val RECORD_EPS: Double = 1e-2
     }
 
@@ -21,9 +22,8 @@ public class PerformanceTrendUseCase(
         if (trainings.isEmpty()) return emptyList()
         val experience = resolveExperience() ?: return emptyList()
         val minTrendThresholdPercent = experience.minTrendThresholdPercent()
-        val latestTraining = trainings.maxBy { it.createdAt }
-
         val sorted = trainings.sortedBy { it.createdAt }
+        val latestTraining = sorted.last()
 
         val metrics = buildList {
             densityMetric(sorted, latestTraining, minTrendThresholdPercent)?.let(::add)
@@ -35,6 +35,15 @@ public class PerformanceTrendUseCase(
 
         return metrics
     }
+
+    private data class MetricStats(
+        val current: Double,
+        val average: Double,
+        val best: Double,
+        val trendPercent: Int,
+        val currentVsAveragePercent: Int,
+        val status: PerformanceTrendStatus,
+    )
 
     /**
      * We intentionally avoid fixed “days” windows here.
@@ -98,34 +107,66 @@ public class PerformanceTrendUseCase(
         }
     }
 
-    private fun volumeMetric(
+    private fun currentVsAveragePercent(current: Double, baselineMean: Double): Int? {
+        if (baselineMean <= 0.0) return null
+        return (((current - baselineMean) / baselineMean) * 100.0).roundToInt()
+    }
+
+    private fun metricStats(
         trainings: List<Training>,
         latest: Training,
         minTrendThresholdPercent: Int,
-    ): PerformanceMetric.VolumeMetric? {
-        val values = trainings.map { it.volume.toDouble() }.filter { it > 0.0 }
-        if (values.size < 2) return null
+        valueOf: (Training) -> Double,
+    ): MetricStats? {
+        val latestValue = valueOf(latest)
+        if (latestValue <= 0.0) return null
+
+        val values = trainings.map(valueOf).filter { it > 0.0 }
+        if (values.size < MIN_TREND_POINTS) return null
         val baselineValues = values.dropLast(1)
         if (baselineValues.isEmpty()) return null
 
         val baselineMean = baselineValues.average()
         val baselineStd = stddev(baselineValues)
         val trend = trendPercent(baselineMean, values) ?: return null
+        val currentVsAverage = currentVsAveragePercent(latestValue, baselineMean) ?: return null
         val threshold = dynamicThresholdPercent(
             mean = baselineMean,
             stddev = baselineStd,
             minThresholdPercent = minTrendThresholdPercent,
         ) ?: return null
         val best = values.maxOrNull() ?: return null
-        val current = values.last()
-        val status = statusFromTrend(current, best, trend, threshold)
+        val status = statusFromTrend(latestValue, best, trend, threshold)
+
+        return MetricStats(
+            current = latestValue,
+            average = baselineMean,
+            best = best,
+            trendPercent = trend,
+            currentVsAveragePercent = currentVsAverage,
+            status = status,
+        )
+    }
+
+    private fun volumeMetric(
+        trainings: List<Training>,
+        latest: Training,
+        minTrendThresholdPercent: Int,
+    ): PerformanceMetric.VolumeMetric? {
+        val stats = metricStats(
+            trainings = trainings,
+            latest = latest,
+            minTrendThresholdPercent = minTrendThresholdPercent,
+            valueOf = { it.volume.toDouble() },
+        ) ?: return null
 
         return PerformanceMetric.VolumeMetric(
-            deltaPercentage = trend,
-            current = latest.volume,
-            average = baselineMean.toFloat(),
-            best = best.toFloat(),
-            status = status,
+            deltaPercentage = stats.trendPercent,
+            currentVsAveragePercentage = stats.currentVsAveragePercent,
+            current = stats.current.toFloat(),
+            average = stats.average.toFloat(),
+            best = stats.best.toFloat(),
+            status = stats.status,
         )
     }
 
@@ -142,29 +183,20 @@ public class PerformanceTrendUseCase(
             return v / minutes
         }
 
-        val values = trainings.map { densityOf(it) }.filter { it > 0.0 }
-        if (values.size < 2) return null
-        val baselineValues = values.dropLast(1)
-        if (baselineValues.isEmpty()) return null
-
-        val baselineMean = baselineValues.average()
-        val baselineStd = stddev(baselineValues)
-        val trend = trendPercent(baselineMean, values) ?: return null
-        val threshold = dynamicThresholdPercent(
-            mean = baselineMean,
-            stddev = baselineStd,
-            minThresholdPercent = minTrendThresholdPercent,
+        val stats = metricStats(
+            trainings = trainings,
+            latest = latest,
+            minTrendThresholdPercent = minTrendThresholdPercent,
+            valueOf = ::densityOf,
         ) ?: return null
-        val best = values.maxOrNull() ?: return null
-        val current = values.last()
-        val status = statusFromTrend(current, best, trend, threshold)
 
         return PerformanceMetric.DensityMetric(
-            deltaPercentage = trend,
-            current = densityOf(latest).toFloat(),
-            average = baselineMean.toFloat(),
-            best = best.toFloat(),
-            status = status,
+            deltaPercentage = stats.trendPercent,
+            currentVsAveragePercentage = stats.currentVsAveragePercent,
+            current = stats.current.toFloat(),
+            average = stats.average.toFloat(),
+            best = stats.best.toFloat(),
+            status = stats.status,
         )
     }
 
@@ -173,29 +205,20 @@ public class PerformanceTrendUseCase(
         latest: Training,
         minTrendThresholdPercent: Int,
     ): PerformanceMetric.RepetitionsMetric? {
-        val values = trainings.map { it.repetitions.toDouble() }.filter { it > 0.0 }
-        if (values.size < 2) return null
-        val baselineValues = values.dropLast(1)
-        if (baselineValues.isEmpty()) return null
-
-        val baselineMean = baselineValues.average()
-        val baselineStd = stddev(baselineValues)
-        val trend = trendPercent(baselineMean, values) ?: return null
-        val threshold = dynamicThresholdPercent(
-            mean = baselineMean,
-            stddev = baselineStd,
-            minThresholdPercent = minTrendThresholdPercent,
+        val stats = metricStats(
+            trainings = trainings,
+            latest = latest,
+            minTrendThresholdPercent = minTrendThresholdPercent,
+            valueOf = { it.repetitions.toDouble() },
         ) ?: return null
-        val best = values.maxOrNull() ?: return null
-        val current = values.last()
-        val status = statusFromTrend(current, best, trend, threshold)
 
         return PerformanceMetric.RepetitionsMetric(
-            deltaPercentage = trend,
-            current = latest.repetitions,
-            average = baselineMean.roundToInt(),
-            best = best.roundToInt(),
-            status = status,
+            deltaPercentage = stats.trendPercent,
+            currentVsAveragePercentage = stats.currentVsAveragePercent,
+            current = stats.current.roundToInt(),
+            average = stats.average.roundToInt(),
+            best = stats.best.roundToInt(),
+            status = stats.status,
         )
     }
 
@@ -204,29 +227,20 @@ public class PerformanceTrendUseCase(
         latest: Training,
         minTrendThresholdPercent: Int,
     ): PerformanceMetric.IntensityMetric? {
-        val values = trainings.map { it.intensity.toDouble() }.filter { it > 0.0 }
-        if (values.size < 2) return null
-        val baselineValues = values.dropLast(1)
-        if (baselineValues.isEmpty()) return null
-
-        val baselineMean = baselineValues.average()
-        val baselineStd = stddev(baselineValues)
-        val trend = trendPercent(baselineMean, values) ?: return null
-        val threshold = dynamicThresholdPercent(
-            mean = baselineMean,
-            stddev = baselineStd,
-            minThresholdPercent = minTrendThresholdPercent,
+        val stats = metricStats(
+            trainings = trainings,
+            latest = latest,
+            minTrendThresholdPercent = minTrendThresholdPercent,
+            valueOf = { it.intensity.toDouble() },
         ) ?: return null
-        val best = values.maxOrNull() ?: return null
-        val current = values.last()
-        val status = statusFromTrend(current, best, trend, threshold)
 
         return PerformanceMetric.IntensityMetric(
-            deltaPercentage = trend,
-            current = latest.intensity,
-            average = baselineMean.toFloat(),
-            best = best.toFloat(),
-            status = status,
+            deltaPercentage = stats.trendPercent,
+            currentVsAveragePercentage = stats.currentVsAveragePercent,
+            current = stats.current.toFloat(),
+            average = stats.average.toFloat(),
+            best = stats.best.toFloat(),
+            status = stats.status,
         )
     }
 
@@ -234,17 +248,22 @@ public class PerformanceTrendUseCase(
         trainings: List<Training>,
         latest: Training,
     ): PerformanceMetric.DurationMetric? {
+        val latestValue = latest.duration.inWholeMinutes.toDouble()
+        if (latestValue <= 0.0) return null
+
         val values = trainings.map { it.duration.inWholeMinutes.toDouble() }.filter { it > 0.0 }
         if (values.size < 2) return null
         val baselineValues = values.dropLast(1)
         if (baselineValues.isEmpty()) return null
 
         val baselineMean = baselineValues.average()
+        val currentVsAverage = currentVsAveragePercent(latestValue, baselineMean) ?: return null
         val best = values.maxOrNull() ?: return null
 
         return PerformanceMetric.DurationMetric(
             deltaPercentage = 0,
-            current = latest.duration,
+            currentVsAveragePercentage = currentVsAverage,
+            current = latestValue.minutes,
             average = baselineMean.minutes,
             best = best.minutes,
             status = PerformanceTrendStatus.Stable,

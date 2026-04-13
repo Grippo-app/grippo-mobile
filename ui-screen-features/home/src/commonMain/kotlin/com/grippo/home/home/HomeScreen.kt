@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
-import com.grippo.core.state.metrics.stubDigest
 import com.grippo.core.state.metrics.stubExerciseSpotlightGoodFrequency
 import com.grippo.core.state.metrics.stubExerciseSpotlightNearBest
 import com.grippo.core.state.metrics.stubExerciseSpotlightNeedsAttention
@@ -49,7 +48,6 @@ import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.PerformanceMetricCard
-import com.grippo.design.components.metrics.digest.DigestCard
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileCard
@@ -315,17 +313,6 @@ internal fun HomeScreen(
                         )
                     }
                 }
-
-                if (state.digest != null) {
-                    item(key = "digest", span = { GridItemSpan(2) }) {
-                        DigestCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenDigest),
-                            value = state.digest,
-                        )
-                    }
-                }
             }
         },
         bottom = {
@@ -370,7 +357,6 @@ private fun HomeScreenPreview() {
         HomeScreen(
             state = HomeState(
                 lastTraining = stubTraining(),
-                digest = stubDigest(),
                 totalDuration = 28.hours,
                 spotlights = persistentListOf(
                     stubExerciseSpotlightNeedsAttention(),

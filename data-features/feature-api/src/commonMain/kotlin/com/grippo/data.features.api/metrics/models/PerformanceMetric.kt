@@ -5,10 +5,12 @@ import kotlin.time.Duration
 public sealed interface PerformanceMetric {
     public val type: PerformanceMetricType
     public val deltaPercentage: Int
+    public val currentVsAveragePercentage: Int
     public val status: PerformanceTrendStatus
 
     public data class DurationMetric(
         override val deltaPercentage: Int,
+        override val currentVsAveragePercentage: Int,
         val current: Duration,
         val average: Duration,
         val best: Duration,
@@ -19,6 +21,7 @@ public sealed interface PerformanceMetric {
 
     public data class VolumeMetric(
         override val deltaPercentage: Int,
+        override val currentVsAveragePercentage: Int,
         val current: Float,
         val average: Float,
         val best: Float,
@@ -36,6 +39,7 @@ public sealed interface PerformanceMetric {
      */
     public data class DensityMetric(
         override val deltaPercentage: Int,
+        override val currentVsAveragePercentage: Int,
         val current: Float,
         val average: Float,
         val best: Float,
@@ -46,6 +50,7 @@ public sealed interface PerformanceMetric {
 
     public data class RepetitionsMetric(
         override val deltaPercentage: Int,
+        override val currentVsAveragePercentage: Int,
         val current: Int,
         val average: Int,
         val best: Int,
@@ -56,6 +61,7 @@ public sealed interface PerformanceMetric {
 
     public data class IntensityMetric(
         override val deltaPercentage: Int,
+        override val currentVsAveragePercentage: Int,
         val current: Float,
         val average: Float,
         val best: Float,

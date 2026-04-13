@@ -46,8 +46,8 @@ public fun PerformanceTrendHistoryCard(
 private fun PerformanceMetricState.chartValue(): Float? {
     return when (this) {
         is PerformanceMetricState.Duration -> {
-            val minutes = current.inWholeSeconds.toFloat() / 60f
-            minutes.takeIf { it > 0f }
+            val minutes = current.value?.inWholeSeconds?.toFloat()?.div(60f)
+            minutes?.takeIf { it > 0f }
         }
 
         is PerformanceMetricState.Volume -> {

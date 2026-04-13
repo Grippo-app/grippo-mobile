@@ -2,6 +2,7 @@ package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.PerformanceMetricState
-import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -26,37 +26,28 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.density
-import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.highlight_best_value
 import com.grippo.design.resources.provider.highlight_status_declined
 import com.grippo.design.resources.provider.highlight_status_improved
 import com.grippo.design.resources.provider.highlight_status_record
 import com.grippo.design.resources.provider.highlight_status_stable
 import com.grippo.design.resources.provider.highlight_vs_average
-import com.grippo.design.resources.provider.intensity_chip
-import com.grippo.design.resources.provider.repetitions
-import com.grippo.design.resources.provider.volume
-import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 public fun PerformanceMetricCard(
     metric: PerformanceMetricState,
     modifier: Modifier = Modifier,
 ) {
+    val accentColor = performanceStatusColor(metric.status)
+
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
     ) {
-        val label = when (metric.type) {
-            PerformanceMetricTypeState.Duration -> AppTokens.strings.res(Res.string.duration)
-            PerformanceMetricTypeState.Volume -> AppTokens.strings.res(Res.string.volume)
-            PerformanceMetricTypeState.Density -> AppTokens.strings.res(Res.string.density)
-            PerformanceMetricTypeState.Repetitions -> AppTokens.strings.res(Res.string.repetitions)
-            PerformanceMetricTypeState.Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
-        }
+        val label = metric.type.label()
 
-        val delta = formatTrendDelta(metric.deltaPercentage)
+        val averageDelta = formatTrendDelta(metric.currentVsAveragePercentage)
+        val averageDeltaColor = performanceAverageDeltaColor(metric)
 
         val vsAverage = AppTokens.strings.res(Res.string.highlight_vs_average)
 
@@ -64,11 +55,11 @@ public fun PerformanceMetricCard(
             is PerformanceMetricState.Duration -> {
                 val best = AppTokens.strings.res(
                     Res.string.highlight_best_value,
-                    DateTimeUtils.format(metric.best)
+                    metric.best.display
                 )
                 Triple(
-                    DateTimeUtils.format(metric.current),
-                    DateTimeUtils.format(metric.average),
+                    metric.current.display,
+                    metric.average.display,
                     best
                 )
             }
@@ -107,24 +98,47 @@ public fun PerformanceMetricCard(
         }
 
         Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.metrics.performanceTrend.icon),
-                imageVector = metric.type.icon(),
-                tint = AppTokens.colors.icon.secondary,
-                contentDescription = null
-            )
+            val iconShape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
+
+            Box(
+                modifier = Modifier
+                    .clip(iconShape)
+                    .background(accentColor.copy(alpha = 0.14f), shape = iconShape)
+                    .padding(AppTokens.dp.contentPadding.text),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    modifier = Modifier.size(AppTokens.dp.metrics.performanceTrend.icon),
+                    imageVector = metric.type.icon(),
+                    tint = accentColor,
+                    contentDescription = null
+                )
+            }
 
             Text(
+                modifier = Modifier.weight(1f),
                 text = label,
-                style = AppTokens.typography.b12Med(),
+                style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.secondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+
+            PerformanceTrendChip(status = metric.status)
         }
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = current,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -133,31 +147,42 @@ public fun PerformanceMetricCard(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = delta,
+                text = "$vsAverage $average",
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.h6(),
-                color = performanceStatusColor(metric.status)
             )
 
-            PerformanceTrendChip(status = metric.status)
+            Text(
+                text = averageDelta,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = AppTokens.typography.b13Semi(),
+                color = averageDeltaColor
+            )
         }
-
-        Text(
-            text = "$current · $vsAverage $average",
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
 
         Text(
             text = bestLabel,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.b12Med(),
+            style = AppTokens.typography.b11Semi(),
             color = AppTokens.colors.text.tertiary
         )
+    }
+}
+
+@Composable
+private fun performanceAverageDeltaColor(metric: PerformanceMetricState): Color {
+    if (metric is PerformanceMetricState.Duration) {
+        return AppTokens.colors.text.secondary
+    }
+
+    return when {
+        metric.currentVsAveragePercentage > 0 -> AppTokens.colors.semantic.success
+        metric.currentVsAveragePercentage < 0 -> AppTokens.colors.semantic.warning
+        else -> AppTokens.colors.text.secondary
     }
 }
 
@@ -184,14 +209,16 @@ private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
     Text(
         modifier = Modifier
             .clip(shape)
-            .background(color.copy(alpha = 0.2f), shape = shape)
+            .background(color.copy(alpha = 0.18f), shape = shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.status.horizontalPadding,
                 vertical = AppTokens.dp.metrics.status.verticalPadding
             ),
         text = label,
         style = AppTokens.typography.b11Semi(),
-        color = color
+        color = color,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 

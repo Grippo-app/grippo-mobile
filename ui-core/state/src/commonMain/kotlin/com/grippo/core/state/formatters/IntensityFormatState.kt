@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.percent
+import com.grippo.design.resources.provider.kg
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -86,8 +86,8 @@ public sealed class IntensityFormatState : FormatState<Float> {
 
     @Composable
     public fun short(): String {
-        val percent = AppTokens.strings.res(Res.string.percent)
-        return "${value?.roundToInt() ?: "-"}${percent}"
+        val kg = AppTokens.strings.res(Res.string.kg)
+        return "${value?.roundToInt() ?: "-"}$kg"
     }
 
     @Immutable

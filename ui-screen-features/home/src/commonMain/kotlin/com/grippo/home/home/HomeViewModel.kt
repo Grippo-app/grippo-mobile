@@ -10,7 +10,6 @@ import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
-import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -51,7 +50,6 @@ internal class HomeViewModel(
     private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
-    private val trainingDigestUseCase: TrainingDigestUseCase,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
     private val stringProvider: StringProvider,
@@ -124,8 +122,6 @@ internal class HomeViewModel(
     }
 
     private suspend fun provideTrainings(list: List<Training>) {
-        val range = state.value.range.range ?: return
-
         if (list.isEmpty()) {
             clearHome()
             return
@@ -143,10 +139,6 @@ internal class HomeViewModel(
 
         val streak = trainingStreakUseCase
             .fromTrainings(list)
-            .toState()
-
-        val digest = trainingDigestUseCase
-            .digest(list, range = range)
             .toState()
 
         val spotlights = exerciseSpotlightUseCase
@@ -167,7 +159,6 @@ internal class HomeViewModel(
 
         update {
             it.copy(
-                digest = digest,
                 totalDuration = totalDuration,
                 spotlights = spotlights,
                 muscleLoad = muscleLoadSummary,
@@ -299,7 +290,6 @@ internal class HomeViewModel(
     private fun clearHome() {
         update {
             it.copy(
-                digest = null,
                 totalDuration = null,
                 spotlights = persistentListOf(),
                 muscleLoad = null,
