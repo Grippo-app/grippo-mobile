@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -191,22 +192,25 @@ internal fun ExerciseScreen(
                                                 val tooltipState = rememberTooltipState()
                                                 val scope = rememberCoroutineScope()
 
-                                                Tooltip(
-                                                    state = tooltipState,
-                                                    tooltipContent = TooltipContent.Rich(
-                                                        title = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_title),
-                                                        subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_subtitle),
-                                                    ),
-                                                    placement = TooltipPlacement.Top,
-                                                    variant = TooltipVariant.Warning,
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                        .align(Alignment.CenterEnd),
                                                 ) {
-                                                    Badge(
-                                                        modifier = Modifier
-                                                            .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                            .align(Alignment.CenterEnd),
-                                                        style = BadgeStyle.Warning,
-                                                        onClick = { scope.launch { tooltipState.show() } }
-                                                    )
+                                                    Tooltip(
+                                                        state = tooltipState,
+                                                        tooltipContent = TooltipContent.Rich(
+                                                            title = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_title),
+                                                            subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_subtitle),
+                                                        ),
+                                                        placement = TooltipPlacement.Top,
+                                                        variant = TooltipVariant.Warning,
+                                                    ) {
+                                                        Badge(
+                                                            style = BadgeStyle.Warning,
+                                                            onClick = { scope.launch { tooltipState.show() } }
+                                                        )
+                                                    }
                                                 }
                                             }
                                         },
@@ -215,22 +219,25 @@ internal fun ExerciseScreen(
                                                 val tooltipState = rememberTooltipState()
                                                 val scope = rememberCoroutineScope()
 
-                                                Tooltip(
-                                                    state = tooltipState,
-                                                    tooltipContent = TooltipContent.Rich(
-                                                        title = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_title),
-                                                        subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_subtitle),
-                                                    ),
-                                                    placement = TooltipPlacement.Top,
-                                                    variant = TooltipVariant.Warning,
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                        .align(Alignment.CenterEnd),
                                                 ) {
-                                                    Badge(
-                                                        modifier = Modifier
-                                                            .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                            .align(Alignment.CenterEnd),
-                                                        style = BadgeStyle.Warning,
-                                                        onClick = { scope.launch { tooltipState.show() } }
-                                                    )
+                                                    Tooltip(
+                                                        state = tooltipState,
+                                                        tooltipContent = TooltipContent.Rich(
+                                                            title = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_title),
+                                                            subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_subtitle),
+                                                        ),
+                                                        placement = TooltipPlacement.Top,
+                                                        variant = TooltipVariant.Warning,
+                                                    ) {
+                                                        Badge(
+                                                            style = BadgeStyle.Warning,
+                                                            onClick = { scope.launch { tooltipState.show() } }
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -292,7 +299,9 @@ private fun ExerciseScreenPreview() {
         ExerciseScreen(
             state = ExerciseState(
                 exercise = stubExercise(),
-                exerciseExample = stubExerciseExample()
+                exerciseExample = stubExerciseExample(),
+                volumeArtifactIds = persistentSetOf(stubExercise().iterations.random().id),
+                repetitionArtifactIds = persistentSetOf(stubExercise().iterations.random().id),
             ),
             loaders = persistentSetOf(),
             contract = ExerciseContract.Empty

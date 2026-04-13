@@ -275,8 +275,8 @@ public data object AppDp {
     }
 
     public data object Badge {
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.extraSmall
+        val horizontalPadding: Dp = padding.extraSmall
+        val verticalPadding: Dp = padding.tiny
         val icon: Dp = AppDp.icon.extraSmall
         val spaceBetween: Dp = padding.extraSmall
     }
