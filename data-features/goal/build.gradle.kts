@@ -13,6 +13,7 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
+        implementation(projects.dataMappers.dtoToEntity)
         implementation(projects.dataMappers.entityToDomain)
         implementation(projects.dataMappers.domainToDto)
 

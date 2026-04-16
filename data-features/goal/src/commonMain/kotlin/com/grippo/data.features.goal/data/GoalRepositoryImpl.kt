@@ -4,6 +4,7 @@ import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.SetGoal
 import com.grippo.data.features.goal.domain.GoalRepository
 import com.grippo.domain.dto.user.toBody
+import com.grippo.dto.entity.user.toEntityOrNull
 import com.grippo.entity.domain.user.toDomain
 import com.grippo.services.backend.GrippoApi
 import com.grippo.services.database.dao.GoalDao
