@@ -125,6 +125,10 @@ public class RootComponent(
                 RootRouter.Profile(ProfileRouter.Social)
             )
 
+            RootDirection.Goal -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Goal)
+            )
+
             RootDirection.Trainings -> navigation.push(
                 RootRouter.Trainings
             )
@@ -158,6 +162,7 @@ public class RootComponent(
                     toTrainings = viewModel::toTrainings,
                     toSettings = viewModel::toSettings,
                     toSocial = viewModel::toSocial,
+                    toGoal = viewModel::toGoal,
                     close = viewModel::onClose
                 )
             )

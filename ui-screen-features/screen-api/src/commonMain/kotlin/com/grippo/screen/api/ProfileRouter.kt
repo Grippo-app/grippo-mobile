@@ -22,4 +22,7 @@ public sealed class ProfileRouter : BaseRouter {
 
     @Serializable
     public data object Social : ProfileRouter()
+
+    @Serializable
+    public data object Goal : ProfileRouter()
 }

@@ -17,6 +17,7 @@ public interface RootContract {
     public fun toExperience()
     public fun toSettings()
     public fun toSocial()
+    public fun toGoal()
     public fun onBack()
 
     @Immutable
@@ -33,6 +34,7 @@ public interface RootContract {
         override fun toExperience() {}
         override fun toSettings() {}
         override fun toSocial() {}
+        override fun toGoal() {}
         override fun onBack() {}
     }
 }

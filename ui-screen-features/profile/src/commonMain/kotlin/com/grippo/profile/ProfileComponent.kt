@@ -12,6 +12,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.profile.ProfileComponent.Child.Equipments
 import com.grippo.profile.ProfileComponent.Child.Experience
+import com.grippo.profile.ProfileComponent.Child.Goal
 import com.grippo.profile.ProfileComponent.Child.Muscles
 import com.grippo.profile.ProfileComponent.Child.ProfileBody
 import com.grippo.profile.ProfileComponent.Child.Settings
@@ -19,6 +20,7 @@ import com.grippo.profile.ProfileComponent.Child.Social
 import com.grippo.profile.body.ProfileBodyComponent
 import com.grippo.profile.equipments.ProfileEquipmentsComponent
 import com.grippo.profile.experience.ProfileExperienceComponent
+import com.grippo.profile.goal.ProfileGoalComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
 import com.grippo.profile.settings.ProfileSettingsComponent
 import com.grippo.profile.social.ProfileSocialComponent
@@ -100,6 +102,13 @@ public class ProfileComponent(
                     back = viewModel::onBack,
                 )
             )
+
+            ProfileRouter.Goal -> Goal(
+                ProfileGoalComponent(
+                    componentContext = context,
+                    back = viewModel::onBack,
+                )
+            )
         }
     }
 
@@ -117,5 +126,6 @@ public class ProfileComponent(
         data class Experience(override val component: ProfileExperienceComponent) : Child(component)
         data class Settings(override val component: ProfileSettingsComponent) : Child(component)
         data class Social(override val component: ProfileSocialComponent) : Child(component)
+        data class Goal(override val component: ProfileGoalComponent) : Child(component)
     }
 }

@@ -3,9 +3,12 @@ package com.grippo.services.database
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.grippo.services.database.converters.StringListConverter
 import com.grippo.services.database.dao.DraftTrainingDao
 import com.grippo.services.database.dao.EquipmentDao
 import com.grippo.services.database.dao.ExerciseExampleDao
+import com.grippo.services.database.dao.GoalDao
 import com.grippo.services.database.dao.MuscleDao
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.TrainingDao
@@ -23,6 +26,7 @@ import com.grippo.services.database.entity.ExerciseExampleComponentsEntity
 import com.grippo.services.database.entity.ExerciseExampleEntity
 import com.grippo.services.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.services.database.entity.ExerciseExampleSearchPrefixEntity
+import com.grippo.services.database.entity.GoalEntity
 import com.grippo.services.database.entity.IterationEntity
 import com.grippo.services.database.entity.MuscleEntity
 import com.grippo.services.database.entity.MuscleGroupEntity
@@ -65,10 +69,13 @@ import com.grippo.services.database.entity.WeightHistoryEntity
         UserExcludedMuscleEntity::class,
         UserExcludedEquipmentEntity::class,
         WeightHistoryEntity::class,
+
+        GoalEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
+@TypeConverters(StringListConverter::class)
 @ConstructedBy(DatabaseConstructor::class)
 public abstract class Database : RoomDatabase() {
     public abstract fun userActiveDao(): UserActiveDao
@@ -80,4 +87,5 @@ public abstract class Database : RoomDatabase() {
     public abstract fun draftTrainingDao(): DraftTrainingDao
     public abstract fun exerciseExampleDao(): ExerciseExampleDao
     public abstract fun muscleDao(): MuscleDao
+    public abstract fun goalDao(): GoalDao
 }

@@ -5,5 +5,6 @@ import androidx.room.migration.Migration
 internal object DatabaseMigrations {
     val all: Array<Migration> = arrayOf(
         Migration2To3,
+        Migration3To4,
     )
 }

@@ -20,8 +20,10 @@ import com.grippo.services.backend.dto.training.TrainingBody
 import com.grippo.services.backend.dto.training.TrainingResponse
 import com.grippo.services.backend.dto.user.CreateProfileBody
 import com.grippo.services.backend.dto.user.ExperienceBody
+import com.grippo.services.backend.dto.user.GoalResponse
 import com.grippo.services.backend.dto.user.HeightBody
 import com.grippo.services.backend.dto.user.IdsBody
+import com.grippo.services.backend.dto.user.SetGoalBody
 import com.grippo.services.backend.dto.user.UserResponse
 import com.grippo.services.backend.dto.user.WeightHistoryResponse
 import io.ktor.client.call.body
@@ -213,6 +215,25 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         return request(
             method = HttpMethod.Get,
             path = "/weight-history"
+        )
+    }
+
+    /* * * * * * * * * * * * * * * * *
+     * Goal service
+     * * * * * * * * * * * * * * * * */
+
+    public suspend fun getGoal(): Result<GoalResponse> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/users/goal"
+        )
+    }
+
+    public suspend fun setGoal(body: SetGoalBody): Result<GoalResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/users/goal",
+            body = body
         )
     }
 

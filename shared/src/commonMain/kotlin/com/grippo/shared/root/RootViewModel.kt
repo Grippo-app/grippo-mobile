@@ -94,6 +94,10 @@ public class RootViewModel(
         navigateTo(RootDirection.Social)
     }
 
+    override fun toGoal() {
+        navigateTo(RootDirection.Goal)
+    }
+
     override fun onBack() {
         navigateTo(RootDirection.Back)
     }

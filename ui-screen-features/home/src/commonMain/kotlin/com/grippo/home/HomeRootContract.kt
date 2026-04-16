@@ -15,6 +15,7 @@ internal interface HomeRootContract {
     fun toSettings()
     fun toSocial()
     fun toBody()
+    fun toGoal()
 
     @Immutable
     companion object Empty : HomeRootContract {
@@ -29,5 +30,6 @@ internal interface HomeRootContract {
         override fun toDraftTraining() {}
         override fun toSettings() {}
         override fun toSocial() {}
+        override fun toGoal() {}
     }
 }

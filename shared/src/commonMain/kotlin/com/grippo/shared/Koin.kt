@@ -9,6 +9,7 @@ import com.grippo.data.features.excluded.equipments.ExcludedEquipmentFeatureModu
 import com.grippo.data.features.excluded.muscles.ExcludedMusclesFeatureModule
 import com.grippo.data.features.exercise.examples.ExerciseExamplesFeatureModule
 import com.grippo.data.features.exercise.metrics.ExerciseMetricsFeatureModule
+import com.grippo.data.features.goal.GoalFeatureModule
 import com.grippo.data.features.local.settings.LocalSettingsFeatureModule
 import com.grippo.data.features.muscle.MusclesFeatureModule
 import com.grippo.data.features.trainings.TrainingsFeatureModule
@@ -52,6 +53,7 @@ public object Koin {
             ErrorModule().module,
             UserFeatureModule().module,
             WeightHistoryFeatureModule().module,
+            GoalFeatureModule().module,
             MusclesFeatureModule().module,
             EquipmentFeatureModule().module,
             ExerciseExamplesFeatureModule().module,

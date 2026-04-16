@@ -202,6 +202,7 @@ internal class HomeViewModel(
                     ProfileMenu.Equipment -> navigateTo(HomeDirection.MissingEquipment)
                     ProfileMenu.Experience -> navigateTo(HomeDirection.Experience)
                     ProfileMenu.Body -> navigateTo(HomeDirection.Body)
+                    ProfileMenu.Goal -> navigateTo(HomeDirection.Goal)
                 }
             },
             onSettingsResult = {

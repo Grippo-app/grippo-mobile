@@ -5,7 +5,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_menu
 import com.grippo.design.resources.provider.icons.Pro
+import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.icons.Volume
 import com.grippo.design.resources.provider.icons.Weight
@@ -22,7 +24,8 @@ public enum class ProfileMenu {
     Body,
     Experience,
     Muscles,
-    Equipment;
+    Equipment,
+    Goal;
 
     public companion object Companion {
         @Composable
@@ -38,6 +41,7 @@ public enum class ProfileMenu {
             Equipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
             Experience -> AppTokens.strings.res(Res.string.profile_menu_experience)
             Body -> AppTokens.strings.res(Res.string.weight_and_height)
+            Goal -> AppTokens.strings.res(Res.string.goal_menu)
         }
     }
 
@@ -48,6 +52,7 @@ public enum class ProfileMenu {
             Equipment -> AppTokens.icons.Volume
             Experience -> AppTokens.icons.Pro
             Body -> AppTokens.icons.Weight
+            Goal -> AppTokens.icons.Trophy
         }
     }
 }

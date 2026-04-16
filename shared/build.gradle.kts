@@ -58,6 +58,7 @@ kotlin {
         implementation(projects.dataFeatures.exerciseExamples)
         implementation(projects.dataFeatures.exerciseMetrics)
         implementation(projects.dataFeatures.localSettings)
+        implementation(projects.dataFeatures.goal)
 
         implementation(projects.dataMappers.domainToState)
 

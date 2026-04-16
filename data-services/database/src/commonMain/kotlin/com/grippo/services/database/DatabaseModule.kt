@@ -3,6 +3,7 @@ package com.grippo.services.database
 import com.grippo.services.database.dao.DraftTrainingDao
 import com.grippo.services.database.dao.EquipmentDao
 import com.grippo.services.database.dao.ExerciseExampleDao
+import com.grippo.services.database.dao.GoalDao
 import com.grippo.services.database.dao.MuscleDao
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.TrainingDao
@@ -35,6 +36,9 @@ public class DatabaseModule {
 
     @Single
     internal fun provideUserActiveDao(db: Database): UserActiveDao = db.userActiveDao()
+
+    @Single
+    internal fun provideGoalDao(db: Database): GoalDao = db.goalDao()
 
     @Single
     internal fun provideEquipmentDao(db: Database): EquipmentDao = db.equipmentDao()

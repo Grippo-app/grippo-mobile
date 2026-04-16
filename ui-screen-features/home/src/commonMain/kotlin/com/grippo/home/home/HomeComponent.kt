@@ -20,6 +20,7 @@ internal class HomeComponent(
     private val toSettings: () -> Unit,
     private val toSocial: () -> Unit,
     private val toBody: () -> Unit,
+    private val toGoal: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -58,6 +59,7 @@ internal class HomeComponent(
             HomeDirection.Settings -> toSettings.invoke()
             HomeDirection.Social -> toSocial.invoke()
             HomeDirection.Body -> toBody.invoke()
+            HomeDirection.Goal -> toGoal.invoke()
         }
     }
 
