@@ -31,6 +31,7 @@ internal fun PrimaryGoalPickerScreen(
     loaders: ImmutableSet<PrimaryGoalPickerLoader>,
     contract: PrimaryGoalPickerContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
@@ -68,7 +69,9 @@ internal fun PrimaryGoalPickerScreen(
         }
 
         item(key = "bottom_spacer") {
+
             Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
