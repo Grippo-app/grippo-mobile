@@ -20,7 +20,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.components.modifiers.scalableClick
@@ -35,7 +37,7 @@ import com.grippo.design.resources.provider.icons.Mail
 @Composable
 public fun InputEmail(
     modifier: Modifier = Modifier,
-    value: String,
+    value: EmailFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.email_placeholder),
     onValueChange: (String) -> Unit
 ) {
@@ -43,9 +45,13 @@ public fun InputEmail(
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
+        error = when (value) {
+            is EmailFormatState.Invalid -> InputError.Error("")
+            else -> InputError.Non
+        },
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
@@ -63,7 +69,7 @@ public fun InputEmail(
                     modifier = Modifier
                         .size(40.dp)
                         .scalableClick { onValueChange.invoke("") },
-                    visible = value.isNotEmpty(),
+                    visible = value.display.isNotEmpty(),
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),
                 ) {
@@ -101,12 +107,12 @@ public fun InputEmail(
 private fun InputEmailPreview() {
     PreviewContainer {
         InputEmail(
-            value = "user@mail.com",
+            value = EmailFormatState.of("user@mail.com"),
             onValueChange = {}
         )
 
         InputEmail(
-            value = "",
+            value = EmailFormatState.Empty(),
             onValueChange = {}
         )
     }

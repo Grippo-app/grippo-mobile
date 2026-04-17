@@ -1,7 +1,6 @@
 package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -14,6 +13,7 @@ import com.grippo.design.resources.provider.select_month
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.TrainingsDirection.Back
@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 
@@ -130,56 +131,32 @@ internal class TrainingsViewModel(
     }
 
     override fun onOpenDateSelector() {
-        when (state.value.period) {
-            TrainingsTimelinePeriod.Daily -> selectDate()
-            TrainingsTimelinePeriod.Monthly -> selectMonth()
-        }
-    }
-
-    private fun selectDate() {
         safeLaunch {
-            val value = DateFormatState.of(
-                state.value.date.from,
-                state.value.limitations
-            )
+            val dialog = when (state.value.period) {
+                TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
+                    title = stringProvider.get(Res.string.select_date),
+                    initial = state.value.date.from,
+                    limitations = state.value.limitations,
+                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    onResult = ::applyAnchor
+                )
 
-            val dialog = DialogConfig.DatePicker(
-                title = stringProvider.get(Res.string.select_date),
-                initial = value,
-                limitations = state.value.limitations,
-                onResult = { value ->
-                    val date = value.value ?: return@DatePicker
-                    val period = state.value.period
-                    val range = period.rangeFor(date).coerceWithin(state.value.limitations)
-                    update { it.copy(date = range) }
-                }
-            )
-
+                TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
+                    title = stringProvider.get(Res.string.select_month),
+                    initial = state.value.date.from,
+                    limitations = state.value.limitations,
+                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    onResult = ::applyAnchor
+                )
+            }
             dialogController.show(dialog)
         }
     }
 
-    private fun selectMonth() {
-        safeLaunch {
-            val value = DateFormatState.of(
-                state.value.date.from,
-                state.value.limitations
-            )
-
-            val dialog = DialogConfig.MonthPicker(
-                title = stringProvider.get(Res.string.select_month),
-                initial = value,
-                limitations = state.value.limitations,
-                onResult = { value ->
-                    val date = value.value ?: return@MonthPicker
-                    val period = state.value.period
-                    val range = period.rangeFor(date).coerceWithin(state.value.limitations)
-                    update { it.copy(date = range) }
-                }
-            )
-
-            dialogController.show(dialog)
-        }
+    private fun applyAnchor(date: LocalDateTime) {
+        val current = state.value
+        val range = current.period.rangeFor(date).coerceWithin(current.limitations)
+        update { it.copy(date = range) }
     }
 
     override fun onSelectNextDate() = shiftDate(1)

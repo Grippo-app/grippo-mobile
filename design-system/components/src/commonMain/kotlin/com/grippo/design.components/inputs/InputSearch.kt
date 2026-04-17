@@ -99,12 +99,12 @@ public fun InputSearch(
 @Composable
 private fun InputNamePreview() {
     PreviewContainer {
-        InputName(
-            value = "Mark B.",
+        InputSearch(
+            value = "Search something",
             onValueChange = {}
         )
 
-        InputName(
+        InputSearch(
             value = "",
             onValueChange = {}
         )

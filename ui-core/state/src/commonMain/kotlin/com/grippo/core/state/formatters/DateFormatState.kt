@@ -1,6 +1,7 @@
 package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Immutable
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
@@ -32,21 +33,16 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
     ) : DateFormatState()
 
     public companion object {
-        private val Zero = LocalDateTime(1970, 1, 1, 0, 0, 0, 0)
-
-        public fun of(value: LocalDateTime, range: DateRange): DateFormatState {
+        public fun of(
+            value: LocalDateTime?,
+            range: DateRange,
+            format: DateFormat
+        ): DateFormatState {
+            if (value == null) return Empty()
+            val display = DateTimeUtils.format(value, format)
             return when {
-                value == Zero -> Empty()
-
-                DateValidator.isValid(value, range) -> Valid(
-                    display = DateTimeUtils.toUtcIso(value),
-                    value = value
-                )
-
-                else -> Invalid(
-                    display = DateTimeUtils.toUtcIso(value),
-                    value = value
-                )
+                DateValidator.isValid(value, range) -> Valid(display = display, value = value)
+                else -> Invalid(display = display, value = value)
             }
         }
     }

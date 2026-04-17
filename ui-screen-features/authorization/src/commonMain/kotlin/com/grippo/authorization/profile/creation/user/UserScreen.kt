@@ -85,21 +85,21 @@ internal fun UserScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputName(
-            value = state.name.display,
+            value = state.name,
             onValueChange = contract::onNameChange
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputWeight(
-            value = state.weight.display,
+            value = state.weight,
             onClick = contract::onWeightPickerClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputHeight(
-            value = state.height.display,
+            value = state.height,
             onClick = contract::onHeightPickerClick
         )
 

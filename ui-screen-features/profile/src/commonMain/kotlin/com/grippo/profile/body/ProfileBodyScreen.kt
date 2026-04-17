@@ -73,7 +73,7 @@ internal fun ProfileBodyScreen(
 
     InputHeight(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        value = state.height.display,
+        value = state.height,
         onClick = contract::onHeightPickerClick
     )
 
@@ -90,7 +90,7 @@ internal fun ProfileBodyScreen(
 
     InputWeight(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        value = state.weight.display,
+        value = state.weight,
         onClick = contract::onWeightPickerClick
     )
 

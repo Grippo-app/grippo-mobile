@@ -5,6 +5,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -20,7 +21,8 @@ internal data class ProfileGoalState(
     val limitations: DateRange = DateTimeUtils.leadingYear(),
     val selectedTarget: DateFormatState = DateFormatState.of(
         value = DateTimeUtils.now(),
-        range = limitations
+        range = limitations,
+        format = DateFormat.DateOnly.DateMmmDdYyyy
     ),
 
     val selectedPersonalization: ImmutableSet<PersonalizationKeyEnumState> = persistentSetOf(),

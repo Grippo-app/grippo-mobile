@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
@@ -17,29 +18,25 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
-import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlin.time.Duration
 
 @Composable
 public fun InputDuration(
     modifier: Modifier = Modifier,
-    value: Duration,
+    value: DurationFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.duration),
     onClick: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
-    val formatted = DateTimeUtils.format(value)
-
     Input(
         modifier = modifier,
-        value = formatted,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
-        trailing = { color -> },
+        trailing = { _ -> },
         placeholder = PlaceHolder.OverInput(
             value = placeholder
         ),
@@ -59,7 +56,7 @@ public fun InputDuration(
 private fun InputDurationPreview() {
     PreviewContainer {
         InputDuration(
-            value = Duration.parse("2h"),
+            value = DurationFormatState.of("2h"),
             onClick = {}
         )
     }

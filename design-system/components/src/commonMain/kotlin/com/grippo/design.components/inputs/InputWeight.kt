@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
@@ -25,7 +26,7 @@ import com.grippo.design.resources.provider.weight_placeholder
 @Composable
 public fun InputWeight(
     modifier: Modifier = Modifier,
-    value: String,
+    value: WeightFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.weight_placeholder),
     onClick: () -> Unit
 ) {
@@ -33,7 +34,7 @@ public fun InputWeight(
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(
@@ -66,12 +67,12 @@ public fun InputWeight(
 private fun InputWeightPreview() {
     PreviewContainer {
         InputWeight(
-            value = "12.5",
+            value = WeightFormatState.of(70.5f),
             onClick = {}
         )
 
         InputWeight(
-            value = "123.2",
+            value = WeightFormatState.of(85.0f),
             onClick = {}
         )
     }

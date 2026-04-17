@@ -1,7 +1,6 @@
 package com.grippo.design.components.inputs
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.design.components.inputs.core.Input
@@ -23,10 +22,7 @@ public fun InputDate(
     placeholder: String = AppTokens.strings.res(Res.string.select_date),
     onClick: () -> Unit,
 ) {
-    val formatted = remember(value.value) {
-        val v = value.value ?: return@remember "-"
-        DateTimeUtils.format(v, DateFormat.DateOnly.DateMmmDdYyyy)
-    }
+    val formatted = value.display.ifEmpty { "-" }
 
     Input(
         modifier = modifier,
@@ -51,6 +47,7 @@ private fun InputDatePreview() {
             value = DateFormatState.of(
                 value = DateTimeUtils.now(),
                 range = DateRange.Range.Yearly().range,
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
             onClick = {}
         )

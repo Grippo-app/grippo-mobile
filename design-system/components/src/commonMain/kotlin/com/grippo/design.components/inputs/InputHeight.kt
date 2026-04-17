@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
@@ -25,7 +26,7 @@ import com.grippo.design.resources.provider.height_placeholder
 @Composable
 public fun InputHeight(
     modifier: Modifier = Modifier,
-    value: String,
+    value: HeightFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.height_placeholder),
     onClick: () -> Unit
 ) {
@@ -33,7 +34,7 @@ public fun InputHeight(
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(
@@ -66,12 +67,12 @@ public fun InputHeight(
 private fun InputHeightPreview() {
     PreviewContainer {
         InputHeight(
-            value = "12",
+            value = HeightFormatState.of(120),
             onClick = {}
         )
 
         InputHeight(
-            value = "123",
+            value = HeightFormatState.of(175),
             onClick = {}
         )
     }

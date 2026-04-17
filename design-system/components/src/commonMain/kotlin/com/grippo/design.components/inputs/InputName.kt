@@ -19,7 +19,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.components.modifiers.scalableClick
@@ -34,7 +36,7 @@ import com.grippo.design.resources.provider.name_placeholder
 @Composable
 public fun InputName(
     modifier: Modifier = Modifier,
-    value: String,
+    value: NameFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.name_placeholder),
     onValueChange: (String) -> Unit
 ) {
@@ -42,9 +44,13 @@ public fun InputName(
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
+        error = when (value) {
+            is NameFormatState.Invalid -> InputError.Error("")
+            else -> InputError.Non
+        },
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
@@ -62,7 +68,7 @@ public fun InputName(
                     modifier = Modifier
                         .size(40.dp)
                         .scalableClick { onValueChange.invoke("") },
-                    visible = value.isNotEmpty(),
+                    visible = value.display.isNotEmpty(),
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),
                 ) {
@@ -100,12 +106,12 @@ public fun InputName(
 private fun InputNamePreview() {
     PreviewContainer {
         InputName(
-            value = "Mark B.",
+            value = NameFormatState.of("Mark B."),
             onValueChange = {}
         )
 
         InputName(
-            value = "",
+            value = NameFormatState.Empty(),
             onValueChange = {}
         )
     }

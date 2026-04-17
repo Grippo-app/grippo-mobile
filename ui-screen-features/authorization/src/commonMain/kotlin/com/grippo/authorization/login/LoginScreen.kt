@@ -104,14 +104,14 @@ internal fun LoginScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputEmail(
-            value = state.email.display,
+            value = state.email,
             onValueChange = contract::onEmailChange
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputPassword(
-            value = state.password.display,
+            value = state.password,
             onValueChange = contract::onPasswordChange
         )
 

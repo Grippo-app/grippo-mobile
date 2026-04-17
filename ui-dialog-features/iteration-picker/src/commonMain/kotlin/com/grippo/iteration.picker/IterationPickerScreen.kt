@@ -118,7 +118,7 @@ internal fun IterationPickerScreen(
                     modifier = Modifier.weight(1f),
                     onClick = contract::onWeightPickerClick,
                     placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
-                    value = state.value.bodyWeight.display
+                    value = state.value.bodyWeight
                 )
 
                 Row(

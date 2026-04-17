@@ -25,7 +25,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.components.modifiers.scalableClick
@@ -41,7 +43,7 @@ import com.grippo.design.resources.provider.password_placeholder_default
 @Composable
 public fun InputPassword(
     modifier: Modifier = Modifier,
-    value: String,
+    value: PasswordFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.password_placeholder_default),
     onValueChange: (String) -> Unit,
 ) {
@@ -51,10 +53,14 @@ public fun InputPassword(
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         enabled = true,
         maxLines = 1,
         minLines = 1,
+        error = when (value) {
+            is PasswordFormatState.Invalid -> InputError.Error("")
+            else -> InputError.Non
+        },
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
@@ -72,7 +78,7 @@ public fun InputPassword(
             )
         },
         trailing = { color ->
-            if (value.isEmpty()) return@Input
+            if (value is PasswordFormatState.Empty) return@Input
             Box {
                 AnimatedVisibility(
                     modifier = Modifier
@@ -134,12 +140,12 @@ public fun InputPassword(
 private fun InputPasswordPreview() {
     PreviewContainer {
         InputPassword(
-            value = "qwerty123",
+            value = PasswordFormatState.of("qwerty123"),
             onValueChange = {}
         )
 
         InputPassword(
-            value = "",
+            value = PasswordFormatState.Empty(),
             onValueChange = {}
         )
     }
