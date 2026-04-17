@@ -1,6 +1,7 @@
 package com.grippo.profile.goal
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.profile.PersonalizationKeyEnumState
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.SetGoal
@@ -65,9 +66,7 @@ internal class ProfileGoalViewModel(
                 initial = state.value.selectedTarget,
                 limitations = state.value.limitations,
                 title = stringProvider.get(Res.string.select_date),
-                onResult = {
-                    update { current -> current.copy(selectedTarget = it) }
-                }
+                onResult = { update { current -> current.copy(selectedTarget = it) } }
             )
 
             dialogController.show(config)
@@ -95,6 +94,18 @@ internal class ProfileGoalViewModel(
             )
 
             dialogController.show(config)
+        }
+    }
+
+    override fun onPersonalizationClick(item: PersonalizationKeyEnumState) {
+        update { current ->
+            val selected = current.selectedPersonalization.toMutableSet()
+            if (selected.contains(item)) {
+                selected.remove(item)
+            } else {
+                selected.add(item)
+            }
+            current.copy(selectedPersonalization = selected.toPersistentSet())
         }
     }
 

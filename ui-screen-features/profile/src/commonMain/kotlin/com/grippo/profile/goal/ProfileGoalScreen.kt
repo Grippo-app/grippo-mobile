@@ -1,6 +1,7 @@
 package com.grippo.profile.goal
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
@@ -22,6 +24,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCard
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.inputs.InputDate
 import com.grippo.design.components.inputs.InputPrimaryGoal
@@ -121,6 +125,42 @@ internal fun ProfileGoalScreen(
                         value = state.selectedTarget,
                         onClick = contract::onTargetDatePickerClick,
                     )
+                }
+
+                item(key = "personalization") {
+                    Text(
+                        text = "Personalization",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                    ) {
+                        state.personalization.onEach {
+                            key(it) {
+                                val isSelected = remember(state.selectedPersonalization) {
+                                    state.selectedPersonalization.contains(it)
+                                }
+
+                                val onSelectProvider = remember(it.ordinal) {
+                                    { contract.onPersonalizationClick(it) }
+                                }
+
+                                CheckSelectableCard(
+                                    style = CheckSelectableCardStyle.Small(
+                                        title = it.label(),
+                                    ),
+                                    isSelected = isSelected,
+                                    onSelect = onSelectProvider
+                                )
+                            }
+                        }
+                    }
                 }
             }
         },
