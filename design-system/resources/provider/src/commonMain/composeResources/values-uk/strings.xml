@@ -592,6 +592,23 @@
     <string name="goal_secondary_general_fitness">Загальне самопочуття</string>
     <string name="goal_secondary_consistency">Регулярність</string>
 
+    <!-- Primary goal descriptions -->
+    <string name="goal_primary_build_muscle_desc">Нарощуй масу та покращуй рельєф з прогресивними тренуваннями на гіпертрофію</string>
+    <string name="goal_primary_get_stronger_desc">Встановлюй нові рекорди з важкими базовими вправами та чіткою програмою силових</string>
+    <string name="goal_primary_lose_fat_desc">Спалюй жир і змінюй форму тіла з тренуваннями, що зберігають м'язи</string>
+    <string name="goal_primary_return_to_training_desc">Повертайся до тренувань безпечно та без поспіху після перерви або травми</string>
+    <string name="goal_primary_maintain_desc">Зберігай досягнуту форму з регулярними збалансованими тренуваннями</string>
+    <string name="goal_primary_general_fitness_desc">Почувайся краще, рухайся вільніше та живи здоровіше з різносторонніми тренуваннями</string>
+
+    <!-- Secondary goal descriptions -->
+    <string name="goal_secondary_build_muscle_desc">Додай м'язовий об'єм та покращ рельєф паралельно з основною метою</string>
+    <string name="goal_secondary_get_stronger_desc">Розвивай силу та потужність на доповнення до свого головного фокусу</string>
+    <string name="goal_secondary_lose_fat_desc">Знижуй відсоток жиру та покращуй склад тіла на шляху до основної мети</string>
+    <string name="goal_secondary_return_to_training_desc">Поступово відновлюй базу, рухаючись до головної мети</string>
+    <string name="goal_secondary_maintain_desc">Утримуй поточний рівень і не втрачай набрану форму</string>
+    <string name="goal_secondary_general_fitness_desc">Підвищуй енергію, витривалість та загальне фізичне самопочуття</string>
+    <string name="goal_secondary_consistency_desc">Формуй звичку тренуватися та дотримуйся розкладу тиждень за тижнем</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 рази на тиждень</string>
     <string name="personalization_moderate_frequency">3–4 рази на тиждень</string>

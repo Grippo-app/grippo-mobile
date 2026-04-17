@@ -52,7 +52,7 @@ internal fun PrimaryGoalPickerScreen(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
     ) {
-        items(state.goals) { goal ->
+        items(state.goals, key = { it.ordinal }) { goal ->
             val onClickProvider = remember(goal) {
                 { contract.onSelectGoal(goal) }
             }
@@ -60,7 +60,7 @@ internal fun PrimaryGoalPickerScreen(
                 modifier = Modifier.fillMaxWidth(),
                 style = CheckSelectableCardStyle.Medium(
                     title = goal.label(),
-                    description = null
+                    description = goal.description()
                 ),
                 isSelected = state.value == goal,
                 onSelect = onClickProvider,

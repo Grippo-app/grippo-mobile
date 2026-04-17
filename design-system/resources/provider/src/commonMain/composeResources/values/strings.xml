@@ -596,6 +596,23 @@
     <string name="goal_secondary_general_fitness">General fitness</string>
     <string name="goal_secondary_consistency">Stay consistent</string>
 
+    <!-- Primary goal descriptions -->
+    <string name="goal_primary_build_muscle_desc">Pack on size and definition with progressive, hypertrophy-focused workouts</string>
+    <string name="goal_primary_get_stronger_desc">Push past your limits with heavy compound lifts and structured strength programming</string>
+    <string name="goal_primary_lose_fat_desc">Burn fat and reshape your body with calorie-torching, muscle-preserving training</string>
+    <string name="goal_primary_return_to_training_desc">Ease back safely after a break or injury with gradual, structured progression</string>
+    <string name="goal_primary_maintain_desc">Keep your hard-earned fitness with consistent, balanced workouts</string>
+    <string name="goal_primary_general_fitness_desc">Feel better, move better, and live healthier with well-rounded training</string>
+
+    <!-- Secondary goal descriptions -->
+    <string name="goal_secondary_build_muscle_desc">Add lean muscle and improve definition alongside your primary goal</string>
+    <string name="goal_secondary_get_stronger_desc">Increase strength and power as a complement to your main focus</string>
+    <string name="goal_secondary_lose_fat_desc">Reduce body fat and improve body composition alongside your primary goal</string>
+    <string name="goal_secondary_return_to_training_desc">Rebuild your base gradually while working toward your primary goal</string>
+    <string name="goal_secondary_maintain_desc">Sustain your current level without losing your existing gains</string>
+    <string name="goal_secondary_general_fitness_desc">Boost overall energy, endurance, and physical wellness</string>
+    <string name="goal_secondary_consistency_desc">Build a lasting training habit and stay on track week after week</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 times a week</string>
     <string name="personalization_moderate_frequency">3–4 times a week</string>

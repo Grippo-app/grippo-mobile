@@ -33,6 +33,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_picker_primary_title
 import com.grippo.design.resources.provider.goal_save_btn
 import com.grippo.design.resources.provider.goal_secondary_section
 import com.grippo.design.resources.provider.goal_target_date_section
@@ -76,7 +77,7 @@ internal fun ProfileGoalScreen(
             ) {
                 item(key = "primary_goal") {
                     Text(
-                        text = AppTokens.strings.res(Res.string.goal_title),
+                        text = AppTokens.strings.res(Res.string.goal_picker_primary_title),
                         style = AppTokens.typography.b14Med(),
                         color = AppTokens.colors.text.secondary,
                     )

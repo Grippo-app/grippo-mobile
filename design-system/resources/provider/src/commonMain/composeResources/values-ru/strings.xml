@@ -593,6 +593,23 @@
     <string name="goal_secondary_general_fitness">Общее самочувствие</string>
     <string name="goal_secondary_consistency">Регулярность</string>
 
+    <!-- Primary goal descriptions -->
+    <string name="goal_primary_build_muscle_desc">Наращивай массу и прорабатывай рельеф с прогрессивными тренировками на гипертрофию</string>
+    <string name="goal_primary_get_stronger_desc">Пробивай новые рекорды с тяжёлыми базовыми упражнениями и чёткой программой силовых</string>
+    <string name="goal_primary_lose_fat_desc">Сжигай жир и меняй форму тела с тренировками, которые сохраняют мышцы</string>
+    <string name="goal_primary_return_to_training_desc">Возвращайся в строй безопасно и без спешки после перерыва или травмы</string>
+    <string name="goal_primary_maintain_desc">Сохраняй достигнутую форму с регулярными сбалансированными тренировками</string>
+    <string name="goal_primary_general_fitness_desc">Чувствуй себя лучше, двигайся свободнее и живи здоровее с разносторонними тренировками</string>
+
+    <!-- Secondary goal descriptions -->
+    <string name="goal_secondary_build_muscle_desc">Добавь мышечный объём и улучши рельеф параллельно с основной целью</string>
+    <string name="goal_secondary_get_stronger_desc">Развивай силу и мощь в дополнение к своему главному фокусу</string>
+    <string name="goal_secondary_lose_fat_desc">Снижай процент жира и улучшай состав тела на пути к основной цели</string>
+    <string name="goal_secondary_return_to_training_desc">Постепенно восстанавливай базу, двигаясь к главной цели</string>
+    <string name="goal_secondary_maintain_desc">Удерживай текущий уровень и не теряй набранную форму</string>
+    <string name="goal_secondary_general_fitness_desc">Повышай энергию, выносливость и общее физическое самочувствие</string>
+    <string name="goal_secondary_consistency_desc">Сформируй привычку тренироваться и придерживайся расписания неделю за неделей</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>
     <string name="personalization_moderate_frequency">3–4 раза в неделю</string>

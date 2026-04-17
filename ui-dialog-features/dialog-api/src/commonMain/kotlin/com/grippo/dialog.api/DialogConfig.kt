@@ -213,7 +213,7 @@ public sealed class DialogConfig(
     public data class SecondaryGoalPicker(
         val initial: GoalSecondaryGoalEnumState?,
         val title: String,
-        @Transient val onResult: (value: GoalSecondaryGoalEnumState?) -> Unit = {},
+        @Transient val onResult: (value: GoalSecondaryGoalEnumState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

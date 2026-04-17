@@ -12,7 +12,7 @@ public class SecondaryGoalPickerComponent(
     componentContext: ComponentContext,
     private val title: String,
     private val initial: GoalSecondaryGoalEnumState?,
-    private val onResult: (value: GoalSecondaryGoalEnumState?) -> Unit,
+    private val onResult: (value: GoalSecondaryGoalEnumState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<SecondaryGoalPickerDirection>(componentContext) {
 
