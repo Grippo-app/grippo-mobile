@@ -3,6 +3,7 @@ package com.grippo.profile.goal
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
+import com.grippo.data.features.api.goal.models.SetGoal
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_picker_primary_title
 import com.grippo.design.resources.provider.goal_picker_secondary_title
@@ -11,6 +12,7 @@ import com.grippo.design.resources.provider.select_date
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
+import com.grippo.state.domain.goal.toDomain
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.onEach
 
@@ -46,14 +48,14 @@ internal class ProfileGoalViewModel(
 
     override fun onSave() {
         safeLaunch(loader = ProfileGoalLoader.SaveButton) {
-//            val request = SetGoal(
-//                primaryGoal = state.value.selectedPrimary?.toDomain() ?: return@safeLaunch,
-//                secondaryGoal = state.value.selectedSecondary?.toDomain(),
-//                target = state.value.selectedTarget ?: return@safeLaunch,
-//                personalizations = state.value.selectedPersonalization.map { it.toDomain() },
-//            )
-//            goalFeature.setGoal(request).getOrThrow()
-//            navigateTo(ProfileGoalDirection.Back)
+            val request = SetGoal(
+                primaryGoal = state.value.selectedPrimary?.toDomain() ?: return@safeLaunch,
+                secondaryGoal = state.value.selectedSecondary?.toDomain(),
+                target = state.value.selectedTarget.value ?: return@safeLaunch,
+                personalizations = state.value.selectedPersonalization.map { it.toDomain() },
+            )
+            goalFeature.setGoal(request).getOrThrow()
+            navigateTo(ProfileGoalDirection.Back)
         }
     }
 

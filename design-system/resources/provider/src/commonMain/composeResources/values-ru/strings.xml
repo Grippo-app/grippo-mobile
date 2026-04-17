@@ -558,7 +558,7 @@
     <string name="tooltip_suspicious_reps_subtitle">Возможно, пропущена или лишняя цифра</string>
 
     <!-- Goal Profile -->
-    <string name="goal_title">Какая цель сейчас главная?</string>
+    <string name="goal_title">Цель тренировок</string>
     <string name="goal_picker_primary_title">Основная цель</string>
     <string name="goal_picker_secondary_title">Дополнительная цель</string>
     <string name="goal_save_btn">Сохранить цель</string>
