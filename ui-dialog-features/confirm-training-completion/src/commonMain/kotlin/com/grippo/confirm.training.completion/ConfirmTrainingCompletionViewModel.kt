@@ -4,10 +4,9 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import kotlin.time.Duration
 
 public class ConfirmTrainingCompletionViewModel(
-    duration: Duration,
+    duration: DurationFormatState,
     private val dialogController: DialogController
 ) : BaseViewModel<ConfirmTrainingCompletionState, ConfirmTrainingCompletionDirection, ConfirmTrainingCompletionLoader>(
     ConfirmTrainingCompletionState(
@@ -21,12 +20,10 @@ public class ConfirmTrainingCompletionViewModel(
 
     override fun onDurationInputClick() {
         val dialog = DialogConfig.DurationPicker(
-            initial = DurationFormatState.of(state.value.duration),
-            onResult = { result ->
-                val resolved = result.value ?: return@DurationPicker
-                update { it.copy(duration = resolved) }
-            }
+            initial = state.value.duration,
+            onResult = { result -> update { it.copy(duration = result) } }
         )
+
         dialogController.show(dialog)
     }
 

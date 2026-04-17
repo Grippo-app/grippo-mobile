@@ -6,12 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import kotlin.time.Duration
+import com.grippo.core.state.formatters.DurationFormatState
 
 public class ConfirmTrainingCompletionComponent(
     componentContext: ComponentContext,
-    private val value: Duration,
-    private val onResult: (Duration) -> Unit,
+    private val value: DurationFormatState,
+    private val onResult: (DurationFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<ConfirmTrainingCompletionDirection>(componentContext) {
 

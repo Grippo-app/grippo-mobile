@@ -14,6 +14,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
 import com.grippo.state.domain.goal.toDomain
+import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.onEach
 
@@ -66,7 +67,8 @@ internal class ProfileGoalViewModel(
                 initial = state.value.selectedTarget,
                 limitations = state.value.limitations,
                 title = stringProvider.get(Res.string.select_date),
-                onResult = { update { current -> current.copy(selectedTarget = it) } }
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                onResult = { result -> update { it.copy(selectedTarget = result) } }
             )
 
             dialogController.show(config)

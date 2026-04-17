@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -122,7 +123,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         ConfirmTrainingCompletionScreen(
             state = ConfirmTrainingCompletionState(
-                duration = 45.minutes
+                duration = DurationFormatState.of(45.minutes)
             ),
             contract = ConfirmTrainingCompletionContract.Empty,
             loaders = persistentSetOf()

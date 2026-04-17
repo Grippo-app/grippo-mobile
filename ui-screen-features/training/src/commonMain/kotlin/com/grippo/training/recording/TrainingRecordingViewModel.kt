@@ -1,6 +1,7 @@
 package com.grippo.training.recording
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -231,9 +232,10 @@ internal class TrainingRecordingViewModel(
         val duration = DateTimeUtils.ago(state.value.startAt)
 
         val config = DialogConfig.ConfirmTrainingCompletion(
-            value = duration,
+            value = DurationFormatState.of(duration),
             onResult = { result ->
-                val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
+                val raw = result.value ?: return@ConfirmTrainingCompletion
+                val startAt = DateTimeUtils.minus(DateTimeUtils.now(), raw)
                 update { it.copy(startAt = startAt) }
                 cancelNotificationReminder()
                 toCompleteTraining()

@@ -1,9 +1,9 @@
 package com.grippo.confirm.training.completion
 
 import androidx.compose.runtime.Immutable
-import kotlin.time.Duration
+import com.grippo.core.state.formatters.DurationFormatState
 
 @Immutable
 public data class ConfirmTrainingCompletionState(
-    val duration: Duration,
+    val duration: DurationFormatState,
 )

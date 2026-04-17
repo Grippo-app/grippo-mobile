@@ -24,6 +24,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
@@ -92,7 +93,11 @@ private fun ScreenPreview() {
     PreviewContainer {
         DatePickerScreen(
             state = DatePickerState(
-                value = DateFormatState.of(DateTimeUtils.now(), DateRange.Range.Weekly().range),
+                value = DateFormatState.of(
+                    value = DateTimeUtils.now(),
+                    range = DateRange.Range.Weekly().range,
+                    format = DateFormat.DateOnly.DateMmmDdYyyy
+                ),
                 limitations = DateRange.Range.Last365Days().range,
                 title = "Select date",
             ),
