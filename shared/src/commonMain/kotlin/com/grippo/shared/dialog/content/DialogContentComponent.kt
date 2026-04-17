@@ -28,6 +28,8 @@ import com.grippo.month.picker.MonthPickerComponent
 import com.grippo.muscle.loading.MuscleLoadingComponent
 import com.grippo.performance.trend.PerformanceTrendComponent
 import com.grippo.period.picker.PeriodPickerComponent
+import com.grippo.primary.goal.picker.PrimaryGoalPickerComponent
+import com.grippo.secondary.goal.picker.SecondaryGoalPickerComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.training.profile.TrainingProfileComponent
 import com.grippo.training.streak.TrainingStreakComponent
@@ -186,6 +188,26 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.PrimaryGoalPicker -> Child.PrimaryGoalPicker(
+                PrimaryGoalPickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    title = router.title,
+                    onResult = { goal -> viewModel.onBack { router.onResult.invoke(goal) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.SecondaryGoalPicker -> Child.SecondaryGoalPicker(
+                SecondaryGoalPickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    title = router.title,
+                    onResult = { goal -> viewModel.onBack { router.onResult.invoke(goal) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.MonthPicker -> Child.MonthPicker(
                 MonthPickerComponent(
                     componentContext = context,
@@ -319,6 +341,12 @@ internal class DialogContentComponent(
             Child(component)
 
         data class PeriodPicker(override val component: PeriodPickerComponent) :
+            Child(component)
+
+        data class PrimaryGoalPicker(override val component: PrimaryGoalPickerComponent) :
+            Child(component)
+
+        data class SecondaryGoalPicker(override val component: SecondaryGoalPickerComponent) :
             Child(component)
 
         data class MonthPicker(override val component: MonthPickerComponent) :

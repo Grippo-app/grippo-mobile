@@ -14,7 +14,8 @@ internal class ProfileGoalComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileGoalViewModel(
-            goalFeature = getKoin().get()
+            goalFeature = getKoin().get(),
+            dialogController = getKoin().get()
         )
     }
 

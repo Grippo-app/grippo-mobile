@@ -14,5 +14,6 @@ public fun Range.toState(): DateRange.Range {
         Range.LAST_60_DAYS -> DateRange.Range.Last60Days()
         Range.LAST_365_DAYS -> DateRange.Range.Last365Days()
         Range.YEARLY -> DateRange.Range.Yearly()
+        Range.INFINITY -> DateRange.Range.Infinity()
     }
 }

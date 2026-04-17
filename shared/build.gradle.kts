@@ -92,6 +92,8 @@ kotlin {
         implementation(projects.uiDialogFeatures.trainingProfile)
         implementation(projects.uiDialogFeatures.performanceTrend)
         implementation(projects.uiDialogFeatures.periodPicker)
+        implementation(projects.uiDialogFeatures.primaryGoalPicker)
+        implementation(projects.uiDialogFeatures.secondaryGoalPicker)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

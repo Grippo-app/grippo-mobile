@@ -9,7 +9,8 @@ public enum class Range(public val key: String) {
     LAST_30_DAYS("last_30_days"),
     LAST_60_DAYS("last_60_days"),
     LAST_365_DAYS("last_365_days"),
-    YEARLY("yearly");
+    YEARLY("yearly"),
+    INFINITY("infinity");
 
     public companion object {
         public fun of(key: String?): Range? {

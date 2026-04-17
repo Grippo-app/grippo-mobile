@@ -100,6 +100,8 @@ include(":ui-dialog-features:training-streak")
 include(":ui-dialog-features:training-profile")
 include(":ui-dialog-features:performance-trend")
 include(":ui-dialog-features:period-picker")
+include(":ui-dialog-features:primary-goal-picker")
+include(":ui-dialog-features:secondary-goal-picker")
 
 include(":toolkit:context")
 include(":toolkit:localization")

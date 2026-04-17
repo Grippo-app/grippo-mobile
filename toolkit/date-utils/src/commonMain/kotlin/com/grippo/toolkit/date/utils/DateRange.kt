@@ -81,6 +81,11 @@ public data class DateRange(
         @Serializable
         @Immutable
         public data object Undefined : Range()
+
+        @Serializable
+        @Immutable
+        public data class Infinity(override val range: DateRange = DateTimeUtils.infinity()) :
+            Range()
     }
 
     public fun range(): Range {
@@ -120,6 +125,7 @@ public data class DateRange(
             is Range.Last365Days -> AppTokens.strings.res(Res.string.last_365_days)
             is Range.Yearly -> AppTokens.strings.res(Res.string.yearly)
             Range.Undefined -> null
+            is Range.Infinity -> null
         }
     }
 
@@ -136,6 +142,7 @@ public data class DateRange(
             is Range.Last365Days -> formatSpan(DateFormat.DateOnly.DateMmmDdYyyy)
             is Range.Yearly -> formatSpan(DateFormat.DateOnly.DateMmmDdYyyy)
             Range.Undefined -> formatUndefined()
+            is Range.Infinity -> formatUndefined()
         }
     }
 

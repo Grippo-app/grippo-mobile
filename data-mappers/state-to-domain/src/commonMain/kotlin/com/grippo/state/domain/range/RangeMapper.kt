@@ -14,6 +14,7 @@ public fun DateRange.Range.toDomain(): Range? {
         is DateRange.Range.Last60Days -> Range.LAST_60_DAYS
         is DateRange.Range.Last365Days -> Range.LAST_365_DAYS
         is DateRange.Range.Yearly -> Range.YEARLY
+        is DateRange.Range.Infinity -> Range.INFINITY
         DateRange.Range.Undefined -> null
     }
 }

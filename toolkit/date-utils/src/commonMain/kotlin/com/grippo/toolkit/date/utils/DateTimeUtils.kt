@@ -131,6 +131,13 @@ public object DateTimeUtils {
         )
     }
 
+    public fun infinity(): DateRange {
+        return DateRange(
+            from = LocalDateTime(1970, 1, 1, 0, 0, 0, 0),
+            to = LocalDateTime(9999, 12, 31, 23, 59, 59, 999_999_900),
+        )
+    }
+
     /* * * * * * * * * * *
      * Time for date
      * * * * * * * * * * */

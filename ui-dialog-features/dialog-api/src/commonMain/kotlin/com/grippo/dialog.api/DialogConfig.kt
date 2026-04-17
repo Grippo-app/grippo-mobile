@@ -8,6 +8,8 @@ import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
+import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
+import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.trainings.IterationFocusState
@@ -186,6 +188,32 @@ public sealed class DialogConfig(
         val initial: DateRange.Range,
         val title: String,
         @Transient val onResult: (value: DateRange.Range) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    ) {
+        override val key: String
+            get() = buildKey(initial, title)
+    }
+
+    @Serializable
+    public data class PrimaryGoalPicker(
+        val initial: GoalPrimaryGoalEnumState?,
+        val title: String,
+        @Transient val onResult: (value: GoalPrimaryGoalEnumState) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    ) {
+        override val key: String
+            get() = buildKey(initial, title)
+    }
+
+    @Serializable
+    public data class SecondaryGoalPicker(
+        val initial: GoalSecondaryGoalEnumState?,
+        val title: String,
+        @Transient val onResult: (value: GoalSecondaryGoalEnumState?) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
