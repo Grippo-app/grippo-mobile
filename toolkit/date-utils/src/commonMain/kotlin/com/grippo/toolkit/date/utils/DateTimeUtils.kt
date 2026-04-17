@@ -47,6 +47,15 @@ public object DateTimeUtils {
         )
     }
 
+    public fun leadingYear(): DateRange {
+        val date = Clock.System.now().toLocalDateTime(timeZone).date
+
+        return DateRange(
+            from = date.atTime(DayTime.StartOfDay.localTime),
+            to = date.plus(DatePeriod(years = 1)).atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
     public fun thisWeek(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
         val daysToStartOfWeek = today.dayOfWeek.ordinal
