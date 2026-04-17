@@ -561,7 +561,9 @@
     <string name="tooltip_suspicious_reps_subtitle">Possible missing or extra digit</string>
 
     <!-- Goal Profile -->
-    <string name="goal_title">What\'s your main goal right now?</string>
+    <string name="goal_title">What's your main goal right now?</string>
+    <string name="goal_picker_primary_title">Primary goal</string>
+    <string name="goal_picker_secondary_title">Secondary goal</string>
     <string name="goal_save_btn">Save goal</string>
     <string name="goal_customize_btn">Customize in detail</string>
     <string name="goal_secondary_section">What else matters?</string>

@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,6 +23,9 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.inputs.InputDate
+import com.grippo.design.components.inputs.InputPrimaryGoal
+import com.grippo.design.components.inputs.InputSecondaryGoal
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -29,8 +34,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_save_btn
+import com.grippo.design.resources.provider.goal_secondary_section
+import com.grippo.design.resources.provider.goal_target_date_section
 import com.grippo.design.resources.provider.goal_title
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
@@ -65,10 +71,56 @@ internal fun ProfileGoalScreen(
         content = { containerModifier, resolvedPadding ->
             LazyColumn(
                 modifier = containerModifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
                 contentPadding = resolvedPadding,
             ) {
+                item(key = "primary_goal") {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.goal_title),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
 
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+                    InputPrimaryGoal(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.selectedPrimary,
+                        onClick = contract::onPrimaryGoalPickerClick,
+                    )
+                }
+
+                item(key = "secondary_goal") {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.goal_secondary_section),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+                    InputSecondaryGoal(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.selectedSecondary,
+                        onClick = contract::onSecondaryGoalPickerClick,
+                    )
+                }
+
+                item(key = "target_date") {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.goal_target_date_section),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+                    InputDate(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.selectedTarget,
+                        onClick = contract::onTargetDatePickerClick,
+                    )
+                }
             }
         },
         bottom = {
@@ -91,7 +143,7 @@ internal fun ProfileGoalScreen(
                 ),
                 style = ButtonStyle.Primary,
                 state = buttonState,
-                onClick = contract::onSaveFastPath,
+                onClick = contract::onSave,
             )
 
             Spacer(Modifier.size(AppTokens.dp.screen.verticalPadding))
@@ -109,7 +161,6 @@ private fun ProfileGoalScreenPreview() {
             state = ProfileGoalState(
                 selectedPrimary = GoalPrimaryGoalEnumState.entries.random(),
                 selectedSecondary = GoalSecondaryGoalEnumState.entries.random(),
-                selectedTarget = DateTimeUtils.now(),
                 selectedPersonalization = PersonalizationKeyEnumState.entries
                     .shuffled()
                     .take(3)
