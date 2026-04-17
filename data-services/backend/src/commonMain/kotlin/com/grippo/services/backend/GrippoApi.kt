@@ -222,7 +222,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Goal service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getGoal(): Result<GoalResponse> {
+    public suspend fun getGoal(): Result<GoalResponse?> {
         return request(
             method = HttpMethod.Get,
             path = "/users/goal"

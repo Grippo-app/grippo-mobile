@@ -36,7 +36,7 @@ internal class GoalRepositoryImpl(
         val response = api.getGoal()
 
         return response.map { dto ->
-            val entity = dto.toEntityOrNull(userId) ?: return@map false
+            val entity = dto?.toEntityOrNull(userId) ?: return@map false
             goalDao.insertOrUpdate(entity)
             true
         }
