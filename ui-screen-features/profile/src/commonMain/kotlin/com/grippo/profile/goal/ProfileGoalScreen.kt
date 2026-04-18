@@ -167,7 +167,7 @@ internal fun ProfileGoalScreen(
         bottom = {
             Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-            val buttonState = remember(loaders) {
+            val buttonState = remember(loaders, state.selectedPrimary) {
                 when {
                     loaders.contains(ProfileGoalLoader.SaveButton) -> ButtonState.Loading
                     state.selectedPrimary == null -> ButtonState.Disabled
