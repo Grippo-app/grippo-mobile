@@ -79,8 +79,7 @@ internal class TrainingsViewModel(
     }
 
     override fun onTrainingMenuClick(id: String) {
-        val dialog = DialogConfig.MenuPicker.of(
-            items = TrainingMenu.entries,
+        val dialog = DialogConfig.TrainingMenuPicker(
             onResult = { item ->
                 when (item) {
                     TrainingMenu.Delete -> deleteTraining(id)

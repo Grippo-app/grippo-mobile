@@ -12,6 +12,7 @@ import com.grippo.confirm.training.completion.ConfirmTrainingCompletionComponent
 import com.grippo.confirmation.ConfirmationComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.profile.ProfileComponent
@@ -237,11 +238,11 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.MenuPicker -> Child.MenuPicker(
+            is DialogConfig.TrainingMenuPicker -> Child.MenuPicker(
                 MenuPickerComponent(
                     componentContext = context,
-                    items = router.items,
-                    onResult = { item -> viewModel.onBack { router.onResult.invoke(item) } },
+                    items = TrainingMenu.entries,
+                    onResult = { item -> viewModel.onBack { router.onResult.invoke(item as TrainingMenu) } },
                     back = { viewModel.onBack(null) }
                 )
             )

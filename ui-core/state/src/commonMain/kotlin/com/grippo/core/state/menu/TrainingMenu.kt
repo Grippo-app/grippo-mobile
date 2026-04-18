@@ -14,13 +14,10 @@ import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Edit
 import com.grippo.design.resources.provider.icons.EyeOn
 import com.grippo.design.resources.provider.selected
-import kotlinx.serialization.Serializable
 
 @Immutable
-@Serializable
 public sealed class TrainingMenu : PickerMenuItem {
 
-    @Serializable
     public data object Details : TrainingMenu() {
         override val id: String get() = "overview"
         override fun text(): UiText = UiText.Res(Res.string.details)
@@ -29,7 +26,6 @@ public sealed class TrainingMenu : PickerMenuItem {
         override fun icon(): ImageVector = AppTokens.icons.EyeOn
     }
 
-    @Serializable
     public data object Edit : TrainingMenu() {
         override val id: String get() = "edit"
         override fun text(): UiText = UiText.Res(Res.string.edit_btn)
@@ -38,7 +34,6 @@ public sealed class TrainingMenu : PickerMenuItem {
         override fun icon(): ImageVector = AppTokens.icons.Edit
     }
 
-    @Serializable
     public data object Delete : TrainingMenu() {
         override val id: String get() = "delete"
         override fun text(): UiText = UiText.Res(Res.string.delete_btn)
