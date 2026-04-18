@@ -46,7 +46,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(error)
+            get() = buildKey("ErrorDisplay", error)
     }
 
     @Serializable
@@ -57,7 +57,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(id)
+            get() = buildKey("ExerciseExample", id)
     }
 
     @Serializable
@@ -68,7 +68,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(id)
+            get() = buildKey("Exercise", id)
     }
 
     @Serializable
@@ -79,7 +79,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(range)
+            get() = buildKey("MuscleLoading", range)
     }
 
     @Serializable
@@ -90,7 +90,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(range)
+            get() = buildKey("TrainingStreak", range)
     }
 
     @Serializable
@@ -101,7 +101,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(range)
+            get() = buildKey("TrainingProfile", range)
     }
 
     @Serializable
@@ -113,7 +113,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(range, metricType)
+            get() = buildKey("PerformanceTrend", range, metricType)
     }
 
     @Serializable
@@ -129,7 +129,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial, number, example, focus, suggestions)
+            get() = buildKey("Iteration", initial, number, example, focus, suggestions)
     }
 
     @Serializable
@@ -141,7 +141,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial)
+            get() = buildKey("WeightPicker", initial)
     }
 
     @Serializable
@@ -153,7 +153,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial)
+            get() = buildKey("DurationPicker", initial)
     }
 
     @Serializable
@@ -165,7 +165,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial)
+            get() = buildKey("HeightPicker", initial)
     }
 
     @Serializable
@@ -179,7 +179,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial, limitations, title)
+            get() = buildKey("DatePicker", initial, limitations, title)
     }
 
     @Serializable
@@ -192,7 +192,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial, title)
+            get() = buildKey("PeriodPicker", initial, title)
     }
 
     @Serializable
@@ -205,7 +205,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial, title)
+            get() = buildKey("PrimaryGoalPicker", initial, title)
     }
 
     @Serializable
@@ -218,7 +218,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial, title)
+            get() = buildKey("SecondaryGoalPicker", initial, title)
     }
 
     @Serializable
@@ -232,7 +232,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial, limitations, title)
+            get() = buildKey("MonthPicker", initial, limitations, title)
     }
 
     @Serializable
@@ -244,7 +244,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey()
+            get() = buildKey("DraftTraining")
     }
 
     @Serializable
@@ -256,7 +256,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(targetMuscleGroupId)
+            get() = buildKey("ExerciseExamplePicker", targetMuscleGroupId)
     }
 
     @Serializable
@@ -267,7 +267,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey()
+            get() = buildKey("TrainingMenuPicker")
     }
 
     @Serializable
@@ -279,7 +279,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey()
+            get() = buildKey("Profile")
     }
 
     @Serializable
@@ -292,7 +292,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(title, description)
+            get() = buildKey("Confirmation", title, description)
     }
 
     @Serializable
@@ -304,7 +304,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(initial)
+            get() = buildKey("ConfirmTrainingCompletion", initial)
     }
 
     @Serializable
@@ -317,7 +317,7 @@ public sealed class DialogConfig(
             public val range: DateRange,
         ) : Statistics() {
             override val key: String
-                get() = buildKey(range)
+                get() = buildKey("Statistics.Trainings", range)
         }
 
         @Serializable
@@ -325,7 +325,7 @@ public sealed class DialogConfig(
             public val id: String,
         ) : Statistics() {
             override val key: String
-                get() = buildKey(id)
+                get() = buildKey("Statistics.Training", id)
         }
     }
 }
