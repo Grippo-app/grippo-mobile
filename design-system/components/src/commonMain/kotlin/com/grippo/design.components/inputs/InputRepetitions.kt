@@ -14,9 +14,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.design.components.inputs.core.Input
-import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -41,11 +41,7 @@ public fun InputRepetitions(
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
-        error = when (value) {
-            is RepetitionsFormatState.Empty -> InputError.Non
-            is RepetitionsFormatState.Invalid -> InputError.Error("")
-            is RepetitionsFormatState.Valid -> InputError.Non
-        },
+        error = value.toInputError(),
         trailing = { color ->
             Text(
                 modifier = Modifier.padding(end = 8.dp),

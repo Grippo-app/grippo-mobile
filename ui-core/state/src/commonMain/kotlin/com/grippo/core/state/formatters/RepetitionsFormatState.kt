@@ -17,21 +17,21 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     public data class Valid(
         override val display: String,
         override val value: Int
-    ) : RepetitionsFormatState()
+    ) : RepetitionsFormatState(), FormatState.Valid<Int>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Int?
-    ) : RepetitionsFormatState()
+    ) : RepetitionsFormatState(), FormatState.Invalid<Int>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Int? = null
-    ) : RepetitionsFormatState()
+    ) : RepetitionsFormatState(), FormatState.Empty<Int>
 
     public companion object {
         public fun of(display: String): RepetitionsFormatState {

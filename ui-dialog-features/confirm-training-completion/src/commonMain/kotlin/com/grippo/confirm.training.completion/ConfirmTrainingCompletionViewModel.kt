@@ -6,11 +6,11 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 
 public class ConfirmTrainingCompletionViewModel(
-    duration: DurationFormatState,
+    initial: DurationFormatState,
     private val dialogController: DialogController
 ) : BaseViewModel<ConfirmTrainingCompletionState, ConfirmTrainingCompletionDirection, ConfirmTrainingCompletionLoader>(
     ConfirmTrainingCompletionState(
-        duration = duration
+        duration = initial
     )
 ), ConfirmTrainingCompletionContract {
 

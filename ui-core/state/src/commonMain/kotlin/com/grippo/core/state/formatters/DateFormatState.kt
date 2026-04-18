@@ -19,7 +19,7 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
         override val display: String,
         override val value: LocalDateTime,
         override val format: DateFormat,
-    ) : DateFormatState()
+    ) : DateFormatState(), FormatState.Valid<LocalDateTime>
 
     @Immutable
     @Serializable
@@ -27,7 +27,7 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
         override val display: String,
         override val value: LocalDateTime?,
         override val format: DateFormat,
-    ) : DateFormatState()
+    ) : DateFormatState(), FormatState.Invalid<LocalDateTime>
 
     @Immutable
     @Serializable
@@ -35,7 +35,7 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
         override val format: DateFormat,
         override val display: String = "",
         override val value: LocalDateTime? = null,
-    ) : DateFormatState()
+    ) : DateFormatState(), FormatState.Empty<LocalDateTime>
 
     public companion object {
         public fun of(

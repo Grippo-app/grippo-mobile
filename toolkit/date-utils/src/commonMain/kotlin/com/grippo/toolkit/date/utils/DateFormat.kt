@@ -43,6 +43,12 @@ public sealed interface DateFormat {
 
         @Immutable
         @Serializable
+        public data object MmmYyyy : DateOnly {
+            override val pattern: String = "MMM yyyy"
+        }
+
+        @Immutable
+        @Serializable
         public data object DateMmmDdComma : DateOnly {
             override val pattern: String = "MMM, dd"
         }

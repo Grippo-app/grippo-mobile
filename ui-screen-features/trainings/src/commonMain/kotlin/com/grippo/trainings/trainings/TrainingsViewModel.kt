@@ -150,22 +150,25 @@ internal class TrainingsViewModel(
             //    (или встроить обновление anchor прямо в applyAnchor и принимать DateFormatState).
             // 4) Проверить, что shiftDate/onOpenDaily/init-rangeFlow корректно работают с новым anchor.
             val current = state.value
-            val initial = DateFormatState.of(
-                value = current.date.from,
-                range = current.limitations,
-                format = DateFormat.DateOnly.DateMmmDdYyyy
-            )
             val dialog = when (current.period) {
                 TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
                     title = stringProvider.get(Res.string.select_date),
-                    initial = initial,
+                    initial = DateFormatState.of(
+                        value = current.date.from,
+                        range = current.limitations,
+                        format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    ),
                     limitations = current.limitations,
                     onResult = { result -> result.value?.let(::applyAnchor) }
                 )
 
                 TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
                     title = stringProvider.get(Res.string.select_month),
-                    initial = initial,
+                    initial = DateFormatState.of(
+                        value = current.date.from,
+                        range = current.limitations,
+                        format = DateFormat.DateOnly.MmmYyyy,
+                    ),
                     limitations = current.limitations,
                     onResult = { result -> result.value?.let(::applyAnchor) }
                 )

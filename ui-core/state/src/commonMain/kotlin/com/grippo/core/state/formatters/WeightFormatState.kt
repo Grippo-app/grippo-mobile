@@ -14,21 +14,21 @@ public sealed class WeightFormatState : FormatState<Float> {
     public data class Valid(
         override val display: String,
         override val value: Float
-    ) : WeightFormatState()
+    ) : WeightFormatState(), FormatState.Valid<Float>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Float?
-    ) : WeightFormatState()
+    ) : WeightFormatState(), FormatState.Invalid<Float>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Float? = null
-    ) : WeightFormatState()
+    ) : WeightFormatState(), FormatState.Empty<Float>
 
     public companion object {
         public val WeightLimitation: ClosedFloatingPointRange<Float> = 30.0f..150.0f

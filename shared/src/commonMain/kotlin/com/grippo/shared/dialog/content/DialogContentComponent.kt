@@ -280,7 +280,7 @@ internal class DialogContentComponent(
             is DialogConfig.ConfirmTrainingCompletion -> Child.ConfirmTrainingCompletion(
                 ConfirmTrainingCompletionComponent(
                     componentContext = context,
-                    value = router.value,
+                    initial = router.initial,
                     onResult = { duration -> viewModel.onBack { router.onResult.invoke(duration) } },
                     back = { viewModel.onBack(null) }
                 )

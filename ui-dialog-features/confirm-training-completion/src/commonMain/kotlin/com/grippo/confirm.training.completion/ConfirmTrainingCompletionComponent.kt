@@ -10,14 +10,14 @@ import com.grippo.core.state.formatters.DurationFormatState
 
 public class ConfirmTrainingCompletionComponent(
     componentContext: ComponentContext,
-    private val value: DurationFormatState,
+    private val initial: DurationFormatState,
     private val onResult: (DurationFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<ConfirmTrainingCompletionDirection>(componentContext) {
 
     override val viewModel: ConfirmTrainingCompletionViewModel = componentContext.retainedInstance {
         ConfirmTrainingCompletionViewModel(
-            duration = value,
+            initial = initial,
             dialogController = getKoin().get(),
         )
     }

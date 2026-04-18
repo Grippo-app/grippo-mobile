@@ -232,7 +232,7 @@ internal class TrainingRecordingViewModel(
         val duration = DateTimeUtils.ago(state.value.startAt)
 
         val config = DialogConfig.ConfirmTrainingCompletion(
-            value = DurationFormatState.of(duration),
+            initial = DurationFormatState.of(duration),
             onResult = { result ->
                 val raw = result.value ?: return@ConfirmTrainingCompletion
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), raw)

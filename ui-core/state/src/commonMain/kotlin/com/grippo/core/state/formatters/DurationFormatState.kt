@@ -16,21 +16,21 @@ public sealed class DurationFormatState : FormatState<Duration> {
     public data class Valid(
         override val display: String,
         override val value: Duration
-    ) : DurationFormatState()
+    ) : DurationFormatState(), FormatState.Valid<Duration>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Duration?
-    ) : DurationFormatState()
+    ) : DurationFormatState(), FormatState.Invalid<Duration>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Duration? = null
-    ) : DurationFormatState()
+    ) : DurationFormatState(), FormatState.Empty<Duration>
 
     public companion object {
         public val DurationLimitation: ClosedRange<Duration> =

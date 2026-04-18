@@ -12,21 +12,21 @@ public sealed class HeightFormatState : FormatState<Int> {
     public data class Valid(
         override val display: String,
         override val value: Int
-    ) : HeightFormatState()
+    ) : HeightFormatState(), FormatState.Valid<Int>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Int?
-    ) : HeightFormatState()
+    ) : HeightFormatState(), FormatState.Invalid<Int>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Int? = null
-    ) : HeightFormatState()
+    ) : HeightFormatState(), FormatState.Empty<Int>
 
     public companion object {
         public val HeightLimitation: IntRange = 100..250

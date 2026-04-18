@@ -14,9 +14,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.components.inputs.core.Input
-import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -38,11 +38,7 @@ public fun InputVolume(
         value = value.display,
         maxLines = 1,
         minLines = 1,
-        error = when (value) {
-            is VolumeFormatState.Empty -> InputError.Non
-            is VolumeFormatState.Invalid -> InputError.Error("")
-            is VolumeFormatState.Valid -> InputError.Non
-        },
+        error = value.toInputError(),
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),

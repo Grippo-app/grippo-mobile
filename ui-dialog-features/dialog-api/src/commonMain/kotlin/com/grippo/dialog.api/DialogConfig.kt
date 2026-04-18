@@ -298,14 +298,14 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class ConfirmTrainingCompletion(
-        val value: DurationFormatState,
+        val initial: DurationFormatState,
         @Transient val onResult: (DurationFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(value)
+            get() = buildKey(initial)
     }
 
     @Serializable

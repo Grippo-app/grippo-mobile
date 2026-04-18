@@ -18,21 +18,21 @@ public sealed class IntensityFormatState : FormatState<Float> {
     public data class Valid(
         override val display: String,
         override val value: Float
-    ) : IntensityFormatState()
+    ) : IntensityFormatState(), FormatState.Valid<Float>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Float?
-    ) : IntensityFormatState()
+    ) : IntensityFormatState(), FormatState.Invalid<Float>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Float? = null
-    ) : IntensityFormatState()
+    ) : IntensityFormatState(), FormatState.Empty<Float>
 
     public companion object {
 

@@ -17,21 +17,21 @@ public sealed class PercentageFormatState : FormatState<Int> {
     public data class Valid(
         override val display: String,
         override val value: Int
-    ) : PercentageFormatState()
+    ) : PercentageFormatState(), FormatState.Valid<Int>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Int?
-    ) : PercentageFormatState()
+    ) : PercentageFormatState(), FormatState.Invalid<Int>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Int? = null
-    ) : PercentageFormatState()
+    ) : PercentageFormatState(), FormatState.Empty<Int>
 
     public companion object {
 

@@ -6,6 +6,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -22,17 +23,15 @@ public fun InputDate(
     placeholder: String = AppTokens.strings.res(Res.string.select_date),
     onClick: () -> Unit,
 ) {
-    val formatted = value.display.ifEmpty { "-" }
-
     Input(
         modifier = modifier,
-        value = formatted,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
-        trailing = { _ -> },
+        error = value.toInputError(),
         placeholder = PlaceHolder.OverInput(
             value = placeholder
         ),

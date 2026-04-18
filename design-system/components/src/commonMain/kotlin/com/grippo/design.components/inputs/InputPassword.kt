@@ -1,12 +1,6 @@
 package com.grippo.design.components.inputs
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -24,13 +17,12 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.design.components.inputs.core.Input
-import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
+import com.grippo.design.components.inputs.core.InputTrailingIconButton
 import com.grippo.design.components.inputs.core.PlaceHolder
-import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -57,10 +49,7 @@ public fun InputPassword(
         enabled = true,
         maxLines = 1,
         minLines = 1,
-        error = when (value) {
-            is PasswordFormatState.Invalid -> InputError.Error("")
-            else -> InputError.Non
-        },
+        error = value.toInputError(),
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
@@ -80,48 +69,17 @@ public fun InputPassword(
         trailing = { color ->
             if (value is PasswordFormatState.Empty) return@Input
             Box {
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .scalableClick { passwordVisible = true },
+                InputTrailingIconButton(
                     visible = !passwordVisible,
-                    enter = fadeIn() + scaleIn(),
-                    exit = scaleOut() + fadeOut(),
-                    content = {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(AppTokens.dp.input.icon),
-                                imageVector = AppTokens.icons.EyeOn,
-                                tint = color,
-                                contentDescription = null,
-                            )
-                        }
-                    },
+                    icon = AppTokens.icons.EyeOn,
+                    tint = color,
+                    onClick = { passwordVisible = true },
                 )
-
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .scalableClick { passwordVisible = false },
+                InputTrailingIconButton(
                     visible = passwordVisible,
-                    enter = fadeIn() + scaleIn(),
-                    exit = scaleOut() + fadeOut(),
-                    content = {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(AppTokens.dp.input.icon),
-                                imageVector = AppTokens.icons.EyeOff,
-                                tint = color,
-                                contentDescription = null,
-                            )
-                        }
-                    },
+                    icon = AppTokens.icons.EyeOff,
+                    tint = color,
+                    onClick = { passwordVisible = false },
                 )
             }
         },

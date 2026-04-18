@@ -12,21 +12,21 @@ public sealed class NameFormatState : FormatState<String> {
     public data class Valid(
         override val display: String,
         override val value: String
-    ) : NameFormatState()
+    ) : NameFormatState(), FormatState.Valid<String>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: String?
-    ) : NameFormatState()
+    ) : NameFormatState(), FormatState.Invalid<String>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: String? = null
-    ) : NameFormatState()
+    ) : NameFormatState(), FormatState.Empty<String>
 
     public companion object {
         public val NameLimitation: IntRange = 1..60

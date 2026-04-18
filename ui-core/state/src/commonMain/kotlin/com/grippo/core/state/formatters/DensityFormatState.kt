@@ -19,21 +19,21 @@ public sealed class DensityFormatState : FormatState<Float> {
     public data class Valid(
         override val display: String,
         override val value: Float
-    ) : DensityFormatState()
+    ) : DensityFormatState(), FormatState.Valid<Float>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: Float?
-    ) : DensityFormatState()
+    ) : DensityFormatState(), FormatState.Invalid<Float>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: Float? = null
-    ) : DensityFormatState()
+    ) : DensityFormatState(), FormatState.Empty<Float>
 
     public companion object {
         private fun tenths(value: Float): Int = (value * 10f).roundToInt()

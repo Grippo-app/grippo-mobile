@@ -16,21 +16,21 @@ public sealed class PasswordFormatState : FormatState<String> {
     public data class Valid(
         override val display: String,
         override val value: String
-    ) : PasswordFormatState()
+    ) : PasswordFormatState(), FormatState.Valid<String>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: String?
-    ) : PasswordFormatState()
+    ) : PasswordFormatState(), FormatState.Invalid<String>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: String? = null
-    ) : PasswordFormatState()
+    ) : PasswordFormatState(), FormatState.Empty<String>
 
     public companion object {
         public fun of(display: String): PasswordFormatState {

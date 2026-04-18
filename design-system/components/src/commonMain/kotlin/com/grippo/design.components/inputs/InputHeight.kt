@@ -1,21 +1,15 @@
 package com.grippo.design.components.inputs
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -30,8 +24,6 @@ public fun InputHeight(
     placeholder: String = AppTokens.strings.res(Res.string.height_placeholder),
     onClick: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-
     Input(
         modifier = modifier,
         value = value.display,
@@ -40,6 +32,7 @@ public fun InputHeight(
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
+        error = value.toInputError(),
         trailing = { color ->
             Text(
                 modifier = Modifier.padding(end = 8.dp),
@@ -51,14 +44,6 @@ public fun InputHeight(
         placeholder = PlaceHolder.OverInput(
             value = placeholder
         ),
-        keyboardActions = KeyboardActions {
-            focusManager.moveFocus(FocusDirection.Next)
-        },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Number
-        )
     )
 }
 

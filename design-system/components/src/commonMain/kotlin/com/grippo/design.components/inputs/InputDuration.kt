@@ -1,18 +1,12 @@
 package com.grippo.design.components.inputs
 
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -26,8 +20,6 @@ public fun InputDuration(
     placeholder: String = AppTokens.strings.res(Res.string.duration),
     onClick: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-
     Input(
         modifier = modifier,
         value = value.display,
@@ -36,18 +28,10 @@ public fun InputDuration(
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
-        trailing = { _ -> },
+        error = value.toInputError(),
         placeholder = PlaceHolder.OverInput(
             value = placeholder
         ),
-        keyboardActions = KeyboardActions {
-            focusManager.moveFocus(FocusDirection.Next)
-        },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Number
-        )
     )
 }
 

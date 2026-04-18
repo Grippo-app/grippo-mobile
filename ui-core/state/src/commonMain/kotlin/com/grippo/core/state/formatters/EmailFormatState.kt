@@ -12,21 +12,21 @@ public sealed class EmailFormatState : FormatState<String> {
     public data class Valid(
         override val display: String,
         override val value: String
-    ) : EmailFormatState()
+    ) : EmailFormatState(), FormatState.Valid<String>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
         override val value: String?
-    ) : EmailFormatState()
+    ) : EmailFormatState(), FormatState.Invalid<String>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
         override val value: String? = null
-    ) : EmailFormatState()
+    ) : EmailFormatState(), FormatState.Empty<String>
 
     public companion object {
         public fun of(value: String?): EmailFormatState {
