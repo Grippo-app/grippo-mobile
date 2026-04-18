@@ -126,8 +126,13 @@ internal fun Input(
         }
     }
 
+    // Suppress error styling while the field is focused: we don't want to flash
+    // the user red mid-typing (e.g. partial email doesn't match the regex yet).
+    // Error becomes visible only after the user leaves the field.
+    val showError = error is InputError.Error && !hasFocus.value
+
     val borderColor = when {
-        error is InputError.Error -> colors.semantic.error
+        showError -> colors.semantic.error
         !enabled -> Color.Transparent
         hasFocus.value -> colors.border.focus
         else -> Color.Transparent
@@ -137,27 +142,27 @@ internal fun Input(
         else -> colors.input.backgroundDisabled
     }
     val placeholderColor = when {
-        error is InputError.Error -> colors.input.placeholder
+        showError -> colors.input.placeholder
         !enabled -> colors.input.placeholderDisabled
         else -> colors.input.placeholder
     }
     val labelColor = when {
-        error is InputError.Error -> colors.input.label
+        showError -> colors.input.label
         !enabled -> colors.input.placeholderDisabled
         else -> colors.input.label
     }
     val contentColor = when {
-        error is InputError.Error -> colors.semantic.error
+        showError -> colors.semantic.error
         !enabled -> colors.input.textDisabled
         else -> colors.input.text
     }
     val leadingColor = when {
-        error is InputError.Error -> colors.input.leading
+        showError -> colors.input.leading
         !enabled -> colors.input.textDisabled
         else -> colors.input.leading
     }
     val trailingColor = when {
-        error is InputError.Error -> colors.input.trailing
+        showError -> colors.input.trailing
         !enabled -> colors.input.textDisabled
         else -> colors.input.trailing
     }
