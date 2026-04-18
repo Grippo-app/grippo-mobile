@@ -256,14 +256,24 @@ public data object AppDp {
     }
 
     public data object UserCard {
-        val chip: Chip = Chip
+        val experience: Experience = Experience
+        val stats: Stats = Stats
 
-        public data object Chip {
+        public data object Experience {
             val radius: Dp = AppDp.radius.small
             val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.small
-            val icon: Dp = AppDp.icon.extraSmall
-            val space: Dp = padding.small
+            val verticalPadding: Dp = padding.extraSmall
+            val icon: Dp = AppDp.icon.small
+            val space: Dp = padding.extraSmall
+        }
+
+        public data object Stats {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val icon: Dp = AppDp.icon.small
+            val space: Dp = padding.extraSmall
+            val dividerWidth: Dp = 1.dp
         }
     }
 
