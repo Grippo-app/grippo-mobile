@@ -1,9 +1,11 @@
 package com.grippo.core.state.examples
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.profile.ExperienceEnumState
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -19,7 +21,7 @@ public data class ExerciseExampleValueState(
     val weightType: WeightTypeEnumState,
     val category: CategoryEnumState,
     val usageCount: Int,
-    val lastUsed: LocalDateTime?,
+    val lastUsed: DateFormatState,
 )
 
 public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
@@ -33,6 +35,10 @@ public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
         weightType = WeightTypeEnumState.BODY_WEIGHT,
         category = CategoryEnumState.COMPOUND,
         usageCount = 4,
-        lastUsed = DateTimeUtils.now()
+        lastUsed = DateFormatState.of(
+            value = DateTimeUtils.now(),
+            range = DateRange.Range.Infinity().range,
+            format = DateFormat.DateOnly.DateDdMmm
+        )
     )
 }

@@ -4,14 +4,16 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExampleValueState
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.stubTotal
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
@@ -24,7 +26,7 @@ public data class ExerciseState(
     @Serializable(with = ImmutableListSerializer::class)
     val iterations: ImmutableList<IterationState>,
     val exerciseExample: ExerciseExampleValueState,
-    val createdAt: LocalDateTime,
+    val createdAt: DateFormatState,
     val total: TrainingTotalState
 )
 
@@ -45,5 +47,9 @@ public fun stubExercise(): ExerciseState = ExerciseState(
     }.toPersistentList(),
     total = stubTotal(),
     exerciseExample = stubExerciseExampleValueState(),
-    createdAt = DateTimeUtils.now()
+    createdAt = DateFormatState.of(
+        value = DateTimeUtils.now(),
+        range = DateRange.Range.Infinity().range,
+        format = DateFormat.DateOnly.DateMmmDdYyyy
+    )
 )

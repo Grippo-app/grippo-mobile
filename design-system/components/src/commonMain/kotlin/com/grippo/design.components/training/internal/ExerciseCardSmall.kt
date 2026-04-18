@@ -19,8 +19,6 @@ import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 internal fun ExerciseCardSmall(
@@ -39,13 +37,8 @@ internal fun ExerciseCardSmall(
             ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
-        val formattedDate = DateCompose.rememberFormat(
-            value.createdAt.date,
-            DateFormat.DateOnly.DateMmmDdYyyy
-        )
-
         Text(
-            text = formattedDate,
+            text = value.createdAt.display,
             style = AppTokens.typography.h6(),
             color = AppTokens.colors.text.primary,
             maxLines = 2,

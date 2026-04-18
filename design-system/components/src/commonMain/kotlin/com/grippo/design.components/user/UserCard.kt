@@ -40,8 +40,6 @@ import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.icons.Height
 import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.kg
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -58,10 +56,7 @@ public fun UserCard(
     value: UserState,
     style: UserCardStyle = UserCardStyle.Preview
 ) {
-    val joinedLabel = DateCompose.rememberFormat(
-        value = value.createdAt,
-        format = DateFormat.DateOnly.DateMmmDdYyyy
-    )
+    val joinedLabel = value.createdAt.display
 
     val heightUnit = AppTokens.strings.res(Res.string.cm)
     val weightUnit = AppTokens.strings.res(Res.string.kg)

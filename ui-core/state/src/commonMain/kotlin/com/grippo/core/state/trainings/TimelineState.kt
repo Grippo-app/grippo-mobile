@@ -1,15 +1,17 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.metrics.DigestState
 import com.grippo.core.state.metrics.stubDigest
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.plus
 import kotlin.time.Duration
 
@@ -103,7 +105,8 @@ public sealed interface TimelineState {
 
     @Immutable
     public data class DateTime(
-        val createAt: LocalDateTime,
+        val startAt: DateFormatState,
+        val createAt: DateFormatState,
         val duration: Duration,
         val trainingId: String,
         override val position: TrainingPosition,
@@ -175,13 +178,27 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
             else -> TrainingPosition.MIDDLE
         }
 
+        val end = training.createdAt.value
+
+        val start = end?.let { DateTimeUtils.minus(it, training.duration) }
+
         values += TimelineState.DateTime(
-            createAt = training.createdAt,
+            startAt = DateFormatState.of(
+                value = start,
+                range = DateRange.Range.Infinity().range,
+                format = DateFormat.TimeOnly.Time24hHm
+            ),
+            createAt = DateFormatState.of(
+                value = end,
+                range = DateRange.Range.Infinity().range,
+                format = DateFormat.TimeOnly.Time24hHm
+            ),
             duration = training.duration,
             trainingId = training.id,
             position = position,
             key = "stub-date-${training.id}",
         )
+
         values += training.toPreviewTrainingListValues(position)
     }
 

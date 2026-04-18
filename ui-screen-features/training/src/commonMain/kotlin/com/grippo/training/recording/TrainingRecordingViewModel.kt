@@ -1,6 +1,7 @@
 package com.grippo.training.recording
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -33,6 +34,8 @@ import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
@@ -168,7 +171,11 @@ internal class TrainingRecordingViewModel(
                     name = example.value.name,
                     iterations = persistentListOf(),
                     exerciseExample = example.value,
-                    createdAt = DateTimeUtils.now(),
+                    createdAt = DateFormatState.of(
+                        value = DateTimeUtils.now(),
+                        range = DateRange.Range.Infinity().range,
+                        format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    ),
                     total = TrainingTotalState(
                         volume = VolumeFormatState.of(0f),
                         repetitions = RepetitionsFormatState.of(0),

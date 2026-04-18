@@ -1,5 +1,6 @@
 package com.grippo.domain.state.training
 
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -7,6 +8,8 @@ import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.uuid.Uuid
@@ -21,7 +24,11 @@ public fun SetExercise.toState(): ExerciseState {
         name = name,
         iterations = iterations.toState(),
         exerciseExample = exerciseExample.toState(),
-        createdAt = createdAt,
+        createdAt = DateFormatState.of(
+            value = createdAt,
+            range = DateRange.Range.Infinity().range,
+            format = DateFormat.DateOnly.DateMmmDdYyyy
+        ),
         total = TrainingTotalState(
             volume = VolumeFormatState.of(volume),
             repetitions = RepetitionsFormatState.of(repetitions),

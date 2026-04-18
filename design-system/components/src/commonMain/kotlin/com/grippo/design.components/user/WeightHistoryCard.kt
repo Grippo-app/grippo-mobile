@@ -20,8 +20,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 public fun WeightHistoryCard(
@@ -40,13 +38,8 @@ public fun WeightHistoryCard(
             ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
-        val formattedDate = DateCompose.rememberFormat(
-            value.createdAt.date,
-            DateFormat.DateOnly.DateMmmDdYyyy
-        )
-
         Text(
-            text = formattedDate,
+            text = value.createdAt.display,
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
             maxLines = 1,

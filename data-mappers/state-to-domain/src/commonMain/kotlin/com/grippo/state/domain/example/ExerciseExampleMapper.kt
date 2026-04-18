@@ -20,6 +20,6 @@ public fun ExerciseExampleValueState.toDomain(): ExerciseExampleValue {
         weightType = weightType.toDomain(),
         category = category.toDomain(),
         usageCount = usageCount,
-        lastUsed = lastUsed
+        lastUsed = lastUsed.value
     )
 }

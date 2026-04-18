@@ -31,7 +31,6 @@ import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.last_workout
 import com.grippo.design.resources.provider.plate
 import com.grippo.design.resources.provider.plus_value_more
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.toPersistentList
 
@@ -42,16 +41,11 @@ public fun LastTrainingCard(
     onClick: () -> Unit
 ) {
 
-    val startLabel = remember(value.createdAt, value.duration) {
-        val v = DateTimeUtils.minus(value.createdAt, value.duration)
-        DateTimeUtils.format(v, DateFormat.DateOnly.DateMmmDdYyyy)
-    }
-
     val volume = value.total.volume.short()
 
-    val string = remember(value.duration, startLabel, volume) {
+    val string = remember(value.createdAt, value.duration, volume) {
         buildString {
-            append(startLabel)
+            append(value.createdAt.display)
             append(" · ")
             append(DateTimeUtils.format(value.duration))
             append(" · ")

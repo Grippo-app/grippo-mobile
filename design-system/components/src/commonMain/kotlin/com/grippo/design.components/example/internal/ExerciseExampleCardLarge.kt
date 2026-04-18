@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.example.ExampleTypeSection
 import com.grippo.design.components.example.ExerciseExampleCard
@@ -26,8 +27,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.not_used_before
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 internal fun ExerciseExampleCardLarge(
@@ -71,29 +70,30 @@ internal fun ExerciseExampleCardLarge(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            val lastUsedDate = value.value.lastUsed?.let { l ->
-                DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
+            when (val lastUsed = value.value.lastUsed) {
+                is DateFormatState.Empty -> Text(
+                    text = AppTokens.strings.res(Res.string.not_used_before),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.tertiary
+                )
+
+                is DateFormatState.Valid,
+                is DateFormatState.Invalid -> {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.last_used_label),
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary
+                    )
+
+                    Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        text = lastUsed.display,
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.semantic.notice
+                    )
+                }
             }
-
-            lastUsedDate?.let {
-                Text(
-                    text = AppTokens.strings.res(Res.string.last_used_label),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary
-                )
-
-                Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
-
-                Text(
-                    text = lastUsedDate,
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.semantic.notice
-                )
-            } ?: Text(
-                text = AppTokens.strings.res(Res.string.not_used_before),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary
-            )
         }
     }
 }

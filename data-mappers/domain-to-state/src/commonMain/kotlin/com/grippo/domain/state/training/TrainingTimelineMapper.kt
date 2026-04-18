@@ -1,11 +1,15 @@
 package com.grippo.domain.state.training
 
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TrainingPosition
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition
 import com.grippo.data.features.api.training.models.TrainingTimelineValue
 import com.grippo.domain.state.metrics.toState
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -27,7 +31,16 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
     )
 
     is TrainingTimelineValue.DateTime -> TimelineState.DateTime(
-        createAt = createdAt,
+        startAt = DateFormatState.of(
+            value = DateTimeUtils.minus(createdAt, duration),
+            range = DateRange.Range.Infinity().range,
+            format = DateFormat.TimeOnly.Time24hHm
+        ),
+        createAt = DateFormatState.of(
+            value = createdAt,
+            range = DateRange.Range.Infinity().range,
+            format = DateFormat.TimeOnly.Time24hHm
+        ),
         duration = duration,
         trainingId = trainingId,
         position = position.toState(),
