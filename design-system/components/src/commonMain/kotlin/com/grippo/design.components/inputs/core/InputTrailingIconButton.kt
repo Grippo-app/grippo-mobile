@@ -18,13 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 
-/**
- * Shared trailing button for `Input`. Handles the common animated visibility +
- * circular tap target + centered icon pattern used across clear/reveal/copy actions.
- *
- * Intended to be returned from `Input(trailing = { color -> ... })`, where
- * [tint] is the input's `trailingColor` passed into the trailing slot.
- */
 @Composable
 internal fun InputTrailingIconButton(
     visible: Boolean,
