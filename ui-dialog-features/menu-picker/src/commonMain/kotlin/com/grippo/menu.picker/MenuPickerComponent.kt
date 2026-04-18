@@ -6,12 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.menu.PickerMenuItem
 
 public class MenuPickerComponent(
     componentContext: ComponentContext,
-    items: List<MenuItemState>,
-    private val onResult: (id: String) -> Unit,
+    items: List<PickerMenuItem>,
+    private val onResult: (item: PickerMenuItem) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<MenuPickerDirection>(componentContext) {
 
@@ -29,7 +29,7 @@ public class MenuPickerComponent(
 
     override suspend fun eventListener(direction: MenuPickerDirection) {
         when (direction) {
-            is MenuPickerDirection.BackWithResult -> onResult.invoke(direction.id)
+            is MenuPickerDirection.BackWithResult -> onResult.invoke(direction.item)
             MenuPickerDirection.Back -> back.invoke()
         }
     }

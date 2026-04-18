@@ -7,13 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.menu.PickerMenuItem
+import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.design.components.menu.Menu
 import com.grippo.design.components.menu.MenuItem
 import com.grippo.design.core.AppTokens
@@ -46,17 +45,20 @@ internal fun MenuPickerScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    val menu = remember(state.items) {
-        state.items
-            .map { it.id to MenuItem(UiText.Str(it.text)) }
-            .toPersistentList()
-    }
+    val menuItems = state.items.map { item ->
+        item to MenuItem(
+            title = item.text(),
+            icon = item.icon(),
+            contentColor = item.color(),
+        )
+    }.toPersistentList()
 
     Menu(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        items = menu,
-        onClick = contract::onItemClick
+        items = menuItems,
+        onClick = contract::onItemClick,
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
@@ -70,10 +72,10 @@ private fun ScreenPreview() {
     PreviewContainer {
         MenuPickerScreen(
             state = MenuPickerState(
-                items = persistentListOf(
-                    MenuItemState(id = "1", text = "First"),
-                    MenuItemState(id = "2", text = "Second"),
-                    MenuItemState(id = "3", text = "Third")
+                items = persistentListOf<PickerMenuItem>(
+                    TrainingMenu.Details,
+                    TrainingMenu.Edit,
+                    TrainingMenu.Delete,
                 ),
             ),
             loaders = persistentSetOf(),

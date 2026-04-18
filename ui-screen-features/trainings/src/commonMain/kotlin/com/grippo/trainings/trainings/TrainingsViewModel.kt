@@ -2,7 +2,7 @@ package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
@@ -79,28 +79,18 @@ internal class TrainingsViewModel(
     }
 
     override fun onTrainingMenuClick(id: String) {
-        safeLaunch {
-            val list = TrainingMenu.entries.map {
-                MenuItemState(
-                    id = it.id,
-                    text = it.text(stringProvider)
-                )
-            }
-
-            val dialog = DialogConfig.MenuPicker(
-                items = list,
-                onResult = {
-                    when (TrainingMenu.of(it)) {
-                        TrainingMenu.Delete -> deleteTraining(id)
-                        TrainingMenu.Edit -> openTrainingEdit(id)
-                        TrainingMenu.Details -> openTrainingOverview(id)
-                        null -> {}
-                    }
+        val dialog = DialogConfig.MenuPicker.of(
+            items = TrainingMenu.entries,
+            onResult = { item ->
+                when (item) {
+                    TrainingMenu.Delete -> deleteTraining(id)
+                    TrainingMenu.Edit -> openTrainingEdit(id)
+                    TrainingMenu.Details -> openTrainingOverview(id)
                 }
-            )
+            }
+        )
 
-            dialogController.show(dialog)
-        }
+        dialogController.show(dialog)
     }
 
     override fun onExerciseClick(id: String) {

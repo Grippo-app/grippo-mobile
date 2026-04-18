@@ -241,7 +241,7 @@ internal class DialogContentComponent(
                 MenuPickerComponent(
                     componentContext = context,
                     items = router.items,
-                    onResult = { id -> viewModel.onBack { router.onResult.invoke(id) } },
+                    onResult = { item -> viewModel.onBack { router.onResult.invoke(item) } },
                     back = { viewModel.onBack(null) }
                 )
             )

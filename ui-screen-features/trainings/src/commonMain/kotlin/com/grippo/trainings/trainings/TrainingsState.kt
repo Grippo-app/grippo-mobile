@@ -4,11 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.delete_btn
-import com.grippo.design.resources.provider.details
-import com.grippo.design.resources.provider.edit_btn
-import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.selected
 import com.grippo.design.resources.provider.trainings_period_daily
 import com.grippo.design.resources.provider.trainings_period_monthly
 import com.grippo.toolkit.date.utils.DateRange
@@ -28,31 +23,6 @@ internal data class TrainingsState(
     val limitations: DateRange = DateTimeUtils.trailingYear(),
     val timeline: ImmutableList<TimelineState> = persistentListOf(),
 )
-
-@Immutable
-internal enum class TrainingMenu(val id: String) {
-    Details("overview"),
-    Edit("edit"),
-    Delete("delete");
-
-    companion object {
-        suspend fun title(stringProvider: StringProvider): String {
-            return stringProvider.get(Res.string.selected)
-        }
-
-        fun of(id: String): TrainingMenu? {
-            return entries.firstOrNull { it.id == id }
-        }
-    }
-
-    suspend fun text(stringProvider: StringProvider): String {
-        return when (this) {
-            Delete -> stringProvider.get(Res.string.delete_btn)
-            Edit -> stringProvider.get(Res.string.edit_btn)
-            Details -> stringProvider.get(Res.string.details)
-        }
-    }
-}
 
 @Immutable
 internal enum class TrainingsTimelinePeriod(

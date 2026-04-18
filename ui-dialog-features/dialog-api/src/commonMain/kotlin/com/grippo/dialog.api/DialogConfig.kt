@@ -6,7 +6,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
-import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.menu.PickerMenuItem
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
@@ -261,14 +261,24 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class MenuPicker(
-        val items: List<MenuItemState>,
-        @Transient val onResult: (id: String) -> Unit = {},
+        val items: List<PickerMenuItem>,
+        @Transient val onResult: (item: PickerMenuItem) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey(items)
+            get() = buildKey(items.joinToString(separator = "|") { it.id })
+
+        public companion object {
+            public inline fun <reified T : PickerMenuItem> of(
+                items: List<T>,
+                crossinline onResult: (T) -> Unit,
+            ): MenuPicker = MenuPicker(
+                items = items,
+                onResult = { item -> (item as? T)?.let { onResult(it) } }
+            )
+        }
     }
 
     @Serializable
