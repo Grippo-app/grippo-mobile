@@ -7,7 +7,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 
 public class DatePickerComponent(
@@ -15,7 +14,6 @@ public class DatePickerComponent(
     private val title: String,
     private val initial: DateFormatState,
     private val limitations: DateRange,
-    private val format: DateFormat,
     private val onResult: (value: DateFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<DatePickerDirection>(componentContext) {
@@ -24,7 +22,6 @@ public class DatePickerComponent(
         DatePickerViewModel(
             initial = initial,
             limitations = limitations,
-            format = format,
             title = title
         )
     }

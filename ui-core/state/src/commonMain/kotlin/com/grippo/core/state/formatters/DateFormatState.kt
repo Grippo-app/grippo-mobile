@@ -11,38 +11,52 @@ import kotlinx.serialization.Serializable
 @Serializable
 public sealed class DateFormatState : FormatState<LocalDateTime> {
 
+    public abstract val format: DateFormat
+
     @Immutable
     @Serializable
     public data class Valid(
         override val display: String,
-        override val value: LocalDateTime
+        override val value: LocalDateTime,
+        override val format: DateFormat,
     ) : DateFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
-        override val value: LocalDateTime?
+        override val value: LocalDateTime?,
+        override val format: DateFormat,
     ) : DateFormatState()
 
     @Immutable
     @Serializable
     public data class Empty(
+        override val format: DateFormat,
         override val display: String = "",
-        override val value: LocalDateTime? = null
+        override val value: LocalDateTime? = null,
     ) : DateFormatState()
 
     public companion object {
         public fun of(
             value: LocalDateTime?,
             range: DateRange,
-            format: DateFormat
+            format: DateFormat,
         ): DateFormatState {
-            if (value == null) return Empty()
+            if (value == null) return Empty(format = format)
             val display = DateTimeUtils.format(value, format)
             return when {
-                DateValidator.isValid(value, range) -> Valid(display = display, value = value)
-                else -> Invalid(display = display, value = value)
+                DateValidator.isValid(value, range) -> Valid(
+                    display = display,
+                    value = value,
+                    format = format
+                )
+
+                else -> Invalid(
+                    display = display,
+                    value = value,
+                    format = format
+                )
             }
         }
     }

@@ -17,7 +17,6 @@ import com.grippo.core.state.trainings.IterationState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlin.time.Duration
 
 @Serializable
 public sealed class DialogConfig(
@@ -299,8 +298,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class ConfirmTrainingCompletion(
-        val value: Duration,
-        @Transient val onResult: (Duration) -> Unit = {},
+        val value: DurationFormatState,
+        @Transient val onResult: (DurationFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

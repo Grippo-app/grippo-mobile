@@ -1,6 +1,7 @@
 package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -132,21 +133,41 @@ internal class TrainingsViewModel(
 
     override fun onOpenDateSelector() {
         safeLaunch {
-            val dialog = when (state.value.period) {
+            // TODO(format-state-unification): перевести TrainingsState на DateFormatState-якорь.
+            // Контракт DialogConfig.DatePicker/MonthPicker — FormatState in/out, но TrainingsState.date
+            // хранит сырой DateRange, поэтому здесь на входе оборачиваем `date.from` в
+            // DateFormatState.of(...), а на выходе распаковываем через result.value?.let(::applyAnchor).
+            // Это временный костыль до рефакторинга стейта.
+            //
+            // Промпт для следующей итерации:
+            // 1) Добавить в TrainingsState поле `anchor: DateFormatState` (опорная дата периода),
+            //    инициализировать через DateFormatState.of(anchor, limitations, DateFormat.DateOnly.DateMmmDdYyyy)
+            //    везде, где сейчас формируется `date` (init-блок, onSelectPeriod, shiftDate, onOpenDaily).
+            // 2) `date: DateRange` сделать производным: вычислять через `period.rangeFor(anchor.value)
+            //    .coerceWithin(limitations)` в одном месте (например, в приватном `recomputeRange()`).
+            // 3) Здесь заменить обёртку/развёртку на `initial = current.anchor` и
+            //    `onResult = { result -> update { it.copy(anchor = result) }; result.value?.let(::applyAnchor) }`
+            //    (или встроить обновление anchor прямо в applyAnchor и принимать DateFormatState).
+            // 4) Проверить, что shiftDate/onOpenDaily/init-rangeFlow корректно работают с новым anchor.
+            val current = state.value
+            val initial = DateFormatState.of(
+                value = current.date.from,
+                range = current.limitations,
+                format = DateFormat.DateOnly.DateMmmDdYyyy
+            )
+            val dialog = when (current.period) {
                 TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
                     title = stringProvider.get(Res.string.select_date),
-                    initial = state.value.date.from,
-                    limitations = state.value.limitations,
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
-                    onResult = ::applyAnchor
+                    initial = initial,
+                    limitations = current.limitations,
+                    onResult = { result -> result.value?.let(::applyAnchor) }
                 )
 
                 TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
                     title = stringProvider.get(Res.string.select_month),
-                    initial = state.value.date.from,
-                    limitations = state.value.limitations,
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
-                    onResult = ::applyAnchor
+                    initial = initial,
+                    limitations = current.limitations,
+                    onResult = { result -> result.value?.let(::applyAnchor) }
                 )
             }
             dialogController.show(dialog)

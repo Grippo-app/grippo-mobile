@@ -53,7 +53,7 @@ private fun InputDatePreview() {
         )
 
         InputDate(
-            value = DateFormatState.Empty(),
+            value = DateFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy),
             onClick = {}
         )
     }
