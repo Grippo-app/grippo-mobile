@@ -1,6 +1,7 @@
 package com.grippo.profile.social
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.menu.SocialMenu
 import com.grippo.toolkit.link.opener.LinkOpener
 
 internal class ProfileSocialViewModel(
@@ -9,7 +10,7 @@ internal class ProfileSocialViewModel(
     ProfileSocialState
 ), ProfileSocialContract {
 
-    override fun onOpenLink(value: SocialChannel) {
+    override fun onOpenLink(value: SocialMenu) {
         value.urls.any { url -> linkOpener.open(url).isOpened }
     }
 

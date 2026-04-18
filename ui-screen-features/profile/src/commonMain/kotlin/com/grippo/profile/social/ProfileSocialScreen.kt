@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.menu.SocialMenu
 import com.grippo.design.components.menu.Menu
 import com.grippo.design.components.menu.MenuItem
 import com.grippo.design.components.toolbar.Leading
@@ -52,11 +53,12 @@ internal fun ProfileSocialScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-    val items = SocialChannel.entries
+    val items = SocialMenu.entries
         .map { channel ->
             channel to MenuItem(
-                title = channel.title,
-                icon = channel.icon()
+                title = channel.text(),
+                icon = channel.icon(),
+                contentColor = channel.color(),
             )
         }.toPersistentList()
 

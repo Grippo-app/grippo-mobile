@@ -1,8 +1,8 @@
 package com.grippo.dialog.profile
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.profile.ProfileMenu
-import com.grippo.core.state.profile.SettingsMenu
+import com.grippo.core.state.menu.ProfileMenu
+import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState

@@ -19,7 +19,7 @@ import com.grippo.design.resources.provider.selected
 public sealed class TrainingMenu : PickerMenuItem {
 
     public data object Details : TrainingMenu() {
-        override val id: String get() = "overview"
+        override val id: String get() = "details"
         override fun text(): UiText = UiText.Res(Res.string.details)
 
         @Composable

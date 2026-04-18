@@ -12,10 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.menu.ProfileMenu
+import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.profile.RoleEnumState
-import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.menu.Menu
@@ -67,14 +66,14 @@ internal fun ProfileScreen(
             ) {
                 item {
                     val profileMenu = ProfileMenu.entries
-                        .map { it to MenuItem(UiText.Str(it.text()), it.icon()) }
+                        .map { it to MenuItem(it.text(), it.icon(), it.color()) }
                         .toPersistentList()
 
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = AppTokens.dp.contentPadding.subContent),
-                        text = ProfileMenu.title(),
+                        text = ProfileMenu.title().text(),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary
                     )
@@ -90,14 +89,14 @@ internal fun ProfileScreen(
 
                     val settingsMenu = SettingsMenu.entries
                         .filter { !(state.user?.role != RoleEnumState.ADMIN && it == SettingsMenu.Debug) }
-                        .map { it to MenuItem(UiText.Str(it.text()), it.icon()) }
+                        .map { it to MenuItem(it.text(), it.icon(), it.color()) }
                         .toPersistentList()
 
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = AppTokens.dp.contentPadding.subContent),
-                        text = SettingsMenu.title(),
+                        text = SettingsMenu.title().text(),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary
                     )

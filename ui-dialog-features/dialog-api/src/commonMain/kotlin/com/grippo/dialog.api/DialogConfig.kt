@@ -6,12 +6,12 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.menu.ProfileMenu
+import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
-import com.grippo.core.state.profile.ProfileMenu
-import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.toolkit.date.utils.DateRange

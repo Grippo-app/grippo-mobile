@@ -1,9 +1,9 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.menu.ProfileMenu
+import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
-import com.grippo.core.state.profile.ProfileMenu
-import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.Range

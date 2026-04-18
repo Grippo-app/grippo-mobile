@@ -1,8 +1,8 @@
 package com.grippo.dialog.profile
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.profile.ProfileMenu
-import com.grippo.core.state.profile.SettingsMenu
+import com.grippo.core.state.menu.ProfileMenu
+import com.grippo.core.state.menu.SettingsMenu
 
 @Immutable
 internal interface ProfileContract {
