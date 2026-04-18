@@ -7,4 +7,7 @@ import com.grippo.core.foundation.models.BaseLoader
 internal sealed interface ProfileSettingsLoader : BaseLoader {
     @Immutable
     data object DeleteAccountButton : ProfileSettingsLoader
+
+    @Immutable
+    data object LogoutButton : ProfileSettingsLoader
 }

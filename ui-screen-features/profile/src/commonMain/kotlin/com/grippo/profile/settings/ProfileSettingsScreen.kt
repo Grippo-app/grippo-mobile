@@ -9,6 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
+import com.grippo.design.components.button.ButtonState
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -17,6 +22,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Logout
+import com.grippo.design.resources.provider.logout_btn
 import com.grippo.design.resources.provider.settings
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -33,6 +40,25 @@ internal fun ProfileSettingsScreen(
         title = AppTokens.strings.res(Res.string.settings),
         style = ToolbarStyle.Transparent,
         leading = Leading.Back(contract::onBack)
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        style = ButtonStyle.Error,
+        state = if (loaders.contains(ProfileSettingsLoader.LogoutButton)) {
+            ButtonState.Loading
+        } else {
+            ButtonState.Enabled
+        },
+        content = ButtonContent.Text(
+            startIcon = ButtonIcon.Icon(AppTokens.icons.Logout),
+            text = AppTokens.strings.res(Res.string.logout_btn),
+        ),
+        onClick = contract::onLogoutClick
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

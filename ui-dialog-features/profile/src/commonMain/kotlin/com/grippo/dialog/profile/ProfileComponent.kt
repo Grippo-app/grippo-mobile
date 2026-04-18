@@ -18,8 +18,7 @@ public class ProfileComponent(
 
     override val viewModel: ProfileViewModel = componentContext.retainedInstance {
         ProfileViewModel(
-            userFeature = getKoin().get(),
-            logoutUseCase = getKoin().get()
+            userFeature = getKoin().get()
         )
     }
 

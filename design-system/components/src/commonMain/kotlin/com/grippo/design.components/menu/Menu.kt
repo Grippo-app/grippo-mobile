@@ -1,6 +1,5 @@
 package com.grippo.design.components.menu
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,13 +28,9 @@ public fun <KEY> Menu(
     items: ImmutableList<Pair<KEY, MenuItem>>,
     onClick: (KEY) -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
+    RoundedCornerShape(AppTokens.dp.menu.radius)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(AppTokens.colors.background.card, shape)
-    ) {
+    Column(modifier = modifier) {
 
         items.forEachIndexed { index, item ->
             val onClickProvider = remember(item) {

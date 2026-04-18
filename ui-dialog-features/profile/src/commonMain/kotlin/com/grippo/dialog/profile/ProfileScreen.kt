@@ -17,10 +17,6 @@ import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.RoleEnumState
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.profile.stubUser
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.menu.Menu
 import com.grippo.design.components.menu.MenuItem
@@ -28,9 +24,6 @@ import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Logout
-import com.grippo.design.resources.provider.logout_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -82,8 +75,8 @@ internal fun ProfileScreen(
                             .fillMaxWidth()
                             .padding(start = AppTokens.dp.contentPadding.subContent),
                         text = ProfileMenu.title(),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary
                     )
 
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
@@ -105,8 +98,8 @@ internal fun ProfileScreen(
                             .fillMaxWidth()
                             .padding(start = AppTokens.dp.contentPadding.subContent),
                         text = SettingsMenu.title(),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary
                     )
 
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
@@ -114,18 +107,6 @@ internal fun ProfileScreen(
                     Menu(
                         items = settingsMenu,
                         onClick = contract::onSettingsMenuClick
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        style = ButtonStyle.Error,
-                        content = ButtonContent.Text(
-                            startIcon = ButtonIcon.Icon(AppTokens.icons.Logout),
-                            text = AppTokens.strings.res(Res.string.logout_btn),
-                        ),
-                        onClick = contract::onLogoutClick
                     )
                 }
             }
