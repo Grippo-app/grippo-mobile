@@ -59,7 +59,7 @@ public fun InputVolume(
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Decimal
         )
     )
 }

@@ -3,6 +3,7 @@ package com.grippo.data.features.api.authorization
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 
@@ -12,7 +13,8 @@ public class LoginUseCase(
     private val excludedMusclesFeature: ExcludedMusclesFeature,
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val weightHistoryFeature: WeightHistoryFeature
+    private val weightHistoryFeature: WeightHistoryFeature,
+    private val goalFeature: GoalFeature,
 ) {
     public suspend fun executeEmail(email: String, password: String): Boolean {
         authorizationFeature.login(email, password).getOrThrow()
@@ -24,6 +26,7 @@ public class LoginUseCase(
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
             weightHistoryFeature.getWeightHistory().getOrThrow()
+            goalFeature.getGoal().getOrThrow()
         }
 
         val pushToken = authorizationFeature.getPushToken()
@@ -45,6 +48,7 @@ public class LoginUseCase(
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
             weightHistoryFeature.getWeightHistory().getOrThrow()
+            goalFeature.getGoal().getOrThrow()
         }
 
         val pushToken = authorizationFeature.getPushToken()
@@ -66,6 +70,7 @@ public class LoginUseCase(
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
             weightHistoryFeature.getWeightHistory().getOrThrow()
+            goalFeature.getGoal().getOrThrow()
         }
 
         val pushToken = authorizationFeature.getPushToken()
