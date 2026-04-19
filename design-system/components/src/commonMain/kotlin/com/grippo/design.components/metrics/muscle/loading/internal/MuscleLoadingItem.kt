@@ -90,6 +90,7 @@ internal fun MuscleLoadingItem(
 
                 if (trainingsText.isNotBlank()) {
                     Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
                     Text(
                         text = trainingsText,
                         style = AppTokens.typography.b12Med(),

@@ -123,28 +123,7 @@ internal class HomeViewModel(
         update { it.copy(hasDraftTraining = hasDraftTraining) }
     }
 
-    private suspend fun provideGoal(goal: Goal?) {
-        cachedGoal = goal
-        refreshGoalProgress()
-    }
-
-    private suspend fun refreshGoalProgress() {
-        val goal = cachedGoal
-        val trainings = cachedTrainings
-        if (goal == null || trainings.isEmpty()) {
-            update { it.copy(goalProgress = null) }
-            return
-        }
-        val adherence = goalFollowingUseCase.fromTrainingsByPrimary(trainings) ?: run {
-            update { it.copy(goalProgress = null) }
-            return
-        }
-        val goalProgress = toGoalProgressState(goal = goal, adherence = adherence)
-        update { it.copy(goalProgress = goalProgress) }
-    }
-
     private suspend fun provideTrainings(list: List<Training>) {
-        cachedTrainings = list
         if (list.isEmpty()) {
             clearHome()
             return
@@ -180,6 +159,10 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
+        val goalProgress = goalFollowingUseCase
+            .fromTrainingsByPrimary(list)
+            ?.toState()
+
         update {
             it.copy(
                 totalDuration = totalDuration,
@@ -188,11 +171,10 @@ internal class HomeViewModel(
                 streak = streak,
                 performance = performance,
                 lastTraining = last,
+                goalProgress = goalProgress,
                 profile = profile
             )
         }
-
-        refreshGoalProgress()
     }
 
     override fun onStartTraining() {
@@ -323,7 +305,7 @@ internal class HomeViewModel(
                 performance = persistentListOf(),
                 lastTraining = null,
                 profile = null,
-                goalProgress = null
+                goalProgress = null,
             )
         }
     }
