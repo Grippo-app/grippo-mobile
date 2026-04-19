@@ -3,7 +3,7 @@ package com.grippo.design.components.indicators
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.Dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -22,10 +21,7 @@ public fun LineIndicator(
     modifier: Modifier = Modifier,
     progress: Float,
     colors: AppColor.LineIndicatorColors.IndicatorColors = AppTokens.colors.lineIndicator.primary,
-    cornerRadius: Dp = AppTokens.dp.contentPadding.text,
 ) {
-    val shape = RoundedCornerShape(cornerRadius)
-
     val coercedProgress = progress.coerceIn(0f, 1f)
 
     val progressAnim = remember { Animatable(0f) }
@@ -48,7 +44,7 @@ public fun LineIndicator(
     )
 
     LinearProgressIndicator(
-        modifier = modifier.clip(shape),
+        modifier = modifier.clip(CircleShape),
         progress = { progressAnim.value },
         color = indicatorColor,
         trackColor = trackColor
@@ -60,7 +56,7 @@ public fun LineIndicator(
 private fun LineIndicatorPreview() {
     PreviewContainer {
         LineIndicator(
-            progress = 0.6f,
+            progress = 0.6f
         )
     }
 }

@@ -87,7 +87,7 @@ private fun TrainingStreakTimelineRow(
         LineIndicator(
             modifier = Modifier.fillMaxWidth(),
             progress = (entry.progressPercent.coerceIn(0, 100)) / 100f,
-            colors = progressColors
+            colors = progressColors,
         )
     }
 }

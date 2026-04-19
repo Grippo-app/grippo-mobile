@@ -152,14 +152,11 @@ public fun TrainingStreakCard(
         LineIndicator(
             modifier = Modifier.fillMaxWidth(),
             progress = progressValue,
-            colors = progressColors
+            colors = progressColors,
         )
 
         Text(
-            text = AppTokens.strings.res(
-                Res.string.highlight_active_days,
-                value.totalActiveDays
-            ),
+            text = AppTokens.strings.res(Res.string.highlight_active_days, value.totalActiveDays),
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary,
             maxLines = 1,

@@ -113,7 +113,7 @@ internal fun MuscleLoadingItem(
         LineIndicator(
             modifier = Modifier.fillMaxWidth(),
             progress = progress,
-            colors = indicatorColors
+            colors = indicatorColors,
         )
     }
 }

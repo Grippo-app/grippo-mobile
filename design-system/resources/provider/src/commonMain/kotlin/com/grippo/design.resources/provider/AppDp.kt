@@ -182,12 +182,6 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.small
-            val progressBar: ProgressBar = ProgressBar
-
-            public data object ProgressBar {
-                val height: Dp = padding.extraSmall
-                val radius: Dp = AppDp.radius.small
-            }
         }
 
         public data object Highlights {

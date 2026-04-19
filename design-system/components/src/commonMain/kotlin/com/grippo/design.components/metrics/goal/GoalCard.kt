@@ -1,26 +1,23 @@
 package com.grippo.design.components.metrics.goal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.GoalProgressState
 import com.grippo.core.state.metrics.stubGoalProgress
 import com.grippo.design.components.chart.internal.RingChart
+import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
@@ -29,9 +26,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_adherence_label
 import com.grippo.design.resources.provider.goal_card_adherence_score
-import com.grippo.design.resources.provider.goal_card_description_1
-import com.grippo.design.resources.provider.goal_card_description_2
-import com.grippo.design.resources.provider.goal_card_no_data
 import com.grippo.design.resources.provider.goal_card_title
 
 @Composable
@@ -39,7 +33,7 @@ public fun GoalCard(
     value: GoalProgressState,
     modifier: Modifier = Modifier,
 ) {
-    val score = value.adherence.score.coerceIn(0, 100)
+    val score = value.score.coerceIn(0, 100)
 
     MetricSectionPanel(
         modifier = modifier,
@@ -60,7 +54,7 @@ public fun GoalCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = value.primaryGoal.label(),
+                    text = value.goal.primaryGoal.label(),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                     maxLines = 2,
@@ -75,7 +69,7 @@ public fun GoalCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
                 Text(
                     text = value.progressLine(),
@@ -85,7 +79,7 @@ public fun GoalCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+//                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
                 Text(
                     text = value.remainingLine(),
@@ -98,65 +92,37 @@ public fun GoalCard(
 
             AdherenceRing(
                 modifier = Modifier.size(AppTokens.dp.metrics.goal.chart),
-                score = score,
-                caption = AppTokens.strings.res(Res.string.goal_card_adherence_label),
+                score = score
             )
         }
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-        ProgressTimeline(
-            modifier = Modifier.fillMaxWidth(),
-            fraction = value.progressFraction,
-        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = value.startedLabel(),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-
-            Text(
-                text = value.targetLabel(),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-        ) {
-            if (score == 0) {
-                Text(
-                    text = AppTokens.strings.res(Res.string.goal_card_no_data),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.tertiary,
-                )
-            }
-
-            Text(
-                text = AppTokens.strings.res(Res.string.goal_card_description_1),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary,
-            )
-
-            Text(
-                text = AppTokens.strings.res(Res.string.goal_card_description_2),
-                style = AppTokens.typography.b12Semi(),
+                modifier = Modifier,
+                text = value.goal.createdAt.display,
+                style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
+                maxLines = 1
+            )
+            Text(
+                modifier = Modifier,
+                text = value.goal.target.display,
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.secondary,
+                maxLines = 1
             )
         }
+
+        LineIndicator(
+            modifier = modifier.fillMaxWidth(),
+            progress = value.progressFraction,
+            colors = AppTokens.colors.lineIndicator.muted,
+        )
     }
 }
 
@@ -170,9 +136,8 @@ private fun remainingColor(value: GoalProgressState): Color {
 
 @Composable
 private fun AdherenceRing(
-    score: Int,
-    caption: String,
     modifier: Modifier = Modifier,
+    score: Int,
 ) {
     val colors = when {
         score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.lineIndicator.success
@@ -192,48 +157,20 @@ private fun AdherenceRing(
         )
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = AppTokens.strings.res(Res.string.goal_card_adherence_score, score),
                 style = AppTokens.typography.h3(),
-                color = AppTokens.colors.text.primary,
+                color = AppTokens.colors.text.primary
             )
+
             Text(
-                text = caption,
+                text = AppTokens.strings.res(Res.string.goal_card_adherence_label),
                 style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                color = AppTokens.colors.text.secondary
             )
         }
-    }
-}
-
-@Composable
-private fun ProgressTimeline(
-    fraction: Float,
-    modifier: Modifier = Modifier,
-) {
-    val clamped = fraction.coerceIn(0f, 1f)
-    val trackColor = AppTokens.colors.lineIndicator.info.track
-    val fillColor = AppTokens.colors.lineIndicator.info.indicator
-    val height = AppTokens.dp.metrics.goal.progressBar.height
-    val radius = AppTokens.dp.metrics.goal.progressBar.radius
-
-    Box(
-        modifier = modifier
-            .height(height)
-            .clip(RoundedCornerShape(radius))
-            .background(trackColor),
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(clamped)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(radius))
-                .background(fillColor),
-        )
     }
 }
 
@@ -241,6 +178,8 @@ private fun ProgressTimeline(
 @Composable
 private fun GoalCardPreview() {
     PreviewContainer {
-        GoalCard(value = stubGoalProgress())
+        GoalCard(
+            value = stubGoalProgress()
+        )
     }
 }
