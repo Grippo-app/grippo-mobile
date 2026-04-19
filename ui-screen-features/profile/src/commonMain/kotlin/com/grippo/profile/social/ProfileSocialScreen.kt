@@ -44,11 +44,10 @@ internal fun ProfileSocialScreen(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-            .padding(start = AppTokens.dp.contentPadding.subContent),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         text = AppTokens.strings.res(Res.string.official_grippo_channels),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary
+        style = AppTokens.typography.h4(),
+        color = AppTokens.colors.text.primary
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
