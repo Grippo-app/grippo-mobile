@@ -20,7 +20,7 @@ public fun UserEntity.toDomain(stats: UserStats): User? {
         weight = weight,
         experience = mappedExperience,
         height = height,
-        createAt = DateTimeUtils.toLocalDateTime(createdAt),
+        createdAt = DateTimeUtils.toLocalDateTime(createdAt),
         role = RoleEnum.of(role),
         stats = stats
     )

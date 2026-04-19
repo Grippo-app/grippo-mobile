@@ -16,7 +16,7 @@ public fun User.toState(): UserState {
         weight = WeightFormatState.of(weight),
         height = HeightFormatState.of(height),
         createdAt = DateFormatState.of(
-            value = createAt,
+            value = createdAt,
             range = DateRange.Range.Infinity().range,
             format = DateFormat.DateOnly.DateMmmDdYyyy
         ),

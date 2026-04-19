@@ -10,7 +10,7 @@ public data class User(
     val experience: ExperienceEnum,
     val weight: Float,
     val height: Int,
-    val createAt: LocalDateTime,
+    val createdAt: LocalDateTime,
     val role: RoleEnum,
     val stats: UserStats,
 )
