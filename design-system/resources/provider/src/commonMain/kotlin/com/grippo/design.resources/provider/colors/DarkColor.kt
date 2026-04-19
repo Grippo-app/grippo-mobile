@@ -1,7 +1,6 @@
 package com.grippo.design.resources.provider.colors
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import com.grippo.design.resources.provider.AppColor
 
 public object DarkColor : AppColor {
@@ -282,8 +281,8 @@ public object DarkColor : AppColor {
             // Achievement / positive — soft green ramps into deep emerald.
             override val success = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(
-                    lerp(AppPalette.Common.White, AppPalette.Unique.Green, 0.4f),
-                    AppPalette.Unique.Emerald,
+                    AppPalette.Unique.Green,
+                    AppPalette.Unique.Olive
                 )
                 override val track: Color = AppPalette.Unique.Emerald.copy(alpha = 0.2f)
             }
@@ -302,6 +301,14 @@ public object DarkColor : AppColor {
                 override val colors: List<Color> = listOf(
                     AppPalette.Unique.Yellow,
                     AppPalette.Unique.Orange,
+                )
+                override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
+            }
+
+            override val error = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(
+                    AppPalette.Unique.Orange,
+                    AppPalette.Unique.Red,
                 )
                 override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
             }
