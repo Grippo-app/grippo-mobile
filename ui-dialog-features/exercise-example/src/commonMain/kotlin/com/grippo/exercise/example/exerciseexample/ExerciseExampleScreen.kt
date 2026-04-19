@@ -31,7 +31,6 @@ import com.grippo.design.components.metrics.EstimatedOneRepMaxCard
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -120,7 +119,6 @@ internal fun ExerciseExampleScreen(
                         .fillMaxWidth(),
                     summary = summary,
                     mode = MuscleLoadingMode.PerGroup,
-                    style = MuscleLoadingStyle.Collapsed
                 )
             }
 

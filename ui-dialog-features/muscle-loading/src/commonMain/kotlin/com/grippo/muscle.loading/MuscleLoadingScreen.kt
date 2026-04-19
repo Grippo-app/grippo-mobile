@@ -24,7 +24,6 @@ import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingBalanceC
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingImagesMode
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingImagesRow
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -158,7 +157,6 @@ private fun MuscleLoadOverviewCard(
             modifier = Modifier.fillMaxWidth(),
             summary = summary,
             mode = listMode,
-            style = MuscleLoadingStyle.Expanded
         )
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))

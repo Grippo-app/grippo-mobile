@@ -1,12 +1,9 @@
 package com.grippo.design.components.metrics.muscle.loading.internal
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.metrics.MuscleLoadEntryState
@@ -17,25 +14,17 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.muscle_load_trainings_count
 import com.grippo.design.resources.provider.percent
 import kotlin.math.roundToInt
-
-// todo probably deprecated
-@Immutable
-public enum class MuscleLoadingItemStyle {
-    Expanded,
-    Collapsed
-}
 
 @Composable
 internal fun MuscleLoadingItem(
     entry: MuscleLoadEntryState,
     color: Color,
     label: String,
+    indicatorColors: AppColor.Charts.IndicatorColors.IndicatorColors,
     modifier: Modifier = Modifier,
     dominant: Boolean = false,
-    style: MuscleLoadingItemStyle
 ) {
     val progress = (entry.value / 100f).coerceIn(0f, 1f)
 
@@ -51,18 +40,8 @@ internal fun MuscleLoadingItem(
         if (dominant) AppTokens.colors.text.primary
         else AppTokens.colors.text.secondary
 
-    val indicatorColors = indicatorColorsFor(color)
-
     val percentSymbol = AppTokens.strings.res(Res.string.percent)
     val valueText = "${entry.value.roundToInt()}$percentSymbol"
-
-    val trainingsText = if (style == MuscleLoadingItemStyle.Expanded) {
-        val trainingsCount = entry.hitTrainingsCount.coerceAtLeast(0)
-        AppTokens.strings.res(Res.string.muscle_load_trainings_count, trainingsCount)
-            .takeIf { it.isNotBlank() }
-    } else {
-        null
-    }
 
     LineIndicator(
         modifier = modifier.fillMaxWidth(),
@@ -70,26 +49,12 @@ internal fun MuscleLoadingItem(
         colors = indicatorColors,
         labelSpacing = AppTokens.dp.contentPadding.text,
         startLabel = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = label,
-                    style = labelStyle,
-                    color = textColor,
-                    maxLines = 1,
-                )
-
-                if (trainingsText != null) {
-                    Text(
-                        text = trainingsText,
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.tertiary,
-                        maxLines = 1,
-                    )
-                }
-            }
+            Text(
+                text = label,
+                style = labelStyle,
+                color = textColor,
+                maxLines = 1,
+            )
         },
         endLabel = {
             Text(
@@ -100,13 +65,6 @@ internal fun MuscleLoadingItem(
             )
         },
     )
-}
-
-private fun indicatorColorsFor(color: Color): AppColor.Charts.IndicatorColors.IndicatorColors {
-    return object : AppColor.Charts.IndicatorColors.IndicatorColors {
-        override val colors: List<Color> = listOf(color)
-        override val track: Color = color.copy(alpha = 0.2f)
-    }
 }
 
 internal fun colorizeEntries(
@@ -151,6 +109,20 @@ internal data class ColoredEntry(
     val color: Color,
 )
 
+@Composable
+internal fun indicatorColorsForRank(
+    index: Int,
+    total: Int,
+): AppColor.Charts.IndicatorColors.IndicatorColors {
+    if (total <= 0) return AppTokens.colors.charts.indicator.success
+    val third = total / 3f
+    return when {
+        index < third -> AppTokens.colors.charts.indicator.success
+        index < 2f * third -> AppTokens.colors.charts.indicator.warning
+        else -> AppTokens.colors.charts.indicator.error
+    }
+}
+
 @AppPreview
 @Composable
 private fun MuscleLoadingItemPreview() {
@@ -163,16 +135,8 @@ private fun MuscleLoadingItemPreview() {
             entry = entry,
             color = color,
             label = entry.group.title().text(),
+            indicatorColors = AppTokens.colors.charts.indicator.success,
             dominant = true,
-            style = MuscleLoadingItemStyle.Expanded
-        )
-
-        MuscleLoadingItem(
-            entry = entry,
-            color = color,
-            label = entry.group.title().text(),
-            dominant = true,
-            style = MuscleLoadingItemStyle.Collapsed
         )
     }
 }

@@ -13,19 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.metrics.stubCategoryDistribution
-import com.grippo.core.state.metrics.stubForceDistribution
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeries
-import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -128,10 +124,6 @@ internal fun StatisticsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             summary = summary,
                             mode = MuscleLoadingMode.PerGroup,
-                            style = when (state.mode) {
-                                StatisticsMode.Exercises -> MuscleLoadingStyle.Collapsed
-                                is StatisticsMode.Trainings -> MuscleLoadingStyle.Expanded
-                            }
                         )
                     }
                 }

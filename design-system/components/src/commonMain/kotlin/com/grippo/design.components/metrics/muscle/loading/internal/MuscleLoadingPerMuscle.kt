@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -17,7 +16,6 @@ import com.grippo.design.preview.PreviewContainer
 internal fun MuscleLoadingPerMuscle(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
-    style: MuscleLoadingStyle
 ) {
     val palette = AppTokens.colors.muscle.palette6MuscleCalm
 
@@ -42,11 +40,8 @@ internal fun MuscleLoadingPerMuscle(
                     entry = colored.entry,
                     color = colored.color,
                     label = colored.entry.muscles.firstOrNull()?.title()?.text() ?: "-",
+                    indicatorColors = indicatorColorsForRank(index, displayedEntries.size),
                     dominant = index == 0,
-                    style = when (style) {
-                        MuscleLoadingStyle.Expanded -> MuscleLoadingItemStyle.Expanded
-                        MuscleLoadingStyle.Collapsed -> MuscleLoadingItemStyle.Collapsed
-                    }
                 )
             }
         }
@@ -59,13 +54,9 @@ private fun MuscleLoadingPerMusclePreview() {
     PreviewContainer {
         MuscleLoadingPerMuscle(
             summary = stubMuscleLoadSummary(),
-            modifier = Modifier,
-            style = MuscleLoadingStyle.Expanded
         )
         MuscleLoadingPerMuscle(
             summary = stubMuscleLoadSummary(),
-            modifier = Modifier,
-            style = MuscleLoadingStyle.Collapsed
         )
     }
 }
