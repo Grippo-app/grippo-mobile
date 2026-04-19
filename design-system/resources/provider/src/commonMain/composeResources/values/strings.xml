@@ -274,6 +274,8 @@
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
     <string name="official_grippo_channels">Official Grippo channels</string>
+    <string name="social_hero_headline">Join the Grippo community</string>
+    <string name="social_hero_subtitle">Workout tips, app updates, and inspiration from athletes like you</string>
     <string name="value_statistics">%1$s statistics</string>
     <string name="value_muscle_loading">%1$s muscle loading</string>
     <string name="muscle_loading">Muscle loading</string>

@@ -101,7 +101,7 @@ public fun UserCard(
             color = experienceColor,
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
         Text(
             text = value.name,
@@ -141,7 +141,7 @@ private fun ExperienceBadge(
     Row(
         modifier = Modifier
             .background(
-                color = color.copy(alpha = 0.18f),
+                color = color,
                 shape = RoundedCornerShape(AppTokens.dp.userCard.experience.radius)
             )
             .padding(
@@ -155,13 +155,13 @@ private fun ExperienceBadge(
             modifier = Modifier.size(AppTokens.dp.userCard.experience.icon),
             imageVector = icon,
             contentDescription = null,
-            tint = color,
+            tint = AppTokens.colors.icon.primary,
         )
 
         Text(
             text = text,
             style = AppTokens.typography.b13Semi(),
-            color = color,
+            color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

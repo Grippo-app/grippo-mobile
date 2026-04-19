@@ -79,7 +79,7 @@ internal fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         text = ProfileMenu.title().text(),
                         style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary
+                        color = AppTokens.colors.text.tertiary
                     )
 
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
@@ -107,7 +107,7 @@ internal fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         text = SettingsMenu.title().text(),
                         style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary
+                        color = AppTokens.colors.text.tertiary
                     )
 
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))

@@ -273,6 +273,8 @@
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
     <string name="official_grippo_channels">Официальные каналы Grippo</string>
+    <string name="social_hero_headline">Присоединяйтесь к сообществу Grippo</string>
+    <string name="social_hero_subtitle">Советы по тренировкам, обновления и вдохновение от таких же атлетов, как ты</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — мышечная нагрузка</string>
     <string name="muscle_loading">Мышечная нагрузка</string>
