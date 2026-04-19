@@ -35,8 +35,6 @@ public data class GoalProgressState(
     val daysRemaining: Int,
     val progressFraction: Float,
     val isFinished: Boolean,
-    val startedAt: DateFormatState,
-    val targetAt: DateFormatState,
 ) {
     @Composable
     public fun progressLine(): String {
@@ -89,7 +87,5 @@ public fun stubGoalProgress(): GoalProgressState {
         daysRemaining = 0,
         progressFraction = 0f,
         isFinished = true,
-        startedAt = goal.createdAt,
-        targetAt = goal.target,
     )
 }
