@@ -100,10 +100,10 @@ public fun TrainingStreakCard(
             (value.featured.progressPercent.coerceIn(0, 100)) / 100f
 
         val progressColors = when (value.featured.mood) {
-            TrainingStreakMood.CrushingIt -> AppTokens.colors.lineIndicator.success
-            TrainingStreakMood.OnTrack -> AppTokens.colors.lineIndicator.info
-            TrainingStreakMood.Paused -> AppTokens.colors.lineIndicator.muted
-            TrainingStreakMood.Restart -> AppTokens.colors.lineIndicator.warning
+            TrainingStreakMood.CrushingIt -> AppTokens.colors.charts.indicator.success
+            TrainingStreakMood.OnTrack -> AppTokens.colors.charts.indicator.info
+            TrainingStreakMood.Paused -> AppTokens.colors.charts.indicator.muted
+            TrainingStreakMood.Restart -> AppTokens.colors.charts.indicator.warning
         }
 
         val moodLabel = when (value.featured.mood) {
@@ -177,6 +177,21 @@ public fun TrainingStreakCard(
 @Composable
 private fun TrainingStreakCardPreviewCardPreview() {
     PreviewContainer {
+        TrainingStreakCard(
+            value = stubTrainingStreaks().random(),
+        )
+        TrainingStreakCard(
+            value = stubTrainingStreaks().random(),
+        )
+        TrainingStreakCard(
+            value = stubTrainingStreaks().random(),
+        )
+        TrainingStreakCard(
+            value = stubTrainingStreaks().random(),
+        )
+        TrainingStreakCard(
+            value = stubTrainingStreaks().random(),
+        )
         TrainingStreakCard(
             value = stubTrainingStreaks().random(),
         )

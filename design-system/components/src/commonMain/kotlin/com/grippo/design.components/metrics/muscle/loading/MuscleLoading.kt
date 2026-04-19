@@ -18,6 +18,7 @@ public enum class MuscleLoadingMode {
     PerMuscle,
 }
 
+// todo deprecated
 @Immutable
 public enum class MuscleLoadingStyle {
     Expanded,

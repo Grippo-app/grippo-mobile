@@ -164,9 +164,9 @@ private fun BalanceRing(
     modifier: Modifier = Modifier,
 ) {
     val colors = when {
-        score >= 70 -> AppTokens.colors.lineIndicator.success
-        score >= 50 -> AppTokens.colors.lineIndicator.info
-        else -> AppTokens.colors.lineIndicator.warning
+        score >= 70 -> AppTokens.colors.charts.ring.success
+        score >= 50 -> AppTokens.colors.charts.ring.info
+        else -> AppTokens.colors.charts.ring.warning
     }
 
     Box(
@@ -201,6 +201,15 @@ private fun BalanceRing(
 @Composable
 private fun MuscleLoadingBalanceCardPreview() {
     PreviewContainer {
+        MuscleLoadingBalanceCard(
+            summary = stubMuscleLoadSummary()
+        )
+        MuscleLoadingBalanceCard(
+            summary = stubMuscleLoadSummary()
+        )
+        MuscleLoadingBalanceCard(
+            summary = stubMuscleLoadSummary()
+        )
         MuscleLoadingBalanceCard(
             summary = stubMuscleLoadSummary()
         )

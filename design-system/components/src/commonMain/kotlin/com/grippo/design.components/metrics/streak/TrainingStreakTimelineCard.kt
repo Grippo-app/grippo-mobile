@@ -1,7 +1,5 @@
 package com.grippo.design.components.metrics.streak
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +20,8 @@ import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 public fun TrainingStreakTimelineCard(
-    entries: List<TrainingStreakProgressState>,
     modifier: Modifier = Modifier,
+    entries: List<TrainingStreakProgressState>,
 ) {
     if (entries.isEmpty()) return
 
@@ -53,49 +51,60 @@ private fun TrainingStreakTimelineRow(
     val to = entry.range.to.date
 
     val formattedDate = if (from == to) {
-        val start = DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
-        start
+        DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
     } else {
         val start = DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
         val end = DateCompose.rememberFormat(to, DateFormat.DateOnly.DateDdMmm)
         "$start - $end"
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-        Text(
-            text = formattedDate,
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.primary
-        )
-
-        Text(
-            text = AppTokens.strings.res(
-                Res.string.training_streak_period_value,
-                entry.achievedSessions,
-                entry.targetSessions
-            ),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        val progressColors = when {
-            entry.progressPercent >= 80 -> AppTokens.colors.lineIndicator.success
-            entry.progressPercent >= 40 -> AppTokens.colors.lineIndicator.info
-            else -> AppTokens.colors.lineIndicator.warning
-        }
-
-        LineIndicator(
-            modifier = Modifier.fillMaxWidth(),
-            progress = (entry.progressPercent.coerceIn(0, 100)) / 100f,
-            colors = progressColors,
-        )
+    val progressColors = when {
+        entry.progressPercent >= 80 -> AppTokens.colors.charts.indicator.success
+        entry.progressPercent >= 40 -> AppTokens.colors.charts.indicator.info
+        else -> AppTokens.colors.charts.indicator.warning
     }
+
+    LineIndicator(
+        modifier = Modifier.fillMaxWidth(),
+        progress = (entry.progressPercent.coerceIn(0, 100)) / 100f,
+        colors = progressColors,
+        labelSpacing = AppTokens.dp.contentPadding.text,
+        startLabel = {
+            Text(
+                text = formattedDate,
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 1,
+            )
+        },
+        endLabel = {
+            Text(
+                text = AppTokens.strings.res(
+                    Res.string.training_streak_period_value,
+                    entry.achievedSessions,
+                    entry.targetSessions
+                ),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.secondary,
+                maxLines = 1,
+            )
+        },
+    )
 }
 
 @AppPreview
 @Composable
 private fun TrainingStreakTimelineCardPreview() {
     PreviewContainer {
+        TrainingStreakTimelineCard(
+            entries = stubTrainingStreaks().random().timeline
+        )
+        TrainingStreakTimelineCard(
+            entries = stubTrainingStreaks().random().timeline
+        )
+        TrainingStreakTimelineCard(
+            entries = stubTrainingStreaks().random().timeline
+        )
         TrainingStreakTimelineCard(
             entries = stubTrainingStreaks().random().timeline
         )

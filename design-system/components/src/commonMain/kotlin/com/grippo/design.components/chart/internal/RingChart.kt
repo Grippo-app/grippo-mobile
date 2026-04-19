@@ -17,7 +17,7 @@ internal fun RingChart(
     modifier: Modifier = Modifier,
     value: Float,
     max: Float,
-    colors: AppColor.LineIndicatorColors.IndicatorColors,
+    colors: AppColor.Charts.RingColor.RingPalette,
 ) {
     val style = RingStyle(
         strokeWidth = 12.dp,
@@ -42,7 +42,28 @@ private fun RingChartPreview() {
             modifier = Modifier.size(120.dp),
             value = 62f,
             max = 100f,
-            colors = AppTokens.colors.lineIndicator.info
+            colors = AppTokens.colors.charts.ring.info
+        )
+
+        RingChart(
+            modifier = Modifier.size(120.dp),
+            value = 62f,
+            max = 100f,
+            colors = AppTokens.colors.charts.ring.success
+        )
+
+        RingChart(
+            modifier = Modifier.size(120.dp),
+            value = 62f,
+            max = 100f,
+            colors = AppTokens.colors.charts.ring.warning
+        )
+
+        RingChart(
+            modifier = Modifier.size(120.dp),
+            value = 62f,
+            max = 100f,
+            colors = AppTokens.colors.charts.ring.muted
         )
     }
 }

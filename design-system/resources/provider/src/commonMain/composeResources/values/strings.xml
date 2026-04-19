@@ -618,7 +618,7 @@
     <!-- Goal progress card -->
     <string name="goal_card_title">Training goal</string>
     <string name="goal_card_adherence_score">%1$d%</string>
-    <string name="goal_card_adherence_label">adherence</string>
+    <string name="goal_card_adherence_label">on track</string>
     <string name="goal_card_status_on_track">On track</string>
     <string name="goal_card_status_drifting">Drifting</string>
     <string name="goal_card_status_off_track">Off track</string>

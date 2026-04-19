@@ -68,24 +68,110 @@ public data class GoalProgressState(
     }
 }
 
-public fun stubGoalProgress(): GoalProgressState {
-    val goal = stubGoal()
+public fun stubGoalProgressList(): List<GoalProgressState> {
     val now = DateFormatState.of(
         value = DateTimeUtils.now(),
         range = DateTimeUtils.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy
     )
-    return GoalProgressState(
-        goal = goal,
-        now = now,
-        score = 72,
-        strengthShare = 30,
-        hypertrophyShare = 55,
-        enduranceShare = 15,
-        daysTotal = 1,
-        daysElapsed = 0,
-        daysRemaining = 0,
-        progressFraction = 0f,
-        isFinished = true,
+    return listOf(
+        // On track, early progress
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 82,
+            strengthShare = 45,
+            hypertrophyShare = 40,
+            enduranceShare = 15,
+            daysTotal = 90,
+            daysElapsed = 18,
+            daysRemaining = 72,
+            progressFraction = 0.2f,
+            isFinished = false,
+        ),
+        // Drifting, mid progress
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 54,
+            strengthShare = 20,
+            hypertrophyShare = 35,
+            enduranceShare = 45,
+            daysTotal = 60,
+            daysElapsed = 30,
+            daysRemaining = 30,
+            progressFraction = 0.5f,
+            isFinished = false,
+        ),
+        // Off track, late progress
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 28,
+            strengthShare = 10,
+            hypertrophyShare = 25,
+            enduranceShare = 65,
+            daysTotal = 45,
+            daysElapsed = 38,
+            daysRemaining = 7,
+            progressFraction = 0.84f,
+            isFinished = false,
+        ),
+        // Due today
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 66,
+            strengthShare = 33,
+            hypertrophyShare = 33,
+            enduranceShare = 34,
+            daysTotal = 30,
+            daysElapsed = 30,
+            daysRemaining = 0,
+            progressFraction = 1f,
+            isFinished = false,
+        ),
+        // Overdue
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 47,
+            strengthShare = 25,
+            hypertrophyShare = 50,
+            enduranceShare = 25,
+            daysTotal = 30,
+            daysElapsed = 34,
+            daysRemaining = -4,
+            progressFraction = 1f,
+            isFinished = false,
+        ),
+        // Completed successfully
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 91,
+            strengthShare = 50,
+            hypertrophyShare = 35,
+            enduranceShare = 15,
+            daysTotal = 120,
+            daysElapsed = 120,
+            daysRemaining = 0,
+            progressFraction = 1f,
+            isFinished = true,
+        ),
+        // Just started
+        GoalProgressState(
+            goal = stubGoal(),
+            now = now,
+            score = 75,
+            strengthShare = 60,
+            hypertrophyShare = 25,
+            enduranceShare = 15,
+            daysTotal = 180,
+            daysElapsed = 2,
+            daysRemaining = 178,
+            progressFraction = 0.01f,
+            isFinished = false,
+        ),
     )
 }

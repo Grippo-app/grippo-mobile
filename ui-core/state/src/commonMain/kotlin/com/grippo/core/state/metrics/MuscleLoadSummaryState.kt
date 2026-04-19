@@ -7,6 +7,7 @@ import com.grippo.core.state.muscles.MuscleGroupEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 @Immutable
 public data class MuscleLoadSummaryState(
@@ -269,12 +270,12 @@ public data class MuscleLoadDominanceState(
 public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
     return MuscleLoadSummaryState(
         meta = MuscleLoadMetaState(
-            trainingsCount = 24,
-            totalExercises = 188,
-            totalSets = 612,
-            totalRepetitions = 4680,
-            totalVolume = 54230f,
-            dominantGroup = MuscleGroupEnumState.CHEST_MUSCLES,
+            trainingsCount = Random.nextInt(5, 60),
+            totalExercises = Random.nextInt(40, 400),
+            totalSets = Random.nextInt(120, 1500),
+            totalRepetitions = Random.nextInt(800, 12000),
+            totalVolume = Random.nextDouble(8_000.0, 120_000.0).toFloat(),
+            dominantGroup = MuscleGroupEnumState.entries.random(),
         ),
         perGroup = MuscleLoadBreakdownState(
             entries = listOf(

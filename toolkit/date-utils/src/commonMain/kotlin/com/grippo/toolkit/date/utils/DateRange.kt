@@ -23,8 +23,8 @@ import kotlin.math.max
 @Serializable
 @Immutable
 public data class DateRange(
-    val from: LocalDateTime,
-    val to: LocalDateTime,
+    val from: LocalDateTime, // todo probably formatter
+    val to: LocalDateTime, // todo probably formatter
 ) {
 
     @Serializable

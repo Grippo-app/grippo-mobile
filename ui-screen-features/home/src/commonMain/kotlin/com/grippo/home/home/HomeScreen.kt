@@ -33,7 +33,7 @@ import com.grippo.core.state.metrics.stubExerciseSpotlightGoodFrequency
 import com.grippo.core.state.metrics.stubExerciseSpotlightNearBest
 import com.grippo.core.state.metrics.stubExerciseSpotlightNeedsAttention
 import com.grippo.core.state.metrics.stubExerciseSpotlightProgressWin
-import com.grippo.core.state.metrics.stubGoalProgress
+import com.grippo.core.state.metrics.stubGoalProgressList
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
@@ -379,7 +379,7 @@ private fun HomeScreenPreview() {
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
                 profile = stubTrainingLoadProfile(),
-                goalProgress = stubGoalProgress(),
+                goalProgress = stubGoalProgressList().random(),
                 hasDraftTraining = true
             ),
             loaders = persistentSetOf(),

@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.colors
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import com.grippo.design.resources.provider.AppColor
 
 public object DarkColor : AppColor {
@@ -78,30 +79,6 @@ public object DarkColor : AppColor {
         override val peakIntensity1: Color = AppPalette.Unique.Brown
         override val peakIntensity2: Color = AppPalette.Unique.Copper
     }
-
-    override val lineIndicator: AppColor.LineIndicatorColors =
-        object : AppColor.LineIndicatorColors {
-            override val primary = object : AppColor.LineIndicatorColors.IndicatorColors {
-                override val indicator: Color = AppPalette.Common.White
-                override val track: Color = AppPalette.Common.White.copy(alpha = 0.2f)
-            }
-            override val success = object : AppColor.LineIndicatorColors.IndicatorColors {
-                override val indicator: Color = AppPalette.Unique.Green
-                override val track: Color = AppPalette.Unique.Green.copy(alpha = 0.2f)
-            }
-            override val info = object : AppColor.LineIndicatorColors.IndicatorColors {
-                override val indicator: Color = AppPalette.Common.White
-                override val track: Color = AppPalette.Common.White.copy(alpha = 0.2f)
-            }
-            override val warning = object : AppColor.LineIndicatorColors.IndicatorColors {
-                override val indicator: Color = AppPalette.Unique.Orange
-                override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
-            }
-            override val muted = object : AppColor.LineIndicatorColors.IndicatorColors {
-                override val indicator: Color = AppPalette.NeutralDark.N500
-                override val track: Color = AppPalette.NeutralDark.N500.copy(alpha = 0.2f)
-            }
-        }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val placeholder = AppPalette.NeutralDark.N500
@@ -251,7 +228,7 @@ public object DarkColor : AppColor {
             override val dot = AppPalette.Common.White
             override val middle = AppPalette.NeutralDark.N400
         }
-        override val tooltip = object : AppColor.Charts.Tooltip {
+        override val tooltip = object : AppColor.Charts.TooltipColor {
             override val background: Color = AppPalette.NeutralDark.N400
             override val border: Color = AppPalette.NeutralDark.N450
             override val text: Color = AppPalette.Common.White
@@ -273,6 +250,67 @@ public object DarkColor : AppColor {
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.White.copy(alpha = 0.08f)
+        }
+        override val ring = object : AppColor.Charts.RingColor {
+            override val success = object : AppColor.Charts.RingColor.RingPalette {
+                override val indicator: Color = AppPalette.Unique.Emerald
+                override val track: Color = AppPalette.Unique.Emerald.copy(alpha = 0.2f)
+            }
+            override val info = object : AppColor.Charts.RingColor.RingPalette {
+                override val indicator: Color = AppPalette.Common.White
+                override val track: Color = AppPalette.NeutralDark.N300
+            }
+            override val warning = object : AppColor.Charts.RingColor.RingPalette {
+                override val indicator: Color = AppPalette.Unique.Orange
+                override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
+            }
+            override val muted = object : AppColor.Charts.RingColor.RingPalette {
+                override val indicator: Color = AppPalette.NeutralDark.N500
+                override val track: Color = AppPalette.NeutralDark.N500.copy(alpha = 0.2f)
+            }
+        }
+        override val indicator = object : AppColor.Charts.IndicatorColors {
+            // Brand accent — neutral start, warm finish. Fits hero-progress (goals, milestones).
+            override val primary = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(
+                    AppPalette.Common.White,
+                    AppPalette.Unique.Orange,
+                )
+                override val track: Color = AppPalette.Common.White.copy(alpha = 0.2f)
+            }
+
+            // Achievement / positive — soft green ramps into deep emerald.
+            override val success = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(
+                    lerp(AppPalette.Common.White, AppPalette.Unique.Green, 0.4f),
+                    AppPalette.Unique.Emerald,
+                )
+                override val track: Color = AppPalette.Unique.Emerald.copy(alpha = 0.2f)
+            }
+
+            // Neutral informational — pastel-blue to brand blue.
+            override val info = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(
+                    AppPalette.Common.White,
+                    AppPalette.Common.White,
+                )
+                override val track: Color = AppPalette.NeutralDark.N500
+            }
+
+            // Hot ramp — yellow attention fading into orange urgency.
+            override val warning = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(
+                    AppPalette.Unique.Yellow,
+                    AppPalette.Unique.Orange,
+                )
+                override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
+            }
+
+            // Muted — kept solid on purpose; used where progress should fade into the background.
+            override val muted = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(AppPalette.NeutralDark.N500)
+                override val track: Color = AppPalette.NeutralDark.N500.copy(alpha = 0.2f)
+            }
         }
     }
 

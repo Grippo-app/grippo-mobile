@@ -26,7 +26,6 @@ public interface AppColor {
     public val palette: PaletteColors
     public val static: Static
     public val achievements: Achievements
-    public val lineIndicator: LineIndicatorColors
     public val selectableCardColors: SelectableCardColors
 
     public interface DividerColors {
@@ -225,19 +224,6 @@ public interface AppColor {
         }
     }
 
-    public interface LineIndicatorColors {
-        public val primary: IndicatorColors
-        public val success: IndicatorColors
-        public val info: IndicatorColors
-        public val warning: IndicatorColors
-        public val muted: IndicatorColors
-
-        public interface IndicatorColors {
-            public val indicator: Color
-            public val track: Color
-        }
-    }
-
     public interface ChipColors {
         public val intensity: GradientColors
         public val volume: GradientColors
@@ -256,7 +242,36 @@ public interface AppColor {
         public val progress: ProgressColors
         public val radar: RadarColors
         public val sparkline: SparklineColors
-        public val tooltip: Tooltip
+        public val tooltip: TooltipColor
+        public val ring: RingColor
+        public val indicator: IndicatorColors
+
+        public interface RingColor {
+            public val success: RingPalette
+            public val info: RingPalette
+            public val warning: RingPalette
+            public val muted: RingPalette
+
+            public interface RingPalette {
+                public val indicator: Color
+                public val track: Color
+            }
+        }
+
+        public interface IndicatorColors {
+            public val primary: IndicatorColors
+            public val success: IndicatorColors
+            public val info: IndicatorColors
+            public val warning: IndicatorColors
+            public val muted: IndicatorColors
+
+            public interface IndicatorColors {
+                public val colors: List<Color>
+                public val stops: List<Float>? get() = null
+                public val track: Color
+                public val dominant: Color get() = colors.last()
+            }
+        }
 
         public interface SparklineColors {
             public val lineA: Color
@@ -266,7 +281,7 @@ public interface AppColor {
             public val middle: Color
         }
 
-        public interface Tooltip {
+        public interface TooltipColor {
             public val background: Color
             public val border: Color
             public val text: Color

@@ -12,10 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.GoalProgressState
-import com.grippo.core.state.metrics.stubGoalProgress
+import com.grippo.core.state.metrics.stubGoalProgressList
 import com.grippo.design.components.chart.internal.RingChart
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -33,8 +32,6 @@ public fun GoalCard(
     value: GoalProgressState,
     modifier: Modifier = Modifier,
 ) {
-    val score = value.score.coerceIn(0, 100)
-
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
@@ -79,12 +76,13 @@ public fun GoalCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-//                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
                 Text(
                     text = value.remainingLine(),
                     style = AppTokens.typography.b13Med(),
-                    color = remainingColor(value),
+                    color = when {
+                        value.daysRemaining < 0 -> AppTokens.colors.semantic.warning
+                        else -> AppTokens.colors.text.secondary
+                    },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -92,57 +90,52 @@ public fun GoalCard(
 
             AdherenceRing(
                 modifier = Modifier.size(AppTokens.dp.metrics.goal.chart),
-                score = score
+                score = value.score.coerceIn(0, 100)
             )
         }
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                modifier = Modifier,
-                text = value.goal.createdAt.display,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1
-            )
-            Text(
-                modifier = Modifier,
-                text = value.goal.target.display,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1
-            )
-        }
-
         LineIndicator(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             progress = value.progressFraction,
-            colors = AppTokens.colors.lineIndicator.muted,
+            colors = AppTokens.colors.charts.indicator.success,
+            labelSpacing = AppTokens.dp.contentPadding.text,
+            startLabel = {
+                Text(
+                    text = value.goal.createdAt.display,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                )
+            },
+            endLabel = {
+                Text(
+                    text = value.goal.target.display,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                )
+            },
+            marker = {
+                Text(
+                    text = "\uD83D\uDD25️",
+                    style = AppTokens.typography.h4(),
+                )
+            },
         )
-    }
-}
-
-@Composable
-private fun remainingColor(value: GoalProgressState): Color {
-    return when {
-        value.daysRemaining < 0 -> AppTokens.colors.semantic.warning
-        else -> AppTokens.colors.text.secondary
     }
 }
 
 @Composable
 private fun AdherenceRing(
     modifier: Modifier = Modifier,
-    score: Int,
+    score: Int
 ) {
     val colors = when {
-        score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.lineIndicator.success
-        score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.lineIndicator.info
-        else -> AppTokens.colors.lineIndicator.warning
+        score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.ring.success
+        score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.charts.ring.info
+        else -> AppTokens.colors.charts.ring.warning
     }
 
     Box(
@@ -156,9 +149,7 @@ private fun AdherenceRing(
             colors = colors,
         )
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = AppTokens.strings.res(Res.string.goal_card_adherence_score, score),
                 style = AppTokens.typography.h3(),
@@ -179,7 +170,13 @@ private fun AdherenceRing(
 private fun GoalCardPreview() {
     PreviewContainer {
         GoalCard(
-            value = stubGoalProgress()
+            value = stubGoalProgressList().random()
+        )
+        GoalCard(
+            value = stubGoalProgressList().random()
+        )
+        GoalCard(
+            value = stubGoalProgressList().random()
         )
     }
 }

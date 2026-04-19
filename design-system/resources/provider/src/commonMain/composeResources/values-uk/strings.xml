@@ -614,7 +614,7 @@
     <!-- Goal progress card -->
     <string name="goal_card_title">Ціль тренувань</string>
     <string name="goal_card_adherence_score">%1$d%</string>
-    <string name="goal_card_adherence_label">дотримання цілі</string>
+    <string name="goal_card_adherence_label">за планом</string>
     <string name="goal_card_status_on_track">За планом</string>
     <string name="goal_card_status_drifting">Відхиляєшся</string>
     <string name="goal_card_status_off_track">Збився з цілі</string>

@@ -1,11 +1,8 @@
 package com.grippo.design.components.metrics.muscle.loading.internal
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -24,6 +21,7 @@ import com.grippo.design.resources.provider.muscle_load_trainings_count
 import com.grippo.design.resources.provider.percent
 import kotlin.math.roundToInt
 
+// todo probably deprecated
 @Immutable
 public enum class MuscleLoadingItemStyle {
     Expanded,
@@ -49,78 +47,64 @@ internal fun MuscleLoadingItem(
         if (dominant) AppTokens.typography.h5()
         else AppTokens.typography.b13Semi()
 
-    val labelColor =
-        if (dominant) AppTokens.colors.text.primary
-        else AppTokens.colors.text.secondary
-
-    val valueColor =
+    val textColor =
         if (dominant) AppTokens.colors.text.primary
         else AppTokens.colors.text.secondary
 
     val indicatorColors = indicatorColorsFor(color)
 
     val percentSymbol = AppTokens.strings.res(Res.string.percent)
-
     val valueText = "${entry.value.roundToInt()}$percentSymbol"
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier,
-                text = label,
-                style = labelStyle,
-                color = labelColor,
-                maxLines = 1
-            )
+    val trainingsText = if (style == MuscleLoadingItemStyle.Expanded) {
+        val trainingsCount = entry.hitTrainingsCount.coerceAtLeast(0)
+        AppTokens.strings.res(Res.string.muscle_load_trainings_count, trainingsCount)
+            .takeIf { it.isNotBlank() }
+    } else {
+        null
+    }
 
-            if (style == MuscleLoadingItemStyle.Expanded) {
-                val trainingsCount = entry.hitTrainingsCount.coerceAtLeast(0)
-
-                val trainingsText = AppTokens.strings.res(
-                    Res.string.muscle_load_trainings_count,
-                    trainingsCount
+    LineIndicator(
+        modifier = modifier.fillMaxWidth(),
+        progress = progress,
+        colors = indicatorColors,
+        labelSpacing = AppTokens.dp.contentPadding.text,
+        startLabel = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = label,
+                    style = labelStyle,
+                    color = textColor,
+                    maxLines = 1,
                 )
 
-                if (trainingsText.isNotBlank()) {
-                    Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
+                if (trainingsText != null) {
                     Text(
                         text = trainingsText,
                         style = AppTokens.typography.b12Med(),
                         color = AppTokens.colors.text.tertiary,
-                        maxLines = 1
+                        maxLines = 1,
                     )
                 }
             }
-
-            Spacer(Modifier.weight(1f))
-
+        },
+        endLabel = {
             Text(
                 text = valueText,
                 style = valueStyle,
-                color = valueColor,
-                maxLines = 1
+                color = textColor,
+                maxLines = 1,
             )
-        }
-
-        LineIndicator(
-            modifier = Modifier.fillMaxWidth(),
-            progress = progress,
-            colors = indicatorColors,
-        )
-    }
+        },
+    )
 }
 
-private fun indicatorColorsFor(color: Color): AppColor.LineIndicatorColors.IndicatorColors {
-    return object : AppColor.LineIndicatorColors.IndicatorColors {
-        override val indicator: Color = color
+private fun indicatorColorsFor(color: Color): AppColor.Charts.IndicatorColors.IndicatorColors {
+    return object : AppColor.Charts.IndicatorColors.IndicatorColors {
+        override val colors: List<Color> = listOf(color)
         override val track: Color = color.copy(alpha = 0.2f)
     }
 }
