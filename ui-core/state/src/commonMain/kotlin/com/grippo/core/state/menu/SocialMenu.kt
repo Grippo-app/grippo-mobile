@@ -2,6 +2,7 @@ package com.grippo.core.state.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
@@ -23,38 +24,70 @@ public sealed class SocialMenu : PickerMenuItem {
 
     public data object Instagram : SocialMenu() {
         override val id: String get() = "instagram"
+
         override val urls: List<String> = listOf("https://www.instagram.com/grippo.app/")
+
         override fun text(): UiText = UiText.Res(Res.string.instagram)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Instagram
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object TikTok : SocialMenu() {
         override val id: String get() = "tiktok"
+
         override val urls: List<String> = listOf("https://www.tiktok.com/@grippoapp")
+
         override fun text(): UiText = UiText.Res(Res.string.tiktok)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Tiktok
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object YouTube : SocialMenu() {
         override val id: String get() = "youtube"
+
         override val urls: List<String> = listOf("https://www.youtube.com/@GrippoApp")
+
         override fun text(): UiText = UiText.Res(Res.string.youtube)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Youtube
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object Threads : SocialMenu() {
         override val id: String get() = "threads"
+
         override val urls: List<String> = listOf("https://www.threads.com/@grippo.app")
+
         override fun text(): UiText = UiText.Res(Res.string.threads)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Threads
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public companion object {

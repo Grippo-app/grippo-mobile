@@ -20,29 +20,47 @@ public sealed class TrainingMenu : PickerMenuItem {
 
     public data object Details : TrainingMenu() {
         override val id: String get() = "details"
+
         override fun text(): UiText = UiText.Res(Res.string.details)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.EyeOn
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object Edit : TrainingMenu() {
         override val id: String get() = "edit"
+
         override fun text(): UiText = UiText.Res(Res.string.edit_btn)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Edit
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object Delete : TrainingMenu() {
         override val id: String get() = "delete"
+
         override fun text(): UiText = UiText.Res(Res.string.delete_btn)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Cancel
 
         @Composable
-        override fun color(): Color = AppTokens.colors.semantic.error
+        override fun textColor(): Color = AppTokens.colors.semantic.error
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.semantic.error
     }
 
     public companion object {

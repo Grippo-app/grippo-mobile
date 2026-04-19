@@ -22,7 +22,8 @@ import kotlinx.collections.immutable.persistentListOf
 public data class MenuItem(
     val title: UiText,
     val icon: ImageVector,
-    val contentColor: Color
+    val titleColor: Color,
+    val iconColor: Color
 )
 
 @Composable
@@ -33,8 +34,7 @@ public fun <KEY> Menu(
 ) {
     // Indent the divider so it starts right after the icon column,
     // aligned with the beginning of the text.
-    val dividerStartIndent = AppTokens.dp.menu.item.horizontalPadding +
-            AppTokens.dp.menu.item.icon +
+    val dividerStartIndent = AppTokens.dp.menu.item.icon +
             AppTokens.dp.contentPadding.subContent
 
     Column(modifier = modifier) {
@@ -48,7 +48,8 @@ public fun <KEY> Menu(
                 modifier = Modifier.fillMaxWidth(),
                 title = item.title.text(),
                 icon = item.icon,
-                contentColor = item.contentColor,
+                titleColor = item.titleColor,
+                iconColor = item.iconColor,
                 onClick = onClickProvider
             )
 
@@ -73,17 +74,20 @@ private fun MenuPreview() {
                 "settings" to MenuItem(
                     title = UiText.Str("Settings"),
                     icon = AppTokens.icons.User,
-                    contentColor = AppTokens.colors.text.primary
+                    titleColor = AppTokens.colors.text.primary,
+                    iconColor = AppTokens.colors.icon.primary,
                 ),
                 "profile" to MenuItem(
                     title = UiText.Str("Profile"),
                     icon = AppTokens.icons.User,
-                    contentColor = AppTokens.colors.text.primary
+                    titleColor = AppTokens.colors.text.primary,
+                    iconColor = AppTokens.colors.icon.primary,
                 ),
                 "logout" to MenuItem(
                     title = UiText.Str("Logout"),
                     icon = AppTokens.icons.User,
-                    contentColor = AppTokens.colors.semantic.error
+                    titleColor = AppTokens.colors.semantic.error,
+                    iconColor = AppTokens.colors.semantic.error,
                 )
             ),
             onClick = {}

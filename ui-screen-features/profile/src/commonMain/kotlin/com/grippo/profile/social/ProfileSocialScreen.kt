@@ -58,7 +58,8 @@ internal fun ProfileSocialScreen(
             channel to MenuItem(
                 title = channel.text(),
                 icon = channel.icon(),
-                contentColor = channel.color(),
+                titleColor = channel.textColor(),
+                iconColor = channel.iconColor()
             )
         }.toPersistentList()
 

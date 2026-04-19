@@ -16,5 +16,8 @@ public sealed interface PickerMenuItem {
     public fun icon(): ImageVector
 
     @Composable
-    public fun color(): Color = Color.Unspecified
+    public fun textColor(): Color
+
+    @Composable
+    public fun iconColor(): Color
 }

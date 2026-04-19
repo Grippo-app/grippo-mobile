@@ -2,6 +2,7 @@ package com.grippo.core.state.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
@@ -19,26 +20,47 @@ public sealed class SettingsMenu : PickerMenuItem {
 
     public data object Settings : SettingsMenu() {
         override val id: String get() = "settings"
+
         override fun text(): UiText = UiText.Res(Res.string.settings)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Filter
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object Social : SettingsMenu() {
         override val id: String get() = "social"
+
         override fun text(): UiText = UiText.Res(Res.string.follow_us)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.ChatAlt
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public data object Debug : SettingsMenu() {
         override val id: String get() = "debug"
+
         override fun text(): UiText = UiText.Res(Res.string.debug)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Bug
+
+        @Composable
+        override fun textColor(): Color = AppTokens.colors.text.primary
+
+        @Composable
+        override fun iconColor(): Color = AppTokens.colors.icon.primary
     }
 
     public companion object {

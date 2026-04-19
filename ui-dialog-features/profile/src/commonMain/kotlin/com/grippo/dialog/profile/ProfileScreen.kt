@@ -66,13 +66,17 @@ internal fun ProfileScreen(
             ) {
                 item {
                     val profileMenu = ProfileMenu.entries
-                        .map { it to MenuItem(it.text(), it.icon(), it.color()) }
-                        .toPersistentList()
+                        .map {
+                            it to MenuItem(
+                                title = it.text(),
+                                icon = it.icon(),
+                                titleColor = it.textColor(),
+                                iconColor = it.iconColor()
+                            )
+                        }.toPersistentList()
 
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = AppTokens.dp.contentPadding.subContent),
+                        modifier = Modifier.fillMaxWidth(),
                         text = ProfileMenu.title().text(),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary
@@ -89,13 +93,18 @@ internal fun ProfileScreen(
 
                     val settingsMenu = SettingsMenu.entries
                         .filter { !(state.user?.role != RoleEnumState.ADMIN && it == SettingsMenu.Debug) }
-                        .map { it to MenuItem(it.text(), it.icon(), it.color()) }
+                        .map {
+                            it to MenuItem(
+                                title = it.text(),
+                                icon = it.icon(),
+                                titleColor = it.textColor(),
+                                iconColor = it.iconColor()
+                            )
+                        }
                         .toPersistentList()
 
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = AppTokens.dp.contentPadding.subContent),
+                        modifier = Modifier.fillMaxWidth(),
                         text = SettingsMenu.title().text(),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary

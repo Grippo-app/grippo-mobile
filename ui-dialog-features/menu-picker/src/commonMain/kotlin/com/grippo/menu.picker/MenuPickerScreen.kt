@@ -49,7 +49,8 @@ internal fun MenuPickerScreen(
         item to MenuItem(
             title = item.text(),
             icon = item.icon(),
-            contentColor = item.color(),
+            titleColor = item.textColor(),
+            iconColor = item.iconColor()
         )
     }.toPersistentList()
 

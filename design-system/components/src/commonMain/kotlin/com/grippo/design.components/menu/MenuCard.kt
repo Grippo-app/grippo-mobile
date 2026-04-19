@@ -24,23 +24,21 @@ public fun MenuCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector,
-    contentColor: Color,
+    titleColor: Color,
+    iconColor: Color,
     onClick: () -> Unit,
 ) {
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .padding(
-                vertical = AppTokens.dp.menu.item.verticalPadding,
-                horizontal = AppTokens.dp.menu.item.horizontalPadding
-            ),
+            .padding(vertical = AppTokens.dp.menu.item.verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
             imageVector = icon,
-            tint = contentColor,
+            tint = titleColor,
             contentDescription = null
         )
 
@@ -50,13 +48,13 @@ public fun MenuCard(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.b14Semi(),
-            color = contentColor
+            color = titleColor
         )
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
             imageVector = AppTokens.icons.ArrowRight,
-            tint = AppTokens.colors.icon.secondary,
+            tint = iconColor,
             contentDescription = null
         )
     }
@@ -69,14 +67,16 @@ private fun MenuCardPreview() {
         MenuCard(
             title = "User Settings",
             icon = AppTokens.icons.User,
-            contentColor = AppTokens.colors.text.primary,
+            titleColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             onClick = {}
         )
 
         MenuCard(
             title = "Logout",
             icon = AppTokens.icons.User,
-            contentColor = AppTokens.colors.semantic.error,
+            titleColor = AppTokens.colors.semantic.error,
+            iconColor = AppTokens.colors.semantic.error,
             onClick = {}
         )
     }
