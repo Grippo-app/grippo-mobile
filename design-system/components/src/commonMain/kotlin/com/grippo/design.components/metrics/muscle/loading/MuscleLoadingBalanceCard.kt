@@ -22,8 +22,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_load_balance
-import com.grippo.design.resources.provider.muscle_load_balance_description_1
-import com.grippo.design.resources.provider.muscle_load_balance_description_2
 import com.grippo.design.resources.provider.muscle_load_balance_score
 import com.grippo.design.resources.provider.muscle_load_balance_score_label
 import com.grippo.design.resources.provider.muscle_load_balance_status_balanced
@@ -153,23 +151,6 @@ public fun MuscleLoadingBalanceCard(
                 score = balanceScore,
                 caption = AppTokens.strings.res(Res.string.muscle_load_balance_score_label),
                 percentSymbol = percentSymbol
-            )
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-        ) {
-            Text(
-                text = AppTokens.strings.res(Res.string.muscle_load_balance_description_1),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary
-            )
-
-            Text(
-                text = AppTokens.strings.res(Res.string.muscle_load_balance_description_2),
-                style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.secondary
             )
         }
     }
