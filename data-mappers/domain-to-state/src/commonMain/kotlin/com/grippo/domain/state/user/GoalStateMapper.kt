@@ -16,6 +16,11 @@ public fun Goal.toState(): GoalState {
             range = DateRange.Range.Infinity().range,
             format = DateFormat.DateOnly.DateMmmDdYyyy
         ),
+        createdAt = DateFormatState.of(
+            value = createdAt,
+            range = DateRange.Range.Infinity().range,
+            format = DateFormat.DateOnly.DateMmmDdYyyy
+        ),
         personalizations = personalizations.map { it.toState() }.toPersistentList(),
     )
 }

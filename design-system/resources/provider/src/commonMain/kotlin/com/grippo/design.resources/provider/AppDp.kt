@@ -136,6 +136,7 @@ public data object AppDp {
         val trainingSummary: TrainingSummary = TrainingSummary
         val trainingProfile: TrainingProfile = TrainingProfile
         val muscleLoad: MuscleLoad = MuscleLoad
+        val goal: Goal = Goal
         val performanceTrend: PerformanceTrend = PerformanceTrend
         val spotlightCard: SpotlightCard = SpotlightCard
 
@@ -173,6 +174,19 @@ public data object AppDp {
                 val radius: Dp = AppDp.radius.medium
                 val horizontalPadding: Dp = padding.medium
                 val verticalPadding: Dp = padding.small
+            }
+        }
+
+        public data object Goal {
+            val chart: Dp = size.xLarge
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.small
+            val progressBar: ProgressBar = ProgressBar
+
+            public data object ProgressBar {
+                val height: Dp = padding.extraSmall
+                val radius: Dp = AppDp.radius.small
             }
         }
 

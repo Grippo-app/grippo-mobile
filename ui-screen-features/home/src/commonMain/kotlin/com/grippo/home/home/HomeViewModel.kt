@@ -8,6 +8,7 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
+import com.grippo.data.features.api.metrics.GoalFollowingUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
@@ -54,7 +55,8 @@ internal class HomeViewModel(
     private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
     private val stringProvider: StringProvider,
     private val permissionManager: PermissionManager,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
+    private val goalFollowingUseCase: GoalFollowingUseCase
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -121,7 +123,28 @@ internal class HomeViewModel(
         update { it.copy(hasDraftTraining = hasDraftTraining) }
     }
 
+    private suspend fun provideGoal(goal: Goal?) {
+        cachedGoal = goal
+        refreshGoalProgress()
+    }
+
+    private suspend fun refreshGoalProgress() {
+        val goal = cachedGoal
+        val trainings = cachedTrainings
+        if (goal == null || trainings.isEmpty()) {
+            update { it.copy(goalProgress = null) }
+            return
+        }
+        val adherence = goalFollowingUseCase.fromTrainingsByPrimary(trainings) ?: run {
+            update { it.copy(goalProgress = null) }
+            return
+        }
+        val goalProgress = toGoalProgressState(goal = goal, adherence = adherence)
+        update { it.copy(goalProgress = goalProgress) }
+    }
+
     private suspend fun provideTrainings(list: List<Training>) {
+        cachedTrainings = list
         if (list.isEmpty()) {
             clearHome()
             return
@@ -168,6 +191,8 @@ internal class HomeViewModel(
                 profile = profile
             )
         }
+
+        refreshGoalProgress()
     }
 
     override fun onStartTraining() {
@@ -297,7 +322,8 @@ internal class HomeViewModel(
                 streak = null,
                 performance = persistentListOf(),
                 lastTraining = null,
-                profile = null
+                profile = null,
+                goalProgress = null
             )
         }
     }

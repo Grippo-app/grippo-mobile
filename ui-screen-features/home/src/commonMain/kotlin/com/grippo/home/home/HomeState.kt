@@ -2,6 +2,7 @@ package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.metrics.ExerciseSpotlightState
+import com.grippo.core.state.metrics.GoalProgressState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.TrainingLoadProfileState
@@ -22,5 +23,6 @@ internal data class HomeState(
     val streak: TrainingStreakState? = null,
     val performance: ImmutableList<PerformanceMetricState> = persistentListOf(),
     val profile: TrainingLoadProfileState? = null,
+    val goalProgress: GoalProgressState? = null,
     val spotlights: ImmutableList<ExerciseSpotlightState> = persistentListOf(),
 )

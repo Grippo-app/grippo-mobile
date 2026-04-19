@@ -8,7 +8,7 @@ public data class Goal(
     val target: LocalDateTime,
     val personalizations: List<PersonalizationKeyEnum>,
     val confidence: Double,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
     val lastConfirmedAt: String?,
 )

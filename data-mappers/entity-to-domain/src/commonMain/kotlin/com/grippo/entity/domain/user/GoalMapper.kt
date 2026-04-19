@@ -17,12 +17,10 @@ public fun GoalEntity.toDomain(): Goal? {
         primaryGoal = mappedPrimaryGoal,
         secondaryGoal = GoalSecondaryGoalEnum.of(secondaryGoal),
         target = DateTimeUtils.toLocalDateTime(target),
-        personalizations = personalizations.mapNotNull {
-            PersonalizationKeyEnum.of(it)
-        },
+        personalizations = personalizations.mapNotNull { PersonalizationKeyEnum.of(it) },
         confidence = confidence,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
+        createdAt = DateTimeUtils.toLocalDateTime(createdAt),
+        updatedAt = DateTimeUtils.toLocalDateTime(updatedAt),
         lastConfirmedAt = lastConfirmedAt,
     )
 }

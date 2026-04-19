@@ -12,6 +12,7 @@ public data class GoalState(
     val primaryGoal: GoalPrimaryGoalEnumState,
     val secondaryGoal: GoalSecondaryGoalEnumState?,
     val target: DateFormatState,
+    val createdAt: DateFormatState,
     val personalizations: ImmutableList<PersonalizationKeyEnumState>,
 )
 
@@ -20,6 +21,11 @@ public fun stubGoal(): GoalState {
         primaryGoal = GoalPrimaryGoalEnumState.entries.random(),
         secondaryGoal = GoalSecondaryGoalEnumState.entries.random(),
         target = DateFormatState.of(
+            value = DateTimeUtils.now(),
+            range = DateTimeUtils.infinity(),
+            format = DateFormat.DateOnly.DateMmmDdYyyy
+        ),
+        createdAt = DateFormatState.of(
             value = DateTimeUtils.now(),
             range = DateTimeUtils.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy

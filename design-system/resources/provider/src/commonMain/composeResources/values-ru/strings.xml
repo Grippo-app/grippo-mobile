@@ -612,6 +612,24 @@
     <string name="goal_secondary_general_fitness_desc">Повышай энергию, выносливость и общее физическое самочувствие</string>
     <string name="goal_secondary_consistency_desc">Сформируй привычку тренироваться и придерживайся расписания неделю за неделей</string>
 
+    <!-- Goal progress card -->
+    <string name="goal_card_title">Цель тренировок</string>
+    <string name="goal_card_adherence_score">%1$d/100</string>
+    <string name="goal_card_adherence_label">следование цели</string>
+    <string name="goal_card_status_on_track">По плану</string>
+    <string name="goal_card_status_drifting">Уходишь в сторону</string>
+    <string name="goal_card_status_off_track">Сбился с цели</string>
+    <string name="goal_card_status_completed">Цель достигнута</string>
+    <string name="goal_card_progress_day">День %1$d из %2$d</string>
+    <string name="goal_card_progress_days_left">Осталось %1$d дн.</string>
+    <string name="goal_card_progress_overdue">Просрочено на %1$d дн.</string>
+    <string name="goal_card_progress_due_today">Срок сегодня</string>
+    <string name="goal_card_started_label">Старт %1$s</string>
+    <string name="goal_card_target_label">Финиш %1$s</string>
+    <string name="goal_card_no_data">Пока мало тренировок для оценки.</string>
+    <string name="goal_card_description_1">Показывает, насколько последние тренировки соответствуют цели.</string>
+    <string name="goal_card_description_2">100 — полное соответствие.</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>
     <string name="personalization_moderate_frequency">3–4 раза в неделю</string>

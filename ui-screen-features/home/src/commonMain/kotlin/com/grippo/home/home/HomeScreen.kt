@@ -33,6 +33,7 @@ import com.grippo.core.state.metrics.stubExerciseSpotlightGoodFrequency
 import com.grippo.core.state.metrics.stubExerciseSpotlightNearBest
 import com.grippo.core.state.metrics.stubExerciseSpotlightNeedsAttention
 import com.grippo.core.state.metrics.stubExerciseSpotlightProgressWin
+import com.grippo.core.state.metrics.stubGoalProgress
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
@@ -48,6 +49,7 @@ import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.PerformanceMetricCard
+import com.grippo.design.components.metrics.goal.GoalCard
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileCard
@@ -182,6 +184,15 @@ internal fun HomeScreen(
                         range = state.range,
                         onPeriodChange = contract::onOpenPeriodPicker
                     )
+                }
+
+                if (state.goalProgress != null) {
+                    item(key = "goal_progress", span = { GridItemSpan(2) }) {
+                        GoalCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.goalProgress,
+                        )
+                    }
                 }
 
                 if (state.profile != null) {
@@ -368,6 +379,7 @@ private fun HomeScreenPreview() {
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
                 profile = stubTrainingLoadProfile(),
+                goalProgress = stubGoalProgress(),
                 hasDraftTraining = true
             ),
             loaders = persistentSetOf(),

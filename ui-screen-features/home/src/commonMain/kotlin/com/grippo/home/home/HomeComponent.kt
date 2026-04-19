@@ -36,7 +36,8 @@ internal class HomeComponent(
             stringProvider = getKoin().get(),
             trainingLoadProfileUseCase = getKoin().get(),
             permissionManager = getKoin().get(),
-            notificationManager = getKoin().get()
+            notificationManager = getKoin().get(),
+            goalFollowingUseCase = getKoin().get(),
         )
     }
 

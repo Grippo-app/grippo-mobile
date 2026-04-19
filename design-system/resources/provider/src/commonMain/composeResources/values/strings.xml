@@ -615,6 +615,24 @@
     <string name="goal_secondary_general_fitness_desc">Boost overall energy, endurance, and physical wellness</string>
     <string name="goal_secondary_consistency_desc">Build a lasting training habit and stay on track week after week</string>
 
+    <!-- Goal progress card -->
+    <string name="goal_card_title">Training goal</string>
+    <string name="goal_card_adherence_score">%1$d/100</string>
+    <string name="goal_card_adherence_label">adherence</string>
+    <string name="goal_card_status_on_track">On track</string>
+    <string name="goal_card_status_drifting">Drifting</string>
+    <string name="goal_card_status_off_track">Off track</string>
+    <string name="goal_card_status_completed">Goal reached</string>
+    <string name="goal_card_progress_day">Day %1$d of %2$d</string>
+    <string name="goal_card_progress_days_left">%1$d days left</string>
+    <string name="goal_card_progress_overdue">Overdue by %1$d days</string>
+    <string name="goal_card_progress_due_today">Due today</string>
+    <string name="goal_card_started_label">Started %1$s</string>
+    <string name="goal_card_target_label">Target %1$s</string>
+    <string name="goal_card_no_data">Not enough training to score yet.</string>
+    <string name="goal_card_description_1">Shows how closely your recent work matches your goal.</string>
+    <string name="goal_card_description_2">100 = perfect adherence.</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 times a week</string>
     <string name="personalization_moderate_frequency">3–4 times a week</string>
