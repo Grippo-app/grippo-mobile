@@ -158,7 +158,7 @@ private fun AdherenceRing(
 
             Text(
                 text = AppTokens.strings.res(Res.string.goal_card_adherence_label),
-                style = AppTokens.typography.b12Med(),
+                style = AppTokens.typography.b11Med(),
                 color = AppTokens.colors.text.secondary
             )
         }

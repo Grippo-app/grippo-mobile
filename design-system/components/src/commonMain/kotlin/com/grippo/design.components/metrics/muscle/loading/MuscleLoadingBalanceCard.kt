@@ -190,7 +190,7 @@ private fun BalanceRing(
             )
             Text(
                 text = caption,
-                style = AppTokens.typography.b12Med(),
+                style = AppTokens.typography.b11Med(),
                 color = AppTokens.colors.text.secondary
             )
         }
