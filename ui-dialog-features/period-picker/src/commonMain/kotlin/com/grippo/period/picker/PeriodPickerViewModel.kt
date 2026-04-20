@@ -18,7 +18,7 @@ public class PeriodPickerViewModel(
     override fun onSelectRange(kind: DateRangeKind) {
         safeLaunch {
             update { it.copy(value = DateRangeFormatState.of(kind)) }
-            delay(200)
+            delay(300)
             navigateTo(PeriodPickerDirection.BackWithResult(kind))
         }
     }

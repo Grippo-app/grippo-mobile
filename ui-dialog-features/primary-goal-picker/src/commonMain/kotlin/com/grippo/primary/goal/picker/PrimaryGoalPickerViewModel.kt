@@ -17,7 +17,7 @@ public class PrimaryGoalPickerViewModel(
     override fun onSelectGoal(goal: GoalPrimaryGoalEnumState) {
         safeLaunch {
             update { it.copy(value = goal) }
-            delay(200)
+            delay(300)
             navigateTo(PrimaryGoalPickerDirection.BackWithResult(goal))
         }
     }
