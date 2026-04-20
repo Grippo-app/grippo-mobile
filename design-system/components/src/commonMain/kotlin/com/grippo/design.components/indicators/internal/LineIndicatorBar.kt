@@ -1,14 +1,8 @@
 package com.grippo.design.components.indicators.internal
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -16,7 +10,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -31,25 +24,6 @@ internal fun LineIndicatorBar(
 ) {
     val coercedProgress = progress.coerceIn(0f, 1f)
 
-    val progressAnim = remember { Animatable(0f) }
-    LaunchedEffect(coercedProgress) {
-        progressAnim.animateTo(
-            targetValue = coercedProgress,
-            animationSpec = tween(durationMillis = 300),
-        )
-    }
-
-    val trackColor by animateColorAsState(
-        targetValue = style.track,
-        animationSpec = tween(durationMillis = 300),
-        label = "LineIndicatorTrackColor",
-    )
-    val animatedSolid by animateColorAsState(
-        targetValue = (style as? LineIndicatorStyle.Solid)?.color ?: Color.Transparent,
-        animationSpec = tween(durationMillis = 300),
-        label = "LineIndicatorSolidColor",
-    )
-
     Layout(
         modifier = modifier
             .defaultMinSize(minHeight = barHeight)
@@ -62,23 +36,21 @@ internal fun LineIndicatorBar(
                 val radius = barPx / 2f
                 val barTop = (canvasHeight - barPx) / 2f
 
-                // Track.
                 drawRoundRect(
-                    color = trackColor,
+                    color = style.track,
                     topLeft = Offset(0f, barTop),
                     size = Size(canvasWidth, barPx),
                     cornerRadius = CornerRadius(radius, radius),
                 )
 
-                // Progress fill.
-                val progressWidth = canvasWidth * progressAnim.value
+                val progressWidth = canvasWidth * coercedProgress
                 if (progressWidth > 0f) {
                     val topLeft = Offset(0f, barTop)
                     val fillSize = Size(progressWidth, barPx)
                     val corner = CornerRadius(radius, radius)
                     when (style) {
                         is LineIndicatorStyle.Solid -> drawRoundRect(
-                            color = animatedSolid,
+                            color = style.color,
                             topLeft = topLeft,
                             size = fillSize,
                             cornerRadius = corner,
@@ -110,8 +82,6 @@ internal fun LineIndicatorBar(
                 }
             },
         content = {
-            // Zero or one marker child. Wrapped in a Box so `measurables.firstOrNull()`
-            // yields a single measurable even if the user provides a group of composables.
             if (marker != null) {
                 Box(contentAlignment = Alignment.Center) { marker() }
             }
@@ -132,9 +102,7 @@ internal fun LineIndicatorBar(
             if (markerPlaceable != null) {
                 val markerW = markerPlaceable.width
                 val halfW = markerW / 2
-                // Read `progressAnim.value` in the placement block so the marker re-places
-                // (without re-measuring) on every animation frame.
-                val progressX = (width * progressAnim.value).toInt()
+                val progressX = (width * coercedProgress).toInt()
                 val maxCenter = (width - halfW).coerceAtLeast(halfW)
                 val centerX = progressX.coerceIn(halfW, maxCenter)
                 val centerY = height / 2

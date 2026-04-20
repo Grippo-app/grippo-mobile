@@ -1,9 +1,5 @@
 package com.grippo.home.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,17 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubExerciseSpotlightGoodFrequency
 import com.grippo.core.state.metrics.stubExerciseSpotlightNearBest
@@ -70,7 +64,6 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.hours
 
 @Composable
@@ -83,18 +76,7 @@ internal fun HomeScreen(
         value = AppTokens.colors.background.screen,
     )
 ) {
-    val isEmptyState = state.lastTraining == null
-
-    var showEmptyState by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isEmptyState) {
-        if (isEmptyState) {
-            delay(350)
-            showEmptyState = true
-        } else {
-            showEmptyState = false
-        }
-    }
+    val isEmptyState = state.lastTraining == null && loaders.contains(HomeLoader.Trainings)
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -111,261 +93,227 @@ internal fun HomeScreen(
         },
     )
 
-    AnimatedVisibility(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        visible = isEmptyState && showEmptyState,
-        enter = fadeIn(animationSpec = tween(500)) + scaleIn(
-            initialScale = 1.03f,
-            animationSpec = tween(500),
-        ),
-    ) {
+    if (isEmptyState) {
         EmptyHomeContent(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             onStartTraining = contract::onStartTraining,
             onResumeTraining = contract::onResumeTraining,
             hasDraftTraining = state.hasDraftTraining
         )
+    } else {
+        val basePadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content,
+        )
+
+        val densityMetric = remember(state.performance) {
+            state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Density }
+        }
+        val volumeMetric = remember(state.performance) {
+            state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Volume }
+        }
+        val repetitionsMetric = remember(state.performance) {
+            state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Repetitions }
+        }
+        val intensityMetric = remember(state.performance) {
+            state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Intensity }
+        }
+
+        val spotlightsList = remember(state.spotlights) {
+            state.spotlights.toPersistentList()
+        }
+
+        BottomOverlayContainer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = basePadding,
+            overlay = AppTokens.colors.background.screen,
+            content = { containerModifier, resolvedPadding ->
+                LazyVerticalGrid(
+                    modifier = containerModifier.fillMaxWidth(),
+                    columns = GridCells.Fixed(2),
+                    contentPadding = resolvedPadding,
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                ) {
+                    if (state.lastTraining != null) {
+                        item(key = "last_training", span = { GridItemSpan(2) }) {
+                            LastTrainingCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = state.lastTraining,
+                                onClick = contract::onOpenTrainings
+                            )
+                        }
+                    }
+
+                    item(key = "highlights_header", span = { GridItemSpan(2) }) {
+                        HighlightsHeader(
+                            modifier = Modifier.fillMaxWidth(),
+                            range = state.range,
+                            onPeriodChange = contract::onOpenPeriodPicker
+                        )
+                    }
+
+                    if (state.goalProgress != null) {
+                        item(key = "goal_progress", span = { GridItemSpan(2) }) {
+                            GoalCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = state.goalProgress,
+                            )
+                        }
+                    } else {
+                        item(key = "goal_progress_empty", span = { GridItemSpan(2) }) {
+                            GoalEmptyCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = contract::onAddGoal
+                            )
+                        }
+                    }
+
+                    if (state.muscleLoad != null || state.streak != null) {
+                        item(
+                            key = "muscle_loading_and_training_streak",
+                            span = { GridItemSpan(2) }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(intrinsicSize = IntrinsicSize.Max),
+                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                            ) {
+                                if (state.muscleLoad != null) {
+                                    MuscleLoadingCard(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()
+                                            .scalableClick(onClick = contract::onOpenMuscleLoading),
+                                        summary = state.muscleLoad
+                                    )
+                                }
+                                if (state.streak != null) {
+                                    TrainingStreakCard(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()
+                                            .scalableClick(onClick = contract::onOpenTrainingStreak),
+                                        value = state.streak
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (state.profile != null) {
+                        item(key = "training_load_profile", span = { GridItemSpan(2) }) {
+                            TrainingLoadProfileCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .scalableClick(onClick = contract::onOpenTrainingProfile),
+                                value = state.profile,
+                            )
+                        }
+                    }
+
+                    if (spotlightsList.isNotEmpty()) {
+                        item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                            ExerciseSpotlightsCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = spotlightsList,
+                                onExampleClick = contract::onOpenExample
+                            )
+                        }
+                    }
+
+                    performanceMetricItem(
+                        key = "performance_density",
+                        metric = densityMetric,
+                        pair = volumeMetric,
+                        contract = contract,
+                    )
+                    performanceMetricItem(
+                        key = "performance_volume",
+                        metric = volumeMetric,
+                        pair = densityMetric,
+                        contract = contract,
+                    )
+                    performanceMetricItem(
+                        key = "performance_repetitions",
+                        metric = repetitionsMetric,
+                        pair = intensityMetric,
+                        contract = contract,
+                    )
+                    performanceMetricItem(
+                        key = "performance_intensity",
+                        metric = intensityMetric,
+                        pair = repetitionsMetric,
+                        contract = contract,
+                    )
+                }
+            },
+            bottom = {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                if (state.hasDraftTraining) {
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                        onClick = contract::onResumeTraining,
+                        style = ButtonStyle.Error,
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.resume_training_btn)
+                        )
+                    )
+                } else {
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.start_workout),
+                        ),
+                        style = ButtonStyle.Primary,
+                        onClick = contract::onStartTraining
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
+            }
+        )
     }
+}
 
-    if (isEmptyState) {
-        return@BaseComposeScreen
+private fun LazyGridScope.performanceMetricItem(
+    key: String,
+    metric: PerformanceMetricState?,
+    pair: PerformanceMetricState?,
+    contract: HomeContract,
+) {
+    if (metric == null) return
+    item(
+        key = key,
+        span = { GridItemSpan(if (pair == null) 2 else 1) }
+    ) {
+        PerformanceMetricCardItem(metric = metric, contract = contract)
     }
+}
 
-    val basePadding = PaddingValues(
-        horizontal = AppTokens.dp.screen.horizontalPadding,
-        vertical = AppTokens.dp.contentPadding.content
-    )
-
-    val densityMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Density }
+@Composable
+private fun PerformanceMetricCardItem(
+    metric: PerformanceMetricState,
+    contract: HomeContract,
+) {
+    val onClick = remember(contract, metric.type) {
+        { contract.onPerformanceMetricClick(metric.type) }
     }
-
-    val volumeMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Volume }
-    }
-
-    val repetitionsMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Repetitions }
-    }
-
-    val intensityMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Intensity }
-    }
-
-    BottomOverlayContainer(
+    PerformanceMetricCard(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f),
-        contentPadding = basePadding,
-        overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
-            LazyVerticalGrid(
-                modifier = containerModifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                columns = GridCells.Fixed(2),
-                contentPadding = resolvedPadding,
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                item(key = "last_training", span = { GridItemSpan(2) }) {
-                    LastTrainingCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.lastTraining,
-                        onClick = contract::onOpenTrainings
-                    )
-                }
-
-                item(key = "highlights_header", span = { GridItemSpan(2) }) {
-                    HighlightsHeader(
-                        modifier = Modifier.fillMaxWidth(),
-                        range = state.range,
-                        onPeriodChange = contract::onOpenPeriodPicker
-                    )
-                }
-
-                if (state.goalProgress != null) {
-                    item(key = "goal_progress", span = { GridItemSpan(2) }) {
-                        GoalCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.goalProgress,
-                        )
-                    }
-                } else {
-                    item(key = "goal_progress_empty", span = { GridItemSpan(2) }) {
-                        GoalEmptyCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = contract::onAddGoal
-                        )
-                    }
-                }
-
-                item(key = "muscle_loading_and_training_streak", span = { GridItemSpan(2) }) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(intrinsicSize = IntrinsicSize.Max),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                    ) {
-                        if (state.muscleLoad != null) {
-                            MuscleLoadingCard(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = contract::onOpenMuscleLoading),
-                                summary = state.muscleLoad
-                            )
-                        }
-                        if (state.streak != null) {
-                            TrainingStreakCard(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = contract::onOpenTrainingStreak),
-                                value = state.streak
-                            )
-                        }
-                    }
-                }
-
-                if (state.profile != null) {
-                    item(key = "training_load_profile", span = { GridItemSpan(2) }) {
-                        TrainingLoadProfileCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenTrainingProfile),
-                            value = state.profile,
-                        )
-                    }
-                }
-
-                if (state.spotlights.isNotEmpty()) {
-                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
-                        val list = remember(state.spotlights) {
-                            state.spotlights
-                                .toPersistentList()
-                        }
-
-                        ExerciseSpotlightsCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = list,
-                            onExampleClick = contract::onOpenExample
-                        )
-                    }
-                }
-
-                if (densityMetric != null) {
-                    item(
-                        key = "performance_density",
-                        span = { GridItemSpan(if (volumeMetric == null) 2 else 1) }
-                    ) {
-                        val onPerformanceMetricClickProvider =
-                            remember(densityMetric.type) {
-                                { contract.onPerformanceMetricClick(densityMetric.type) }
-                            }
-                        PerformanceMetricCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .scalableClick(onClick = onPerformanceMetricClickProvider),
-                            metric = densityMetric
-                        )
-                    }
-                }
-
-                if (volumeMetric != null) {
-                    item(
-                        key = "performance_volume",
-                        span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
-                    ) {
-                        val onPerformanceMetricClickProvider =
-                            remember(volumeMetric.type) {
-                                { contract.onPerformanceMetricClick(volumeMetric.type) }
-                            }
-                        PerformanceMetricCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .scalableClick(onClick = onPerformanceMetricClickProvider),
-                            metric = volumeMetric
-                        )
-                    }
-                }
-
-                if (repetitionsMetric != null) {
-                    item(
-                        key = "performance_repetitions",
-                        span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
-                    ) {
-                        val onPerformanceMetricClickProvider =
-                            remember(repetitionsMetric.type) {
-                                { contract.onPerformanceMetricClick(repetitionsMetric.type) }
-                            }
-                        PerformanceMetricCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .scalableClick(onClick = onPerformanceMetricClickProvider),
-                            metric = repetitionsMetric
-                        )
-                    }
-                }
-
-                if (intensityMetric != null) {
-                    item(
-                        key = "performance_intensity",
-                        span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
-                    ) {
-                        val onPerformanceMetricClickProvider =
-                            remember(intensityMetric.type) {
-                                { contract.onPerformanceMetricClick(intensityMetric.type) }
-                            }
-                        PerformanceMetricCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .scalableClick(onClick = onPerformanceMetricClickProvider),
-                            metric = intensityMetric
-                        )
-                    }
-                }
-            }
-        },
-        bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-
-            if (state.hasDraftTraining) {
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    onClick = contract::onResumeTraining,
-                    style = ButtonStyle.Error,
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.resume_training_btn)
-                    )
-                )
-            } else {
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.start_workout),
-                    ),
-                    style = ButtonStyle.Primary,
-                    onClick = contract::onStartTraining
-                )
-            }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
+            .fillMaxHeight()
+            .scalableClick(onClick = onClick),
+        metric = metric
     )
 }
 

@@ -99,11 +99,8 @@ internal class HomeViewModel(
             .map { it.range.value }
             .filterNotNull()
             .distinctUntilChanged()
-            .onEach { period ->
-                trainingFeature
-                    .getTrainings(start = period.from, end = period.to)
-            }
-            .safeLaunch()
+            .onEach { period -> trainingFeature.getTrainings(start = period.from, end = period.to) }
+            .safeLaunch(loader = HomeLoader.Trainings)
 
         safeLaunch {
             exerciseExampleFeature.getExerciseExamples()
