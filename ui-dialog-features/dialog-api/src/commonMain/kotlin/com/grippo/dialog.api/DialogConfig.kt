@@ -2,10 +2,6 @@ package com.grippo.dialog.api
 
 import com.grippo.core.state.error.AppErrorState
 import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.core.state.formatters.DurationFormatState
-import com.grippo.core.state.formatters.HeightFormatState
-import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.menu.TrainingMenu
@@ -14,10 +10,13 @@ import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangeKind
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.time.Duration
 
 @Serializable
 public sealed class DialogConfig(
@@ -135,8 +134,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class WeightPicker(
-        val initial: WeightFormatState,
-        @Transient val onResult: (value: WeightFormatState) -> Unit = {},
+        val initial: Float?,
+        @Transient val onResult: (value: Float) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
@@ -147,8 +146,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class DurationPicker(
-        val initial: DurationFormatState,
-        @Transient val onResult: (value: DurationFormatState) -> Unit = {},
+        val initial: Duration?,
+        @Transient val onResult: (value: Duration) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
@@ -159,8 +158,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class HeightPicker(
-        val initial: HeightFormatState,
-        @Transient val onResult: (value: HeightFormatState) -> Unit = {},
+        val initial: Int?,
+        @Transient val onResult: (value: Int) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
@@ -171,16 +170,17 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class DatePicker(
-        val initial: DateFormatState,
+        val initial: LocalDateTime?,
+        val format: DateFormat,
         val limitations: DateRange,
         val title: String,
-        @Transient val onResult: (value: DateFormatState) -> Unit = {},
+        @Transient val onResult: (value: LocalDateTime) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("DatePicker", initial, limitations, title)
+            get() = buildKey("DatePicker", initial, format, limitations, title)
     }
 
     @Serializable
@@ -224,16 +224,17 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class MonthPicker(
-        val initial: DateFormatState,
+        val initial: LocalDateTime?,
+        val format: DateFormat,
         val limitations: DateRange,
         val title: String,
-        @Transient val onResult: (value: DateFormatState) -> Unit = {},
+        @Transient val onResult: (value: LocalDateTime) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("MonthPicker", initial, limitations, title)
+            get() = buildKey("MonthPicker", initial, format, limitations, title)
     }
 
     @Serializable
@@ -298,8 +299,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class ConfirmTrainingCompletion(
-        val initial: DurationFormatState,
-        @Transient val onResult: (DurationFormatState) -> Unit = {},
+        val initial: Duration?,
+        @Transient val onResult: (Duration) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

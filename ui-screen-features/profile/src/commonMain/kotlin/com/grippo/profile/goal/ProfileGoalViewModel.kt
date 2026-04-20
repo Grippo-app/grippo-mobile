@@ -1,6 +1,7 @@
 package com.grippo.profile.goal
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
@@ -63,10 +64,21 @@ internal class ProfileGoalViewModel(
     override fun onTargetDatePickerClick() {
         safeLaunch {
             val config = DialogConfig.DatePicker(
-                initial = state.value.selectedTarget,
+                initial = state.value.selectedTarget.value,
+                format = state.value.selectedTarget.format,
                 limitations = state.value.limitations,
                 title = stringProvider.get(Res.string.select_date),
-                onResult = { result -> update { it.copy(selectedTarget = result) } }
+                onResult = { result ->
+                    update {
+                        it.copy(
+                            selectedTarget = DateFormatState.of(
+                                value = result,
+                                range = it.limitations,
+                                format = it.selectedTarget.format,
+                            )
+                        )
+                    }
+                }
             )
 
             dialogController.show(config)

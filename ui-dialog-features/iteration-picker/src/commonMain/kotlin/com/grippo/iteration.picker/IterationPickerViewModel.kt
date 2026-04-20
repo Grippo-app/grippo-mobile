@@ -32,10 +32,10 @@ public class IterationPickerViewModel(
 
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
-            initial = state.value.value.bodyWeight,
+            initial = state.value.value.bodyWeight.value,
             onResult = { result ->
                 update { s ->
-                    val iteration = s.value.copy(bodyWeight = result)
+                    val iteration = s.value.copy(bodyWeight = WeightFormatState.of(result))
                     s.copy(value = iteration)
                 }
             }

@@ -12,6 +12,10 @@ import com.grippo.confirm.training.completion.ConfirmTrainingCompletionComponent
 import com.grippo.confirmation.ConfirmationComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
@@ -74,8 +78,11 @@ internal class DialogContentComponent(
             is DialogConfig.WeightPicker -> Child.WeightPicker(
                 WeightPickerComponent(
                     componentContext = context,
-                    initial = router.initial,
-                    onResult = { weight -> viewModel.onBack { router.onResult.invoke(weight) } },
+                    initial = WeightFormatState.of(router.initial),
+                    onResult = { weight ->
+                        val raw = weight.value
+                        viewModel.onBack(raw?.let { { router.onResult.invoke(it) } })
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -83,8 +90,11 @@ internal class DialogContentComponent(
             is DialogConfig.DurationPicker -> Child.DurationPicker(
                 DurationPickerComponent(
                     componentContext = context,
-                    initial = router.initial,
-                    onResult = { duration -> viewModel.onBack { router.onResult.invoke(duration) } },
+                    initial = DurationFormatState.of(router.initial),
+                    onResult = { duration ->
+                        val raw = duration.value
+                        viewModel.onBack(raw?.let { { router.onResult.invoke(it) } })
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -92,8 +102,11 @@ internal class DialogContentComponent(
             is DialogConfig.HeightPicker -> Child.HeightPicker(
                 HeightPickerComponent(
                     componentContext = context,
-                    initial = router.initial,
-                    onResult = { height -> viewModel.onBack { router.onResult.invoke(height) } },
+                    initial = HeightFormatState.of(router.initial ?: 0),
+                    onResult = { height ->
+                        val raw = height.value
+                        viewModel.onBack(raw?.let { { router.onResult.invoke(it) } })
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -171,10 +184,17 @@ internal class DialogContentComponent(
             is DialogConfig.DatePicker -> Child.DatePicker(
                 DatePickerComponent(
                     componentContext = context,
-                    initial = router.initial,
+                    initial = DateFormatState.of(
+                        value = router.initial,
+                        range = router.limitations,
+                        format = router.format,
+                    ),
                     title = router.title,
                     limitations = router.limitations,
-                    onResult = { date -> viewModel.onBack { router.onResult.invoke(date) } },
+                    onResult = { date ->
+                        val raw = date.value
+                        viewModel.onBack(raw?.let { { router.onResult.invoke(it) } })
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -212,10 +232,17 @@ internal class DialogContentComponent(
             is DialogConfig.MonthPicker -> Child.MonthPicker(
                 MonthPickerComponent(
                     componentContext = context,
-                    initial = router.initial,
+                    initial = DateFormatState.of(
+                        value = router.initial,
+                        range = router.limitations,
+                        format = router.format,
+                    ),
                     title = router.title,
                     limitations = router.limitations,
-                    onResult = { date -> viewModel.onBack { router.onResult.invoke(date) } },
+                    onResult = { date ->
+                        val raw = date.value
+                        viewModel.onBack(raw?.let { { router.onResult.invoke(it) } })
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -281,8 +308,11 @@ internal class DialogContentComponent(
             is DialogConfig.ConfirmTrainingCompletion -> Child.ConfirmTrainingCompletion(
                 ConfirmTrainingCompletionComponent(
                     componentContext = context,
-                    initial = router.initial,
-                    onResult = { duration -> viewModel.onBack { router.onResult.invoke(duration) } },
+                    initial = DurationFormatState.of(router.initial),
+                    onResult = { duration ->
+                        val raw = duration.value
+                        viewModel.onBack(raw?.let { { router.onResult.invoke(it) } })
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )

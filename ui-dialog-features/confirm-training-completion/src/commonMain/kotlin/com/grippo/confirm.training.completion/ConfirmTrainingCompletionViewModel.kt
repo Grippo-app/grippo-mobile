@@ -20,8 +20,8 @@ public class ConfirmTrainingCompletionViewModel(
 
     override fun onDurationInputClick() {
         val dialog = DialogConfig.DurationPicker(
-            initial = state.value.duration,
-            onResult = { result -> update { it.copy(duration = result) } }
+            initial = state.value.duration.value,
+            onResult = { result -> update { it.copy(duration = DurationFormatState.of(result)) } }
         )
 
         dialogController.show(dialog)

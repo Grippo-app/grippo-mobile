@@ -16,16 +16,16 @@ internal class UserViewModel(
 
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
-            initial = state.value.weight,
-            onResult = { value -> update { it.copy(weight = value) } }
+            initial = state.value.weight.value,
+            onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
         )
         dialogController.show(dialog)
     }
 
     override fun onHeightPickerClick() {
         val dialog = DialogConfig.HeightPicker(
-            initial = state.value.height,
-            onResult = { value -> update { it.copy(height = value) } }
+            initial = state.value.height.value,
+            onResult = { value -> update { it.copy(height = HeightFormatState.of(value)) } }
         )
         dialogController.show(dialog)
     }
