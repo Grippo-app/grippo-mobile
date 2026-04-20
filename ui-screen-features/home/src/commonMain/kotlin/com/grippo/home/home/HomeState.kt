@@ -16,7 +16,7 @@ import kotlin.time.Duration
 
 @Immutable
 internal data class HomeState(
-    val range: DateRangeFormatState = DateRangeFormatState.ofPreset(DateRangeKind.Last30Days),
+    val range: DateRangeFormatState = DateRangeFormatState.of(DateRangeKind.Last30Days),
     val hasDraftTraining: Boolean = false,
     val lastTraining: TrainingState? = null,
     val totalDuration: Duration? = null,

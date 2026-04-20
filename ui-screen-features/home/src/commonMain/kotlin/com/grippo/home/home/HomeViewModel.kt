@@ -116,7 +116,7 @@ internal class HomeViewModel(
 
     private fun provideRange(value: Range?) {
         val kind = value?.toState() ?: return
-        update { it.copy(range = DateRangeFormatState.ofPreset(kind)) }
+        update { it.copy(range = DateRangeFormatState.of(kind)) }
     }
 
     private fun provideDraftTraining(value: SetDraftTraining?) {

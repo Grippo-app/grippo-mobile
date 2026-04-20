@@ -137,7 +137,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PerformanceTrendScreen(
             state = PerformanceTrendDialogState(
-                range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
                 metricType = PerformanceMetricTypeState.Volume,
                 history = stubPerformanceTrendHistory(),
             ),

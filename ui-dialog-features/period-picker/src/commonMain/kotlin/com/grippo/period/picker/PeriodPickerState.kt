@@ -11,9 +11,9 @@ public data class PeriodPickerState(
     val title: String,
     val value: DateRangeFormatState,
     val suggestions: ImmutableList<DateRangeFormatState> = persistentListOf(
-        DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
-        DateRangeFormatState.ofPreset(DateRangeKind.Last14Days),
-        DateRangeFormatState.ofPreset(DateRangeKind.Last30Days),
-        DateRangeFormatState.ofPreset(DateRangeKind.Last60Days),
+        DateRangeFormatState.of(DateRangeKind.Last7Days),
+        DateRangeFormatState.of(DateRangeKind.Last14Days),
+        DateRangeFormatState.of(DateRangeKind.Last30Days),
+        DateRangeFormatState.of(DateRangeKind.Last60Days),
     )
 )

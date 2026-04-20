@@ -103,7 +103,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingStreakScreen(
             state = TrainingStreakDialogState(
-                range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
                 streak = stubTrainingStreaks().first()
             ),
             loaders = persistentSetOf(),

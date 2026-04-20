@@ -58,7 +58,7 @@ public fun HighlightsHeader(
 private fun HighlightsHeaderPreview() {
     PreviewContainer {
         HighlightsHeader(
-            range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+            range = DateRangeFormatState.of(DateRangeKind.Last7Days),
             onPeriodChange = {},
         )
     }

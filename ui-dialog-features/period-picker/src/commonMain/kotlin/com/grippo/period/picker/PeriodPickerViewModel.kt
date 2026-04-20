@@ -9,7 +9,7 @@ public class PeriodPickerViewModel(
     initial: DateRangeKind,
 ) : BaseViewModel<PeriodPickerState, PeriodPickerDirection, PeriodPickerLoader>(
     PeriodPickerState(
-        value = DateRangeFormatState.ofPreset(initial),
+        value = DateRangeFormatState.of(initial),
         title = title
     )
 ), PeriodPickerContract {

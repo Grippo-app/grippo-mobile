@@ -86,13 +86,13 @@ public fun PeriodPicker(
 private fun PeriodPickerPreview() {
     PreviewContainer {
         PeriodPicker(
-            value = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+            value = DateRangeFormatState.of(DateRangeKind.Last7Days),
             enabled = true,
             onSelect = {},
         )
 
         PeriodPicker(
-            value = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+            value = DateRangeFormatState.of(DateRangeKind.Last7Days),
             enabled = false,
             onSelect = {},
         )

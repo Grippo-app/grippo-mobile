@@ -170,7 +170,7 @@ private fun ScreenPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
-                range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingShowingMode.PerGroup
             ),
@@ -186,7 +186,7 @@ private fun ScreenPerMusclePreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
-                range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingShowingMode.PerMuscle
             ),

@@ -101,7 +101,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingProfileScreen(
             state = TrainingProfileDialogState(
-                range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
                 profile = stubTrainingLoadProfile()
             ),
             loaders = persistentSetOf(),

@@ -84,7 +84,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                value = DateRangeFormatState.ofPreset(DateRangeKind.Weekly),
+                value = DateRangeFormatState.of(DateRangeKind.Weekly),
                 title = "Select period",
             ),
             loaders = persistentSetOf(),

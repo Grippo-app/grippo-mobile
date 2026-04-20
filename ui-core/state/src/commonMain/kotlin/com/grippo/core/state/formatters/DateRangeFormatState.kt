@@ -39,7 +39,6 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
         override val display: String,
         override val value: DateRange?,
         override val kind: DateRangeKind,
-        val error: DateRangeError? = null,
     ) : DateRangeFormatState(), FormatState.Invalid<DateRange>
 
     @Immutable
@@ -76,7 +75,7 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             return if (isPresetBucket(kind)) {
                 Valid(display = display, value = range, kind = kind)
             } else {
-                Invalid(display = display, value = range, kind = kind, error = null)
+                Invalid(display = display, value = range, kind = kind)
             }
         }
 
@@ -85,23 +84,18 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
          * Passing [DateRangeKind.Custom] yields [Empty] — Custom has no
          * canonical resolution without explicit endpoints.
          */
-        public fun ofPreset(kind: DateRangeKind): DateRangeFormatState {
+        public fun of(kind: DateRangeKind): DateRangeFormatState {
             val range = DateRangePresets.resolve(kind)
                 ?: return Empty(kind = kind)
             val display = DateRangeFormatter.format(range, kind)
             return if (isPresetBucket(kind)) {
                 Valid(display = display, value = range, kind = kind)
             } else {
-                Invalid(display = display, value = range, kind = kind, error = null)
+                Invalid(display = display, value = range, kind = kind)
             }
         }
 
-        /**
-         * Builds a Custom range from raw user input. Handles the full
-         * validation lifecycle: missing endpoints → [Empty], bad input →
-         * [Invalid] with [DateRangeError], good input → [Valid].
-         */
-        public fun ofCustom(
+        public fun of(
             from: LocalDateTime?,
             to: LocalDateTime?,
         ): DateRangeFormatState {
@@ -110,15 +104,14 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             }
             val range = DateRange(from = from, to = to)
             val display = DateRangeFormatter.format(range, DateRangeKind.Custom)
-            val error = validateCustom(range)
-            return if (error == null) {
+            val isError = range.from > range.to
+            return if (isError) {
                 Valid(display = display, value = range, kind = DateRangeKind.Custom)
             } else {
                 Invalid(
                     display = display,
                     value = range,
                     kind = DateRangeKind.Custom,
-                    error = error,
                 )
             }
         }
@@ -132,42 +125,28 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             DateRangeKind.Last30Days,
             DateRangeKind.Last60Days,
             DateRangeKind.Last365Days,
-            DateRangeKind.Yearly,
-                -> true
+            DateRangeKind.Yearly -> true
 
             DateRangeKind.Custom,
-            DateRangeKind.Infinity,
-                -> false
-        }
-
-        private fun validateCustom(range: DateRange): DateRangeError? {
-            if (range.from > range.to) return DateRangeError.FromAfterTo
-            return null
+            DateRangeKind.Infinity -> false
         }
     }
 
     private object DateRangeFormatter {
         fun format(value: DateRange, kind: DateRangeKind): String = when (kind) {
-            DateRangeKind.Daily -> DateTimeUtils.format(
-                value.from,
-                DateFormat.DateOnly.DateDdMmmm,
-            )
-
+            DateRangeKind.Daily -> DateTimeUtils.format(value.from, DateFormat.DateOnly.DateDdMmmm)
             DateRangeKind.Weekly,
             DateRangeKind.Last7Days,
             DateRangeKind.Last14Days,
             DateRangeKind.Monthly,
             DateRangeKind.Last30Days,
-            DateRangeKind.Last60Days,
-                -> span(value, DateFormat.DateOnly.DateDdMmm)
+            DateRangeKind.Last60Days -> span(value, DateFormat.DateOnly.DateDdMmm)
 
             DateRangeKind.Last365Days,
-            DateRangeKind.Yearly,
-                -> span(value, DateFormat.DateOnly.DateMmmDdYyyy)
+            DateRangeKind.Yearly -> span(value, DateFormat.DateOnly.DateMmmDdYyyy)
 
             DateRangeKind.Custom,
-            DateRangeKind.Infinity,
-                -> undefined(value)
+            DateRangeKind.Infinity -> undefined(value)
         }
 
         private fun span(value: DateRange, format: DateFormat.DateOnly): String {

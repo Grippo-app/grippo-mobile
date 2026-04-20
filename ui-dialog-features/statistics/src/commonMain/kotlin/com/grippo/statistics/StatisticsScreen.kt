@@ -144,7 +144,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         StatisticsScreen(
             state = StatisticsState(
-                mode = StatisticsMode.Trainings(range = DateRangeFormatState.ofPreset(DateRangeKind.Weekly)),
+                mode = StatisticsMode.Trainings(range = DateRangeFormatState.of(DateRangeKind.Weekly)),
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
                 muscleLoad = stubMuscleLoadSummary(),
