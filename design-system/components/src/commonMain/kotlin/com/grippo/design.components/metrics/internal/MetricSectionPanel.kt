@@ -30,7 +30,8 @@ public enum class MetricSectionPanelStyle {
 internal fun MetricSectionPanel(
     modifier: Modifier = Modifier,
     style: MetricSectionPanelStyle,
-    decoration: (@Composable BoxScope.() -> Unit)? = null,
+    decorator: (@Composable BoxScope.() -> Unit)? = null,
+    overlay: (@Composable BoxScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
 
@@ -63,7 +64,7 @@ internal fun MetricSectionPanel(
                 shape = RoundedCornerShape(radius)
             )
     ) {
-        decoration?.invoke(this)
+        decorator?.invoke(this)
 
         Column(
             modifier = Modifier
@@ -75,6 +76,8 @@ internal fun MetricSectionPanel(
             verticalArrangement = Arrangement.spacedBy(spacer),
             content = content
         )
+
+        overlay?.invoke(this)
     }
 }
 

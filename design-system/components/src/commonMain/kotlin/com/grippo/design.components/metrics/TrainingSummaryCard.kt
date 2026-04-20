@@ -45,7 +45,7 @@ public fun TrainingSummaryCard(
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Large,
-        decoration = {
+        decorator = {
             Box(
                 modifier = Modifier
                     .spot(color = AppTokens.colors.brand.color3)

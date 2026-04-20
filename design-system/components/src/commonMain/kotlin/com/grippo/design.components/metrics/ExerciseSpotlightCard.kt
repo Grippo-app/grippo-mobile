@@ -69,7 +69,7 @@ private fun ExerciseSpotlightCard(
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
-        decoration = {
+        decorator = {
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterStart)

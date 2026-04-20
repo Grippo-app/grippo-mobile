@@ -141,7 +141,8 @@ public interface AppColor {
     }
 
     public interface OverlayColors {
-        public val defaultShadow: Color
+        public val shadow: Color
+        public val overlay: Color
     }
 
     public interface BorderColors {

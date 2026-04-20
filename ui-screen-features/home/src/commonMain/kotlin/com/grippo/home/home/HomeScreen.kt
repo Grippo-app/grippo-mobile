@@ -50,6 +50,7 @@ import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.PerformanceMetricCard
 import com.grippo.design.components.metrics.goal.GoalCard
+import com.grippo.design.components.metrics.goal.GoalEmptyCard
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileCard
@@ -191,6 +192,13 @@ internal fun HomeScreen(
                         GoalCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = state.goalProgress,
+                        )
+                    }
+                } else {
+                    item(key = "goal_progress_empty", span = { GridItemSpan(2) }) {
+                        GoalEmptyCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {}
                         )
                     }
                 }

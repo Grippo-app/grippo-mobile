@@ -131,7 +131,8 @@ public object DarkColor : AppColor {
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
-        override val defaultShadow = AppPalette.Common.Black.copy(alpha = 0.2f)
+        override val shadow = AppPalette.Common.Black.copy(alpha = 0.2f)
+        override val overlay = AppPalette.NeutralDark.N300.copy(alpha = 0.7f)
     }
 
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {

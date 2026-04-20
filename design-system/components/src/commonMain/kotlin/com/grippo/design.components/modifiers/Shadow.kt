@@ -36,7 +36,7 @@ public fun Modifier.shadowDefault(
     shape: Shape,
     elevation: ShadowElevation,
     sides: ImmutableList<Side> = Side.entries.toPersistentList(),
-    color: Color = AppTokens.colors.overlay.defaultShadow,
+    color: Color = AppTokens.colors.overlay.shadow,
 ): Modifier {
 
     if (elevation == ShadowElevation.Non) return this

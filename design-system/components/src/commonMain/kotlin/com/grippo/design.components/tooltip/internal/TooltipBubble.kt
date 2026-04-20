@@ -63,8 +63,8 @@ internal fun TooltipBubble(
             .shadow(
                 elevation = dp.elevation,
                 shape = shape,
-                ambientColor = AppTokens.colors.overlay.defaultShadow,
-                spotColor = AppTokens.colors.overlay.defaultShadow,
+                ambientColor = AppTokens.colors.overlay.shadow,
+                spotColor = AppTokens.colors.overlay.shadow,
             )
             .clip(shape)
             .background(AppTokens.colors.background.dialog) // Under layer
