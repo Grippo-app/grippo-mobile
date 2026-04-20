@@ -3,6 +3,7 @@ package com.grippo.period.picker
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.toolkit.date.utils.DateRangeKind
+import kotlinx.coroutines.delay
 
 public class PeriodPickerViewModel(
     title: String,
@@ -15,7 +16,11 @@ public class PeriodPickerViewModel(
 ), PeriodPickerContract {
 
     override fun onSelectRange(kind: DateRangeKind) {
-        navigateTo(PeriodPickerDirection.BackWithResult(kind))
+        safeLaunch {
+            update { it.copy(value = DateRangeFormatState.of(kind)) }
+            delay(200)
+            navigateTo(PeriodPickerDirection.BackWithResult(kind))
+        }
     }
 
     override fun onDismiss() {

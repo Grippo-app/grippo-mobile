@@ -2,6 +2,7 @@ package com.grippo.secondary.goal.picker
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
+import kotlinx.coroutines.delay
 
 public class SecondaryGoalPickerViewModel(
     title: String,
@@ -14,7 +15,11 @@ public class SecondaryGoalPickerViewModel(
 ), SecondaryGoalPickerContract {
 
     override fun onSelectGoal(goal: GoalSecondaryGoalEnumState) {
-        navigateTo(SecondaryGoalPickerDirection.BackWithResult(goal))
+        safeLaunch {
+            update { it.copy(value = goal) }
+            delay(200)
+            navigateTo(SecondaryGoalPickerDirection.BackWithResult(goal))
+        }
     }
 
     override fun onDismiss() {

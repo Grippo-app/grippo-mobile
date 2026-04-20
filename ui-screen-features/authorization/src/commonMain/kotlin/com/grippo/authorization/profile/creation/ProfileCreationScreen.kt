@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -19,7 +21,16 @@ import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.core.AppTokens
 import com.grippo.screen.api.ProfileCreationRouter
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
+
+private val PROFILE_CREATION_FLOW = persistentListOf(
+    ProfileCreationRouter.User,
+    ProfileCreationRouter.Experience,
+    ProfileCreationRouter.ExcludedMuscles,
+    ProfileCreationRouter.MissingEquipments,
+    ProfileCreationRouter.Completed
+)
 
 @Composable
 internal fun ProfileCreationScreen(
@@ -29,18 +40,17 @@ internal fun ProfileCreationScreen(
     contract: ProfileCreationContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     val stack by component.childStack.subscribeAsState()
-    val stepsTotal = PROFILE_CREATION_FLOW.size.coerceAtLeast(1)
+    val stepsTotal = remember { PROFILE_CREATION_FLOW.size }
     val stepsCompleted = stack.items.size.coerceIn(0, stepsTotal)
-    val progress = stepsCompleted / stepsTotal.toFloat()
+    val totalLineIndicator = (stepsTotal - 1).coerceAtLeast(1)
+    val progress = stepsCompleted / totalLineIndicator.toFloat()
 
     Box {
         ChildStackCompose(
             modifier = Modifier.fillMaxSize(),
             stack = component.childStack,
             animation = platformAnimation(),
-            content = { child ->
-                child.instance.component.Render()
-            }
+            content = { child -> child.instance.component.Render() }
         )
 
         if (stepsCompleted < stepsTotal) {
@@ -53,15 +63,13 @@ internal fun ProfileCreationScreen(
                     .padding(horizontal = 100.dp)
                     .wrapContentHeight(),
                 progress = progress,
+                marker = {
+                    Text(
+                        text = "\uD83D\uDE80️",
+                        style = AppTokens.typography.h4(),
+                    )
+                },
             )
         }
     }
 }
-
-private val PROFILE_CREATION_FLOW = listOf(
-    ProfileCreationRouter.User,
-    ProfileCreationRouter.Experience,
-    ProfileCreationRouter.ExcludedMuscles,
-    ProfileCreationRouter.MissingEquipments,
-    ProfileCreationRouter.Completed
-)

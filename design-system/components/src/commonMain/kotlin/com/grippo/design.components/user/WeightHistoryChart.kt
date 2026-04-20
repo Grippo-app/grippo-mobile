@@ -24,7 +24,7 @@ public fun WeightHistoryChart(
             .asReversed()
             .mapNotNull { it.value.value?.takeIf { weight -> weight > 0f } }
 
-        if (values.size < 2) {
+        if (values.isEmpty()) {
             null
         } else {
             val points = values.mapIndexed { index, value ->

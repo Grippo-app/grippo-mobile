@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
@@ -16,6 +17,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputDuration
 import com.grippo.design.core.AppTokens
@@ -102,11 +104,20 @@ internal fun ConfirmTrainingCompletionScreen(
             onClick = contract::onBack
         )
 
+        val buttonState = remember(loaders, state.duration) {
+            when (state.duration) {
+                is DurationFormatState.Invalid -> ButtonState.Disabled
+                is DurationFormatState.Empty -> ButtonState.Disabled
+                else -> ButtonState.Enabled
+            }
+        }
+
         Button(
             modifier = Modifier.weight(1f),
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.confirm_btn),
             ),
+            state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::onConfirm
         )

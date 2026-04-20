@@ -23,5 +23,26 @@ internal object Migration3To4 : Migration(3, 4) {
             )
             """.trimIndent()
         )
+
+        // weight_history: add userId column + FK to user with CASCADE on delete.
+        // Existing rows are cached from the backend and will be re-fetched,
+        // so we drop and recreate the table instead of trying to back-fill userId.
+        connection.execSQL("DROP TABLE IF EXISTS `weight_history`")
+        connection.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `weight_history` (
+                `id` TEXT NOT NULL,
+                `userId` TEXT NOT NULL,
+                `weight` REAL NOT NULL,
+                `createdAt` TEXT NOT NULL,
+                `updatedAt` TEXT NOT NULL,
+                PRIMARY KEY(`id`),
+                FOREIGN KEY(`userId`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+        connection.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_weight_history_userId` ON `weight_history` (`userId`)"
+        )
     }
 }

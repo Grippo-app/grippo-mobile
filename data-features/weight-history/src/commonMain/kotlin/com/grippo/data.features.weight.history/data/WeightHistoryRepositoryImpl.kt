@@ -5,8 +5,10 @@ import com.grippo.data.features.weight.history.domain.WeightHistoryRepository
 import com.grippo.dto.entity.user.toEntities
 import com.grippo.entity.domain.user.toDomain
 import com.grippo.services.backend.GrippoApi
+import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.dao.WeightHistoryDao
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
@@ -14,6 +16,7 @@ import org.koin.core.annotation.Single
 internal class WeightHistoryRepositoryImpl(
     private val api: GrippoApi,
     private val weightHistoryDao: WeightHistoryDao,
+    private val userActiveDao: UserActiveDao,
 ) : WeightHistoryRepository {
 
     override fun observeWeightHistory(): Flow<List<WeightHistory>> {
@@ -27,10 +30,11 @@ internal class WeightHistoryRepositoryImpl(
     }
 
     override suspend fun getWeightHistory(): Result<Unit> {
+        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
         val response = api.getWeightHistory()
 
         response.onSuccess { r ->
-            val entitles = r.toEntities()
+            val entitles = r.toEntities(userId)
             entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
         }
 
@@ -38,11 +42,12 @@ internal class WeightHistoryRepositoryImpl(
     }
 
     override suspend fun updateWeight(value: Float): Result<Unit> {
+        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
         val response = api.updateWeightHistory(value)
 
         response.onSuccess {
             val list = api.getWeightHistory().getOrNull() ?: return@onSuccess
-            val entitles = list.toEntities()
+            val entitles = list.toEntities(userId)
             entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
         }
 
@@ -50,11 +55,12 @@ internal class WeightHistoryRepositoryImpl(
     }
 
     override suspend fun deleteWeight(id: String): Result<Unit> {
+        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
         val response = api.deleteWeight(id)
 
         response.onSuccess {
             val list = api.getWeightHistory().getOrNull() ?: return@onSuccess
-            val entitles = list.toEntities()
+            val entitles = list.toEntities(userId)
             entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
         }
 
