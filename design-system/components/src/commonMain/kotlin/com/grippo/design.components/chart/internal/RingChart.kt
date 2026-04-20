@@ -63,6 +63,13 @@ private fun RingChartPreview() {
             modifier = Modifier.size(120.dp),
             value = 62f,
             max = 100f,
+            colors = AppTokens.colors.charts.ring.error
+        )
+
+        RingChart(
+            modifier = Modifier.size(120.dp),
+            value = 62f,
+            max = 100f,
             colors = AppTokens.colors.charts.ring.muted
         )
     }

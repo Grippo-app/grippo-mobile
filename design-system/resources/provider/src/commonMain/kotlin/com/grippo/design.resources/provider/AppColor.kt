@@ -251,6 +251,7 @@ public interface AppColor {
             public val success: RingPalette
             public val info: RingPalette
             public val warning: RingPalette
+            public val error: RingPalette
             public val muted: RingPalette
 
             public interface RingPalette {

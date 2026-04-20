@@ -200,8 +200,8 @@ private fun ringColors(
 ): AppColor.Charts.RingColor.RingPalette = when {
     isFinished && score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.ring.success
     score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.ring.success
-    score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.charts.ring.info
-    else -> AppTokens.colors.charts.ring.warning
+    score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.charts.ring.warning
+    else -> AppTokens.colors.charts.ring.error
 }
 
 @Composable

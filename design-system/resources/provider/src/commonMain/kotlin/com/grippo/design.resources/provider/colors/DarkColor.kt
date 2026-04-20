@@ -132,7 +132,7 @@ public object DarkColor : AppColor {
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
         override val shadow = AppPalette.Common.Black.copy(alpha = 0.2f)
-        override val overlay = AppPalette.NeutralDark.N300.copy(alpha = 0.7f)
+        override val overlay = AppPalette.NeutralDark.N200.copy(alpha = 0.8f)
     }
 
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
@@ -263,6 +263,10 @@ public object DarkColor : AppColor {
             override val warning = object : AppColor.Charts.RingColor.RingPalette {
                 override val indicator: Color = AppPalette.Unique.Orange
                 override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
+            }
+            override val error = object : AppColor.Charts.RingColor.RingPalette {
+                override val indicator: Color = AppPalette.Unique.Red
+                override val track: Color = AppPalette.Unique.Red.copy(alpha = 0.2f)
             }
             override val muted = object : AppColor.Charts.RingColor.RingPalette {
                 override val indicator: Color = AppPalette.NeutralDark.N500
