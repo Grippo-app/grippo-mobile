@@ -164,8 +164,3 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
         }
     }
 }
-
-@Serializable
-public enum class DateRangeError {
-    FromAfterTo,
-}
