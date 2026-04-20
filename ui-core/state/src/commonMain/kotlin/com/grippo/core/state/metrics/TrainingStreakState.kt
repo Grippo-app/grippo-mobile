@@ -1,6 +1,7 @@
 package com.grippo.core.state.metrics
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.toolkit.date.utils.DateRange
 
 @Immutable
@@ -91,7 +92,7 @@ public data class TrainingStreakProgressState(
     val progressPercent: Int,
     val achievedSessions: Int,
     val targetSessions: Int,
-    val range: DateRange,
+    val range: DateRangeFormatState,
 )
 
 public fun stubTrainingStreaks(): List<TrainingStreakState> {
@@ -109,19 +110,19 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                     progressPercent = 100,
                     achievedSessions = 1,
                     targetSessions = 1,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 1,
                     targetSessions = 1,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 50,
                     achievedSessions = 1,
                     targetSessions = 2,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
             ),
             kind = TrainingStreakKind.Daily,
@@ -143,19 +144,19 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                     progressPercent = 75,
                     achievedSessions = 3,
                     targetSessions = 4,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 40,
                     achievedSessions = 2,
                     targetSessions = 5,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 20,
                     achievedSessions = 1,
                     targetSessions = 5,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
             ),
             kind = TrainingStreakKind.Weekly,
@@ -178,25 +179,25 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                     progressPercent = 100,
                     achievedSessions = 2,
                     targetSessions = 2,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 2,
                     targetSessions = 2,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 60,
                     achievedSessions = 1,
                     targetSessions = 2,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 80,
                     achievedSessions = 2,
                     targetSessions = 2,
-                    range = DateRange.Range.Last7Days().range,
+                    range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 ),
             ),
             kind = TrainingStreakKind.Rhythm,

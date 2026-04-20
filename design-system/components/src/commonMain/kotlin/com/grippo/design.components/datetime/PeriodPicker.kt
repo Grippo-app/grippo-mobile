@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -25,7 +26,7 @@ import com.grippo.toolkit.date.utils.DateRange
 @Composable
 public fun PeriodPicker(
     modifier: Modifier = Modifier,
-    value: DateRange.Range,
+    value: DateRangeFormatState,
     enabled: Boolean = true,
     onSelect: () -> Unit,
 ) {
@@ -54,7 +55,7 @@ public fun PeriodPicker(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = value.range?.label() ?: "-",
+            text = value.label()?.text() ?: "-",
             style = AppTokens.typography.h6(),
             color = titleColor
         )
@@ -85,13 +86,13 @@ public fun PeriodPicker(
 private fun PeriodPickerPreview() {
     PreviewContainer {
         PeriodPicker(
-            value = DateRange.Range.Last7Days(),
+            value = DateRangeFormatState.of(DateRange.Range.Last7Days()),
             enabled = true,
             onSelect = {},
         )
 
         PeriodPicker(
-            value = DateRange.Range.Last7Days(),
+            value = DateRangeFormatState.of(DateRange.Range.Last7Days()),
             enabled = false,
             onSelect = {},
         )

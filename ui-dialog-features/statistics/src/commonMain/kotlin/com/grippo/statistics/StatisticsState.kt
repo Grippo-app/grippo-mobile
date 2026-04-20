@@ -1,10 +1,10 @@
 package com.grippo.statistics
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.VolumeSeriesState
-import com.grippo.toolkit.date.utils.DateRange
 
 @Immutable
 public data class StatisticsState(
@@ -24,7 +24,7 @@ public data class StatisticsState(
 public sealed interface StatisticsMode {
     @Immutable
     public data class Trainings(
-        val range: DateRange
+        val range: DateRangeFormatState
     ) : StatisticsMode
 
     @Immutable

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -21,7 +22,7 @@ import com.grippo.toolkit.date.utils.DateRange
 @Composable
 public fun HighlightsHeader(
     modifier: Modifier = Modifier,
-    range: DateRange.Range,
+    range: DateRangeFormatState,
     onPeriodChange: () -> Unit
 ) {
     Row(
@@ -57,7 +58,7 @@ public fun HighlightsHeader(
 private fun HighlightsHeaderPreview() {
     PreviewContainer {
         HighlightsHeader(
-            range = DateRange.Range.Last7Days(),
+            range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
             onPeriodChange = {},
         )
     }

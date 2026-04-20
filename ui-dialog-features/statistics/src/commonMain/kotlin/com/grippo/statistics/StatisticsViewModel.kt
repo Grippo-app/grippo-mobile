@@ -1,6 +1,7 @@
 package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
@@ -21,7 +22,7 @@ public class StatisticsViewModel(
     StatisticsState(
         mode = when (config) {
             is DialogConfig.Statistics.Trainings -> StatisticsMode.Trainings(
-                range = config.range
+                range = DateRangeFormatState.of(config.range)
             )
 
             is DialogConfig.Statistics.Training -> StatisticsMode.Exercises
@@ -32,15 +33,15 @@ public class StatisticsViewModel(
     init {
         when (config) {
             is DialogConfig.Statistics.Trainings -> {
-                trainingFeature.observeTrainings(config.range.from, config.range.to)
+                trainingFeature
+                    .observeTrainings(config.range.from, config.range.to)
                     .mapLatest { trainings -> provideTrainingStatistics(config.range, trainings) }
                     .safeLaunch(loader = StatisticsLoader.Charts)
 
                 safeLaunch {
-                    trainingFeature.getTrainings(
-                        start = config.range.from,
-                        end = config.range.to
-                    ).getOrThrow()
+                    trainingFeature
+                        .getTrainings(start = config.range.from, end = config.range.to)
+                        .getOrThrow()
                 }
             }
 
@@ -56,12 +57,11 @@ public class StatisticsViewModel(
         navigateTo(StatisticsDirection.Back)
     }
 
-    private suspend fun provideTrainingStatistics(
-        range: DateRange,
-        trainings: List<Training>,
-    ) {
+    private suspend fun provideTrainingStatistics(range: DateRange, trainings: List<Training>) {
+        val formattedRange = DateRangeFormatState.of(range)
+
         if (trainings.isEmpty()) {
-            clearStatistics(mode = StatisticsMode.Trainings(range))
+            clearStatistics(mode = StatisticsMode.Trainings(formattedRange))
             return
         }
 
@@ -79,7 +79,7 @@ public class StatisticsViewModel(
 
         update {
             it.copy(
-                mode = StatisticsMode.Trainings(range = range),
+                mode = StatisticsMode.Trainings(range = formattedRange),
                 exerciseVolume = volume,
                 total = totalMetrics,
                 muscleLoad = muscleLoad,

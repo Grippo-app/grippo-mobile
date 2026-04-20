@@ -1,6 +1,7 @@
 package com.grippo.training.streak
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -13,7 +14,7 @@ public class TrainingStreakViewModel(
     trainingFeature: TrainingFeature,
     private val trainingStreakUseCase: TrainingStreakUseCase,
 ) : BaseViewModel<TrainingStreakDialogState, TrainingStreakDirection, TrainingStreakLoader>(
-    TrainingStreakDialogState(range = range)
+    TrainingStreakDialogState(range = DateRangeFormatState.of(range))
 ), TrainingStreakContract {
 
     init {

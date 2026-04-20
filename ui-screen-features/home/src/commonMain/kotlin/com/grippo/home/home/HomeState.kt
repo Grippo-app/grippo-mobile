@@ -1,6 +1,7 @@
 package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.ExerciseSpotlightState
 import com.grippo.core.state.metrics.GoalProgressState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
@@ -15,7 +16,7 @@ import kotlin.time.Duration
 
 @Immutable
 internal data class HomeState(
-    val range: DateRange.Range = DateRange.Range.Last30Days(),
+    val range: DateRangeFormatState = DateRangeFormatState.of(DateRange.Range.Last30Days()),
     val hasDraftTraining: Boolean = false,
     val lastTraining: TrainingState? = null,
     val totalDuration: Duration? = null,

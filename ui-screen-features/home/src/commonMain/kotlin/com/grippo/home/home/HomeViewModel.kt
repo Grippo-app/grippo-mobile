@@ -1,6 +1,7 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
@@ -85,7 +86,7 @@ internal class HomeViewModel(
         }
 
         state
-            .map { it.range.range }
+            .map { it.range.kind.range }
             .filterNotNull()
             .distinctUntilChanged()
             .flatMapLatest { period ->
@@ -95,7 +96,7 @@ internal class HomeViewModel(
             }.safeLaunch()
 
         state
-            .map { it.range.range }
+            .map { it.range.kind.range }
             .filterNotNull()
             .distinctUntilChanged()
             .onEach { period ->
@@ -115,7 +116,7 @@ internal class HomeViewModel(
 
     private fun provideRange(value: Range?) {
         val range = value?.toState() ?: return
-        update { it.copy(range = range) }
+        update { it.copy(range = DateRangeFormatState.of(range)) }
     }
 
     private fun provideDraftTraining(value: SetDraftTraining?) {
@@ -182,7 +183,7 @@ internal class HomeViewModel(
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
-        val range = state.value.range.range ?: return
+        val range = state.value.range.kind.range ?: return
 
         val dialog = DialogConfig.PerformanceTrend(
             range = range,
@@ -193,7 +194,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenMuscleLoading() {
-        val range = state.value.range.range ?: return
+        val range = state.value.range.kind.range ?: return
 
         val dialog = DialogConfig.MuscleLoading(
             range = range,
@@ -232,7 +233,7 @@ internal class HomeViewModel(
         safeLaunch {
             val dialog = DialogConfig.PeriodPicker(
                 title = stringProvider.get(Res.string.period_picker_title),
-                initial = state.value.range,
+                initial = state.value.range.kind,
                 onResult = { result ->
                     safeLaunch {
                         localSettingsFeature.setRange(result.toDomain()).getOrThrow()
@@ -245,7 +246,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainingProfile() {
-        val range = state.value.range.range ?: return
+        val range = state.value.range.kind.range ?: return
 
         val dialog = DialogConfig.TrainingProfile(
             range = range
@@ -272,7 +273,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainingStreak() {
-        val range = state.value.range.range ?: return
+        val range = state.value.range.kind.range ?: return
 
         val dialog = DialogConfig.TrainingStreak(
             range = range
@@ -282,7 +283,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenDigest() {
-        val range = state.value.range.range ?: return
+        val range = state.value.range.kind.range ?: return
 
         val config = DialogConfig.Statistics.Trainings(
             range = range

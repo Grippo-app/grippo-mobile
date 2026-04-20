@@ -1,6 +1,7 @@
 package com.grippo.muscle.loading
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -13,7 +14,7 @@ public class MuscleLoadingViewModel(
     trainingFeature: TrainingFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
 ) : BaseViewModel<MuscleLoadingState, MuscleLoadingDirection, MuscleLoadingLoader>(
-    MuscleLoadingState(range = range)
+    MuscleLoadingState(range = DateRangeFormatState.of(range))
 ), MuscleLoadingContract {
 
     init {

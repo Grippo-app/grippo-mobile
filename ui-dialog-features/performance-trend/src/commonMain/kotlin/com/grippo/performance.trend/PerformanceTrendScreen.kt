@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubPerformanceTrendHistory
 import com.grippo.design.components.metrics.PerformanceMetricCard
@@ -25,8 +26,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.performance_trend
 import com.grippo.design.resources.provider.value_performance_trend
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -42,7 +41,7 @@ internal fun PerformanceTrendScreen(
 
     val metricLabel = state.metricType.label()
 
-    val title = state.range.label()?.let {
+    val title = state.range.label()?.text()?.let {
         AppTokens.strings.res(Res.string.value_performance_trend, it, metricLabel)
     } ?: AppTokens.strings.res(Res.string.performance_trend, metricLabel)
 
@@ -58,7 +57,7 @@ internal fun PerformanceTrendScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = state.range.formatted(),
+        text = state.range.display,
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -98,11 +97,6 @@ internal fun PerformanceTrendScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
             ) {
-                val formattedDate = DateCompose.rememberFormat(
-                    entry.range.to,
-                    DateFormat.DateOnly.DateMmmDdYyyy
-                )
-
                 val style = if (index == 0) {
                     AppTokens.typography.h5()
                 } else {
@@ -117,7 +111,7 @@ internal fun PerformanceTrendScreen(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = formattedDate,
+                    text = entry.endDate.display,
                     style = style,
                     color = color
                 )
@@ -143,7 +137,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PerformanceTrendScreen(
             state = PerformanceTrendDialogState(
-                range = DateRange.Range.Last7Days().range,
+                range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 metricType = PerformanceMetricTypeState.Volume,
                 history = stubPerformanceTrendHistory(),
             ),

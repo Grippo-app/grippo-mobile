@@ -1,12 +1,15 @@
 package com.grippo.performance.trend
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendHistoryEntry
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.toState
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -20,7 +23,7 @@ public class PerformanceTrendViewModel(
     private val performanceTrendUseCase: PerformanceTrendUseCase,
 ) : BaseViewModel<PerformanceTrendDialogState, PerformanceTrendDirection, PerformanceTrendLoader>(
     PerformanceTrendDialogState(
-        range = range,
+        range = DateRangeFormatState.of(range),
         metricType = metricType
     )
 ), PerformanceTrendContract {
@@ -61,11 +64,14 @@ public class PerformanceTrendViewModel(
                 .firstOrNull { it.type == state.value.metricType }
 
             if (metric != null) {
+                val endAt = slice.last().createdAt
+
                 history.add(
                     PerformanceTrendHistoryEntry(
-                        range = DateRange(
-                            from = slice.first().createdAt,
-                            to = slice.last().createdAt
+                        endDate = DateFormatState.of(
+                            value = endAt,
+                            range = DateRange.Range.Infinity().range,
+                            format = DateFormat.DateOnly.DateMmmDdYyyy,
                         ),
                         metric = metric
                     )

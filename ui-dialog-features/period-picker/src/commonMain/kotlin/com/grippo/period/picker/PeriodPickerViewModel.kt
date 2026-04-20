@@ -1,6 +1,7 @@
 package com.grippo.period.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.toolkit.date.utils.DateRange
 
 public class PeriodPickerViewModel(
@@ -8,7 +9,7 @@ public class PeriodPickerViewModel(
     initial: DateRange.Range,
 ) : BaseViewModel<PeriodPickerState, PeriodPickerDirection, PeriodPickerLoader>(
     PeriodPickerState(
-        value = initial,
+        value = DateRangeFormatState.of(initial),
         title = title
     )
 ), PeriodPickerContract {

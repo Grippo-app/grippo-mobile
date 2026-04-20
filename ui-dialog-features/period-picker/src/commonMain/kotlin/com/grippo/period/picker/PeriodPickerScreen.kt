@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.core.AppTokens
@@ -56,15 +57,15 @@ internal fun PeriodPickerScreen(
     ) {
         items(state.suggestions) { item ->
             val onClickProvider = remember(item) {
-                { contract.onSelectRange(item) }
+                { contract.onSelectRange(item.kind) }
             }
             CheckSelectableCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = CheckSelectableCardStyle.Medium(
-                    title = item.range?.label() ?: AppTokens.strings.res(Res.string.custom),
-                    description = item.range?.formatted(),
+                    title = item.label()?.text() ?: AppTokens.strings.res(Res.string.custom),
+                    description = item.display,
                 ),
-                isSelected = state.value == item,
+                isSelected = state.value.kind == item.kind,
                 onSelect = onClickProvider
             )
         }
@@ -83,7 +84,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                value = DateRange.Range.Weekly(),
+                value = DateRangeFormatState.of(DateRange.Range.Weekly()),
                 title = "Select period",
             ),
             loaders = persistentSetOf(),

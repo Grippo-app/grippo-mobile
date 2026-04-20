@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.metrics.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.streak.TrainingStreakInsightsCard
@@ -38,7 +39,7 @@ internal fun TrainingStreakScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = state.range.label()?.let {
+        text = state.range.label()?.text()?.let {
             AppTokens.strings.res(Res.string.value_training_streak, it)
         } ?: AppTokens.strings.res(Res.string.training_streak),
         style = AppTokens.typography.h2(),
@@ -50,7 +51,7 @@ internal fun TrainingStreakScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = state.range.formatted(),
+        text = state.range.display,
         style = AppTokens.typography.b14Semi(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -102,7 +103,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingStreakScreen(
             state = TrainingStreakDialogState(
-                range = DateRange.Range.Last7Days().range,
+                range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 streak = stubTrainingStreaks().first()
             ),
             loaders = persistentSetOf(),

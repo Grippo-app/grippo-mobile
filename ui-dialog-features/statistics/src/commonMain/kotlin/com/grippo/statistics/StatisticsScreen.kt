@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeries
@@ -47,7 +48,7 @@ internal fun StatisticsScreen(
         modifier = Modifier.fillMaxWidth(),
         text = when (val mode = state.mode) {
             is StatisticsMode.Exercises -> AppTokens.strings.res(Res.string.statistics)
-            is StatisticsMode.Trainings -> mode.range.label()?.let {
+            is StatisticsMode.Trainings -> mode.range.label()?.text()?.let {
                 AppTokens.strings.res(Res.string.value_statistics, it)
             } ?: AppTokens.strings.res(Res.string.statistics)
         },
@@ -66,7 +67,7 @@ internal fun StatisticsScreen(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = mode.range.formatted(),
+                text = mode.range.display,
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.Center
@@ -143,7 +144,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         StatisticsScreen(
             state = StatisticsState(
-                mode = StatisticsMode.Trainings(range = DateRange.Range.Weekly().range),
+                mode = StatisticsMode.Trainings(range = DateRangeFormatState.of(DateRange.Range.Weekly())),
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
                 muscleLoad = stubMuscleLoadSummary(),

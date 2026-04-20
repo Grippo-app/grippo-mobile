@@ -3,6 +3,7 @@ package com.grippo.core.state.metrics
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -24,7 +25,9 @@ import com.grippo.design.resources.provider.performance_trend_desc_repetitions
 import com.grippo.design.resources.provider.performance_trend_desc_volume
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.volume
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -75,7 +78,7 @@ public enum class PerformanceMetricTypeState {
 
 @Immutable
 public data class PerformanceTrendHistoryEntry(
-    val range: DateRange,
+    val endDate: DateFormatState,
     val metric: PerformanceMetricState,
 )
 
@@ -156,17 +159,31 @@ public enum class PerformanceTrendStatusState {
 }
 
 public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryEntry> {
+    val now = DateTimeUtils.now()
+    val anyRange = DateRange.Range.Infinity().range
     return persistentListOf(
         PerformanceTrendHistoryEntry(
-            range = DateRange.Range.Last7Days().range,
+            endDate = DateFormatState.of(
+                value = now,
+                range = anyRange,
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
             metric = stubPerformanceMetrics().random()
         ),
         PerformanceTrendHistoryEntry(
-            range = DateRange.Range.Last7Days().range,
+            endDate = DateFormatState.of(
+                value = now,
+                range = anyRange,
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
             metric = stubPerformanceMetrics().random()
         ),
         PerformanceTrendHistoryEntry(
-            range = DateRange.Range.Last7Days().range,
+            endDate = DateFormatState.of(
+                value = now,
+                range = anyRange,
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
             metric = stubPerformanceMetrics().random()
         ),
     )

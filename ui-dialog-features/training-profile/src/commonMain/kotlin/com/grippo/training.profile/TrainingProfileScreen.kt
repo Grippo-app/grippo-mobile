@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileDetailsCard
 import com.grippo.design.components.metrics.training.profile.TrainingProfileRadar
@@ -38,7 +39,9 @@ internal fun TrainingProfileScreen(
 
     val baseTitle = AppTokens.strings.res(Res.string.training_profile)
 
-    val title = state.range.label()?.let { "$baseTitle • $it" } ?: baseTitle
+    val title = state.range.label()?.text()
+        ?.let { "$baseTitle • $it" }
+        ?: baseTitle
 
     Text(
         modifier = Modifier.fillMaxWidth(),
@@ -52,7 +55,7 @@ internal fun TrainingProfileScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = state.range.formatted(),
+        text = state.range.display,
         style = AppTokens.typography.b14Semi(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -98,7 +101,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingProfileScreen(
             state = TrainingProfileDialogState(
-                range = DateRange.Range.Last7Days().range,
+                range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 profile = stubTrainingLoadProfile()
             ),
             loaders = persistentSetOf(),

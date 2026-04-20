@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
@@ -49,7 +50,7 @@ internal fun MuscleLoadingScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = state.range.label()?.let {
+        text = state.range.label()?.text()?.let {
             AppTokens.strings.res(Res.string.value_muscle_loading, it)
         } ?: AppTokens.strings.res(Res.string.muscle_loading),
         style = AppTokens.typography.h3(),
@@ -61,7 +62,7 @@ internal fun MuscleLoadingScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = state.range.formatted(),
+        text = state.range.display,
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -169,7 +170,7 @@ private fun ScreenPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
-                range = DateRange.Range.Last7Days().range,
+                range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingShowingMode.PerGroup
             ),
@@ -185,7 +186,7 @@ private fun ScreenPerMusclePreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
-                range = DateRange.Range.Last7Days().range,
+                range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingShowingMode.PerMuscle
             ),

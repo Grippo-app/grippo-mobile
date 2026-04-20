@@ -15,8 +15,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_period_value
 import com.grippo.design.resources.provider.training_streak_timeline_title
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 public fun TrainingStreakTimelineCard(
@@ -47,17 +45,6 @@ public fun TrainingStreakTimelineCard(
 private fun TrainingStreakTimelineRow(
     entry: TrainingStreakProgressState,
 ) {
-    val from = entry.range.from.date
-    val to = entry.range.to.date
-
-    val formattedDate = if (from == to) {
-        DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
-    } else {
-        val start = DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
-        val end = DateCompose.rememberFormat(to, DateFormat.DateOnly.DateDdMmm)
-        "$start - $end"
-    }
-
     val progressColors = when {
         entry.progressPercent >= 80 -> AppTokens.colors.charts.indicator.success
         entry.progressPercent >= 40 -> AppTokens.colors.charts.indicator.info
@@ -71,7 +58,7 @@ private fun TrainingStreakTimelineRow(
         labelSpacing = AppTokens.dp.contentPadding.text,
         startLabel = {
             Text(
-                text = formattedDate,
+                text = entry.range.display,
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.primary,
                 maxLines = 1,

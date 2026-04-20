@@ -1,6 +1,7 @@
 package com.grippo.training.profile
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -13,7 +14,7 @@ public class TrainingProfileViewModel(
     trainingFeature: TrainingFeature,
     private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
 ) : BaseViewModel<TrainingProfileDialogState, TrainingProfileDirection, TrainingProfileLoader>(
-    TrainingProfileDialogState(range = range)
+    TrainingProfileDialogState(range = DateRangeFormatState.of(range))
 ), TrainingProfileContract {
 
     init {
