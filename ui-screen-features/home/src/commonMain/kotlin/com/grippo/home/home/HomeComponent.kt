@@ -38,6 +38,7 @@ internal class HomeComponent(
             permissionManager = getKoin().get(),
             notificationManager = getKoin().get(),
             goalFollowingUseCase = getKoin().get(),
+            userFeature = getKoin().get()
         )
     }
 

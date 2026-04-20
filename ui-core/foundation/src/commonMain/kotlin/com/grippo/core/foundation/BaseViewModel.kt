@@ -75,7 +75,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     protected enum class Processing { WhileActive, Infinity }
 
     private val coroutineScope: CoroutineScope = CoroutineScope(
-        context = SupervisorJob() + Dispatchers.Default
+        context = SupervisorJob() + Dispatchers.Main.immediate
     )
 
     private val operationManager by inject<OperationManager> {
@@ -83,7 +83,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     protected fun <T> Flow<T>.safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         processing: Processing = Processing.WhileActive,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
@@ -111,7 +111,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     protected fun safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         processing: Processing = Processing.Infinity,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},

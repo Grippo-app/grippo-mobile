@@ -8,6 +8,7 @@ import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.TrainingLoadProfileState
 import com.grippo.core.state.metrics.TrainingStreakState
+import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableList
@@ -17,6 +18,7 @@ import kotlin.time.Duration
 @Immutable
 internal data class HomeState(
     val range: DateRangeFormatState = DateRangeFormatState.of(DateRangeKind.Last30Days),
+    val user: UserState? = null,
     val hasDraftTraining: Boolean = false,
     val lastTraining: TrainingState? = null,
     val totalDuration: Duration? = null,

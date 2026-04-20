@@ -17,6 +17,8 @@ import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.data.features.api.user.UserFeature
+import com.grippo.data.features.api.user.models.User
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.notification_weight_description
 import com.grippo.design.resources.provider.notification_weight_title
@@ -27,6 +29,7 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.range.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.domain.state.user.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.range.toDomain
 import com.grippo.toolkit.local.notification.AppNotification
@@ -57,12 +60,18 @@ internal class HomeViewModel(
     private val stringProvider: StringProvider,
     private val permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
-    private val goalFollowingUseCase: GoalFollowingUseCase
+    private val goalFollowingUseCase: GoalFollowingUseCase,
+    userFeature: UserFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
 
     init {
+        userFeature
+            .observeUser()
+            .onEach(::provideUser)
+            .safeLaunch()
+
         localSettingsFeature.observeRange()
             .onEach(::provideRange)
             .safeLaunch()
@@ -93,7 +102,7 @@ internal class HomeViewModel(
                 trainingFeature
                     .observeTrainings(start = period.from, end = period.to)
                     .onEach(::provideTrainings)
-            }.safeLaunch()
+            }.safeLaunch(loader = HomeLoader.Trainings)
 
         state
             .map { it.range.value }
@@ -109,6 +118,11 @@ internal class HomeViewModel(
         trainingFeature.getDraftTraining()
             .onEach(::provideDraftTraining)
             .safeLaunch()
+    }
+
+    private fun provideUser(value: User?) {
+        val user = value?.toState() ?: return
+        update { it.copy(user = user) }
     }
 
     private fun provideRange(value: Range?) {
