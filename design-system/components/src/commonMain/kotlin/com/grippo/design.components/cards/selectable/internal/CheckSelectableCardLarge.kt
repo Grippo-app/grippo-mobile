@@ -1,14 +1,20 @@
 package com.grippo.design.components.cards.selectable.internal
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -16,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardVariants
@@ -35,25 +41,39 @@ internal fun CheckSelectableCardLarge(
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.checkSelectableCard.large.radius)
 
-    val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.semantic.success else Color.Transparent,
-        label = "border"
+    val iconTint by animateColorAsState(
+        if (isSelected) AppTokens.colors.semantic.success else AppTokens.colors.icon.tertiary,
+        label = "iconTint"
     )
 
-    val iconTint = AppTokens.colors.icon.primary
+    val decorationWidth by animateDpAsState(
+        targetValue = if (isSelected) AppTokens.dp.metrics.status.verticalPadding else 0.dp,
+        animationSpec = tween(durationMillis = 300),
+        label = "decorationWidth"
+    )
 
-    Column(
+    Row(
         modifier = modifier
+            .height(intrinsicSize = IntrinsicSize.Max)
             .scalableClick(onClick = onClick)
-            .background(AppTokens.colors.background.card, shape)
-            .border(1.dp, borderColor, shape)
-            .padding(
-                horizontal = AppTokens.dp.checkSelectableCard.large.horizontalPadding,
-                vertical = AppTokens.dp.checkSelectableCard.large.verticalPadding
-            ),
+            .clip(shape)
+            .background(AppTokens.colors.background.card, shape),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(decorationWidth)
+                .background(AppTokens.colors.semantic.success.copy(alpha = 0.7f))
+        )
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = AppTokens.dp.checkSelectableCard.large.horizontalPadding,
+                    vertical = AppTokens.dp.checkSelectableCard.large.verticalPadding
+                ),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.checkSelectableCard.large.horizontalPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
