@@ -90,7 +90,7 @@ internal fun HomeScreen(
         return@BaseComposeScreen
     }
 
-    if (isLoading && isEmptyState) {
+    if (isLoading) {
         Loader(
             modifier = Modifier.fillMaxSize(),
         )
