@@ -11,6 +11,7 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -70,7 +71,7 @@ public class PerformanceTrendViewModel(
                     PerformanceTrendHistoryEntry(
                         endDate = DateFormatState.of(
                             value = endAt,
-                            range = DateRange.Range.Infinity().range,
+                            range = DateRangePresets.infinity(),
                             format = DateFormat.DateOnly.DateMmmDdYyyy,
                         ),
                         metric = metric

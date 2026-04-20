@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -29,7 +29,7 @@ public fun stubWeightHistory(): WeightHistoryState = WeightHistoryState(
     value = WeightFormatState.of(Random.nextInt(60, 100).toFloat()),
     createdAt = DateFormatState.of(
         value = DateTimeUtils.now(),
-        range = DateRange.Range.Infinity().range,
+        range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy
     )
 )

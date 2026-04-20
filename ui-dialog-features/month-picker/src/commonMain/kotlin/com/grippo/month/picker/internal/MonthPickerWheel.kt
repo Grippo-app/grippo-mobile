@@ -18,6 +18,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateCompose.rememberFormat
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
@@ -165,7 +166,7 @@ private fun MonthWheelPickerPreview() {
     PreviewContainer {
         MonthWheelPicker(
             initial = DateTimeUtils.now(),
-            limitations = DateRange.Range.Last365Days().range,
+            limitations = DateRangePresets.last365Days(),
             select = {}
         )
     }

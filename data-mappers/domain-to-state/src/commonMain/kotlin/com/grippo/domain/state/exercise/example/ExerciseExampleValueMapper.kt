@@ -5,7 +5,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
 import com.grippo.domain.state.user.toState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 
 public fun ExerciseExampleValue.toState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(
@@ -20,7 +20,7 @@ public fun ExerciseExampleValue.toState(): ExerciseExampleValueState {
         usageCount = usageCount,
         lastUsed = DateFormatState.of(
             value = lastUsed,
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateDdMmm
         )
     )

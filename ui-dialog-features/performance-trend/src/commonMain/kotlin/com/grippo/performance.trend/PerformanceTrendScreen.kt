@@ -26,7 +26,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.performance_trend
 import com.grippo.design.resources.provider.value_performance_trend
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -137,7 +137,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PerformanceTrendScreen(
             state = PerformanceTrendDialogState(
-                range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
+                range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
                 metricType = PerformanceMetricTypeState.Volume,
                 history = stubPerformanceTrendHistory(),
             ),

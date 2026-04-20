@@ -6,13 +6,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 
 public class PeriodPickerComponent(
     componentContext: ComponentContext,
     private val title: String,
-    private val initial: DateRange.Range,
-    private val onResult: (value: DateRange.Range) -> Unit,
+    private val initial: DateRangeKind,
+    private val onResult: (value: DateRangeKind) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<PeriodPickerDirection>(componentContext) {
 

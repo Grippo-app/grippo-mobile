@@ -35,7 +35,7 @@ import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
@@ -173,7 +173,7 @@ internal class TrainingRecordingViewModel(
                     exerciseExample = example.value,
                     createdAt = DateFormatState.of(
                         value = DateTimeUtils.now(),
-                        range = DateRange.Range.Infinity().range,
+                        range = DateRangePresets.infinity(),
                         format = DateFormat.DateOnly.DateMmmDdYyyy,
                     ),
                     total = TrainingTotalState(

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -37,7 +37,7 @@ public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
         usageCount = 4,
         lastUsed = DateFormatState.of(
             value = DateTimeUtils.now(),
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateDdMmm
         )
     )

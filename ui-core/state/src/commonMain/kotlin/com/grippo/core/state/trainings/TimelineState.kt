@@ -5,7 +5,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.metrics.DigestState
 import com.grippo.core.state.metrics.stubDigest
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -185,12 +185,12 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
         values += TimelineState.DateTime(
             startAt = DateFormatState.of(
                 value = start,
-                range = DateRange.Range.Infinity().range,
+                range = DateRangePresets.infinity(),
                 format = DateFormat.TimeOnly.Time24hHm
             ),
             createAt = DateFormatState.of(
                 value = end,
-                range = DateRange.Range.Infinity().range,
+                range = DateRangePresets.infinity(),
                 format = DateFormat.TimeOnly.Time24hHm
             ),
             duration = training.duration,
@@ -206,7 +206,7 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 }
 
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
-    val monthRange = DateRange.Range.Monthly().range
+    val monthRange = DateRangePresets.monthly()
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
     val digest = stubDigest()
     val values = mutableListOf<TimelineState>()

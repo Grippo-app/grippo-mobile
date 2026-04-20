@@ -17,7 +17,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.insights
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 
 @Composable
 public fun HighlightsHeader(
@@ -58,7 +58,7 @@ public fun HighlightsHeader(
 private fun HighlightsHeaderPreview() {
     PreviewContainer {
         HighlightsHeader(
-            range = DateRangeFormatState.of(DateRange.Range.Last7Days()),
+            range = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
             onPeriodChange = {},
         )
     }

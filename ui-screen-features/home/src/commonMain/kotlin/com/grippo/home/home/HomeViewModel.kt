@@ -86,7 +86,7 @@ internal class HomeViewModel(
         }
 
         state
-            .map { it.range.kind.range }
+            .map { it.range.value }
             .filterNotNull()
             .distinctUntilChanged()
             .flatMapLatest { period ->
@@ -96,7 +96,7 @@ internal class HomeViewModel(
             }.safeLaunch()
 
         state
-            .map { it.range.kind.range }
+            .map { it.range.value }
             .filterNotNull()
             .distinctUntilChanged()
             .onEach { period ->
@@ -115,8 +115,8 @@ internal class HomeViewModel(
     }
 
     private fun provideRange(value: Range?) {
-        val range = value?.toState() ?: return
-        update { it.copy(range = DateRangeFormatState.of(range)) }
+        val kind = value?.toState() ?: return
+        update { it.copy(range = DateRangeFormatState.ofPreset(kind)) }
     }
 
     private fun provideDraftTraining(value: SetDraftTraining?) {
@@ -183,7 +183,7 @@ internal class HomeViewModel(
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
-        val range = state.value.range.kind.range ?: return
+        val range = state.value.range.value ?: return
 
         val dialog = DialogConfig.PerformanceTrend(
             range = range,
@@ -194,7 +194,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenMuscleLoading() {
-        val range = state.value.range.kind.range ?: return
+        val range = state.value.range.value ?: return
 
         val dialog = DialogConfig.MuscleLoading(
             range = range,
@@ -246,7 +246,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainingProfile() {
-        val range = state.value.range.kind.range ?: return
+        val range = state.value.range.value ?: return
 
         val dialog = DialogConfig.TrainingProfile(
             range = range
@@ -273,7 +273,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainingStreak() {
-        val range = state.value.range.kind.range ?: return
+        val range = state.value.range.value ?: return
 
         val dialog = DialogConfig.TrainingStreak(
             range = range
@@ -283,7 +283,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenDigest() {
-        val range = state.value.range.kind.range ?: return
+        val range = state.value.range.value ?: return
 
         val config = DialogConfig.Statistics.Trainings(
             range = range

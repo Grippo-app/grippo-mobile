@@ -9,7 +9,7 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -25,7 +25,7 @@ public fun Exercise.toState(): ExerciseState {
         exerciseExample = exerciseExample.toState(),
         createdAt = DateFormatState.of(
             value = createdAt,
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy
         ),
         total = TrainingTotalState(

@@ -7,6 +7,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.trainings_period_daily
 import com.grippo.design.resources.provider.trainings_period_monthly
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -33,8 +34,8 @@ internal enum class TrainingsTimelinePeriod(
     Monthly(id = "monthly", text = UiText.Res(Res.string.trainings_period_monthly));
 
     fun defaultRange(): DateRange = when (this) {
-        Daily -> DateRange.Range.Daily().range
-        Monthly -> DateRange.Range.Monthly().range
+        Daily -> DateRangePresets.daily()
+        Monthly -> DateRangePresets.monthly()
     }
 
     fun rangeFor(anchor: LocalDateTime): DateRange = when (this) {

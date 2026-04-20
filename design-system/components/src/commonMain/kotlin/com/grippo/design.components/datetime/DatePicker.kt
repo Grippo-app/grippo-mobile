@@ -22,6 +22,7 @@ import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 
@@ -101,7 +102,7 @@ private fun DatePickerPreview() {
             format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = true,
             onSelect = {},
-            limitations = DateRange.Range.Weekly().range,
+            limitations = DateRangePresets.weekly(),
             onNext = {},
             onPrevious = {}
         )
@@ -111,7 +112,7 @@ private fun DatePickerPreview() {
             format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = false,
             onSelect = {},
-            limitations = DateRange.Range.Weekly().range,
+            limitations = DateRangePresets.weekly(),
             onNext = {},
             onPrevious = {}
         )

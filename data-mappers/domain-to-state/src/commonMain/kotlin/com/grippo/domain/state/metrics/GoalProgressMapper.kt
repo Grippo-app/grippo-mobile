@@ -5,7 +5,7 @@ import com.grippo.core.state.metrics.GoalProgressState
 import com.grippo.data.features.api.metrics.models.GoalAdherence
 import com.grippo.domain.state.user.toState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.daysUntil
 
@@ -22,7 +22,7 @@ public fun GoalAdherence.toState(): GoalProgressState {
         goal = goal.toState(),
         now = DateFormatState.of(
             value = now,
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateDdMmm
         ),
         score = score,

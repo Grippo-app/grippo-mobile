@@ -3,7 +3,6 @@ package com.grippo.toolkit.date.utils
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import kotlin.math.max
 
 @Serializable
@@ -11,82 +10,88 @@ public data class DateRange(
     val from: LocalDateTime,
     val to: LocalDateTime,
 ) {
+    public fun isWellFormed(): Boolean = from <= to
+}
 
-    @Serializable
-    public sealed class Range {
-        @Transient
-        public open val range: DateRange? = null
+@Serializable
+public enum class DateRangeKind {
+    Daily,
+    Weekly,
+    Last7Days,
+    Last14Days,
+    Monthly,
+    Last30Days,
+    Last60Days,
+    Last365Days,
+    Yearly,
+    Infinity,
+    Custom,
+}
 
-        @Serializable
-        public data class Daily(override val range: DateRange = DateTimeUtils.thisDay()) :
-            Range()
+public object DateRangePresets {
 
-        @Serializable
-        public data class Weekly(override val range: DateRange = DateTimeUtils.thisWeek()) :
-            Range()
+    public fun daily(): DateRange = DateTimeUtils.thisDay()
+    public fun weekly(): DateRange = DateTimeUtils.thisWeek()
+    public fun last7Days(): DateRange = DateTimeUtils.trailingWeek()
+    public fun last14Days(): DateRange = DateTimeUtils.trailing14Days()
+    public fun monthly(): DateRange = DateTimeUtils.thisMonth()
+    public fun last30Days(): DateRange = DateTimeUtils.trailingMonth()
+    public fun last60Days(): DateRange = DateTimeUtils.trailing60Days()
+    public fun last365Days(): DateRange = DateTimeUtils.trailingYear()
+    public fun yearly(): DateRange = DateTimeUtils.thisYear()
+    public fun infinity(): DateRange = DateTimeUtils.infinity()
 
-        @Serializable
-        public data class Last7Days(override val range: DateRange = DateTimeUtils.trailingWeek()) :
-            Range()
-
-        @Serializable
-        public data class Last14Days(override val range: DateRange = DateTimeUtils.trailing14Days()) :
-            Range()
-
-        @Serializable
-        public data class Monthly(override val range: DateRange = DateTimeUtils.thisMonth()) :
-            Range()
-
-        @Serializable
-        public data class Last30Days(override val range: DateRange = DateTimeUtils.trailingMonth()) :
-            Range()
-
-        @Serializable
-        public data class Last60Days(override val range: DateRange = DateTimeUtils.trailing60Days()) :
-            Range()
-
-        @Serializable
-        public data class Last365Days(override val range: DateRange = DateTimeUtils.trailingYear()) :
-            Range()
-
-        @Serializable
-        public data class Yearly(override val range: DateRange = DateTimeUtils.thisYear()) :
-            Range()
-
-        @Serializable
-        public data class Undefined(override val range: DateRange? = null) : Range()
-
-        @Serializable
-        public data class Infinity(override val range: DateRange = DateTimeUtils.infinity()) :
-            Range()
+    /**
+     * Materializes a preset kind into a concrete [DateRange].
+     * Returns null for [DateRangeKind.Custom] — custom ranges carry their
+     * own endpoints and cannot be resolved from the kind alone.
+     */
+    public fun resolve(kind: DateRangeKind): DateRange? = when (kind) {
+        DateRangeKind.Daily -> daily()
+        DateRangeKind.Weekly -> weekly()
+        DateRangeKind.Last7Days -> last7Days()
+        DateRangeKind.Last14Days -> last14Days()
+        DateRangeKind.Monthly -> monthly()
+        DateRangeKind.Last30Days -> last30Days()
+        DateRangeKind.Last60Days -> last60Days()
+        DateRangeKind.Last365Days -> last365Days()
+        DateRangeKind.Yearly -> yearly()
+        DateRangeKind.Infinity -> infinity()
+        DateRangeKind.Custom -> null
     }
 
-    public fun range(): Range {
-        val days = max(0, from.date.daysUntil(to.date) + 1)
+    /**
+     * Classifies an arbitrary [DateRange] into a [DateRangeKind].
+     * Prefers exact preset matches, then falls back to day-count heuristics,
+     * then to [DateRangeKind.Custom].
+     */
+    public fun classify(range: DateRange): DateRangeKind {
+        val days = max(0, range.from.date.daysUntil(range.to.date) + 1)
 
         return when {
-            matches(DateTimeUtils.thisDay()) -> Range.Daily(this)
-            matches(DateTimeUtils.thisWeek()) -> Range.Weekly(this)
-            matches(DateTimeUtils.trailingWeek()) -> Range.Last7Days(this)
-            matches(DateTimeUtils.trailing14Days()) -> Range.Last14Days(this)
-            matches(DateTimeUtils.thisMonth()) -> Range.Monthly(this)
-            matches(DateTimeUtils.trailingMonth()) -> Range.Last30Days(this)
-            matches(DateTimeUtils.trailing60Days()) -> Range.Last60Days(this)
-            matches(DateTimeUtils.trailingYear()) -> Range.Last365Days(this)
-            matches(DateTimeUtils.thisYear()) -> Range.Yearly(this)
-            days == 1 -> Range.Daily(this)
-            days == 7 -> Range.Last7Days(this)
-            days == 14 -> Range.Last14Days(this)
-            days == 30 -> Range.Last30Days(this)
-            days == 60 -> Range.Last60Days(this)
-            days in 28..31 -> Range.Monthly(this)
-            days in 365..366 -> Range.Yearly(this)
-            else -> Range.Undefined(this)
+            matches(range, daily()) -> DateRangeKind.Daily
+            matches(range, weekly()) -> DateRangeKind.Weekly
+            matches(range, last7Days()) -> DateRangeKind.Last7Days
+            matches(range, last14Days()) -> DateRangeKind.Last14Days
+            matches(range, monthly()) -> DateRangeKind.Monthly
+            matches(range, last30Days()) -> DateRangeKind.Last30Days
+            matches(range, last60Days()) -> DateRangeKind.Last60Days
+            matches(range, last365Days()) -> DateRangeKind.Last365Days
+            matches(range, yearly()) -> DateRangeKind.Yearly
+            matches(range, infinity()) -> DateRangeKind.Infinity
+            days == 1 -> DateRangeKind.Daily
+            days == 7 -> DateRangeKind.Last7Days
+            days == 14 -> DateRangeKind.Last14Days
+            days == 30 -> DateRangeKind.Last30Days
+            days == 60 -> DateRangeKind.Last60Days
+            days in 28..31 -> DateRangeKind.Monthly
+            days in 365..366 -> DateRangeKind.Yearly
+            else -> DateRangeKind.Custom
         }
     }
 
-    private fun matches(other: DateRange): Boolean {
-        return from == other.from && to == other.to
+    private fun matches(a: DateRange, b: DateRange): Boolean {
+        return a.from == b.from && a.to == b.to
     }
 }
 

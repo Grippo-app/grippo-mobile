@@ -8,7 +8,7 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
@@ -33,8 +33,8 @@ public fun stubUser(): UserState = UserState(
     height = HeightFormatState.of(Random.nextInt(140, 200)),
     weight = WeightFormatState.of(Random.nextInt(60, 100).toFloat()),
     createdAt = DateFormatState.of(
-        value = DateRange.Range.Daily().range.from,
-        range = DateRange.Range.Infinity().range,
+        value = DateRangePresets.daily().from,
+        range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy
     ),
     experience = ExperienceEnumState.ADVANCED,

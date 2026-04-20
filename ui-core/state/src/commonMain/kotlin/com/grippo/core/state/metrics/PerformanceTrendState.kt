@@ -26,7 +26,7 @@ import com.grippo.design.resources.provider.performance_trend_desc_volume
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -160,7 +160,7 @@ public enum class PerformanceTrendStatusState {
 
 public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryEntry> {
     val now = DateTimeUtils.now()
-    val anyRange = DateRange.Range.Infinity().range
+    val anyRange = DateRangePresets.infinity()
     return persistentListOf(
         PerformanceTrendHistoryEntry(
             endDate = DateFormatState.of(

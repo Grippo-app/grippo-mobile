@@ -13,7 +13,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.select_date
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
@@ -45,7 +45,7 @@ private fun InputDatePreview() {
         InputDate(
             value = DateFormatState.of(
                 value = DateTimeUtils.now(),
-                range = DateRange.Range.Yearly().range,
+                range = DateRangePresets.yearly(),
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
             onClick = {}

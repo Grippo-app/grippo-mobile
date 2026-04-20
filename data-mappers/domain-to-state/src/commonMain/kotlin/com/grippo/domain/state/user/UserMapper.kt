@@ -6,7 +6,7 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.profile.UserState
 import com.grippo.data.features.api.user.models.User
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 
 public fun User.toState(): UserState {
     return UserState(
@@ -17,7 +17,7 @@ public fun User.toState(): UserState {
         height = HeightFormatState.of(height),
         createdAt = DateFormatState.of(
             value = createdAt,
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy
         ),
         experience = experience.toState(),

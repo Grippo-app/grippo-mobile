@@ -31,7 +31,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.value_statistics
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -144,7 +144,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         StatisticsScreen(
             state = StatisticsState(
-                mode = StatisticsMode.Trainings(range = DateRangeFormatState.of(DateRange.Range.Weekly())),
+                mode = StatisticsMode.Trainings(range = DateRangeFormatState.ofPreset(DateRangeKind.Weekly)),
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
                 muscleLoad = stubMuscleLoadSummary(),

@@ -6,7 +6,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
@@ -29,8 +29,8 @@ public fun stubTraining(): TrainingState = TrainingState(
     id = Uuid.random().toString(),
     duration = 10000L.minutes,
     createdAt = DateFormatState.of(
-        value = DateRange.Range.Daily().range.from,
-        range = DateRange.Range.Infinity().range,
+        value = DateRangePresets.daily().from,
+        range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy
     ),
     total = stubTotal(),

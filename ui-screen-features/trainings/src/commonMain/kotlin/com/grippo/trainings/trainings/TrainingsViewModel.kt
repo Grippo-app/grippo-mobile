@@ -167,9 +167,10 @@ internal class TrainingsViewModel(
     }
 
     private fun applyAnchor(date: LocalDateTime) {
-        val current = state.value
-        val range = current.period.rangeFor(date).coerceWithin(current.limitations)
-        update { it.copy(date = range) }
+        update {
+            val range = it.period.rangeFor(date).coerceWithin(it.limitations)
+            it.copy(date = range)
+        }
     }
 
     override fun onSelectNextDate() = shiftDate(1)

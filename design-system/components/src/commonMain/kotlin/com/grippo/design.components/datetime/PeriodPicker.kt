@@ -21,7 +21,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.ArrowDown
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 
 @Composable
 public fun PeriodPicker(
@@ -86,13 +86,13 @@ public fun PeriodPicker(
 private fun PeriodPickerPreview() {
     PreviewContainer {
         PeriodPicker(
-            value = DateRangeFormatState.of(DateRange.Range.Last7Days()),
+            value = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
             enabled = true,
             onSelect = {},
         )
 
         PeriodPicker(
-            value = DateRangeFormatState.of(DateRange.Range.Last7Days()),
+            value = DateRangeFormatState.ofPreset(DateRangeKind.Last7Days),
             enabled = false,
             onSelect = {},
         )

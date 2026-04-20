@@ -2,20 +2,20 @@ package com.grippo.period.picker
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 
 public class PeriodPickerViewModel(
     title: String,
-    initial: DateRange.Range,
+    initial: DateRangeKind,
 ) : BaseViewModel<PeriodPickerState, PeriodPickerDirection, PeriodPickerLoader>(
     PeriodPickerState(
-        value = DateRangeFormatState.of(initial),
+        value = DateRangeFormatState.ofPreset(initial),
         title = title
     )
 ), PeriodPickerContract {
 
-    override fun onSelectRange(range: DateRange.Range) {
-        navigateTo(PeriodPickerDirection.BackWithResult(range))
+    override fun onSelectRange(kind: DateRangeKind) {
+        navigateTo(PeriodPickerDirection.BackWithResult(kind))
     }
 
     override fun onDismiss() {

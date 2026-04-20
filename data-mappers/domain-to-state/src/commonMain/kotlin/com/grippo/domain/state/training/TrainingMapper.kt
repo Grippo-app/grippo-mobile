@@ -8,7 +8,7 @@ import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -28,7 +28,7 @@ public fun Training.toState(): TrainingState {
         duration = duration,
         createdAt = DateFormatState.of(
             value = createdAt,
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy
         )
     )

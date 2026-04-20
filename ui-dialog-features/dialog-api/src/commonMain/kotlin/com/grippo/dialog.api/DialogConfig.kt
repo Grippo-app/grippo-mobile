@@ -15,6 +15,7 @@ import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -184,9 +185,9 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class PeriodPicker(
-        val initial: DateRange.Range,
+        val initial: DateRangeKind,
         val title: String,
-        @Transient val onResult: (value: DateRange.Range) -> Unit = {},
+        @Transient val onResult: (value: DateRangeKind) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

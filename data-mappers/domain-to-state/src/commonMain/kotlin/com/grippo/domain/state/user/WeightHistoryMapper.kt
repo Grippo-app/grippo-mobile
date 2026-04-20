@@ -5,7 +5,7 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.profile.WeightHistoryState
 import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -19,7 +19,7 @@ public fun WeightHistory.toState(): WeightHistoryState {
         value = WeightFormatState.of(weight),
         createdAt = DateFormatState.of(
             value = createdAt,
-            range = DateRange.Range.Infinity().range,
+            range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy
         )
     )
