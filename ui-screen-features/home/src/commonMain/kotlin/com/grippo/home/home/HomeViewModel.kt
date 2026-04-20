@@ -292,6 +292,10 @@ internal class HomeViewModel(
         dialogController.show(config)
     }
 
+    override fun onAddGoal() {
+        navigateTo(HomeDirection.Goal)
+    }
+
     override fun onBack() {
         navigateTo(HomeDirection.Back)
     }

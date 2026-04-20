@@ -198,7 +198,7 @@ internal fun HomeScreen(
                     item(key = "goal_progress_empty", span = { GridItemSpan(2) }) {
                         GoalEmptyCard(
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = {}
+                            onClick = contract::onAddGoal
                         )
                     }
                 }
