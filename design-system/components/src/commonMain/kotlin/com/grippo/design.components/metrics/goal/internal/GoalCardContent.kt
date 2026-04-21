@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,18 +35,23 @@ import com.grippo.design.resources.provider.goal_card_adherence_score
 import com.grippo.design.resources.provider.goal_card_title
 
 @Composable
-internal fun GoalCardContent(value: GoalProgressState) {
+internal fun GoalCardContent(
+    value: GoalProgressState
+) {
     val score = value.score.coerceIn(0, 100)
     val ringColors = ringColors(score = score, isFinished = value.isFinished)
     val indicatorColors = indicatorColors(score = score, isFinished = value.isFinished)
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(intrinsicSize = IntrinsicSize.Min),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         GoalTitleBlock(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
+                .fillMaxHeight(),
             title = value.goal.primaryGoal.label(),
             score = score,
             isFinished = value.isFinished,
@@ -59,46 +65,53 @@ internal fun GoalCardContent(value: GoalProgressState) {
         )
     }
 
-    LineIndicator(
-        modifier = Modifier.fillMaxWidth(),
-        progress = value.progressFraction,
-        colors = indicatorColors,
-        labelSpacing = AppTokens.dp.contentPadding.text,
-        startLabel = {
-            Text(
-                text = value.goal.createdAt.display,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1,
-            )
-        },
-        endLabel = {
-            Text(
-                text = value.goal.target.display,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1,
-            )
-        },
-        marker = {
-            Text(
-                text = "\uD83D\uDD25\uFE0F",
-                style = AppTokens.typography.h4(),
-            )
-        },
-    )
+    Column(
+        Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+    ) {
+        LineIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = AppTokens.dp.contentPadding.text),
+            progress = value.progressFraction,
+            colors = indicatorColors,
+            labelSpacing = AppTokens.dp.contentPadding.text,
+            startLabel = {
+                Text(
+                    text = value.goal.createdAt.display,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                )
+            },
+            endLabel = {
+                Text(
+                    text = value.goal.target.display,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                )
+            },
+            marker = {
+                Text(
+                    text = "\uD83D\uDD25\uFE0F",
+                    style = AppTokens.typography.h4(),
+                )
+            },
+        )
 
-    Text(
-        text = "${value.progressLine()} · ${value.remainingLine()}",
-        style = AppTokens.typography.b13Med(),
-        color = if (value.daysRemaining < 0) {
-            AppTokens.colors.semantic.warning
-        } else {
-            AppTokens.colors.text.secondary
-        },
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
+        Text(
+            text = "${value.progressLine()} · ${value.remainingLine()}",
+            style = AppTokens.typography.b13Med(),
+            color = if (value.daysRemaining < 0) {
+                AppTokens.colors.semantic.warning
+            } else {
+                AppTokens.colors.text.secondary
+            },
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
 @Composable
@@ -110,7 +123,7 @@ private fun GoalTitleBlock(
     isFinished: Boolean
 ) {
     Column(
-        modifier = modifier.height(IntrinsicSize.Max),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
         Text(
@@ -121,6 +134,7 @@ private fun GoalTitleBlock(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+
         Spacer(Modifier.weight(1f))
 
         Text(

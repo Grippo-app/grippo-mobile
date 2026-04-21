@@ -338,6 +338,7 @@
     <string name="tonnage">Тоннаж</string>
     <string name="spotlight">В центре внимания</string>
     <string name="insights">Инсайты</string>
+    <string name="progress">Прогресс</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Интенсивность</string>
     <string name="performance_metric_density">Темп работы</string>

@@ -339,6 +339,7 @@
     <string name="tonnage">Tonnage</string>
     <string name="spotlight">Spotlight</string>
     <string name="insights">Insights</string>
+    <string name="progress">Progress</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>
     <string name="performance_metric_density">Work rate</string>

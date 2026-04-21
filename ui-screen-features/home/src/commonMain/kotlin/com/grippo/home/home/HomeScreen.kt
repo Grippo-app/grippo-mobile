@@ -32,7 +32,6 @@ import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.core.state.metrics.stubTrainingStreaks
-import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -245,7 +244,10 @@ internal fun HomeScreen(
                         key = "performance_volume",
                         span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
                     ) {
-                        PerformanceMetricCardItem(metric = volumeMetric, contract = contract)
+                        PerformanceMetricCardItem(
+                            metric = volumeMetric,
+                            contract = contract
+                        )
                     }
                 }
 
@@ -254,7 +256,10 @@ internal fun HomeScreen(
                         key = "performance_repetitions",
                         span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
                     ) {
-                        PerformanceMetricCardItem(metric = repetitionsMetric, contract = contract)
+                        PerformanceMetricCardItem(
+                            metric = repetitionsMetric,
+                            contract = contract
+                        )
                     }
                 }
 
@@ -263,7 +268,10 @@ internal fun HomeScreen(
                         key = "performance_intensity",
                         span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
                     ) {
-                        PerformanceMetricCardItem(metric = intensityMetric, contract = contract)
+                        PerformanceMetricCardItem(
+                            metric = intensityMetric,
+                            contract = contract
+                        )
                     }
                 }
             }

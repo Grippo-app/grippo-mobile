@@ -2,8 +2,6 @@ package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,8 +13,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Intensity
-import com.grippo.design.resources.provider.insights
+import com.grippo.design.resources.provider.progress
 import com.grippo.toolkit.date.utils.DateRangeKind
 
 @Composable
@@ -30,16 +27,9 @@ public fun HighlightsHeader(
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.metrics.highlights.icon),
-            imageVector = AppTokens.icons.Intensity,
-            tint = AppTokens.colors.icon.primary,
-            contentDescription = null
-        )
-
         Text(
             modifier = Modifier.weight(1f),
-            text = AppTokens.strings.res(Res.string.insights),
+            text = AppTokens.strings.res(Res.string.progress),
             style = AppTokens.typography.h4(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,
