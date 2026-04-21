@@ -4,8 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,14 +36,8 @@ import com.grippo.design.resources.provider.goal_card_title
 @Composable
 internal fun GoalCardContent(value: GoalProgressState) {
     val score = value.score.coerceIn(0, 100)
-    val statusColor = statusColor(score = score, isFinished = value.isFinished)
     val ringColors = ringColors(score = score, isFinished = value.isFinished)
     val indicatorColors = indicatorColors(score = score, isFinished = value.isFinished)
-
-    GoalHeader(
-        statusText = value.statusLabel(),
-        statusColor = statusColor,
-    )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -50,12 +47,9 @@ internal fun GoalCardContent(value: GoalProgressState) {
         GoalTitleBlock(
             modifier = Modifier.weight(1f),
             title = value.goal.primaryGoal.label(),
-            metaText = "${value.progressLine()} · ${value.remainingLine()}",
-            metaColor = if (value.daysRemaining < 0) {
-                AppTokens.colors.semantic.warning
-            } else {
-                AppTokens.colors.text.secondary
-            },
+            score = score,
+            isFinished = value.isFinished,
+            statusText = value.statusLabel()
         )
 
         AdherenceRing(
@@ -93,28 +87,52 @@ internal fun GoalCardContent(value: GoalProgressState) {
             )
         },
     )
+
+    Text(
+        text = "${value.progressLine()} · ${value.remainingLine()}",
+        style = AppTokens.typography.b13Med(),
+        color = if (value.daysRemaining < 0) {
+            AppTokens.colors.semantic.warning
+        } else {
+            AppTokens.colors.text.secondary
+        },
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 @Composable
-private fun GoalHeader(
+private fun GoalTitleBlock(
+    modifier: Modifier = Modifier,
+    title: String,
     statusText: String,
-    statusColor: Color,
+    score: Int,
+    isFinished: Boolean
 ) {
-    val pillShape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier = modifier.height(IntrinsicSize.Max),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.goal_card_title),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        Spacer(Modifier.weight(1f))
+
+        Text(
+            text = title,
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        val pillShape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
+        val statusColor = statusColor(score = score, isFinished = isFinished)
 
         Text(
             modifier = Modifier
@@ -130,35 +148,8 @@ private fun GoalHeader(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-    }
-}
 
-@Composable
-private fun GoalTitleBlock(
-    modifier: Modifier = Modifier,
-    title: String,
-    metaText: String,
-    metaColor: Color,
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        Text(
-            text = title,
-            style = AppTokens.typography.h4(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Text(
-            text = metaText,
-            style = AppTokens.typography.b13Med(),
-            color = metaColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Spacer(Modifier.weight(1f))
     }
 }
 
@@ -224,7 +215,8 @@ private fun indicatorColors(
 @Composable
 private fun GoalCardContentOnTrackPreview() {
     PreviewContainer {
-        val value = stubGoalProgressList().first { !it.isFinished && it.score >= GoalProgressState.ON_TRACK_MIN }
+        val value =
+            stubGoalProgressList().first { !it.isFinished && it.score >= GoalProgressState.ON_TRACK_MIN }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Small,
             content = { GoalCardContent(value = value) }

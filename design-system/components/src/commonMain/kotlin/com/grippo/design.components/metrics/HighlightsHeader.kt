@@ -33,7 +33,7 @@ public fun HighlightsHeader(
         Icon(
             modifier = Modifier.size(AppTokens.dp.metrics.highlights.icon),
             imageVector = AppTokens.icons.Intensity,
-            tint = AppTokens.colors.semantic.warning,
+            tint = AppTokens.colors.icon.primary,
             contentDescription = null
         )
 
@@ -41,7 +41,7 @@ public fun HighlightsHeader(
             modifier = Modifier.weight(1f),
             text = AppTokens.strings.res(Res.string.insights),
             style = AppTokens.typography.h4(),
-            color = AppTokens.colors.semantic.warning,
+            color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
