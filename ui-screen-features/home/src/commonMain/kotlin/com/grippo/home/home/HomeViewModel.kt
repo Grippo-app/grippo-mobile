@@ -196,7 +196,7 @@ internal class HomeViewModel(
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
         val range = state.value.range.value ?: return
 
-        val dialog = DialogConfig.PerformanceTrend(
+        val dialog = DialogConfig.PerformanceTrendDetails(
             range = range,
             metricType = type,
         )
@@ -207,7 +207,7 @@ internal class HomeViewModel(
     override fun onOpenMuscleLoading() {
         val range = state.value.range.value ?: return
 
-        val dialog = DialogConfig.MuscleLoading(
+        val dialog = DialogConfig.MuscleLoadingDetails(
             range = range,
         )
         dialogController.show(dialog)
@@ -259,7 +259,7 @@ internal class HomeViewModel(
     override fun onOpenTrainingProfile() {
         val range = state.value.range.value ?: return
 
-        val dialog = DialogConfig.TrainingProfile(
+        val dialog = DialogConfig.TrainingProfileDetails(
             range = range
         )
 
@@ -286,7 +286,7 @@ internal class HomeViewModel(
     override fun onOpenTrainingStreak() {
         val range = state.value.range.value ?: return
 
-        val dialog = DialogConfig.TrainingStreak(
+        val dialog = DialogConfig.TrainingStreakDetails(
             range = range
         )
 

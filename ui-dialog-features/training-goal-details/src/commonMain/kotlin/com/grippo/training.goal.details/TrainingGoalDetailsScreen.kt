@@ -273,7 +273,7 @@ private fun StackedShareBar(
             Box(
                 modifier = Modifier
                     .weight(weight)
-                    .fillMaxWidth()
+                    .fillMaxHeight()
                     .background(segment.color),
             )
         }

@@ -1,0 +1,113 @@
+package com.grippo.training.streak.details
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.metrics.stubTrainingStreaks
+import com.grippo.design.components.metrics.streak.TrainingStreakCard
+import com.grippo.design.components.metrics.streak.TrainingStreakInsightsCard
+import com.grippo.design.components.metrics.streak.TrainingStreakTimelineCard
+import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.training_streak
+import com.grippo.design.resources.provider.value_training_streak
+import com.grippo.toolkit.date.utils.DateRangeKind
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
+
+@Composable
+internal fun TrainingStreakDetailsScreen(
+    state: TrainingStreakDetailsDialogState,
+    loaders: ImmutableSet<TrainingStreakDetailsLoader>,
+    contract: TrainingStreakDetailsContract
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.range.label()?.text()?.let {
+            AppTokens.strings.res(Res.string.value_training_streak, it)
+        } ?: AppTokens.strings.res(Res.string.training_streak),
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.range.display,
+        style = AppTokens.typography.b14Semi(),
+        color = AppTokens.colors.text.secondary,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f, false),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        state.streak?.let { streak ->
+            item(key = "summary") {
+                TrainingStreakCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = streak
+                )
+            }
+
+            item(key = "insights") {
+                TrainingStreakInsightsCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = streak
+                )
+            }
+
+            item(key = "timeline") {
+                TrainingStreakTimelineCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    entries = streak.timeline
+                )
+            }
+        }
+
+        item("bottom_space") {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = TrainingStreakDetailsDialogState(
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                streak = stubTrainingStreaks().first()
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty
+        )
+    }
+}

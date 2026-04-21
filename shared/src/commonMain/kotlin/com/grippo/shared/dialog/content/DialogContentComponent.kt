@@ -30,15 +30,15 @@ import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.month.picker.MonthPickerComponent
-import com.grippo.muscle.loading.MuscleLoadingComponent
-import com.grippo.performance.trend.PerformanceTrendComponent
+import com.grippo.muscle.loading.details.MuscleLoadingDetailsComponent
+import com.grippo.performance.trend.details.PerformanceTrendDetailsComponent
 import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.primary.goal.picker.PrimaryGoalPickerComponent
 import com.grippo.secondary.goal.picker.SecondaryGoalPickerComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.training.goal.details.TrainingGoalDetailsComponent
-import com.grippo.training.profile.TrainingProfileComponent
-import com.grippo.training.streak.TrainingStreakComponent
+import com.grippo.training.profile.details.TrainingProfileDetailsComponent
+import com.grippo.training.streak.details.TrainingStreakDetailsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogContentComponent(
@@ -136,32 +136,32 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.MuscleLoading -> Child.MuscleLoading(
-                MuscleLoadingComponent(
+            is DialogConfig.MuscleLoadingDetails -> Child.MuscleLoadingDetails(
+                MuscleLoadingDetailsComponent(
                     componentContext = context,
                     range = router.range,
                     back = { viewModel.onBack(null) }
                 )
             )
 
-            is DialogConfig.TrainingStreak -> Child.TrainingStreak(
-                TrainingStreakComponent(
+            is DialogConfig.TrainingStreakDetails -> Child.TrainingStreakDetails(
+                TrainingStreakDetailsComponent(
                     componentContext = context,
                     range = router.range,
                     back = { viewModel.onBack(null) }
                 )
             )
 
-            is DialogConfig.TrainingProfile -> Child.TrainingProfile(
-                TrainingProfileComponent(
+            is DialogConfig.TrainingProfileDetails -> Child.TrainingProfileDetails(
+                TrainingProfileDetailsComponent(
                     componentContext = context,
                     range = router.range,
                     back = { viewModel.onBack(null) }
                 )
             )
 
-            is DialogConfig.PerformanceTrend -> Child.PerformanceTrend(
-                PerformanceTrendComponent(
+            is DialogConfig.PerformanceTrendDetails -> Child.PerformanceTrendDetails(
+                PerformanceTrendDetailsComponent(
                     componentContext = context,
                     range = router.range,
                     metricType = router.metricType,
@@ -365,16 +365,16 @@ internal class DialogContentComponent(
         data class Exercise(override val component: ExerciseComponent) :
             Child(component)
 
-        data class MuscleLoading(override val component: MuscleLoadingComponent) :
+        data class MuscleLoadingDetails(override val component: MuscleLoadingDetailsComponent) :
             Child(component)
 
-        data class TrainingStreak(override val component: TrainingStreakComponent) :
+        data class TrainingStreakDetails(override val component: TrainingStreakDetailsComponent) :
             Child(component)
 
-        data class TrainingProfile(override val component: TrainingProfileComponent) :
+        data class TrainingProfileDetails(override val component: TrainingProfileDetailsComponent) :
             Child(component)
 
-        data class PerformanceTrend(override val component: PerformanceTrendComponent) :
+        data class PerformanceTrendDetails(override val component: PerformanceTrendDetailsComponent) :
             Child(component)
 
         data class TrainingGoalDetails(override val component: TrainingGoalDetailsComponent) :

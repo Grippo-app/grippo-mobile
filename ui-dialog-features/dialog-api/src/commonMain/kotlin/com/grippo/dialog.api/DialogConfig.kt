@@ -72,40 +72,40 @@ public sealed class DialogConfig(
     }
 
     @Serializable
-    public data class MuscleLoading(
+    public data class MuscleLoadingDetails(
         val range: DateRange,
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("MuscleLoading", range)
+            get() = buildKey("MuscleLoadingDetails", range)
     }
 
     @Serializable
-    public data class TrainingStreak(
+    public data class TrainingStreakDetails(
         val range: DateRange,
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("TrainingStreak", range)
+            get() = buildKey("TrainingStreakDetails", range)
     }
 
     @Serializable
-    public data class TrainingProfile(
+    public data class TrainingProfileDetails(
         val range: DateRange,
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("TrainingProfile", range)
+            get() = buildKey("TrainingProfileDetails", range)
     }
 
     @Serializable
-    public data class PerformanceTrend(
+    public data class PerformanceTrendDetails(
         val range: DateRange,
         val metricType: PerformanceMetricTypeState,
     ) : DialogConfig(
@@ -113,7 +113,7 @@ public sealed class DialogConfig(
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("PerformanceTrend", range, metricType)
+            get() = buildKey("PerformanceTrendDetails", range, metricType)
     }
 
     @Serializable
