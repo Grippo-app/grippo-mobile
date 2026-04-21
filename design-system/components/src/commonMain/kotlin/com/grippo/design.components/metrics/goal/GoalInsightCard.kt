@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,31 +67,29 @@ public fun GoalInsightCard(
     val accent = severity.color()
     val tokens = AppTokens.dp.metrics.goal.insight
     val shape = RoundedCornerShape(tokens.radius)
-    val accentShape = RoundedCornerShape(tokens.accentRadius)
 
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Max)
             .clip(shape)
             .background(AppTokens.colors.background.card, shape)
-            .padding(
-                horizontal = tokens.horizontalPadding,
-                vertical = tokens.verticalPadding,
-            ),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(tokens.rowSpacing),
+            .height(intrinsicSize = IntrinsicSize.Min),
     ) {
         Box(
             modifier = Modifier
-                .width(tokens.accentWidth)
+                .align(Alignment.CenterStart)
                 .fillMaxHeight()
-                .clip(accentShape)
-                .background(accent, accentShape),
+                .width(tokens.accentWidth)
+                .background(accent.copy(alpha = 0.7f)),
         )
 
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = tokens.horizontalPadding,
+                    vertical = tokens.verticalPadding,
+                ),
             verticalArrangement = Arrangement.spacedBy(tokens.textSpacing),
         ) {
             Text(

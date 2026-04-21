@@ -201,9 +201,6 @@ public data object AppDp {
                 val horizontalPadding: Dp = padding.medium
                 val verticalPadding: Dp = padding.medium
                 val accentWidth: Dp = 3.dp
-                val accentHeight: Dp = 38.dp
-                val accentRadius: Dp = 2.dp
-                val rowSpacing: Dp = padding.small
                 val textSpacing: Dp = padding.extraSmall
             }
         }
