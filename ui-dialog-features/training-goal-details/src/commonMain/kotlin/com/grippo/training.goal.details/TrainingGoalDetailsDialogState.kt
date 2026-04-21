@@ -2,7 +2,6 @@ package com.grippo.training.goal.details
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.GoalProgressState
 import com.grippo.design.core.AppTokens
@@ -90,15 +89,7 @@ public data class TrainingGoalDetailsDialogState(
             Negative,
 
             /** Neutral, informational - muted. */
-            Neutral;
-
-            @Composable
-            public fun color(): Color = when (this) {
-                Positive -> AppTokens.colors.semantic.success
-                Warning -> AppTokens.colors.semantic.warning
-                Negative -> AppTokens.colors.semantic.error
-                Neutral -> AppTokens.colors.semantic.info
-            }
+            Neutral,
         }
     }
 

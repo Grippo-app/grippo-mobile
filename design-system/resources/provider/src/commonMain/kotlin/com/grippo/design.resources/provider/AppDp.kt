@@ -182,6 +182,30 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.small
+            val focusDistribution: FocusDistribution = FocusDistribution
+            val insight: Insight = Insight
+
+            public data object FocusDistribution {
+                val radius: Dp = AppDp.radius.small
+                val horizontalPadding: Dp = padding.medium
+                val verticalPadding: Dp = padding.medium
+                val spacer: Dp = padding.small
+                val barHeight: Dp = padding.small
+                val legendDot: Dp = padding.small
+                val legendSpacing: Dp = padding.small
+                val titleToBar: Dp = padding.extraSmall
+            }
+
+            public data object Insight {
+                val radius: Dp = AppDp.radius.small
+                val horizontalPadding: Dp = padding.medium
+                val verticalPadding: Dp = padding.medium
+                val accentWidth: Dp = 3.dp
+                val accentHeight: Dp = 38.dp
+                val accentRadius: Dp = 2.dp
+                val rowSpacing: Dp = padding.small
+                val textSpacing: Dp = padding.extraSmall
+            }
         }
 
         public data object Highlights {

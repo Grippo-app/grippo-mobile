@@ -1,49 +1,31 @@
 package com.grippo.training.goal.details
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.stubGoalProgressList
 import com.grippo.design.components.metrics.goal.GoalCard
+import com.grippo.design.components.metrics.goal.GoalFocusDistributionCard
+import com.grippo.design.components.metrics.goal.GoalInsightCard
+import com.grippo.design.components.metrics.goal.GoalInsightSeverity
 import com.grippo.design.components.tip.TipCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_details_focus_endurance
-import com.grippo.design.resources.provider.goal_details_focus_hypertrophy
-import com.grippo.design.resources.provider.goal_details_focus_share
-import com.grippo.design.resources.provider.goal_details_focus_strength
-import com.grippo.design.resources.provider.goal_details_focus_subtitle
-import com.grippo.design.resources.provider.goal_details_focus_title
 import com.grippo.design.resources.provider.goal_details_insights_title
 import com.grippo.design.resources.provider.goal_details_subtitle
 import com.grippo.design.resources.provider.goal_details_tips_title
@@ -114,11 +96,9 @@ internal fun TrainingGoalDetailsScreen(
             }
 
             item(key = "focus") {
-                FocusDistributionCard(
+                GoalFocusDistributionCard(
                     modifier = Modifier.fillMaxWidth(),
-                    strengthShare = progress.strengthShare,
-                    hypertrophyShare = progress.hypertrophyShare,
-                    enduranceShare = progress.enduranceShare,
+                    value = progress,
                 )
             }
         }
@@ -137,8 +117,12 @@ internal fun TrainingGoalDetailsScreen(
                 items = state.insights,
                 key = { index, _ -> "insight_$index" },
             ) { _, item ->
-                InsightRow(
-                    item = item
+                val (headline, detail) = item.reason.reasonText()
+                GoalInsightCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    severity = item.severity.toGoalInsightSeverity(),
+                    headline = headline,
+                    detail = detail,
                 )
             }
         }
@@ -172,194 +156,11 @@ internal fun TrainingGoalDetailsScreen(
     }
 }
 
-/**
- * A stacked horizontal bar + legend that shows how the user's training
- * breaks down across the three training qualities. It's information-dense
- * but readable: each colored segment is proportional to its share,
- * and the legend below shows the % number for every axis.
- */
-@Composable
-private fun FocusDistributionCard(
-    modifier: Modifier = Modifier,
-    strengthShare: Int,
-    hypertrophyShare: Int,
-    enduranceShare: Int,
-) {
-    val radius = AppTokens.dp.metrics.panel.small.radius
-    val strengthColor = AppTokens.colors.charts.ring.warning.indicator
-    val hypertrophyColor = AppTokens.colors.charts.ring.info.indicator
-    val enduranceColor = AppTokens.colors.charts.ring.success.indicator
-
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(radius))
-            .background(AppTokens.colors.background.card, RoundedCornerShape(radius))
-            .padding(
-                horizontal = AppTokens.dp.metrics.panel.small.horizontalPadding,
-                vertical = AppTokens.dp.metrics.panel.small.verticalPadding,
-            ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.panel.small.spacer),
-    ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.goal_details_focus_title),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Text(
-            text = AppTokens.strings.res(Res.string.goal_details_focus_subtitle),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-        StackedShareBar(
-            modifier = Modifier.fillMaxWidth(),
-            segments = persistentListOf(
-                StackedSegment(strengthShare, strengthColor),
-                StackedSegment(hypertrophyShare, hypertrophyColor),
-                StackedSegment(enduranceShare, enduranceColor),
-            ),
-        )
-
-        FocusLegendRow(
-            label = AppTokens.strings.res(Res.string.goal_details_focus_strength),
-            percent = strengthShare,
-            color = strengthColor,
-        )
-
-        FocusLegendRow(
-            label = AppTokens.strings.res(Res.string.goal_details_focus_hypertrophy),
-            percent = hypertrophyShare,
-            color = hypertrophyColor,
-        )
-
-        FocusLegendRow(
-            label = AppTokens.strings.res(Res.string.goal_details_focus_endurance),
-            percent = enduranceShare,
-            color = enduranceColor,
-        )
-    }
-}
-
-@Immutable
-private data class StackedSegment(
-    val weight: Int,
-    val color: Color,
-)
-
-@Composable
-private fun StackedShareBar(
-    modifier: Modifier = Modifier,
-    segments: List<StackedSegment>,
-) {
-    val barHeight = 10.dp
-    val shape = RoundedCornerShape(barHeight / 2)
-    val total = segments.sumOf { it.weight.coerceAtLeast(0) }
-    val fallbackColor = AppTokens.colors.charts.ring.muted.track
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(barHeight)
-            .clip(shape)
-            .background(fallbackColor, shape),
-    ) {
-        if (total <= 0) return@Row
-        segments.forEach { segment ->
-            val weight = segment.weight.coerceAtLeast(0).toFloat() / total.toFloat()
-            if (weight <= 0f) return@forEach
-            Box(
-                modifier = Modifier
-                    .weight(weight)
-                    .fillMaxHeight()
-                    .background(segment.color),
-            )
-        }
-    }
-}
-
-@Composable
-private fun FocusLegendRow(
-    label: String,
-    percent: Int,
-    color: Color,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .clip(CircleShape)
-                .background(color, CircleShape),
-        )
-
-        Text(
-            modifier = Modifier.weight(1f),
-            text = label,
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Text(
-            text = AppTokens.strings.res(
-                Res.string.goal_details_focus_share,
-                percent.coerceIn(0, 100)
-            ),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-    }
-}
-
-@Composable
-private fun InsightRow(item: InsightItem) {
-    val (headline, detail) = item.reason.reasonText()
-    val accent = item.severity.color()
-    val radius = AppTokens.dp.metrics.panel.small.radius
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(intrinsicSize = IntrinsicSize.Max)
-            .clip(RoundedCornerShape(radius))
-            .background(AppTokens.colors.background.card, RoundedCornerShape(radius))
-            .padding(
-                horizontal = AppTokens.dp.metrics.panel.small.horizontalPadding,
-                vertical = AppTokens.dp.metrics.panel.small.verticalPadding,
-            ),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-    ) {
-        // Vertical accent stripe communicating severity at a glance.
-        Box(
-            modifier = Modifier
-                .width(3.dp)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(2.dp))
-                .background(accent, RoundedCornerShape(2.dp)),
-        )
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-        ) {
-            Text(
-                text = headline,
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.primary,
-            )
-            Text(
-                text = detail,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-    }
+private fun InsightItem.Severity.toGoalInsightSeverity(): GoalInsightSeverity = when (this) {
+    InsightItem.Severity.Positive -> GoalInsightSeverity.Positive
+    InsightItem.Severity.Warning -> GoalInsightSeverity.Warning
+    InsightItem.Severity.Negative -> GoalInsightSeverity.Negative
+    InsightItem.Severity.Neutral -> GoalInsightSeverity.Neutral
 }
 
 @AppPreview
