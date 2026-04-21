@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -33,6 +32,8 @@ import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.core.state.metrics.stubTrainingStreaks
+import com.grippo.core.state.profile.UserState
+import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -230,30 +231,41 @@ internal fun HomeScreen(
                     }
                 }
 
-                performanceMetricItem(
-                    key = "performance_density",
-                    metric = densityMetric,
-                    pair = volumeMetric,
-                    contract = contract,
-                )
-                performanceMetricItem(
-                    key = "performance_volume",
-                    metric = volumeMetric,
-                    pair = densityMetric,
-                    contract = contract,
-                )
-                performanceMetricItem(
-                    key = "performance_repetitions",
-                    metric = repetitionsMetric,
-                    pair = intensityMetric,
-                    contract = contract,
-                )
-                performanceMetricItem(
-                    key = "performance_intensity",
-                    metric = intensityMetric,
-                    pair = repetitionsMetric,
-                    contract = contract,
-                )
+                if (densityMetric != null) {
+                    item(
+                        key = "performance_density",
+                        span = { GridItemSpan(if (volumeMetric == null) 2 else 1) }
+                    ) {
+                        PerformanceMetricCardItem(metric = densityMetric, contract = contract)
+                    }
+                }
+
+                if (volumeMetric != null) {
+                    item(
+                        key = "performance_volume",
+                        span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
+                    ) {
+                        PerformanceMetricCardItem(metric = volumeMetric, contract = contract)
+                    }
+                }
+
+                if (repetitionsMetric != null) {
+                    item(
+                        key = "performance_repetitions",
+                        span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
+                    ) {
+                        PerformanceMetricCardItem(metric = repetitionsMetric, contract = contract)
+                    }
+                }
+
+                if (intensityMetric != null) {
+                    item(
+                        key = "performance_intensity",
+                        span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
+                    ) {
+                        PerformanceMetricCardItem(metric = intensityMetric, contract = contract)
+                    }
+                }
             }
         },
         bottom = {
@@ -288,21 +300,6 @@ internal fun HomeScreen(
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     )
-}
-
-private fun LazyGridScope.performanceMetricItem(
-    key: String,
-    metric: PerformanceMetricState?,
-    pair: PerformanceMetricState?,
-    contract: HomeContract,
-) {
-    if (metric == null) return
-    item(
-        key = key,
-        span = { GridItemSpan(if (pair == null) 2 else 1) }
-    ) {
-        PerformanceMetricCardItem(metric = metric, contract = contract)
-    }
 }
 
 @Composable
@@ -341,7 +338,8 @@ private fun HomeScreenPreview() {
                 performance = stubPerformanceMetrics(),
                 profile = stubTrainingLoadProfile(),
                 goalProgress = stubGoalProgressList().random(),
-                hasDraftTraining = true
+                hasDraftTraining = true,
+                user = stubUser()
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty
