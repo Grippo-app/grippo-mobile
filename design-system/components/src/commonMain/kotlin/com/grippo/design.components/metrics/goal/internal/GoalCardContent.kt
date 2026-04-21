@@ -17,9 +17,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.GoalProgressState
+import com.grippo.core.state.metrics.stubGoalProgressList
 import com.grippo.design.components.chart.internal.RingChart
 import com.grippo.design.components.indicators.LineIndicator
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_adherence_score
@@ -213,4 +218,67 @@ private fun indicatorColors(
     score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.indicator.success
     score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.charts.indicator.warning
     else -> AppTokens.colors.charts.indicator.error
+}
+
+@AppPreview
+@Composable
+private fun GoalCardContentOnTrackPreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { !it.isFinished && it.score >= GoalProgressState.ON_TRACK_MIN }
+        MetricSectionPanel(
+            style = MetricSectionPanelStyle.Small,
+            content = { GoalCardContent(value = value) }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardContentDriftingPreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first {
+            !it.isFinished &&
+                    it.score in GoalProgressState.DRIFTING_MIN until GoalProgressState.ON_TRACK_MIN
+        }
+        MetricSectionPanel(
+            style = MetricSectionPanelStyle.Small,
+            content = { GoalCardContent(value = value) }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardContentOffTrackPreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { it.score < GoalProgressState.DRIFTING_MIN }
+        MetricSectionPanel(
+            style = MetricSectionPanelStyle.Small,
+            content = { GoalCardContent(value = value) }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardContentOverduePreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { it.daysRemaining < 0 }
+        MetricSectionPanel(
+            style = MetricSectionPanelStyle.Small,
+            content = { GoalCardContent(value = value) }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardContentCompletedPreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { it.isFinished }
+        MetricSectionPanel(
+            style = MetricSectionPanelStyle.Small,
+            content = { GoalCardContent(value = value) }
+        )
+    }
 }
