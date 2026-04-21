@@ -5,9 +5,12 @@ import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
+import com.grippo.data.features.api.metrics.models.TopExerciseContribution
+import com.grippo.data.features.api.metrics.models.TopMuscleContribution
 import com.grippo.data.features.api.metrics.models.TrainingDimensionKind
 import com.grippo.data.features.api.metrics.models.TrainingDimensionScore
 import com.grippo.data.features.api.metrics.models.TrainingLoadProfile
+import com.grippo.data.features.api.metrics.models.TrainingLoadProfileArtifacts
 import com.grippo.data.features.api.metrics.models.TrainingProfileKind
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.training.models.Exercise
@@ -41,16 +44,32 @@ public class TrainingLoadProfileUseCase(
 
         private const val CONFIDENCE_GAP_MAX = 25f
         private const val CONFIDENCE_MIN_TOP_SCORE = 40
+
+        private const val TOP_EXERCISES_LIMIT = 5
+        private const val TOP_MUSCLES_LIMIT = 5
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): TrainingLoadProfile {
         val ids = trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.toSet()
         val examples = loadExamples(ids)
 
-        val raws = trainings.mapNotNull { buildRaw(it, examples) }
+        val perSession: List<List<ExerciseStats>> = trainings.map {
+            buildExerciseStats(it.exercises)
+        }
+        val allStats = perSession.flatten()
+
+        val raws = trainings.mapIndexedNotNull { index, training ->
+            buildRawFromStats(
+                stats = perSession[index],
+                minutes = training.duration.inWholeSeconds.toFloat() / 60f,
+                repetitions = training.repetitions,
+                exampleMap = examples,
+            )
+        }
         if (raws.isEmpty()) return emptyProfile()
 
-        return buildProfile(raws)
+        val artifacts = computeArtifacts(allStats, examples)
+        return buildProfile(raws, artifacts)
     }
 
     public suspend fun fromTraining(training: Training): TrainingLoadProfile {
@@ -61,14 +80,16 @@ public class TrainingLoadProfileUseCase(
         if (exercises.isEmpty()) return emptyProfile()
 
         val examples = loadExamples(exercises.map { it.exerciseExample.id }.toSet())
-        val raw = buildRaw(
-            exercises = exercises,
+        val stats = buildExerciseStats(exercises)
+        val raw = buildRawFromStats(
+            stats = stats,
             minutes = 0f,
             repetitions = exercises.sumOf { it.repetitions },
             exampleMap = examples,
         ) ?: return emptyProfile()
 
-        return buildProfile(listOf(raw))
+        val artifacts = computeArtifacts(stats, examples)
+        return buildProfile(listOf(raw), artifacts)
     }
 
     private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
@@ -88,6 +109,7 @@ public class TrainingLoadProfileUseCase(
             ),
             dominant = null,
             confidence = 0,
+            artifacts = TrainingLoadProfileArtifacts.empty(),
         )
     }
 
@@ -102,15 +124,6 @@ public class TrainingLoadProfileUseCase(
         val activity: Float,
         val totalWork: Float,
     )
-
-    private fun buildRaw(training: Training, exampleMap: Map<String, ExerciseExample>): Raw? {
-        return buildRaw(
-            exercises = training.exercises,
-            minutes = training.duration.inWholeSeconds.toFloat() / 60f,
-            repetitions = training.repetitions,
-            exampleMap = exampleMap,
-        )
-    }
 
     private data class LiftSet(
         val weight: Float,
@@ -131,15 +144,12 @@ public class TrainingLoadProfileUseCase(
         val stimulus: Float,
     )
 
-    private fun buildRaw(
-        exercises: List<Exercise>,
+    private fun buildRawFromStats(
+        stats: List<ExerciseStats>,
         minutes: Float,
         repetitions: Int,
         exampleMap: Map<String, ExerciseExample>,
     ): Raw? {
-        if (exercises.isEmpty()) return null
-
-        val stats = buildExerciseStats(exercises)
         if (stats.isEmpty()) return null
 
         val totalSets = stats.sumOf { it.sets.size }
@@ -166,7 +176,7 @@ public class TrainingLoadProfileUseCase(
 
         val compoundRatio = weightedCategoryRatioByStimulus(stats, CategoryEnum.COMPOUND)
         val freeWeightRatio = weightedWeightTypeRatioByStimulus(stats, WeightTypeEnum.FREE)
-        val pushRatio = weightedPushRatioByStimulus(stats)
+        val pushRatio = weightedForceTypeRatioByStimulus(stats, ForceTypeEnum.PUSH)
 
         val specializationTop2Percent = computeSpecializationTop2Percent(stats, exampleMap)
 
@@ -232,7 +242,10 @@ public class TrainingLoadProfileUseCase(
         }
     }
 
-    private fun buildProfile(raws: List<Raw>): TrainingLoadProfile {
+    private fun buildProfile(
+        raws: List<Raw>,
+        artifacts: TrainingLoadProfileArtifacts,
+    ): TrainingLoadProfile {
         val poolRaw = aggregateRaw(raws)
 
         val strength = (poolRaw.strengthShare * 100f).roundToInt().coerceIn(0, 100)
@@ -260,6 +273,88 @@ public class TrainingLoadProfileUseCase(
             ),
             dominant = if (kind == TrainingProfileKind.Easy) null else dominant,
             confidence = if (kind == TrainingProfileKind.Easy) 0 else confidence,
+            artifacts = artifacts,
+        )
+    }
+
+    // -------------------------------------------------------------------------
+    // Artifacts — evidence behind the verdict
+    // -------------------------------------------------------------------------
+
+    private fun computeArtifacts(
+        allStats: List<ExerciseStats>,
+        examples: Map<String, ExerciseExample>,
+    ): TrainingLoadProfileArtifacts {
+        if (allStats.isEmpty()) return TrainingLoadProfileArtifacts.empty()
+
+        val totalStimulus = allStats.sumOf { it.stimulus.toDouble() }.toFloat()
+        if (!totalStimulus.isFinite() || totalStimulus <= EPS) {
+            return TrainingLoadProfileArtifacts.empty()
+        }
+
+        // --- Top exercises (by aggregated stimulus across sessions) ---
+        val grouped = allStats.groupBy { it.exampleId }
+        val topExercises = grouped.map { (exampleId, list) ->
+            val stimulusSum = list.sumOf { it.stimulus.toDouble() }.toFloat()
+            val setsCount = list.sumOf { it.sets.size }
+            val heaviest = list
+                .flatMap { it.sets }
+                .maxOfOrNull { it.weight } ?: 0f
+            val combinedLiftSets = list.flatMap { stats ->
+                stats.sets.map { LiftSet(weight = it.weight, reps = it.reps) }
+            }
+            val e1rm = estimateExerciseOneRm(combinedLiftSets)
+            val first = list.first()
+            TopExerciseContribution(
+                exampleId = exampleId,
+                name = first.exercise.name,
+                totalSets = setsCount,
+                stimulusShare = ((stimulusSum / totalStimulus) * 100f)
+                    .roundToInt().coerceIn(0, 100),
+                heaviestWeight = if (heaviest.isFinite() && heaviest > 0f) heaviest else 0f,
+                estimatedOneRepMax = if (e1rm.isFinite() && e1rm > 0f) e1rm else 0f,
+                category = first.exercise.exerciseExample.category,
+            )
+        }
+            .sortedByDescending { it.stimulusShare }
+            .take(TOP_EXERCISES_LIMIT)
+
+        // --- Top muscles (by stimulus distributed via bundle percentages) ---
+        val muscleTotals = computeMuscleStimulusTotals(allStats, examples)
+        val totalMuscle = muscleTotals.values.sumOf { it.toDouble() }.toFloat()
+        val sortedMuscles = muscleTotals.entries
+            .filter { it.value.isFinite() && it.value > EPS }
+            .sortedByDescending { it.value }
+
+        val topMuscles = if (totalMuscle > EPS) {
+            sortedMuscles.take(TOP_MUSCLES_LIMIT).map { (muscle, v) ->
+                TopMuscleContribution(
+                    muscle = muscle,
+                    share = ((v / totalMuscle) * 100f).roundToInt().coerceIn(0, 100),
+                )
+            }
+        } else emptyList()
+
+        // --- Ratio metrics ---
+        val compoundRatio =
+            (weightedCategoryRatioByStimulus(allStats, CategoryEnum.COMPOUND) * 100f)
+                .roundToInt().coerceIn(0, 100)
+        val pushRatio = (weightedForceTypeRatioByStimulus(allStats, ForceTypeEnum.PUSH) * 100f)
+            .roundToInt().coerceIn(0, 100)
+        val pullRatio = (weightedForceTypeRatioByStimulus(allStats, ForceTypeEnum.PULL) * 100f)
+            .roundToInt().coerceIn(0, 100)
+        val hingeRatio = (weightedForceTypeRatioByStimulus(allStats, ForceTypeEnum.HINGE) * 100f)
+            .roundToInt().coerceIn(0, 100)
+
+        return TrainingLoadProfileArtifacts(
+            topExercises = topExercises,
+            topMuscles = topMuscles,
+            totalExercisesCount = grouped.size,
+            totalMusclesCount = muscleTotals.size,
+            compoundRatio = compoundRatio,
+            pushRatio = pushRatio,
+            pullRatio = pullRatio,
+            hingeRatio = hingeRatio,
         )
     }
 
@@ -570,6 +665,23 @@ public class TrainingLoadProfileUseCase(
         stats: List<ExerciseStats>,
         exampleMap: Map<String, ExerciseExample>,
     ): Float {
+        val totals = computeMuscleStimulusTotals(stats, exampleMap)
+
+        val values = totals.values.filter { it.isFinite() && it > EPS }.sortedDescending()
+        if (values.isEmpty()) return 0f
+
+        val sum = values.sum()
+        if (!sum.isFinite() || sum <= EPS) return 0f
+
+        val top2 = values.take(2).sum()
+        val percent = (top2 / sum) * 100f
+        return if (percent.isFinite()) percent.coerceIn(0f, 100f) else 0f
+    }
+
+    private fun computeMuscleStimulusTotals(
+        stats: List<ExerciseStats>,
+        exampleMap: Map<String, ExerciseExample>,
+    ): Map<MuscleEnum, Float> {
         val totals = mutableMapOf<MuscleEnum, Float>()
 
         stats.forEach { ex ->
@@ -599,15 +711,7 @@ public class TrainingLoadProfileUseCase(
             }
         }
 
-        val values = totals.values.filter { it.isFinite() && it > EPS }.sortedDescending()
-        if (values.isEmpty()) return 0f
-
-        val sum = values.sum()
-        if (!sum.isFinite() || sum <= EPS) return 0f
-
-        val top2 = values.take(2).sum()
-        val percent = (top2 / sum) * 100f
-        return if (percent.isFinite()) percent.coerceIn(0f, 100f) else 0f
+        return totals
     }
 
     private fun weightedCategoryRatioByStimulus(
@@ -650,27 +754,24 @@ public class TrainingLoadProfileUseCase(
         return if (r.isFinite()) r.coerceIn(0f, 1f) else 0f
     }
 
-    private fun weightedPushRatioByStimulus(stats: List<ExerciseStats>): Float {
+    private fun weightedForceTypeRatioByStimulus(
+        stats: List<ExerciseStats>,
+        type: ForceTypeEnum,
+    ): Float {
         var sum = 0f
-        var push = 0f
+        var matched = 0f
 
         stats.forEach { ex ->
             val w = ex.stimulus
             if (!w.isFinite() || w <= EPS) return@forEach
 
             sum += w
-            if (isPushForceType(ex.exercise.exerciseExample.forceType)) {
-                push += w
-            }
+            if (ex.exercise.exerciseExample.forceType == type) matched += w
         }
 
         if (!sum.isFinite() || sum <= EPS) return 0f
-        val r = push / sum
+        val r = matched / sum
         return if (r.isFinite()) r.coerceIn(0f, 1f) else 0f
-    }
-
-    private fun isPushForceType(forceType: ForceTypeEnum?): Boolean {
-        return forceType == ForceTypeEnum.PUSH
     }
 
     private fun dominantAxis(s: Int, h: Int, e: Int): TrainingDimensionKind? {
@@ -734,9 +835,9 @@ public class TrainingLoadProfileUseCase(
     private fun safe(v: Float): Float {
         return if (v.isFinite() && v > 0f) v else 0f
     }
-}
 
-private fun log1pSafe(v: Float): Float {
-    if (!v.isFinite() || v <= 0f) return 0f
-    return ln(1.0 + v.toDouble()).toFloat()
+    private fun log1pSafe(v: Float): Float {
+        if (!v.isFinite() || v <= 0f) return 0f
+        return ln(1.0 + v.toDouble()).toFloat()
+    }
 }

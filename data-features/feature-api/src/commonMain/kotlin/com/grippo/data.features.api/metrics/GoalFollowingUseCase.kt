@@ -7,9 +7,11 @@ import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.GoalPrimaryGoalEnum
-import com.grippo.data.features.api.goal.models.GoalSecondaryGoalEnum
+import com.grippo.data.features.api.metrics.GoalFollowingUseCase.Companion.SPEC_CORE_WEIGHT
 import com.grippo.data.features.api.metrics.GoalFollowingUseCase.Companion.SUPPRESSED_AXIS_PENALTY_FULL
 import com.grippo.data.features.api.metrics.models.GoalAdherence
+import com.grippo.data.features.api.metrics.models.TopExerciseContribution
+import com.grippo.data.features.api.metrics.models.TopMuscleContribution
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
@@ -47,10 +49,8 @@ public class GoalFollowingUseCase(
 
         /**
          * Quality weighting inside specialization-style goals (GET_STRONGER /
-         * BUILD_MUSCLE / LOSE_FAT). The core axis share provides [CORE_WEIGHT]
-         * of the score; the remainder is split among quality modifiers. The
-         * three weights below always sum to 1 so a perfect-on-axis + perfect-on-
-         * quality session scores exactly 100.
+         * BUILD_MUSCLE / LOSE_FAT). The core axis share provides [SPEC_CORE_WEIGHT]
+         * of the score; the remainder is split among quality modifiers.
          */
         private const val SPEC_CORE_WEIGHT = 0.70f
         private const val SPEC_QUALITY_WEIGHT = 0.30f
@@ -63,16 +63,14 @@ public class GoalFollowingUseCase(
 
         /**
          * Balanced-dual goals (MAINTAIN, GENERAL_FITNESS) score as
-         * `min(axisA, axisB) * 2`. That peaks at 100 when both axes are at 50%
-         * and the third axis is 0. A penalty clamps the score when the
+         * `min(axisA, axisB) * 2`. A penalty clamps the score when the
          * suppressed axis grows beyond the threshold below.
          */
         private const val SUPPRESSED_AXIS_PENALTY_FULL = 0.50f
 
         /**
          * RETURN_TO_TRAINING scoring: adherence peaks in a "low-to-moderate"
-         * work band and decays outside it. Athletes returning must train *some*
-         * but not *too much*; both extremes lower adherence.
+         * work band and decays outside it.
          */
         private const val RTT_WORK_FLOOR = 20f
         private const val RTT_WORK_PEAK = 30f
@@ -84,127 +82,215 @@ public class GoalFollowingUseCase(
          * count (a light weekly cadence baseline).
          */
         private const val CONSISTENCY_TARGET_SESSIONS = 3
+
+        /** Maximum number of top contributors exposed to consumers. */
+        private const val TOP_EXERCISES_LIMIT = 5
+        private const val TOP_MUSCLES_LIMIT = 3
     }
 
     // -------------------------------------------------------------------------
-    // Public API
+    // Public API — one pipeline, one model per call.
     // -------------------------------------------------------------------------
 
     public suspend fun fromTrainingsByPrimary(
         trainings: List<Training>,
     ): GoalAdherence? {
         val goal = goalFeature.observeGoal().firstOrNull() ?: return null
-        val pooled = computePooled(trainings)
-        return scoreForPrimary(goal, goal.primaryGoal, pooled)
-    }
-
-    public suspend fun fromTrainingsBySecondary(
-        trainings: List<Training>,
-    ): GoalAdherence? {
-        val goal = goalFeature.observeGoal().firstOrNull() ?: return null
-        val pooled = computePooled(trainings)
-        return when (goal.secondaryGoal) {
-            GoalSecondaryGoalEnum.GET_STRONGER ->
-                scoreForPrimary(goal, GoalPrimaryGoalEnum.GET_STRONGER, pooled)
-
-            GoalSecondaryGoalEnum.BUILD_MUSCLE ->
-                scoreForPrimary(goal, GoalPrimaryGoalEnum.BUILD_MUSCLE, pooled)
-
-            GoalSecondaryGoalEnum.LOSE_FAT ->
-                scoreForPrimary(goal, GoalPrimaryGoalEnum.LOSE_FAT, pooled)
-
-            GoalSecondaryGoalEnum.MAINTAIN ->
-                scoreForPrimary(goal, GoalPrimaryGoalEnum.MAINTAIN, pooled)
-
-            GoalSecondaryGoalEnum.GENERAL_FITNESS ->
-                scoreForPrimary(goal, GoalPrimaryGoalEnum.GENERAL_FITNESS, pooled)
-
-            GoalSecondaryGoalEnum.RETURN_TO_TRAINING ->
-                scoreForPrimary(goal, GoalPrimaryGoalEnum.RETURN_TO_TRAINING, pooled)
-
-            GoalSecondaryGoalEnum.CONSISTENCY ->
-                scoreConsistency(goal, pooled)
-
-            null -> null
-        }
+        val analysis = analyze(trainings)
+        val score = scoreForPrimary(goal.primaryGoal, analysis)
+        return analysis.toAdherence(goal = goal, score = score)
     }
 
     // -------------------------------------------------------------------------
-    // Per-goal adherence formulas
+    // Analysis — single pass over the training list.
     // -------------------------------------------------------------------------
 
-    private fun scoreForPrimary(
-        goal: Goal,
-        primary: GoalPrimaryGoalEnum,
-        pooled: Pooled,
-    ): GoalAdherence {
-        val strength = pooled.strength
-        val hypertrophy = pooled.hypertrophy
-        val endurance = pooled.endurance
+    /**
+     * Everything the scorer and the breakdown need, computed in one go.
+     * Domain-internal: not exposed. [raw] feeds the per-goal formulas;
+     * the other fields are surfaced via [GoalAdherence].
+     */
+    private data class Analysis(
+        val raw: Raw,
+        val sessionCount: Int,
+        val strengthShare: Int,
+        val hypertrophyShare: Int,
+        val enduranceShare: Int,
+        val compoundRatio: Int,
+        val topExercises: List<TopExerciseContribution>,
+        val topMuscles: List<TopMuscleContribution>,
+    ) {
+        val isSilent: Boolean
+            get() = raw.totalWork <= EPS ||
+                    (strengthShare + hypertrophyShare + enduranceShare) == 0
+    }
 
-        val score = when (primary) {
-            GoalPrimaryGoalEnum.GET_STRONGER -> scoreStrengthFocus(pooled)
-            GoalPrimaryGoalEnum.BUILD_MUSCLE -> scoreHypertrophyFocus(pooled)
-            GoalPrimaryGoalEnum.LOSE_FAT -> scoreEnduranceFocus(pooled)
-            GoalPrimaryGoalEnum.MAINTAIN -> scorePowerbuilding(pooled)
-            GoalPrimaryGoalEnum.GENERAL_FITNESS -> scoreConcurrent(pooled)
-            GoalPrimaryGoalEnum.RETURN_TO_TRAINING -> scoreReturnToTraining(pooled)
+    private suspend fun analyze(trainings: List<Training>): Analysis {
+        if (trainings.isEmpty()) return emptyAnalysis()
+
+        val ids = trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.toSet()
+        val examples = loadExamples(ids)
+
+        // One pass: build ExerciseStats per session, then reuse for both the
+        // per-session Raw (scoring pool) and the period-level artifacts.
+        val perSession: List<Pair<Training, List<ExerciseStats>>> = trainings.map { training ->
+            training to buildExerciseStats(training.exercises)
         }
+        val sessionCount = perSession.count { it.second.isNotEmpty() }
 
-        return GoalAdherence(
-            goal = goal,
-            score = score,
-            strengthShare = strength,
-            hypertrophyShare = hypertrophy,
-            enduranceShare = endurance,
+        val raws = perSession.mapNotNull { (training, stats) ->
+            if (stats.isEmpty()) null else buildRawFromStats(training, stats, examples)
+        }
+        if (raws.isEmpty()) return emptyAnalysis().copy(sessionCount = sessionCount)
+
+        val pool = aggregateRaw(raws)
+        val strengthShare = (pool.strengthShare * 100f).roundToInt().coerceIn(0, 100)
+        val hypertrophyShare = (pool.hypertrophyShare * 100f).roundToInt().coerceIn(0, 100)
+        val enduranceShare = (pool.enduranceShare * 100f).roundToInt().coerceIn(0, 100)
+
+        val allStats: List<ExerciseStats> = perSession.flatMap { it.second }
+        val totalStimulus = allStats.sumOf { it.stimulus.toDouble() }.toFloat()
+
+        val compoundRatio =
+            (weightedCategoryRatioByStimulus(allStats, CategoryEnum.COMPOUND) * 100f)
+                .roundToInt().coerceIn(0, 100)
+
+        val muscleTotals = computeMuscleStimulusTotals(allStats, examples)
+        val totalMuscle = muscleTotals.values.sumOf { it.toDouble() }.toFloat()
+        val topMuscles = muscleTotals.entries
+            .filter { it.value.isFinite() && it.value > EPS }
+            .sortedByDescending { it.value }
+            .take(TOP_MUSCLES_LIMIT)
+            .map { (muscle, v) ->
+                TopMuscleContribution(
+                    muscle = muscle,
+                    share = if (totalMuscle > EPS) {
+                        ((v / totalMuscle) * 100f).roundToInt().coerceIn(0, 100)
+                    } else 0,
+                )
+            }
+
+        val topExercises = buildTopExercises(allStats, totalStimulus)
+
+        return Analysis(
+            raw = pool,
+            sessionCount = sessionCount,
+            strengthShare = strengthShare,
+            hypertrophyShare = hypertrophyShare,
+            enduranceShare = enduranceShare,
+            compoundRatio = compoundRatio,
+            topExercises = topExercises,
+            topMuscles = topMuscles,
         )
     }
 
-    private fun scoreStrengthFocus(pooled: Pooled): Int {
-        if (pooled.isSilent) return 0
-        // Core = strength share. Quality = compound + free-weight signal.
-        val core = pooled.raw.strengthShare
-        val quality = 0.5f * pooled.raw.compoundRatio + 0.5f * pooled.raw.freeWeightRatio
+    private fun emptyAnalysis(): Analysis = Analysis(
+        raw = Raw(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f),
+        sessionCount = 0,
+        strengthShare = 0,
+        hypertrophyShare = 0,
+        enduranceShare = 0,
+        compoundRatio = 0,
+        topExercises = emptyList(),
+        topMuscles = emptyList(),
+    )
+
+    private fun Analysis.toAdherence(goal: Goal, score: Int): GoalAdherence = GoalAdherence(
+        goal = goal,
+        score = score,
+        strengthShare = strengthShare,
+        hypertrophyShare = hypertrophyShare,
+        enduranceShare = enduranceShare,
+        sessionCount = sessionCount,
+        compoundRatio = compoundRatio,
+        topExercises = topExercises,
+        topMuscles = topMuscles,
+    )
+
+    private fun buildTopExercises(
+        allStats: List<ExerciseStats>,
+        totalStimulus: Float,
+    ): List<TopExerciseContribution> {
+        if (allStats.isEmpty()) return emptyList()
+        val grouped: Map<String, List<ExerciseStats>> = allStats.groupBy { it.exampleId }
+        return grouped.map { (exampleId, list) ->
+            val stimulusSum = list.sumOf { it.stimulus.toDouble() }.toFloat()
+            val setsCount = list.sumOf { it.sets.size }
+            val heaviest = list
+                .flatMap { it.sets }
+                .maxOfOrNull { it.weight } ?: 0f
+            val combinedLiftSets = list.flatMap { stats ->
+                stats.sets.map { LiftSet(weight = it.weight, reps = it.reps) }
+            }
+            val e1rm = estimateExerciseOneRm(combinedLiftSets)
+            val first = list.first()
+            TopExerciseContribution(
+                exampleId = exampleId,
+                name = first.exercise.name,
+                totalSets = setsCount,
+                stimulusShare = if (totalStimulus > EPS) {
+                    ((stimulusSum / totalStimulus) * 100f).roundToInt().coerceIn(0, 100)
+                } else 0,
+                heaviestWeight = if (heaviest.isFinite() && heaviest > 0f) heaviest else 0f,
+                estimatedOneRepMax = if (e1rm.isFinite() && e1rm > 0f) e1rm else 0f,
+                category = first.exercise.exerciseExample.category,
+            )
+        }.sortedByDescending { it.stimulusShare }.take(TOP_EXERCISES_LIMIT)
+    }
+
+    // -------------------------------------------------------------------------
+    // Per-goal adherence formulas — now just return Int score.
+    // -------------------------------------------------------------------------
+
+    private fun scoreForPrimary(primary: GoalPrimaryGoalEnum, analysis: Analysis): Int {
+        return when (primary) {
+            GoalPrimaryGoalEnum.GET_STRONGER -> scoreStrengthFocus(analysis)
+            GoalPrimaryGoalEnum.BUILD_MUSCLE -> scoreHypertrophyFocus(analysis)
+            GoalPrimaryGoalEnum.LOSE_FAT -> scoreEnduranceFocus(analysis)
+            GoalPrimaryGoalEnum.MAINTAIN -> scorePowerbuilding(analysis)
+            GoalPrimaryGoalEnum.GENERAL_FITNESS -> scoreConcurrent(analysis)
+            GoalPrimaryGoalEnum.RETURN_TO_TRAINING -> scoreReturnToTraining(analysis)
+        }
+    }
+
+    private fun scoreStrengthFocus(a: Analysis): Int {
+        if (a.isSilent) return 0
+        val core = a.raw.strengthShare
+        val quality = 0.5f * a.raw.compoundRatio + 0.5f * a.raw.freeWeightRatio
         return toScore(core * (SPEC_CORE_WEIGHT + SPEC_QUALITY_WEIGHT * quality))
     }
 
-    private fun scoreHypertrophyFocus(pooled: Pooled): Int {
-        if (pooled.isSilent) return 0
-        // Core = hypertrophy share. Quality = muscle specialization (focus).
-        val core = pooled.raw.hypertrophyShare
-        val quality = (pooled.raw.specializationTop2Percent / SPECIALIZATION_SATURATION_PERCENT)
+    private fun scoreHypertrophyFocus(a: Analysis): Int {
+        if (a.isSilent) return 0
+        val core = a.raw.hypertrophyShare
+        val quality = (a.raw.specializationTop2Percent / SPECIALIZATION_SATURATION_PERCENT)
             .coerceIn(0f, 1f)
         return toScore(core * (SPEC_CORE_WEIGHT + SPEC_QUALITY_WEIGHT * quality))
     }
 
-    private fun scoreEnduranceFocus(pooled: Pooled): Int {
-        if (pooled.isSilent) return 0
-        // Core = endurance share. Quality = density (activity index).
-        val core = pooled.raw.enduranceShare
-        val quality = (pooled.raw.activity / ACTIVITY_QUALITY_SATURATION).coerceIn(0f, 1f)
+    private fun scoreEnduranceFocus(a: Analysis): Int {
+        if (a.isSilent) return 0
+        val core = a.raw.enduranceShare
+        val quality = (a.raw.activity / ACTIVITY_QUALITY_SATURATION).coerceIn(0f, 1f)
         return toScore(core * (SPEC_CORE_WEIGHT + SPEC_QUALITY_WEIGHT * quality))
     }
 
-    private fun scorePowerbuilding(pooled: Pooled): Int {
-        if (pooled.isSilent) return 0
-        // Balance = min(str, hyp) * 2 peaks at 50/50 split; penalty scales with
-        // how much endurance intruded on the session.
-        val balance = 2f * min(pooled.raw.strengthShare, pooled.raw.hypertrophyShare)
-        val penalty = suppressedAxisPenalty(pooled.raw.enduranceShare)
+    private fun scorePowerbuilding(a: Analysis): Int {
+        if (a.isSilent) return 0
+        val balance = 2f * min(a.raw.strengthShare, a.raw.hypertrophyShare)
+        val penalty = suppressedAxisPenalty(a.raw.enduranceShare)
         return toScore(balance * penalty)
     }
 
-    private fun scoreConcurrent(pooled: Pooled): Int {
-        if (pooled.isSilent) return 0
-        // Same shape as powerbuilding but str+end with hypertrophy suppressed.
-        val balance = 2f * min(pooled.raw.strengthShare, pooled.raw.enduranceShare)
-        val penalty = suppressedAxisPenalty(pooled.raw.hypertrophyShare)
+    private fun scoreConcurrent(a: Analysis): Int {
+        if (a.isSilent) return 0
+        val balance = 2f * min(a.raw.strengthShare, a.raw.enduranceShare)
+        val penalty = suppressedAxisPenalty(a.raw.hypertrophyShare)
         return toScore(balance * penalty)
     }
 
-    private fun scoreReturnToTraining(pooled: Pooled): Int {
-        // A ramp-up phase needs *some* work (floor) and *not too much* (ceiling).
-        val work = pooled.raw.totalWork
+    private fun scoreReturnToTraining(a: Analysis): Int {
+        val work = a.raw.totalWork
         val activityFloor = (work / RTT_WORK_FLOOR).coerceIn(0f, 1f)
         val overdoRange = RTT_WORK_CEILING - RTT_WORK_PEAK
         val overdoPenalty =
@@ -213,24 +299,16 @@ public class GoalFollowingUseCase(
         return toScore(activityFloor * overdoPenalty)
     }
 
-    private fun scoreConsistency(goal: Goal, pooled: Pooled): GoalAdherence {
-        // CONSISTENCY is frequency-based, not stimulus-based.
+    private fun scoreConsistency(a: Analysis): Int {
         val target = CONSISTENCY_TARGET_SESSIONS.coerceAtLeast(1)
-        val ratio = (pooled.sessionCount.toFloat() / target).coerceIn(0f, 1f)
-        return GoalAdherence(
-            goal = goal,
-            score = toScore(ratio),
-            strengthShare = pooled.strength,
-            hypertrophyShare = pooled.hypertrophy,
-            enduranceShare = pooled.endurance,
-        )
+        val ratio = (a.sessionCount.toFloat() / target).coerceIn(0f, 1f)
+        return toScore(ratio)
     }
 
     /**
      * Smooth penalty applied to the third (suppressed) axis of a balanced-dual
      * goal. Returns 1 when the suppressed axis is ~0, and 0 when it reaches
-     * [SUPPRESSED_AXIS_PENALTY_FULL] share (50%) — i.e. as soon as the third
-     * axis is as big as either of the balanced pair the score collapses.
+     * [SUPPRESSED_AXIS_PENALTY_FULL] share (50%).
      */
     private fun suppressedAxisPenalty(suppressedShare: Float): Float {
         val t = (suppressedShare / SUPPRESSED_AXIS_PENALTY_FULL).coerceIn(0f, 1f)
@@ -243,51 +321,8 @@ public class GoalFollowingUseCase(
     }
 
     // -------------------------------------------------------------------------
-    // Pooled primitives (self-contained; mirrors TrainingLoadProfileUseCase)
+    // Per-session Raw + pooled aggregation.
     // -------------------------------------------------------------------------
-
-    private data class Pooled(
-        val raw: Raw,
-        val sessionCount: Int,
-        val strength: Int,
-        val hypertrophy: Int,
-        val endurance: Int,
-    ) {
-        val isSilent: Boolean
-            get() = raw.totalWork <= EPS || (strength + hypertrophy + endurance) == 0
-    }
-
-    private suspend fun computePooled(trainings: List<Training>): Pooled {
-        if (trainings.isEmpty()) return emptyPooled()
-
-        val ids = trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.toSet()
-        val examples = loadExamples(ids)
-
-        val raws = trainings.mapNotNull { buildRaw(it, examples) }
-        if (raws.isEmpty()) return emptyPooled()
-
-        val pool = aggregateRaw(raws)
-
-        val strength = (pool.strengthShare * 100f).roundToInt().coerceIn(0, 100)
-        val hypertrophy = (pool.hypertrophyShare * 100f).roundToInt().coerceIn(0, 100)
-        val endurance = (pool.enduranceShare * 100f).roundToInt().coerceIn(0, 100)
-
-        return Pooled(
-            raw = pool,
-            sessionCount = raws.size,
-            strength = strength,
-            hypertrophy = hypertrophy,
-            endurance = endurance,
-        )
-    }
-
-    private fun emptyPooled(): Pooled = Pooled(
-        raw = Raw(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f),
-        sessionCount = 0,
-        strength = 0,
-        hypertrophy = 0,
-        endurance = 0,
-    )
 
     private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
         if (ids.isEmpty()) return emptyMap()
@@ -312,7 +347,6 @@ public class GoalFollowingUseCase(
         val reps: Int
     )
 
-
     private data class SetStats(
         val weight: Float,
         val reps: Int,
@@ -333,28 +367,16 @@ public class GoalFollowingUseCase(
         val endurance: Float,
     )
 
-    private fun buildRaw(training: Training, exampleMap: Map<String, ExerciseExample>): Raw? {
-        return buildRaw(
-            exercises = training.exercises,
-            minutes = training.duration.inWholeSeconds.toFloat() / 60f,
-            repetitions = training.repetitions,
-            exampleMap = exampleMap,
-        )
-    }
-
-    private fun buildRaw(
-        exercises: List<Exercise>,
-        minutes: Float,
-        repetitions: Int,
+    private fun buildRawFromStats(
+        training: Training,
+        stats: List<ExerciseStats>,
         exampleMap: Map<String, ExerciseExample>,
     ): Raw? {
-        if (exercises.isEmpty()) return null
-
-        val stats = buildExerciseStats(exercises)
         if (stats.isEmpty()) return null
 
         val totalSets = stats.sumOf { it.sets.size }
-        val safeMinutes = resolveMinutes(minutes, totalSets)
+        val safeMinutes =
+            resolveMinutes(training.duration.inWholeSeconds.toFloat() / 60f, totalSets)
 
         val dimWork = computeDimensionWork(stats)
         val totalDimWork = dimWork.strength + dimWork.hypertrophy + dimWork.endurance
@@ -372,7 +394,7 @@ public class GoalFollowingUseCase(
         val stimulus = safe(stats.sumOf { it.stimulus.toDouble() }.toFloat())
         val stimulusPerMin = if (stimulus > EPS) stimulus / safeMinutes else 0f
 
-        val reps = repetitions.coerceAtLeast(0)
+        val reps = training.repetitions.coerceAtLeast(0)
         val repsPerMin = if (reps > 0) reps.toFloat() / safeMinutes else 0f
 
         val compoundRatio = weightedCategoryRatioByStimulus(stats, CategoryEnum.COMPOUND)
@@ -673,6 +695,23 @@ public class GoalFollowingUseCase(
         stats: List<ExerciseStats>,
         exampleMap: Map<String, ExerciseExample>,
     ): Float {
+        val totals = computeMuscleStimulusTotals(stats, exampleMap)
+
+        val values = totals.values.filter { it.isFinite() && it > EPS }.sortedDescending()
+        if (values.isEmpty()) return 0f
+
+        val sum = values.sum()
+        if (!sum.isFinite() || sum <= EPS) return 0f
+
+        val top2 = values.take(2).sum()
+        val percent = (top2 / sum) * 100f
+        return if (percent.isFinite()) percent.coerceIn(0f, 100f) else 0f
+    }
+
+    private fun computeMuscleStimulusTotals(
+        stats: List<ExerciseStats>,
+        exampleMap: Map<String, ExerciseExample>,
+    ): Map<MuscleEnum, Float> {
         val totals = mutableMapOf<MuscleEnum, Float>()
 
         stats.forEach { ex ->
@@ -701,15 +740,7 @@ public class GoalFollowingUseCase(
             }
         }
 
-        val values = totals.values.filter { it.isFinite() && it > EPS }.sortedDescending()
-        if (values.isEmpty()) return 0f
-
-        val sum = values.sum()
-        if (!sum.isFinite() || sum <= EPS) return 0f
-
-        val top2 = values.take(2).sum()
-        val percent = (top2 / sum) * 100f
-        return if (percent.isFinite()) percent.coerceIn(0f, 100f) else 0f
+        return totals
     }
 
     private fun weightedCategoryRatioByStimulus(

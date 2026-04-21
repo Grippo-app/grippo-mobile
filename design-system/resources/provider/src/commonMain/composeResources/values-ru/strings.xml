@@ -22,7 +22,6 @@
     <string name="spotlight_needs_attention_title">Нужно вернуть</string>
     <string name="spotlight_good_frequency_title">Хорошая частота</string>
     <string name="spotlight_near_best_title">Рядом с лучшим</string>
-    <string name="low_confidence">Низкая уверенность</string>
     <string name="repetitions_input_hint">1 - 99 повторений</string>
     <string name="exercise_details_btn">Детали упражнения</string>
     <string name="and">И</string>
@@ -36,8 +35,6 @@
     <string name="choose_your_experience_level">Выберите свой уровень опыта — мы порекомендуем упражнения, которые подходят вам лучше всего.</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Совет</string>
-    <string name="medium_confidence">Средняя уверенность</string>
-    <string name="high_confidence">Высокая уверенность</string>
     <string name="training_profile">Профиль тренировки</string>
     <string name="training_dimension_strength">Сила</string>
     <string name="training_dimension_hypertrophy">Гипертрофия</string>
@@ -52,22 +49,12 @@
     <string name="training_profile_kind_mixed">Смешанный</string>
     <string name="training_profile_kind_easy">Лёгкий</string>
     <string name="training_profile_title_easy_session">Лёгкая тренировка</string>
-    <string name="training_profile_title_with_confidence">%1$s</string>
-    <string name="training_profile_focus_dominant">%1$s — доминирует</string>
-    <string name="training_profile_focus_leaning">%1$s — с уклоном</string>
-    <string name="training_profile_focus_low_confidence">%1$s (%2$s)</string>
-    <string name="training_profile_distribution">%1$s %2$d • %3$s %4$d • %5$s %6$d</string>
-    <string name="training_profile_no_clear_focus">Нет явного фокуса: лидер всего на +%1$d выше второго.</string>
-    <string name="training_profile_leads_by">%1$s лидирует на +%2$d.</string>
     <string name="training_profile_subtitle_easy">Восстановление / техника / день низкого стресса.</string>
     <string name="training_profile_subtitle_powerbuilding">Тяжёлая работа + объём в одной тренировке.</string>
     <string name="training_profile_subtitle_mixed">Сегодня не доминирует ни одна ось.</string>
     <string name="training_profile_subtitle_strength">Большая часть работы смещена к силовому стимулу.</string>
     <string name="training_profile_subtitle_hypertrophy">Большая часть работы смещена к стимулу роста мышц.</string>
     <string name="training_profile_subtitle_endurance">Большая часть работы смещена к выносливости / плотности.</string>
-    <string name="training_profile_details_easy">Низкая общая нагрузка. %1$s</string>
-    <string name="training_profile_details_powerbuilding">Сила и гипертрофия обе выражены. %1$s</string>
-    <string name="training_profile_details_dominance_distribution">%1$s  %2$s</string>
     <string name="training_profile_tip_easy">Если было слишком легко: добавьте 1 тяжёлый подход в основное упражнение или подойдите ближе к отказу.</string>
     <string name="training_profile_tip_powerbuilding">Простая структура: 1–3 тяжёлых подхода + 2–4 облегчённых (6–10 повторений).</string>
     <string name="training_profile_tip_mixed">Хотите более чёткий профиль в следующий раз? Выберите один рычаг: тяжелее / больше подходов / короче отдых.</string>
@@ -83,6 +70,23 @@
     <string name="training_profile_confidence">Уверенность %1$d%% • %2$s</string>
     <string name="training_profile_tip_label">Совет</string>
     <string name="training_profile_segment">%1$s %2$d</string>
+    <string name="training_profile_artifact_top_exercises_title">Топ упражнений</string>
+    <string name="training_profile_artifact_top_exercises_subtitle">Отсортировано по доле общей нагрузки. Нагрузка = подходы × повторы × вес, с поправкой на интенсивность (%% от 1ПМ).</string>
+    <string name="training_profile_artifact_top_exercises_footer_truncated">Показано топ-%1$d из %2$d упражнений. Остальные внесли меньший вклад.</string>
+    <string name="training_profile_artifact_top_exercises_footer_all">Показаны все %1$d упражнений, по убыванию вклада.</string>
+    <string name="training_profile_artifact_muscle_focus_title">Фокус по мышцам</string>
+    <string name="training_profile_artifact_muscle_focus_subtitle">Доля общей нагрузки, которая легла на каждую мышцу (с учётом распределения внутри упражнений).</string>
+    <string name="training_profile_artifact_muscle_focus_footer_truncated">Показано топ-%1$d из %2$d задействованных мышц.</string>
+    <string name="training_profile_artifact_muscle_focus_footer_all">Показаны все %1$d задействованные мышцы.</string>
+    <string name="training_profile_artifact_movement_style_title">Стиль движений</string>
+    <string name="training_profile_artifact_movement_style_subtitle">Как нагрузка распределилась по типу упражнений и по направлению движения.</string>
+    <string name="training_profile_artifact_compound_vs_isolation">Базовые и изолированные</string>
+    <string name="training_profile_artifact_compound_vs_isolation_hint">Базовые — многосуставные (присед, жим, тяга). Изолированные — односуставные (сгибания, разгибания).</string>
+    <string name="training_profile_artifact_push_vs_pull">Жимы, тяги и хиндж</string>
+    <string name="training_profile_artifact_push_vs_pull_hint">Жим: толкание/разгибание (жим лёжа, жим стоя). Тяга: притягивание (тяги, подтягивания). Хиндж: наклон через таз (становая, RDL).</string>
+    <string name="training_profile_artifact_share">%1$d%</string>
+    <string name="training_profile_artifact_sets">%1$d подх.</string>
+    <string name="training_profile_artifact_empty">Пока мало данных — запиши ещё подходы, чтобы увидеть разбивку.</string>
     <string name="spotlight_progress_win_metric">+%1$s% к последним %2$d сессиям</string>
     <string name="spotlight_progress_win_context">Сейчас %1$s кг против обычных %2$s кг</string>
     <string name="spotlight_progress_win_action">Повтори этот вес ещё раз, потом повышай.</string>
@@ -640,7 +644,7 @@
     <string name="goal_details_focus_strength">Сила</string>
     <string name="goal_details_focus_hypertrophy">Гипертрофия</string>
     <string name="goal_details_focus_endurance">Выносливость</string>
-    <string name="goal_details_focus_share">%1$d%</string>
+    <string name="goal_details_focus_share">%1$d</string>
     <string name="goal_details_insights_title">Что влияет на счёт</string>
     <string name="goal_details_tips_title">Рекомендации</string>
 
@@ -705,6 +709,35 @@
     <string name="goal_details_tip_consistent">Держи стабильные 3 тренировки в неделю — регулярность важнее отдельного ударного дня.</string>
     <string name="goal_details_tip_review_deadline">Пересмотри дату финиша — продли её или закрой цель и начни новую.</string>
     <string name="goal_details_tip_stay_course">Ты держишь паттерн. Продолжай в том же духе.</string>
+
+    <!-- Секция «Как получен счёт» -->
+    <string name="goal_details_breakdown_title">Из чего сложился счёт</string>
+    <string name="goal_details_breakdown_subtitle">Твои тренировки в цифрах, по которым мы оценили цель.</string>
+
+    <string name="goal_details_breakdown_sessions">Тренировки</string>
+    <string name="goal_details_breakdown_sessions_value">%1$d тренировок</string>
+    <string name="goal_details_breakdown_sessions_vs_target">%1$d из %2$d целевых тренировок</string>
+    <string name="goal_details_breakdown_sessions_hint">Сколько отдельных тренировочных дней мы учли в этом периоде.</string>
+    <string name="goal_details_breakdown_compound">Базовые упражнения</string>
+    <string name="goal_details_breakdown_compound_hint">Какая доля работы пришлась на многосуставные движения (присед, жим, тяга).</string>
+    <string name="goal_details_breakdown_work_balance">Сила vs Гипертрофия</string>
+    <string name="goal_details_breakdown_work_balance_hint">Как общая работа делится между силовыми сетами (тяжёлые, мало повторов) и гипертрофическими (умеренные повторы).</string>
+    <string name="goal_details_breakdown_work_balance_general">Сила vs Выносливость</string>
+    <string name="goal_details_breakdown_work_balance_general_hint">Как общая работа делится между силовыми сетами и длинными сетами на выносливость.</string>
+
+    <string name="goal_details_breakdown_top_exercises_title">Топ упражнений по вкладу</string>
+    <string name="goal_details_breakdown_top_exercises_hint">Твои %1$d главных упражнения по нагрузке (сеты × вес × повторы). Всё остальное суммарно даёт ещё %2$d%%.</string>
+    <string name="goal_details_breakdown_top_exercises_empty">В этом периоде ещё нет сетов с весом и повторениями.</string>
+    <string name="goal_details_breakdown_top_muscles_title">Мышцы, получившие больше всего работы</string>
+    <string name="goal_details_breakdown_top_muscles_hint">Мышцы отсортированы по суммарной нагрузке, которую они получили за все тренировки.</string>
+    <string name="goal_details_breakdown_exercise_sets">%1$d сетов</string>
+    <string name="goal_details_breakdown_exercise_one_rm">примерный 1ПМ %1$d кг</string>
+    <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>
+    <string name="goal_details_breakdown_exercise_share_caption">от общей нагрузки</string>
+    <string name="goal_details_breakdown_muscle_share_caption">от работы мышц</string>
+
+    <string name="goal_details_breakdown_empty_title">Данных для расчёта пока нет</string>
+    <string name="goal_details_breakdown_empty_detail">Добавь тренировку в этот период — и мы покажем, какие сессии и упражнения двигали счёт.</string>
 
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>

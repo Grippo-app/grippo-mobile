@@ -1,12 +1,15 @@
 package com.grippo.domain.state.metrics
 
+import kotlinx.collections.immutable.toPersistentList
 import com.grippo.core.state.metrics.TrainingDimensionKindState as StateTrainingDimensionKind
 import com.grippo.core.state.metrics.TrainingDimensionScoreState as StateTrainingDimensionScore
+import com.grippo.core.state.metrics.TrainingLoadProfileArtifactsState as StateTrainingLoadProfileArtifacts
 import com.grippo.core.state.metrics.TrainingLoadProfileState as StateTrainingLoadProfile
 import com.grippo.core.state.metrics.TrainingProfileKindState as StateTrainingProfileKind
 import com.grippo.data.features.api.metrics.models.TrainingDimensionKind as DomainTrainingDimensionKind
 import com.grippo.data.features.api.metrics.models.TrainingDimensionScore as DomainTrainingDimensionScore
 import com.grippo.data.features.api.metrics.models.TrainingLoadProfile as DomainTrainingLoadProfile
+import com.grippo.data.features.api.metrics.models.TrainingLoadProfileArtifacts as DomainTrainingLoadProfileArtifacts
 import com.grippo.data.features.api.metrics.models.TrainingProfileKind as DomainTrainingProfileKind
 
 public fun DomainTrainingLoadProfile?.toState(): StateTrainingLoadProfile? {
@@ -16,6 +19,20 @@ public fun DomainTrainingLoadProfile?.toState(): StateTrainingLoadProfile? {
         dimensions = value.dimensions.map(DomainTrainingDimensionScore::toState),
         dominant = value.dominant?.toState(),
         confidence = value.confidence,
+        artifacts = value.artifacts.toState(),
+    )
+}
+
+private fun DomainTrainingLoadProfileArtifacts.toState(): StateTrainingLoadProfileArtifacts {
+    return StateTrainingLoadProfileArtifacts(
+        topExercises = topExercises.map { it.toState() }.toPersistentList(),
+        topMuscles = topMuscles.map { it.toState() }.toPersistentList(),
+        totalExercisesCount = totalExercisesCount,
+        totalMusclesCount = totalMusclesCount,
+        compoundRatio = compoundRatio,
+        pushRatio = pushRatio,
+        pullRatio = pullRatio,
+        hingeRatio = hingeRatio,
     )
 }
 

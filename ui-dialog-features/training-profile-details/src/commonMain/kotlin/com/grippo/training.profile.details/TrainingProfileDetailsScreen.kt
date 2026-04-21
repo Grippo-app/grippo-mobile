@@ -17,8 +17,11 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileDetailsCard
+import com.grippo.design.components.metrics.training.profile.TrainingProfileMovementStyleCard
+import com.grippo.design.components.metrics.training.profile.TrainingProfileMuscleFocusCard
 import com.grippo.design.components.metrics.training.profile.TrainingProfileRadar
 import com.grippo.design.components.metrics.training.profile.TrainingProfileRadarStyle
+import com.grippo.design.components.metrics.training.profile.TrainingProfileTopExercisesCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -83,6 +86,27 @@ internal fun TrainingProfileDetailsScreen(
                 TrainingLoadProfileDetailsCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = profile,
+                )
+            }
+
+            item(key = "artifact_top_exercises") {
+                TrainingProfileTopExercisesCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = profile.artifacts,
+                )
+            }
+
+            item(key = "artifact_muscle_focus") {
+                TrainingProfileMuscleFocusCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = profile.artifacts,
+                )
+            }
+
+            item(key = "artifact_movement_style") {
+                TrainingProfileMovementStyleCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = profile.artifacts,
                 )
             }
         }

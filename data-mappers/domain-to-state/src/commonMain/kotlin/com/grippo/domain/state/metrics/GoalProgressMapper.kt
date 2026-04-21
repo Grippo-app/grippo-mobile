@@ -7,6 +7,7 @@ import com.grippo.domain.state.user.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.daysUntil
 
 public fun GoalAdherence.toState(): GoalProgressState {
@@ -34,5 +35,9 @@ public fun GoalAdherence.toState(): GoalProgressState {
         daysRemaining = daysRemaining,
         progressFraction = (daysElapsed.toFloat() / daysTotal.toFloat()).coerceIn(0f, 1f),
         isFinished = now.date >= targetDate,
+        sessionCount = sessionCount,
+        compoundRatio = compoundRatio,
+        topExercises = topExercises.map { it.toState() }.toPersistentList(),
+        topMuscles = topMuscles.map { it.toState() }.toPersistentList(),
     )
 }

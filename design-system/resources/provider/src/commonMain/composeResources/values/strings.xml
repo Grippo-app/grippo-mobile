@@ -22,7 +22,6 @@
     <string name="spotlight_needs_attention_title">Needs Attention</string>
     <string name="spotlight_good_frequency_title">Good Frequency</string>
     <string name="spotlight_near_best_title">Near Best</string>
-    <string name="low_confidence">Low confidence</string>
     <string name="repetitions_input_hint">1 - 99 reps</string>
     <string name="exercise_details_btn">Exercise details</string>
     <string name="and">And</string>
@@ -36,8 +35,6 @@
     <string name="choose_your_experience_level">Choose your experience level — we’ll recommend exercises that fit you best.</string>
     <string name="weight_input_hint">1 - 999 kg</string>
     <string name="advice">Advice</string>
-    <string name="medium_confidence">Medium confidence</string>
-    <string name="high_confidence">High confidence</string>
     <string name="training_profile">Training profile</string>
     <string name="training_dimension_strength">Strength</string>
     <string name="training_dimension_hypertrophy">Hypertrophy</string>
@@ -52,22 +49,12 @@
     <string name="training_profile_kind_mixed">Mixed</string>
     <string name="training_profile_kind_easy">Easy</string>
     <string name="training_profile_title_easy_session">Easy session</string>
-    <string name="training_profile_title_with_confidence">%1$s</string>
-    <string name="training_profile_focus_dominant">%1$s-dominant</string>
-    <string name="training_profile_focus_leaning">%1$s-leaning</string>
-    <string name="training_profile_focus_low_confidence">%1$s (%2$s)</string>
-    <string name="training_profile_distribution">%1$s %2$d • %3$s %4$d • %5$s %6$d</string>
-    <string name="training_profile_no_clear_focus">No clear focus: top is only +%1$d over second.</string>
-    <string name="training_profile_leads_by">%1$s leads by +%2$d.</string>
     <string name="training_profile_subtitle_easy">Recovery / technique / low-stress day.</string>
     <string name="training_profile_subtitle_powerbuilding">Heavy work + volume in the same session.</string>
     <string name="training_profile_subtitle_mixed">No single axis dominates today.</string>
     <string name="training_profile_subtitle_strength">More of your work leans toward strength stimulus.</string>
     <string name="training_profile_subtitle_hypertrophy">More of your work leans toward muscle-building stimulus.</string>
     <string name="training_profile_subtitle_endurance">More of your work leans toward endurance / density.</string>
-    <string name="training_profile_details_easy">Low overall load. %1$s</string>
-    <string name="training_profile_details_powerbuilding">Strength and hypertrophy are both strong. %1$s</string>
-    <string name="training_profile_details_dominance_distribution">%1$s  %2$s</string>
     <string name="training_profile_tip_easy">If it felt too easy: add 1 hard set to your main lift or push closer to failure.</string>
     <string name="training_profile_tip_powerbuilding">Simple structure: 1–3 heavy sets + 2–4 back-off sets (6–10 reps).</string>
     <string name="training_profile_tip_mixed">Want a clearer profile next time? Choose one knob: heavier / more sets / shorter rests.</string>
@@ -83,6 +70,23 @@
     <string name="training_profile_confidence">Confidence %1$d%% • %2$s</string>
     <string name="training_profile_tip_label">Tip</string>
     <string name="training_profile_segment">%1$s %2$d</string>
+    <string name="training_profile_artifact_top_exercises_title">Top exercises</string>
+    <string name="training_profile_artifact_top_exercises_subtitle">Ranked by their share of total training load. Load = sets × reps × weight, adjusted by intensity (%% of 1RM).</string>
+    <string name="training_profile_artifact_top_exercises_footer_truncated">Showing top %1$d of %2$d exercises. The rest contributed less to the load.</string>
+    <string name="training_profile_artifact_top_exercises_footer_all">All %1$d exercises shown, ordered by contribution.</string>
+    <string name="training_profile_artifact_muscle_focus_title">Muscle focus</string>
+    <string name="training_profile_artifact_muscle_focus_subtitle">Share of total training load landed on each muscle, using the muscle weights from the exercise bundles.</string>
+    <string name="training_profile_artifact_muscle_focus_footer_truncated">Showing top %1$d of %2$d muscles worked.</string>
+    <string name="training_profile_artifact_muscle_focus_footer_all">All %1$d muscles worked are shown.</string>
+    <string name="training_profile_artifact_movement_style_title">Movement style</string>
+    <string name="training_profile_artifact_movement_style_subtitle">How your load splits by exercise type and by pushing/pulling pattern.</string>
+    <string name="training_profile_artifact_compound_vs_isolation">Compound vs Isolation</string>
+    <string name="training_profile_artifact_compound_vs_isolation_hint">Compound: multi-joint (squat, bench, row). Isolation: single-joint (curl, extension).</string>
+    <string name="training_profile_artifact_push_vs_pull">Push vs Pull vs Hinge</string>
+    <string name="training_profile_artifact_push_vs_pull_hint">Push: press/extend (bench, OHP). Pull: pull toward you (row, pull-up). Hinge: hip-dominant (deadlift, RDL).</string>
+    <string name="training_profile_artifact_share">%1$d%</string>
+    <string name="training_profile_artifact_sets">%1$d sets</string>
+    <string name="training_profile_artifact_empty">Not enough data yet — log more sets to see the breakdown.</string>
     <string name="spotlight_progress_win_metric">+%1$s% vs last %2$d sessions</string>
     <string name="spotlight_progress_win_context">Now %1$s kg vs usual %2$s kg</string>
     <string name="spotlight_progress_win_action">Repeat this load once before moving up.</string>
@@ -643,7 +647,7 @@
     <string name="goal_details_focus_strength">Strength</string>
     <string name="goal_details_focus_hypertrophy">Hypertrophy</string>
     <string name="goal_details_focus_endurance">Endurance</string>
-    <string name="goal_details_focus_share">%1$d%</string>
+    <string name="goal_details_focus_share">%1$d</string>
     <string name="goal_details_insights_title">What\'s driving your score</string>
     <string name="goal_details_tips_title">Recommendations</string>
 
@@ -708,6 +712,38 @@
     <string name="goal_details_tip_consistent">Aim for a steady 3 sessions a week — cadence matters more than any single workout.</string>
     <string name="goal_details_tip_review_deadline">Revisit the target date — either extend it or close the goal and start a fresh one.</string>
     <string name="goal_details_tip_stay_course">You\'re on pattern. Keep doing what\'s been working.</string>
+
+    <!-- Calculation breakdown section -->
+    <string name="goal_details_breakdown_title">Why this score</string>
+    <string name="goal_details_breakdown_subtitle">The training you logged, translated into the numbers we scored against.</string>
+
+    <!-- Summary row labels -->
+    <string name="goal_details_breakdown_sessions">Sessions</string>
+    <string name="goal_details_breakdown_sessions_value">%1$d sessions</string>
+    <string name="goal_details_breakdown_sessions_vs_target">%1$d of %2$d target sessions</string>
+    <string name="goal_details_breakdown_sessions_hint">Unique training days we counted in this period.</string>
+    <string name="goal_details_breakdown_compound">Compound movements</string>
+    <string name="goal_details_breakdown_compound_hint">Share of work from multi-joint lifts (squat, bench, deadlift, rows).</string>
+    <string name="goal_details_breakdown_work_balance">Strength vs Hypertrophy</string>
+    <string name="goal_details_breakdown_work_balance_hint">Split of your total work between strength sets (heavy, low reps) and hypertrophy sets (moderate reps).</string>
+    <string name="goal_details_breakdown_work_balance_general">Strength vs Endurance</string>
+    <string name="goal_details_breakdown_work_balance_general_hint">Split of your total work between strength sets and longer endurance sets.</string>
+
+    <!-- Top exercises / muscles -->
+    <string name="goal_details_breakdown_top_exercises_title">Top exercises by contribution</string>
+    <string name="goal_details_breakdown_top_exercises_hint">Your %1$d biggest contributors by training stimulus (sets × weight × reps). Anything lighter rolls into the remaining %2$d%%.</string>
+    <string name="goal_details_breakdown_top_exercises_empty">No lifts with weight &amp; reps in this range yet.</string>
+    <string name="goal_details_breakdown_top_muscles_title">Muscles that got the most work</string>
+    <string name="goal_details_breakdown_top_muscles_hint">Muscles ranked by total stimulus they received across all your sessions.</string>
+    <string name="goal_details_breakdown_exercise_sets">%1$d sets</string>
+    <string name="goal_details_breakdown_exercise_one_rm">est. 1RM %1$d kg</string>
+    <string name="goal_details_breakdown_exercise_heaviest">top %1$d kg</string>
+    <string name="goal_details_breakdown_exercise_share_caption">of total stimulus</string>
+    <string name="goal_details_breakdown_muscle_share_caption">of muscle work</string>
+
+    <!-- Empty state -->
+    <string name="goal_details_breakdown_empty_title">No calculation data yet</string>
+    <string name="goal_details_breakdown_empty_detail">Log a training in this period and we\'ll break down which sessions and exercises moved the score.</string>
 
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 times a week</string>

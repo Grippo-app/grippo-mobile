@@ -2,32 +2,21 @@ package com.grippo.core.state.metrics
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.high_confidence
-import com.grippo.design.resources.provider.low_confidence
-import com.grippo.design.resources.provider.medium_confidence
 import com.grippo.design.resources.provider.training_dimension_endurance
 import com.grippo.design.resources.provider.training_dimension_hypertrophy
 import com.grippo.design.resources.provider.training_dimension_strength
 import com.grippo.design.resources.provider.training_profile_axis_endurance_id
 import com.grippo.design.resources.provider.training_profile_axis_hypertrophy_id
 import com.grippo.design.resources.provider.training_profile_axis_strength_id
-import com.grippo.design.resources.provider.training_profile_details_dominance_distribution
-import com.grippo.design.resources.provider.training_profile_details_easy
-import com.grippo.design.resources.provider.training_profile_details_powerbuilding
-import com.grippo.design.resources.provider.training_profile_distribution
-import com.grippo.design.resources.provider.training_profile_focus_dominant
-import com.grippo.design.resources.provider.training_profile_focus_leaning
-import com.grippo.design.resources.provider.training_profile_focus_low_confidence
 import com.grippo.design.resources.provider.training_profile_kind_easy
 import com.grippo.design.resources.provider.training_profile_kind_endurance
 import com.grippo.design.resources.provider.training_profile_kind_hypertrophy
 import com.grippo.design.resources.provider.training_profile_kind_mixed
 import com.grippo.design.resources.provider.training_profile_kind_powerbuilding
 import com.grippo.design.resources.provider.training_profile_kind_strength
-import com.grippo.design.resources.provider.training_profile_leads_by
-import com.grippo.design.resources.provider.training_profile_no_clear_focus
 import com.grippo.design.resources.provider.training_profile_subtitle_easy
 import com.grippo.design.resources.provider.training_profile_subtitle_endurance
 import com.grippo.design.resources.provider.training_profile_subtitle_hypertrophy
@@ -47,6 +36,8 @@ import com.grippo.design.resources.provider.training_profile_tip_strength_high
 import com.grippo.design.resources.provider.training_profile_tip_strength_low
 import com.grippo.design.resources.provider.training_profile_tip_strength_medium
 import com.grippo.design.resources.provider.training_profile_title_easy_session
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class TrainingLoadProfileState(
@@ -54,6 +45,7 @@ public data class TrainingLoadProfileState(
     val dimensions: List<TrainingDimensionScoreState>,
     val dominant: TrainingDimensionKindState?,
     val confidence: Int,
+    val artifacts: TrainingLoadProfileArtifactsState = TrainingLoadProfileArtifactsState.empty(),
 ) {
     @Composable
     public fun title(): String = kind.title(this)
@@ -62,72 +54,8 @@ public data class TrainingLoadProfileState(
     public fun subtitle(): String = kind.subtitle(this)
 
     @Composable
-    public fun details(): String = kind.details(this)
-
-    @Composable
     public fun tip(): String? = kind.tip(this)
 
-    @Composable
-    public fun confidenceLabel(): String {
-        val c = confidence.coerceIn(0, 100)
-        return when (c) {
-            in 0..33 -> AppTokens.strings.res(Res.string.low_confidence)
-            in 34..66 -> AppTokens.strings.res(Res.string.medium_confidence)
-            else -> AppTokens.strings.res(Res.string.high_confidence)
-        }
-    }
-
-    @Composable
-    public fun focusTitleForAxis(axis: TrainingDimensionKindState): String {
-        val c = confidence.coerceIn(0, 100)
-        val base = axis.label()
-        return when {
-            c >= 70 -> AppTokens.strings.res(Res.string.training_profile_focus_dominant, base)
-            c >= 35 -> AppTokens.strings.res(Res.string.training_profile_focus_leaning, base)
-            else -> AppTokens.strings.res(
-                Res.string.training_profile_focus_low_confidence,
-                base,
-                AppTokens.strings.res(Res.string.low_confidence),
-            )
-        }
-    }
-
-    @Composable
-    public fun distributionLine(): String {
-        val s = scoreOf(TrainingDimensionKindState.Strength)
-        val h = scoreOf(TrainingDimensionKindState.Hypertrophy)
-        val e = scoreOf(TrainingDimensionKindState.Endurance)
-        return AppTokens.strings.res(
-            Res.string.training_profile_distribution,
-            TrainingDimensionKindState.Strength.label(),
-            s,
-            TrainingDimensionKindState.Hypertrophy.label(),
-            h,
-            TrainingDimensionKindState.Endurance.label(),
-            e,
-        )
-    }
-
-    @Composable
-    public fun dominanceLine(): String {
-        val s = scoreOf(TrainingDimensionKindState.Strength)
-        val h = scoreOf(TrainingDimensionKindState.Hypertrophy)
-        val e = scoreOf(TrainingDimensionKindState.Endurance)
-
-        val top = maxOf(s, h, e)
-        val low = minOf(s, h, e)
-        val second = s + h + e - top - low
-        val gap = (top - second).coerceAtLeast(0)
-
-        val axis = dominant
-        return if (axis == null) {
-            AppTokens.strings.res(Res.string.training_profile_no_clear_focus, gap)
-        } else {
-            AppTokens.strings.res(Res.string.training_profile_leads_by, axis.label(), gap)
-        }
-    }
-
-    @Composable
     public fun scoreOf(kind: TrainingDimensionKindState): Int {
         return dimensions.firstOrNull { it.kind == kind }?.score?.coerceIn(0, 100) ?: 0
     }
@@ -204,47 +132,6 @@ public enum class TrainingProfileKindState {
     }
 
     @Composable
-    public fun details(profile: TrainingLoadProfileState): String {
-        val distribution = profile.distributionLine()
-        return when (this) {
-            Easy -> AppTokens.strings.res(
-                Res.string.training_profile_details_easy,
-                distribution
-            )
-
-            Powerbuilding ->
-                AppTokens.strings.res(
-                    Res.string.training_profile_details_powerbuilding,
-                    distribution
-                )
-
-            Mixed -> AppTokens.strings.res(
-                Res.string.training_profile_details_dominance_distribution,
-                profile.dominanceLine(),
-                distribution,
-            )
-
-            Strength -> AppTokens.strings.res(
-                Res.string.training_profile_details_dominance_distribution,
-                profile.dominanceLine(),
-                distribution,
-            )
-
-            Hypertrophy -> AppTokens.strings.res(
-                Res.string.training_profile_details_dominance_distribution,
-                profile.dominanceLine(),
-                distribution,
-            )
-
-            Endurance -> AppTokens.strings.res(
-                Res.string.training_profile_details_dominance_distribution,
-                profile.dominanceLine(),
-                distribution,
-            )
-        }
-    }
-
-    @Composable
     public fun tip(profile: TrainingLoadProfileState): String? {
         val c = profile.confidence.coerceIn(0, 100)
         return when (this) {
@@ -278,6 +165,52 @@ public data class TrainingDimensionScoreState(
     val score: Int, // 0..100
 )
 
+/**
+ * State-layer mirror of the domain `TrainingLoadProfileArtifacts`. Carries
+ * the evidence the classifier used — top exercises, muscle focus, and a few
+ * movement-style ratios — so the UI can explain *why* the profile came out
+ * the way it did.
+ *
+ * All percent fields are 0..100. `topExercises` and `topMuscles` are sorted
+ * by share descending.
+ */
+@Immutable
+public data class TrainingLoadProfileArtifactsState(
+    val topExercises: ImmutableList<TopExerciseContributionState>,
+    val topMuscles: ImmutableList<TopMuscleContributionState>,
+    val totalExercisesCount: Int,
+    val totalMusclesCount: Int,
+    val compoundRatio: Int,
+    val pushRatio: Int,
+    val pullRatio: Int,
+    val hingeRatio: Int,
+) {
+    public val isEmpty: Boolean
+        get() = topExercises.isEmpty() &&
+                topMuscles.isEmpty() &&
+                compoundRatio == 0 &&
+                pushRatio == 0 &&
+                pullRatio == 0 &&
+                hingeRatio == 0
+
+    public val isolationRatio: Int
+        get() = (100 - compoundRatio).coerceIn(0, 100)
+
+    public companion object {
+        public fun empty(): TrainingLoadProfileArtifactsState =
+            TrainingLoadProfileArtifactsState(
+                topExercises = persistentListOf(),
+                topMuscles = persistentListOf(),
+                totalExercisesCount = 0,
+                totalMusclesCount = 0,
+                compoundRatio = 0,
+                pushRatio = 0,
+                pullRatio = 0,
+                hingeRatio = 0,
+            )
+    }
+}
+
 public fun stubTrainingLoadProfile(): TrainingLoadProfileState {
     return TrainingLoadProfileState(
         kind = TrainingProfileKindState.Powerbuilding,
@@ -296,6 +229,72 @@ public fun stubTrainingLoadProfile(): TrainingLoadProfileState {
             )
         ),
         dominant = TrainingDimensionKindState.Strength,
-        confidence = 74
+        confidence = 74,
+        artifacts = stubTrainingLoadProfileArtifacts(),
+    )
+}
+
+public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState {
+    return TrainingLoadProfileArtifactsState(
+        topExercises = persistentListOf(
+            TopExerciseContributionState(
+                exampleId = "ex-1",
+                name = "Back Squat",
+                totalSets = 12,
+                stimulusShare = 28,
+                heaviestWeight = 140f,
+                estimatedOneRepMax = 155f,
+                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+            ),
+            TopExerciseContributionState(
+                exampleId = "ex-2",
+                name = "Bench Press",
+                totalSets = 10,
+                stimulusShare = 22,
+                heaviestWeight = 105f,
+                estimatedOneRepMax = 118f,
+                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+            ),
+            TopExerciseContributionState(
+                exampleId = "ex-3",
+                name = "Deadlift",
+                totalSets = 6,
+                stimulusShare = 18,
+                heaviestWeight = 180f,
+                estimatedOneRepMax = 198f,
+                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+            ),
+            TopExerciseContributionState(
+                exampleId = "ex-4",
+                name = "Barbell Row",
+                totalSets = 8,
+                stimulusShare = 12,
+                heaviestWeight = 85f,
+                estimatedOneRepMax = 96f,
+                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+            ),
+            TopExerciseContributionState(
+                exampleId = "ex-5",
+                name = "Bicep Curl",
+                totalSets = 9,
+                stimulusShare = 8,
+                heaviestWeight = 22f,
+                estimatedOneRepMax = 26f,
+                category = com.grippo.core.state.examples.CategoryEnumState.ISOLATION,
+            ),
+        ),
+        topMuscles = persistentListOf(
+            TopMuscleContributionState(MuscleEnumState.QUADRICEPS, 26),
+            TopMuscleContributionState(MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL, 22),
+            TopMuscleContributionState(MuscleEnumState.LATISSIMUS_DORSI, 15),
+            TopMuscleContributionState(MuscleEnumState.GLUTEAL, 12),
+            TopMuscleContributionState(MuscleEnumState.BICEPS, 9),
+        ),
+        totalExercisesCount = 9,
+        totalMusclesCount = 7,
+        compoundRatio = 72,
+        pushRatio = 46,
+        pullRatio = 38,
+        hingeRatio = 16,
     )
 }

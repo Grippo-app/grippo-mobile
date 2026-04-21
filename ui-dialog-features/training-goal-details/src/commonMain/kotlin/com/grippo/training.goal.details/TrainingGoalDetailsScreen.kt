@@ -16,7 +16,10 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.metrics.stubGoalProgress
 import com.grippo.core.state.metrics.stubGoalProgressList
+import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
+import com.grippo.design.components.metrics.goal.GoalCalculationBreakdownCard
 import com.grippo.design.components.metrics.goal.GoalCard
 import com.grippo.design.components.metrics.goal.GoalFocusDistributionCard
 import com.grippo.design.components.metrics.goal.GoalInsightCard
@@ -100,6 +103,15 @@ internal fun TrainingGoalDetailsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     value = progress,
                 )
+            }
+
+            if (progress.hasBreakdown) {
+                item(key = "breakdown") {
+                    GoalCalculationBreakdownCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = progress,
+                    )
+                }
             }
         }
 
@@ -202,6 +214,26 @@ private fun TrainingGoalDetailsScreenOnTrackPreview() {
                     InsightItem(InsightItem.Severity.Positive, ReasonCode.StrengthShareOk),
                 ),
                 tips = persistentListOf(TipCode.StayTheCourse),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingGoalDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingGoalDetailsScreenHypertrophyPreview() {
+    val progress = stubGoalProgress(primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE)
+    PreviewContainer {
+        TrainingGoalDetailsScreen(
+            state = TrainingGoalDetailsDialogState(
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                progress = progress,
+                insights = persistentListOf(
+                    InsightItem(InsightItem.Severity.Positive, ReasonCode.HypertrophyShareOk),
+                ),
+                tips = persistentListOf(TipCode.IncreaseHypertrophyReps),
             ),
             loaders = persistentSetOf(),
             contract = TrainingGoalDetailsContract.Empty,
