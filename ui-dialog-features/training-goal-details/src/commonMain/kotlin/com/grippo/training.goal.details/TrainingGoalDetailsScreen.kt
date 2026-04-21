@@ -108,7 +108,7 @@ internal fun TrainingGoalDetailsScreen(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = AppTokens.strings.res(Res.string.goal_details_insights_title),
-                    style = AppTokens.typography.h5(),
+                    style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                 )
             }
@@ -132,7 +132,7 @@ internal fun TrainingGoalDetailsScreen(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = AppTokens.strings.res(Res.string.goal_details_tips_title),
-                    style = AppTokens.typography.h5(),
+                    style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                 )
             }

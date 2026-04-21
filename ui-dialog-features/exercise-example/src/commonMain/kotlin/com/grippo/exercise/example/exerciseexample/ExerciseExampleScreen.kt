@@ -31,7 +31,6 @@ import com.grippo.design.components.metrics.EstimatedOneRepMaxCard
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
-import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -126,11 +125,16 @@ internal fun ExerciseExampleScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-                ContentSpliter(
-                    text = AppTokens.strings.res(Res.string.achievements)
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    text = AppTokens.strings.res(Res.string.achievements),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
                 )
 
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
                 AchievementsCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -155,11 +159,16 @@ internal fun ExerciseExampleScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-                ContentSpliter(
-                    text = AppTokens.strings.res(Res.string.history)
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    text = AppTokens.strings.res(Res.string.history),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
                 )
 
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
                 state.exerciseVolume
                     ?.takeIf { it.entries.isNotEmpty() }

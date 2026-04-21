@@ -48,7 +48,7 @@ public fun EstimatedOneRepMaxCard(
 
         Text(
             text = "${latest.roundToInt()} $kg",
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary
         )
 

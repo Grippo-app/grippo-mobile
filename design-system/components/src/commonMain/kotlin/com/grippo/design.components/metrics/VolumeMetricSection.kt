@@ -35,7 +35,7 @@ public fun VolumeMetricChart(
         Text(
             modifier = Modifier.weight(1f),
             text = AppTokens.strings.res(Res.string.tonnage),
-            style = AppTokens.typography.h6(),
+            style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

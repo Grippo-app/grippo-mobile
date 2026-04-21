@@ -29,11 +29,11 @@ internal fun MuscleLoadingItem(
     val progress = (entry.value / 100f).coerceIn(0f, 1f)
 
     val labelStyle =
-        if (dominant) AppTokens.typography.h5()
+        if (dominant) AppTokens.typography.h6()
         else AppTokens.typography.b13Med()
 
     val valueStyle =
-        if (dominant) AppTokens.typography.h5()
+        if (dominant) AppTokens.typography.h6()
         else AppTokens.typography.b13Semi()
 
     val textColor =
