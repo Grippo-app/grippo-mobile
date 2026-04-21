@@ -293,6 +293,16 @@ internal class HomeViewModel(
         dialogController.show(dialog)
     }
 
+    override fun onOpenGoalDetails() {
+        val range = state.value.range.value ?: return
+
+        val dialog = DialogConfig.TrainingGoalDetails(
+            range = range
+        )
+
+        dialogController.show(dialog)
+    }
+
     override fun onOpenDigest() {
         val range = state.value.range.value ?: return
 

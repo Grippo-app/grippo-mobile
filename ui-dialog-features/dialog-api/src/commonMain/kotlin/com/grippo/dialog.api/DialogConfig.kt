@@ -117,6 +117,17 @@ public sealed class DialogConfig(
     }
 
     @Serializable
+    public data class TrainingGoalDetails(
+        val range: DateRange,
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    ) {
+        override val key: String
+            get() = buildKey("TrainingGoalDetails", range)
+    }
+
+    @Serializable
     public data class Iteration(
         val initial: IterationState,
         val number: Int,

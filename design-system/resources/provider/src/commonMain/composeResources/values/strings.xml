@@ -633,6 +633,81 @@
     <string name="goal_card_description_1">Shows how closely your recent work matches your goal.</string>
     <string name="goal_card_description_2">100 = perfect adherence.</string>
 
+    <!-- Training goal details dialog -->
+    <string name="goal_details_title">Goal details</string>
+    <string name="goal_details_subtitle">A closer look at how your training matches the goal you picked.</string>
+    <string name="goal_details_timeline_title">Timeline</string>
+    <string name="goal_details_focus_title">Focus distribution</string>
+    <string name="goal_details_focus_subtitle">Share of the work that went toward each training quality.</string>
+    <string name="goal_details_focus_strength">Strength</string>
+    <string name="goal_details_focus_hypertrophy">Hypertrophy</string>
+    <string name="goal_details_focus_endurance">Endurance</string>
+    <string name="goal_details_focus_share">%1$d%</string>
+    <string name="goal_details_insights_title">What\'s driving your score</string>
+    <string name="goal_details_tips_title">Recommendations</string>
+
+    <!-- Training goal details: reason headlines -->
+    <string name="goal_details_reason_no_data_title">Not enough data yet</string>
+    <string name="goal_details_reason_no_data_detail">Log a few trainings in this period so we can score adherence.</string>
+    <string name="goal_details_reason_too_early_title">It\'s still early</string>
+    <string name="goal_details_reason_too_early_detail">Your goal just started — a stable pattern usually takes about a week of training to show up.</string>
+    <string name="goal_details_reason_overdue_title">Target date has passed</string>
+    <string name="goal_details_reason_overdue_detail">You\'re past the original target. Consider extending the deadline or wrapping the goal up.</string>
+    <string name="goal_details_reason_almost_done_title">Home stretch</string>
+    <string name="goal_details_reason_almost_done_detail">You\'re in the final stretch. Lock in the pattern that has been working.</string>
+    <string name="goal_details_reason_completed_title">Goal reached</string>
+    <string name="goal_details_reason_completed_detail">Your training matched the plan through the full period — nice work.</string>
+    <string name="goal_details_reason_on_track_title">On track</string>
+    <string name="goal_details_reason_on_track_detail">Your recent training pattern matches the goal you chose.</string>
+    <string name="goal_details_reason_drifting_title">Slightly off</string>
+    <string name="goal_details_reason_drifting_detail">Some sessions don\'t fit the pattern this goal needs. Small adjustments will get you back.</string>
+    <string name="goal_details_reason_off_track_title">Off track</string>
+    <string name="goal_details_reason_off_track_detail">Most of your recent work goes toward a different quality than what this goal needs.</string>
+
+    <!-- Training goal details: per-axis reasons -->
+    <string name="goal_details_reason_strength_low_title">Not enough heavy work</string>
+    <string name="goal_details_reason_strength_low_detail">Low-rep, high-load sets are the key driver of getting stronger, and they\'re a small share of your volume.</string>
+    <string name="goal_details_reason_strength_ok_title">Strength focus looks right</string>
+    <string name="goal_details_reason_strength_ok_detail">A clear majority of your work is heavy enough to build strength.</string>
+
+    <string name="goal_details_reason_hypertrophy_low_title">Too little hypertrophy work</string>
+    <string name="goal_details_reason_hypertrophy_low_detail">Moderate-load, moderate-rep sets (6–12 reps) drive muscle growth — you\'re not doing enough of them.</string>
+    <string name="goal_details_reason_hypertrophy_ok_title">Hypertrophy focus looks right</string>
+    <string name="goal_details_reason_hypertrophy_ok_detail">Most of your work lives in the hypertrophy rep range.</string>
+
+    <string name="goal_details_reason_endurance_low_title">Not enough metabolic work</string>
+    <string name="goal_details_reason_endurance_low_detail">Fat-loss goals benefit from higher reps and shorter rest — you\'re leaning heavy instead.</string>
+    <string name="goal_details_reason_endurance_ok_title">Endurance emphasis is right</string>
+    <string name="goal_details_reason_endurance_ok_detail">You\'re keeping the pace high enough to drive the conditioning you need.</string>
+
+    <string name="goal_details_reason_balance_drift_title">Your axes are off balance</string>
+    <string name="goal_details_reason_balance_drift_detail">This goal rewards a rough 50/50 split between the two core qualities — you\'re leaning into one.</string>
+    <string name="goal_details_reason_balance_ok_title">Balance looks healthy</string>
+    <string name="goal_details_reason_balance_ok_detail">The two core qualities are trading weight evenly, which is what this goal needs.</string>
+
+    <string name="goal_details_reason_suppressed_axis_high_title">A third quality is crowding in</string>
+    <string name="goal_details_reason_suppressed_axis_high_detail">The quality this goal wants suppressed is taking up too much of your session time.</string>
+
+    <string name="goal_details_reason_rtt_under_title">Still ramping up slowly</string>
+    <string name="goal_details_reason_rtt_under_detail">You\'re training below the minimum work needed to rebuild capacity. Add a couple more light sessions.</string>
+    <string name="goal_details_reason_rtt_over_title">Coming back too hot</string>
+    <string name="goal_details_reason_rtt_over_detail">Volume and intensity are already high for a return phase. Pull back to protect recovery.</string>
+    <string name="goal_details_reason_rtt_in_range_title">Ramp-up pace looks right</string>
+    <string name="goal_details_reason_rtt_in_range_detail">You\'re training enough to rebuild without overshooting.</string>
+
+    <!-- Training goal details: actionable tips -->
+    <string name="goal_details_tip_add_heavy">Work in 3–5 reps at 85%+ of your 1RM on a main compound lift.</string>
+    <string name="goal_details_tip_hypertrophy_reps">Target 8–12 reps at 65–75% 1RM and do 3–4 sets per muscle group.</string>
+    <string name="goal_details_tip_metabolic">Try shorter rests, higher reps (12–20), and circuit-style finishers.</string>
+    <string name="goal_details_tip_balance_strength_hyp">Plan one heavy lower-rep day and one moderate-rep day each week.</string>
+    <string name="goal_details_tip_balance_strength_end">Alternate a strength session with a conditioning session — keep them roughly equal in volume.</string>
+    <string name="goal_details_tip_reduce_suppressed">Swap one conditioning or hypertrophy day for the axis this goal cares about.</string>
+    <string name="goal_details_tip_ramp_up">Add one more short session this week, keeping every set 2–3 reps shy of failure.</string>
+    <string name="goal_details_tip_dial_back">Cut the heaviest set off each exercise for a week and prioritize recovery.</string>
+    <string name="goal_details_tip_consistent">Aim for a steady 3 sessions a week — cadence matters more than any single workout.</string>
+    <string name="goal_details_tip_review_deadline">Revisit the target date — either extend it or close the goal and start a fresh one.</string>
+    <string name="goal_details_tip_stay_course">You\'re on pattern. Keep doing what\'s been working.</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 times a week</string>
     <string name="personalization_moderate_frequency">3–4 times a week</string>

@@ -36,6 +36,7 @@ import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.primary.goal.picker.PrimaryGoalPickerComponent
 import com.grippo.secondary.goal.picker.SecondaryGoalPickerComponent
 import com.grippo.statistics.StatisticsComponent
+import com.grippo.training.goal.details.TrainingGoalDetailsComponent
 import com.grippo.training.profile.TrainingProfileComponent
 import com.grippo.training.streak.TrainingStreakComponent
 import com.grippo.weight.picker.WeightPickerComponent
@@ -164,6 +165,14 @@ internal class DialogContentComponent(
                     componentContext = context,
                     range = router.range,
                     metricType = router.metricType,
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.TrainingGoalDetails -> Child.TrainingGoalDetails(
+                TrainingGoalDetailsComponent(
+                    componentContext = context,
+                    range = router.range,
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -366,6 +375,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class PerformanceTrend(override val component: PerformanceTrendComponent) :
+            Child(component)
+
+        data class TrainingGoalDetails(override val component: TrainingGoalDetailsComponent) :
             Child(component)
 
         data class DatePicker(override val component: DatePickerComponent) :

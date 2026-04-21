@@ -169,18 +169,13 @@ internal fun HomeScreen(
                 if (state.goalProgress != null) {
                     item(key = "goal_progress", span = { GridItemSpan(2) }) {
                         GoalCard(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenGoalDetails),
                             value = state.goalProgress,
                         )
                     }
-                } /*else {
-                    item(key = "goal_progress_empty", span = { GridItemSpan(2) }) {
-                        GoalEmptyCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = contract::onAddGoal
-                        )
-                    }
-                }*/
+                }
 
                 if (state.muscleLoad != null || state.streak != null) {
                     item(

@@ -630,6 +630,81 @@
     <string name="goal_card_description_1">Показывает, насколько последние тренировки соответствуют цели.</string>
     <string name="goal_card_description_2">100 — полное соответствие.</string>
 
+    <!-- Training goal details dialog -->
+    <string name="goal_details_title">Детали цели</string>
+    <string name="goal_details_subtitle">Разбираем, насколько твои тренировки совпадают с выбранной целью.</string>
+    <string name="goal_details_timeline_title">Хронология</string>
+    <string name="goal_details_focus_title">Распределение фокуса</string>
+    <string name="goal_details_focus_subtitle">Какая доля работы ушла на каждое качество.</string>
+    <string name="goal_details_focus_strength">Сила</string>
+    <string name="goal_details_focus_hypertrophy">Гипертрофия</string>
+    <string name="goal_details_focus_endurance">Выносливость</string>
+    <string name="goal_details_focus_share">%1$d%</string>
+    <string name="goal_details_insights_title">Что влияет на счёт</string>
+    <string name="goal_details_tips_title">Рекомендации</string>
+
+    <!-- Training goal details: reason headlines -->
+    <string name="goal_details_reason_no_data_title">Пока мало данных</string>
+    <string name="goal_details_reason_no_data_detail">Добавь несколько тренировок за этот период, чтобы мы оценили соответствие.</string>
+    <string name="goal_details_reason_too_early_title">Ещё слишком рано</string>
+    <string name="goal_details_reason_too_early_detail">Цель только началась — устойчивый паттерн обычно проявляется примерно через неделю тренировок.</string>
+    <string name="goal_details_reason_overdue_title">Дата финиша прошла</string>
+    <string name="goal_details_reason_overdue_detail">Ты прошёл исходный дедлайн. Продли срок или закрой цель.</string>
+    <string name="goal_details_reason_almost_done_title">Финишная прямая</string>
+    <string name="goal_details_reason_almost_done_detail">Ты на финишной прямой. Закрепи то, что уже работает.</string>
+    <string name="goal_details_reason_completed_title">Цель достигнута</string>
+    <string name="goal_details_reason_completed_detail">Тренировки соответствовали плану весь период — отличная работа.</string>
+    <string name="goal_details_reason_on_track_title">В графике</string>
+    <string name="goal_details_reason_on_track_detail">Последние тренировки совпадают с выбранной целью.</string>
+    <string name="goal_details_reason_drifting_title">Немного в сторону</string>
+    <string name="goal_details_reason_drifting_detail">Часть сессий не вписывается в нужный паттерн. Небольшие правки вернут тебя в строй.</string>
+    <string name="goal_details_reason_off_track_title">Не по курсу</string>
+    <string name="goal_details_reason_off_track_detail">Большая часть работы уходит в другую сторону, чем нужно этой цели.</string>
+
+    <!-- Training goal details: per-axis reasons -->
+    <string name="goal_details_reason_strength_low_title">Мало тяжёлой работы</string>
+    <string name="goal_details_reason_strength_low_detail">Малоповторные подходы с большим весом — главный драйвер силы, а у тебя их доля невелика.</string>
+    <string name="goal_details_reason_strength_ok_title">Фокус на силу выдержан</string>
+    <string name="goal_details_reason_strength_ok_detail">Большая часть работы достаточно тяжёлая, чтобы развивать силу.</string>
+
+    <string name="goal_details_reason_hypertrophy_low_title">Слишком мало работы на массу</string>
+    <string name="goal_details_reason_hypertrophy_low_detail">Средний вес на 6–12 повторений — двигатель роста мышц, а у тебя таких подходов мало.</string>
+    <string name="goal_details_reason_hypertrophy_ok_title">Фокус на гипертрофию выдержан</string>
+    <string name="goal_details_reason_hypertrophy_ok_detail">Большая часть работы лежит в диапазоне гипертрофии.</string>
+
+    <string name="goal_details_reason_endurance_low_title">Недостаточно метаболической работы</string>
+    <string name="goal_details_reason_endurance_low_detail">Для жиросжигания полезнее больше повторений и короче отдых — а ты уходишь в тяжёлые веса.</string>
+    <string name="goal_details_reason_endurance_ok_title">Акцент на выносливость выдержан</string>
+    <string name="goal_details_reason_endurance_ok_detail">Темп держится достаточно высоко, чтобы давать нужную кондицию.</string>
+
+    <string name="goal_details_reason_balance_drift_title">Оси разбалансированы</string>
+    <string name="goal_details_reason_balance_drift_detail">Этой цели нужен примерно равный баланс между двумя ключевыми качествами — ты тянешь в одну сторону.</string>
+    <string name="goal_details_reason_balance_ok_title">Баланс выглядит здорово</string>
+    <string name="goal_details_reason_balance_ok_detail">Два ключевых качества распределены примерно поровну — как и нужно этой цели.</string>
+
+    <string name="goal_details_reason_suppressed_axis_high_title">Третье качество лезет в кадр</string>
+    <string name="goal_details_reason_suppressed_axis_high_detail">Качество, которое должно быть приглушено, занимает слишком много времени сессии.</string>
+
+    <string name="goal_details_reason_rtt_under_title">Разгон идёт слишком медленно</string>
+    <string name="goal_details_reason_rtt_under_detail">Ты тренируешься ниже минимума, нужного для восстановления формы. Добавь пару лёгких сессий.</string>
+    <string name="goal_details_reason_rtt_over_title">Возвращаешься слишком горячо</string>
+    <string name="goal_details_reason_rtt_over_detail">Для фазы возврата объём и интенсивность уже высокие. Сбавь, чтобы сохранить восстановление.</string>
+    <string name="goal_details_reason_rtt_in_range_title">Темп разгона подходящий</string>
+    <string name="goal_details_reason_rtt_in_range_detail">Ты тренируешься достаточно, чтобы восстановить форму без перегиба.</string>
+
+    <!-- Training goal details: actionable tips -->
+    <string name="goal_details_tip_add_heavy">Добавь 3–5 повторений на 85%+ от 1ПМ в основном базовом движении.</string>
+    <string name="goal_details_tip_hypertrophy_reps">Держи 8–12 повторений на 65–75% от 1ПМ и 3–4 подхода на мышечную группу.</string>
+    <string name="goal_details_tip_metabolic">Попробуй короче отдых, больше повторений (12–20) и круговые добивающие.</string>
+    <string name="goal_details_tip_balance_strength_hyp">Запланируй один тяжёлый малоповторный день и один среднеповторный в неделю.</string>
+    <string name="goal_details_tip_balance_strength_end">Чередуй силовую и кондиционную сессии — держи их примерно равными по объёму.</string>
+    <string name="goal_details_tip_reduce_suppressed">Замени одну кондиционную или гипертрофическую тренировку на ось, важную для цели.</string>
+    <string name="goal_details_tip_ramp_up">Добавь ещё одну короткую тренировку на неделе, останавливайся за 2–3 повторения до отказа.</string>
+    <string name="goal_details_tip_dial_back">Убери самый тяжёлый подход из каждого упражнения на неделю и сделай упор на восстановление.</string>
+    <string name="goal_details_tip_consistent">Держи стабильные 3 тренировки в неделю — регулярность важнее отдельного ударного дня.</string>
+    <string name="goal_details_tip_review_deadline">Пересмотри дату финиша — продли её или закрой цель и начни новую.</string>
+    <string name="goal_details_tip_stay_course">Ты держишь паттерн. Продолжай в том же духе.</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>
     <string name="personalization_moderate_frequency">3–4 раза в неделю</string>
