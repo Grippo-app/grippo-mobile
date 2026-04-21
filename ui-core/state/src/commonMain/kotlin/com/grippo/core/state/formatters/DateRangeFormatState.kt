@@ -72,7 +72,7 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
         public fun of(range: DateRange): DateRangeFormatState {
             val kind = DateRangePresets.classify(range)
             val display = DateRangeFormatter.format(range, kind)
-            return if (isPresetBucket(kind)) {
+            return if (DateRangeValidator.isValid(range, kind)) {
                 Valid(display = display, value = range, kind = kind)
             } else {
                 Invalid(display = display, value = range, kind = kind)
@@ -88,7 +88,7 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             val range = DateRangePresets.resolve(kind)
                 ?: return Empty(kind = kind)
             val display = DateRangeFormatter.format(range, kind)
-            return if (isPresetBucket(kind)) {
+            return if (DateRangeValidator.isValid(range, kind)) {
                 Valid(display = display, value = range, kind = kind)
             } else {
                 Invalid(display = display, value = range, kind = kind)
@@ -103,17 +103,20 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
                 return Empty(kind = DateRangeKind.Custom)
             }
             val range = DateRange(from = from, to = to)
-            val display = DateRangeFormatter.format(range, DateRangeKind.Custom)
-            val isError = range.from > range.to
-            return if (isError) {
-                Valid(display = display, value = range, kind = DateRangeKind.Custom)
+            val kind = DateRangeKind.Custom
+            val display = DateRangeFormatter.format(range, kind)
+            return if (DateRangeValidator.isValid(range, kind)) {
+                Valid(display = display, value = range, kind = kind)
             } else {
-                Invalid(
-                    display = display,
-                    value = range,
-                    kind = DateRangeKind.Custom,
-                )
+                Invalid(display = display, value = range, kind = kind)
             }
+        }
+    }
+
+    private object DateRangeValidator {
+        fun isValid(range: DateRange, kind: DateRangeKind): Boolean {
+            if (!range.isWellFormed()) return false
+            return isPresetBucket(kind)
         }
 
         private fun isPresetBucket(kind: DateRangeKind): Boolean = when (kind) {

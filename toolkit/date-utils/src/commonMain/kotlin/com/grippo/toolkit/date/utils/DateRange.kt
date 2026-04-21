@@ -94,7 +94,3 @@ public object DateRangePresets {
         return a.from == b.from && a.to == b.to
     }
 }
-
-public operator fun DateRange.contains(ts: LocalDateTime): Boolean {
-    return (ts >= from) && (ts <= to)
-}

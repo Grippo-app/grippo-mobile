@@ -1,5 +1,6 @@
 package com.grippo.toolkit.date.utils
 
+import com.grippo.toolkit.date.utils.internal.DayTime
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
