@@ -1,7 +1,6 @@
 package com.grippo.design.components.metrics.engagement.digest
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
@@ -17,20 +16,12 @@ import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.total
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
-import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 public fun DigestCard(
     modifier: Modifier = Modifier,
     value: DigestState,
 ) {
-    val subtitle = remember(value.start, value.end) {
-        val from = DateTimeUtils.format(value.start, DateFormat.DateOnly.DateDdMmm)
-        val to = DateTimeUtils.format(value.end, DateFormat.DateOnly.DateDdMmm)
-        "$from - $to"
-    }
-
     val style = DigestCardStyle(
         radius = AppTokens.dp.metrics.engagement.digest.content.radius,
         horizontalPadding = AppTokens.dp.metrics.engagement.digest.content.horizontalPadding,
@@ -44,7 +35,7 @@ public fun DigestCard(
         icon = AppTokens.icons.Trophy,
         accentColor = AppTokens.colors.brand.color6,
         title = AppTokens.strings.res(Res.string.total),
-        subtitle = subtitle,
+        subtitle = value.range.display,
         metrics = listOf(
             DigestMetric(
                 label = AppTokens.strings.res(Res.string.trainings),
@@ -52,7 +43,7 @@ public fun DigestCard(
             ),
             DigestMetric(
                 label = AppTokens.strings.res(Res.string.duration),
-                value = DateTimeUtils.format(value.duration)
+                value = value.duration.display
             ),
             DigestMetric(
                 label = AppTokens.strings.res(Res.string.volume),

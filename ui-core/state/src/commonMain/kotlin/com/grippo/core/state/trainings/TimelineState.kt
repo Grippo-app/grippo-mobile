@@ -2,6 +2,7 @@ package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.toolkit.date.utils.DateFormat
@@ -13,7 +14,6 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
-import kotlin.time.Duration
 
 @Immutable
 public enum class TrainingPosition {
@@ -68,7 +68,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public sealed interface Monthly : TimelineState {
-        public val month: LocalDate
+        public val month: DateFormatState
     }
 
     @Immutable
@@ -107,7 +107,7 @@ public sealed interface TimelineState {
     public data class DateTime(
         val startAt: DateFormatState,
         val createAt: DateFormatState,
-        val duration: Duration,
+        val duration: DurationFormatState,
         val trainingId: String,
         override val position: TrainingPosition,
         override val key: String,
@@ -124,7 +124,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public data class WeeklyTrainingsDay(
-        val date: LocalDate,
+        val date: DateFormatState,
         val trainings: ImmutableList<TrainingState>,
         override val position: TrainingPosition,
         override val key: String,
@@ -143,15 +143,15 @@ public sealed interface TimelineState {
     @Immutable
     public data class MonthlyDigest(
         val summary: DigestState,
-        override val month: LocalDate,
+        override val month: DateFormatState,
         override val key: String,
         override val position: TrainingPosition = TrainingPosition.EMPTY,
     ) : Monthly
 
     @Immutable
     public data class MonthlyTrainingsDay(
-        val date: LocalDate,
-        override val month: LocalDate,
+        val date: DateFormatState,
+        override val month: DateFormatState,
         val trainings: ImmutableList<TrainingState>,
         override val key: String,
         override val position: TrainingPosition,
@@ -180,7 +180,10 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 
         val end = training.createdAt.value
 
-        val start = end?.let { DateTimeUtils.minus(it, training.duration) }
+        val durationValue = training.duration.value
+        val start = end?.let { endValue ->
+            durationValue?.let { DateTimeUtils.minus(endValue, it) }
+        }
 
         values += TimelineState.DateTime(
             startAt = DateFormatState.of(
@@ -208,12 +211,17 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
     val monthRange = DateRangePresets.monthly()
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
+    val monthReferenceFormatted = DateFormatState.of(
+        value = DateTimeUtils.startOfDay(monthReference),
+        range = DateRangePresets.infinity(),
+        format = DateFormat.DateOnly.MmmYyyy,
+    )
     val digest = stubDigest()
     val values = mutableListOf<TimelineState>()
 
     values += TimelineState.MonthlyDigest(
         summary = digest,
-        month = monthReference,
+        month = monthReferenceFormatted,
         key = "stub-monthly-digest",
     )
 
@@ -229,8 +237,12 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
         }
 
         TimelineState.MonthlyTrainingsDay(
-            date = date,
-            month = monthReference,
+            date = DateFormatState.of(
+                value = DateTimeUtils.startOfDay(date),
+                range = DateRangePresets.infinity(),
+                format = DateFormat.DateOnly.DateDdMmm,
+            ),
+            month = monthReferenceFormatted,
             trainings = trainings,
             key = "stub-monthly-day-$date",
             position = position,

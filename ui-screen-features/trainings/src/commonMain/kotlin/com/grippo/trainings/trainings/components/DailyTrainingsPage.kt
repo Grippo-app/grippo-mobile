@@ -31,7 +31,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Menu
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -110,7 +109,7 @@ private fun DailyTimelineItem(
                 Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
 
                 Text(
-                    text = DateTimeUtils.format(value.duration),
+                    text = value.duration.display,
                     style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.tertiary
                 )

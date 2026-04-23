@@ -11,7 +11,7 @@ public fun List<TrainingState>.toDomain(): List<SetTraining> {
 public fun TrainingState.toDomain(): SetTraining? {
     return SetTraining(
         exercises = exercises.toDomain(),
-        duration = duration,
+        duration = duration.value ?: return null,
         repetitions = total.repetitions.value ?: return null,
         volume = total.volume.value ?: return null,
         intensity = total.intensity.value ?: return null

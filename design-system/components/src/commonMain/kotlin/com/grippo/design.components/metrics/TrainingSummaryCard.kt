@@ -33,7 +33,6 @@ import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.overview
 import com.grippo.design.resources.provider.total_value
 import com.grippo.design.resources.provider.value_sets
-import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 public fun TrainingSummaryCard(
@@ -79,9 +78,7 @@ public fun TrainingSummaryCard(
             )
         }
 
-        val durationText = remember(training.duration) {
-            DateTimeUtils.format(training.duration)
-        }
+        val durationText = training.duration.display
         val setsCount = remember(training.exercises) {
             training.exercises.sumOf { e -> e.iterations.sumOf { i -> i.repetitions.value ?: 0 } }
         }

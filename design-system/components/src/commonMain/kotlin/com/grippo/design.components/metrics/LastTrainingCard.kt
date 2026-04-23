@@ -31,7 +31,6 @@ import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.last_workout
 import com.grippo.design.resources.provider.plate
 import com.grippo.design.resources.provider.plus_value_more
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
@@ -47,7 +46,7 @@ public fun LastTrainingCard(
         buildString {
             append(value.createdAt.display)
             append(" · ")
-            append(DateTimeUtils.format(value.duration))
+            append(value.duration.display)
             append(" · ")
             append(volume)
         }

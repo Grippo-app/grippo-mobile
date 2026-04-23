@@ -3,6 +3,7 @@ package com.grippo.core.state.trainings
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.toolkit.date.utils.DateFormat
@@ -10,7 +11,6 @@ import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 @Serializable
 public data class TrainingState(
     val id: String,
-    val duration: Duration,
+    val duration: DurationFormatState,
     val createdAt: DateFormatState,
     @Serializable(with = ImmutableListSerializer::class)
     val exercises: ImmutableList<ExerciseState>,
@@ -27,7 +27,7 @@ public data class TrainingState(
 
 public fun stubTraining(): TrainingState = TrainingState(
     id = Uuid.random().toString(),
-    duration = 10000L.minutes,
+    duration = DurationFormatState.of(75L.minutes),
     createdAt = DateFormatState.of(
         value = DateRangePresets.daily().from,
         range = DateRangePresets.infinity(),
