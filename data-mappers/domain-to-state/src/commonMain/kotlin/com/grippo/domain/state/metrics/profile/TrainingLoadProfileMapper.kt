@@ -6,11 +6,11 @@ import com.grippo.core.state.metrics.profile.TrainingDimensionScoreState as Stat
 import com.grippo.core.state.metrics.profile.TrainingLoadProfileArtifactsState as StateTrainingLoadProfileArtifacts
 import com.grippo.core.state.metrics.profile.TrainingLoadProfileState as StateTrainingLoadProfile
 import com.grippo.core.state.metrics.profile.TrainingProfileKindState as StateTrainingProfileKind
-import com.grippo.data.features.api.metrics.profile.TrainingDimensionKind as DomainTrainingDimensionKind
-import com.grippo.data.features.api.metrics.profile.TrainingDimensionScore as DomainTrainingDimensionScore
-import com.grippo.data.features.api.metrics.profile.TrainingLoadProfile as DomainTrainingLoadProfile
-import com.grippo.data.features.api.metrics.profile.TrainingLoadProfileArtifacts as DomainTrainingLoadProfileArtifacts
-import com.grippo.data.features.api.metrics.profile.TrainingProfileKind as DomainTrainingProfileKind
+import com.grippo.data.features.api.metrics.profile.models.TrainingDimensionKind as DomainTrainingDimensionKind
+import com.grippo.data.features.api.metrics.profile.models.TrainingDimensionScore as DomainTrainingDimensionScore
+import com.grippo.data.features.api.metrics.profile.models.TrainingLoadProfile as DomainTrainingLoadProfile
+import com.grippo.data.features.api.metrics.profile.models.TrainingLoadProfileArtifacts as DomainTrainingLoadProfileArtifacts
+import com.grippo.data.features.api.metrics.profile.models.TrainingProfileKind as DomainTrainingProfileKind
 
 public fun DomainTrainingLoadProfile?.toState(): StateTrainingLoadProfile? {
     val value = this ?: return null

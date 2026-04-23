@@ -4,7 +4,7 @@ import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.metrics.distribution.ExerciseDistributionEntryState
 import com.grippo.core.state.metrics.distribution.ExerciseDistributionState
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
-import com.grippo.data.features.api.metrics.distribution.ExerciseDistribution
+import com.grippo.data.features.api.metrics.distribution.models.ExerciseDistribution
 import com.grippo.domain.state.exercise.example.toState
 import kotlinx.collections.immutable.toPersistentList
 

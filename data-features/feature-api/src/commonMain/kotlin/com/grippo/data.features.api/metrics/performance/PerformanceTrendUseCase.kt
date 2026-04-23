@@ -1,6 +1,8 @@
 package com.grippo.data.features.api.metrics.performance
 
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
+import com.grippo.data.features.api.metrics.performance.models.PerformanceMetric
+import com.grippo.data.features.api.metrics.performance.models.PerformanceTrendStatus
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.user.UserFeature
 import kotlinx.coroutines.flow.firstOrNull

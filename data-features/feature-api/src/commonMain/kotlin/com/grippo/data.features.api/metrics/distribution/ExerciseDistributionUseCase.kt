@@ -3,6 +3,9 @@ package com.grippo.data.features.api.metrics.distribution
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
+import com.grippo.data.features.api.metrics.distribution.models.DistributionWeighting
+import com.grippo.data.features.api.metrics.distribution.models.ExerciseDistribution
+import com.grippo.data.features.api.metrics.distribution.models.ExerciseDistributionEntry
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training

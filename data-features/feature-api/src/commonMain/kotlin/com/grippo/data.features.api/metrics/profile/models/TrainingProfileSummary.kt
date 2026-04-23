@@ -1,4 +1,4 @@
-package com.grippo.data.features.api.metrics.profile
+package com.grippo.data.features.api.metrics.profile.models
 
 public data class TrainingLoadProfile(
     val kind: TrainingProfileKind,

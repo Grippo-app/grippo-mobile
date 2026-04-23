@@ -1,5 +1,6 @@
 package com.grippo.data.features.api.metrics.volume
 
+import com.grippo.data.features.api.metrics.volume.models.TrainingTotal
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.SetExercise

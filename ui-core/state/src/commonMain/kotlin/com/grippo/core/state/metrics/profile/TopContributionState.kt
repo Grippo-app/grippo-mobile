@@ -4,11 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.muscles.MuscleEnumState
 
-/**
- * UI-ready version of a single exercise's contribution to the period's
- * training stimulus. Shared by goal adherence (details screen) and the
- * training-profile summary.
- */
 @Immutable
 public data class TopExerciseContributionState(
     val exampleId: String,
@@ -20,11 +15,6 @@ public data class TopExerciseContributionState(
     val category: CategoryEnumState?,
 )
 
-/**
- * UI-ready version of a single muscle's contribution to the period's
- * training stimulus. Shared by goal adherence (details screen) and the
- * training-profile summary.
- */
 @Immutable
 public data class TopMuscleContributionState(
     val muscle: MuscleEnumState,

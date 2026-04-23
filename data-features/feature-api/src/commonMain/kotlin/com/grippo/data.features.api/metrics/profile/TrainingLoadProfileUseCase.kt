@@ -7,6 +7,11 @@ import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.data.features.api.metrics.profile.models.TopExerciseContribution
 import com.grippo.data.features.api.metrics.profile.models.TopMuscleContribution
+import com.grippo.data.features.api.metrics.profile.models.TrainingDimensionKind
+import com.grippo.data.features.api.metrics.profile.models.TrainingDimensionScore
+import com.grippo.data.features.api.metrics.profile.models.TrainingLoadProfile
+import com.grippo.data.features.api.metrics.profile.models.TrainingLoadProfileArtifacts
+import com.grippo.data.features.api.metrics.profile.models.TrainingProfileKind
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration

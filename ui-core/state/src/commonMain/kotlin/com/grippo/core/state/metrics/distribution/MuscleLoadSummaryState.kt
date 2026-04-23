@@ -4,6 +4,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscle_load_summary_action_balanced
+import com.grippo.design.resources.provider.muscle_load_summary_action_clear_split_no_target
+import com.grippo.design.resources.provider.muscle_load_summary_action_clear_split_with_target
+import com.grippo.design.resources.provider.muscle_load_summary_action_mild_bias_no_target
+import com.grippo.design.resources.provider.muscle_load_summary_action_mild_bias_with_target
+import com.grippo.design.resources.provider.muscle_load_summary_action_strong_focus_no_target
+import com.grippo.design.resources.provider.muscle_load_summary_action_strong_focus_with_target
+import com.grippo.design.resources.provider.muscle_load_summary_assist_suppressed
+import com.grippo.design.resources.provider.muscle_load_summary_empty
+import com.grippo.design.resources.provider.muscle_load_summary_headline_balanced
+import com.grippo.design.resources.provider.muscle_load_summary_headline_clear_split
+import com.grippo.design.resources.provider.muscle_load_summary_headline_mild_bias
+import com.grippo.design.resources.provider.muscle_load_summary_headline_strong_focus
+import com.grippo.design.resources.provider.muscle_load_summary_note
+import com.grippo.design.resources.provider.muscle_load_summary_second_driver
+import com.grippo.design.resources.provider.muscle_load_summary_stimulus_higher_than_volume
+import com.grippo.design.resources.provider.muscle_load_summary_stimulus_volume_match
+import com.grippo.design.resources.provider.muscle_load_summary_tail_with_weakest
+import com.grippo.design.resources.provider.muscle_load_summary_tail_without_weakest
+import com.grippo.design.resources.provider.muscle_load_summary_top_group_fallback
+import com.grippo.design.resources.provider.muscle_load_summary_top_muscle
+import com.grippo.design.resources.provider.muscle_load_summary_volume_higher_than_stimulus
+import com.grippo.design.resources.provider.muscle_load_summary_weakest_group_fallback
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
@@ -25,7 +50,7 @@ public data class MuscleLoadSummaryState(
         val stimulusMuscles = perMuscle.entries.sortedByDescending { it.value }
 
         if (stimulusGroups.isEmpty() && stimulusMuscles.isEmpty()) {
-            return "Log a workout to see your muscle load."
+            return AppTokens.strings.res(Res.string.muscle_load_summary_empty)
         }
 
         val top1 = groupDominance.top1SharePercent.coerceIn(0f, 100f)
@@ -45,7 +70,8 @@ public data class MuscleLoadSummaryState(
         val weakestGroupEntry = stimulusGroups.lastOrNull()
 
         val topGroup = topGroupEntry?.group
-        val topGroupName = topGroup?.title()?.text() ?: "top group"
+        val topGroupName = topGroup?.title()?.text()
+            ?: AppTokens.strings.res(Res.string.muscle_load_summary_top_group_fallback)
 
         val weakestGroupName = weakestGroupEntry?.group?.title()?.text()
         val weakestGroupShare = weakestGroupEntry?.value?.coerceIn(0f, 100f)
@@ -63,60 +89,81 @@ public data class MuscleLoadSummaryState(
             weakestShare = weakestGroupShare
         )
 
-        val note =
-            "Note: stimulus-weighted load. Compounds get a small boost; tiny shares are damped; small/sensitive muscles are capped."
+        val note = AppTokens.strings.res(Res.string.muscle_load_summary_note)
 
         val headline = when {
-            top1 >= 60f ->
-                "Strong focus: $topGroupName ~${top1i}% (top-2 ~${top2i}%)."
+            top1 >= 60f -> AppTokens.strings.res(
+                Res.string.muscle_load_summary_headline_strong_focus,
+                topGroupName, top1i, top2i
+            )
 
-            top2 >= 80f ->
-                "Clear split: top-2 ~${top2i}% (top ~${top1i}%, second ~${secondI}%)."
+            top2 >= 80f -> AppTokens.strings.res(
+                Res.string.muscle_load_summary_headline_clear_split,
+                top2i, top1i, secondI
+            )
 
-            top1 <= 42f && top2 <= 70f ->
-                "Balanced: top ~${top1i}%, top-2 ~${top2i}%."
+            top1 <= 42f && top2 <= 70f -> AppTokens.strings.res(
+                Res.string.muscle_load_summary_headline_balanced,
+                top1i, top2i
+            )
 
-            else ->
-                "Mild bias: top ~${top1i}%, top-2 ~${top2i}% (rest ~${restI}%)."
+            else -> AppTokens.strings.res(
+                Res.string.muscle_load_summary_headline_mild_bias,
+                top1i, top2i, restI
+            )
         }
 
         val actionable = when {
             top1 >= 60f -> {
                 val target = weakestGroupName
                 if (target != null) {
-                    "If this is the goal, keep it 2-3 weeks. If not: add 2-4 sets/week for $target until rest share is above ~25%."
+                    AppTokens.strings.res(
+                        Res.string.muscle_load_summary_action_strong_focus_with_target,
+                        target
+                    )
                 } else {
-                    "If this is the goal, keep it 2-3 weeks. If not: add 2-4 sets/week to the least trained group until rest share is above ~25%."
+                    AppTokens.strings.res(Res.string.muscle_load_summary_action_strong_focus_no_target)
                 }
             }
 
             top2 >= 80f -> {
                 val target = weakestGroupName
                 if (target != null) {
-                    "Good split. To avoid lag: keep 1-3 sets/week for $target and other low-share groups."
+                    AppTokens.strings.res(
+                        Res.string.muscle_load_summary_action_clear_split_with_target,
+                        target
+                    )
                 } else {
-                    "Good split. To avoid lag: keep 1-3 sets/week for low-share groups."
+                    AppTokens.strings.res(Res.string.muscle_load_summary_action_clear_split_no_target)
                 }
             }
 
             top1 <= 42f && top2 <= 70f -> {
-                "Solid base. If progress stalls: pick one group and add 2-3 sets/week."
+                AppTokens.strings.res(Res.string.muscle_load_summary_action_balanced)
             }
 
             else -> {
                 val target = weakestGroupName
                 if (target != null) {
-                    "If you want it cleaner: add 1-2 sets per session to $target (or whichever is lowest) until top-2 is ~70-75%."
+                    AppTokens.strings.res(
+                        Res.string.muscle_load_summary_action_mild_bias_with_target,
+                        target
+                    )
                 } else {
-                    "If you want it cleaner: add 1-2 sets per session to the lowest-share group until top-2 is ~70-75%."
+                    AppTokens.strings.res(Res.string.muscle_load_summary_action_mild_bias_no_target)
                 }
             }
         }
 
+        val topMuscleLine = if (topMuscleName != null && topMusclePercent != null) {
+            AppTokens.strings.res(
+                Res.string.muscle_load_summary_top_muscle,
+                topMuscleName, topMusclePercent
+            )
+        } else null
+
         val extra = buildString {
-            if (topMuscleName != null && topMusclePercent != null) {
-                append("Top muscle: $topMuscleName (~$topMusclePercent%). ")
-            }
+            if (!topMuscleLine.isNullOrBlank()) append(topMuscleLine).append(" ")
             if (!volumeStyleHint.isNullOrBlank()) append(volumeStyleHint).append(" ")
             if (!assistSuppressionHint.isNullOrBlank()) append(assistSuppressionHint).append(" ")
             if (!tailHint.isNullOrBlank()) append(tailHint).append(" ")
@@ -140,18 +187,17 @@ public data class MuscleLoadSummaryState(
         val delta = v - s
 
         return when {
-            delta >= 8f ->
-                "Volume is higher than stimulus for ${
-                    topGroup.title().text()
-                }. Lots of tonnage, less focus. For size: add 1-2 back-off sets. For strength: keep it, but keep one heavy top set."
+            delta >= 8f -> AppTokens.strings.res(
+                Res.string.muscle_load_summary_volume_higher_than_stimulus,
+                topGroup.title().text()
+            )
 
-            delta <= -8f ->
-                "Stimulus is higher than volume for ${
-                    topGroup.title().text()
-                }. More effort with less tonnage. For strength: add a heavier top set. For size: keep it and add 1 set."
+            delta <= -8f -> AppTokens.strings.res(
+                Res.string.muscle_load_summary_stimulus_higher_than_volume,
+                topGroup.title().text()
+            )
 
-            else ->
-                "Stimulus and volume match for the top group."
+            else -> AppTokens.strings.res(Res.string.muscle_load_summary_stimulus_volume_match)
         }
     }
 
@@ -187,7 +233,9 @@ public data class MuscleLoadSummaryState(
 
         if (likelyAssistGroups.isEmpty()) {
             val second = secondGroupEntry?.group?.title()?.text()
-            return if (second != null) "Second driver: $second." else null
+            return if (second != null) {
+                AppTokens.strings.res(Res.string.muscle_load_summary_second_driver, second)
+            } else null
         }
 
         val assistStimulus = perGroup.entries
@@ -205,14 +253,17 @@ public data class MuscleLoadSummaryState(
         val isSuppressed = assistStimulus <= 10f && assistVolume >= 12f
 
         return if (isSuppressed) {
-            "Assist groups look quiet - expected. This score dampens tiny shares, so compounds won't inflate arms/shoulders. If you want them to grow, add 2-6 isolation sets/week."
+            AppTokens.strings.res(Res.string.muscle_load_summary_assist_suppressed)
         } else {
             val second = secondGroupEntry?.group?.title()?.text()
-            if (second != null) "Second driver: $second." else null
+            if (second != null) {
+                AppTokens.strings.res(Res.string.muscle_load_summary_second_driver, second)
+            } else null
         }
     }
 
 
+    @Composable
     private fun buildTailHint(
         restShare: Float,
         weakestGroupName: String?,
@@ -221,13 +272,20 @@ public data class MuscleLoadSummaryState(
         val rest = restShare.coerceIn(0f, 100f)
         if (rest >= 28f) return null
 
-        val wName = weakestGroupName ?: "the weakest group"
+        val wName = weakestGroupName
+            ?: AppTokens.strings.res(Res.string.muscle_load_summary_weakest_group_fallback)
         val wShare = weakestShare?.coerceIn(0f, 100f)?.roundToInt()?.coerceIn(0, 100)
 
         return if (wShare != null) {
-            "Low tail: remaining groups ~${rest.roundToInt()}%. $wName ~${wShare}%. Consider a short maintenance block."
+            AppTokens.strings.res(
+                Res.string.muscle_load_summary_tail_with_weakest,
+                rest.roundToInt(), wName, wShare
+            )
         } else {
-            "Low tail: remaining groups ~${rest.roundToInt()}%. Consider a short maintenance block."
+            AppTokens.strings.res(
+                Res.string.muscle_load_summary_tail_without_weakest,
+                rest.roundToInt()
+            )
         }
     }
 }

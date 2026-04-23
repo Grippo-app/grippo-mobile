@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.math.min
 import com.grippo.core.state.metrics.performance.ExerciseSpotlightState as StateExerciseSpotlight
-import com.grippo.data.features.api.metrics.performance.ExerciseSpotlight as DomainExerciseSpotlight
+import com.grippo.data.features.api.metrics.performance.models.ExerciseSpotlight as DomainExerciseSpotlight
 
 public fun List<DomainExerciseSpotlight>.toState(): ImmutableList<StateExerciseSpotlight> {
     return map { it.toState() }.toPersistentList()

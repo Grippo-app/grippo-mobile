@@ -2,7 +2,7 @@ package com.grippo.domain.state.metrics.performance
 
 import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxEntryState
 import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxState
-import com.grippo.data.features.api.metrics.performance.EstimatedOneRepMaxSeries
+import com.grippo.data.features.api.metrics.performance.models.EstimatedOneRepMaxSeries
 import kotlinx.collections.immutable.toPersistentList
 
 public fun EstimatedOneRepMaxSeries?.toState(): EstimatedOneRepMaxState? {

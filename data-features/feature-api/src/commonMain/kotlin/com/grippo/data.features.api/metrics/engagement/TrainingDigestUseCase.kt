@@ -1,5 +1,6 @@
 package com.grippo.data.features.api.metrics.engagement
 
+import com.grippo.data.features.api.metrics.engagement.models.TrainingDigestResult
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.toolkit.date.utils.DateRange
 import kotlin.time.Duration

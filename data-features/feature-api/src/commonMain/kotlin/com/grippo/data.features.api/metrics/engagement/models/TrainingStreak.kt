@@ -1,4 +1,4 @@
-package com.grippo.data.features.api.metrics.engagement
+package com.grippo.data.features.api.metrics.engagement.models
 
 import kotlinx.datetime.LocalDateTime
 

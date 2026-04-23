@@ -2,7 +2,7 @@ package com.grippo.domain.state.metrics.volume
 
 import com.grippo.core.state.metrics.volume.VolumeSeriesEntryState
 import com.grippo.core.state.metrics.volume.VolumeSeriesState
-import com.grippo.data.features.api.metrics.volume.VolumeSeries
+import com.grippo.data.features.api.metrics.volume.models.VolumeSeries
 import kotlinx.collections.immutable.toPersistentList
 
 public fun VolumeSeries?.toState(): VolumeSeriesState? {

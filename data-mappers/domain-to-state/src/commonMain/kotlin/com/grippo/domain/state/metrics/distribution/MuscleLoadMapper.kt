@@ -4,8 +4,8 @@ import com.grippo.domain.state.muscles.toState
 import com.grippo.core.state.metrics.distribution.MuscleLoadDominanceState as StateMuscleLoadDominance
 import com.grippo.core.state.metrics.distribution.MuscleLoadMetaState as StateMuscleLoadMeta
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState as StateMuscleLoadSummary
-import com.grippo.data.features.api.metrics.distribution.MuscleLoadMeta as DomainMuscleLoadMeta
-import com.grippo.data.features.api.metrics.distribution.MuscleLoadSummary as DomainMuscleLoadSummary
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadMeta as DomainMuscleLoadMeta
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary as DomainMuscleLoadSummary
 
 public fun DomainMuscleLoadSummary.toState(): StateMuscleLoadSummary {
     return StateMuscleLoadSummary(

@@ -1,4 +1,4 @@
-package com.grippo.data.features.api.metrics.performance
+package com.grippo.data.features.api.metrics.performance.models
 
 import kotlinx.datetime.LocalDateTime
 

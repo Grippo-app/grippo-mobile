@@ -165,15 +165,6 @@ public data class TrainingDimensionScoreState(
     val score: Int, // 0..100
 )
 
-/**
- * State-layer mirror of the domain `TrainingLoadProfileArtifacts`. Carries
- * the evidence the classifier used — top exercises, muscle focus, and a few
- * movement-style ratios — so the UI can explain *why* the profile came out
- * the way it did.
- *
- * All percent fields are 0..100. `topExercises` and `topMuscles` are sorted
- * by share descending.
- */
 @Immutable
 public data class TrainingLoadProfileArtifactsState(
     val topExercises: ImmutableList<TopExerciseContributionState>,

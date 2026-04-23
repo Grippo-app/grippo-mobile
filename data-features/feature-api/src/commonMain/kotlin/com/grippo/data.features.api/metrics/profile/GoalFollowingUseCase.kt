@@ -9,6 +9,7 @@ import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.GoalPrimaryGoalEnum
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.SPEC_CORE_WEIGHT
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.SUPPRESSED_AXIS_PENALTY_FULL
+import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.data.features.api.metrics.profile.models.TopExerciseContribution
 import com.grippo.data.features.api.metrics.profile.models.TopMuscleContribution
 import com.grippo.data.features.api.muscle.models.MuscleEnum

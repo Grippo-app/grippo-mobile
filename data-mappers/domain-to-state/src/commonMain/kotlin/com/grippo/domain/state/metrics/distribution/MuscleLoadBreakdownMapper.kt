@@ -4,8 +4,8 @@ import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.toPersistentList
 import com.grippo.core.state.metrics.distribution.MuscleLoadBreakdownState as StateMuscleLoadBreakdown
 import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState as StateMuscleLoadEntry
-import com.grippo.data.features.api.metrics.distribution.MuscleLoadBreakdown as DomainMuscleLoadBreakdown
-import com.grippo.data.features.api.metrics.distribution.MuscleLoadEntry as DomainMuscleLoadEntry
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadBreakdown as DomainMuscleLoadBreakdown
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadEntry as DomainMuscleLoadEntry
 
 public fun DomainMuscleLoadBreakdown.toState(): StateMuscleLoadBreakdown {
     val entries = entries.map(DomainMuscleLoadEntry::toState)

@@ -2,7 +2,7 @@ package com.grippo.domain.state.metrics.engagement
 
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
-import com.grippo.data.features.api.metrics.engagement.TrainingDigestResult
+import com.grippo.data.features.api.metrics.engagement.models.TrainingDigestResult
 
 public fun TrainingDigestResult.toState(): DigestState {
     return DigestState(

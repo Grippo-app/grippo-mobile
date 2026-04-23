@@ -1,4 +1,4 @@
-package com.grippo.data.features.api.metrics.distribution
+package com.grippo.data.features.api.metrics.distribution.models
 
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum

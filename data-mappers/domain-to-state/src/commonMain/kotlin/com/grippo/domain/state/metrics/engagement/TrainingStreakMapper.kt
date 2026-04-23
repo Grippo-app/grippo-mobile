@@ -7,11 +7,11 @@ import com.grippo.core.state.metrics.engagement.TrainingStreakKind as StateTrain
 import com.grippo.core.state.metrics.engagement.TrainingStreakMood as StateTrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakProgressState as StateTrainingStreakProgress
 import com.grippo.core.state.metrics.engagement.TrainingStreakState as StateTrainingStreak
-import com.grippo.data.features.api.metrics.engagement.TrainingStreak as DomainTrainingStreak
-import com.grippo.data.features.api.metrics.engagement.TrainingStreakFeatured as DomainTrainingStreakFeatured
-import com.grippo.data.features.api.metrics.engagement.TrainingStreakKind as DomainTrainingStreakKind
-import com.grippo.data.features.api.metrics.engagement.TrainingStreakMood as DomainTrainingStreakMood
-import com.grippo.data.features.api.metrics.engagement.TrainingStreakProgressEntry as DomainTrainingStreakProgress
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreak as DomainTrainingStreak
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakFeatured as DomainTrainingStreakFeatured
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakKind as DomainTrainingStreakKind
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakMood as DomainTrainingStreakMood
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakProgressEntry as DomainTrainingStreakProgress
 
 public fun DomainTrainingStreak.toState(): StateTrainingStreak {
     return StateTrainingStreak(

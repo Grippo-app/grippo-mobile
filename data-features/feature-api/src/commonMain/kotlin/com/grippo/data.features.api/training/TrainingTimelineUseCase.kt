@@ -1,6 +1,6 @@
 package com.grippo.data.features.api.training
 
-import com.grippo.data.features.api.metrics.engagement.TrainingDigestResult
+import com.grippo.data.features.api.metrics.engagement.models.TrainingDigestResult
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition

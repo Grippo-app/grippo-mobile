@@ -1,4 +1,4 @@
-package com.grippo.data.features.api.metrics.profile
+package com.grippo.data.features.api.metrics.profile.models
 
 import com.grippo.data.features.api.goal.models.Goal
 

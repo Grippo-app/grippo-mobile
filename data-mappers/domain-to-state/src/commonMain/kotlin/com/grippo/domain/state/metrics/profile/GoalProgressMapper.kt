@@ -2,7 +2,7 @@ package com.grippo.domain.state.metrics.profile
 
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
-import com.grippo.data.features.api.metrics.profile.GoalAdherence
+import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.domain.state.user.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets

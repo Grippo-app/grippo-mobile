@@ -7,8 +7,8 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
-import com.grippo.data.features.api.metrics.performance.PerformanceMetric
-import com.grippo.data.features.api.metrics.performance.PerformanceTrendStatus
+import com.grippo.data.features.api.metrics.performance.models.PerformanceMetric
+import com.grippo.data.features.api.metrics.performance.models.PerformanceTrendStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

@@ -1,5 +1,7 @@
 package com.grippo.data.features.api.metrics.performance
 
+import com.grippo.data.features.api.metrics.performance.models.EstimatedOneRepMaxEntry
+import com.grippo.data.features.api.metrics.performance.models.EstimatedOneRepMaxSeries
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training

@@ -5,6 +5,11 @@ import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadBreakdown
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadDominance
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadEntry
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadMeta
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroup

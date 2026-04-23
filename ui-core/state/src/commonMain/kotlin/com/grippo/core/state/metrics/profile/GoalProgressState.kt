@@ -24,13 +24,6 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-/**
- * UI-ready goal-adherence snapshot. Carries the headline score used by the
- * compact Home card and the concrete evidence (sessions + top contributors)
- * rendered on the goal-details screen. Kept intentionally lean: no raw
- * intensity / work floats leak into the UI layer — everything here is a
- * percent, a count, or a named contributor.
- */
 @Immutable
 public data class GoalProgressState(
     val goal: GoalState,
@@ -94,17 +87,10 @@ public data class GoalProgressState(
     public companion object {
         public const val ON_TRACK_MIN: Int = 70
         public const val DRIFTING_MIN: Int = 40
-
-        /** Sessions-per-period target for the CONSISTENCY secondary goal. */
         public const val CONSISTENCY_TARGET_SESSIONS: Int = 3
     }
 }
 
-// -----------------------------------------------------------------------------
-// Stubs — full-fidelity samples used by @Previews.
-// -----------------------------------------------------------------------------
-
-/** A canonical set of top-contributor stubs used for previews. */
 private fun stubTopExercises(): ImmutableList<TopExerciseContributionState> = persistentListOf(
     TopExerciseContributionState(
         exampleId = "ex-1",
@@ -159,11 +145,6 @@ private fun stubTopMuscles(): ImmutableList<TopMuscleContributionState> = persis
     TopMuscleContributionState(MuscleEnumState.LATISSIMUS_DORSI, 15),
 )
 
-/**
- * Build a fully-populated goal progress stub for previews. Callers can
- * override the primary/secondary goal to exercise different UI branches of
- * the goal-details screen.
- */
 public fun stubGoalProgress(
     primary: GoalPrimaryGoalEnumState = GoalPrimaryGoalEnumState.GET_STRONGER,
     secondary: GoalSecondaryGoalEnumState? = GoalSecondaryGoalEnumState.CONSISTENCY,

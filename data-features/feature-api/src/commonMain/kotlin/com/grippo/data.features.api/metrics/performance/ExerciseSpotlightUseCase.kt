@@ -1,6 +1,7 @@
 package com.grippo.data.features.api.metrics.performance
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
+import com.grippo.data.features.api.metrics.performance.models.ExerciseSpotlight
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate

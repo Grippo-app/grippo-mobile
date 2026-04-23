@@ -1,6 +1,11 @@
 package com.grippo.data.features.api.metrics.engagement
 
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreak
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakFeatured
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakKind
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakMood
+import com.grippo.data.features.api.metrics.engagement.models.TrainingStreakProgressEntry
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.toolkit.date.utils.DateTimeUtils
