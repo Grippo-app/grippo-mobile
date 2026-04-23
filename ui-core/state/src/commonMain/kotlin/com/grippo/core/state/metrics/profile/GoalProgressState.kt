@@ -3,7 +3,7 @@ package com.grippo.core.state.metrics.profile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
@@ -27,7 +27,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 public data class GoalProgressState(
     val goal: GoalState,
-    val now: DateFormatState,
+    val now: DateTimeFormatState,
 
     // Adherence score.
     val score: Int,
@@ -163,7 +163,7 @@ public fun stubGoalProgress(
     val baseGoal = stubGoal()
     return GoalProgressState(
         goal = baseGoal.copy(primaryGoal = primary, secondaryGoal = secondary),
-        now = DateFormatState.of(
+        now = DateTimeFormatState.of(
             value = DateTimeUtils.now(),
             range = DateTimeUtils.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
@@ -199,7 +199,7 @@ public fun stubGoalProgressList(): List<GoalProgressState> {
         StubSeed(75, 60, 25, 15, 180, 2, 178, 0.01f, false),
     )
 
-    val now = DateFormatState.of(
+    val now = DateTimeFormatState.of(
         value = DateTimeUtils.now(),
         range = DateTimeUtils.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy

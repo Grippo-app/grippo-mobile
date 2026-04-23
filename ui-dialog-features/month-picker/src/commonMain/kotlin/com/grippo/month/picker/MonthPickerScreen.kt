@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -65,8 +65,8 @@ internal fun MonthPickerScreen(
 
     val buttonState = remember(loaders, state.value) {
         when (state.value) {
-            is DateFormatState.Invalid -> ButtonState.Disabled
-            is DateFormatState.Empty -> ButtonState.Disabled
+            is DateTimeFormatState.Invalid -> ButtonState.Disabled
+            is DateTimeFormatState.Empty -> ButtonState.Disabled
             else -> ButtonState.Enabled
         }
     }
@@ -94,7 +94,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         MonthPickerScreen(
             state = MonthPickerState(
-                value = DateFormatState.of(
+                value = DateTimeFormatState.of(
                     value = DateTimeUtils.now(),
                     range = DateRangePresets.yearly(),
                     format = DateFormat.DateOnly.DateMmmDdYyyy

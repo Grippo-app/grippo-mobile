@@ -1,6 +1,6 @@
 package com.grippo.domain.state.user
 
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.profile.UserState
@@ -15,7 +15,7 @@ public fun User.toState(): UserState {
         email = email,
         weight = WeightFormatState.of(weight),
         height = HeightFormatState.of(height),
-        createdAt = DateFormatState.of(
+        createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy

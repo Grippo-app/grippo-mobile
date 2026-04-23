@@ -1,6 +1,6 @@
 package com.grippo.domain.state.metrics.profile
 
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.domain.state.user.toState
@@ -21,7 +21,7 @@ public fun GoalAdherence.toState(): GoalProgressState {
 
     return GoalProgressState(
         goal = goal.toState(),
-        now = DateFormatState.of(
+        now = DateTimeFormatState.of(
             value = now,
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateDdMmm

@@ -1,6 +1,6 @@
 package com.grippo.domain.state.user
 
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.profile.WeightHistoryState
 import com.grippo.data.features.api.weight.history.models.WeightHistory
@@ -17,7 +17,7 @@ public fun WeightHistory.toState(): WeightHistoryState {
     return WeightHistoryState(
         id = id,
         value = WeightFormatState.of(weight),
-        createdAt = DateFormatState.of(
+        createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy

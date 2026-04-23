@@ -1,7 +1,7 @@
 package com.grippo.core.state.profile
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -20,7 +20,7 @@ public data class UserState(
     val email: String,
     val height: HeightFormatState,
     val weight: WeightFormatState,
-    val createdAt: DateFormatState,
+    val createdAt: DateTimeFormatState,
     val experience: ExperienceEnumState,
     val role: RoleEnumState,
     val stats: UserStatsState,
@@ -32,7 +32,7 @@ public fun stubUser(): UserState = UserState(
     email = "max@test.dev",
     height = HeightFormatState.of(Random.nextInt(140, 200)),
     weight = WeightFormatState.of(Random.nextInt(60, 100).toFloat()),
-    createdAt = DateFormatState.of(
+    createdAt = DateTimeFormatState.of(
         value = DateRangePresets.daily().from,
         range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy

@@ -3,7 +3,7 @@ package com.grippo.core.state.metrics.performance
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -78,7 +78,7 @@ public enum class PerformanceMetricTypeState {
 
 @Immutable
 public data class PerformanceTrendHistoryEntry(
-    val endDate: DateFormatState,
+    val endDate: DateTimeFormatState,
     val metric: PerformanceMetricState,
 )
 
@@ -163,7 +163,7 @@ public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryE
     val anyRange = DateRangePresets.infinity()
     return persistentListOf(
         PerformanceTrendHistoryEntry(
-            endDate = DateFormatState.of(
+            endDate = DateTimeFormatState.of(
                 value = now,
                 range = anyRange,
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
@@ -171,7 +171,7 @@ public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryE
             metric = stubPerformanceMetrics().random()
         ),
         PerformanceTrendHistoryEntry(
-            endDate = DateFormatState.of(
+            endDate = DateTimeFormatState.of(
                 value = now,
                 range = anyRange,
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
@@ -179,7 +179,7 @@ public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryE
             metric = stubPerformanceMetrics().random()
         ),
         PerformanceTrendHistoryEntry(
-            endDate = DateFormatState.of(
+            endDate = DateTimeFormatState.of(
                 value = now,
                 range = anyRange,
                 format = DateFormat.DateOnly.DateMmmDdYyyy,

@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.example.ExampleTypeSection
 import com.grippo.design.components.example.ExerciseExampleCard
@@ -71,14 +71,14 @@ internal fun ExerciseExampleCardLarge(
         ) {
 
             when (val lastUsed = value.value.lastUsed) {
-                is DateFormatState.Empty -> Text(
+                is DateTimeFormatState.Empty -> Text(
                     text = AppTokens.strings.res(Res.string.not_used_before),
                     style = AppTokens.typography.b12Med(),
                     color = AppTokens.colors.text.tertiary
                 )
 
-                is DateFormatState.Valid,
-                is DateFormatState.Invalid -> {
+                is DateTimeFormatState.Valid,
+                is DateTimeFormatState.Invalid -> {
                     Text(
                         text = AppTokens.strings.res(Res.string.last_used_label),
                         style = AppTokens.typography.b12Med(),

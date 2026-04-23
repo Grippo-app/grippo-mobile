@@ -1,7 +1,7 @@
 package com.grippo.profile.goal
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
@@ -19,7 +19,7 @@ internal data class ProfileGoalState(
     val selectedSecondary: GoalSecondaryGoalEnumState? = null,
 
     val limitations: DateRange = DateTimeUtils.leadingYear(),
-    val selectedTarget: DateFormatState = DateFormatState.of(
+    val selectedTarget: DateTimeFormatState = DateTimeFormatState.of(
         value = DateTimeUtils.now(),
         range = limitations,
         format = DateFormat.DateOnly.DateMmmDdYyyy

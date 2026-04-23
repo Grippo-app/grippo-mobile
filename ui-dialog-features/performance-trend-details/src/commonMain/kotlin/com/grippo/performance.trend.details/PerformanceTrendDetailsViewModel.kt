@@ -1,8 +1,8 @@
 package com.grippo.performance.trend.details
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
@@ -69,7 +69,7 @@ public class PerformanceTrendDetailsViewModel(
 
                 history.add(
                     PerformanceTrendHistoryEntry(
-                        endDate = DateFormatState.of(
+                        endDate = DateTimeFormatState.of(
                             value = endAt,
                             range = DateRangePresets.infinity(),
                             format = DateFormat.DateOnly.DateMmmDdYyyy,

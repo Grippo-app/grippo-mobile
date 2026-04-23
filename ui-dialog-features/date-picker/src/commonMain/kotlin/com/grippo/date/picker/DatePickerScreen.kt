@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.date.picker.internal.DateWheelPicker
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -64,8 +64,8 @@ internal fun DatePickerScreen(
 
     val buttonState = remember(loaders, state.value) {
         when (state.value) {
-            is DateFormatState.Invalid -> ButtonState.Disabled
-            is DateFormatState.Empty -> ButtonState.Disabled
+            is DateTimeFormatState.Invalid -> ButtonState.Disabled
+            is DateTimeFormatState.Empty -> ButtonState.Disabled
             else -> ButtonState.Enabled
         }
     }
@@ -93,7 +93,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         DatePickerScreen(
             state = DatePickerState(
-                value = DateFormatState.of(
+                value = DateTimeFormatState.of(
                     value = DateTimeUtils.now(),
                     range = DateRangePresets.weekly(),
                     format = DateFormat.DateOnly.DateMmmDdYyyy

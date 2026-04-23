@@ -2,7 +2,7 @@ package com.grippo.design.components.inputs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
@@ -19,7 +19,7 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 @Composable
 public fun InputDate(
     modifier: Modifier = Modifier,
-    value: DateFormatState,
+    value: DateTimeFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.select_date),
     onClick: () -> Unit,
 ) {
@@ -43,7 +43,7 @@ public fun InputDate(
 private fun InputDatePreview() {
     PreviewContainer {
         InputDate(
-            value = DateFormatState.of(
+            value = DateTimeFormatState.of(
                 value = DateTimeUtils.now(),
                 range = DateRangePresets.yearly(),
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
@@ -52,7 +52,7 @@ private fun InputDatePreview() {
         )
 
         InputDate(
-            value = DateFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy),
+            value = DateTimeFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy),
             onClick = {}
         )
     }

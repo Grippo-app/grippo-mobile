@@ -1,7 +1,7 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
@@ -68,7 +68,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public sealed interface Monthly : TimelineState {
-        public val month: DateFormatState
+        public val month: DateTimeFormatState
     }
 
     @Immutable
@@ -105,8 +105,8 @@ public sealed interface TimelineState {
 
     @Immutable
     public data class DateTime(
-        val startAt: DateFormatState,
-        val createAt: DateFormatState,
+        val startAt: DateTimeFormatState,
+        val createAt: DateTimeFormatState,
         val duration: DurationFormatState,
         val trainingId: String,
         override val position: TrainingPosition,
@@ -124,7 +124,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public data class WeeklyTrainingsDay(
-        val date: DateFormatState,
+        val date: DateTimeFormatState,
         val trainings: ImmutableList<TrainingState>,
         override val position: TrainingPosition,
         override val key: String,
@@ -143,15 +143,15 @@ public sealed interface TimelineState {
     @Immutable
     public data class MonthlyDigest(
         val summary: DigestState,
-        override val month: DateFormatState,
+        override val month: DateTimeFormatState,
         override val key: String,
         override val position: TrainingPosition = TrainingPosition.EMPTY,
     ) : Monthly
 
     @Immutable
     public data class MonthlyTrainingsDay(
-        val date: DateFormatState,
-        override val month: DateFormatState,
+        val date: DateTimeFormatState,
+        override val month: DateTimeFormatState,
         val trainings: ImmutableList<TrainingState>,
         override val key: String,
         override val position: TrainingPosition,
@@ -186,12 +186,12 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
         }
 
         values += TimelineState.DateTime(
-            startAt = DateFormatState.of(
+            startAt = DateTimeFormatState.of(
                 value = start,
                 range = DateRangePresets.infinity(),
                 format = DateFormat.TimeOnly.Time24hHm
             ),
-            createAt = DateFormatState.of(
+            createAt = DateTimeFormatState.of(
                 value = end,
                 range = DateRangePresets.infinity(),
                 format = DateFormat.TimeOnly.Time24hHm
@@ -211,7 +211,7 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
     val monthRange = DateRangePresets.monthly()
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
-    val monthReferenceFormatted = DateFormatState.of(
+    val monthReferenceFormatted = DateTimeFormatState.of(
         value = DateTimeUtils.startOfDay(monthReference),
         range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.MmmYyyy,
@@ -237,7 +237,7 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
         }
 
         TimelineState.MonthlyTrainingsDay(
-            date = DateFormatState.of(
+            date = DateTimeFormatState.of(
                 value = DateTimeUtils.startOfDay(date),
                 range = DateRangePresets.infinity(),
                 format = DateFormat.DateOnly.DateDdMmm,

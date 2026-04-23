@@ -1,6 +1,6 @@
 package com.grippo.domain.state.training
 
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -27,7 +27,7 @@ public fun Training.toState(): TrainingState {
             intensity = IntensityFormatState.of(intensity),
         ),
         duration = DurationFormatState.of(duration),
-        createdAt = DateFormatState.of(
+        createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy

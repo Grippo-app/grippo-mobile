@@ -6,15 +6,15 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.toolkit.date.utils.DateRange
 
 public class MonthPickerComponent(
     componentContext: ComponentContext,
     private val title: String,
-    private val initial: DateFormatState,
+    private val initial: DateTimeFormatState,
     private val limitations: DateRange,
-    private val onResult: (value: DateFormatState) -> Unit,
+    private val onResult: (value: DateTimeFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<MonthPickerDirection>(componentContext) {
 

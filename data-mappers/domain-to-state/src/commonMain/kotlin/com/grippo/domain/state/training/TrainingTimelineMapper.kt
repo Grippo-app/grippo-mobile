@@ -1,6 +1,7 @@
 package com.grippo.domain.state.training
 
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TrainingPosition
 import com.grippo.data.features.api.training.models.TrainingTimeline
@@ -13,6 +14,7 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDate
 
 public fun TrainingTimeline.toState(): ImmutableList<TimelineState> {
     if (values.isEmpty()) return persistentListOf()
@@ -24,6 +26,18 @@ public fun List<TrainingTimelineValue>.toState(): ImmutableList<TimelineState> {
     return map { it.toStateValue() }.toPersistentList()
 }
 
+private fun LocalDate.toDayDateFormatState(): DateTimeFormatState = DateTimeFormatState.of(
+    value = DateTimeUtils.startOfDay(this),
+    range = DateRangePresets.infinity(),
+    format = DateFormat.DateOnly.DateDdMmm,
+)
+
+private fun LocalDate.toMonthDateFormatState(): DateTimeFormatState = DateTimeFormatState.of(
+    value = DateTimeUtils.startOfDay(this),
+    range = DateRangePresets.infinity(),
+    format = DateFormat.DateOnly.MmmYyyy,
+)
+
 private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
     is TrainingTimelineValue.BetweenExercises -> TimelineState.BetweenExercises(
         position = position.toState(),
@@ -31,17 +45,17 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
     )
 
     is TrainingTimelineValue.DateTime -> TimelineState.DateTime(
-        startAt = DateFormatState.of(
+        startAt = DateTimeFormatState.of(
             value = DateTimeUtils.minus(createdAt, duration),
             range = DateRangePresets.infinity(),
             format = DateFormat.TimeOnly.Time24hHm
         ),
-        createAt = DateFormatState.of(
+        createAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
             format = DateFormat.TimeOnly.Time24hHm
         ),
-        duration = duration,
+        duration = DurationFormatState.of(duration),
         trainingId = trainingId,
         position = position.toState(),
         key = key,
@@ -77,14 +91,14 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
 
     is TrainingTimelineValue.MonthSummary -> TimelineState.MonthlyDigest(
         summary = summary.toState(),
-        month = month,
+        month = month.toMonthDateFormatState(),
         key = key,
         position = position.toState(),
     )
 
     is TrainingTimelineValue.MonthlyTrainingsDay -> TimelineState.MonthlyTrainingsDay(
-        date = date,
-        month = month,
+        date = date.toDayDateFormatState(),
+        month = month.toMonthDateFormatState(),
         trainings = trainings.toState(),
         key = key,
         position = position.toState(),
@@ -97,7 +111,7 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
     )
 
     is TrainingTimelineValue.WeeklyTrainingsDay -> TimelineState.WeeklyTrainingsDay(
-        date = date,
+        date = date.toDayDateFormatState(),
         trainings = trainings.toState(),
         position = position.toState(),
         key = key,

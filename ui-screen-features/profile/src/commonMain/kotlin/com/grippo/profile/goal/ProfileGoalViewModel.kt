@@ -1,7 +1,7 @@
 package com.grippo.profile.goal
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
@@ -71,7 +71,7 @@ internal class ProfileGoalViewModel(
                 onResult = { result ->
                     update {
                         it.copy(
-                            selectedTarget = DateFormatState.of(
+                            selectedTarget = DateTimeFormatState.of(
                                 value = result,
                                 range = it.limitations,
                                 format = it.selectedTarget.format,

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public sealed class DateFormatState : FormatState<LocalDateTime> {
+public sealed class DateTimeFormatState : FormatState<LocalDateTime> {
 
     public abstract val format: DateFormat
 
@@ -19,7 +19,7 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
         override val display: String,
         override val value: LocalDateTime,
         override val format: DateFormat,
-    ) : DateFormatState(), FormatState.Valid<LocalDateTime>
+    ) : DateTimeFormatState(), FormatState.Valid<LocalDateTime>
 
     @Immutable
     @Serializable
@@ -27,7 +27,7 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
         override val display: String,
         override val value: LocalDateTime?,
         override val format: DateFormat,
-    ) : DateFormatState(), FormatState.Invalid<LocalDateTime>
+    ) : DateTimeFormatState(), FormatState.Invalid<LocalDateTime>
 
     @Immutable
     @Serializable
@@ -35,14 +35,14 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
         override val format: DateFormat,
         override val display: String = "",
         override val value: LocalDateTime? = null,
-    ) : DateFormatState(), FormatState.Empty<LocalDateTime>
+    ) : DateTimeFormatState(), FormatState.Empty<LocalDateTime>
 
     public companion object {
         public fun of(
             value: LocalDateTime?,
             range: DateRange,
             format: DateFormat,
-        ): DateFormatState {
+        ): DateTimeFormatState {
             if (value == null) return Empty(format = format)
             val display = DateTimeUtils.format(value, format)
             return when {

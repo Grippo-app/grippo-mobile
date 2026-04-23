@@ -12,7 +12,7 @@ import com.grippo.confirm.training.completion.ConfirmTrainingCompletionComponent
 import com.grippo.confirmation.ConfirmationComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -193,7 +193,7 @@ internal class DialogContentComponent(
             is DialogConfig.DatePicker -> Child.DatePicker(
                 DatePickerComponent(
                     componentContext = context,
-                    initial = DateFormatState.of(
+                    initial = DateTimeFormatState.of(
                         value = router.initial,
                         range = router.limitations,
                         format = router.format,
@@ -241,7 +241,7 @@ internal class DialogContentComponent(
             is DialogConfig.MonthPicker -> Child.MonthPicker(
                 MonthPickerComponent(
                     componentContext = context,
-                    initial = DateFormatState.of(
+                    initial = DateTimeFormatState.of(
                         value = router.initial,
                         range = router.limitations,
                         format = router.format,

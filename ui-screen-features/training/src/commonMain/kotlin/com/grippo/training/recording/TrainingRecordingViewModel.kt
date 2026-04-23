@@ -1,7 +1,7 @@
 package com.grippo.training.recording
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -170,7 +170,7 @@ internal class TrainingRecordingViewModel(
                     name = example.value.name,
                     iterations = persistentListOf(),
                     exerciseExample = example.value,
-                    createdAt = DateFormatState.of(
+                    createdAt = DateTimeFormatState.of(
                         value = DateTimeUtils.now(),
                         range = DateRangePresets.infinity(),
                         format = DateFormat.DateOnly.DateMmmDdYyyy,
