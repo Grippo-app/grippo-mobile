@@ -1,6 +1,6 @@
 package com.grippo.data.features.api.training
 
-import com.grippo.data.features.api.metrics.models.Digest
+import com.grippo.data.features.api.metrics.engagement.TrainingDigestResult
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition
@@ -15,7 +15,7 @@ public class TrainingTimelineUseCase {
     public fun trainingTimeline(
         trainings: List<Training>,
         range: DateRange,
-        digest: Digest? = null,
+        digest: TrainingDigestResult? = null,
     ): TrainingTimeline {
         val nonEmpty = trainings.filter { it.exercises.isNotEmpty() }
         if (nonEmpty.isEmpty()) return TrainingTimeline(emptyList())
@@ -79,7 +79,7 @@ public class TrainingTimelineUseCase {
     }
 
     private fun List<Training>.toWeeklyTimeline(
-        summary: Digest,
+        summary: TrainingDigestResult,
     ): List<TrainingTimelineValue> {
         val groupedByDate = sortedByDescending { it.createdAt }.groupBy { it.createdAt.date }
         val sortedDates = groupedByDate.keys.sortedDescending()
@@ -111,7 +111,7 @@ public class TrainingTimelineUseCase {
     }
 
     private fun List<Training>.toMonthlyTimeline(
-        digest: Digest,
+        digest: TrainingDigestResult,
         month: LocalDate,
     ): List<TrainingTimelineValue> {
         val groupedByDate = groupBy { it.createdAt.date }

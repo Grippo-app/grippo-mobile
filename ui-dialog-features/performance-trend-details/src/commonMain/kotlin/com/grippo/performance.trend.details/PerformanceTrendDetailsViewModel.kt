@@ -3,12 +3,12 @@ package com.grippo.performance.trend.details
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.PerformanceMetricTypeState
-import com.grippo.core.state.metrics.PerformanceTrendHistoryEntry
-import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
+import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
+import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.performance.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangePresets

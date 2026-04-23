@@ -4,7 +4,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.TrainingTotalState
+import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.toolkit.date.utils.DateFormat

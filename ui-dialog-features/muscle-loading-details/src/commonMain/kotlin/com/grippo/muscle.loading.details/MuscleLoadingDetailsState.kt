@@ -3,7 +3,7 @@ package com.grippo.muscle.loading.details
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.metrics.MuscleLoadSummaryState
+import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.per_group
 import com.grippo.design.resources.provider.per_muscle

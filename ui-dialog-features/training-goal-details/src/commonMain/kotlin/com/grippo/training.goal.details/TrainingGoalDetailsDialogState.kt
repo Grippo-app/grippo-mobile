@@ -3,7 +3,7 @@ package com.grippo.training.goal.details
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.GoalProgressState
+import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_details_reason_almost_done_detail

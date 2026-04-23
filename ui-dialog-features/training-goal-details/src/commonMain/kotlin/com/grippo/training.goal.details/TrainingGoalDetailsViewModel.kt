@@ -2,12 +2,12 @@ package com.grippo.training.goal.details
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.GoalProgressState
+import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
-import com.grippo.data.features.api.metrics.GoalFollowingUseCase
+import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.profile.toState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.InsightItem
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.ReasonCode

@@ -3,8 +3,8 @@ package com.grippo.core.state.trainings
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.core.state.metrics.TrainingTotalState
-import com.grippo.core.state.metrics.stubTotal
+import com.grippo.core.state.metrics.volume.TrainingTotalState
+import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableList

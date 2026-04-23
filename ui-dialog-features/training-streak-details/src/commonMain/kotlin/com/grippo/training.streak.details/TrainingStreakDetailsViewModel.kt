@@ -2,10 +2,10 @@ package com.grippo.training.streak.details
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.data.features.api.metrics.TrainingStreakUseCase
+import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.engagement.toState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.coroutines.flow.onEach
 

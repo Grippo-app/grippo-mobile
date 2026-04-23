@@ -1,7 +1,7 @@
 package com.grippo.training.completed
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.metrics.MuscleLoadSummaryState
+import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TrainingState
 import kotlinx.collections.immutable.ImmutableList

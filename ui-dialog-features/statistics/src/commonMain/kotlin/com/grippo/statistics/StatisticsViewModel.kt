@@ -2,13 +2,14 @@ package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
-import com.grippo.data.features.api.metrics.TrainingTotalUseCase
-import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
+import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
+import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
+import com.grippo.data.features.api.metrics.volume.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.distribution.toState
+import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.coroutines.flow.mapLatest
 

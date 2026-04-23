@@ -14,10 +14,10 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.stubTrainingStreaks
-import com.grippo.design.components.metrics.streak.TrainingStreakCard
-import com.grippo.design.components.metrics.streak.TrainingStreakInsightsCard
-import com.grippo.design.components.metrics.streak.TrainingStreakTimelineCard
+import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakInsightsCard
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

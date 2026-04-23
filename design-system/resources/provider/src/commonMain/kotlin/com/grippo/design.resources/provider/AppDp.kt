@@ -125,91 +125,19 @@ public data object AppDp {
     }
 
     public data object Metrics {
-        val digest: Digest = Digest
         val highlights: Highlights = Highlights
         val panel: Panel = Panel
         val status: Status = Status
-        val distribution: Distribution = Distribution
-        val volume: Volume = Volume
-        val strength: Strength = Strength
         val lastTraining: LastTraining = LastTraining
         val trainingSummary: TrainingSummary = TrainingSummary
-        val trainingProfile: TrainingProfile = TrainingProfile
-        val muscleLoad: MuscleLoad = MuscleLoad
-        val goal: Goal = Goal
-        val performanceTrend: PerformanceTrend = PerformanceTrend
-        val spotlightCard: SpotlightCard = SpotlightCard
 
-        public data object SpotlightCard {
-            val icon: Dp = AppDp.icon.extraSmall
-        }
-
-        public data object PerformanceTrend {
-            val icon: Dp = AppDp.icon.extraSmall
-        }
-
-        public data object Digest {
-            val content: Content = Content
-            val layout: Layout = Layout
-
-            public data object Layout {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.small
-            }
-
-            public data object Content {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.small
-                val verticalPadding: Dp = padding.small
-                val icon: Dp = AppDp.icon.large
-            }
-        }
-
-        public data object MuscleLoad {
-            val balance: Balance = Balance
-
-            public data object Balance {
-                val chart: Dp = size.xLarge
-                val radius: Dp = AppDp.radius.medium
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.small
-            }
-        }
-
-        public data object Goal {
-            val chart: Dp = size.xLarge
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.small
-            val focusDistribution: FocusDistribution = FocusDistribution
-            val insight: Insight = Insight
-
-            public data object FocusDistribution {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.medium
-                val spacer: Dp = padding.small
-                val barHeight: Dp = padding.small
-                val legendDot: Dp = padding.small
-                val legendSpacing: Dp = padding.small
-                val titleToBar: Dp = padding.extraSmall
-            }
-
-            public data object Insight {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.medium
-                val accentWidth: Dp = 3.dp
-                val textSpacing: Dp = padding.extraSmall
-            }
-        }
+        val engagement: Engagement = Engagement
+        val distribution: Distribution = Distribution
+        val performance: Performance = Performance
+        val profile: Profile = Profile
+        val volume: Volume = Volume
 
         public data object Highlights {
-            val icon: Dp = AppDp.icon.medium
-        }
-
-        public data object Digests {
             val icon: Dp = AppDp.icon.medium
         }
 
@@ -238,49 +166,133 @@ public data object AppDp {
             }
         }
 
-        public data object Distribution {
-            val size: Dp = icon.xxxLarge
-        }
-
-        public data object Volume {
-            val height: Dp = icon.xxxLarge
-        }
-
-        public data object Strength {
-            val height: Dp = icon.xxxLarge
-        }
-
         public data object LastTraining {
             val image: Dp = icon.xxxxLarge
         }
 
-        public data object TrainingProfile {
-            val icon: Dp = AppDp.icon.xLarge
-            val radar: Radar = Radar
-            val details: Details = Details
+        public data object TrainingSummary {
+            val spot: Dp = icon.xxxxLarge
+        }
 
-            public data object Details {
-                val radius: Dp = AppDp.radius.medium
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.medium
-            }
+        public data object Engagement {
+            val digest: Digest = Digest
 
-            public data object Radar {
-                val small: Small = Small
-                val large: Large = Large
+            public data object Digest {
+                val content: Content = Content
+                val layout: Layout = Layout
 
-                public data object Small {
-                    val size: Dp = Size.large
+                public data object Layout {
+                    val radius: Dp = AppDp.radius.small
+                    val horizontalPadding: Dp = padding.medium
+                    val verticalPadding: Dp = padding.small
                 }
 
-                public data object Large {
-                    val size: Dp = Size.xxLarge
+                public data object Content {
+                    val radius: Dp = AppDp.radius.small
+                    val horizontalPadding: Dp = padding.small
+                    val verticalPadding: Dp = padding.small
+                    val icon: Dp = AppDp.icon.large
                 }
             }
         }
 
-        public data object TrainingSummary {
-            val spot: Dp = icon.xxxxLarge
+        public data object Distribution {
+            val chart: Chart = Chart
+            val muscleLoad: MuscleLoad = MuscleLoad
+
+            public data object Chart {
+                val size: Dp = icon.xxxLarge
+            }
+
+            public data object MuscleLoad {
+                val balance: Balance = Balance
+
+                public data object Balance {
+                    val chart: Dp = size.xLarge
+                    val radius: Dp = AppDp.radius.medium
+                    val horizontalPadding: Dp = padding.medium
+                    val verticalPadding: Dp = padding.small
+                }
+            }
+        }
+
+        public data object Performance {
+            val strength: Strength = Strength
+            val trend: Trend = Trend
+
+            public data object Strength {
+                val height: Dp = icon.xxxLarge
+            }
+
+            public data object Trend {
+                val icon: Dp = AppDp.icon.extraSmall
+            }
+        }
+
+        public data object Profile {
+            val trainingProfile: TrainingProfile = TrainingProfile
+            val goal: Goal = Goal
+
+            public data object TrainingProfile {
+                val icon: Dp = AppDp.icon.xLarge
+                val radar: Radar = Radar
+                val details: Details = Details
+
+                public data object Details {
+                    val radius: Dp = AppDp.radius.medium
+                    val horizontalPadding: Dp = padding.medium
+                    val verticalPadding: Dp = padding.medium
+                }
+
+                public data object Radar {
+                    val small: Small = Small
+                    val large: Large = Large
+
+                    public data object Small {
+                        val size: Dp = Size.large
+                    }
+
+                    public data object Large {
+                        val size: Dp = Size.xxLarge
+                    }
+                }
+            }
+
+            public data object Goal {
+                val chart: Dp = size.xLarge
+                val radius: Dp = AppDp.radius.medium
+                val horizontalPadding: Dp = padding.medium
+                val verticalPadding: Dp = padding.small
+                val focusDistribution: FocusDistribution = FocusDistribution
+                val insight: Insight = Insight
+
+                public data object FocusDistribution {
+                    val radius: Dp = Panel.Small.radius
+                    val horizontalPadding: Dp = Panel.Small.horizontalPadding
+                    val verticalPadding: Dp = Panel.Small.verticalPadding
+                    val spacer: Dp = padding.small
+                    val barHeight: Dp = padding.small
+                    val legendDot: Dp = padding.small
+                    val legendSpacing: Dp = padding.small
+                    val titleToBar: Dp = padding.extraSmall
+                }
+
+                public data object Insight {
+                    val radius: Dp = Panel.Small.radius
+                    val horizontalPadding: Dp = Panel.Small.horizontalPadding
+                    val verticalPadding: Dp = Panel.Small.verticalPadding
+                    val accentWidth: Dp = 3.dp
+                    val textSpacing: Dp = padding.extraSmall
+                }
+            }
+        }
+
+        public data object Volume {
+            val chart: Chart = Chart
+
+            public data object Chart {
+                val height: Dp = icon.xxxLarge
+            }
         }
     }
 

@@ -2,8 +2,8 @@ package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.core.state.metrics.DigestState
-import com.grippo.core.state.metrics.stubDigest
+import com.grippo.core.state.metrics.engagement.DigestState
+import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils

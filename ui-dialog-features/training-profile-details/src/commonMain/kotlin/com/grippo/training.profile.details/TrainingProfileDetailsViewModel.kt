@@ -2,10 +2,10 @@ package com.grippo.training.profile.details
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
+import com.grippo.data.features.api.metrics.profile.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.profile.toState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.coroutines.flow.onEach
 

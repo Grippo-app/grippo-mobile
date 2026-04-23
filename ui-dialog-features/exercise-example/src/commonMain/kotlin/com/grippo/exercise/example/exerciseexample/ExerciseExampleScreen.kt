@@ -18,7 +18,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.achevements.stubAchievements
 import com.grippo.core.state.examples.stubExerciseExample
-import com.grippo.core.state.metrics.stubEstimatedOneRepMax
+import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
@@ -27,10 +27,10 @@ import com.grippo.design.components.example.ExampleDescriptionText
 import com.grippo.design.components.example.ExampleTypeSection
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.metrics.EstimatedOneRepMaxCard
-import com.grippo.design.components.metrics.VolumeMetricChart
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
+import com.grippo.design.components.metrics.performance.EstimatedOneRepMaxCard
+import com.grippo.design.components.metrics.volume.VolumeMetricChart
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens

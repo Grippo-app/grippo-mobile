@@ -5,7 +5,7 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.menu.TrainingMenu
-import com.grippo.core.state.metrics.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.trainings.IterationFocusState

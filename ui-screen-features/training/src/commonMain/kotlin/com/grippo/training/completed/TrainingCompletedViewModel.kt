@@ -5,8 +5,8 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
-import com.grippo.data.features.api.metrics.TrainingTotalUseCase
+import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
+import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.SetTraining
@@ -17,7 +17,8 @@ import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.something_went_wrong
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.distribution.toState
+import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.services.firebase.FirebaseProvider.Event

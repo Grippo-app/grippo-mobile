@@ -6,7 +6,7 @@ import com.grippo.core.state.trainings.TrainingPosition
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition
 import com.grippo.data.features.api.training.models.TrainingTimelineValue
-import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.engagement.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils

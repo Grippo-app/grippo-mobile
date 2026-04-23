@@ -2,7 +2,7 @@ package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.TrainingMenu
-import com.grippo.data.features.api.metrics.TrainingDigestUseCase
+import com.grippo.data.features.api.metrics.engagement.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.Training

@@ -16,10 +16,10 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.PerformanceMetricTypeState
-import com.grippo.core.state.metrics.stubPerformanceTrendHistory
-import com.grippo.design.components.metrics.PerformanceMetricCard
-import com.grippo.design.components.metrics.PerformanceTrendHistoryCard
+import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
+import com.grippo.design.components.metrics.performance.PerformanceMetricCard
+import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

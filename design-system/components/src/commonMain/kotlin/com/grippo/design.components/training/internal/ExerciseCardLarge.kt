@@ -15,7 +15,7 @@ import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.metrics.TrainingTotalSection
+import com.grippo.design.components.metrics.volume.TrainingTotalSection
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle

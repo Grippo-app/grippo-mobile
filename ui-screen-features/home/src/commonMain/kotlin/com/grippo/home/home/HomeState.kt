@@ -2,12 +2,12 @@ package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.ExerciseSpotlightState
-import com.grippo.core.state.metrics.GoalProgressState
-import com.grippo.core.state.metrics.MuscleLoadSummaryState
-import com.grippo.core.state.metrics.PerformanceMetricState
-import com.grippo.core.state.metrics.TrainingLoadProfileState
-import com.grippo.core.state.metrics.TrainingStreakState
+import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
+import com.grippo.core.state.metrics.engagement.TrainingStreakState
+import com.grippo.core.state.metrics.performance.ExerciseSpotlightState
+import com.grippo.core.state.metrics.performance.PerformanceMetricState
+import com.grippo.core.state.metrics.profile.GoalProgressState
+import com.grippo.core.state.metrics.profile.TrainingLoadProfileState
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRangeKind

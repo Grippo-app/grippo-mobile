@@ -2,7 +2,7 @@ package com.grippo.training.streak.details
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.TrainingStreakState as TrainingStreakDetails
+import com.grippo.core.state.metrics.engagement.TrainingStreakState as TrainingStreakDetails
 
 @Immutable
 public data class TrainingStreakDetailsDialogState(

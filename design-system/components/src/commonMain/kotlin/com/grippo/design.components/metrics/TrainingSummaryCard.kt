@@ -11,8 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import com.grippo.core.state.metrics.MuscleLoadSummaryState
-import com.grippo.core.state.metrics.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -20,10 +20,10 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
-import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
