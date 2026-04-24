@@ -1,6 +1,7 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
@@ -68,7 +69,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public sealed interface Monthly : TimelineState {
-        public val month: DateTimeFormatState
+        public val month: DateFormatState
     }
 
     @Immutable
@@ -124,7 +125,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public data class WeeklyTrainingsDay(
-        val date: DateTimeFormatState,
+        val date: DateFormatState,
         val trainings: ImmutableList<TrainingState>,
         override val position: TrainingPosition,
         override val key: String,
@@ -143,15 +144,15 @@ public sealed interface TimelineState {
     @Immutable
     public data class MonthlyDigest(
         val summary: DigestState,
-        override val month: DateTimeFormatState,
+        override val month: DateFormatState,
         override val key: String,
         override val position: TrainingPosition = TrainingPosition.EMPTY,
     ) : Monthly
 
     @Immutable
     public data class MonthlyTrainingsDay(
-        val date: DateTimeFormatState,
-        override val month: DateTimeFormatState,
+        val date: DateFormatState,
+        override val month: DateFormatState,
         val trainings: ImmutableList<TrainingState>,
         override val key: String,
         override val position: TrainingPosition,
@@ -211,8 +212,8 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
     val monthRange = DateRangePresets.monthly()
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
-    val monthReferenceFormatted = DateTimeFormatState.of(
-        value = DateTimeUtils.startOfDay(monthReference),
+    val monthReferenceFormatted = DateFormatState.of(
+        value = monthReference,
         range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.MmmYyyy,
     )
@@ -237,8 +238,8 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
         }
 
         TimelineState.MonthlyTrainingsDay(
-            date = DateTimeFormatState.of(
-                value = DateTimeUtils.startOfDay(date),
+            date = DateFormatState.of(
+                value = date,
                 range = DateRangePresets.infinity(),
                 format = DateFormat.DateOnly.DateDdMmm,
             ),

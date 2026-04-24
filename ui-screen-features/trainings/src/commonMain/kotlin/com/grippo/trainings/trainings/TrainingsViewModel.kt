@@ -2,6 +2,7 @@ package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.TrainingMenu
+import com.grippo.core.state.trainings.TimelineState
 import com.grippo.data.features.api.metrics.engagement.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
@@ -18,6 +19,7 @@ import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -72,9 +74,23 @@ internal class TrainingsViewModel(
             trainings = list,
             range = range,
             digest = digest,
-        )
+        ).toState()
 
-        update { it.copy(timeline = timeline.toState()) }
+        update { current ->
+            val nextPeriod = when (current.period) {
+                is TrainingsTimelinePeriod.Daily -> TrainingsTimelinePeriod.Daily(
+                    items = timeline
+                        .filterIsInstance<TimelineState.Daily.Item>()
+                        .toPersistentList(),
+                )
+
+                is TrainingsTimelinePeriod.Monthly -> buildMonthlyPeriod(
+                    range = range,
+                    timeline = timeline,
+                )
+            }
+            current.copy(period = nextPeriod)
+        }
     }
 
     override fun onTrainingMenuClick(id: String) {
@@ -111,19 +127,19 @@ internal class TrainingsViewModel(
         navigateTo(TrainingsDirection.AddTraining)
     }
 
-    override fun onSelectPeriod(period: TrainingsTimelinePeriod) {
+    override fun onSelectPeriod(id: String) {
         val current = state.value
-        if (current.period == period) return
-
-        val alignedRange = period.defaultRange().coerceWithin(current.limitations)
-        update { it.copy(period = period, date = alignedRange) }
+        if (current.period.id == id) return
+        val target = TrainingsTimelinePeriod.variantById(id) ?: return
+        val alignedRange = target.defaultRange().coerceWithin(current.limitations)
+        update { it.copy(period = target, date = alignedRange) }
     }
 
     override fun onOpenDateSelector() {
         safeLaunch {
             val current = state.value
             val dialog = when (current.period) {
-                TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
+                is TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
                     title = stringProvider.get(Res.string.select_date),
                     initial = current.date.from,
                     format = DateFormat.DateOnly.DateMmmDdYyyy,
@@ -131,7 +147,7 @@ internal class TrainingsViewModel(
                     onResult = ::applyAnchor,
                 )
 
-                TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
+                is TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
                     title = stringProvider.get(Res.string.select_month),
                     initial = current.date.from,
                     format = DateFormat.DateOnly.MmmYyyy,
@@ -155,9 +171,15 @@ internal class TrainingsViewModel(
     override fun onSelectPreviousDate() = shiftDate(-1)
 
     override fun onOpenDaily(date: LocalDate) {
-        val range = TrainingsTimelinePeriod.Daily.rangeFor(DateTimeUtils.startOfDay(date))
-        val aligned = range.coerceWithin(state.value.limitations)
-        update { it.copy(period = TrainingsTimelinePeriod.Daily, date = aligned) }
+        val range = TrainingsTimelinePeriod.Daily()
+            .rangeFor(DateTimeUtils.startOfDay(date))
+            .coerceWithin(state.value.limitations)
+        update {
+            it.copy(
+                period = TrainingsTimelinePeriod.Daily(),
+                date = range,
+            )
+        }
     }
 
     private fun openTrainingOverview(id: String) {
@@ -184,13 +206,13 @@ internal class TrainingsViewModel(
         val current = state.value
 
         val shifted = when (current.period) {
-            TrainingsTimelinePeriod.Monthly -> {
+            is TrainingsTimelinePeriod.Monthly -> {
                 val anchorDate = current.date.from.date.plus(DatePeriod(months = direction))
                 val anchor = DateTimeUtils.startOfDay(anchorDate)
-                TrainingsTimelinePeriod.Monthly.rangeFor(anchor)
+                current.period.rangeFor(anchor)
             }
 
-            TrainingsTimelinePeriod.Daily -> {
+            is TrainingsTimelinePeriod.Daily -> {
                 val span = current.date.run {
                     val days = from.date.daysUntil(to.date) + 1
                     if (days <= 0) 1 else days

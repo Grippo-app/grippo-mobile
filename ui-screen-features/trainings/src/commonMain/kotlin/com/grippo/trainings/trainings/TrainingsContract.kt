@@ -9,7 +9,7 @@ internal interface TrainingsContract {
     fun onDailyDigestViewStats()
     fun onExerciseClick(id: String)
     fun onTrainingMenuClick(id: String)
-    fun onSelectPeriod(period: TrainingsTimelinePeriod)
+    fun onSelectPeriod(id: String)
     fun onOpenDateSelector()
     fun onSelectNextDate()
     fun onSelectPreviousDate()
@@ -22,7 +22,7 @@ internal interface TrainingsContract {
         override fun onDailyDigestViewStats() {}
         override fun onExerciseClick(id: String) {}
         override fun onTrainingMenuClick(id: String) {}
-        override fun onSelectPeriod(period: TrainingsTimelinePeriod) {}
+        override fun onSelectPeriod(id: String) {}
         override fun onOpenDateSelector() {}
         override fun onSelectNextDate() {}
         override fun onSelectPreviousDate() {}

@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.button.Button
@@ -49,7 +50,9 @@ internal fun TrainingsScreen(
     )
 ) {
     val periodSegmentItems = remember {
-        TrainingsTimelinePeriod.entries.map { it to it.text }.toPersistentList()
+        TrainingsTimelinePeriod.Variants
+            .map { it.id to it.text }
+            .toPersistentList()
     }
 
     Toolbar(
@@ -63,7 +66,7 @@ internal fun TrainingsScreen(
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
                 items = periodSegmentItems,
-                selected = state.period,
+                selected = state.period.id,
                 onSelect = contract::onSelectPeriod,
                 segmentWidth = SegmentWidth.EqualFill,
                 style = SegmentStyle.Fill
@@ -77,8 +80,8 @@ internal fun TrainingsScreen(
                     .fillMaxWidth(),
                 value = state.date.from,
                 format = when (state.period) {
-                    TrainingsTimelinePeriod.Daily -> DateFormat.DateOnly.DateDdMmm
-                    TrainingsTimelinePeriod.Monthly -> DateFormat.DateOnly.Mmmm
+                    is TrainingsTimelinePeriod.Daily -> DateFormat.DateOnly.DateDdMmm
+                    is TrainingsTimelinePeriod.Monthly -> DateFormat.DateOnly.Mmmm
                 },
                 limitations = state.limitations,
                 onSelect = contract::onOpenDateSelector,
@@ -102,25 +105,23 @@ internal fun TrainingsScreen(
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
-            when (state.period) {
-                TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
+            when (val period = state.period) {
+                is TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
                     modifier = containerModifier
                         .fillMaxWidth()
                         .weight(1f),
-                    timeline = state.timeline,
+                    items = period.items,
                     contentPadding = resolvedPadding,
-                    onViewStatsClick = contract::onDailyDigestViewStats,
                     onTrainingMenuClick = contract::onTrainingMenuClick,
                     onExerciseClick = contract::onExerciseClick,
                 )
 
-                TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
+                is TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
                     modifier = containerModifier
                         .fillMaxWidth()
                         .weight(1f),
-                    timeline = state.timeline,
+                    period = period,
                     contentPadding = resolvedPadding,
-                    month = state.date.from.date,
                     onDigestClick = contract::onDailyDigestViewStats,
                     onOpenDaily = contract::onOpenDaily,
                 )
@@ -151,11 +152,14 @@ internal fun TrainingsScreen(
 @Composable
 private fun DailyScreenPreview() {
     PreviewContainer {
+        val dailyItems = stubDailyTrainingTimeline()
+            .filterIsInstance<TimelineState.Daily.Item>()
+            .toPersistentList()
+        val daily = TrainingsTimelinePeriod.Daily(items = dailyItems)
         TrainingsScreen(
             state = TrainingsState(
-                period = TrainingsTimelinePeriod.Daily,
-                date = TrainingsTimelinePeriod.Daily.defaultRange(),
-                timeline = stubDailyTrainingTimeline(),
+                period = daily,
+                date = daily.defaultRange(),
             ),
             loaders = persistentSetOf(),
             contract = TrainingsContract.Empty
@@ -167,11 +171,15 @@ private fun DailyScreenPreview() {
 @Composable
 private fun MonthlyScreenPreview() {
     PreviewContainer {
+        val monthlyRange = TrainingsTimelinePeriod.Monthly().defaultRange()
+        val monthly = buildMonthlyPeriod(
+            range = monthlyRange,
+            timeline = stubMonthlyTrainingTimeline(),
+        )
         TrainingsScreen(
             state = TrainingsState(
-                period = TrainingsTimelinePeriod.Monthly,
-                date = TrainingsTimelinePeriod.Monthly.defaultRange(),
-                timeline = stubMonthlyTrainingTimeline(),
+                period = monthly,
+                date = monthlyRange,
             ),
             loaders = persistentSetOf(),
             contract = TrainingsContract.Empty

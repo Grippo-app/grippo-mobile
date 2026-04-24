@@ -24,73 +24,38 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.metrics.engagement.digest.DigestCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.trainings.trainings.MonthlyCalendarDayState
+import com.grippo.trainings.trainings.TrainingsTimelinePeriod
+import com.grippo.trainings.trainings.buildMonthlyPeriod
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 
 @Composable
 internal fun MonthlyTrainingsPage(
     modifier: Modifier = Modifier,
-    timeline: ImmutableList<TimelineState>,
+    period: TrainingsTimelinePeriod.Monthly,
     contentPadding: PaddingValues,
-    month: LocalDate? = null,
     onDigestClick: () -> Unit,
     onOpenDaily: (LocalDate) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
-    val monthlyContent = remember(timeline) {
-        timeline.monthlyContent()
-    }
-    val digest = monthlyContent.digest
-    val days = monthlyContent.days
-
-    val monthReference = remember(month, digest, days) {
-        month?.let { LocalDate(it.year, it.month, 1) }
-            ?: digest?.month
-            ?: days.firstOrNull()?.month
-            ?: DateRangePresets.monthly().from.date
-    }
-
-    LaunchedEffect(monthReference) {
+    LaunchedEffect(period.monthReference) {
         scrollState.scrollTo(0)
-    }
-
-    val calendarWeeks = remember(monthReference, days) {
-        buildMonthCalendar(monthReference, days)
-    }
-
-    val weekDayLabels = remember {
-        val mondayReference = LocalDate(2023, 1, 2)
-        DayOfWeek.entries.map { day ->
-            val labelDate = mondayReference.plus(DatePeriod(days = day.ordinal))
-            DateTimeUtils.format(labelDate, DateFormat.DateOnly.WeekdayShort)
-        }
     }
 
     Column(
@@ -102,27 +67,26 @@ internal fun MonthlyTrainingsPage(
     ) {
         AnimatedContent(
             modifier = Modifier.fillMaxWidth(),
-            targetState = digest,
+            targetState = period.digest,
             transitionSpec = {
                 (fadeIn(animationSpec = tween(220, delayMillis = 90)))
                     .togetherWith(fadeOut(animationSpec = tween(90)))
             },
-        ) { d ->
-            if (d != null) {
+        ) { digest ->
+            if (digest != null) {
                 DigestCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .scalableClick(onClick = onDigestClick),
-                    value = d.summary,
+                    value = digest,
                 )
             }
         }
 
         MonthCalendar(
-            modifier = Modifier
-                .fillMaxWidth(),
-            weekDayLabels = weekDayLabels,
-            weeks = calendarWeeks,
+            modifier = Modifier.fillMaxWidth(),
+            weekDayLabels = period.weekDayLabels,
+            weeks = period.weeks,
             onDayClick = onOpenDaily,
         )
     }
@@ -131,13 +95,13 @@ internal fun MonthlyTrainingsPage(
 @Composable
 private fun MonthCalendar(
     modifier: Modifier = Modifier,
-    weekDayLabels: List<String>,
-    weeks: List<List<MonthlyCalendarDay>>,
+    weekDayLabels: ImmutableList<String>,
+    weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>>,
     onDayClick: (LocalDate) -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val horizontalSpacing = AppTokens.dp.contentPadding.subContent
-        val dayCellWidth = remember(maxWidth, horizontalSpacing) {
+        val dayCellWidth = run {
             val spacing = horizontalSpacing * (weekDayLabels.size - 1)
             (maxWidth - spacing) / weekDayLabels.size
         }
@@ -199,32 +163,30 @@ private fun MonthCalendar(
 @Composable
 private fun MonthCalendarDayCell(
     modifier: Modifier = Modifier,
-    day: MonthlyCalendarDay,
+    day: MonthlyCalendarDayState,
     onDayClick: (LocalDate) -> Unit,
 ) {
-    val date = day.date
-    val trainingCount = day.trainingDay?.trainings?.size ?: 0
-    val hasTrainings = trainingCount > 0
-    val isCurrentDay = day.isCurrentMonth && DateTimeUtils.isToday(date)
+    val hasTrainings = day.trainingCount > 0
+    val isHighlighted = day.isCurrentMonth && day.isToday
     val shape = RoundedCornerShape(AppTokens.dp.contentPadding.subContent)
     val defaultBorder = AppTokens.colors.border.default.copy(alpha = 0.3f)
     val backgroundColor = when {
-        isCurrentDay -> AppTokens.colors.brand.color6.copy(alpha = 0.16f)
+        isHighlighted -> AppTokens.colors.brand.color6.copy(alpha = 0.16f)
         else -> Color.Transparent
     }
     val borderColor = when {
-        isCurrentDay -> AppTokens.colors.brand.color6
+        isHighlighted -> AppTokens.colors.brand.color6
         hasTrainings -> AppTokens.colors.border.default
         else -> defaultBorder
     }
     val textColor = when {
         !day.isCurrentMonth -> AppTokens.colors.text.disabled
-        isCurrentDay -> AppTokens.colors.text.primary
+        isHighlighted -> AppTokens.colors.text.primary
         hasTrainings -> AppTokens.colors.text.primary
         else -> AppTokens.colors.text.secondary
     }
-    val clickableModifier = if (hasTrainings && day.isCurrentMonth) {
-        Modifier.scalableClick { onDayClick(date) }
+    val clickableModifier = if (day.isClickable) {
+        Modifier.scalableClick { day.date.value?.let(onDayClick) }
     } else {
         Modifier
     }
@@ -239,7 +201,7 @@ private fun MonthCalendarDayCell(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            text = date.day.toString(),
+            text = day.dayOfMonth.toString(),
             style = AppTokens.typography.b14Med(),
             color = textColor,
         )
@@ -248,77 +210,23 @@ private fun MonthCalendarDayCell(
 
         if (hasTrainings) {
             CalendarTrainingBars(
-                count = trainingCount,
+                count = day.trainingCount,
                 barColor = AppTokens.colors.brand.color6,
             )
         }
     }
 }
 
-@Immutable
-private data class MonthlyCalendarContent(
-    val digest: TimelineState.MonthlyDigest?,
-    val days: ImmutableList<TimelineState.MonthlyTrainingsDay>,
-)
-
-private fun ImmutableList<TimelineState>.monthlyContent(): MonthlyCalendarContent {
-    var digest: TimelineState.MonthlyDigest? = null
-    val days = mutableListOf<TimelineState.MonthlyTrainingsDay>()
-
-    for (value in this) {
-        when (value) {
-            is TimelineState.MonthlyDigest -> if (digest == null) {
-                digest = value
-            }
-
-            is TimelineState.MonthlyTrainingsDay -> days += value
-            else -> Unit
-        }
-    }
-
-    return MonthlyCalendarContent(
-        digest = digest,
-        days = days.toPersistentList(),
-    )
-}
-
-private fun buildMonthCalendar(
-    monthReference: LocalDate,
-    days: List<TimelineState.MonthlyTrainingsDay>,
-): List<List<MonthlyCalendarDay>> {
-    val trainingsByDate = days.associateBy { it.date }
-    val startOfMonth = LocalDate(monthReference.year, monthReference.month, 1)
-    val daysInMonth = DateTimeUtils.getDaysInMonth(monthReference.year, monthReference.month)
-    val startOffset = (startOfMonth.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber)
-        .let { if (it < 0) it + 7 else it }
-    val totalCells = ((startOffset + daysInMonth + 6) / 7) * 7
-    val firstDisplayedDate = startOfMonth.minus(DatePeriod(days = startOffset))
-
-    return (0 until totalCells).map { index ->
-        val date = firstDisplayedDate.plus(DatePeriod(days = index))
-        MonthlyCalendarDay(
-            date = date,
-            isCurrentMonth = date.month == monthReference.month && date.year == monthReference.year,
-            trainingDay = trainingsByDate[date],
-        )
-    }.chunked(7)
-}
-
-@Immutable
-private data class MonthlyCalendarDay(
-    val date: LocalDate,
-    val isCurrentMonth: Boolean,
-    val trainingDay: TimelineState.MonthlyTrainingsDay?,
-)
-
 @AppPreview
 @Composable
 private fun MonthlyTrainingsPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            timeline = stubMonthlyTrainingTimeline(),
+            period = buildMonthlyPeriod(
+                range = DateRangePresets.monthly(),
+                timeline = stubMonthlyTrainingTimeline(),
+            ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            month = DateRangePresets.monthly().from.date,
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )
@@ -330,9 +238,8 @@ private fun MonthlyTrainingsPagePreview() {
 private fun MonthlyTrainingsEmptyPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            timeline = persistentListOf(),
+            period = TrainingsTimelinePeriod.Monthly(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            month = DateRangePresets.monthly().from.date,
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )
