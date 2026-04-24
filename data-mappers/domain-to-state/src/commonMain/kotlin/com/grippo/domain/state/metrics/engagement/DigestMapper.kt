@@ -13,12 +13,19 @@ public fun TrainingDigestResult.toState(): DigestState {
         from = DateTimeUtils.startOfDay(this.start),
         to = DateTimeUtils.endOfDay(this.end),
     )
-    return DigestState(
-        range = DateRangeFormatState.of(range),
-        exercisesCount = this.exercisesCount,
+    val rangeFormat = DateRangeFormatState.of(range)
+
+    if (this.trainingsCount == 0) {
+        return DigestState.Empty(range = rangeFormat)
+    }
+
+    return DigestState.Content(
+        range = rangeFormat,
         trainingsCount = this.trainingsCount,
         duration = DurationFormatState.of(this.duration),
         total = VolumeFormatState.of(this.totalVolume),
+        avgVolume = VolumeFormatState.of(this.avgVolumePerTraining),
         totalSets = this.totalSets,
+        activeDays = this.activeDays,
     )
 }

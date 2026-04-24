@@ -19,37 +19,45 @@ public class TrainingDigestUseCase {
         return TrainingDigestResult(
             start = start,
             end = end,
-            exercisesCount = stats.exercisesCount,
             trainingsCount = stats.trainingsCount,
             duration = stats.duration,
             totalVolume = stats.totalVolume,
             totalSets = stats.totalSets,
+            activeDays = stats.activeDays,
+            avgVolumePerTraining = stats.avgVolumePerTraining,
         )
     }
 
     private fun List<Training>.aggregate(): DigestStats {
         val trainingsCount = size
-        val exercisesCount = sumOf { it.exercises.size }
         val duration = fold(ZERO) { acc: Duration, training -> acc + training.duration }
         val totalVolume = fold(0f) { acc, training -> acc + training.volume }
         val totalSets = sumOf { training ->
             training.exercises.sumOf { it.iterations.size }
         }
+        val activeDays = mapTo(mutableSetOf()) { it.createdAt.date }.size
+        val avgVolumePerTraining = if (trainingsCount > 0) {
+            totalVolume / trainingsCount
+        } else {
+            0f
+        }
 
         return DigestStats(
-            exercisesCount = exercisesCount,
             trainingsCount = trainingsCount,
             duration = duration,
             totalVolume = totalVolume,
             totalSets = totalSets,
+            activeDays = activeDays,
+            avgVolumePerTraining = avgVolumePerTraining,
         )
     }
 
     private data class DigestStats(
-        val exercisesCount: Int,
         val trainingsCount: Int,
         val duration: Duration,
         val totalVolume: Float,
         val totalSets: Int,
+        val activeDays: Int,
+        val avgVolumePerTraining: Float,
     )
 }

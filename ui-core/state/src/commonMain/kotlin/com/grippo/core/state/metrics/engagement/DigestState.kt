@@ -11,14 +11,25 @@ import kotlinx.datetime.minus
 import kotlin.time.Duration
 
 @Immutable
-public data class DigestState(
-    val range: DateRangeFormatState,
-    val exercisesCount: Int,
-    val trainingsCount: Int,
-    val duration: DurationFormatState,
-    val total: VolumeFormatState,
-    val totalSets: Int,
-)
+public sealed interface DigestState {
+    public val range: DateRangeFormatState
+
+    @Immutable
+    public data class Content(
+        override val range: DateRangeFormatState,
+        val trainingsCount: Int,
+        val duration: DurationFormatState,
+        val total: VolumeFormatState,
+        val avgVolume: VolumeFormatState,
+        val totalSets: Int,
+        val activeDays: Int,
+    ) : DigestState
+
+    @Immutable
+    public data class Empty(
+        override val range: DateRangeFormatState,
+    ) : DigestState
+}
 
 public fun stubDigest(): DigestState {
     val today = DateTimeUtils.now().date
@@ -27,12 +38,13 @@ public fun stubDigest(): DigestState {
         from = DateTimeUtils.startOfDay(start),
         to = DateTimeUtils.endOfDay(today),
     )
-    return DigestState(
+    return DigestState.Content(
         range = DateRangeFormatState.of(range),
-        exercisesCount = 28,
+        trainingsCount = 5,
         duration = DurationFormatState.of(Duration.parse("7h")),
         total = VolumeFormatState.of(540F),
+        avgVolume = VolumeFormatState.of(108F),
         totalSets = 32,
-        trainingsCount = 5,
+        activeDays = 4,
     )
 }

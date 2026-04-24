@@ -178,21 +178,7 @@ public data object AppDp {
             val digest: Digest = Digest
 
             public data object Digest {
-                val content: Content = Content
-                val layout: Layout = Layout
-
-                public data object Layout {
-                    val radius: Dp = AppDp.radius.small
-                    val horizontalPadding: Dp = padding.medium
-                    val verticalPadding: Dp = padding.small
-                }
-
-                public data object Content {
-                    val radius: Dp = AppDp.radius.small
-                    val horizontalPadding: Dp = padding.small
-                    val verticalPadding: Dp = padding.small
-                    val icon: Dp = AppDp.icon.large
-                }
+                val icon: Dp = AppDp.icon.large
             }
         }
 

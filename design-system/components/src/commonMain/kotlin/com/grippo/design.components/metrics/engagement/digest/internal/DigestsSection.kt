@@ -6,13 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,167 +20,75 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
-import com.grippo.design.preview.AppPreview
-import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Trophy
 
 @Composable
-internal fun DigestsSection(
+internal fun DigestHeader(
     modifier: Modifier = Modifier,
-    style: DigestCardStyle,
     icon: ImageVector,
     accentColor: Color,
     title: String,
     subtitle: String,
-    metrics: List<DigestMetric>,
-) {
-    Box(
-        modifier = modifier
-            .height(intrinsicSize = IntrinsicSize.Max)
-            .clip(RoundedCornerShape(style.radius))
-            .background(
-                AppTokens.colors.background.card,
-                shape = RoundedCornerShape(style.radius)
-            )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    horizontal = style.horizontalPadding,
-                    vertical = style.verticalPadding
-                ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-        ) {
-            DigestCardHeader(
-                icon = icon,
-                accentColor = accentColor,
-                title = title,
-                subtitle = subtitle,
-                style = style
-            )
-
-            DigestMetricsGrid(
-                metrics = metrics,
-                accentColor = accentColor
-            )
-        }
-    }
-}
-
-@Composable
-private fun DigestCardHeader(
-    icon: ImageVector,
-    accentColor: Color,
-    title: String,
-    subtitle: String,
-    style: DigestCardStyle,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            modifier = Modifier.size(style.iconSize),
+            modifier = Modifier.size(AppTokens.dp.metrics.engagement.digest.icon),
             imageVector = icon,
             contentDescription = null,
-            tint = accentColor
+            tint = accentColor,
         )
 
         Text(
             modifier = Modifier.weight(1f),
             text = title,
-            style = AppTokens.typography.h4(),
-            color = accentColor,
+            style = AppTokens.typography.h5(),
+            color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
 
         if (subtitle.isNotBlank()) {
-            DigestSubtitleChip(
+            Text(
                 text = subtitle,
-                accent = accentColor
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.tertiary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
 }
 
 @Composable
-private fun DigestSubtitleChip(
-    text: String,
-    accent: Color,
-) {
-    val chipShape = RoundedCornerShape(AppTokens.dp.metrics.engagement.digest.layout.radius)
-
-    Text(
-        modifier = Modifier
-            .clip(chipShape)
-            .background(
-                color = accent.copy(alpha = 0.12f),
-                shape = chipShape
-            )
-            .padding(
-                horizontal = AppTokens.dp.metrics.engagement.digest.layout.horizontalPadding,
-                vertical = AppTokens.dp.metrics.engagement.digest.layout.verticalPadding
-            ),
-        text = text,
-        style = AppTokens.typography.b12Semi(),
-        color = AppTokens.colors.text.secondary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
-}
-
-@Composable
-private fun DigestMetricsGrid(
-    metrics: List<DigestMetric>,
-    accentColor: Color,
+internal fun DigestHero(
+    modifier: Modifier = Modifier,
+    value: String,
+    label: String,
+    dimmed: Boolean = false,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
-        metrics
-            .chunked(4)
-            .forEach { rowItems ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-                ) {
-                    rowItems.forEach { metric ->
-                        DigestMetricPanel(
-                            modifier = Modifier.weight(1f),
-                            label = metric.label,
-                            value = metric.value,
-                            accentColor = accentColor
-                        )
-                    }
+        Text(
+            text = value,
+            style = AppTokens.typography.h3(),
+            color = if (dimmed) {
+                AppTokens.colors.text.tertiary
+            } else {
+                AppTokens.colors.text.primary
+            },
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
 
-                    if (rowItems.size == 1) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
-    }
-}
-
-@Composable
-private fun DigestMetricPanel(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-    accentColor: Color,
-) {
-    MetricSectionPanel(
-        modifier = modifier,
-        style = MetricSectionPanelStyle.Small,
-    ) {
         Text(
             text = label,
             style = AppTokens.typography.b12Med(),
@@ -189,52 +96,107 @@ private fun DigestMetricPanel(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+}
 
+@Composable
+internal fun DigestBreakdown(
+    modifier: Modifier = Modifier,
+    items: List<DigestBreakdownItem>,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        items.forEachIndexed { index, item ->
+            DigestBreakdownCell(
+                modifier = Modifier.weight(1f),
+                label = item.label,
+                value = item.value,
+                dimmed = item.dimmed,
+            )
+
+            if (index != items.lastIndex) {
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(AppTokens.colors.border.default.copy(alpha = 0.4f))
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DigestBreakdownCell(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    dimmed: Boolean,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
         Text(
             text = value,
             style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary,
+            color = if (dimmed) {
+                AppTokens.colors.text.tertiary
+            } else {
+                AppTokens.colors.text.primary
+            },
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+        )
+
+        Text(
+            text = label,
+            style = AppTokens.typography.b11Med(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+internal fun DigestFooter(
+    modifier: Modifier = Modifier,
+    accentColor: Color,
+    text: String,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(accentColor)
+        )
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = text,
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
     }
 }
 
-internal data class DigestMetric(
+internal data class DigestBreakdownItem(
     val label: String,
     val value: String,
+    val dimmed: Boolean = false,
 )
-
-internal data class DigestCardStyle(
-    val radius: Dp,
-    val horizontalPadding: Dp,
-    val verticalPadding: Dp,
-    val iconSize: Dp,
-)
-
-@AppPreview
-@Composable
-private fun DigestsSectionPreview() {
-    PreviewContainer {
-        val style = DigestCardStyle(
-            radius = AppTokens.dp.metrics.engagement.digest.content.radius,
-            horizontalPadding = AppTokens.dp.metrics.engagement.digest.content.horizontalPadding,
-            verticalPadding = AppTokens.dp.metrics.engagement.digest.content.verticalPadding,
-            iconSize = AppTokens.dp.metrics.engagement.digest.content.icon,
-        )
-
-        DigestsSection(
-            style = style,
-            icon = AppTokens.icons.Trophy,
-            accentColor = AppTokens.colors.brand.color4,
-            title = "Weekly achievements",
-            subtitle = "12-19 Jan",
-            metrics = listOf(
-                DigestMetric(label = "Trainings", value = "5"),
-                DigestMetric(label = "Sets", value = "42"),
-                DigestMetric(label = "Duration", value = "05:40"),
-                DigestMetric(label = "Volume", value = "12k"),
-            )
-        )
-    }
-}

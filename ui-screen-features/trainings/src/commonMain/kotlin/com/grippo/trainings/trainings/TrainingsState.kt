@@ -2,6 +2,7 @@ package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.trainings.TimelineState
@@ -71,7 +72,9 @@ internal sealed interface TrainingsTimelinePeriod {
     @Immutable
     data class Monthly(
         val monthReference: DateFormatState = defaultMonthReference(),
-        val digest: DigestState? = null,
+        val digest: DigestState = DigestState.Empty(
+            range = DateRangeFormatState.of(DateRangePresets.monthly()),
+        ),
         val weekDayLabels: ImmutableList<String> = DateTimeUtils.weekDayShortLabels()
             .toPersistentList(),
         val weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>> = persistentListOf(),
@@ -156,7 +159,8 @@ internal sealed interface TrainingsTimelinePeriod {
                         range = DateRangePresets.infinity(),
                         format = DateFormat.DateOnly.MmmYyyy,
                     ),
-                    digest = digestEntry?.summary,
+                    digest = digestEntry?.summary
+                        ?: DigestState.Empty(range = DateRangeFormatState.of(range)),
                     weeks = weeks,
                 )
             }
