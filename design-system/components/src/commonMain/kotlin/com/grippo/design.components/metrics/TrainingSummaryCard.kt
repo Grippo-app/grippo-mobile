@@ -2,6 +2,7 @@ package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,8 +29,6 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
 import com.grippo.design.components.metrics.internal.MetricBreakdownRow
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,6 +41,7 @@ import com.grippo.design.resources.provider.icons.ArrowTop
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.sets
+import com.grippo.design.resources.provider.tonnage
 
 @Composable
 public fun TrainingSummaryCard(
@@ -51,18 +51,9 @@ public fun TrainingSummaryCard(
     volumeTrend: PerformanceMetricState.Volume?,
     onClick: () -> Unit,
 ) {
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
-        decorator = {
-//            Box(
-//                modifier = Modifier
-//                    .spot(color = AppTokens.colors.brand.color3)
-//                    .align(Alignment.CenterEnd)
-//                    .size(AppTokens.dp.metrics.trainingSummary.spot)
-//                    .scale(2f),
-//            )
-        }
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         SummaryHero(
             modifier = Modifier.fillMaxWidth(),
@@ -89,14 +80,24 @@ private fun SummaryHero(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+
+        Text(
+            modifier = Modifier.weight(weight = 1f, fill = false),
+            text = AppTokens.strings.res(Res.string.tonnage),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
         Text(
             modifier = Modifier.weight(weight = 1f, fill = false),
             text = training.total.volume.short(),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.semantic.notice,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

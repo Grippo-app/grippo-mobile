@@ -119,7 +119,7 @@ internal fun TrainingCompletedScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             if (cardVisible.value) {
                 BottomOverlayContainer(
