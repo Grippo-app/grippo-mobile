@@ -11,11 +11,11 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
-import com.grippo.design.components.metrics.engagement.digest.internal.DigestBreakdown
-import com.grippo.design.components.metrics.engagement.digest.internal.DigestBreakdownItem
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestFooter
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHeader
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHero
+import com.grippo.design.components.metrics.internal.MetricBreakdownItem
+import com.grippo.design.components.metrics.internal.MetricBreakdownRow
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.modifiers.spot
@@ -81,19 +81,19 @@ private fun EmptyDigestBody() {
         dimmed = true,
     )
 
-    DigestBreakdown(
+    MetricBreakdownRow(
         items = listOf(
-            DigestBreakdownItem(
+            MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.trainings),
                 value = "0",
                 dimmed = true,
             ),
-            DigestBreakdownItem(
+            MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.duration),
                 value = "0",
                 dimmed = true,
             ),
-            DigestBreakdownItem(
+            MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.sets),
                 value = "0",
                 dimmed = true,
@@ -112,18 +112,18 @@ private fun ContentDigestBody(
         label = AppTokens.strings.res(Res.string.volume),
     )
 
-    DigestBreakdown(
+    MetricBreakdownRow(
         items = listOf(
-            DigestBreakdownItem(
+            MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.trainings),
                 value = value.trainingsCount.toString(),
             ),
-            DigestBreakdownItem(
+            MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.duration),
                 value = value.duration.display.ifBlank { "0" },
                 dimmed = value.duration.display.isBlank(),
             ),
-            DigestBreakdownItem(
+            MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.sets),
                 value = value.totalSets.toString(),
             ),

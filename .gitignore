@@ -8,6 +8,7 @@ captures/
 secure/firebase/
 secure/keystore/
 secure/google/
+memory.md
 
 # Local configuration file
 local.properties

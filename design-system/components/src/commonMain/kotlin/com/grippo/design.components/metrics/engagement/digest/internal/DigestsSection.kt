@@ -4,13 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -20,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.Trophy
 
 @Composable
 internal fun DigestHeader(
@@ -100,73 +98,6 @@ internal fun DigestHero(
 }
 
 @Composable
-internal fun DigestBreakdown(
-    modifier: Modifier = Modifier,
-    items: List<DigestBreakdownItem>,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        items.forEachIndexed { index, item ->
-            DigestBreakdownCell(
-                modifier = Modifier.weight(1f),
-                label = item.label,
-                value = item.value,
-                dimmed = item.dimmed,
-            )
-
-            if (index != items.lastIndex) {
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(AppTokens.colors.border.default.copy(alpha = 0.4f))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DigestBreakdownCell(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-    dimmed: Boolean,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        Text(
-            text = value,
-            style = AppTokens.typography.h5(),
-            color = if (dimmed) {
-                AppTokens.colors.text.tertiary
-            } else {
-                AppTokens.colors.text.primary
-            },
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-        )
-
-        Text(
-            text = label,
-            style = AppTokens.typography.b11Med(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Composable
 internal fun DigestFooter(
     modifier: Modifier = Modifier,
     accentColor: Color,
@@ -195,8 +126,25 @@ internal fun DigestFooter(
     }
 }
 
-internal data class DigestBreakdownItem(
-    val label: String,
-    val value: String,
-    val dimmed: Boolean = false,
-)
+@AppPreview
+@Composable
+private fun DigestsSectionPreview() {
+    PreviewContainer {
+        DigestHeader(
+            icon = AppTokens.icons.Trophy,
+            accentColor = AppTokens.colors.brand.color6,
+            title = "Total",
+            subtitle = "Apr 2026",
+        )
+
+        DigestHero(
+            value = "3 250 kg",
+            label = "Volume",
+        )
+
+        DigestFooter(
+            accentColor = AppTokens.colors.brand.color6,
+            text = "Average 1 080 kg · 8 active days",
+        )
+    }
+}

@@ -4,8 +4,10 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,16 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TimelineState.Companion.exercise
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.TrainingSummaryCard
 import com.grippo.design.components.toolbar.Toolbar
@@ -46,6 +50,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.go_to_dashboard
 import com.grippo.design.resources.provider.workout_summary
 import kotlinx.collections.immutable.ImmutableSet
@@ -99,9 +104,8 @@ internal fun TrainingCompletedScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    horizontal = AppTokens.dp.screen.horizontalPadding,
-                ).imePadding(),
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -130,17 +134,34 @@ internal fun TrainingCompletedScreen(
                                 .alpha(alpha),
                             contentPadding = resolvedPadding,
                         ) {
+                            val training = state.training
+                            val muscleLoad = state.muscleLoad
 
-                            if (state.summary != null && state.training != null) {
+                            if (training != null && muscleLoad != null) {
                                 item(key = "training_summary") {
                                     TrainingSummaryCard(
                                         modifier = Modifier.fillMaxWidth(),
-                                        training = state.training,
-                                        summary = state.summary,
-                                        onClick = contract::onSummaryClick
+                                        training = training,
+                                        muscleLoad = muscleLoad,
+                                        volumeTrend = state.volumeTrend,
+                                        onClick = contract::onSummaryClick,
                                     )
 
                                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                                }
+                            }
+
+                            val exerciseCount = state.training?.exercises?.size ?: 0
+                            if (exerciseCount > 0) {
+                                item(key = "exercises_section") {
+                                    ExercisesSectionHeader(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(
+                                                bottom = AppTokens.dp.contentPadding.subContent,
+                                            ),
+                                        count = exerciseCount,
+                                    )
                                 }
                             }
 
@@ -187,10 +208,35 @@ internal fun TrainingCompletedScreen(
                 )
             }
         }
+    }
+}
 
-        if (cardVisible.value && cardVisible.value) {
-            KonfettiParade()
-        }
+@Composable
+private fun ExercisesSectionHeader(
+    modifier: Modifier = Modifier,
+    count: Int,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = AppTokens.strings.res(Res.string.exercises),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = count.toString(),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.tertiary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -200,9 +246,24 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingCompletedScreen(
             state = TrainingCompletedState(
-                timeline = stubDailyTrainingTimeline()
+                timeline = stubDailyTrainingTimeline(),
+                training = stubTraining(),
+                muscleLoad = stubMuscleLoadSummary(),
+                volumeTrend = null,
             ),
             loaders = persistentSetOf(),
+            contract = TrainingCompletedContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        TrainingCompletedScreen(
+            state = TrainingCompletedState(),
+            loaders = persistentSetOf(TrainingCompletedLoader.SaveTraining),
             contract = TrainingCompletedContract.Empty
         )
     }
