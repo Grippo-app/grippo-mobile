@@ -278,4 +278,16 @@ public object DateTimeUtils {
         val lastDayOfThisMonth = firstOfNextMonth.minus(DatePeriod(days = 1))
         return lastDayOfThisMonth.day
     }
+
+    /**
+     * Localized short weekday labels in ISO order (Monday → Sunday): "Mon", "Tue", …
+     * Stable within the current locale — compute once and reuse.
+     */
+    public fun weekDayShortLabels(): List<String> {
+        // 2023-01-02 is a known Monday — anchor for building the ISO-ordered list.
+        val monday = LocalDate(2023, 1, 2)
+        return DayOfWeek.entries.map { day ->
+            format(monday.plus(DatePeriod(days = day.ordinal)), DateFormat.DateOnly.WeekdayShort)
+        }
+    }
 }

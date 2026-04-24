@@ -40,7 +40,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.trainings.trainings.MonthlyCalendarDayState
 import com.grippo.trainings.trainings.TrainingsTimelinePeriod
-import com.grippo.trainings.trainings.buildMonthlyPeriod
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
@@ -222,7 +221,7 @@ private fun MonthCalendarDayCell(
 private fun MonthlyTrainingsPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            period = buildMonthlyPeriod(
+            period = TrainingsTimelinePeriod.Monthly.from(
                 range = DateRangePresets.monthly(),
                 timeline = stubMonthlyTrainingTimeline(),
             ),

@@ -172,7 +172,7 @@ private fun DailyScreenPreview() {
 private fun MonthlyScreenPreview() {
     PreviewContainer {
         val monthlyRange = TrainingsTimelinePeriod.Monthly().defaultRange()
-        val monthly = buildMonthlyPeriod(
+        val monthly = TrainingsTimelinePeriod.Monthly.from(
             range = monthlyRange,
             timeline = stubMonthlyTrainingTimeline(),
         )

@@ -84,7 +84,7 @@ internal class TrainingsViewModel(
                         .toPersistentList(),
                 )
 
-                is TrainingsTimelinePeriod.Monthly -> buildMonthlyPeriod(
+                is TrainingsTimelinePeriod.Monthly -> TrainingsTimelinePeriod.Monthly.from(
                     range = range,
                     timeline = timeline,
                 )
