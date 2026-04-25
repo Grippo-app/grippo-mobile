@@ -575,6 +575,7 @@
     <string name="goal_customize_btn">Customize in detail</string>
     <string name="goal_secondary_section">What else matters?</string>
     <string name="goal_target_date_section">When do you want to reach it?</string>
+    <string name="goal_target_date_placeholder">Target date</string>
     <string name="personalizations_frequency_section">How often do you train?</string>
     <string name="personalizations_duration_section">How long are your sessions?</string>
     <string name="personalizations_recovery_section">Recovery &amp; lifestyle</string>

@@ -47,6 +47,7 @@ import com.grippo.design.resources.provider.goal_intro
 import com.grippo.design.resources.provider.goal_main_section
 import com.grippo.design.resources.provider.goal_personalization_section
 import com.grippo.design.resources.provider.goal_save_btn
+import com.grippo.design.resources.provider.goal_target_date_placeholder
 import com.grippo.design.resources.provider.goal_title
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -244,6 +245,7 @@ private fun MainGoalSection(
         InputDate(
             modifier = Modifier.fillMaxWidth(),
             value = target,
+            placeholder = AppTokens.strings.res(Res.string.goal_target_date_placeholder),
             onClick = onTargetClick,
         )
     }
@@ -265,7 +267,7 @@ private fun PersonalizationGroup(
             modifier = Modifier.fillMaxWidth(),
             text = category.label(),
             style = AppTokens.typography.h4(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
         )
 
         FlowRow(

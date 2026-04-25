@@ -572,6 +572,7 @@
     <string name="goal_customize_btn">Настроить подробнее</string>
     <string name="goal_secondary_section">Что ещё важно?</string>
     <string name="goal_target_date_section">Когда хочешь достичь?</string>
+    <string name="goal_target_date_placeholder">Целевая дата</string>
     <string name="personalizations_frequency_section">Как часто тренируешься?</string>
     <string name="personalizations_duration_section">Сколько длится тренировка?</string>
     <string name="personalizations_recovery_section">Восстановление и образ жизни</string>
