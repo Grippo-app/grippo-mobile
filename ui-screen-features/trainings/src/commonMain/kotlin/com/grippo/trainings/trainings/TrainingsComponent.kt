@@ -21,6 +21,7 @@ internal class TrainingsComponent(
             stringProvider = getKoin().get(),
             trainingDigestUseCase = getKoin().get(),
             trainingTimelineUseCase = getKoin().get(),
+            deleteTrainingUseCase = getKoin().get()
         )
     }
 

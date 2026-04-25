@@ -9,8 +9,10 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
+import com.grippo.data.features.api.training.SetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
+import com.grippo.data.features.api.training.UpdateTrainingUseCase
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
@@ -36,6 +38,8 @@ internal class TrainingCompletedViewModel(
     exercises: List<ExerciseState>,
     startAt: LocalDateTime,
     private val trainingFeature: TrainingFeature,
+    private val setTrainingUseCase: SetTrainingUseCase,
+    private val updateTrainingUseCase: UpdateTrainingUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
     private val exerciseExampleFeature: ExerciseExampleFeature,
@@ -76,8 +80,8 @@ internal class TrainingCompletedViewModel(
 
             val id = when (val allocatedId = stage.id) {
                 null -> {
-                    val result = trainingFeature
-                        .setTraining(training)
+                    val result = setTrainingUseCase
+                        .execute(training)
                         .onFailure {
                             throw AppError.Expected(
                                 message = stringProvider.get(Res.string.something_went_wrong),
@@ -89,8 +93,8 @@ internal class TrainingCompletedViewModel(
                 }
 
                 else -> {
-                    val result = trainingFeature
-                        .updateTraining(allocatedId, training)
+                    val result = updateTrainingUseCase
+                        .execute(allocatedId, training)
                         .onFailure {
                             throw AppError.Expected(
                                 message = stringProvider.get(Res.string.something_went_wrong),

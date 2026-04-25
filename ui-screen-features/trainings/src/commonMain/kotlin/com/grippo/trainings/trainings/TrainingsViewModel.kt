@@ -4,6 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.data.features.api.metrics.engagement.TrainingDigestUseCase
+import com.grippo.data.features.api.training.DeleteTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.Training
@@ -35,6 +36,7 @@ internal class TrainingsViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val trainingDigestUseCase: TrainingDigestUseCase,
+    private val deleteTrainingUseCase: DeleteTrainingUseCase,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
     TrainingsState()
@@ -192,7 +194,7 @@ internal class TrainingsViewModel(
 
     private fun deleteTraining(id: String) {
         safeLaunch {
-            trainingFeature.deleteTraining(id).getOrThrow()
+            deleteTrainingUseCase.execute(id).getOrThrow()
         }
     }
 

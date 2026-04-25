@@ -30,7 +30,9 @@ internal class TrainingCompletedComponent(
             trainingTimelineUseCase = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
             performanceTrendUseCase = getKoin().get(),
-            stringProvider = getKoin().get()
+            stringProvider = getKoin().get(),
+            setTrainingUseCase = getKoin().get(),
+            updateTrainingUseCase = getKoin().get(),
         )
     }
 

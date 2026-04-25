@@ -15,9 +15,12 @@ import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
 import com.grippo.data.features.api.metrics.profile.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.volume.VolumeSeriesUseCase
+import com.grippo.data.features.api.training.DeleteTrainingUseCase
 import com.grippo.data.features.api.training.ExerciseValidatorUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
+import com.grippo.data.features.api.training.SetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
+import com.grippo.data.features.api.training.UpdateTrainingUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import com.grippo.data.features.api.weight.history.UpdateWeightUseCase
 import org.koin.core.annotation.Module
@@ -45,6 +48,27 @@ public class FeatureApiModule {
         single {
             LogoutUseCase(
                 authorizationFeature = get(),
+            )
+        }
+
+        single {
+            SetTrainingUseCase(
+                trainingFeature = get(),
+                userFeature = get()
+            )
+        }
+
+        single {
+            UpdateTrainingUseCase(
+                trainingFeature = get(),
+                userFeature = get()
+            )
+        }
+
+        single {
+            DeleteTrainingUseCase(
+                trainingFeature = get(),
+                userFeature = get()
             )
         }
 
