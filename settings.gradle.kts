@@ -103,6 +103,7 @@ include(":ui-dialog-features:training-goal-details")
 include(":ui-dialog-features:period-picker")
 include(":ui-dialog-features:primary-goal-picker")
 include(":ui-dialog-features:secondary-goal-picker")
+include(":ui-dialog-features:goal-setup-suggestion")
 
 include(":toolkit:context")
 include(":toolkit:localization")

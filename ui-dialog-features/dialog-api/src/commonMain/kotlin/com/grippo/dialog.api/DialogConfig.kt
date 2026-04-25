@@ -234,6 +234,17 @@ public sealed class DialogConfig(
     }
 
     @Serializable
+    public data class GoalSetupSuggestion(
+        @Transient val onConfigure: () -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    ) {
+        override val key: String
+            get() = buildKey("GoalSetupSuggestion")
+    }
+
+    @Serializable
     public data class MonthPicker(
         val initial: LocalDateTime?,
         val format: DateFormat,

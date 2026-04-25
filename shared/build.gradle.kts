@@ -95,6 +95,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.periodPicker)
         implementation(projects.uiDialogFeatures.primaryGoalPicker)
         implementation(projects.uiDialogFeatures.secondaryGoalPicker)
+        implementation(projects.uiDialogFeatures.goalSetupSuggestion)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

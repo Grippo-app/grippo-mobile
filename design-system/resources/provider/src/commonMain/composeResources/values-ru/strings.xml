@@ -828,4 +828,17 @@
     <string name="muscle_load_summary_assist_suppressed">Вспомогательные группы выглядят тихо — это ожидаемо. Рейтинг сглаживает мелкие доли, чтобы базовые упражнения не раздували руки/плечи. Если хотите их рост, добавьте 2-6 изолирующих подходов/нед.</string>
     <string name="muscle_load_summary_tail_with_weakest">Короткий хвост: остальные группы ~%1$d%%. %2$s ~%3$d%%. Рассмотрите короткий блок поддержания.</string>
     <string name="muscle_load_summary_tail_without_weakest">Короткий хвост: остальные группы ~%1$d%%. Рассмотрите короткий блок поддержания.</string>
+
+    <!-- Goal setup suggestion dialog -->
+    <string name="goal_setup_suggestion_title">Расскажите о вашей цели</string>
+    <string name="goal_setup_suggestion_subtitle">Пара быстрых ответов поможет нам понять, к чему вы идёте. Изменить можно в любой момент.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_title">Пространство под вас</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Мелкие детали помогают увидеть, что действительно важно для вас в тренировках.</string>
+    <string name="goal_setup_suggestion_benefit_direction_title">Чёткое направление</string>
+    <string name="goal_setup_suggestion_benefit_direction_description">Когда цель названа, каждая тренировка чуть осмысленнее.</string>
+    <string name="goal_setup_suggestion_benefit_evolves_title">Точнее со временем</string>
+    <string name="goal_setup_suggestion_benefit_evolves_description">Чем дольше вы тренируетесь, тем больше ваша цель становится ориентиром, с которым мы растём вместе.</string>
+    <string name="goal_setup_suggestion_estimate">Около минуты</string>
+    <string name="goal_setup_suggestion_primary_btn">Поделиться целью</string>
+    <string name="goal_setup_suggestion_secondary_btn">Может позже</string>
 </resources>

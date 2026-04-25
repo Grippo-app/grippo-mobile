@@ -834,4 +834,17 @@
     <string name="muscle_load_summary_assist_suppressed">Assist groups look quiet - expected. This score dampens tiny shares, so compounds won\'t inflate arms/shoulders. If you want them to grow, add 2-6 isolation sets/week.</string>
     <string name="muscle_load_summary_tail_with_weakest">Low tail: remaining groups ~%1$d%%. %2$s ~%3$d%%. Consider a short maintenance block.</string>
     <string name="muscle_load_summary_tail_without_weakest">Low tail: remaining groups ~%1$d%%. Consider a short maintenance block.</string>
+
+    <!-- Goal setup suggestion dialog -->
+    <string name="goal_setup_suggestion_title">Tell us about your goal</string>
+    <string name="goal_setup_suggestion_subtitle">A few quick answers help us understand what you\'re working toward. You can change it any time.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_title">A space that knows you</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">The little details help us see what really matters to you in training.</string>
+    <string name="goal_setup_suggestion_benefit_direction_title">A clearer direction</string>
+    <string name="goal_setup_suggestion_benefit_direction_description">Naming what you\'re after makes each session feel a little more intentional.</string>
+    <string name="goal_setup_suggestion_benefit_evolves_title">Better over time</string>
+    <string name="goal_setup_suggestion_benefit_evolves_description">As you train, your goal becomes a quiet anchor we can grow with you.</string>
+    <string name="goal_setup_suggestion_estimate">Takes about a minute</string>
+    <string name="goal_setup_suggestion_primary_btn">Share my goal</string>
+    <string name="goal_setup_suggestion_secondary_btn">Maybe later</string>
 </resources>

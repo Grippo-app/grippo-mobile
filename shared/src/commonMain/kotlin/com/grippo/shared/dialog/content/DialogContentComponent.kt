@@ -26,6 +26,7 @@ import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.exercise.example.picker.ExerciseExamplePickerComponent
+import com.grippo.goal.setup.suggestion.GoalSetupSuggestionComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
@@ -238,6 +239,14 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.GoalSetupSuggestion -> Child.GoalSetupSuggestion(
+                GoalSetupSuggestionComponent(
+                    componentContext = context,
+                    onConfigure = { viewModel.onBack { router.onConfigure.invoke() } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.MonthPicker -> Child.MonthPicker(
                 MonthPickerComponent(
                     componentContext = context,
@@ -390,6 +399,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class SecondaryGoalPicker(override val component: SecondaryGoalPickerComponent) :
+            Child(component)
+
+        data class GoalSetupSuggestion(override val component: GoalSetupSuggestionComponent) :
             Child(component)
 
         data class MonthPicker(override val component: MonthPickerComponent) :
