@@ -576,6 +576,10 @@
     <string name="personalizations_duration_section">Сколько длится тренировка?</string>
     <string name="personalizations_recovery_section">Восстановление и образ жизни</string>
     <string name="personalizations_limitations_section">Ограничения</string>
+    <string name="personalizations_style_section">Стиль и подход</string>
+    <string name="goal_intro">К чему вы сейчас идёте? Подстроим опыт под это.</string>
+    <string name="goal_main_section">Главное</string>
+    <string name="goal_personalization_section">Личные нюансы</string>
     <string name="goal_review_title">Твоя цель</string>
     <string name="goal_no_date">Без даты</string>
     <string name="goal_in_8_12_weeks">Через 8–12 недель</string>

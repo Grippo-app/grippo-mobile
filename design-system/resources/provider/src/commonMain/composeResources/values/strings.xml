@@ -579,6 +579,10 @@
     <string name="personalizations_duration_section">How long are your sessions?</string>
     <string name="personalizations_recovery_section">Recovery &amp; lifestyle</string>
     <string name="personalizations_limitations_section">Physical limitations</string>
+    <string name="personalizations_style_section">Style &amp; approach</string>
+    <string name="goal_intro">What are you working toward right now? We\'ll shape the experience around it.</string>
+    <string name="goal_main_section">The essentials</string>
+    <string name="goal_personalization_section">Personal touches</string>
     <string name="goal_review_title">Your goal</string>
     <string name="goal_no_date">No date</string>
     <string name="goal_in_8_12_weeks">In 8–12 weeks</string>

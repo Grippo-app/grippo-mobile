@@ -1,6 +1,9 @@
 package com.grippo.profile.goal
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
@@ -30,6 +35,7 @@ import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.inputs.InputDate
 import com.grippo.design.components.inputs.InputPrimaryGoal
 import com.grippo.design.components.inputs.InputSecondaryGoal
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -37,13 +43,15 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_picker_primary_title
+import com.grippo.design.resources.provider.goal_intro
+import com.grippo.design.resources.provider.goal_main_section
+import com.grippo.design.resources.provider.goal_personalization_section
 import com.grippo.design.resources.provider.goal_save_btn
-import com.grippo.design.resources.provider.goal_secondary_section
-import com.grippo.design.resources.provider.goal_target_date_section
 import com.grippo.design.resources.provider.goal_title
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
@@ -61,11 +69,32 @@ internal fun ProfileGoalScreen(
         leading = Leading.Back(contract::onBack),
     )
 
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.goal_intro),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary,
+        textAlign = TextAlign.Center,
+    )
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
     val basePadding = PaddingValues(
         start = AppTokens.dp.screen.horizontalPadding,
         end = AppTokens.dp.screen.horizontalPadding,
         top = AppTokens.dp.contentPadding.content,
     )
+
+    val groupedPersonalization: Map<PersonalizationKeyEnumState.Category, ImmutableList<PersonalizationKeyEnumState>> =
+        remember(state.personalization) {
+            state.personalization
+                .groupBy(PersonalizationKeyEnumState::category)
+                .mapValues { (_, items) -> items.toPersistentList() }
+        }
 
     BottomOverlayContainer(
         modifier = Modifier
@@ -79,87 +108,37 @@ internal fun ProfileGoalScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
                 contentPadding = resolvedPadding,
             ) {
-                item(key = "primary_goal") {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.goal_picker_primary_title),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-                    InputPrimaryGoal(
+                item(key = "main_goal_content") {
+                    MainGoalSection(
                         modifier = Modifier.fillMaxWidth(),
-                        value = state.selectedPrimary,
-                        onClick = contract::onPrimaryGoalPickerClick,
+                        primary = state.selectedPrimary,
+                        secondary = state.selectedSecondary,
+                        target = state.selectedTarget,
+                        onPrimaryClick = contract::onPrimaryGoalPickerClick,
+                        onSecondaryClick = contract::onSecondaryGoalPickerClick,
+                        onTargetClick = contract::onTargetDatePickerClick
                     )
                 }
 
-                item(key = "secondary_goal") {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.goal_secondary_section),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-                    InputSecondaryGoal(
+                item(key = "personalization_splitter") {
+                    ContentSpliter(
                         modifier = Modifier.fillMaxWidth(),
-                        value = state.selectedSecondary,
-                        onClick = contract::onSecondaryGoalPickerClick,
+                        text = AppTokens.strings.res(Res.string.goal_personalization_section),
                     )
                 }
 
-                item(key = "target_date") {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.goal_target_date_section),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
+                PersonalizationKeyEnumState.Category.entries.forEach { category ->
+                    val items = groupedPersonalization[category] ?: return@forEach
+                    if (items.isEmpty()) return@forEach
 
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-                    InputDate(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.selectedTarget,
-                        onClick = contract::onTargetDatePickerClick,
-                    )
-                }
-
-                item(key = "personalization") {
-                    Text(
-                        text = "Personalization",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                    ) {
-                        state.personalization.onEach {
-                            key(it) {
-                                val isSelected = remember(state.selectedPersonalization) {
-                                    state.selectedPersonalization.contains(it)
-                                }
-
-                                val onSelectProvider = remember(it.ordinal) {
-                                    { contract.onPersonalizationClick(it) }
-                                }
-
-                                CheckSelectableCard(
-                                    style = CheckSelectableCardStyle.Small(
-                                        title = it.label(),
-                                    ),
-                                    isSelected = isSelected,
-                                    onSelect = onSelectProvider
-                                )
-                            }
-                        }
+                    item(key = "personalization_${category.name}") {
+                        PersonalizationGroup(
+                            modifier = Modifier.fillMaxWidth(),
+                            category = category,
+                            items = items,
+                            selected = state.selectedPersonalization,
+                            onSelect = contract::onPersonalizationClick,
+                        )
                     }
                 }
             }
@@ -194,6 +173,124 @@ internal fun ProfileGoalScreen(
     )
 }
 
+@Composable
+private fun MainGoalSection(
+    modifier: Modifier = Modifier,
+    primary: GoalPrimaryGoalEnumState?,
+    secondary: GoalSecondaryGoalEnumState?,
+    target: DateTimeFormatState,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    onTargetClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier.animateContentSize()
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.goal_main_section),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
+        )
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+        InputPrimaryGoal(
+            modifier = Modifier.fillMaxWidth(),
+            value = primary,
+            onClick = onPrimaryClick,
+        )
+
+        AnimatedVisibility(visible = primary != null) {
+            primary?.let { value ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        modifier = modifier.padding(horizontal = AppTokens.dp.contentPadding.subContent),
+                        text = value.description(),
+                        style = AppTokens.typography.b13Med(),
+                        color = AppTokens.colors.text.tertiary,
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+        InputSecondaryGoal(
+            modifier = Modifier.fillMaxWidth(),
+            value = secondary,
+            onClick = onSecondaryClick,
+        )
+
+        AnimatedVisibility(visible = secondary != null) {
+            secondary?.let { value ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        modifier = modifier.padding(horizontal = AppTokens.dp.contentPadding.subContent),
+                        text = value.description(),
+                        style = AppTokens.typography.b13Med(),
+                        color = AppTokens.colors.text.tertiary,
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+        InputDate(
+            modifier = Modifier.fillMaxWidth(),
+            value = target,
+            onClick = onTargetClick,
+        )
+    }
+}
+
+@Composable
+private fun PersonalizationGroup(
+    modifier: Modifier = Modifier,
+    category: PersonalizationKeyEnumState.Category,
+    items: ImmutableList<PersonalizationKeyEnumState>,
+    selected: ImmutableSet<PersonalizationKeyEnumState>,
+    onSelect: (PersonalizationKeyEnumState) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = category.label(),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.tertiary,
+        )
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            items.forEach { item ->
+                key(item) {
+                    val isSelected = remember(selected, item) { item in selected }
+                    val provider = remember(item) { { onSelect(item) } }
+
+                    CheckSelectableCard(
+                        style = CheckSelectableCardStyle.Small(
+                            title = item.label(),
+                        ),
+                        isSelected = isSelected,
+                        onSelect = provider,
+                    )
+                }
+            }
+        }
+    }
+}
+
 @AppPreview
 @Composable
 private fun ProfileGoalScreenPreview() {
@@ -204,9 +301,21 @@ private fun ProfileGoalScreenPreview() {
                 selectedSecondary = GoalSecondaryGoalEnumState.entries.random(),
                 selectedPersonalization = PersonalizationKeyEnumState.entries
                     .shuffled()
-                    .take(3)
-                    .toPersistentSet()
+                    .take(6)
+                    .toPersistentSet(),
             ),
+            loaders = persistentSetOf(),
+            contract = ProfileGoalContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileGoalScreenEmptyPreview() {
+    PreviewContainer {
+        ProfileGoalScreen(
+            state = ProfileGoalState(),
             loaders = persistentSetOf(),
             contract = ProfileGoalContract.Empty,
         )

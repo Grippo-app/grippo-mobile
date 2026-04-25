@@ -55,6 +55,11 @@ import com.grippo.design.resources.provider.personalization_warmup_focus
 import com.grippo.design.resources.provider.personalization_weekdays_only
 import com.grippo.design.resources.provider.personalization_weekends_only
 import com.grippo.design.resources.provider.personalization_wrist_care
+import com.grippo.design.resources.provider.personalizations_duration_section
+import com.grippo.design.resources.provider.personalizations_frequency_section
+import com.grippo.design.resources.provider.personalizations_limitations_section
+import com.grippo.design.resources.provider.personalizations_recovery_section
+import com.grippo.design.resources.provider.personalizations_style_section
 
 @Immutable
 public enum class PersonalizationKeyEnumState {
@@ -110,6 +115,70 @@ public enum class PersonalizationKeyEnumState {
     SPLIT_ROUTINE_PREFERENCE,
     UPPER_LOWER_PREFERENCE;
 
+    /**
+     * Logical bucket the entry belongs to.
+     *
+     * Drives section grouping in screens that surface the full personalization
+     * list, so the user sees coherent clusters instead of one flat wall of chips.
+     */
+    public fun category(): Category = when (this) {
+        LOW_FREQUENCY,
+        MODERATE_FREQUENCY,
+        HIGH_FREQUENCY,
+        WEEKENDS_ONLY,
+        WEEKDAYS_ONLY,
+        FLEXIBLE_SCHEDULE,
+        INCONSISTENT_SCHEDULE -> Category.FREQUENCY
+
+        MINUTES_30_45,
+        MINUTES_45_60,
+        MINUTES_60_90,
+        MINUTES_90_120,
+        MINUTES_120_PLUS,
+        FLEXIBLE_DURATION -> Category.DURATION
+
+        LOW_ENERGY_DAYS,
+        STRESSFUL_PERIOD,
+        POOR_SLEEP,
+        TRAVELS_OFTEN,
+        RETURNING_AFTER_BREAK,
+        RECOVERING_FROM_INJURY,
+        RECOVERY_FOCUS,
+        MOBILITY_FOCUS,
+        WARMUP_FOCUS,
+        FATIGUE_MANAGEMENT -> Category.RECOVERY
+
+        JOINT_FRIENDLY,
+        LOW_IMPACT,
+        BACK_CARE,
+        KNEE_CARE,
+        SHOULDER_CARE,
+        WRIST_CARE,
+        LIMITED_RANGE_OF_MOTION,
+        AVOID_HIGH_INTENSITY,
+        AVOID_HEAVY_LOADING,
+        AVOID_DEEP_SQUATS,
+        AVOID_LUNGES,
+        AVOID_OVERHEAD_WORK,
+        AVOID_HEAVY_SPINAL_LOADING,
+        AVOID_TWISTING,
+        AVOID_FLOOR_WORK,
+        NEEDS_SUPPORTED_MOVEMENTS -> Category.LIMITATIONS
+
+        SIMPLE_PLAN,
+        MORE_VARIETY,
+        LOWER_VOLUME,
+        HIGHER_VOLUME,
+        GRADUAL_PROGRESSION,
+        AGGRESSIVE_PROGRESSION,
+        BEGINNER_FRIENDLY,
+        EASY_TO_FOLLOW,
+        NO_COMPLEX_MOVEMENTS,
+        FULL_BODY_PREFERENCE,
+        SPLIT_ROUTINE_PREFERENCE,
+        UPPER_LOWER_PREFERENCE -> Category.STYLE
+    }
+
     @Composable
     public fun label(): String {
         return when (this) {
@@ -164,6 +233,24 @@ public enum class PersonalizationKeyEnumState {
             FULL_BODY_PREFERENCE -> AppTokens.strings.res(Res.string.personalization_full_body_preference)
             SPLIT_ROUTINE_PREFERENCE -> AppTokens.strings.res(Res.string.personalization_split_routine_preference)
             UPPER_LOWER_PREFERENCE -> AppTokens.strings.res(Res.string.personalization_upper_lower_preference)
+        }
+    }
+
+    @Immutable
+    public enum class Category {
+        FREQUENCY,
+        DURATION,
+        RECOVERY,
+        LIMITATIONS,
+        STYLE;
+
+        @Composable
+        public fun label(): String = when (this) {
+            FREQUENCY -> AppTokens.strings.res(Res.string.personalizations_frequency_section)
+            DURATION -> AppTokens.strings.res(Res.string.personalizations_duration_section)
+            RECOVERY -> AppTokens.strings.res(Res.string.personalizations_recovery_section)
+            LIMITATIONS -> AppTokens.strings.res(Res.string.personalizations_limitations_section)
+            STYLE -> AppTokens.strings.res(Res.string.personalizations_style_section)
         }
     }
 }
