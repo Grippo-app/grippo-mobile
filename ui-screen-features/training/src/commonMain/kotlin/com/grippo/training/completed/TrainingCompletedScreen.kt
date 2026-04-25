@@ -155,11 +155,7 @@ internal fun TrainingCompletedScreen(
                             if (exerciseCount > 0) {
                                 item(key = "exercises_section") {
                                     ExercisesSectionHeader(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(
-                                                bottom = AppTokens.dp.contentPadding.subContent,
-                                            ),
+                                        modifier = Modifier.fillMaxWidth(),
                                         count = exerciseCount,
                                     )
                                 }
