@@ -57,4 +57,12 @@ internal class LocalSettingsRepositoryImpl(
             }
         }
     }
+
+    override suspend fun clear(): Result<Unit> {
+        return runCatching {
+            dataStore.edit { preferences ->
+                preferences.clear()
+            }
+        }
+    }
 }

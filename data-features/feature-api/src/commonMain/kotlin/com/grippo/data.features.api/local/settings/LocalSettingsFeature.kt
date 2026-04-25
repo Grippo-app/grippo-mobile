@@ -11,4 +11,6 @@ public interface LocalSettingsFeature {
 
     public fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?>
     public suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit>
+
+    public suspend fun clear(): Result<Unit>
 }

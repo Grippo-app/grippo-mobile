@@ -26,4 +26,8 @@ internal class LocalSettingsFeatureImpl(
     override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit> {
         return repository.setLastGoalSuggestionShownAt(value)
     }
+
+    override suspend fun clear(): Result<Unit> {
+        return repository.clear()
+    }
 }

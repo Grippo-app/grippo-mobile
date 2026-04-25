@@ -1,8 +1,8 @@
 package com.grippo.profile.settings
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
-import com.grippo.data.features.api.user.UserFeature
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.account_deletion
 import com.grippo.design.resources.provider.account_deletion_description
@@ -11,7 +11,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 
 internal class ProfileSettingsViewModel(
-    private val userFeature: UserFeature,
+    private val deleteProfileUseCase: DeleteProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider
@@ -26,7 +26,6 @@ internal class ProfileSettingsViewModel(
     override fun onLogoutClick() {
         safeLaunch(loader = ProfileSettingsLoader.LogoutButton) {
             logoutUseCase.execute()
-            navigateTo(ProfileSettingsDirection.Back)
         }
     }
 
@@ -37,10 +36,9 @@ internal class ProfileSettingsViewModel(
                 description = stringProvider.get(Res.string.account_deletion_description),
                 onResult = {
                     safeLaunch(loader = ProfileSettingsLoader.DeleteAccountButton) {
-                        userFeature.deleteProfile().getOrThrow()
+                        deleteProfileUseCase.execute()
                     }
-                }
-            )
+                })
             dialogController.show(config)
         }
     }

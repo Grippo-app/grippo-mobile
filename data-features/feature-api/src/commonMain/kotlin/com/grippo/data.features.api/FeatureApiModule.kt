@@ -1,5 +1,6 @@
 package com.grippo.data.features.api
 
+import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
 import com.grippo.data.features.api.authorization.RegisterUseCase
@@ -49,6 +50,13 @@ public class FeatureApiModule {
         single {
             LogoutUseCase(
                 authorizationFeature = get(),
+                localSettingsFeature = get()
+            )
+        }
+        single {
+            DeleteProfileUseCase(
+                userFeature = get(),
+                localSettingsFeature = get()
             )
         }
 

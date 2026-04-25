@@ -7,10 +7,10 @@ import kotlinx.datetime.LocalDateTime
 internal interface LocalSettingsRepository {
 
     fun observeRange(): Flow<Range?>
-
     suspend fun setRange(range: Range?): Result<Unit>
 
     fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?>
-
     suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit>
+
+    suspend fun clear(): Result<Unit>
 }
