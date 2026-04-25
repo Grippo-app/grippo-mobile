@@ -3,6 +3,7 @@ package com.grippo.data.features.local.settings.domain
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.Range
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Single
 
 @Single(binds = [LocalSettingsFeature::class])
@@ -16,5 +17,13 @@ internal class LocalSettingsFeatureImpl(
 
     override suspend fun setRange(range: Range?): Result<Unit> {
         return repository.setRange(range)
+    }
+
+    override fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?> {
+        return repository.observeLastGoalSuggestionShownAt()
+    }
+
+    override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit> {
+        return repository.setLastGoalSuggestionShownAt(value)
     }
 }

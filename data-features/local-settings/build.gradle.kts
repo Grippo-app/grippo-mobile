@@ -12,8 +12,11 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.datastore)
+        implementation(projects.toolkit.dateUtils)
 
         implementation(libs.androidx.datastore.preferences.core)
         implementation(libs.kotlinx.coroutines.core)
+
+        implementation(libs.datetime)
     }
 }

@@ -4,5 +4,6 @@ import com.grippo.core.foundation.models.BaseDirection
 
 public sealed interface GoalSetupSuggestionDirection : BaseDirection {
     public data object Configure : GoalSetupSuggestionDirection
+    public data object Later : GoalSetupSuggestionDirection
     public data object Back : GoalSetupSuggestionDirection
 }

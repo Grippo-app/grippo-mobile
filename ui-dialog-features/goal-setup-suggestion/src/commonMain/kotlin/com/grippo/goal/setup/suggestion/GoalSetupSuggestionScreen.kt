@@ -112,7 +112,7 @@ internal fun GoalSetupSuggestionScreen(
                 text = AppTokens.strings.res(Res.string.goal_setup_suggestion_secondary_btn),
             ),
             style = ButtonStyle.Secondary,
-            onClick = contract::onBack,
+            onClick = contract::onLater,
         )
 
         Button(

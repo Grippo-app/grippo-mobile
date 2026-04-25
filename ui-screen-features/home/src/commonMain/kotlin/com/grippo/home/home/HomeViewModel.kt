@@ -6,6 +6,7 @@ import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.goal.GoalSetupSuggestionUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
@@ -64,6 +65,7 @@ internal class HomeViewModel(
     private val permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
     private val goalFollowingUseCase: GoalFollowingUseCase,
+    private val goalSetupSuggestionUseCase: GoalSetupSuggestionUseCase,
     userFeature: UserFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
@@ -193,7 +195,18 @@ internal class HomeViewModel(
     }
 
     override fun onStartTraining() {
-        navigateTo(HomeDirection.AddTraining)
+        safeLaunch {
+            if (goalSetupSuggestionUseCase.shouldSuggest()) {
+                goalSetupSuggestionUseCase.markShown()
+                val config = DialogConfig.GoalSetupSuggestion(
+                    onConfigure = { navigateTo(HomeDirection.Goal) },
+                    onLater = { navigateTo(HomeDirection.AddTraining) },
+                )
+                dialogController.show(config)
+            } else {
+                navigateTo(HomeDirection.AddTraining)
+            }
+        }
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {

@@ -236,6 +236,7 @@ public sealed class DialogConfig(
     @Serializable
     public data class GoalSetupSuggestion(
         @Transient val onConfigure: () -> Unit = {},
+        @Transient val onLater: () -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

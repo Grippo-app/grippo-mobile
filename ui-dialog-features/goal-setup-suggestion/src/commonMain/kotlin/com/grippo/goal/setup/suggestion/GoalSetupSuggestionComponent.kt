@@ -10,6 +10,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 public class GoalSetupSuggestionComponent(
     componentContext: ComponentContext,
     private val onConfigure: () -> Unit,
+    private val onLater: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<GoalSetupSuggestionDirection>(componentContext) {
 
@@ -26,6 +27,7 @@ public class GoalSetupSuggestionComponent(
     override suspend fun eventListener(direction: GoalSetupSuggestionDirection) {
         when (direction) {
             GoalSetupSuggestionDirection.Configure -> onConfigure.invoke()
+            GoalSetupSuggestionDirection.Later -> onLater.invoke()
             GoalSetupSuggestionDirection.Back -> back.invoke()
         }
     }

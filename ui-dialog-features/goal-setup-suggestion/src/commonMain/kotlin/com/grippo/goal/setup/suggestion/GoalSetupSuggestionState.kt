@@ -35,7 +35,6 @@ public data class GoalSetupSuggestionState(
             Evolves -> AppTokens.icons.Repeat
         }
 
-
         @Composable
         public fun text(): Pair<String, String> = when (this) {
             Tailored ->

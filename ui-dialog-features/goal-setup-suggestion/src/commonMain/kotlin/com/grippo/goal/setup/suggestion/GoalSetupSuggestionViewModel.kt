@@ -12,6 +12,10 @@ public class GoalSetupSuggestionViewModel :
         navigateTo(GoalSetupSuggestionDirection.Configure)
     }
 
+    override fun onLater() {
+        navigateTo(GoalSetupSuggestionDirection.Later)
+    }
+
     override fun onBack() {
         navigateTo(GoalSetupSuggestionDirection.Back)
     }

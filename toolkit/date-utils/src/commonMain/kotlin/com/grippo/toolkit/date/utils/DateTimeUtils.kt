@@ -266,6 +266,10 @@ public object DateTimeUtils {
         return date < today
     }
 
+    public fun isPast(value: LocalDateTime): Boolean {
+        return value.toInstant(timeZone) < Clock.System.now()
+    }
+
     /* * * * * * * * * * *
     * Static
     * * * * * * * * * * */

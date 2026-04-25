@@ -243,6 +243,7 @@ internal class DialogContentComponent(
                 GoalSetupSuggestionComponent(
                     componentContext = context,
                     onConfigure = { viewModel.onBack { router.onConfigure.invoke() } },
+                    onLater = { viewModel.onBack { router.onLater.invoke() } },
                     back = { viewModel.onBack(null) }
                 )
             )
