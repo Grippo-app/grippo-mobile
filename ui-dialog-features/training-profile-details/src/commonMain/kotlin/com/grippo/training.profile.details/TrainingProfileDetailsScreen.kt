@@ -22,6 +22,8 @@ import com.grippo.design.components.metrics.profile.TrainingProfileMuscleFocusCa
 import com.grippo.design.components.metrics.profile.TrainingProfileRadar
 import com.grippo.design.components.metrics.profile.TrainingProfileRadarStyle
 import com.grippo.design.components.metrics.profile.TrainingProfileTopExercisesCard
+import com.grippo.design.components.scroll.AnchorScrollBehavior
+import com.grippo.design.components.scroll.rememberAnchoredLazyListState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -66,7 +68,12 @@ internal fun TrainingProfileDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    val listState = rememberAnchoredLazyListState(
+        behavior = AnchorScrollBehavior.Animated
+    )
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),

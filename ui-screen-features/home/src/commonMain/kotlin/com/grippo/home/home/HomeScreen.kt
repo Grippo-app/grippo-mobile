@@ -50,6 +50,8 @@ import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.profile.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.scroll.AnchorScrollBehavior
+import com.grippo.design.components.scroll.rememberAnchoredLazyGridState
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -134,6 +136,10 @@ internal fun HomeScreen(
         state.spotlights.toPersistentList()
     }
 
+    val gridState = rememberAnchoredLazyGridState(
+        behavior = AnchorScrollBehavior.Animated,
+    )
+
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
@@ -142,6 +148,7 @@ internal fun HomeScreen(
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
             LazyVerticalGrid(
+                state = gridState,
                 modifier = containerModifier.fillMaxWidth(),
                 columns = GridCells.Fixed(2),
                 contentPadding = resolvedPadding,

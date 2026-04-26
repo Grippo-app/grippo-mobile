@@ -24,6 +24,8 @@ import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalFocusDistributionCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
+import com.grippo.design.components.scroll.AnchorScrollBehavior
+import com.grippo.design.components.scroll.rememberAnchoredLazyListState
 import com.grippo.design.components.tip.TipCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -72,7 +74,12 @@ internal fun TrainingGoalDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    val listState = rememberAnchoredLazyListState(
+        behavior = AnchorScrollBehavior.Animated
+    )
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
