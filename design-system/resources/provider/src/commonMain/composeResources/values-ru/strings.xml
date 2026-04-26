@@ -746,6 +746,8 @@
     <string name="goal_details_breakdown_top_exercises_empty">В этом периоде ещё нет сетов с весом и повторениями.</string>
     <string name="goal_details_breakdown_top_muscles_title">Мышцы, получившие больше всего работы</string>
     <string name="goal_details_breakdown_top_muscles_hint">Мышцы отсортированы по суммарной нагрузке, которую они получили за все тренировки.</string>
+    <string name="goal_details_breakdown_muscle_coverage">Проработано %1$d мышечных групп</string>
+    <string name="goal_details_breakdown_undercoverage">Недогружено: %1$s · вместе %2$s</string>
     <string name="goal_details_breakdown_exercise_sets">%1$d сетов</string>
     <string name="goal_details_breakdown_exercise_one_rm">примерный 1ПМ %1$d кг</string>
     <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>

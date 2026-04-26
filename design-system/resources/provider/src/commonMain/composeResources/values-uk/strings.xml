@@ -745,6 +745,8 @@
     <string name="goal_details_breakdown_top_exercises_empty">У цьому періоді ще немає підходів з вагою та повтореннями.</string>
     <string name="goal_details_breakdown_top_muscles_title">М'язи, що отримали найбільше роботи</string>
     <string name="goal_details_breakdown_top_muscles_hint">М'язи відсортовані за сумарним навантаженням, яке вони отримали за всі тренування.</string>
+    <string name="goal_details_breakdown_muscle_coverage">Опрацьовано %1$d груп м'язів</string>
+    <string name="goal_details_breakdown_undercoverage">Бракує роботи: %1$s · разом %2$s</string>
     <string name="goal_details_breakdown_exercise_sets">%1$d сетів</string>
     <string name="goal_details_breakdown_exercise_one_rm">приблизний 1ПМ %1$d кг</string>
     <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>
