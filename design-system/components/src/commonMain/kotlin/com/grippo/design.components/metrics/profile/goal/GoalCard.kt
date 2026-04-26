@@ -12,13 +12,19 @@ import com.grippo.design.preview.PreviewContainer
 
 @Composable
 public fun GoalCard(
-    value: GoalProgressState,
     modifier: Modifier = Modifier,
+    value: GoalProgressState,
+    onUpdateClick: () -> Unit
 ) {
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
-        content = { GoalCardContent(value = value) }
+        content = {
+            GoalCardContent(
+                value = value,
+                onUpdateClick = onUpdateClick
+            )
+        }
     )
 }
 
@@ -27,13 +33,16 @@ public fun GoalCard(
 private fun GoalCardPreview() {
     PreviewContainer {
         GoalCard(
-            value = stubGoalProgressList().random()
+            value = stubGoalProgressList().random(),
+            onUpdateClick = {}
         )
         GoalCard(
-            value = stubGoalProgressList().random()
+            value = stubGoalProgressList().random(),
+            onUpdateClick = {}
         )
         GoalCard(
-            value = stubGoalProgressList().random()
+            value = stubGoalProgressList().random(),
+            onUpdateClick = {}
         )
     }
 }

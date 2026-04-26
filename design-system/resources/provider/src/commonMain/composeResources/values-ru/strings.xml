@@ -639,6 +639,7 @@
     <string name="goal_card_no_data">Пока мало тренировок для оценки.</string>
     <string name="goal_card_description_1">Показывает, насколько последние тренировки соответствуют цели.</string>
     <string name="goal_card_description_2">100 — полное соответствие.</string>
+    <string name="goal_card_update_btn">Обновить</string>
 
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Детали цели</string>

@@ -280,4 +280,8 @@ public class TrainingGoalDetailsViewModel(
     override fun onBack() {
         navigateTo(TrainingGoalDetailsDirection.Back)
     }
+
+    override fun onAddGoal() {
+        navigateTo(TrainingGoalDetailsDirection.AddGoal)
+    }
 }

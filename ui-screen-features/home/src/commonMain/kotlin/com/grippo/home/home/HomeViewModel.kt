@@ -313,7 +313,8 @@ internal class HomeViewModel(
         val range = state.value.range.value ?: return
 
         val dialog = DialogConfig.TrainingGoalDetails(
-            range = range
+            range = range,
+            onAddGoal = { navigateTo(HomeDirection.Goal) }
         )
 
         dialogController.show(dialog)

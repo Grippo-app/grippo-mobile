@@ -174,7 +174,8 @@ internal class DialogContentComponent(
                 TrainingGoalDetailsComponent(
                     componentContext = context,
                     range = router.range,
-                    back = { viewModel.onBack(null) }
+                    back = { viewModel.onBack(null) },
+                    onAddGoal = { viewModel.onBack { router.onAddGoal.invoke() } }
                 )
             )
 

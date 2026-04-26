@@ -173,6 +173,7 @@ internal fun HomeScreen(
                                 .fillMaxWidth()
                                 .scalableClick(onClick = contract::onOpenGoalDetails),
                             value = state.goalProgress,
+                            onUpdateClick = contract::onAddGoal
                         )
                     }
                 }

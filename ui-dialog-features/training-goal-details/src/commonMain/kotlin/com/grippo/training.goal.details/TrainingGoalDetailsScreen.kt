@@ -86,6 +86,7 @@ internal fun TrainingGoalDetailsScreen(
                 GoalCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = progress,
+                    onUpdateClick = contract::onAddGoal
                 )
             }
 

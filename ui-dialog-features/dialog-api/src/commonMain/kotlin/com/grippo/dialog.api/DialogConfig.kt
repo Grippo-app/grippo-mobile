@@ -119,6 +119,7 @@ public sealed class DialogConfig(
     @Serializable
     public data class TrainingGoalDetails(
         val range: DateRange,
+        @Transient val onAddGoal: () -> Unit = { },
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

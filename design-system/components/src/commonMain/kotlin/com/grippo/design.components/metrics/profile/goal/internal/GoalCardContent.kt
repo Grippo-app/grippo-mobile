@@ -22,6 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chart.internal.RingChart
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -33,10 +37,12 @@ import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_adherence_score
 import com.grippo.design.resources.provider.goal_card_title
+import com.grippo.design.resources.provider.goal_card_update_btn
 
 @Composable
 internal fun GoalCardContent(
-    value: GoalProgressState
+    value: GoalProgressState,
+    onUpdateClick: () -> Unit
 ) {
     val score = value.score.coerceIn(0, 100)
     val ringColors = ringColors(score = score, isFinished = value.isFinished)
@@ -100,17 +106,41 @@ internal fun GoalCardContent(
             },
         )
 
-        Text(
-            text = "${value.progressLine()} · ${value.remainingLine()}",
-            style = AppTokens.typography.b13Med(),
-            color = if (value.daysRemaining < 0) {
-                AppTokens.colors.semantic.warning
-            } else {
-                AppTokens.colors.text.secondary
-            },
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        val isOverdue = value.daysRemaining < 0
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = if (isOverdue) {
+                    value.remainingLine()
+                } else {
+                    "${value.progressLine()} · ${value.remainingLine()}"
+                },
+                style = AppTokens.typography.b13Med(),
+                color = if (isOverdue) {
+                    AppTokens.colors.semantic.warning
+                } else {
+                    AppTokens.colors.text.secondary
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            if (isOverdue) {
+                Button(
+                    size = ButtonSize.Small,
+                    style = ButtonStyle.Secondary,
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.goal_card_update_btn)
+                    ),
+                    onClick = onUpdateClick
+                )
+            }
+        }
     }
 }
 
@@ -233,7 +263,12 @@ private fun GoalCardContentOnTrackPreview() {
             stubGoalProgressList().first { !it.isFinished && it.score >= GoalProgressState.ON_TRACK_MIN }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Small,
-            content = { GoalCardContent(value = value) }
+            content = {
+                GoalCardContent(
+                    value = value,
+                    onUpdateClick = {}
+                )
+            }
         )
     }
 }
@@ -248,7 +283,12 @@ private fun GoalCardContentDriftingPreview() {
         }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Small,
-            content = { GoalCardContent(value = value) }
+            content = {
+                GoalCardContent(
+                    value = value,
+                    onUpdateClick = {}
+                )
+            }
         )
     }
 }
@@ -260,7 +300,12 @@ private fun GoalCardContentOffTrackPreview() {
         val value = stubGoalProgressList().first { it.score < GoalProgressState.DRIFTING_MIN }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Small,
-            content = { GoalCardContent(value = value) }
+            content = {
+                GoalCardContent(
+                    value = value,
+                    onUpdateClick = {}
+                )
+            }
         )
     }
 }
@@ -272,7 +317,12 @@ private fun GoalCardContentOverduePreview() {
         val value = stubGoalProgressList().first { it.daysRemaining < 0 }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Small,
-            content = { GoalCardContent(value = value) }
+            content = {
+                GoalCardContent(
+                    value = value,
+                    onUpdateClick = {}
+                )
+            }
         )
     }
 }
@@ -284,7 +334,12 @@ private fun GoalCardContentCompletedPreview() {
         val value = stubGoalProgressList().first { it.isFinished }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Small,
-            content = { GoalCardContent(value = value) }
+            content = {
+                GoalCardContent(
+                    value = value,
+                    onUpdateClick = {}
+                )
+            }
         )
     }
 }

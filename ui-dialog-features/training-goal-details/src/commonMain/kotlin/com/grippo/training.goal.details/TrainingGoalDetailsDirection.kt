@@ -4,4 +4,5 @@ import com.grippo.core.foundation.models.BaseDirection
 
 public sealed interface TrainingGoalDetailsDirection : BaseDirection {
     public data object Back : TrainingGoalDetailsDirection
+    public data object AddGoal : TrainingGoalDetailsDirection
 }

@@ -12,6 +12,7 @@ public class TrainingGoalDetailsComponent(
     componentContext: ComponentContext,
     range: DateRange,
     private val back: () -> Unit,
+    private val onAddGoal: () -> Unit,
 ) : BaseComponent<TrainingGoalDetailsDirection>(componentContext) {
 
     override val viewModel: TrainingGoalDetailsViewModel = componentContext.retainedInstance {
@@ -31,6 +32,7 @@ public class TrainingGoalDetailsComponent(
     override suspend fun eventListener(direction: TrainingGoalDetailsDirection) {
         when (direction) {
             TrainingGoalDetailsDirection.Back -> back.invoke()
+            TrainingGoalDetailsDirection.AddGoal -> onAddGoal.invoke()
         }
     }
 
