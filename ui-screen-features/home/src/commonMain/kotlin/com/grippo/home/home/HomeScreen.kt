@@ -78,7 +78,7 @@ internal fun HomeScreen(
     )
 ) {
     val isEmptyState = (state.user?.stats?.trainingsCount ?: 0) < 1
-    val isLoading = loaders.contains(HomeLoader.Trainings)
+    val isLoading = loaders.contains(HomeLoader.Trainings) && isEmptyState
 
     if (isEmptyState && isLoading.not()) {
         EmptyHomeContent(
@@ -92,7 +92,7 @@ internal fun HomeScreen(
 
     if (isLoading) {
         Loader(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
         )
         return@BaseComposeScreen
     }
