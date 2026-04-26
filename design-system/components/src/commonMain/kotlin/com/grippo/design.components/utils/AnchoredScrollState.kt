@@ -15,9 +15,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+/**
+ * Controls how the auto-snap-to-top correction is applied when a lazy
+ * scrollable drifts off the top while [rememberAnchoredLazyGridState] /
+ * [rememberAnchoredLazyListState] has it pinned.
+ */
 @Immutable
 public enum class AnchorScrollBehavior {
+
+    /**
+     * Snap to the top via `requestScrollToItem` — non-suspending, applied on
+     * the next measure pass without animation. Best for hiding *silent
+     * drift* (e.g. async data trickling in above existing items): the user
+     * does not see a separate "scroll" motion, just the corrected layout.
+     */
     Instant,
+
+    /**
+     * Smooth animated scroll to the top via Compose's built-in
+     * `animateScrollToItem(0)`. The user sees a deliberate scroll motion.
+     * Use for cases where the snap itself should communicate "new content
+     * arrived at the top, look up" — e.g. feeds, chats, lists with explicit
+     * refreshes.
+     */
     Animated,
 }
 
