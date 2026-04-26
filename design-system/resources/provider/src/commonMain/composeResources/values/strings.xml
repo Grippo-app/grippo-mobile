@@ -747,7 +747,7 @@
 
     <!-- Top exercises / muscles -->
     <string name="goal_details_breakdown_top_exercises_title">Top exercises by contribution</string>
-    <string name="goal_details_breakdown_top_exercises_hint">Your %1$d biggest contributors by training stimulus (sets × weight × reps). Anything lighter rolls into the remaining %2$d%%.</string>
+    <string name="goal_details_breakdown_top_exercises_hint">Your %1$d biggest contributors by training stimulus (sets × weight × reps). Everything else combined adds up to %2$s.</string>
     <string name="goal_details_breakdown_top_exercises_empty">No lifts with weight &amp; reps in this range yet.</string>
     <string name="goal_details_breakdown_top_muscles_title">Muscles that got the most work</string>
     <string name="goal_details_breakdown_top_muscles_hint">Muscles ranked by total stimulus they received across all your sessions.</string>

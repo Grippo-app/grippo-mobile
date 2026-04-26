@@ -64,7 +64,6 @@ public fun GoalFocusDistributionCard(
                 horizontal = AppTokens.dp.metrics.profile.goal.focusDistribution.horizontalPadding,
                 vertical = AppTokens.dp.metrics.profile.goal.focusDistribution.verticalPadding,
             ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.profile.goal.focusDistribution.spacer),
     ) {
         Text(
             text = AppTokens.strings.res(Res.string.goal_details_focus_title),
@@ -72,13 +71,15 @@ public fun GoalFocusDistributionCard(
             color = AppTokens.colors.text.secondary,
         )
 
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+
         Text(
             text = AppTokens.strings.res(Res.string.goal_details_focus_subtitle),
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.metrics.profile.goal.focusDistribution.titleToBar))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
 
         StackedShareBar(
             modifier = Modifier.fillMaxWidth(),
@@ -88,6 +89,8 @@ public fun GoalFocusDistributionCard(
                 StackedShareSegment(endurance, enduranceColor),
             ),
         )
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
         FocusLegendRow(
             label = AppTokens.strings.res(Res.string.goal_details_focus_strength),

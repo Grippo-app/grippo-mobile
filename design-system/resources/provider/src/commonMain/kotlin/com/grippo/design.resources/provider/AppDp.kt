@@ -256,11 +256,9 @@ public data object AppDp {
                     val radius: Dp = Panel.Small.radius
                     val horizontalPadding: Dp = Panel.Small.horizontalPadding
                     val verticalPadding: Dp = Panel.Small.verticalPadding
-                    val spacer: Dp = padding.small
                     val barHeight: Dp = padding.small
                     val legendDot: Dp = padding.small
                     val legendSpacing: Dp = padding.small
-                    val titleToBar: Dp = padding.extraSmall
                 }
 
                 public data object Insight {
