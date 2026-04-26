@@ -281,9 +281,7 @@ private fun PersonalizationGroup(
                     val provider = remember(item) { { onSelect(item) } }
 
                     CheckSelectableCard(
-                        style = CheckSelectableCardStyle.Small(
-                            title = item.label(),
-                        ),
+                        style = CheckSelectableCardStyle.Small(title = item.label()),
                         isSelected = isSelected,
                         onSelect = provider,
                     )

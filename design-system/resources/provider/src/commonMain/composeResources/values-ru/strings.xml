@@ -573,11 +573,21 @@
     <string name="goal_secondary_section">Что ещё важно?</string>
     <string name="goal_target_date_section">Когда хочешь достичь?</string>
     <string name="goal_target_date_placeholder">Целевая дата</string>
-    <string name="personalizations_frequency_section">Как часто тренируешься?</string>
-    <string name="personalizations_duration_section">Сколько длится тренировка?</string>
-    <string name="personalizations_recovery_section">Восстановление и образ жизни</string>
-    <string name="personalizations_limitations_section">Ограничения</string>
-    <string name="personalizations_style_section">Стиль и подход</string>
+    <string name="personalizations_schedule_section">Расписание тренировок</string>
+    <string name="personalizations_session_duration_section">Длительность сессии</string>
+    <string name="personalizations_lifestyle_section">Образ жизни</string>
+    <string name="personalizations_recovery_context_section">Контекст восстановления</string>
+    <string name="personalizations_care_zones_section">Чувствительные зоны</string>
+    <string name="personalizations_health_conditions_section">Состояния здоровья</string>
+    <string name="personalizations_movement_restrictions_section">Запреты на движения</string>
+    <string name="personalizations_sports_section">Виды спорта</string>
+    <string name="personalizations_focus_areas_section">Приоритетные зоны</string>
+    <string name="personalizations_physical_qualities_section">Физические качества</string>
+    <string name="personalizations_program_preferences_section">Предпочтения программы</string>
+    <string name="personalizations_routine_structure_section">Структура программы</string>
+    <string name="personalizations_set_method_preferences_section">Стиль выполнения</string>
+    <string name="personalizations_equipment_preferences_section">Оборудование</string>
+    <string name="personalizations_training_phase_section">Фаза цикла</string>
     <string name="goal_intro">К чему вы сейчас идёте? Подстроим опыт под это.</string>
     <string name="goal_main_section">Главное</string>
     <string name="goal_personalization_section">Личные нюансы</string>
@@ -745,70 +755,145 @@
     <string name="goal_details_breakdown_empty_title">Данных для расчёта пока нет</string>
     <string name="goal_details_breakdown_empty_detail">Добавь тренировку в этот период — и мы покажем, какие сессии и упражнения двигали счёт.</string>
 
-    <!-- Personalizations: frequency -->
+    <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>
     <string name="personalization_moderate_frequency">3–4 раза в неделю</string>
     <string name="personalization_high_frequency">5+ раз в неделю</string>
-    <string name="personalization_weekends_only">Только по выходным</string>
     <string name="personalization_weekdays_only">Только в будни</string>
+    <string name="personalization_weekends_only">Только по выходным</string>
     <string name="personalization_flexible_schedule">Гибкий график</string>
-    <string name="personalization_inconsistent_schedule">Нестабильный график</string>
+    <string name="personalization_unpredictable_schedule">Хаотичный график</string>
 
-    <!-- Personalizations: duration -->
-    <string name="personalization_minutes_30_45">30–45 минут</string>
-    <string name="personalization_minutes_45_60">45–60 минут</string>
-    <string name="personalization_minutes_60_90">60–90 минут</string>
-    <string name="personalization_minutes_90_120">90–120 минут</string>
-    <string name="personalization_minutes_120_plus">~2 часа и больше</string>
-    <string name="personalization_flexible_duration">По-разному</string>
+    <!-- Personalizations: session duration -->
+    <string name="personalization_minutes_up_to_45">До 45 минут</string>
+    <string name="personalization_minutes_45_to_90">45–90 минут</string>
+    <string name="personalization_minutes_90_plus">90+ минут</string>
+    <string name="personalization_flexible_duration">Гибкая длительность</string>
 
-    <!-- Personalizations: recovery -->
-    <string name="personalization_low_energy_days">Бывают дни без сил</string>
-    <string name="personalization_stressful_period">Стрессовый период</string>
-    <string name="personalization_poor_sleep">Плохой сон</string>
-    <string name="personalization_travels_often">Часто уезжаю</string>
+    <!-- Personalizations: lifestyle -->
+    <string name="personalization_high_stress_lifestyle">Высокий уровень стресса</string>
+    <string name="personalization_poor_sleep_pattern">Плохо сплю</string>
+    <string name="personalization_low_energy_tendency">Часто мало энергии</string>
+    <string name="personalization_sedentary_job">Сидячая работа</string>
+    <string name="personalization_physically_active_job">Физически активная работа</string>
 
-    <!-- Personalizations: physical limitations -->
-    <string name="personalization_joint_friendly">Беречь суставы</string>
-    <string name="personalization_low_impact">Низкая ударная нагрузка</string>
-    <string name="personalization_back_care">Беречь спину</string>
-    <string name="personalization_knee_care">Беречь колени</string>
-    <string name="personalization_shoulder_care">Беречь плечи</string>
-    <string name="personalization_wrist_care">Беречь запястья</string>
-    <string name="personalization_returning_after_break">Возврат после паузы</string>
-    <string name="personalization_recovering_from_injury">Восстановление после травмы</string>
-    <string name="personalization_recovery_focus">Приоритет восстановлению</string>
-    <string name="personalization_mobility_focus">Акцент на подвижность</string>
-    <string name="personalization_warmup_focus">Серьёзная разминка</string>
+    <!-- Personalizations: recovery context -->
+    <string name="personalization_returning_after_break">Возвращаюсь после паузы</string>
+    <string name="personalization_recovering_from_injury">Восстанавливаюсь после травмы</string>
     <string name="personalization_limited_range_of_motion">Ограниченная амплитуда</string>
-    <string name="personalization_fatigue_management">Управление усталостью</string>
+    <string name="personalization_fatigue_management">Часто переутомляюсь</string>
+    <string name="personalization_recovery_focus">Фокус на восстановление</string>
+    <string name="personalization_mobility_focus">Фокус на мобильность</string>
+
+    <!-- Personalizations: care zones -->
+    <string name="personalization_neck_care">Беречь шею</string>
+    <string name="personalization_lower_back_care">Беречь поясницу</string>
+    <string name="personalization_upper_back_care">Беречь верх спины</string>
+    <string name="personalization_shoulder_care">Беречь плечи</string>
+    <string name="personalization_elbow_care">Беречь локти</string>
+    <string name="personalization_wrist_care">Беречь запястья</string>
+    <string name="personalization_hip_care">Беречь таз</string>
+    <string name="personalization_knee_care">Беречь колени</string>
+    <string name="personalization_ankle_care">Беречь голеностоп</string>
+
+    <!-- Personalizations: health conditions -->
+    <string name="personalization_hypertension">Гипертония</string>
+    <string name="personalization_diabetes">Диабет</string>
+    <string name="personalization_asthma">Астма</string>
+    <string name="personalization_osteoporosis">Остеопороз</string>
+    <string name="personalization_arthritis">Артрит</string>
+    <string name="personalization_herniated_disc">Грыжа межпозвонкового диска</string>
+    <string name="personalization_chronic_pain">Хронические боли</string>
+    <string name="personalization_pregnancy">Беременность</string>
+    <string name="personalization_postpartum">Послеродовой период</string>
+
+    <!-- Personalizations: movement restrictions -->
     <string name="personalization_avoid_high_intensity">Без высокой интенсивности</string>
     <string name="personalization_avoid_heavy_loading">Без тяжёлых весов</string>
-
-    <!-- Personalizations: movement exclusions -->
+    <string name="personalization_avoid_high_impact">Без ударной нагрузки</string>
     <string name="personalization_avoid_deep_squats">Без глубоких приседаний</string>
     <string name="personalization_avoid_lunges">Без выпадов</string>
     <string name="personalization_avoid_overhead_work">Без упражнений над головой</string>
-    <string name="personalization_avoid_heavy_spinal_loading">Без нагрузки на позвоночник</string>
+    <string name="personalization_avoid_heavy_spinal_loading">Без осевой нагрузки</string>
+    <string name="personalization_avoid_spinal_flexion">Без сгибания позвоночника</string>
     <string name="personalization_avoid_twisting">Без скручиваний</string>
     <string name="personalization_avoid_floor_work">Без упражнений на полу</string>
+    <string name="personalization_avoid_inversions">Без инверсий</string>
+    <string name="personalization_avoid_valsalva">Без задержки дыхания</string>
     <string name="personalization_needs_supported_movements">С опорой и поддержкой</string>
 
-    <!-- Personalizations: plan style -->
-    <string name="personalization_simple_plan">План попроще</string>
-    <string name="personalization_more_variety">Больше разнообразия</string>
+    <!-- Personalizations: sports -->
+    <string name="personalization_sport_powerlifting">Пауэрлифтинг</string>
+    <string name="personalization_sport_bodybuilding">Бодибилдинг</string>
+    <string name="personalization_sport_olympic_weightlifting">Тяжёлая атлетика</string>
+    <string name="personalization_sport_crossfit">Кроссфит</string>
+    <string name="personalization_sport_calisthenics">Каллистеника</string>
+    <string name="personalization_sport_running">Бег</string>
+    <string name="personalization_sport_cycling">Велоспорт</string>
+    <string name="personalization_sport_swimming">Плавание</string>
+    <string name="personalization_sport_grappling">Борьба / BJJ</string>
+    <string name="personalization_sport_striking">Бокс / MMA</string>
+    <string name="personalization_sport_team_ball_sports">Командные виды</string>
+    <string name="personalization_sport_racquet_sports">Ракеточные виды</string>
+    <string name="personalization_sport_climbing">Скалолазание</string>
+    <string name="personalization_sport_winter_board_sports">Лыжи / сноуборд</string>
+    <string name="personalization_sport_yoga_or_pilates">Йога / пилатес</string>
+
+    <!-- Personalizations: focus areas -->
+    <string name="personalization_focus_chest">Грудные</string>
+    <string name="personalization_focus_back">Спина</string>
+    <string name="personalization_focus_shoulders">Плечи</string>
+    <string name="personalization_focus_rear_delts">Задние дельты</string>
+    <string name="personalization_focus_arms">Руки</string>
+    <string name="personalization_focus_forearms_and_grip">Предплечья / хват</string>
+    <string name="personalization_focus_abs_and_core">Пресс и кор</string>
+    <string name="personalization_focus_legs">Ноги</string>
+    <string name="personalization_focus_glutes">Ягодицы</string>
+    <string name="personalization_focus_quadriceps">Квадрицепсы</string>
+    <string name="personalization_focus_hamstrings">Бицепс бедра</string>
+    <string name="personalization_focus_calves">Икры</string>
+
+    <!-- Personalizations: physical qualities -->
+    <string name="personalization_improve_cardio">Развить кардио</string>
+    <string name="personalization_improve_muscular_endurance">Мышечная выносливость</string>
+    <string name="personalization_improve_explosive_power">Взрывная сила</string>
+    <string name="personalization_improve_speed">Скорость</string>
+    <string name="personalization_improve_flexibility">Гибкость</string>
+    <string name="personalization_improve_balance">Баланс</string>
+    <string name="personalization_improve_grip_strength">Сила хвата</string>
+    <string name="personalization_improve_core_stability">Стабильность корпуса</string>
+
+    <!-- Personalizations: program preferences -->
+    <string name="personalization_simple_plan">Простой план</string>
     <string name="personalization_lower_volume">Меньше объёма</string>
     <string name="personalization_higher_volume">Больше объёма</string>
-    <string name="personalization_gradual_progression">Плавная прогрессия</string>
-    <string name="personalization_aggressive_progression">Быстрый прогресс</string>
-    <string name="personalization_beginner_friendly">Для новичка</string>
+    <string name="personalization_gradual_progression">Постепенная прогрессия</string>
+    <string name="personalization_aggressive_progression">Агрессивная прогрессия</string>
 
-    <!-- Personalizations: structure -->
-    <string name="personalization_easy_to_follow">Понятный план</string>
-    <string name="personalization_no_complex_movements">Без сложных движений</string>
-    <string name="personalization_full_body_preference">Всё тело</string>
-    <string name="personalization_split_routine_preference">Сплит</string>
-    <string name="personalization_upper_lower_preference">Верх/низ</string>
+    <!-- Personalizations: routine structure -->
+    <string name="personalization_prefer_full_body">Full-body</string>
+    <string name="personalization_prefer_upper_lower">Upper / Lower</string>
+    <string name="personalization_prefer_push_pull_legs">Push / Pull / Legs</string>
+    <string name="personalization_prefer_split_routine">Split-routine</string>
+
+    <!-- Personalizations: set / method preferences -->
+    <string name="personalization_prefer_straight_sets">Прямые подходы</string>
+    <string name="personalization_prefer_supersets">Суперсеты</string>
+    <string name="personalization_prefer_circuits">Круговые тренировки</string>
+    <string name="personalization_prefer_heavy_compounds">Базовые с тяжёлыми весами</string>
+
+    <!-- Personalizations: equipment preferences -->
+    <string name="personalization_prefer_free_weights">Свободные веса</string>
+    <string name="personalization_prefer_machines">Тренажёры</string>
+    <string name="personalization_prefer_cables">Кроссовер / блоки</string>
+    <string name="personalization_prefer_bodyweight">Вес тела</string>
+
+    <!-- Personalizations: training phase -->
+    <string name="personalization_phase_bulking">Набор массы</string>
+    <string name="personalization_phase_cutting">Сушка</string>
+    <string name="personalization_phase_maintenance">Поддержание</string>
+    <string name="personalization_phase_deload">Разгрузочная неделя</string>
+    <string name="personalization_phase_competition_prep">Подготовка к соревнованиям</string>
 
     <!-- Muscle load summary -->
     <string name="muscle_load_summary_empty">Запишите тренировку, чтобы увидеть нагрузку по мышцам.</string>

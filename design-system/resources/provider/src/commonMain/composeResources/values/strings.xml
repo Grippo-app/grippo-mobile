@@ -576,11 +576,21 @@
     <string name="goal_secondary_section">What else matters?</string>
     <string name="goal_target_date_section">When do you want to reach it?</string>
     <string name="goal_target_date_placeholder">Target date</string>
-    <string name="personalizations_frequency_section">How often do you train?</string>
-    <string name="personalizations_duration_section">How long are your sessions?</string>
-    <string name="personalizations_recovery_section">Recovery &amp; lifestyle</string>
-    <string name="personalizations_limitations_section">Physical limitations</string>
-    <string name="personalizations_style_section">Style &amp; approach</string>
+    <string name="personalizations_schedule_section">Training schedule</string>
+    <string name="personalizations_session_duration_section">Session duration</string>
+    <string name="personalizations_lifestyle_section">Lifestyle</string>
+    <string name="personalizations_recovery_context_section">Recovery context</string>
+    <string name="personalizations_care_zones_section">Care zones</string>
+    <string name="personalizations_health_conditions_section">Health conditions</string>
+    <string name="personalizations_movement_restrictions_section">Movement restrictions</string>
+    <string name="personalizations_sports_section">Sports</string>
+    <string name="personalizations_focus_areas_section">Focus areas</string>
+    <string name="personalizations_physical_qualities_section">Physical qualities</string>
+    <string name="personalizations_program_preferences_section">Program preferences</string>
+    <string name="personalizations_routine_structure_section">Routine structure</string>
+    <string name="personalizations_set_method_preferences_section">Set / method preferences</string>
+    <string name="personalizations_equipment_preferences_section">Equipment preferences</string>
+    <string name="personalizations_training_phase_section">Training phase</string>
     <string name="goal_intro">What are you working toward right now? We\'ll shape the experience around it.</string>
     <string name="goal_main_section">The essentials</string>
     <string name="goal_personalization_section">Personal touches</string>
@@ -751,70 +761,145 @@
     <string name="goal_details_breakdown_empty_title">No calculation data yet</string>
     <string name="goal_details_breakdown_empty_detail">Log a training in this period and we\'ll break down which sessions and exercises moved the score.</string>
 
-    <!-- Personalizations: frequency -->
+    <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 times a week</string>
     <string name="personalization_moderate_frequency">3–4 times a week</string>
     <string name="personalization_high_frequency">5+ times a week</string>
-    <string name="personalization_weekends_only">Weekends only</string>
     <string name="personalization_weekdays_only">Weekdays only</string>
+    <string name="personalization_weekends_only">Weekends only</string>
     <string name="personalization_flexible_schedule">Flexible schedule</string>
-    <string name="personalization_inconsistent_schedule">Irregular schedule</string>
+    <string name="personalization_unpredictable_schedule">Unpredictable schedule</string>
 
-    <!-- Personalizations: duration -->
-    <string name="personalization_minutes_30_45">30–45 min</string>
-    <string name="personalization_minutes_45_60">45–60 min</string>
-    <string name="personalization_minutes_60_90">60–90 min</string>
-    <string name="personalization_minutes_90_120">90–120 min</string>
-    <string name="personalization_minutes_120_plus">~2 hours or more</string>
-    <string name="personalization_flexible_duration">Varies each time</string>
+    <!-- Personalizations: session duration -->
+    <string name="personalization_minutes_up_to_45">Up to 45 min</string>
+    <string name="personalization_minutes_45_to_90">45–90 min</string>
+    <string name="personalization_minutes_90_plus">90+ min</string>
+    <string name="personalization_flexible_duration">Flexible duration</string>
 
-    <!-- Personalizations: recovery -->
-    <string name="personalization_low_energy_days">Sometimes low energy</string>
-    <string name="personalization_stressful_period">Stressful period</string>
-    <string name="personalization_poor_sleep">Poor sleep</string>
-    <string name="personalization_travels_often">Travel often</string>
+    <!-- Personalizations: lifestyle -->
+    <string name="personalization_high_stress_lifestyle">High stress</string>
+    <string name="personalization_poor_sleep_pattern">Poor sleep</string>
+    <string name="personalization_low_energy_tendency">Often low energy</string>
+    <string name="personalization_sedentary_job">Sedentary job</string>
+    <string name="personalization_physically_active_job">Physically active job</string>
 
-    <!-- Personalizations: physical limitations -->
-    <string name="personalization_joint_friendly">Joint-friendly</string>
-    <string name="personalization_low_impact">Low impact</string>
-    <string name="personalization_back_care">Protect back</string>
-    <string name="personalization_knee_care">Protect knees</string>
-    <string name="personalization_shoulder_care">Protect shoulders</string>
-    <string name="personalization_wrist_care">Protect wrists</string>
+    <!-- Personalizations: recovery context -->
     <string name="personalization_returning_after_break">Returning after break</string>
     <string name="personalization_recovering_from_injury">Recovering from injury</string>
-    <string name="personalization_recovery_focus">Recovery focus</string>
-    <string name="personalization_mobility_focus">Mobility focus</string>
-    <string name="personalization_warmup_focus">Thorough warm-up</string>
     <string name="personalization_limited_range_of_motion">Limited range of motion</string>
     <string name="personalization_fatigue_management">Manage fatigue</string>
+    <string name="personalization_recovery_focus">Recovery focus</string>
+    <string name="personalization_mobility_focus">Mobility focus</string>
+
+    <!-- Personalizations: care zones -->
+    <string name="personalization_neck_care">Protect neck</string>
+    <string name="personalization_lower_back_care">Protect lower back</string>
+    <string name="personalization_upper_back_care">Protect upper back</string>
+    <string name="personalization_shoulder_care">Protect shoulders</string>
+    <string name="personalization_elbow_care">Protect elbows</string>
+    <string name="personalization_wrist_care">Protect wrists</string>
+    <string name="personalization_hip_care">Protect hips</string>
+    <string name="personalization_knee_care">Protect knees</string>
+    <string name="personalization_ankle_care">Protect ankles</string>
+
+    <!-- Personalizations: health conditions -->
+    <string name="personalization_hypertension">Hypertension</string>
+    <string name="personalization_diabetes">Diabetes</string>
+    <string name="personalization_asthma">Asthma</string>
+    <string name="personalization_osteoporosis">Osteoporosis</string>
+    <string name="personalization_arthritis">Arthritis</string>
+    <string name="personalization_herniated_disc">Herniated disc</string>
+    <string name="personalization_chronic_pain">Chronic pain</string>
+    <string name="personalization_pregnancy">Pregnancy</string>
+    <string name="personalization_postpartum">Postpartum</string>
+
+    <!-- Personalizations: movement restrictions -->
     <string name="personalization_avoid_high_intensity">Avoid high intensity</string>
     <string name="personalization_avoid_heavy_loading">Avoid heavy weights</string>
-
-    <!-- Personalizations: movement exclusions -->
+    <string name="personalization_avoid_high_impact">Avoid high impact</string>
     <string name="personalization_avoid_deep_squats">No deep squats</string>
     <string name="personalization_avoid_lunges">No lunges</string>
     <string name="personalization_avoid_overhead_work">No overhead work</string>
     <string name="personalization_avoid_heavy_spinal_loading">No heavy spinal load</string>
+    <string name="personalization_avoid_spinal_flexion">No spinal flexion</string>
     <string name="personalization_avoid_twisting">No twisting</string>
     <string name="personalization_avoid_floor_work">No floor work</string>
+    <string name="personalization_avoid_inversions">No inversions</string>
+    <string name="personalization_avoid_valsalva">No breath holding</string>
     <string name="personalization_needs_supported_movements">Supported movements</string>
 
-    <!-- Personalizations: plan style -->
+    <!-- Personalizations: sports -->
+    <string name="personalization_sport_powerlifting">Powerlifting</string>
+    <string name="personalization_sport_bodybuilding">Bodybuilding</string>
+    <string name="personalization_sport_olympic_weightlifting">Olympic weightlifting</string>
+    <string name="personalization_sport_crossfit">CrossFit</string>
+    <string name="personalization_sport_calisthenics">Calisthenics</string>
+    <string name="personalization_sport_running">Running</string>
+    <string name="personalization_sport_cycling">Cycling</string>
+    <string name="personalization_sport_swimming">Swimming</string>
+    <string name="personalization_sport_grappling">Grappling / BJJ</string>
+    <string name="personalization_sport_striking">Boxing / MMA</string>
+    <string name="personalization_sport_team_ball_sports">Team ball sports</string>
+    <string name="personalization_sport_racquet_sports">Racquet sports</string>
+    <string name="personalization_sport_climbing">Climbing</string>
+    <string name="personalization_sport_winter_board_sports">Skiing / snowboard</string>
+    <string name="personalization_sport_yoga_or_pilates">Yoga / Pilates</string>
+
+    <!-- Personalizations: focus areas -->
+    <string name="personalization_focus_chest">Chest</string>
+    <string name="personalization_focus_back">Back</string>
+    <string name="personalization_focus_shoulders">Shoulders</string>
+    <string name="personalization_focus_rear_delts">Rear delts</string>
+    <string name="personalization_focus_arms">Arms</string>
+    <string name="personalization_focus_forearms_and_grip">Forearms / grip</string>
+    <string name="personalization_focus_abs_and_core">Abs &amp; core</string>
+    <string name="personalization_focus_legs">Legs</string>
+    <string name="personalization_focus_glutes">Glutes</string>
+    <string name="personalization_focus_quadriceps">Quadriceps</string>
+    <string name="personalization_focus_hamstrings">Hamstrings</string>
+    <string name="personalization_focus_calves">Calves</string>
+
+    <!-- Personalizations: physical qualities -->
+    <string name="personalization_improve_cardio">Improve cardio</string>
+    <string name="personalization_improve_muscular_endurance">Muscular endurance</string>
+    <string name="personalization_improve_explosive_power">Explosive power</string>
+    <string name="personalization_improve_speed">Speed</string>
+    <string name="personalization_improve_flexibility">Flexibility</string>
+    <string name="personalization_improve_balance">Balance</string>
+    <string name="personalization_improve_grip_strength">Grip strength</string>
+    <string name="personalization_improve_core_stability">Core stability</string>
+
+    <!-- Personalizations: program preferences -->
     <string name="personalization_simple_plan">Simple plan</string>
-    <string name="personalization_more_variety">More variety</string>
     <string name="personalization_lower_volume">Lower volume</string>
     <string name="personalization_higher_volume">Higher volume</string>
     <string name="personalization_gradual_progression">Gradual progression</string>
     <string name="personalization_aggressive_progression">Aggressive progression</string>
-    <string name="personalization_beginner_friendly">Beginner-friendly</string>
 
-    <!-- Personalizations: structure -->
-    <string name="personalization_easy_to_follow">Easy to follow</string>
-    <string name="personalization_no_complex_movements">No complex movements</string>
-    <string name="personalization_full_body_preference">Full body</string>
-    <string name="personalization_split_routine_preference">Split routine</string>
-    <string name="personalization_upper_lower_preference">Upper/lower split</string>
+    <!-- Personalizations: routine structure -->
+    <string name="personalization_prefer_full_body">Full body</string>
+    <string name="personalization_prefer_upper_lower">Upper / Lower</string>
+    <string name="personalization_prefer_push_pull_legs">Push / Pull / Legs</string>
+    <string name="personalization_prefer_split_routine">Split routine</string>
+
+    <!-- Personalizations: set / method preferences -->
+    <string name="personalization_prefer_straight_sets">Straight sets</string>
+    <string name="personalization_prefer_supersets">Supersets</string>
+    <string name="personalization_prefer_circuits">Circuits</string>
+    <string name="personalization_prefer_heavy_compounds">Heavy compounds</string>
+
+    <!-- Personalizations: equipment preferences -->
+    <string name="personalization_prefer_free_weights">Free weights</string>
+    <string name="personalization_prefer_machines">Machines</string>
+    <string name="personalization_prefer_cables">Cables</string>
+    <string name="personalization_prefer_bodyweight">Bodyweight</string>
+
+    <!-- Personalizations: training phase -->
+    <string name="personalization_phase_bulking">Bulking</string>
+    <string name="personalization_phase_cutting">Cutting</string>
+    <string name="personalization_phase_maintenance">Maintenance</string>
+    <string name="personalization_phase_deload">Deload week</string>
+    <string name="personalization_phase_competition_prep">Competition prep</string>
 
     <!-- Muscle load summary -->
     <string name="muscle_load_summary_empty">Log a workout to see your muscle load.</string>

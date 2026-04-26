@@ -572,11 +572,21 @@
     <string name="goal_secondary_section">Що ще важливо?</string>
     <string name="goal_target_date_section">Коли хочеш досягти?</string>
     <string name="goal_target_date_placeholder">Цільова дата</string>
-    <string name="personalizations_frequency_section">Як часто тренуєшся?</string>
-    <string name="personalizations_duration_section">Скільки триває тренування?</string>
-    <string name="personalizations_recovery_section">Відновлення та спосіб життя</string>
-    <string name="personalizations_limitations_section">Обмеження</string>
-    <string name="personalizations_style_section">Стиль та підхід</string>
+    <string name="personalizations_schedule_section">Розклад тренувань</string>
+    <string name="personalizations_session_duration_section">Тривалість сесії</string>
+    <string name="personalizations_lifestyle_section">Спосіб життя</string>
+    <string name="personalizations_recovery_context_section">Контекст відновлення</string>
+    <string name="personalizations_care_zones_section">Чутливі зони</string>
+    <string name="personalizations_health_conditions_section">Стани здоров'я</string>
+    <string name="personalizations_movement_restrictions_section">Заборони на рухи</string>
+    <string name="personalizations_sports_section">Види спорту</string>
+    <string name="personalizations_focus_areas_section">Пріоритетні зони</string>
+    <string name="personalizations_physical_qualities_section">Фізичні якості</string>
+    <string name="personalizations_program_preferences_section">Налаштування програми</string>
+    <string name="personalizations_routine_structure_section">Структура програми</string>
+    <string name="personalizations_set_method_preferences_section">Стиль виконання</string>
+    <string name="personalizations_equipment_preferences_section">Обладнання</string>
+    <string name="personalizations_training_phase_section">Фаза циклу</string>
     <string name="goal_intro">До чого ви зараз ідете? Підлаштуємо досвід під це.</string>
     <string name="goal_main_section">Головне</string>
     <string name="goal_personalization_section">Особисті нюанси</string>
@@ -678,7 +688,7 @@
     <string name="goal_details_reason_strength_ok_detail">Більшість роботи достатньо важка, щоб розвивати силу.</string>
 
     <string name="goal_details_reason_hypertrophy_low_title">Замало роботи на масу</string>
-    <string name="goal_details_reason_hypertrophy_low_detail">Середня вага на 6–12 повторень — двигун росту м\'язів, а таких підходів у тебе мало.</string>
+    <string name="goal_details_reason_hypertrophy_low_detail">Середня вага на 6–12 повторень — двигун росту м'язів, а таких підходів у тебе мало.</string>
     <string name="goal_details_reason_hypertrophy_ok_title">Фокус на гіпертрофію витримано</string>
     <string name="goal_details_reason_hypertrophy_ok_detail">Більша частина роботи лежить у діапазоні гіпертрофії.</string>
 
@@ -704,7 +714,7 @@
 
     <!-- Training goal details: actionable tips -->
     <string name="goal_details_tip_add_heavy">Додай 3–5 повторень на 85%+ від 1ПМ в основному базовому русі.</string>
-    <string name="goal_details_tip_hypertrophy_reps">Тримай 8–12 повторень на 65–75% від 1ПМ і 3–4 підходи на м\'язову групу.</string>
+    <string name="goal_details_tip_hypertrophy_reps">Тримай 8–12 повторень на 65–75% від 1ПМ і 3–4 підходи на м'язову групу.</string>
     <string name="goal_details_tip_metabolic">Спробуй коротший відпочинок, більше повторень (12–20) і кругові добивки.</string>
     <string name="goal_details_tip_balance_strength_hyp">Заплануй один важкий малоповторний день і один середньоповторний на тиждень.</string>
     <string name="goal_details_tip_balance_strength_end">Чергуй силову і кондиційну сесії — тримай їх приблизно рівними за обсягом.</string>
@@ -733,13 +743,13 @@
     <string name="goal_details_breakdown_top_exercises_title">Топ вправ за внеском</string>
     <string name="goal_details_breakdown_top_exercises_hint">Твої %1$d головні вправи за навантаженням (сети × вага × повтори). Решта сумарно дає ще %2$d%%.</string>
     <string name="goal_details_breakdown_top_exercises_empty">У цьому періоді ще немає підходів з вагою та повтореннями.</string>
-    <string name="goal_details_breakdown_top_muscles_title">М\'язи, що отримали найбільше роботи</string>
-    <string name="goal_details_breakdown_top_muscles_hint">М\'язи відсортовані за сумарним навантаженням, яке вони отримали за всі тренування.</string>
+    <string name="goal_details_breakdown_top_muscles_title">М'язи, що отримали найбільше роботи</string>
+    <string name="goal_details_breakdown_top_muscles_hint">М'язи відсортовані за сумарним навантаженням, яке вони отримали за всі тренування.</string>
     <string name="goal_details_breakdown_exercise_sets">%1$d сетів</string>
     <string name="goal_details_breakdown_exercise_one_rm">приблизний 1ПМ %1$d кг</string>
     <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>
     <string name="goal_details_breakdown_exercise_share_caption">від загального навантаження</string>
-    <string name="goal_details_breakdown_muscle_share_caption">від роботи м\'язів</string>
+    <string name="goal_details_breakdown_muscle_share_caption">від роботи м'язів</string>
 
     <string name="goal_details_breakdown_empty_title">Даних для розрахунку ще немає</string>
     <string name="goal_details_breakdown_empty_detail">Додай тренування в цей період — і ми покажемо, які сесії та вправи рухали рахунок.</string>
@@ -748,72 +758,139 @@
     <string name="personalization_low_frequency">1–2 рази на тиждень</string>
     <string name="personalization_moderate_frequency">3–4 рази на тиждень</string>
     <string name="personalization_high_frequency">5+ разів на тиждень</string>
-    <string name="personalization_weekends_only">Тільки у вихідні</string>
     <string name="personalization_weekdays_only">Тільки в будні</string>
+    <string name="personalization_weekends_only">Тільки у вихідні</string>
     <string name="personalization_flexible_schedule">Гнучкий графік</string>
-    <string name="personalization_inconsistent_schedule">Нестабільний графік</string>
+    <string name="personalization_unpredictable_schedule">Хаотичний графік</string>
 
     <!-- Personalizations: duration -->
-    <string name="personalization_minutes_30_45">30–45 хвилин</string>
-    <string name="personalization_minutes_45_60">45–60 хвилин</string>
-    <string name="personalization_minutes_60_90">60–90 хвилин</string>
-    <string name="personalization_minutes_90_120">90–120 хвилин</string>
-    <string name="personalization_minutes_120_plus">~2 години і більше</string>
-    <string name="personalization_flexible_duration">По-різному</string>
+    <string name="personalization_minutes_up_to_45">До 45 хвилин</string>
+    <string name="personalization_minutes_45_to_90">45–90 хвилин</string>
+    <string name="personalization_minutes_90_plus">90+ хвилин</string>
+    <string name="personalization_flexible_duration">Гнучка тривалість</string>
 
     <!-- Personalizations: recovery -->
-    <string name="personalization_low_energy_days">Бувають дні без сил</string>
-    <string name="personalization_stressful_period">Стресовий період</string>
-    <string name="personalization_poor_sleep">Поганий сон</string>
-    <string name="personalization_travels_often">Часто їжджу</string>
+    <string name="personalization_high_stress_lifestyle">Високий рівень стресу</string>
+    <string name="personalization_poor_sleep_pattern">Погано сплю</string>
+    <string name="personalization_low_energy_tendency">Часто мало енергії</string>
+    <string name="personalization_sedentary_job">Сидяча робота</string>
+    <string name="personalization_physically_active_job">Фізично активна робота</string>
 
     <!-- Personalizations: physical limitations -->
-    <string name="personalization_joint_friendly">Берегти суглоби</string>
-    <string name="personalization_low_impact">Низьке ударне навантаження</string>
-    <string name="personalization_back_care">Берегти спину</string>
-    <string name="personalization_knee_care">Берегти коліна</string>
-    <string name="personalization_shoulder_care">Берегти плечі</string>
-    <string name="personalization_wrist_care">Берегти зап'ястя</string>
-    <string name="personalization_returning_after_break">Повернення після паузи</string>
-    <string name="personalization_recovering_from_injury">Відновлення після травми</string>
-    <string name="personalization_recovery_focus">Пріоритет відновленню</string>
-    <string name="personalization_mobility_focus">Акцент на рухливість</string>
-    <string name="personalization_warmup_focus">Серйозна розминка</string>
+    <string name="personalization_returning_after_break">Повертаюсь після паузи</string>
+    <string name="personalization_recovering_from_injury">Відновлююсь після травми</string>
     <string name="personalization_limited_range_of_motion">Обмежена амплітуда</string>
-    <string name="personalization_fatigue_management">Управління втомою</string>
-    <string name="personalization_avoid_high_intensity">Без високої інтенсивності</string>
-    <string name="personalization_avoid_heavy_loading">Без важких ваг</string>
+    <string name="personalization_fatigue_management">Часто перевтомлююсь</string>
+    <string name="personalization_recovery_focus">Фокус на відновлення</string>
+    <string name="personalization_mobility_focus">Фокус на мобільність</string>
 
     <!-- Personalizations: movement exclusions -->
+    <string name="personalization_neck_care">Берегти шию</string>
+    <string name="personalization_lower_back_care">Берегти поперек</string>
+    <string name="personalization_upper_back_care">Берегти верх спини</string>
+    <string name="personalization_shoulder_care">Берегти плечі</string>
+    <string name="personalization_elbow_care">Берегти лікті</string>
+    <string name="personalization_wrist_care">Берегти зап'ястя</string>
+    <string name="personalization_hip_care">Берегти таз</string>
+    <string name="personalization_knee_care">Берегти коліна</string>
+    <string name="personalization_ankle_care">Берегти гомілковостоп</string>
+
+    <string name="personalization_hypertension">Гіпертонія</string>
+    <string name="personalization_diabetes">Діабет</string>
+    <string name="personalization_asthma">Астма</string>
+    <string name="personalization_osteoporosis">Остеопороз</string>
+    <string name="personalization_arthritis">Артрит</string>
+    <string name="personalization_herniated_disc">Грижа міжхребцевого диска</string>
+    <string name="personalization_chronic_pain">Хронічний біль</string>
+    <string name="personalization_pregnancy">Вагітність</string>
+    <string name="personalization_postpartum">Післяпологовий період</string>
+
+    <string name="personalization_avoid_high_intensity">Без високої інтенсивності</string>
+    <string name="personalization_avoid_heavy_loading">Без важких ваг</string>
+    <string name="personalization_avoid_high_impact">Без ударного навантаження</string>
     <string name="personalization_avoid_deep_squats">Без глибоких присідань</string>
     <string name="personalization_avoid_lunges">Без випадів</string>
     <string name="personalization_avoid_overhead_work">Без вправ над головою</string>
-    <string name="personalization_avoid_heavy_spinal_loading">Без навантаження на хребет</string>
+    <string name="personalization_avoid_heavy_spinal_loading">Без осьового навантаження</string>
+    <string name="personalization_avoid_spinal_flexion">Без згинання хребта</string>
     <string name="personalization_avoid_twisting">Без скручувань</string>
     <string name="personalization_avoid_floor_work">Без вправ на підлозі</string>
+    <string name="personalization_avoid_inversions">Без інверсій</string>
+    <string name="personalization_avoid_valsalva">Без затримки дихання</string>
     <string name="personalization_needs_supported_movements">З опорою та підтримкою</string>
+
+    <string name="personalization_sport_powerlifting">Пауерліфтинг</string>
+    <string name="personalization_sport_bodybuilding">Бодібілдинг</string>
+    <string name="personalization_sport_olympic_weightlifting">Важка атлетика</string>
+    <string name="personalization_sport_crossfit">Кросфіт</string>
+    <string name="personalization_sport_calisthenics">Каллістеніка</string>
+    <string name="personalization_sport_running">Біг</string>
+    <string name="personalization_sport_cycling">Велоспорт</string>
+    <string name="personalization_sport_swimming">Плавання</string>
+    <string name="personalization_sport_grappling">Боротьба / BJJ</string>
+    <string name="personalization_sport_striking">Бокс / MMA</string>
+    <string name="personalization_sport_team_ball_sports">Командні види</string>
+    <string name="personalization_sport_racquet_sports">Ракеткові види</string>
+    <string name="personalization_sport_climbing">Скелелазіння</string>
+    <string name="personalization_sport_winter_board_sports">Лижі / сноуборд</string>
+    <string name="personalization_sport_yoga_or_pilates">Йога / пілатес</string>
+
+    <string name="personalization_focus_chest">Грудні</string>
+    <string name="personalization_focus_back">Спина</string>
+    <string name="personalization_focus_shoulders">Плечі</string>
+    <string name="personalization_focus_rear_delts">Задні дельти</string>
+    <string name="personalization_focus_arms">Руки</string>
+    <string name="personalization_focus_forearms_and_grip">Передпліччя / хват</string>
+    <string name="personalization_focus_abs_and_core">Прес і кор</string>
+    <string name="personalization_focus_legs">Ноги</string>
+    <string name="personalization_focus_glutes">Сідниці</string>
+    <string name="personalization_focus_quadriceps">Квадрицепси</string>
+    <string name="personalization_focus_hamstrings">Біцепс стегна</string>
+    <string name="personalization_focus_calves">Литки</string>
+
+    <string name="personalization_improve_cardio">Розвинути кардіо</string>
+    <string name="personalization_improve_muscular_endurance">М'язова витривалість</string>
+    <string name="personalization_improve_explosive_power">Вибухова сила</string>
+    <string name="personalization_improve_speed">Швидкість</string>
+    <string name="personalization_improve_flexibility">Гнучкість</string>
+    <string name="personalization_improve_balance">Баланс</string>
+    <string name="personalization_improve_grip_strength">Сила хвату</string>
+    <string name="personalization_improve_core_stability">Стабільність корпусу</string>
 
     <!-- Personalizations: plan style -->
     <string name="personalization_simple_plan">Простий план</string>
-    <string name="personalization_more_variety">Більше різноманітності</string>
     <string name="personalization_lower_volume">Менше обсягу</string>
     <string name="personalization_higher_volume">Більше обсягу</string>
-    <string name="personalization_gradual_progression">Плавна прогресія</string>
-    <string name="personalization_aggressive_progression">Швидкий прогрес</string>
-    <string name="personalization_beginner_friendly">Для початківця</string>
+    <string name="personalization_gradual_progression">Поступова прогресія</string>
+    <string name="personalization_aggressive_progression">Агресивна прогресія</string>
 
     <!-- Personalizations: structure -->
-    <string name="personalization_easy_to_follow">Зрозумілий план</string>
-    <string name="personalization_no_complex_movements">Без складних рухів</string>
-    <string name="personalization_full_body_preference">Все тіло</string>
-    <string name="personalization_split_routine_preference">Спліт</string>
-    <string name="personalization_upper_lower_preference">Верх/низ</string>
+    <string name="personalization_prefer_full_body">Full-body</string>
+    <string name="personalization_prefer_upper_lower">Upper / Lower</string>
+    <string name="personalization_prefer_push_pull_legs">Push / Pull / Legs</string>
+    <string name="personalization_prefer_split_routine">Спліт</string>
+
+    <string name="personalization_prefer_straight_sets">Прямі підходи</string>
+    <string name="personalization_prefer_supersets">Суперсети</string>
+    <string name="personalization_prefer_circuits">Колові тренування</string>
+    <string name="personalization_prefer_heavy_compounds">Базові з важкими вагами</string>
+
+    <string name="personalization_prefer_free_weights">Вільні ваги</string>
+    <string name="personalization_prefer_machines">Тренажери</string>
+    <string name="personalization_prefer_cables">Кросовер / блоки</string>
+    <string name="personalization_prefer_bodyweight">Вага тіла</string>
+
+    <string name="personalization_phase_bulking">Набір маси</string>
+    <string name="personalization_phase_cutting">Сушка</string>
+    <string name="personalization_phase_maintenance">Підтримання</string>
+    <string name="personalization_phase_deload">Розвантажувальний тиждень</string>
+    <string name="personalization_phase_competition_prep">Підготовка до змагань</string>
 
     <!-- Muscle load summary -->
-    <string name="muscle_load_summary_empty">Запишіть тренування, щоб побачити навантаження по м\'язах.</string>
+    <string name="muscle_load_summary_empty">Запишіть тренування, щоб побачити навантаження по м'язах.</string>
     <string name="muscle_load_summary_top_group_fallback">топ-група</string>
     <string name="muscle_load_summary_weakest_group_fallback">найслабша група</string>
-    <string name="muscle_load_summary_note">Примітка: навантаження за стимулом. Базові вправи отримують невеликий бонус; крихітні частки згладжуються; дрібні/чутливі м\'язи обмежуються зверху.</string>
+    <string name="muscle_load_summary_note">Примітка: навантаження за стимулом. Базові вправи отримують невеликий бонус; крихітні частки згладжуються; дрібні/чутливі м'язи обмежуються зверху.</string>
     <string name="muscle_load_summary_headline_strong_focus">Сильний фокус: %1$s ~%2$d%% (топ-2 ~%3$d%%).</string>
     <string name="muscle_load_summary_headline_clear_split">Чіткий спліт: топ-2 ~%1$d%% (топ ~%2$d%%, другий ~%3$d%%).</string>
     <string name="muscle_load_summary_headline_balanced">Збалансовано: топ ~%1$d%%, топ-2 ~%2$d%%.</string>
@@ -825,7 +902,7 @@
     <string name="muscle_load_summary_action_balanced">Міцна база. Якщо прогрес зупиниться: оберіть одну групу і додайте 2-3 підходи/тиж.</string>
     <string name="muscle_load_summary_action_mild_bias_with_target">Якщо хочете рівніше: додайте 1-2 підходи за сесію на %1$s (або ту, що нижче всіх), доки топ-2 не стане ~70-75%%.</string>
     <string name="muscle_load_summary_action_mild_bias_no_target">Якщо хочете рівніше: додайте 1-2 підходи за сесію на групу з найменшою часткою, доки топ-2 не стане ~70-75%%.</string>
-    <string name="muscle_load_summary_top_muscle">Топ-м\'яз: %1$s (~%2$d%%).</string>
+    <string name="muscle_load_summary_top_muscle">Топ-м'яз: %1$s (~%2$d%%).</string>
     <string name="muscle_load_summary_volume_higher_than_stimulus">Обсяг вище стимулу для %1$s. Багато тоннажу, менше фокуса. Для розміру: додайте 1-2 полегшені підходи. Для сили: збережіть і залиште один важкий топ-сет.</string>
     <string name="muscle_load_summary_stimulus_higher_than_volume">Стимул вище обсягу для %1$s. Більше зусиль при меншому тоннажі. Для сили: додайте важчий топ-сет. Для розміру: збережіть і додайте 1 підхід.</string>
     <string name="muscle_load_summary_stimulus_volume_match">Стимул і обсяг збігаються для топ-групи.</string>
