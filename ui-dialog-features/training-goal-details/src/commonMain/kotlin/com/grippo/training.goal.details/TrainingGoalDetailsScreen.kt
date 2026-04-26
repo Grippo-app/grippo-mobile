@@ -24,8 +24,8 @@ import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalFocusDistributionCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
-import com.grippo.design.components.scroll.AnchorScrollBehavior
-import com.grippo.design.components.scroll.rememberAnchoredLazyListState
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyListState
 import com.grippo.design.components.tip.TipCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview

@@ -1,4 +1,4 @@
-package com.grippo.design.components.scroll
+package com.grippo.design.components.utils
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState

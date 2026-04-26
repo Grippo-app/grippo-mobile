@@ -50,8 +50,8 @@ import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.profile.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.scroll.AnchorScrollBehavior
-import com.grippo.design.components.scroll.rememberAnchoredLazyGridState
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyGridState
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens

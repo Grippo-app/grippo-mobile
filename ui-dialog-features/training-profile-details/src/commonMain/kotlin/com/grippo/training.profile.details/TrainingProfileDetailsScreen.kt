@@ -22,8 +22,8 @@ import com.grippo.design.components.metrics.profile.TrainingProfileMuscleFocusCa
 import com.grippo.design.components.metrics.profile.TrainingProfileRadar
 import com.grippo.design.components.metrics.profile.TrainingProfileRadarStyle
 import com.grippo.design.components.metrics.profile.TrainingProfileTopExercisesCard
-import com.grippo.design.components.scroll.AnchorScrollBehavior
-import com.grippo.design.components.scroll.rememberAnchoredLazyListState
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyListState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
