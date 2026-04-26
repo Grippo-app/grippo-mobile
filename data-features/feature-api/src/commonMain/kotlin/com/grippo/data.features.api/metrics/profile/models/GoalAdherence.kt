@@ -30,4 +30,5 @@ public data class GoalAdherence(
     // Top contributors within the period.
     val topExercises: List<TopExerciseContribution>,
     val topMuscles: List<TopMuscleContribution>,
+    val topMuscleGroups: List<TopMuscleGroupContribution>,
 )

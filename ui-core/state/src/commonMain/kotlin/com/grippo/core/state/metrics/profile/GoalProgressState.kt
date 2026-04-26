@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.GoalState
@@ -49,10 +50,14 @@ public data class GoalProgressState(
     val compoundRatio: Int,
     val topExercises: ImmutableList<TopExerciseContributionState>,
     val topMuscles: ImmutableList<TopMuscleContributionState>,
+    val topMuscleGroups: ImmutableList<TopMuscleGroupContributionState>,
 ) {
     /** True when there is no meaningful training data behind the score. */
     public val hasBreakdown: Boolean
-        get() = sessionCount > 0 || topExercises.isNotEmpty() || topMuscles.isNotEmpty()
+        get() = sessionCount > 0 ||
+                topExercises.isNotEmpty() ||
+                topMuscles.isNotEmpty() ||
+                topMuscleGroups.isNotEmpty()
 
     @Composable
     public fun progressLine(): String {
@@ -145,6 +150,16 @@ private fun stubTopMuscles(): ImmutableList<TopMuscleContributionState> = persis
     TopMuscleContributionState(MuscleEnumState.LATISSIMUS_DORSI, 15),
 )
 
+private fun stubTopMuscleGroups(): ImmutableList<TopMuscleGroupContributionState> =
+    persistentListOf(
+        TopMuscleGroupContributionState(MuscleGroupEnumState.LEGS, 35),
+        TopMuscleGroupContributionState(MuscleGroupEnumState.CHEST_MUSCLES, 22),
+        TopMuscleGroupContributionState(MuscleGroupEnumState.BACK_MUSCLES, 18),
+        TopMuscleGroupContributionState(MuscleGroupEnumState.SHOULDER_MUSCLES, 12),
+        TopMuscleGroupContributionState(MuscleGroupEnumState.ARMS_AND_FOREARMS, 10),
+        TopMuscleGroupContributionState(MuscleGroupEnumState.ABDOMINAL_MUSCLES, 3),
+    )
+
 public fun stubGoalProgress(
     primary: GoalPrimaryGoalEnumState = GoalPrimaryGoalEnumState.GET_STRONGER,
     secondary: GoalSecondaryGoalEnumState? = GoalSecondaryGoalEnumState.CONSISTENCY,
@@ -159,6 +174,7 @@ public fun stubGoalProgress(
     compoundRatio: Int = 68,
     topExercises: ImmutableList<TopExerciseContributionState> = stubTopExercises(),
     topMuscles: ImmutableList<TopMuscleContributionState> = stubTopMuscles(),
+    topMuscleGroups: ImmutableList<TopMuscleGroupContributionState> = stubTopMuscleGroups(),
 ): GoalProgressState {
     val baseGoal = stubGoal()
     return GoalProgressState(
@@ -182,12 +198,14 @@ public fun stubGoalProgress(
         compoundRatio = compoundRatio,
         topExercises = topExercises,
         topMuscles = topMuscles,
+        topMuscleGroups = topMuscleGroups,
     )
 }
 
 public fun stubGoalProgressList(): List<GoalProgressState> {
     val exercises = stubTopExercises()
     val muscles = stubTopMuscles()
+    val muscleGroups = stubTopMuscleGroups()
     val seeds = listOf(
         // score, strength/hyp/end, daysTotal, daysElapsed, daysRemaining, fraction, finished
         StubSeed(82, 45, 40, 15, 90, 18, 72, 0.2f, false),
@@ -222,6 +240,7 @@ public fun stubGoalProgressList(): List<GoalProgressState> {
             compoundRatio = 68,
             topExercises = exercises,
             topMuscles = muscles,
+            topMuscleGroups = muscleGroups,
         )
     }
 }

@@ -39,5 +39,6 @@ public fun GoalAdherence.toState(): GoalProgressState {
         compoundRatio = compoundRatio,
         topExercises = topExercises.map { it.toState() }.toPersistentList(),
         topMuscles = topMuscles.map { it.toState() }.toPersistentList(),
+        topMuscleGroups = topMuscleGroups.map { it.toState() }.toPersistentList(),
     )
 }

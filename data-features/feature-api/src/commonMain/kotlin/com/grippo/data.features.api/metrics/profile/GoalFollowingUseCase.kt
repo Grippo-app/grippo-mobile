@@ -12,7 +12,9 @@ import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Compani
 import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.data.features.api.metrics.profile.models.TopExerciseContribution
 import com.grippo.data.features.api.metrics.profile.models.TopMuscleContribution
+import com.grippo.data.features.api.metrics.profile.models.TopMuscleGroupContribution
 import com.grippo.data.features.api.muscle.models.MuscleEnum
+import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
@@ -85,7 +87,17 @@ public class GoalFollowingUseCase(
 
         /** Maximum number of top contributors exposed to consumers. */
         private const val TOP_EXERCISES_LIMIT = 5
-        private const val TOP_MUSCLES_LIMIT = 3
+
+        /**
+         * Muscle list is exposed in full (the project's [MuscleEnumState] has
+         * 21 entries, so 30 acts as "all of them"). Capping at 3 silently
+         * dropped chest / back / quad work for hypertrophy users when their
+         * top-3 happened to be small accessory groups, which broke the
+         * breakdown card's coverage stat and undercoverage callout. The UI
+         * decides how many rows to render — see `TOP_MUSCLES_VISIBLE` in
+         * `GoalCalculationBreakdownCard`.
+         */
+        private const val TOP_MUSCLES_LIMIT = 30
     }
 
     // -------------------------------------------------------------------------
@@ -119,6 +131,7 @@ public class GoalFollowingUseCase(
         val compoundRatio: Int,
         val topExercises: List<TopExerciseContribution>,
         val topMuscles: List<TopMuscleContribution>,
+        val topMuscleGroups: List<TopMuscleGroupContribution>,
     ) {
         val isSilent: Boolean
             get() = raw.totalWork <= EPS ||
@@ -170,6 +183,25 @@ public class GoalFollowingUseCase(
                 )
             }
 
+        // Roll the per-muscle stimulus into the six anatomical groups so the
+        // breakdown card can reason about coverage at the level the user
+        // actually programs at ("chest day, leg day"). The full set of groups
+        // is small (6) and bounded, so we don't truncate.
+        val groupTotals: Map<MuscleGroupEnum, Float> = muscleTotals.entries
+            .filter { it.value.isFinite() && it.value > EPS }
+            .groupingBy { it.key.group() }
+            .fold(0f) { acc, entry -> acc + entry.value }
+        val topMuscleGroups = groupTotals.entries
+            .sortedByDescending { it.value }
+            .map { (group, v) ->
+                TopMuscleGroupContribution(
+                    group = group,
+                    share = if (totalMuscle > EPS) {
+                        ((v / totalMuscle) * 100f).roundToInt().coerceIn(0, 100)
+                    } else 0,
+                )
+            }
+
         val topExercises = buildTopExercises(allStats, totalStimulus)
 
         return Analysis(
@@ -181,6 +213,7 @@ public class GoalFollowingUseCase(
             compoundRatio = compoundRatio,
             topExercises = topExercises,
             topMuscles = topMuscles,
+            topMuscleGroups = topMuscleGroups,
         )
     }
 
@@ -193,6 +226,7 @@ public class GoalFollowingUseCase(
         compoundRatio = 0,
         topExercises = emptyList(),
         topMuscles = emptyList(),
+        topMuscleGroups = emptyList(),
     )
 
     private fun Analysis.toAdherence(goal: Goal, score: Int): GoalAdherence = GoalAdherence(
@@ -205,6 +239,7 @@ public class GoalFollowingUseCase(
         compoundRatio = compoundRatio,
         topExercises = topExercises,
         topMuscles = topMuscles,
+        topMuscleGroups = topMuscleGroups,
     )
 
     private fun buildTopExercises(

@@ -3,6 +3,7 @@ package com.grippo.core.state.metrics.profile
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupEnumState
 
 @Immutable
 public data class TopExerciseContributionState(
@@ -18,5 +19,11 @@ public data class TopExerciseContributionState(
 @Immutable
 public data class TopMuscleContributionState(
     val muscle: MuscleEnumState,
+    val share: Int,                  // % of period's total muscle work (0..100)
+)
+
+@Immutable
+public data class TopMuscleGroupContributionState(
+    val group: MuscleGroupEnumState,
     val share: Int,                  // % of period's total muscle work (0..100)
 )

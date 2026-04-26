@@ -29,9 +29,9 @@ import androidx.compose.ui.text.withStyle
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.TopExerciseContributionState
-import com.grippo.core.state.metrics.profile.TopMuscleContributionState
+import com.grippo.core.state.metrics.profile.TopMuscleGroupContributionState
 import com.grippo.core.state.metrics.profile.stubGoalProgress
-import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.design.core.AppTokens
@@ -64,18 +64,17 @@ import com.grippo.design.resources.provider.goal_details_focus_endurance
 import com.grippo.design.resources.provider.goal_details_focus_hypertrophy
 import com.grippo.design.resources.provider.goal_details_focus_share
 import com.grippo.design.resources.provider.goal_details_focus_strength
-import com.grippo.design.resources.provider.muscle_group_back_muscles
-import com.grippo.design.resources.provider.muscle_group_chest_muscles
 import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Maximum number of top contributors rendered with a full progress bar in the
- * exercises and muscles blocks. Exercises stay tight at three rows because the
- * tail line is doing most of the work for GET_STRONGER, while muscles get a
- * larger window because, for hypertrophy goals, coverage is the signal.
+ * exercises and muscle-group blocks. Exercises stay tight at three rows because
+ * the tail line is doing most of the work for GET_STRONGER. Muscle groups
+ * cover all six anatomical buckets so the user sees the full coverage picture
+ * at a glance.
  */
 private const val TOP_EXERCISES_VISIBLE: Int = 3
-private const val TOP_MUSCLES_VISIBLE: Int = 6
+private const val TOP_MUSCLE_GROUPS_VISIBLE: Int = 6
 
 /**
  * Below this share of compound work, a GET_STRONGER goal is treated as
@@ -85,11 +84,10 @@ private const val TOP_MUSCLES_VISIBLE: Int = 6
 private const val COMPOUND_ALIGNMENT_THRESHOLD: Int = 50
 
 /**
- * A major-muscle anchor (chest, back, quads, hams, glutes) with combined share
- * below this threshold reads as a coverage gap and surfaces in the
- * undercoverage callout.
+ * A primary muscle group (chest, back, legs) with share below this threshold
+ * reads as a coverage gap and surfaces in the undercoverage callout.
  */
-private const val MAJOR_MUSCLE_UNDERCOVERAGE_THRESHOLD: Int = 5
+private const val PRIMARY_GROUP_UNDERCOVERAGE_THRESHOLD: Int = 5
 
 /**
  * MAINTAIN / GENERAL_FITNESS quality bar splits two declared dimensions. When
@@ -177,8 +175,8 @@ public fun GoalCalculationBreakdownCard(
 
         if (value.shouldShowMuscleFocus()) {
             SectionDivider(modifier = Modifier.fillMaxWidth())
-            TopMusclesBlock(
-                items = value.topMuscles,
+            TopMuscleGroupsBlock(
+                items = value.topMuscleGroups,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -680,62 +678,66 @@ private fun buildExerciseSubline(
 }
 
 // -----------------------------------------------------------------------------
-// Top muscles block — coverage stat + inversion + undercoverage callout.
+// Top muscle groups block — coverage stat + inversion + undercoverage callout.
 // -----------------------------------------------------------------------------
 
 @Composable
-private fun TopMusclesBlock(
-    items: List<TopMuscleContributionState>,
+private fun TopMuscleGroupsBlock(
+    items: List<TopMuscleGroupContributionState>,
     modifier: Modifier = Modifier,
 ) {
-    val visible = items.take(TOP_MUSCLES_VISIBLE)
+    val visible = items.take(TOP_MUSCLE_GROUPS_VISIBLE)
     val coverageCount = items.count { it.share > 0 }
 
-    // Inversion: an accessory whose share beats every primary-mover's share
-    // reads as "the small muscles are getting more love than the large
-    // groups", which for hypertrophy is a programming red flag. If primaries
-    // are entirely missing from the visible list we don't blanket-flag — the
-    // undercoverage callout will already explain the coverage gap.
+    // Inversion: an accessory group (Arms / Shoulders / Abs) outranking every
+    // primary group (Chest / Back / Legs) is the hypertrophy programming red
+    // flag — accessories are getting more total work than the large movers.
+    // If no primaries are present in the list at all we don't blanket-flag —
+    // the undercoverage callout will already explain the coverage gap.
     val maxPrimaryShare = items
-        .filter { it.muscle.breakdownRole() == BreakdownMuscleRole.PRIMARY }
+        .filter { it.group.breakdownRole() == BreakdownMuscleRole.PRIMARY }
         .maxOfOrNull { it.share }
-    val invertedMuscles: Set<MuscleEnumState> = if (maxPrimaryShare == null) {
+    val invertedGroups: Set<MuscleGroupEnumState> = if (maxPrimaryShare == null) {
         emptySet()
     } else {
         items.asSequence()
             .filter {
-                it.muscle.breakdownRole() == BreakdownMuscleRole.ACCESSORY &&
+                it.group.breakdownRole() == BreakdownMuscleRole.ACCESSORY &&
                         it.share > maxPrimaryShare
             }
-            .map { it.muscle }
+            .map { it.group }
             .toSet()
     }
 
-    // Aggregate visible share per major-muscle anchor. Anchors below the
-    // undercoverage threshold (including those not present at all → 0%) get
-    // listed in a single callout below the muscle list.
-    val undercovered: List<UndercoveredAnchor> = BreakdownMajorMuscle.entries
-        .map { anchor ->
-            val total = items
-                .filter { it.muscle in anchor.members }
-                .sumOf { it.share.coerceAtLeast(0) }
-            UndercoveredAnchor(anchor = anchor, share = total)
+    // Primary groups below the threshold (including ones missing from the
+    // list — share = 0) are the coverage gaps. Always evaluate against the
+    // canonical primary set so an absent group still surfaces.
+    val primaryGroupsByEnum: Map<MuscleGroupEnumState, Int> = items
+        .filter { it.group.breakdownRole() == BreakdownMuscleRole.PRIMARY }
+        .associate { it.group to it.share.coerceAtLeast(0) }
+    val undercovered: List<UndercoveredGroup> = MuscleGroupEnumState.entries
+        .filter { it.breakdownRole() == BreakdownMuscleRole.PRIMARY }
+        .map { group ->
+            UndercoveredGroup(
+                group = group,
+                share = primaryGroupsByEnum[group] ?: 0,
+            )
         }
-        .filter { it.share < MAJOR_MUSCLE_UNDERCOVERAGE_THRESHOLD }
+        .filter { it.share < PRIMARY_GROUP_UNDERCOVERAGE_THRESHOLD }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        TopMusclesHeader(
+        TopMuscleGroupsHeader(
             coverageCount = coverageCount,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        visible.forEach { muscle ->
-            TopMuscleRow(
-                item = muscle,
-                isInverted = muscle.muscle in invertedMuscles,
+        visible.forEach { group ->
+            TopMuscleGroupRow(
+                item = group,
+                isInverted = group.group in invertedGroups,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -750,7 +752,7 @@ private fun TopMusclesBlock(
 }
 
 @Composable
-private fun TopMusclesHeader(
+private fun TopMuscleGroupsHeader(
     coverageCount: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -777,15 +779,15 @@ private fun TopMusclesHeader(
 }
 
 @Composable
-private fun TopMuscleRow(
-    item: TopMuscleContributionState,
+private fun TopMuscleGroupRow(
+    item: TopMuscleGroupContributionState,
     isInverted: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    // When an accessory outranks every primary mover, the row picks up the
-    // error palette — the bar and the percent both read red so the inversion
-    // is visually impossible to miss while the muscle name itself stays
-    // readable in the primary text colour (matches the GET_STRONGER pattern).
+    // When an accessory group outranks every primary group, the row picks up
+    // the error palette — bar + percent both read red so the inversion is
+    // visually impossible to miss. The group name stays readable in the
+    // primary text colour (matches the GET_STRONGER row pattern).
     val accent = if (isInverted) {
         AppTokens.colors.semantic.error
     } else {
@@ -809,7 +811,7 @@ private fun TopMuscleRow(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = item.muscle.title().text(),
+                text = item.group.title().text(),
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.primary,
                 maxLines = 1,
@@ -836,12 +838,12 @@ private fun TopMuscleRow(
 
 @Composable
 private fun UndercoverageCallout(
-    items: List<UndercoveredAnchor>,
+    items: List<UndercoveredGroup>,
     modifier: Modifier = Modifier,
 ) {
     // Resolve composable strings up front so the joinToString / template
     // call sites stay in a normal scope.
-    val labels = items.map { it.anchor.label() }
+    val labels = items.map { it.group.title().text() }
     val combined = items
         .sumOf { it.share.coerceAtLeast(0) }
         .coerceIn(0, 100)
@@ -1053,7 +1055,7 @@ private fun GoalProgressState.shouldShowExercisesBlock(): Boolean {
 }
 
 private fun GoalProgressState.shouldShowMuscleFocus(): Boolean {
-    if (topMuscles.isEmpty()) return false
+    if (topMuscleGroups.isEmpty()) return false
     return when (goal.primaryGoal) {
         GoalPrimaryGoalEnumState.BUILD_MUSCLE,
         GoalPrimaryGoalEnumState.MAINTAIN,
@@ -1064,81 +1066,31 @@ private fun GoalProgressState.shouldShowMuscleFocus(): Boolean {
 }
 
 // -----------------------------------------------------------------------------
-// Muscle classification (for the inversion + undercoverage signals).
+// Muscle-group classification (for the inversion + undercoverage signals).
 //
-// Defined locally because MuscleEnumState is purely anatomical and doesn't
-// expose the "primary mover vs accessory" role this card cares about. The
-// classification mirrors the spec's anatomy buckets, mapped onto the actual
-// enum entries the project ships with.
+// The six anatomical groups split cleanly into "primary movers" (the large
+// groups a hypertrophy or maintenance program is expected to anchor on) and
+// "accessories" (small groups that piggy-back on primary work). An accessory
+// group out-ranking every primary is the inversion the card flags.
 // -----------------------------------------------------------------------------
 
 private enum class BreakdownMuscleRole { PRIMARY, ACCESSORY }
 
-private fun MuscleEnumState.breakdownRole(): BreakdownMuscleRole = when (this) {
-    // Primary movers — large groups a hypertrophy / maintenance program is
-    // expected to anchor on.
-    MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
-    MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL,
-    MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL,
-    MuscleEnumState.LATISSIMUS_DORSI,
-    MuscleEnumState.TRAPEZIUS,
-    MuscleEnumState.RHOMBOIDS,
-    MuscleEnumState.QUADRICEPS,
-    MuscleEnumState.HAMSTRINGS,
-    MuscleEnumState.GLUTEAL,
+private fun MuscleGroupEnumState.breakdownRole(): BreakdownMuscleRole = when (this) {
+    MuscleGroupEnumState.CHEST_MUSCLES,
+    MuscleGroupEnumState.BACK_MUSCLES,
+    MuscleGroupEnumState.LEGS,
         -> BreakdownMuscleRole.PRIMARY
 
-    // Accessory — small groups that piggy-back on primary work. An accessory
-    // out-ranking every primary is the inversion the card flags.
-    MuscleEnumState.TERES_MAJOR,
-    MuscleEnumState.RECTUS_ABDOMINIS,
-    MuscleEnumState.OBLIQUES,
-    MuscleEnumState.CALF,
-    MuscleEnumState.ADDUCTORS,
-    MuscleEnumState.ABDUCTORS,
-    MuscleEnumState.ANTERIOR_DELTOID,
-    MuscleEnumState.LATERAL_DELTOID,
-    MuscleEnumState.POSTERIOR_DELTOID,
-    MuscleEnumState.BICEPS,
-    MuscleEnumState.TRICEPS,
-    MuscleEnumState.FOREARM,
+    MuscleGroupEnumState.SHOULDER_MUSCLES,
+    MuscleGroupEnumState.ARMS_AND_FOREARMS,
+    MuscleGroupEnumState.ABDOMINAL_MUSCLES,
         -> BreakdownMuscleRole.ACCESSORY
 }
 
-/**
- * Major-muscle anchors a hypertrophy / maintenance program is expected to
- * cover. Each anchor aggregates one or more `MuscleEnumState` entries; the
- * card sums their visible share and marks the anchor as undercovered when the
- * total falls below `MAJOR_MUSCLE_UNDERCOVERAGE_THRESHOLD`.
- */
-private enum class BreakdownMajorMuscle(
-    val members: Set<MuscleEnumState>,
-) {
-    CHEST(
-        members = setOf(
-            MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
-            MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL,
-            MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL,
-        ),
-    ),
-    BACK(members = setOf(MuscleEnumState.LATISSIMUS_DORSI)),
-    QUADRICEPS(members = setOf(MuscleEnumState.QUADRICEPS)),
-    HAMSTRINGS(members = setOf(MuscleEnumState.HAMSTRINGS)),
-    GLUTES(members = setOf(MuscleEnumState.GLUTEAL)),
-}
-
-@Composable
-private fun BreakdownMajorMuscle.label(): String = when (this) {
-    BreakdownMajorMuscle.CHEST -> AppTokens.strings.res(Res.string.muscle_group_chest_muscles)
-    BreakdownMajorMuscle.BACK -> AppTokens.strings.res(Res.string.muscle_group_back_muscles)
-    BreakdownMajorMuscle.QUADRICEPS -> MuscleEnumState.QUADRICEPS.title().text()
-    BreakdownMajorMuscle.HAMSTRINGS -> MuscleEnumState.HAMSTRINGS.title().text()
-    BreakdownMajorMuscle.GLUTES -> MuscleEnumState.GLUTEAL.title().text()
-}
-
 @Immutable
-private data class UndercoveredAnchor(
-    val anchor: BreakdownMajorMuscle,
+private data class UndercoveredGroup(
+    val group: MuscleGroupEnumState,
     val share: Int,
 )
 
@@ -1146,25 +1098,26 @@ private data class UndercoveredAnchor(
 // Previews
 // -----------------------------------------------------------------------------
 
-private fun balancedHypertrophyMuscles() = persistentListOf(
-    TopMuscleContributionState(MuscleEnumState.QUADRICEPS, 18),
-    TopMuscleContributionState(MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL, 16),
-    TopMuscleContributionState(MuscleEnumState.LATISSIMUS_DORSI, 14),
-    TopMuscleContributionState(MuscleEnumState.GLUTEAL, 12),
-    TopMuscleContributionState(MuscleEnumState.HAMSTRINGS, 10),
-    TopMuscleContributionState(MuscleEnumState.TRICEPS, 8),
-    TopMuscleContributionState(MuscleEnumState.BICEPS, 7),
+private fun balancedHypertrophyGroups() = persistentListOf(
+    // Primary groups on top, accessories below — no inversion, no
+    // undercoverage. The card should read entirely calm.
+    TopMuscleGroupContributionState(MuscleGroupEnumState.LEGS, 22),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.CHEST_MUSCLES, 20),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.BACK_MUSCLES, 18),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.SHOULDER_MUSCLES, 14),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.ARMS_AND_FOREARMS, 14),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.ABDOMINAL_MUSCLES, 12),
 )
 
-private fun invertedHypertrophyMuscles() = persistentListOf(
-    // Triceps (accessory) outranks every primary mover present, and quads /
-    // hams / glutes are entirely absent — both signals fire.
-    TopMuscleContributionState(MuscleEnumState.TRICEPS, 16),
-    TopMuscleContributionState(MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL, 10),
-    TopMuscleContributionState(MuscleEnumState.TRAPEZIUS, 9),
-    TopMuscleContributionState(MuscleEnumState.BICEPS, 8),
-    TopMuscleContributionState(MuscleEnumState.LATISSIMUS_DORSI, 6),
-    TopMuscleContributionState(MuscleEnumState.ANTERIOR_DELTOID, 6),
+private fun invertedHypertrophyGroups() = persistentListOf(
+    // Arms (accessory) tops every primary, Shoulders also outranks primaries,
+    // and Legs falls below the undercoverage threshold — both signals fire.
+    TopMuscleGroupContributionState(MuscleGroupEnumState.ARMS_AND_FOREARMS, 35),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.SHOULDER_MUSCLES, 22),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.CHEST_MUSCLES, 18),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.BACK_MUSCLES, 14),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.ABDOMINAL_MUSCLES, 8),
+    TopMuscleGroupContributionState(MuscleGroupEnumState.LEGS, 3),
 )
 
 @AppPreview
@@ -1229,14 +1182,14 @@ private fun GoalCalculationBreakdownCardStrengthMisalignedPreview() {
 @AppPreview
 @Composable
 private fun GoalCalculationBreakdownCardHypertrophyPreview() {
-    // Healthy hypertrophy: every major anchor is present with solid share,
-    // accessories sit below primaries. The card should read calm — no red.
+    // Healthy hypertrophy: every primary group leads, accessories sit below.
+    // The card should read calm — no red.
     PreviewContainer {
         GoalCalculationBreakdownCard(
             value = stubGoalProgress(
                 primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE,
                 sessionCount = 14,
-                topMuscles = balancedHypertrophyMuscles(),
+                topMuscleGroups = balancedHypertrophyGroups(),
             ),
         )
     }
@@ -1245,16 +1198,16 @@ private fun GoalCalculationBreakdownCardHypertrophyPreview() {
 @AppPreview
 @Composable
 private fun GoalCalculationBreakdownCardHypertrophyMisalignedPreview() {
-    // Inverted hypertrophy: triceps sit at #1 above every primary in the
-    // visible list, and quads / hams / glutes never appear. Triceps row should
-    // render in semantic.error and the undercoverage callout should name the
-    // missing anchors.
+    // Inverted hypertrophy: Arms tops every primary group, Shoulders also
+    // outranks primaries, Legs is way below the undercoverage threshold.
+    // Both inverted rows should render in semantic.error and the undercoverage
+    // callout should name Legs.
     PreviewContainer {
         GoalCalculationBreakdownCard(
             value = stubGoalProgress(
                 primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE,
                 sessionCount = 21,
-                topMuscles = invertedHypertrophyMuscles(),
+                topMuscleGroups = invertedHypertrophyGroups(),
             ),
         )
     }
@@ -1264,7 +1217,7 @@ private fun GoalCalculationBreakdownCardHypertrophyMisalignedPreview() {
 @Composable
 private fun GoalCalculationBreakdownCardMaintainPreview() {
     // Healthy maintain: balanced strength / hypertrophy split (no skew),
-    // every major muscle anchor present.
+    // every primary muscle group present.
     PreviewContainer {
         GoalCalculationBreakdownCard(
             value = stubGoalProgress(
@@ -1272,7 +1225,7 @@ private fun GoalCalculationBreakdownCardMaintainPreview() {
                 strengthShare = 48,
                 hypertrophyShare = 44,
                 enduranceShare = 8,
-                topMuscles = balancedHypertrophyMuscles(),
+                topMuscleGroups = balancedHypertrophyGroups(),
             ),
         )
     }
@@ -1282,8 +1235,9 @@ private fun GoalCalculationBreakdownCardMaintainPreview() {
 @Composable
 private fun GoalCalculationBreakdownCardMaintainMisalignedPreview() {
     // Misaligned maintain: strength dominates the declared work (>0.7 skew)
-    // and the muscle list is inverted with primary anchors missing. Both the
-    // WorkBalance dominant side and the muscle row should land in red.
+    // and the muscle-group list is inverted with Legs undercovered. Both the
+    // WorkBalance dominant side and the inverted group rows should land in
+    // red, plus an undercoverage callout for Legs.
     PreviewContainer {
         GoalCalculationBreakdownCard(
             value = stubGoalProgress(
@@ -1292,7 +1246,7 @@ private fun GoalCalculationBreakdownCardMaintainMisalignedPreview() {
                 strengthShare = 80,
                 hypertrophyShare = 12,
                 enduranceShare = 8,
-                topMuscles = invertedHypertrophyMuscles(),
+                topMuscleGroups = invertedHypertrophyGroups(),
             ),
         )
     }
@@ -1362,7 +1316,7 @@ private fun GoalCalculationBreakdownCardConsistencyPreview() {
             value = stubGoalProgress(
                 primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE,
                 secondary = GoalSecondaryGoalEnumState.CONSISTENCY,
-                topMuscles = balancedHypertrophyMuscles(),
+                topMuscleGroups = balancedHypertrophyGroups(),
             ),
         )
     }
