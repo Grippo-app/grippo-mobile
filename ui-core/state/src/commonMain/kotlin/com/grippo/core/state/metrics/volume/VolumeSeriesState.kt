@@ -9,12 +9,6 @@ public data class VolumeSeriesState(
     val entries: ImmutableList<VolumeSeriesEntryState>,
 )
 
-@Immutable
-public data class VolumeSeriesEntryState(
-    val label: String,
-    val value: Float,
-)
-
 public fun stubVolumeSeries(): VolumeSeriesState {
     val entries = listOf(
         VolumeSeriesEntryState(label = "Ex1", value = 120f),

@@ -1,6 +1,6 @@
 package com.grippo.domain.state.achievements
 
-import com.grippo.core.state.achevements.AchievementState
+import com.grippo.core.state.achievements.AchievementState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState

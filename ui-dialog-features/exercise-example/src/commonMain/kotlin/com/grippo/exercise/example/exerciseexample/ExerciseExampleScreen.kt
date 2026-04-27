@@ -16,7 +16,7 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.achevements.stubAchievements
+import com.grippo.core.state.achievements.stubAchievements
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises

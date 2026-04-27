@@ -12,12 +12,6 @@ public data class ExerciseDistributionState<T>(
     val entries: ImmutableList<ExerciseDistributionEntryState<T>>,
 )
 
-@Immutable
-public data class ExerciseDistributionEntryState<T>(
-    val key: T,
-    val value: Float,
-)
-
 public fun stubCategoryDistribution(): ExerciseDistributionState<CategoryEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(

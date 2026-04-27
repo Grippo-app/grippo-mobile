@@ -5,18 +5,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration
 
-public enum class TrainingTimelinePosition {
-    FIRST,
-    MIDDLE,
-    LAST,
-    SINGLE,
-    EMPTY,
-}
-
-public data class TrainingTimeline(
-    val values: List<TrainingTimelineValue>,
-)
-
 public sealed interface TrainingTimelineValue {
     public val key: String
     public val position: TrainingTimelinePosition

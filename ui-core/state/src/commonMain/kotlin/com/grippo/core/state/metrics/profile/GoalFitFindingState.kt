@@ -66,7 +66,7 @@ public data class GoalFitFindingState(
         val labels = ArrayList<String>(context.size)
         for (raw in context) {
             val group = MuscleGroupEnumState.entries.firstOrNull { it.name == raw }
-            labels.add(if (group != null) group.title().text() else raw)
+            labels.add(group?.title()?.text() ?: raw)
         }
         return labels.joinToString(separator = ", ")
     }

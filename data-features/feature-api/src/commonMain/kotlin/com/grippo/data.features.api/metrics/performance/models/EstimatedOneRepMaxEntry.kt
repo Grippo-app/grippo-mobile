@@ -2,10 +2,6 @@ package com.grippo.data.features.api.metrics.performance.models
 
 import kotlinx.datetime.LocalDateTime
 
-public data class EstimatedOneRepMaxSeries(
-    val entries: List<EstimatedOneRepMaxEntry>,
-)
-
 public data class EstimatedOneRepMaxEntry(
     val label: String,
     val value: Float,

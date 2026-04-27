@@ -1,86 +1,18 @@
 package com.grippo.core.state.metrics.performance
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.duration
-import com.grippo.design.resources.provider.icons.Intensity
-import com.grippo.design.resources.provider.icons.Repeat
-import com.grippo.design.resources.provider.icons.Timer
-import com.grippo.design.resources.provider.icons.Volume
-import com.grippo.design.resources.provider.performance_metric_density
-import com.grippo.design.resources.provider.performance_metric_intensity
-import com.grippo.design.resources.provider.performance_trend_desc_density
-import com.grippo.design.resources.provider.performance_trend_desc_duration
-import com.grippo.design.resources.provider.performance_trend_desc_intensity
-import com.grippo.design.resources.provider.performance_trend_desc_repetitions
-import com.grippo.design.resources.provider.performance_trend_desc_volume
-import com.grippo.design.resources.provider.repetitions
-import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.minutes
-
-@Serializable
-@Immutable
-public enum class PerformanceMetricTypeState {
-    Duration,
-    Volume,
-    Density,
-    Repetitions,
-    Intensity;
-
-    @Composable
-    public fun icon(): ImageVector {
-        return when (this) {
-            Duration -> AppTokens.icons.Timer
-            Volume -> AppTokens.icons.Volume
-            Density -> AppTokens.icons.Timer
-            Repetitions -> AppTokens.icons.Repeat
-            Intensity -> AppTokens.icons.Intensity
-        }
-    }
-
-    @Composable
-    public fun description(): String {
-        return when (this) {
-            Duration -> AppTokens.strings.res(Res.string.performance_trend_desc_duration)
-            Volume -> AppTokens.strings.res(Res.string.performance_trend_desc_volume)
-            Density -> AppTokens.strings.res(Res.string.performance_trend_desc_density)
-            Repetitions -> AppTokens.strings.res(Res.string.performance_trend_desc_repetitions)
-            Intensity -> AppTokens.strings.res(Res.string.performance_trend_desc_intensity)
-        }
-    }
-
-    @Composable
-    public fun label(): String {
-        return when (this) {
-            Duration -> AppTokens.strings.res(Res.string.duration)
-            Volume -> AppTokens.strings.res(Res.string.volume)
-            Density -> AppTokens.strings.res(Res.string.performance_metric_density)
-            Repetitions -> AppTokens.strings.res(Res.string.repetitions)
-            Intensity -> AppTokens.strings.res(Res.string.performance_metric_intensity)
-        }
-    }
-}
-
-@Immutable
-public data class PerformanceTrendHistoryEntry(
-    val endDate: DateTimeFormatState,
-    val metric: PerformanceMetricState,
-)
 
 @Immutable
 public sealed interface PerformanceMetricState {
@@ -148,14 +80,6 @@ public sealed interface PerformanceMetricState {
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Intensity
     }
-}
-
-@Immutable
-public enum class PerformanceTrendStatusState {
-    Record,
-    Improved,
-    Stable,
-    Declined
 }
 
 public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryEntry> {

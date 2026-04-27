@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.grippo.core.state.achevements.AchievementState
-import com.grippo.core.state.achevements.stubAchievements
+import com.grippo.core.state.achievements.AchievementState
+import com.grippo.core.state.achievements.stubAchievements
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

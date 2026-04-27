@@ -29,7 +29,6 @@ import com.grippo.design.resources.provider.muscle_load_summary_top_group_fallba
 import com.grippo.design.resources.provider.muscle_load_summary_top_muscle
 import com.grippo.design.resources.provider.muscle_load_summary_volume_higher_than_stimulus
 import com.grippo.design.resources.provider.muscle_load_summary_weakest_group_fallback
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -289,41 +288,6 @@ public data class MuscleLoadSummaryState(
         }
     }
 }
-
-@Immutable
-public data class MuscleLoadBreakdownState(
-    val entries: List<MuscleLoadEntryState>,
-)
-
-@Immutable
-public data class MuscleLoadMetaState(
-    val trainingsCount: Int,
-    val totalExercises: Int,
-    val totalSets: Int,
-    val totalRepetitions: Int,
-    val totalVolume: Float,
-    val dominantGroup: MuscleGroupEnumState?,
-)
-
-@Immutable
-public data class MuscleLoadEntryState(
-    val group: MuscleGroupEnumState,
-    val value: Float,
-    val muscles: ImmutableList<MuscleEnumState>,
-    val hitTrainingsCount: Int = 0,
-    val primaryTrainingsCount: Int = 0,
-    val avgStimulusPerHitSession: Float = 0f,
-    val maxStimulusInOneSession: Float = 0f,
-    val avgVolumePerHitSession: Float = 0f,
-    val maxVolumeInOneSession: Float = 0f,
-    val topExampleIds: List<String> = emptyList(),
-)
-
-@Immutable
-public data class MuscleLoadDominanceState(
-    val top1SharePercent: Float,
-    val top2SharePercent: Float,
-)
 
 public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
     return MuscleLoadSummaryState(

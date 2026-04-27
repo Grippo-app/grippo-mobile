@@ -1,7 +1,7 @@
 package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.achevements.AchievementState
+import com.grippo.core.state.achievements.AchievementState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxState

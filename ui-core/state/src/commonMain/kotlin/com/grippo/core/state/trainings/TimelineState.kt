@@ -17,15 +17,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
 @Immutable
-public enum class TrainingPosition {
-    FIRST,
-    MIDDLE,
-    LAST,
-    SINGLE,
-    EMPTY,
-}
-
-@Immutable
 public sealed interface TimelineState {
     public val key: String
     public val position: TrainingPosition

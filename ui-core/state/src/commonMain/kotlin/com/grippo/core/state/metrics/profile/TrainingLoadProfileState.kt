@@ -2,41 +2,8 @@ package com.grippo.core.state.metrics.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.training_dimension_endurance
-import com.grippo.design.resources.provider.training_dimension_hypertrophy
-import com.grippo.design.resources.provider.training_dimension_strength
-import com.grippo.design.resources.provider.training_profile_axis_endurance_id
-import com.grippo.design.resources.provider.training_profile_axis_hypertrophy_id
-import com.grippo.design.resources.provider.training_profile_axis_strength_id
-import com.grippo.design.resources.provider.training_profile_kind_easy
-import com.grippo.design.resources.provider.training_profile_kind_endurance
-import com.grippo.design.resources.provider.training_profile_kind_hypertrophy
-import com.grippo.design.resources.provider.training_profile_kind_mixed
-import com.grippo.design.resources.provider.training_profile_kind_powerbuilding
-import com.grippo.design.resources.provider.training_profile_kind_strength
-import com.grippo.design.resources.provider.training_profile_subtitle_easy
-import com.grippo.design.resources.provider.training_profile_subtitle_endurance
-import com.grippo.design.resources.provider.training_profile_subtitle_hypertrophy
-import com.grippo.design.resources.provider.training_profile_subtitle_mixed
-import com.grippo.design.resources.provider.training_profile_subtitle_powerbuilding
-import com.grippo.design.resources.provider.training_profile_subtitle_strength
-import com.grippo.design.resources.provider.training_profile_tip_easy
-import com.grippo.design.resources.provider.training_profile_tip_endurance_high
-import com.grippo.design.resources.provider.training_profile_tip_endurance_low
-import com.grippo.design.resources.provider.training_profile_tip_endurance_medium
-import com.grippo.design.resources.provider.training_profile_tip_hypertrophy_high
-import com.grippo.design.resources.provider.training_profile_tip_hypertrophy_low
-import com.grippo.design.resources.provider.training_profile_tip_hypertrophy_medium
-import com.grippo.design.resources.provider.training_profile_tip_mixed
-import com.grippo.design.resources.provider.training_profile_tip_powerbuilding
-import com.grippo.design.resources.provider.training_profile_tip_strength_high
-import com.grippo.design.resources.provider.training_profile_tip_strength_low
-import com.grippo.design.resources.provider.training_profile_tip_strength_medium
-import com.grippo.design.resources.provider.training_profile_title_easy_session
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
@@ -58,147 +25,6 @@ public data class TrainingLoadProfileState(
 
     public fun scoreOf(kind: TrainingDimensionKindState): Int {
         return dimensions.firstOrNull { it.kind == kind }?.score?.coerceIn(0, 100) ?: 0
-    }
-}
-
-@Immutable
-public enum class TrainingDimensionKindState {
-    Strength,
-    Hypertrophy,
-    Endurance;
-
-    @Composable
-    public fun axisId(): String {
-        return when (this) {
-            Strength -> AppTokens.strings.res(Res.string.training_profile_axis_strength_id)
-            Hypertrophy -> AppTokens.strings.res(Res.string.training_profile_axis_hypertrophy_id)
-            Endurance -> AppTokens.strings.res(Res.string.training_profile_axis_endurance_id)
-        }
-    }
-
-    @Composable
-    public fun label(): String {
-        return when (this) {
-            Strength -> AppTokens.strings.res(Res.string.training_dimension_strength)
-            Hypertrophy -> AppTokens.strings.res(Res.string.training_dimension_hypertrophy)
-            Endurance -> AppTokens.strings.res(Res.string.training_dimension_endurance)
-        }
-    }
-}
-
-@Immutable
-public enum class TrainingProfileKindState {
-    Strength,
-    Hypertrophy,
-    Endurance,
-    Powerbuilding,
-    Mixed,
-    Easy;
-
-    @Composable
-    public fun label(): String {
-        return when (this) {
-            Strength -> AppTokens.strings.res(Res.string.training_profile_kind_strength)
-            Hypertrophy -> AppTokens.strings.res(Res.string.training_profile_kind_hypertrophy)
-            Endurance -> AppTokens.strings.res(Res.string.training_profile_kind_endurance)
-            Powerbuilding -> AppTokens.strings.res(Res.string.training_profile_kind_powerbuilding)
-            Mixed -> AppTokens.strings.res(Res.string.training_profile_kind_mixed)
-            Easy -> AppTokens.strings.res(Res.string.training_profile_kind_easy)
-        }
-    }
-
-    @Composable
-    public fun title(profile: TrainingLoadProfileState): String {
-        return when (this) {
-            Easy -> AppTokens.strings.res(Res.string.training_profile_title_easy_session)
-            Powerbuilding -> label()
-            Mixed -> label()
-            Strength -> label()
-            Hypertrophy -> label()
-            Endurance -> label()
-        }
-    }
-
-    @Composable
-    public fun subtitle(profile: TrainingLoadProfileState): String {
-        return when (this) {
-            Easy -> AppTokens.strings.res(Res.string.training_profile_subtitle_easy)
-            Powerbuilding -> AppTokens.strings.res(Res.string.training_profile_subtitle_powerbuilding)
-            Mixed -> AppTokens.strings.res(Res.string.training_profile_subtitle_mixed)
-            Strength -> AppTokens.strings.res(Res.string.training_profile_subtitle_strength)
-            Hypertrophy -> AppTokens.strings.res(Res.string.training_profile_subtitle_hypertrophy)
-            Endurance -> AppTokens.strings.res(Res.string.training_profile_subtitle_endurance)
-        }
-    }
-
-    @Composable
-    public fun tip(profile: TrainingLoadProfileState): String? {
-        val c = profile.confidence.coerceIn(0, 100)
-        return when (this) {
-            Easy -> AppTokens.strings.res(Res.string.training_profile_tip_easy)
-            Powerbuilding -> AppTokens.strings.res(Res.string.training_profile_tip_powerbuilding)
-            Mixed -> AppTokens.strings.res(Res.string.training_profile_tip_mixed)
-            Strength -> when {
-                c >= 70 -> AppTokens.strings.res(Res.string.training_profile_tip_strength_high)
-                c >= 35 -> AppTokens.strings.res(Res.string.training_profile_tip_strength_medium)
-                else -> AppTokens.strings.res(Res.string.training_profile_tip_strength_low)
-            }
-
-            Hypertrophy -> when {
-                c >= 70 -> AppTokens.strings.res(Res.string.training_profile_tip_hypertrophy_high)
-                c >= 35 -> AppTokens.strings.res(Res.string.training_profile_tip_hypertrophy_medium)
-                else -> AppTokens.strings.res(Res.string.training_profile_tip_hypertrophy_low)
-            }
-
-            Endurance -> when {
-                c >= 70 -> AppTokens.strings.res(Res.string.training_profile_tip_endurance_high)
-                c >= 35 -> AppTokens.strings.res(Res.string.training_profile_tip_endurance_medium)
-                else -> AppTokens.strings.res(Res.string.training_profile_tip_endurance_low)
-            }
-        }
-    }
-}
-
-@Immutable
-public data class TrainingDimensionScoreState(
-    val kind: TrainingDimensionKindState,
-    val score: Int, // 0..100
-)
-
-@Immutable
-public data class TrainingLoadProfileArtifactsState(
-    val topExercises: ImmutableList<TopExerciseContributionState>,
-    val topMuscles: ImmutableList<TopMuscleContributionState>,
-    val totalExercisesCount: Int,
-    val totalMusclesCount: Int,
-    val compoundRatio: Int,
-    val pushRatio: Int,
-    val pullRatio: Int,
-    val hingeRatio: Int,
-) {
-    public val isEmpty: Boolean
-        get() = topExercises.isEmpty() &&
-                topMuscles.isEmpty() &&
-                compoundRatio == 0 &&
-                pushRatio == 0 &&
-                pullRatio == 0 &&
-                hingeRatio == 0
-
-    public val isolationRatio: Int
-        get() = (100 - compoundRatio).coerceIn(0, 100)
-
-    public companion object {
-        public fun empty(): TrainingLoadProfileArtifactsState =
-            TrainingLoadProfileArtifactsState(
-                topExercises = persistentListOf(),
-                topMuscles = persistentListOf(),
-                totalExercisesCount = 0,
-                totalMusclesCount = 0,
-                compoundRatio = 0,
-                pushRatio = 0,
-                pullRatio = 0,
-                hingeRatio = 0,
-            )
     }
 }
 
@@ -235,7 +61,7 @@ public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState
                 stimulusShare = 28,
                 heaviestWeight = 140f,
                 estimatedOneRepMax = 155f,
-                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+                category = CategoryEnumState.COMPOUND,
             ),
             TopExerciseContributionState(
                 exampleId = "ex-2",
@@ -244,7 +70,7 @@ public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState
                 stimulusShare = 22,
                 heaviestWeight = 105f,
                 estimatedOneRepMax = 118f,
-                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+                category = CategoryEnumState.COMPOUND,
             ),
             TopExerciseContributionState(
                 exampleId = "ex-3",
@@ -253,7 +79,7 @@ public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState
                 stimulusShare = 18,
                 heaviestWeight = 180f,
                 estimatedOneRepMax = 198f,
-                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+                category = CategoryEnumState.COMPOUND,
             ),
             TopExerciseContributionState(
                 exampleId = "ex-4",
@@ -262,7 +88,7 @@ public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState
                 stimulusShare = 12,
                 heaviestWeight = 85f,
                 estimatedOneRepMax = 96f,
-                category = com.grippo.core.state.examples.CategoryEnumState.COMPOUND,
+                category = CategoryEnumState.COMPOUND,
             ),
             TopExerciseContributionState(
                 exampleId = "ex-5",
@@ -271,7 +97,7 @@ public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState
                 stimulusShare = 8,
                 heaviestWeight = 22f,
                 estimatedOneRepMax = 26f,
-                category = com.grippo.core.state.examples.CategoryEnumState.ISOLATION,
+                category = CategoryEnumState.ISOLATION,
             ),
         ),
         topMuscles = persistentListOf(

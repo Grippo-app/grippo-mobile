@@ -9,13 +9,6 @@ public data class EstimatedOneRepMaxState(
     val entries: ImmutableList<EstimatedOneRepMaxEntryState>,
 )
 
-@Immutable
-public data class EstimatedOneRepMaxEntryState(
-    val label: String,
-    val value: Float,
-    val confidence: Float,
-)
-
 public fun stubEstimatedOneRepMax(): EstimatedOneRepMaxState {
     val entries = listOf(
         EstimatedOneRepMaxEntryState(label = "Ex1", value = 92f, confidence = 0.8f),

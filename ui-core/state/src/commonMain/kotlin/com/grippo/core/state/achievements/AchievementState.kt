@@ -1,4 +1,4 @@
-package com.grippo.core.state.achevements
+package com.grippo.core.state.achievements
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable

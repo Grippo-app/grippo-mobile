@@ -70,18 +70,3 @@ public sealed interface PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Intensity
     }
 }
-
-public enum class PerformanceTrendStatus {
-    Record,
-    Improved,
-    Stable,
-    Declined
-}
-
-public enum class PerformanceMetricType {
-    Duration,
-    Volume,
-    Density,
-    Repetitions,
-    Intensity,
-}

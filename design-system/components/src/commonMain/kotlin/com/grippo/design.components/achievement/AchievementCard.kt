@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.achevements.AchievementState
-import com.grippo.core.state.achevements.stubAchievement
+import com.grippo.core.state.achievements.AchievementState
+import com.grippo.core.state.achievements.stubAchievement
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
