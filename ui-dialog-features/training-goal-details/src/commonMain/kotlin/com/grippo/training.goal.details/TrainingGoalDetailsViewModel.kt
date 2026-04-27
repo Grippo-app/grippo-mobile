@@ -5,6 +5,7 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
+import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.profile.toState
@@ -26,18 +27,6 @@ public class TrainingGoalDetailsViewModel(
         range = DateRangeFormatState.of(range),
     )
 ), TrainingGoalDetailsContract {
-
-    private companion object {
-        // Thresholds used for diagnosis — kept local to the dialog so that
-        // score-computation stays in the use case and UX-facing thresholds
-        // stay in the UX-facing code.
-        private const val FOCUS_SHARE_TARGET = 50 // % share on the core axis
-        private const val FOCUS_SHARE_STRONG = 65 // % share that we call "great"
-        private const val SUPPRESSED_AXIS_LIMIT = 30 // % share on the 3rd axis
-        private const val BALANCE_DELTA_LIMIT = 25 // |a - b| tolerance
-        private const val EARLY_DAYS = 7
-        private const val ALMOST_DONE_FRACTION = 0.85f
-    }
 
     init {
         trainingFeature
@@ -125,7 +114,7 @@ public class TrainingGoalDetailsViewModel(
                     a = progress.strengthShare,
                     b = progress.hypertrophyShare,
                 )
-                if (progress.enduranceShare > SUPPRESSED_AXIS_LIMIT) {
+                if (progress.enduranceShare > GoalAdherence.SUPPRESSED_AXIS_LIMIT) {
                     items += InsightItem(
                         InsightItem.Severity.Warning,
                         ReasonCode.SuppressedAxisTooHigh,
@@ -138,7 +127,7 @@ public class TrainingGoalDetailsViewModel(
                     a = progress.strengthShare,
                     b = progress.enduranceShare,
                 )
-                if (progress.hypertrophyShare > SUPPRESSED_AXIS_LIMIT) {
+                if (progress.hypertrophyShare > GoalAdherence.SUPPRESSED_AXIS_LIMIT) {
                     items += InsightItem(
                         InsightItem.Severity.Warning,
                         ReasonCode.SuppressedAxisTooHigh,
@@ -147,7 +136,7 @@ public class TrainingGoalDetailsViewModel(
             }
 
             GoalPrimaryGoalEnumState.RETURN_TO_TRAINING -> items += when {
-                score < GoalProgressState.DRIFTING_MIN && progress.daysElapsed >= EARLY_DAYS ->
+                score < GoalProgressState.DRIFTING_MIN && progress.daysElapsed >= GoalAdherence.EARLY_DAYS ->
                     InsightItem(
                         InsightItem.Severity.Warning,
                         ReasonCode.ReturnToTrainingUnderWork,
@@ -176,10 +165,10 @@ public class TrainingGoalDetailsViewModel(
             progress.daysRemaining < 0 ->
                 items += InsightItem(InsightItem.Severity.Warning, ReasonCode.Overdue)
 
-            progress.daysElapsed < EARLY_DAYS ->
+            progress.daysElapsed < GoalAdherence.EARLY_DAYS ->
                 items += InsightItem(InsightItem.Severity.Neutral, ReasonCode.TooEarly)
 
-            progress.progressFraction >= ALMOST_DONE_FRACTION ->
+            progress.progressFraction >= GoalAdherence.ALMOST_DONE_FRACTION ->
                 items += InsightItem(InsightItem.Severity.Neutral, ReasonCode.AlmostDone)
         }
 
@@ -192,10 +181,10 @@ public class TrainingGoalDetailsViewModel(
         okReason: ReasonCode,
     ): InsightItem {
         return when {
-            share >= FOCUS_SHARE_STRONG ->
+            share >= GoalAdherence.FOCUS_SHARE_STRONG ->
                 InsightItem(InsightItem.Severity.Positive, okReason)
 
-            share >= FOCUS_SHARE_TARGET ->
+            share >= GoalAdherence.FOCUS_SHARE_TARGET ->
                 InsightItem(InsightItem.Severity.Neutral, okReason)
 
             else ->
@@ -205,7 +194,7 @@ public class TrainingGoalDetailsViewModel(
 
     private fun balanceAxis(a: Int, b: Int): InsightItem {
         val delta = kotlin.math.abs(a - b)
-        return if (delta <= BALANCE_DELTA_LIMIT) {
+        return if (delta <= GoalAdherence.BALANCE_DELTA_LIMIT) {
             InsightItem(InsightItem.Severity.Positive, ReasonCode.BalanceOk)
         } else {
             InsightItem(InsightItem.Severity.Warning, ReasonCode.BalanceDrift)
@@ -223,29 +212,29 @@ public class TrainingGoalDetailsViewModel(
 
         when (progress.goal.primaryGoal) {
             GoalPrimaryGoalEnumState.GET_STRONGER -> {
-                if (progress.strengthShare < FOCUS_SHARE_TARGET) tips += TipCode.AddHeavyCompounds
+                if (progress.strengthShare < GoalAdherence.FOCUS_SHARE_TARGET) tips += TipCode.AddHeavyCompounds
             }
 
             GoalPrimaryGoalEnumState.BUILD_MUSCLE -> {
-                if (progress.hypertrophyShare < FOCUS_SHARE_TARGET) tips += TipCode.IncreaseHypertrophyReps
+                if (progress.hypertrophyShare < GoalAdherence.FOCUS_SHARE_TARGET) tips += TipCode.IncreaseHypertrophyReps
             }
 
             GoalPrimaryGoalEnumState.LOSE_FAT -> {
-                if (progress.enduranceShare < FOCUS_SHARE_TARGET) tips += TipCode.AddMetabolicWork
+                if (progress.enduranceShare < GoalAdherence.FOCUS_SHARE_TARGET) tips += TipCode.AddMetabolicWork
             }
 
             GoalPrimaryGoalEnumState.MAINTAIN -> {
-                if (kotlin.math.abs(progress.strengthShare - progress.hypertrophyShare) > BALANCE_DELTA_LIMIT) {
+                if (kotlin.math.abs(progress.strengthShare - progress.hypertrophyShare) > GoalAdherence.BALANCE_DELTA_LIMIT) {
                     tips += TipCode.BalanceStrengthAndHypertrophy
                 }
-                if (progress.enduranceShare > SUPPRESSED_AXIS_LIMIT) tips += TipCode.ReduceSuppressedAxis
+                if (progress.enduranceShare > GoalAdherence.SUPPRESSED_AXIS_LIMIT) tips += TipCode.ReduceSuppressedAxis
             }
 
             GoalPrimaryGoalEnumState.GENERAL_FITNESS -> {
-                if (kotlin.math.abs(progress.strengthShare - progress.enduranceShare) > BALANCE_DELTA_LIMIT) {
+                if (kotlin.math.abs(progress.strengthShare - progress.enduranceShare) > GoalAdherence.BALANCE_DELTA_LIMIT) {
                     tips += TipCode.BalanceStrengthAndEndurance
                 }
-                if (progress.hypertrophyShare > SUPPRESSED_AXIS_LIMIT) tips += TipCode.ReduceSuppressedAxis
+                if (progress.hypertrophyShare > GoalAdherence.SUPPRESSED_AXIS_LIMIT) tips += TipCode.ReduceSuppressedAxis
             }
 
             GoalPrimaryGoalEnumState.RETURN_TO_TRAINING -> {
