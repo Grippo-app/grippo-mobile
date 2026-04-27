@@ -51,13 +51,13 @@ public data class GoalProgressState(
     val topExercises: ImmutableList<TopExerciseContributionState>,
     val topMuscles: ImmutableList<TopMuscleContributionState>,
     val topMuscleGroups: ImmutableList<TopMuscleGroupContributionState>,
+    val findings: ImmutableList<GoalFitFindingState>,
 ) {
-    /** True when there is no meaningful training data behind the score. */
-    public val hasBreakdown: Boolean
-        get() = sessionCount > 0 ||
-                topExercises.isNotEmpty() ||
-                topMuscles.isNotEmpty() ||
-                topMuscleGroups.isNotEmpty()
+    public val hasBreakdown: Boolean = sessionCount > 0 ||
+            topExercises.isNotEmpty() ||
+            topMuscles.isNotEmpty() ||
+            topMuscleGroups.isNotEmpty() ||
+            findings.isNotEmpty()
 
     @Composable
     public fun progressLine(): String {
@@ -175,6 +175,7 @@ public fun stubGoalProgress(
     topExercises: ImmutableList<TopExerciseContributionState> = stubTopExercises(),
     topMuscles: ImmutableList<TopMuscleContributionState> = stubTopMuscles(),
     topMuscleGroups: ImmutableList<TopMuscleGroupContributionState> = stubTopMuscleGroups(),
+    findings: ImmutableList<GoalFitFindingState> = stubGoalFitFindings(primary),
 ): GoalProgressState {
     val baseGoal = stubGoal()
     return GoalProgressState(
@@ -199,6 +200,7 @@ public fun stubGoalProgress(
         topExercises = topExercises,
         topMuscles = topMuscles,
         topMuscleGroups = topMuscleGroups,
+        findings = findings,
     )
 }
 
@@ -241,6 +243,7 @@ public fun stubGoalProgressList(): List<GoalProgressState> {
             topExercises = exercises,
             topMuscles = muscles,
             topMuscleGroups = muscleGroups,
+            findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.GET_STRONGER),
         )
     }
 }

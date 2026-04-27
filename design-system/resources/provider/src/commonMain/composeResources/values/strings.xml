@@ -761,7 +761,69 @@
 
     <!-- Empty state -->
     <string name="goal_details_breakdown_empty_title">No calculation data yet</string>
-    <string name="goal_details_breakdown_empty_detail">Log a training in this period and we\'ll break down which sessions and exercises moved the score.</string>
+    <string name="goal_details_breakdown_empty_detail">Log a training in this period and we'll break down which sessions and exercises moved the score.</string>
+
+    <!-- Goal-fit diagnostic block -->
+    <string name="goal_fit_diagnostic_title">Protocol fit</string>
+    <string name="goal_fit_diagnostic_subtitle">Where the training you did matched the goal you set, and where it drifted.</string>
+    <string name="goal_fit_severity_pass">On track</string>
+    <string name="goal_fit_severity_warn">Watch</string>
+    <string name="goal_fit_severity_fail">Off track</string>
+
+    <!-- Goal-fit target formats: actual / target line uses %1$s (actual), %2$s (target) -->
+    <string name="goal_fit_value_target">%1$s · target %2$s</string>
+    <string name="goal_fit_target_at_least">≥%1$s</string>
+    <string name="goal_fit_target_at_most">≤%1$s</string>
+    <string name="goal_fit_target_range">%1$s–%2$s</string>
+    <string name="goal_fit_target_count_of">%1$s of %2$s</string>
+
+    <!-- Goal-fit unit suffixes (concatenated with numbers in code; never used as printf %d) -->
+    <string name="goal_fit_unit_sets_per_week">sets/wk</string>
+    <string name="goal_fit_unit_sessions_per_week">sessions/wk</string>
+    <string name="goal_fit_unit_lifts">lifts</string>
+    <string name="goal_fit_unit_groups">groups</string>
+    <string name="goal_fit_unit_qualities">qualities</string>
+    <string name="goal_fit_unit_ratio">×</string>
+
+    <!-- Goal-fit context labels (shown next to per-group sub-findings) -->
+    <string name="goal_fit_inversion_none">No accessory inversion</string>
+    <string name="goal_fit_inversion_inverted">Above all primary groups: %1$s</string>
+
+    <!-- Goal-fit rule titles — BUILD_MUSCLE -->
+    <string name="goal_fit_rule_build_muscle_hypertrophy_rep_range_share_title">Hypertrophy rep range</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Weekly sets per primary group</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Sessions per primary group</string>
+    <string name="goal_fit_rule_build_muscle_accessory_inversion_title">Accessory vs primary balance</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Load progression</string>
+
+    <!-- Goal-fit rule titles — GET_STRONGER -->
+    <string name="goal_fit_rule_get_stronger_compound_presence_title">Compound lifts present</string>
+    <string name="goal_fit_rule_get_stronger_heavy_intensity_share_title">Heavy top-set share</string>
+    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Strength rep range</string>
+    <string name="goal_fit_rule_get_stronger_compound_to_isolation_ratio_title">Compound to isolation</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Compound load progression</string>
+
+    <!-- Goal-fit rule titles — MAINTAIN -->
+    <string name="goal_fit_rule_maintain_work_balance_skew_title">Strength vs hypertrophy balance</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Muscle group coverage</string>
+    <string name="goal_fit_rule_maintain_weekly_frequency_title">Sessions per week</string>
+    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Weekly volume stability</string>
+
+    <!-- Goal-fit rule titles — GENERAL_FITNESS -->
+    <string name="goal_fit_rule_general_fitness_quality_variety_title">Quality variety</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Muscle group coverage</string>
+    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Sessions per week</string>
+    <string name="goal_fit_rule_general_fitness_work_balance_skew_title">Strength vs endurance balance</string>
+
+    <!-- Goal-fit rule titles — LOSE_FAT -->
+    <string name="goal_fit_rule_lose_fat_session_adherence_title">Sessions per week</string>
+    <string name="goal_fit_rule_lose_fat_resistance_presence_title">Resistance work per week</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Weekly volume trend</string>
+
+    <!-- Goal-fit rule titles — RETURN_TO_TRAINING -->
+    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Sessions per week</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Weekly load ramp</string>
+    <string name="goal_fit_rule_return_to_training_intensity_floor_title">Intensity ceiling</string>
 
     <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 times a week</string>

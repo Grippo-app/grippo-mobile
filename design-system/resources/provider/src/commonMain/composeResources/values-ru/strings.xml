@@ -757,6 +757,59 @@
     <string name="goal_details_breakdown_empty_title">Данных для расчёта пока нет</string>
     <string name="goal_details_breakdown_empty_detail">Добавь тренировку в этот период — и мы покажем, какие сессии и упражнения двигали счёт.</string>
 
+    <!-- Goal-fit diagnostic block -->
+    <string name="goal_fit_diagnostic_title">Соответствие протоколу</string>
+    <string name="goal_fit_diagnostic_subtitle">Где тренировки совпали с целью, а где ты от неё отклонился.</string>
+    <string name="goal_fit_severity_pass">В норме</string>
+    <string name="goal_fit_severity_warn">Следи</string>
+    <string name="goal_fit_severity_fail">Мимо цели</string>
+
+    <string name="goal_fit_value_target">%1$s · цель %2$s</string>
+    <string name="goal_fit_target_at_least">≥%1$s</string>
+    <string name="goal_fit_target_at_most">≤%1$s</string>
+    <string name="goal_fit_target_range">%1$s–%2$s</string>
+    <string name="goal_fit_target_count_of">%1$s из %2$s</string>
+
+    <string name="goal_fit_unit_sets_per_week">сетов/нед</string>
+    <string name="goal_fit_unit_sessions_per_week">тренировок/нед</string>
+    <string name="goal_fit_unit_lifts">упражнений</string>
+    <string name="goal_fit_unit_groups">групп</string>
+    <string name="goal_fit_unit_qualities">качеств</string>
+    <string name="goal_fit_unit_ratio">×</string>
+
+    <string name="goal_fit_inversion_none">Без перекоса на вспомогательные</string>
+    <string name="goal_fit_inversion_inverted">Выше всех основных: %1$s</string>
+
+    <string name="goal_fit_rule_build_muscle_hypertrophy_rep_range_share_title">Диапазон повторов под гипертрофию</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Сетов в неделю на основную группу</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Тренировок на основную группу</string>
+    <string name="goal_fit_rule_build_muscle_accessory_inversion_title">Баланс основных и вспомогательных</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Прогресс нагрузки</string>
+
+    <string name="goal_fit_rule_get_stronger_compound_presence_title">Базовые упражнения в наличии</string>
+    <string name="goal_fit_rule_get_stronger_heavy_intensity_share_title">Доля тяжёлых топ-сетов</string>
+    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Силовой диапазон повторов</string>
+    <string name="goal_fit_rule_get_stronger_compound_to_isolation_ratio_title">База к изоляции</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Прогресс на базе</string>
+
+    <string name="goal_fit_rule_maintain_work_balance_skew_title">Баланс силы и гипертрофии</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Покрытие мышечных групп</string>
+    <string name="goal_fit_rule_maintain_weekly_frequency_title">Тренировок в неделю</string>
+    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Стабильность недельного объёма</string>
+
+    <string name="goal_fit_rule_general_fitness_quality_variety_title">Разнообразие качеств</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Покрытие мышечных групп</string>
+    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Тренировок в неделю</string>
+    <string name="goal_fit_rule_general_fitness_work_balance_skew_title">Баланс силы и выносливости</string>
+
+    <string name="goal_fit_rule_lose_fat_session_adherence_title">Тренировок в неделю</string>
+    <string name="goal_fit_rule_lose_fat_resistance_presence_title">Силовая работа в неделю</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Тренд недельного объёма</string>
+
+    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Тренировок в неделю</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Скачок недельной нагрузки</string>
+    <string name="goal_fit_rule_return_to_training_intensity_floor_title">Потолок интенсивности</string>
+
     <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>
     <string name="personalization_moderate_frequency">3–4 раза в неделю</string>

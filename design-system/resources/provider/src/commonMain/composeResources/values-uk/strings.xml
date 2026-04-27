@@ -756,6 +756,59 @@
     <string name="goal_details_breakdown_empty_title">Даних для розрахунку ще немає</string>
     <string name="goal_details_breakdown_empty_detail">Додай тренування в цей період — і ми покажемо, які сесії та вправи рухали рахунок.</string>
 
+    <!-- Goal-fit diagnostic block -->
+    <string name="goal_fit_diagnostic_title">Відповідність протоколу</string>
+    <string name="goal_fit_diagnostic_subtitle">Де тренування збіглись із ціллю, а де ти від неї відхилився.</string>
+    <string name="goal_fit_severity_pass">В нормі</string>
+    <string name="goal_fit_severity_warn">Слідкуй</string>
+    <string name="goal_fit_severity_fail">Поза ціллю</string>
+
+    <string name="goal_fit_value_target">%1$s · ціль %2$s</string>
+    <string name="goal_fit_target_at_least">≥%1$s</string>
+    <string name="goal_fit_target_at_most">≤%1$s</string>
+    <string name="goal_fit_target_range">%1$s–%2$s</string>
+    <string name="goal_fit_target_count_of">%1$s з %2$s</string>
+
+    <string name="goal_fit_unit_sets_per_week">сетів/тиж</string>
+    <string name="goal_fit_unit_sessions_per_week">тренувань/тиж</string>
+    <string name="goal_fit_unit_lifts">вправ</string>
+    <string name="goal_fit_unit_groups">груп</string>
+    <string name="goal_fit_unit_qualities">якостей</string>
+    <string name="goal_fit_unit_ratio">×</string>
+
+    <string name="goal_fit_inversion_none">Без перекосу на допоміжні</string>
+    <string name="goal_fit_inversion_inverted">Вище за всі основні: %1$s</string>
+
+    <string name="goal_fit_rule_build_muscle_hypertrophy_rep_range_share_title">Діапазон повторів під гіпертрофію</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Сетів на тиждень на основну групу</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Тренувань на основну групу</string>
+    <string name="goal_fit_rule_build_muscle_accessory_inversion_title">Баланс основних і допоміжних</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Прогрес навантаження</string>
+
+    <string name="goal_fit_rule_get_stronger_compound_presence_title">Базові вправи в наявності</string>
+    <string name="goal_fit_rule_get_stronger_heavy_intensity_share_title">Частка важких топ-сетів</string>
+    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Силовий діапазон повторів</string>
+    <string name="goal_fit_rule_get_stronger_compound_to_isolation_ratio_title">База до ізоляції</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Прогрес на базі</string>
+
+    <string name="goal_fit_rule_maintain_work_balance_skew_title">Баланс сили та гіпертрофії</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Покриття груп м'язів</string>
+    <string name="goal_fit_rule_maintain_weekly_frequency_title">Тренувань на тиждень</string>
+    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Стабільність тижневого обсягу</string>
+
+    <string name="goal_fit_rule_general_fitness_quality_variety_title">Різноманіття якостей</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Покриття груп м'язів</string>
+    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Тренувань на тиждень</string>
+    <string name="goal_fit_rule_general_fitness_work_balance_skew_title">Баланс сили та витривалості</string>
+
+    <string name="goal_fit_rule_lose_fat_session_adherence_title">Тренувань на тиждень</string>
+    <string name="goal_fit_rule_lose_fat_resistance_presence_title">Силова робота на тиждень</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Тренд тижневого обсягу</string>
+
+    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Тренувань на тиждень</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Стрибок тижневого навантаження</string>
+    <string name="goal_fit_rule_return_to_training_intensity_floor_title">Стеля інтенсивності</string>
+
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 рази на тиждень</string>
     <string name="personalization_moderate_frequency">3–4 рази на тиждень</string>
