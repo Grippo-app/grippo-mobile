@@ -653,13 +653,6 @@
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Деталі цілі</string>
     <string name="goal_details_subtitle">Дивимось ближче, наскільки тренування збігаються з обраною ціллю.</string>
-    <string name="goal_details_timeline_title">Хронологія</string>
-    <string name="goal_details_focus_title">Розподіл фокусу</string>
-    <string name="goal_details_focus_subtitle">Яка частка роботи припала на кожну якість.</string>
-    <string name="goal_details_focus_strength">Сила</string>
-    <string name="goal_details_focus_hypertrophy">Гіпертрофія</string>
-    <string name="goal_details_focus_endurance">Витривалість</string>
-    <string name="goal_details_focus_share">%1$d</string>
     <string name="goal_details_insights_title">Що впливає на бал</string>
     <string name="goal_details_tips_title">Рекомендації</string>
 
@@ -727,7 +720,6 @@
 
     <!-- Секція «Звідки взявся рахунок» -->
     <string name="goal_details_breakdown_title">Звідки взявся рахунок</string>
-    <string name="goal_details_breakdown_subtitle">Твої тренування у цифрах, за якими ми оцінили ціль.</string>
 
     <string name="goal_details_breakdown_sessions">Тренування</string>
     <string name="goal_details_breakdown_sessions_value">%1$d тренувань</string>
@@ -752,9 +744,6 @@
     <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>
     <string name="goal_details_breakdown_exercise_share_caption">від загального навантаження</string>
     <string name="goal_details_breakdown_muscle_share_caption">від роботи м'язів</string>
-
-    <string name="goal_details_breakdown_empty_title">Даних для розрахунку ще немає</string>
-    <string name="goal_details_breakdown_empty_detail">Додай тренування в цей період — і ми покажемо, які сесії та вправи рухали рахунок.</string>
 
     <!-- Goal-fit diagnostic block -->
     <string name="goal_fit_diagnostic_title">Відповідність протоколу</string>

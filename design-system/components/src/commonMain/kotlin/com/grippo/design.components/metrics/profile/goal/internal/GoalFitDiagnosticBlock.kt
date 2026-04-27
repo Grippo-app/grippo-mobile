@@ -239,7 +239,7 @@ private fun SeverityDot(
 ) {
     Box(
         modifier = modifier
-            .size(AppTokens.dp.metrics.profile.goal.focusDistribution.legendDot)
+            .size(AppTokens.dp.metrics.profile.goal.breakdown.severityDot)
             .clip(CircleShape)
             .background(color, CircleShape),
     )

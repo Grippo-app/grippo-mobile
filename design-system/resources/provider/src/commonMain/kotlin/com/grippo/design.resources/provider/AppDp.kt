@@ -249,16 +249,14 @@ public data object AppDp {
                 val radius: Dp = AppDp.radius.medium
                 val horizontalPadding: Dp = padding.medium
                 val verticalPadding: Dp = padding.small
-                val focusDistribution: FocusDistribution = FocusDistribution
+                val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
 
-                public data object FocusDistribution {
+                public data object Breakdown {
                     val radius: Dp = Panel.Small.radius
                     val horizontalPadding: Dp = Panel.Small.horizontalPadding
                     val verticalPadding: Dp = Panel.Small.verticalPadding
-                    val barHeight: Dp = padding.small
-                    val legendDot: Dp = padding.small
-                    val legendSpacing: Dp = padding.small
+                    val severityDot: Dp = padding.small
                 }
 
                 public data object Insight {

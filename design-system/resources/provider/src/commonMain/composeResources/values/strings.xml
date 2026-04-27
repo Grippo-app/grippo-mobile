@@ -657,13 +657,6 @@
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Goal details</string>
     <string name="goal_details_subtitle">A closer look at how your training matches the goal you picked.</string>
-    <string name="goal_details_timeline_title">Timeline</string>
-    <string name="goal_details_focus_title">Focus distribution</string>
-    <string name="goal_details_focus_subtitle">Share of the work that went toward each training quality.</string>
-    <string name="goal_details_focus_strength">Strength</string>
-    <string name="goal_details_focus_hypertrophy">Hypertrophy</string>
-    <string name="goal_details_focus_endurance">Endurance</string>
-    <string name="goal_details_focus_share">%1$d</string>
     <string name="goal_details_insights_title">What\'s driving your score</string>
     <string name="goal_details_tips_title">Recommendations</string>
 
@@ -731,7 +724,6 @@
 
     <!-- Calculation breakdown section -->
     <string name="goal_details_breakdown_title">Why this score</string>
-    <string name="goal_details_breakdown_subtitle">The training you logged, translated into the numbers we scored against.</string>
 
     <!-- Summary row labels -->
     <string name="goal_details_breakdown_sessions">Sessions</string>
@@ -758,10 +750,6 @@
     <string name="goal_details_breakdown_exercise_heaviest">top %1$d kg</string>
     <string name="goal_details_breakdown_exercise_share_caption">of total stimulus</string>
     <string name="goal_details_breakdown_muscle_share_caption">of muscle work</string>
-
-    <!-- Empty state -->
-    <string name="goal_details_breakdown_empty_title">No calculation data yet</string>
-    <string name="goal_details_breakdown_empty_detail">Log a training in this period and we'll break down which sessions and exercises moved the score.</string>
 
     <!-- Goal-fit diagnostic block -->
     <string name="goal_fit_diagnostic_title">Protocol fit</string>

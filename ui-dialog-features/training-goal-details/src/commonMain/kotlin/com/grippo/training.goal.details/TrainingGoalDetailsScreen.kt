@@ -21,16 +21,16 @@ import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.components.metrics.profile.goal.GoalCalculationBreakdownCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
-import com.grippo.design.components.metrics.profile.goal.GoalFocusDistributionCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
+import com.grippo.design.components.tip.TipCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyListState
-import com.grippo.design.components.tip.TipCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_details_breakdown_title
 import com.grippo.design.resources.provider.goal_details_insights_title
 import com.grippo.design.resources.provider.goal_details_subtitle
 import com.grippo.design.resources.provider.goal_details_tips_title
@@ -106,14 +106,16 @@ internal fun TrainingGoalDetailsScreen(
                 )
             }
 
-            item(key = "focus") {
-                GoalFocusDistributionCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = progress,
-                )
-            }
-
             if (progress.hasBreakdown) {
+                item(key = "breakdown_header") {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = AppTokens.strings.res(Res.string.goal_details_breakdown_title),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
+
                 item(key = "breakdown") {
                     GoalCalculationBreakdownCard(
                         modifier = Modifier.fillMaxWidth(),

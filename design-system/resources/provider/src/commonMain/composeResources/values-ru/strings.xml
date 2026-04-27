@@ -654,13 +654,6 @@
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Детали цели</string>
     <string name="goal_details_subtitle">Разбираем, насколько твои тренировки совпадают с выбранной целью.</string>
-    <string name="goal_details_timeline_title">Хронология</string>
-    <string name="goal_details_focus_title">Распределение фокуса</string>
-    <string name="goal_details_focus_subtitle">Какая доля работы ушла на каждое качество.</string>
-    <string name="goal_details_focus_strength">Сила</string>
-    <string name="goal_details_focus_hypertrophy">Гипертрофия</string>
-    <string name="goal_details_focus_endurance">Выносливость</string>
-    <string name="goal_details_focus_share">%1$d</string>
     <string name="goal_details_insights_title">Что влияет на счёт</string>
     <string name="goal_details_tips_title">Рекомендации</string>
 
@@ -728,7 +721,6 @@
 
     <!-- Секция «Как получен счёт» -->
     <string name="goal_details_breakdown_title">Из чего сложился счёт</string>
-    <string name="goal_details_breakdown_subtitle">Твои тренировки в цифрах, по которым мы оценили цель.</string>
 
     <string name="goal_details_breakdown_sessions">Тренировки</string>
     <string name="goal_details_breakdown_sessions_value">%1$d тренировок</string>
@@ -753,9 +745,6 @@
     <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>
     <string name="goal_details_breakdown_exercise_share_caption">от общей нагрузки</string>
     <string name="goal_details_breakdown_muscle_share_caption">от работы мышц</string>
-
-    <string name="goal_details_breakdown_empty_title">Данных для расчёта пока нет</string>
-    <string name="goal_details_breakdown_empty_detail">Добавь тренировку в этот период — и мы покажем, какие сессии и упражнения двигали счёт.</string>
 
     <!-- Goal-fit diagnostic block -->
     <string name="goal_fit_diagnostic_title">Соответствие протоколу</string>

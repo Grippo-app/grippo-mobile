@@ -26,22 +26,17 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_details_breakdown_empty_detail
-import com.grippo.design.resources.provider.goal_details_breakdown_empty_title
 import com.grippo.design.resources.provider.goal_details_breakdown_sessions
 import com.grippo.design.resources.provider.goal_details_breakdown_sessions_hint
 import com.grippo.design.resources.provider.goal_details_breakdown_sessions_value
 import com.grippo.design.resources.provider.goal_details_breakdown_sessions_vs_target
-import com.grippo.design.resources.provider.goal_details_breakdown_subtitle
-import com.grippo.design.resources.provider.goal_details_breakdown_title
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun GoalCalculationBreakdownCard(
     value: GoalProgressState,
     modifier: Modifier = Modifier,
 ) {
-    val radius = AppTokens.dp.metrics.profile.goal.focusDistribution.radius
+    val radius = AppTokens.dp.metrics.profile.goal.breakdown.radius
     val shape = RoundedCornerShape(radius)
 
     Column(
@@ -49,22 +44,10 @@ public fun GoalCalculationBreakdownCard(
             .clip(shape)
             .background(AppTokens.colors.background.card, shape)
             .padding(
-                horizontal = AppTokens.dp.metrics.profile.goal.focusDistribution.horizontalPadding,
-                vertical = AppTokens.dp.metrics.profile.goal.focusDistribution.verticalPadding,
+                horizontal = AppTokens.dp.metrics.profile.goal.breakdown.horizontalPadding,
+                vertical = AppTokens.dp.metrics.profile.goal.breakdown.verticalPadding,
             ),
     ) {
-        BreakdownHeader(
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (!value.hasBreakdown) {
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
-            EmptyBlock(modifier = Modifier.fillMaxWidth())
-            return@Column
-        }
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
-
         SessionsBlock(
             sessionCount = value.sessionCount,
             isConsistency = value.goal.secondaryGoal == GoalSecondaryGoalEnumState.CONSISTENCY,
@@ -78,25 +61,6 @@ public fun GoalCalculationBreakdownCard(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-    }
-}
-
-@Composable
-private fun BreakdownHeader(modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(
-            text = AppTokens.strings.res(Res.string.goal_details_breakdown_title),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-        Text(
-            text = AppTokens.strings.res(Res.string.goal_details_breakdown_subtitle),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary,
-        )
     }
 }
 
@@ -169,27 +133,6 @@ private fun SectionDivider(modifier: Modifier = Modifier) {
         color = AppTokens.colors.divider.default,
     )
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-}
-
-@Composable
-private fun EmptyBlock(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.goal_details_breakdown_empty_title),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.primary,
-        )
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.goal_details_breakdown_empty_detail),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-    }
 }
 
 @AppPreview
@@ -269,23 +212,6 @@ private fun GoalFitReturnToTrainingPreview() {
                 primary = GoalPrimaryGoalEnumState.RETURN_TO_TRAINING,
                 sessionCount = 20,
                 findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.RETURN_TO_TRAINING),
-            ),
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun GoalFitEmptyDataPreview() {
-    PreviewContainer {
-        GoalCalculationBreakdownCard(
-            value = stubGoalProgress(
-                primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE,
-                sessionCount = 0,
-                topExercises = persistentListOf(),
-                topMuscles = persistentListOf(),
-                topMuscleGroups = persistentListOf(),
-                findings = persistentListOf(),
             ),
         )
     }
