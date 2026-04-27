@@ -10,6 +10,7 @@ import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadDomina
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadEntry
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadMeta
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary
+import com.grippo.data.features.api.metrics.internal.MuscleBundleMath
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroup
@@ -47,12 +48,16 @@ public class MuscleLoadingSummaryUseCase(
         private const val EXAMPLE_FIXED_WEIGHT_FACTOR = 1.00f
         private const val EXAMPLE_BODY_WEIGHT_FACTOR = 1.03f
 
-        private const val SHARE_DAMPING_ALPHA = 1.6f
+        // Bundle-distribution primitives (damping exponent + PUSH-tiny-share
+        // suppression) live in [MuscleBundleMath] — shared source of truth with
+        // `GoalFollowingUseCase` so the two pipelines cannot drift on these
+        // domain-tuned magic numbers. Re-exported as local `const val`s so the
+        // rest of this file is untouched and call sites stay inlined.
+        private const val SHARE_DAMPING_ALPHA = MuscleBundleMath.SHARE_DAMPING_ALPHA
+        private const val PUSH_TINY_SHARE_MAX_PERCENT = MuscleBundleMath.PUSH_TINY_SHARE_MAX_PERCENT
+        private const val PUSH_TINY_SHARE_FACTOR = MuscleBundleMath.PUSH_TINY_SHARE_FACTOR
 
         private const val FATIGUE_IMPACT = 0.35f
-
-        private const val PUSH_TINY_SHARE_MAX_PERCENT = 4f
-        private const val PUSH_TINY_SHARE_FACTOR = 0.35f
 
         private const val HIT_SHARE_THRESHOLD_PERCENT = 10f
         private const val TOP_EXAMPLES_LIMIT = 3
@@ -324,8 +329,8 @@ public class MuscleLoadingSummaryUseCase(
             stimulusLoad = overallStimulus,
             volumeLoad = overallVolume,
             groups = groups,
-            perGroupStats = perGroupStats.mapValues { it.value.toPublic(meta.trainingsCount) },
-            perMuscleStats = perMuscleStats.mapValues { it.value.toPublic(meta.trainingsCount) },
+            perGroupStats = perGroupStats.mapValues { it.value.toPublic() },
+            perMuscleStats = perMuscleStats.mapValues { it.value.toPublic() },
             topExamplesByGroupEnum = topExamplesByGroupEnum,
             topExamplesByMuscle = topExamplesByMuscle,
         )
@@ -339,7 +344,7 @@ public class MuscleLoadingSummaryUseCase(
         var totalVolumeAcrossHits: Float = 0f,
         var maxVolumeInOneSession: Float = 0f,
     ) {
-        fun toPublic(trainingsCount: Int): PublicStats {
+        fun toPublic(): PublicStats {
             val hit = hitTrainingsCount.coerceAtLeast(0)
             val avgStimulus = if (hit > 0) totalStimulusAcrossHits / hit else 0f
             val avgVolume = if (hit > 0) totalVolumeAcrossHits / hit else 0f

@@ -50,10 +50,10 @@ import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.profile.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.utils.AnchorScrollBehavior
-import com.grippo.design.components.utils.rememberAnchoredLazyGridState
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyGridState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -82,16 +82,6 @@ internal fun HomeScreen(
     val isEmptyState = (state.user?.stats?.trainingsCount ?: 0) < 1
     val isLoading = loaders.contains(HomeLoader.Trainings) && isEmptyState
 
-    if (isEmptyState && isLoading.not()) {
-        EmptyHomeContent(
-            modifier = Modifier.fillMaxSize(),
-            onStartTraining = contract::onStartTraining,
-            onResumeTraining = contract::onResumeTraining,
-            hasDraftTraining = state.hasDraftTraining
-        )
-        return@BaseComposeScreen
-    }
-
     if (isLoading) {
         Loader(
             modifier = Modifier.fillMaxSize()
@@ -113,6 +103,16 @@ internal fun HomeScreen(
             )
         },
     )
+
+    if (isEmptyState && isLoading.not()) {
+        EmptyHomeContent(
+            modifier = Modifier.fillMaxSize(),
+            onStartTraining = contract::onStartTraining,
+            onResumeTraining = contract::onResumeTraining,
+            hasDraftTraining = state.hasDraftTraining
+        )
+        return@BaseComposeScreen
+    }
 
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,

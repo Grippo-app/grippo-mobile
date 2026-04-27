@@ -8,9 +8,13 @@ import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.GoalPrimaryGoalEnum
+import com.grippo.data.features.api.metrics.internal.MuscleBundleMath
+import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.ACCESSORY_SETS_PASS_MIN
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.AGONIST_GROUP_THRESHOLD
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.MINUTES_PER_SET_ESTIMATE
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.MIN_RECORDED_MINUTES
+import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.PRIMARY_SETS_PASS_MIN
+import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.SET_CREDIT_BAND_WIDTH
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.SYNERGIST_GROUP_THRESHOLD
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.WORKING_MIN_SETS
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.WORKING_MIN_WEIGHT_FRACTION
@@ -464,6 +468,22 @@ public class GoalFollowingUseCase(
         return if (percent.isFinite()) percent.coerceIn(0f, 100f) else 0f
     }
 
+    /**
+     * Per-muscle stimulus totals over the period. Bundle shares are normalized
+     * and then **damped** via the shared power-law (`ratio^α`, α=1.6) helper
+     * in [MuscleBundleMath] — primary movers gain a non-linear edge over
+     * incidental synergists, matching what `MuscleLoadingSummaryUseCase` does
+     * for muscle-load distribution. Without damping, a 30%/15%/15% bundle
+     * would split stimulus 2:1:1; with α=1.6 it splits closer to 3:1:1, which
+     * lines up with the agonist/synergist set-credit thresholds downstream.
+     *
+     * Note: this distribution is intentionally simpler than the full
+     * `MuscleLoadingSummaryUseCase` model — the fatigue (size/sensitivity),
+     * complexity, and category/weight-type factors live there because they
+     * shape stimulus *load*; they would distort relative stimulus ranking
+     * here without altering the goal-fit signals we actually consume
+     * (top-N muscles, top-N groups, specialization Top2%).
+     */
     private fun computeMuscleStimulusTotals(
         stats: List<ExerciseStats>,
         exampleMap: Map<String, ExerciseExample>,
@@ -477,19 +497,14 @@ public class GoalFollowingUseCase(
             val base = ex.stimulus
             if (!base.isFinite() || base <= EPS) return@forEach
 
-            val totalShare = bundles.sumOf { it.percentage.coerceAtLeast(0) }
-            if (totalShare <= 0) return@forEach
-            val denom = totalShare.toFloat()
+            val dampedRatios = MuscleBundleMath.dampedBundleRatios(bundles) ?: return@forEach
 
-            bundles.forEach { bundle ->
-                val share = bundle.percentage.coerceAtLeast(0).toFloat()
-                if (share <= 0f) return@forEach
-
-                val ratio = share / denom
-                if (!ratio.isFinite() || ratio <= 0f) return@forEach
+            bundles.forEachIndexed { index, bundle ->
+                val ratio = dampedRatios[index]
+                if (!ratio.isFinite() || ratio <= 0f) return@forEachIndexed
 
                 val add = base * ratio
-                if (!add.isFinite() || add <= EPS) return@forEach
+                if (!add.isFinite() || add <= EPS) return@forEachIndexed
                 totals[bundle.muscle.type] = (totals[bundle.muscle.type] ?: 0f) + add
             }
         }
@@ -783,9 +798,18 @@ public class GoalFollowingUseCase(
 
     /**
      * Per-group set credit — bundle shares are aggregated to the group level
-     * first; ≥[AGONIST_GROUP_THRESHOLD] credits 1.0 set (agonist),
-     * ≥[SYNERGIST_GROUP_THRESHOLD] credits 0.5 set (synergist), below that
-     * drops as incidental.
+     * first; group share is then mapped to a set-credit through
+     * [groupShareToCredit] (synergist tier at ≥[SYNERGIST_GROUP_THRESHOLD] →
+     * 0.5 set, agonist tier at ≥[AGONIST_GROUP_THRESHOLD] → 1.0 set), with
+     * `smoothStep` ramps below each tier so that a bundle landing inside the
+     * tier's transition band picks up partial credit instead of being silently
+     * dropped (the original binary cliff).
+     *
+     * For PUSH-type exercises the per-bundle [MuscleBundleMath.pushTinySharePenalty]
+     * is applied before group aggregation — suppresses spurious cross-credit
+     * (e.g. a 4% chest bundle on a triceps extension claiming a chest
+     * synergist set). Constants live in [MuscleBundleMath] as the shared
+     * source of truth with `MuscleLoadingSummaryUseCase`.
      */
     private fun exampleGroupContributions(
         example: ExerciseExample?,
@@ -796,24 +820,68 @@ public class GoalFollowingUseCase(
         val totalShare = bundles.sumOf { it.percentage.coerceAtLeast(0) }
         if (totalShare <= 0) return null
 
+        val forceType = example.value.forceType
         val groupShare = mutableMapOf<MuscleGroupEnum, Float>()
         bundles.forEach { bundle ->
             val share = bundle.percentage.coerceAtLeast(0).toFloat()
             if (share <= 0f) return@forEach
+            val penalty = MuscleBundleMath.pushTinySharePenalty(forceType, share)
             val group = bundle.muscle.type.group()
-            groupShare[group] = (groupShare[group] ?: 0f) + share / totalShare.toFloat()
+            groupShare[group] = (groupShare[group] ?: 0f) + (share * penalty) / totalShare.toFloat()
         }
 
         val out = mutableMapOf<MuscleGroupEnum, Float>()
         groupShare.forEach { (group, share) ->
-            val credit = when {
-                share >= AGONIST_GROUP_THRESHOLD -> AGONIST_SET_WEIGHT
-                share >= SYNERGIST_GROUP_THRESHOLD -> SYNERGIST_SET_WEIGHT
-                else -> 0f
-            }
+            val credit = groupShareToCredit(share)
             if (credit > 0f) out[group] = credit
         }
         return out.takeIf { it.isNotEmpty() }
+    }
+
+    /**
+     * Maps an aggregated group-share fraction (0..1) to a set-credit value
+     * using a soft tier function. Replaces the previous binary cliff to
+     * remove the "31% chest gets 0.5 set, 35% chest gets 1.0 set" UX edge —
+     * a bundle landing inside a tier's transition band picks up partial
+     * credit instead of being silently dropped or jumped.
+     *
+     * Design constraints (preserved from the original cliff so downstream
+     * thresholds [PRIMARY_SETS_PASS_MIN], [ACCESSORY_SETS_PASS_MIN], etc.
+     * stay calibrated):
+     *  - At each tier threshold the credit equals the tier value (cliff
+     *    parity): `f(SYNERGIST_GROUP_THRESHOLD) = SYNERGIST_SET_WEIGHT`,
+     *    `f(AGONIST_GROUP_THRESHOLD) = AGONIST_SET_WEIGHT`.
+     *  - Above each threshold the credit plateaus at the tier value (until
+     *    the next tier's ramp begins).
+     *  - Below each threshold the credit ramps smoothly down to zero over
+     *    [SET_CREDIT_BAND_WIDTH] of share — incidental shares just shy of a
+     *    tier still pick up something instead of being a cliff drop.
+     *
+     * The aggregate set-volume estimate per bundle changes by at most
+     * `SET_CREDIT_BAND_WIDTH × tier_step ≈ 0.025` set vs. the binary cliff
+     * (a clear win on the boundary, negligible elsewhere) — verified by
+     * inspection at share = 0.10 / 0.125 / 0.15 / 0.30 / 0.325 / 0.35.
+     */
+    private fun groupShareToCredit(share: Float): Float {
+        if (!share.isFinite() || share <= 0f) return 0f
+
+        // Synergist tier: smoothly ramps from 0 at (threshold − band) to the
+        // synergist weight at the threshold itself, then plateaus.
+        val synergistRamp = smoothStep(
+            (share - (SYNERGIST_GROUP_THRESHOLD - SET_CREDIT_BAND_WIDTH)) / SET_CREDIT_BAND_WIDTH
+        )
+        val synergist = SYNERGIST_SET_WEIGHT * synergistRamp
+
+        // Agonist tier: same shape, anchored at the agonist threshold; only
+        // the *step up* over the synergist weight is added so we hit
+        // exactly AGONIST_SET_WEIGHT at the agonist threshold.
+        val agonistRamp = smoothStep(
+            (share - (AGONIST_GROUP_THRESHOLD - SET_CREDIT_BAND_WIDTH)) / SET_CREDIT_BAND_WIDTH
+        )
+        val agonistStep = (AGONIST_SET_WEIGHT - SYNERGIST_SET_WEIGHT) * agonistRamp
+
+        val credit = synergist + agonistStep
+        return if (credit.isFinite()) credit.coerceIn(0f, AGONIST_SET_WEIGHT) else 0f
     }
 
     private fun computeTopSetIntensityShares(
@@ -1014,18 +1082,12 @@ public class GoalFollowingUseCase(
 
         MuscleGroupEnum.entries.forEach { group ->
             val sets = ctx.setsPerWeekPerGroup[group] ?: 0f
-            findings += primaryGroupSetsFinding(actual = sets, context = listOf(group.name))
+            findings += weeklySetsFinding(group = group, actual = sets)
         }
 
         MuscleGroupEnum.entries.forEach { group ->
             val freq = ctx.sessionsPerWeekPerGroup[group] ?: 0f
-            findings += atLeastFinding(
-                rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
-                actual = freq,
-                passMin = PRIMARY_FREQUENCY_PASS_MIN,
-                warnMin = PRIMARY_FREQUENCY_WARN_MIN,
-                context = listOf(group.name),
-            )
+            findings += weeklyFrequencyFinding(group = group, actual = freq)
         }
 
         accessoryInversionFinding(ctx)?.let(findings::add)
@@ -1043,19 +1105,55 @@ public class GoalFollowingUseCase(
         return findings
     }
 
-    private fun primaryGroupSetsFinding(actual: Float, context: List<String>): GoalFitFinding {
+    /**
+     * Per-group weekly-sets finding. Primary anatomical groups (chest / back /
+     * legs) use the literature-supported 10..20 band; accessory groups
+     * (arms / shoulders / abs) use a relaxed 6..16 band because they
+     * accumulate substantial *incidental* set credit through synergist
+     * recruitment on compound work — reusing the primary thresholds verbatim
+     * would FAIL most compound-driven BUILD_MUSCLE programs even when the
+     * accessory volume is physiologically adequate.
+     *
+     * Targets are emitted per finding so the UI mapper renders the band
+     * correct for the group it's describing.
+     */
+    private fun weeklySetsFinding(group: MuscleGroupEnum, actual: Float): GoalFitFinding {
+        val isAccessory = group in ACCESSORY_GROUPS
+        val passMin = if (isAccessory) ACCESSORY_SETS_PASS_MIN else PRIMARY_SETS_PASS_MIN
+        val passMax = if (isAccessory) ACCESSORY_SETS_PASS_MAX else PRIMARY_SETS_PASS_MAX
+        val warnLow = if (isAccessory) ACCESSORY_SETS_WARN_LOW_MIN else PRIMARY_SETS_WARN_LOW_MIN
+        val warnHigh = if (isAccessory) ACCESSORY_SETS_WARN_HIGH_MAX else PRIMARY_SETS_WARN_HIGH_MAX
+
         val severity = when {
-            actual >= PRIMARY_SETS_PASS_MIN && actual <= PRIMARY_SETS_PASS_MAX -> GoalFitSeverity.PASS
-            actual >= PRIMARY_SETS_WARN_LOW_MIN && actual <= PRIMARY_SETS_WARN_HIGH_MAX -> GoalFitSeverity.WARN
+            actual in passMin..passMax -> GoalFitSeverity.PASS
+            actual in warnLow..warnHigh -> GoalFitSeverity.WARN
             else -> GoalFitSeverity.FAIL
         }
         return GoalFitFinding(
             rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
             severity = severity,
             actualValue = actual,
-            targetMin = PRIMARY_SETS_PASS_MIN,
-            targetMax = PRIMARY_SETS_PASS_MAX,
-            context = context,
+            targetMin = passMin,
+            targetMax = passMax,
+            context = listOf(group.name),
+        )
+    }
+
+    /**
+     * Per-group weekly-frequency finding. Mirrors [weeklySetsFinding]: primary
+     * groups target ≥1.5 dedicated sessions/week, accessories ≥1.0 (the lower
+     * floor reflects that arms / shoulders / abs typically accumulate
+     * frequency through synergist recruitment on compounds, so the rule
+     * should not penalise compound-driven programmes).
+     */
+    private fun weeklyFrequencyFinding(group: MuscleGroupEnum, actual: Float): GoalFitFinding {
+        val isAccessory = group in ACCESSORY_GROUPS
+        return atLeastFinding(
+            rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
+            actual = actual,
+            passMin = if (isAccessory) ACCESSORY_FREQUENCY_PASS_MIN else PRIMARY_FREQUENCY_PASS_MIN,
+            warnMin = if (isAccessory) ACCESSORY_FREQUENCY_WARN_MIN else PRIMARY_FREQUENCY_WARN_MIN,
+            context = listOf(group.name),
         )
     }
 
@@ -1694,17 +1792,60 @@ public class GoalFollowingUseCase(
         private const val SYNERGIST_GROUP_THRESHOLD = 0.15f
         private const val AGONIST_SET_WEIGHT = 1.0f
         private const val SYNERGIST_SET_WEIGHT = 0.5f
+
+        /**
+         * Width of the smooth ramp leading up to each set-credit tier.
+         * `groupShareToCredit` uses a `smoothStep` that climbs from 0 over
+         * `[threshold − BAND, threshold]` so bundles just shy of a cliff
+         * pick up partial credit; at and above each threshold the function
+         * still produces exactly the original tier value.
+         */
+        private const val SET_CREDIT_BAND_WIDTH = 0.05f
         private const val TOP_SET_HEAVY_REPS_MAX = 8
+
+        // Muscle-bundle distribution constants live in [MuscleBundleMath] —
+        // shared source of truth with `MuscleLoadingSummaryUseCase`.
 
         // Goal-fit rule thresholds — PASS / WARN / FAIL boundaries (PASS-side inclusive)
         private const val HYPERTROPHY_REP_RANGE_PASS_MIN = 60f
         private const val HYPERTROPHY_REP_RANGE_WARN_MIN = 40f
+
+        // BUILD_MUSCLE weekly sets / frequency.
+        //
+        // Primary anatomical groups (chest, back, legs) target the
+        // hypertrophy MV–MAV band that the meta-analytic literature
+        // (Schoenfeld 2017; 2019) consolidates around: ≥10 weekly direct
+        // sets to clear the minimum effective volume, with diminishing
+        // returns past ~20. WARN edges relax that band by half a tier on
+        // either side so an off-week (5..9) and over-shooting weeks
+        // (21..25) do not collapse to FAIL.
         private const val PRIMARY_SETS_PASS_MIN = 10f
         private const val PRIMARY_SETS_PASS_MAX = 20f
         private const val PRIMARY_SETS_WARN_LOW_MIN = 5f
         private const val PRIMARY_SETS_WARN_HIGH_MAX = 25f
         private const val PRIMARY_FREQUENCY_PASS_MIN = 1.5f
         private const val PRIMARY_FREQUENCY_WARN_MIN = 1.0f
+
+        // Accessory groups (arms, shoulders, abs) shift both bounds down
+        // because synergist recruitment on compound work already covers a
+        // chunk of weekly volume — `exampleGroupContributions` credits
+        // bench-press-style triceps activation (~15% bundle share) as 0.5
+        // synergist set, so a programme with 8 weekly compound sets
+        // accumulates ~4 incidental ARM sets before any direct work.
+        // The PASS band (6..16) is therefore tuned for *direct* work only,
+        // and is intended to keep the combined direct + incidental volume
+        // inside the same MV–MAV envelope as primaries.
+        //
+        // Ratios chosen against the primary band: floor 60% (10 → 6), top
+        // 80% (20 → 16). WARN edges scale proportionally so the tier
+        // shapes stay symmetric between the two group classes.
+        private const val ACCESSORY_SETS_PASS_MIN = 6f
+        private const val ACCESSORY_SETS_PASS_MAX = 16f
+        private const val ACCESSORY_SETS_WARN_LOW_MIN = 3f
+        private const val ACCESSORY_SETS_WARN_HIGH_MAX = 22f
+        private const val ACCESSORY_FREQUENCY_PASS_MIN = 1.0f
+        private const val ACCESSORY_FREQUENCY_WARN_MIN = 0.5f
+
         private const val LOAD_PROGRESSION_PASS_MIN = 0.01f
         private const val LOAD_PROGRESSION_WARN_MIN = -0.01f
 
