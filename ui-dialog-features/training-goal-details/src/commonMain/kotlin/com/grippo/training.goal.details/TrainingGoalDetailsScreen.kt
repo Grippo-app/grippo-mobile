@@ -22,8 +22,6 @@ import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.components.metrics.profile.goal.GoalCalculationBreakdownCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightCard
-import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
-import com.grippo.design.components.tip.TipCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyListState
 import com.grippo.design.core.AppTokens
@@ -33,7 +31,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_details_breakdown_title
 import com.grippo.design.resources.provider.goal_details_insights_title
 import com.grippo.design.resources.provider.goal_details_subtitle
-import com.grippo.design.resources.provider.goal_details_tips_title
 import com.grippo.design.resources.provider.goal_details_title
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.InsightItem
@@ -140,32 +137,13 @@ internal fun TrainingGoalDetailsScreen(
                 key = { index, _ -> "insight_$index" },
             ) { _, item ->
                 val (headline, detail) = item.reason.reasonText()
+                val action = item.action?.tipText()
                 GoalInsightCard(
                     modifier = Modifier.fillMaxWidth(),
-                    severity = item.severity.toGoalInsightSeverity(),
+                    severity = item.severity.goalInsightSeverity(),
                     headline = headline,
                     detail = detail,
-                )
-            }
-        }
-
-        if (state.tips.isNotEmpty()) {
-            item(key = "tips_header") {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.goal_details_tips_title),
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary,
-                )
-            }
-
-            itemsIndexed(
-                items = state.tips,
-                key = { index, _ -> "tip_$index" },
-            ) { _, code ->
-                TipCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = code.tipText(),
+                    action = action,
                 )
             }
         }
@@ -176,13 +154,6 @@ internal fun TrainingGoalDetailsScreen(
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
-}
-
-private fun InsightItem.Severity.toGoalInsightSeverity(): GoalInsightSeverity = when (this) {
-    InsightItem.Severity.Positive -> GoalInsightSeverity.Positive
-    InsightItem.Severity.Warning -> GoalInsightSeverity.Warning
-    InsightItem.Severity.Negative -> GoalInsightSeverity.Negative
-    InsightItem.Severity.Neutral -> GoalInsightSeverity.Neutral
 }
 
 @AppPreview
@@ -196,12 +167,12 @@ private fun TrainingGoalDetailsScreenPreview() {
                 progress = progress,
                 insights = persistentListOf(
                     InsightItem(InsightItem.Severity.Warning, ReasonCode.ScoreDrifting),
-                    InsightItem(InsightItem.Severity.Negative, ReasonCode.StrengthShareLow),
+                    InsightItem(
+                        severity = InsightItem.Severity.Negative,
+                        reason = ReasonCode.StrengthShareLow,
+                        action = TipCode.AddHeavyCompounds,
+                    ),
                     InsightItem(InsightItem.Severity.Neutral, ReasonCode.AlmostDone),
-                ),
-                tips = persistentListOf(
-                    TipCode.AddHeavyCompounds,
-                    TipCode.KeepConsistentFrequency,
                 ),
             ),
             loaders = persistentSetOf(),
@@ -223,7 +194,6 @@ private fun TrainingGoalDetailsScreenOnTrackPreview() {
                     InsightItem(InsightItem.Severity.Positive, ReasonCode.ScoreOnTrack),
                     InsightItem(InsightItem.Severity.Positive, ReasonCode.StrengthShareOk),
                 ),
-                tips = persistentListOf(TipCode.StayTheCourse),
             ),
             loaders = persistentSetOf(),
             contract = TrainingGoalDetailsContract.Empty,
@@ -241,9 +211,12 @@ private fun TrainingGoalDetailsScreenHypertrophyPreview() {
                 range = DateRangeFormatState.of(DateRangeKind.Last7Days),
                 progress = progress,
                 insights = persistentListOf(
-                    InsightItem(InsightItem.Severity.Positive, ReasonCode.HypertrophyShareOk),
+                    InsightItem(
+                        severity = InsightItem.Severity.Negative,
+                        reason = ReasonCode.HypertrophyShareLow,
+                        action = TipCode.IncreaseHypertrophyReps,
+                    ),
                 ),
-                tips = persistentListOf(TipCode.IncreaseHypertrophyReps),
             ),
             loaders = persistentSetOf(),
             contract = TrainingGoalDetailsContract.Empty,

@@ -265,6 +265,7 @@ public data object AppDp {
                     val verticalPadding: Dp = Panel.Small.verticalPadding
                     val accentWidth: Dp = 3.dp
                     val textSpacing: Dp = padding.extraSmall
+                    val actionIcon: Dp = icon.small
                 }
             }
         }

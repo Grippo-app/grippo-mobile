@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -21,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.ArrowRight
 
 /**
  * Severity of a goal insight row. Drives the accent stripe color so users
@@ -51,8 +56,11 @@ public enum class GoalInsightSeverity {
 
 /**
  * A single diagnostic row about the goal: a colored vertical accent stripe
- * communicating severity at a glance, followed by a headline and an
- * explanation.
+ * communicating severity at a glance, followed by a headline, an
+ * explanation, and an optional action — the next step paired to this signal.
+ *
+ * The action line shares the severity accent so a user can scan a
+ * red insight and immediately see the red-accented action that pairs to it.
  *
  * All dimensions come from `AppTokens.dp.metrics.profile.goal.insight` so the card
  * stays consistent with the rest of the goal widgets.
@@ -63,6 +71,7 @@ public fun GoalInsightCard(
     headline: String,
     detail: String,
     modifier: Modifier = Modifier,
+    action: String? = null,
 ) {
     val accent = severity.color()
     val tokens = AppTokens.dp.metrics.profile.goal.insight
@@ -102,7 +111,34 @@ public fun GoalInsightCard(
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
             )
+
+            if (action != null) {
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+                ActionRow(text = action, accent = accent)
+            }
         }
+    }
+}
+
+@Composable
+private fun ActionRow(text: String, accent: Color) {
+    val tokens = AppTokens.dp.metrics.profile.goal.insight
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
+        Icon(
+            modifier = Modifier.size(tokens.actionIcon),
+            imageVector = AppTokens.icons.ArrowRight,
+            tint = accent,
+            contentDescription = null,
+        )
+        Text(
+            text = text,
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.primary,
+        )
     }
 }
 
@@ -138,6 +174,7 @@ private fun GoalInsightCardNegativePreview() {
             severity = GoalInsightSeverity.Negative,
             headline = "Off track",
             detail = "Progress has stalled. Time to adjust the plan.",
+            action = "Add 1–2 heavy compound lifts (3–5 reps) per session.",
         )
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
+import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_details_reason_almost_done_detail
@@ -49,14 +50,12 @@ import com.grippo.design.resources.provider.goal_details_reason_too_early_title
 import com.grippo.design.resources.provider.goal_details_tip_add_heavy
 import com.grippo.design.resources.provider.goal_details_tip_balance_strength_end
 import com.grippo.design.resources.provider.goal_details_tip_balance_strength_hyp
-import com.grippo.design.resources.provider.goal_details_tip_consistent
 import com.grippo.design.resources.provider.goal_details_tip_dial_back
 import com.grippo.design.resources.provider.goal_details_tip_hypertrophy_reps
 import com.grippo.design.resources.provider.goal_details_tip_metabolic
 import com.grippo.design.resources.provider.goal_details_tip_ramp_up
 import com.grippo.design.resources.provider.goal_details_tip_reduce_suppressed
 import com.grippo.design.resources.provider.goal_details_tip_review_deadline
-import com.grippo.design.resources.provider.goal_details_tip_stay_course
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -65,17 +64,13 @@ public data class TrainingGoalDetailsDialogState(
     val range: DateRangeFormatState,
     val progress: GoalProgressState? = null,
     val insights: ImmutableList<InsightItem> = persistentListOf(),
-    val tips: ImmutableList<TipCode> = persistentListOf(),
 ) {
 
-    /**
-     * A short diagnostic statement about the goal. Rendered as a row
-     * with a colored leading dot, a headline and an explanation.
-     */
     @Immutable
     public data class InsightItem(
         val severity: Severity,
         val reason: ReasonCode,
+        val action: TipCode? = null,
     ) {
         @Immutable
         public enum class Severity {
@@ -89,7 +84,14 @@ public data class TrainingGoalDetailsDialogState(
             Negative,
 
             /** Neutral, informational - muted. */
-            Neutral,
+            Neutral;
+
+            public fun goalInsightSeverity(): GoalInsightSeverity = when (this) {
+                Positive -> GoalInsightSeverity.Positive
+                Warning -> GoalInsightSeverity.Warning
+                Negative -> GoalInsightSeverity.Negative
+                Neutral -> GoalInsightSeverity.Neutral
+            }
         }
     }
 
@@ -193,8 +195,8 @@ public data class TrainingGoalDetailsDialogState(
     }
 
     /**
-     * Recommendations shown in TipCards. Each code resolves to a
-     * concrete, actionable sentence in the screen layer.
+     * Action codes paired into insights. Each code resolves to a concrete,
+     * actionable sentence rendered as the action line on a [InsightItem].
      */
     @Immutable
     public enum class TipCode {
@@ -206,9 +208,7 @@ public data class TrainingGoalDetailsDialogState(
         ReduceSuppressedAxis,
         RampUpGradually,
         DialBackIntensity,
-        KeepConsistentFrequency,
-        ReviewDeadline,
-        StayTheCourse;
+        ReviewDeadline;
 
         @Composable
         public fun tipText(): String = when (this) {
@@ -220,9 +220,7 @@ public data class TrainingGoalDetailsDialogState(
             ReduceSuppressedAxis -> AppTokens.strings.res(Res.string.goal_details_tip_reduce_suppressed)
             RampUpGradually -> AppTokens.strings.res(Res.string.goal_details_tip_ramp_up)
             DialBackIntensity -> AppTokens.strings.res(Res.string.goal_details_tip_dial_back)
-            KeepConsistentFrequency -> AppTokens.strings.res(Res.string.goal_details_tip_consistent)
             ReviewDeadline -> AppTokens.strings.res(Res.string.goal_details_tip_review_deadline)
-            StayTheCourse -> AppTokens.strings.res(Res.string.goal_details_tip_stay_course)
         }
     }
 }

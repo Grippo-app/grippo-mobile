@@ -654,7 +654,6 @@
     <string name="goal_details_title">Деталі цілі</string>
     <string name="goal_details_subtitle">Дивимось ближче, наскільки тренування збігаються з обраною ціллю.</string>
     <string name="goal_details_insights_title">Що впливає на бал</string>
-    <string name="goal_details_tips_title">Рекомендації</string>
 
     <!-- Training goal details: reason headlines -->
     <string name="goal_details_reason_no_data_title">Поки мало даних</string>
@@ -714,9 +713,7 @@
     <string name="goal_details_tip_reduce_suppressed">Заміни одну кондиційну або гіпертрофічну тренування на ту вісь, що важлива для цілі.</string>
     <string name="goal_details_tip_ramp_up">Додай ще одну коротку тренування цього тижня, зупиняйся за 2–3 повторення до відмови.</string>
     <string name="goal_details_tip_dial_back">Прибери найважчий підхід з кожної вправи на тиждень і зроби акцент на відновленні.</string>
-    <string name="goal_details_tip_consistent">Тримай стабільні 3 тренування на тиждень — регулярність важливіша за окремий ударний день.</string>
     <string name="goal_details_tip_review_deadline">Переглянь дату фінішу — продовж її або закрий ціль і почни нову.</string>
-    <string name="goal_details_tip_stay_course">Ти тримаєш патерн. Продовжуй у тому ж дусі.</string>
 
     <!-- Секція «Звідки взявся рахунок» -->
     <string name="goal_details_breakdown_title">Звідки взявся рахунок</string>

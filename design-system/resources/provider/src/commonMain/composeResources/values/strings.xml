@@ -658,7 +658,6 @@
     <string name="goal_details_title">Goal details</string>
     <string name="goal_details_subtitle">A closer look at how your training matches the goal you picked.</string>
     <string name="goal_details_insights_title">What\'s driving your score</string>
-    <string name="goal_details_tips_title">Recommendations</string>
 
     <!-- Training goal details: reason headlines -->
     <string name="goal_details_reason_no_data_title">Not enough data yet</string>
@@ -718,9 +717,7 @@
     <string name="goal_details_tip_reduce_suppressed">Swap one conditioning or hypertrophy day for the axis this goal cares about.</string>
     <string name="goal_details_tip_ramp_up">Add one more short session this week, keeping every set 2–3 reps shy of failure.</string>
     <string name="goal_details_tip_dial_back">Cut the heaviest set off each exercise for a week and prioritize recovery.</string>
-    <string name="goal_details_tip_consistent">Aim for a steady 3 sessions a week — cadence matters more than any single workout.</string>
     <string name="goal_details_tip_review_deadline">Revisit the target date — either extend it or close the goal and start a fresh one.</string>
-    <string name="goal_details_tip_stay_course">You\'re on pattern. Keep doing what\'s been working.</string>
 
     <!-- Calculation breakdown section -->
     <string name="goal_details_breakdown_title">Why this score</string>

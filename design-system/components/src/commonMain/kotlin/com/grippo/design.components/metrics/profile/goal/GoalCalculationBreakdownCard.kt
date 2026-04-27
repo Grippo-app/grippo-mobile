@@ -55,7 +55,10 @@ public fun GoalCalculationBreakdownCard(
         )
 
         if (value.findings.isNotEmpty()) {
-            SectionDivider(modifier = Modifier.fillMaxWidth())
+            SectionDivider(
+                modifier = Modifier.fillMaxWidth()
+            )
+
             GoalFitDiagnosticBlock(
                 findings = value.findings,
                 modifier = Modifier.fillMaxWidth(),
