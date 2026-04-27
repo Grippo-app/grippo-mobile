@@ -14,6 +14,8 @@ import com.grippo.design.resources.provider.icons.ChatAlt
 import com.grippo.design.resources.provider.icons.Filter
 import com.grippo.design.resources.provider.more
 import com.grippo.design.resources.provider.settings
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public sealed class SettingsMenu : PickerMenuItem {
@@ -64,7 +66,7 @@ public sealed class SettingsMenu : PickerMenuItem {
     }
 
     public companion object {
-        public val entries: List<SettingsMenu> = listOf(Settings, Social, Debug)
+        public val entries: ImmutableList<SettingsMenu> = persistentListOf(Settings, Social, Debug)
 
         public fun title(): UiText = UiText.Res(Res.string.more)
     }

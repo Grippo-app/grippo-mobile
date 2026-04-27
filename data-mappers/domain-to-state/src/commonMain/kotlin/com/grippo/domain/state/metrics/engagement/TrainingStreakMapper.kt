@@ -2,6 +2,7 @@ package com.grippo.domain.state.metrics.engagement
 
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.toolkit.date.utils.DateRange
+import kotlinx.collections.immutable.toPersistentList
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState as StateTrainingStreakFeatured
 import com.grippo.core.state.metrics.engagement.TrainingStreakKind as StateTrainingStreakKind
 import com.grippo.core.state.metrics.engagement.TrainingStreakMood as StateTrainingStreakMood
@@ -17,7 +18,9 @@ public fun DomainTrainingStreak.toState(): StateTrainingStreak {
     return StateTrainingStreak(
         totalActiveDays = totalActiveDays,
         featured = featured.toState(),
-        timeline = timeline.map(DomainTrainingStreakProgress::toState),
+        timeline = timeline
+            .map(DomainTrainingStreakProgress::toState)
+            .toPersistentList(),
         kind = kind.toState(),
         score = score,
         historyDays = historyDays,
@@ -55,7 +58,7 @@ private fun DomainTrainingStreakFeatured.toState(): StateTrainingStreakFeatured 
             length = length,
             targetSessionsPerPeriod = targetSessionsPerPeriod,
             periodLengthDays = periodLengthDays,
-            mask = mask,
+            mask = mask.toPersistentList(),
             mood = mood.toState(),
             progressPercent = progressPercent,
             confidence = confidence,

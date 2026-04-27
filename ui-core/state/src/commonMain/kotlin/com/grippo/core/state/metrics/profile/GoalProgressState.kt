@@ -24,6 +24,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public data class GoalProgressState(
@@ -204,7 +205,7 @@ public fun stubGoalProgress(
     )
 }
 
-public fun stubGoalProgressList(): List<GoalProgressState> {
+public fun stubGoalProgressList(): ImmutableList<GoalProgressState> {
     val exercises = stubTopExercises()
     val muscles = stubTopMuscles()
     val muscleGroups = stubTopMuscleGroups()
@@ -245,7 +246,7 @@ public fun stubGoalProgressList(): List<GoalProgressState> {
             topMuscleGroups = muscleGroups,
             findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.GET_STRONGER),
         )
-    }
+    }.toPersistentList()
 }
 
 /** Internal holder used only by stub builders. */

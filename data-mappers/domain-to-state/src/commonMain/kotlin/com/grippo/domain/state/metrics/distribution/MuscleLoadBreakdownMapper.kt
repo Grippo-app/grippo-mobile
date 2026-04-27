@@ -8,7 +8,8 @@ import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadBreakd
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadEntry as DomainMuscleLoadEntry
 
 public fun DomainMuscleLoadBreakdown.toState(): StateMuscleLoadBreakdown {
-    val entries = entries.map(DomainMuscleLoadEntry::toState)
+    val entries = entries
+        .map(DomainMuscleLoadEntry::toState).toPersistentList()
     return StateMuscleLoadBreakdown(entries = entries)
 }
 
@@ -24,6 +25,6 @@ private fun DomainMuscleLoadEntry.toState(): StateMuscleLoadEntry {
         maxStimulusInOneSession = maxStimulusInOneSession,
         avgVolumePerHitSession = avgVolumePerHitSession,
         maxVolumeInOneSession = maxVolumeInOneSession,
-        topExampleIds = topExampleIds,
+        topExampleIds = topExampleIds.toPersistentList(),
     )
 }

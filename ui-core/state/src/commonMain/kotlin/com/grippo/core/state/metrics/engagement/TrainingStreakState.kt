@@ -3,20 +3,22 @@ package com.grippo.core.state.metrics.engagement
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.toolkit.date.utils.DateRangeKind
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class TrainingStreakState(
     val totalActiveDays: Int,
     val featured: TrainingStreakFeaturedState,
-    val timeline: List<TrainingStreakProgressState>,
+    val timeline: ImmutableList<TrainingStreakProgressState>,
     val kind: TrainingStreakKind,
     val score: Float,
     val historyDays: Int,
     val lastTrainingGapDays: Int,
 )
 
-public fun stubTrainingStreaks(): List<TrainingStreakState> {
-    return listOf(
+public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
+    return persistentListOf(
         TrainingStreakState(
             totalActiveDays = 9,
             featured = TrainingStreakFeaturedState.Daily(
@@ -25,7 +27,7 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                 progressPercent = 60,
                 confidence = 0.8f,
             ),
-            timeline = listOf(
+            timeline = persistentListOf(
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 1,
@@ -59,7 +61,7 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                 progressPercent = 40,
                 confidence = 0.7f,
             ),
-            timeline = listOf(
+            timeline = persistentListOf(
                 TrainingStreakProgressState(
                     progressPercent = 75,
                     achievedSessions = 3,
@@ -94,7 +96,7 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                 progressPercent = 80,
                 confidence = 0.9f,
             ),
-            timeline = listOf(
+            timeline = persistentListOf(
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 2,

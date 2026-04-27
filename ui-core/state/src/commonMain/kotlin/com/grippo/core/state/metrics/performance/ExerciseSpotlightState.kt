@@ -25,6 +25,7 @@ import com.grippo.design.resources.provider.spotlight_progress_win_action
 import com.grippo.design.resources.provider.spotlight_progress_win_context
 import com.grippo.design.resources.provider.spotlight_progress_win_metric
 import com.grippo.design.resources.provider.spotlight_progress_win_title
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.max
 
 @Immutable
@@ -104,22 +105,25 @@ public data class ExerciseSpotlightState(
         return when (val value = details) {
             is Details.ProgressWin -> UiText.Res(
                 Res.string.spotlight_progress_win_metric,
-                listOf(value.improvementPercent, value.comparedSessions),
+                persistentListOf(value.improvementPercent, value.comparedSessions),
             )
 
             is Details.NeedsAttention -> UiText.Res(
                 Res.string.spotlight_needs_attention_metric,
-                listOf(value.currentGapDays),
+                persistentListOf(value.currentGapDays),
             )
 
             is Details.GoodFrequency -> UiText.Res(
                 Res.string.spotlight_good_frequency_metric,
-                listOf(decimalText(value.avgWeeklyFrequency), windowWeeks(value.recentWindowDays)),
+                persistentListOf(
+                    decimalText(value.avgWeeklyFrequency),
+                    windowWeeks(value.recentWindowDays)
+                ),
             )
 
             is Details.NearBest -> UiText.Res(
                 Res.string.spotlight_near_best_metric,
-                listOf(value.gapPercent),
+                persistentListOf(value.gapPercent),
             )
         }
     }
@@ -128,7 +132,7 @@ public data class ExerciseSpotlightState(
         return when (val value = details) {
             is Details.ProgressWin -> UiText.Res(
                 Res.string.spotlight_progress_win_context,
-                listOf(
+                persistentListOf(
                     volumeText(value.latestSessionVolume),
                     volumeText(value.baselineVolumeMedian),
                 ),
@@ -136,12 +140,12 @@ public data class ExerciseSpotlightState(
 
             is Details.NeedsAttention -> UiText.Res(
                 Res.string.spotlight_needs_attention_context,
-                listOf(value.typicalGapDays, value.triggerGapDays),
+                persistentListOf(value.typicalGapDays, value.triggerGapDays),
             )
 
             is Details.GoodFrequency -> UiText.Res(
                 Res.string.spotlight_good_frequency_context,
-                listOf(
+                persistentListOf(
                     value.activeWeeks,
                     windowWeeks(value.recentWindowDays),
                     value.appearancesInWindow,
@@ -150,7 +154,7 @@ public data class ExerciseSpotlightState(
 
             is Details.NearBest -> UiText.Res(
                 Res.string.spotlight_near_best_context,
-                listOf(
+                persistentListOf(
                     volumeText(value.latestSessionVolume),
                     volumeText(value.bestSessionVolume),
                 ),

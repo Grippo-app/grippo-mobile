@@ -14,6 +14,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_muscle_focus
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 public fun MuscleLoadingCard(
@@ -31,10 +32,19 @@ public fun MuscleLoadingCard(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        val clippedData = remember(summary) {
+
+        val clippedData: MuscleLoadSummaryState = remember(summary) {
             summary.copy(
-                perMuscle = summary.perMuscle.copy(entries = summary.perMuscle.entries.take(4)),
-                perGroup = summary.perGroup.copy(entries = summary.perGroup.entries.take(4)),
+                perMuscle = summary.perMuscle.copy(
+                    entries = summary.perMuscle.entries
+                        .take(4)
+                        .toPersistentList()
+                ),
+                perGroup = summary.perGroup.copy(
+                    entries = summary.perGroup.entries
+                        .take(4)
+                        .toPersistentList()
+                ),
             )
         }
 

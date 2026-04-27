@@ -247,8 +247,8 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
 
 private fun TrainingState.toPreviewTrainingListValues(
     position: TrainingPosition,
-): List<TimelineState> {
-    if (exercises.isEmpty()) return emptyList()
+): ImmutableList<TimelineState> {
+    if (exercises.isEmpty()) return persistentListOf()
     val result = mutableListOf<TimelineState>()
     when (exercises.size) {
         1 -> {
@@ -324,5 +324,5 @@ private fun TrainingState.toPreviewTrainingListValues(
         }
     }
 
-    return result
+    return result.toPersistentList()
 }

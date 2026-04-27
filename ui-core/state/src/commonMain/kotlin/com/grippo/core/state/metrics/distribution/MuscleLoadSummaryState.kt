@@ -300,7 +300,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
             dominantGroup = MuscleGroupEnumState.entries.random(),
         ),
         perGroup = MuscleLoadBreakdownState(
-            entries = listOf(
+            entries = persistentListOf(
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.CHEST_MUSCLES,
                     value = 42f,
@@ -314,7 +314,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 42.3f,
                     avgVolumePerHitSession = 920f,
                     maxVolumeInOneSession = 1580f,
-                    topExampleIds = listOf("bench_press", "incline_bench_press"),
+                    topExampleIds = persistentListOf("bench_press", "incline_bench_press"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.BACK_MUSCLES,
@@ -326,7 +326,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 33.4f,
                     avgVolumePerHitSession = 860f,
                     maxVolumeInOneSession = 1320f,
-                    topExampleIds = listOf("pull_up"),
+                    topExampleIds = persistentListOf("pull_up"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.ARMS_AND_FOREARMS,
@@ -338,7 +338,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 22.0f,
                     avgVolumePerHitSession = 540f,
                     maxVolumeInOneSession = 900f,
-                    topExampleIds = listOf("cable_curl"),
+                    topExampleIds = persistentListOf("cable_curl"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.LEGS,
@@ -353,12 +353,12 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 19.8f,
                     avgVolumePerHitSession = 1100f,
                     maxVolumeInOneSession = 1750f,
-                    topExampleIds = listOf("squat"),
+                    topExampleIds = persistentListOf("squat"),
                 )
             )
         ),
         perMuscle = MuscleLoadBreakdownState(
-            entries = listOf(
+            entries = persistentListOf(
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.CHEST_MUSCLES,
                     value = 52f,
@@ -369,7 +369,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 44.1f,
                     avgVolumePerHitSession = 510f,
                     maxVolumeInOneSession = 780f,
-                    topExampleIds = listOf("incline_bench_press"),
+                    topExampleIds = persistentListOf("incline_bench_press"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.BACK_MUSCLES,
@@ -381,7 +381,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 31.7f,
                     avgVolumePerHitSession = 480f,
                     maxVolumeInOneSession = 720f,
-                    topExampleIds = listOf("pull_up"),
+                    topExampleIds = persistentListOf("pull_up"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.ARMS_AND_FOREARMS,
@@ -393,7 +393,7 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 22.5f,
                     avgVolumePerHitSession = 260f,
                     maxVolumeInOneSession = 410f,
-                    topExampleIds = listOf("cable_curl"),
+                    topExampleIds = persistentListOf("cable_curl"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.LEGS,
@@ -405,12 +405,12 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     maxStimulusInOneSession = 19.4f,
                     avgVolumePerHitSession = 610f,
                     maxVolumeInOneSession = 980f,
-                    topExampleIds = listOf("squat"),
+                    topExampleIds = persistentListOf("squat"),
                 ),
             )
         ),
-        volumePerGroup = MuscleLoadBreakdownState(entries = emptyList()),
-        volumePerMuscle = MuscleLoadBreakdownState(entries = emptyList()),
+        volumePerGroup = MuscleLoadBreakdownState(entries = persistentListOf()),
+        volumePerMuscle = MuscleLoadBreakdownState(entries = persistentListOf()),
         dominance = MuscleLoadDominanceState(
             top1SharePercent = 52f,
             top2SharePercent = 74f,

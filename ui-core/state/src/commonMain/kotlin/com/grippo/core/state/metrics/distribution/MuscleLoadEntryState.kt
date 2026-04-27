@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class MuscleLoadEntryState(
@@ -16,5 +17,5 @@ public data class MuscleLoadEntryState(
     val maxStimulusInOneSession: Float = 0f,
     val avgVolumePerHitSession: Float = 0f,
     val maxVolumeInOneSession: Float = 0f,
-    val topExampleIds: List<String> = emptyList(),
+    val topExampleIds: ImmutableList<String> = persistentListOf(),
 )

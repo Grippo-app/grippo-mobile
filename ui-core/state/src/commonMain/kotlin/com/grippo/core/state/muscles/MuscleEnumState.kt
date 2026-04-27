@@ -26,6 +26,8 @@ import com.grippo.design.resources.provider.muscle_teres_major
 import com.grippo.design.resources.provider.muscle_trapezius
 import com.grippo.design.resources.provider.muscle_triceps
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public enum class MuscleEnumState {
@@ -100,7 +102,7 @@ public enum class MuscleEnumState {
     }
 
     public companion object {
-        public fun front(): List<MuscleEnumState> = listOf(
+        public fun front(): ImmutableList<MuscleEnumState> = persistentListOf(
             PECTORALIS_MAJOR_CLAVICULAR,
             PECTORALIS_MAJOR_STERNOCOSTAL,
             PECTORALIS_MAJOR_ABDOMINAL,
@@ -113,7 +115,7 @@ public enum class MuscleEnumState {
             FOREARM
         )
 
-        public fun back(): List<MuscleEnumState> = listOf(
+        public fun back(): ImmutableList<MuscleEnumState> = persistentListOf(
             TRAPEZIUS,
             LATISSIMUS_DORSI,
             RHOMBOIDS,

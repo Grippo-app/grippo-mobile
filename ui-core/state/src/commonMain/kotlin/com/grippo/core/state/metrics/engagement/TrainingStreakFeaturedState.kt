@@ -1,6 +1,7 @@
 package com.grippo.core.state.metrics.engagement
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 public sealed interface TrainingStreakFeaturedState {
@@ -51,7 +52,7 @@ public sealed interface TrainingStreakFeaturedState {
         override val length: Int,
         override val targetSessionsPerPeriod: Int,
         override val periodLengthDays: Int,
-        val mask: List<Boolean>,
+        val mask: ImmutableList<Boolean>,
         override val mood: TrainingStreakMood,
         override val progressPercent: Int,
         override val confidence: Float,

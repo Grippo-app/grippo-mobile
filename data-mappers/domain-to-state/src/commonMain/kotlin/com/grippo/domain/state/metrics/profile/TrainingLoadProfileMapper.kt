@@ -16,7 +16,9 @@ public fun DomainTrainingLoadProfile?.toState(): StateTrainingLoadProfile? {
     val value = this ?: return null
     return StateTrainingLoadProfile(
         kind = value.kind.toState(),
-        dimensions = value.dimensions.map(DomainTrainingDimensionScore::toState),
+        dimensions = value.dimensions
+            .map(DomainTrainingDimensionScore::toState)
+            .toPersistentList(),
         dominant = value.dominant?.toState(),
         confidence = value.confidence,
         artifacts = value.artifacts.toState(),

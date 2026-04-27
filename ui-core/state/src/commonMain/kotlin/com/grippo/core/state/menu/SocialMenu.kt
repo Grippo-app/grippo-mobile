@@ -16,16 +16,19 @@ import com.grippo.design.resources.provider.instagram
 import com.grippo.design.resources.provider.threads
 import com.grippo.design.resources.provider.tiktok
 import com.grippo.design.resources.provider.youtube
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public sealed class SocialMenu : PickerMenuItem {
 
-    public abstract val urls: List<String>
+    public abstract val urls: ImmutableList<String>
 
     public data object Instagram : SocialMenu() {
         override val id: String get() = "instagram"
 
-        override val urls: List<String> = listOf("https://www.instagram.com/grippo.app/")
+        override val urls: ImmutableList<String> =
+            persistentListOf("https://www.instagram.com/grippo.app/")
 
         override fun text(): UiText = UiText.Res(Res.string.instagram)
 
@@ -42,7 +45,8 @@ public sealed class SocialMenu : PickerMenuItem {
     public data object TikTok : SocialMenu() {
         override val id: String get() = "tiktok"
 
-        override val urls: List<String> = listOf("https://www.tiktok.com/@grippoapp")
+        override val urls: ImmutableList<String> =
+            persistentListOf("https://www.tiktok.com/@grippoapp")
 
         override fun text(): UiText = UiText.Res(Res.string.tiktok)
 
@@ -59,7 +63,8 @@ public sealed class SocialMenu : PickerMenuItem {
     public data object YouTube : SocialMenu() {
         override val id: String get() = "youtube"
 
-        override val urls: List<String> = listOf("https://www.youtube.com/@GrippoApp")
+        override val urls: ImmutableList<String> =
+            persistentListOf("https://www.youtube.com/@GrippoApp")
 
         override fun text(): UiText = UiText.Res(Res.string.youtube)
 
@@ -76,7 +81,8 @@ public sealed class SocialMenu : PickerMenuItem {
     public data object Threads : SocialMenu() {
         override val id: String get() = "threads"
 
-        override val urls: List<String> = listOf("https://www.threads.com/@grippo.app")
+        override val urls: ImmutableList<String> =
+            persistentListOf("https://www.threads.com/@grippo.app")
 
         override fun text(): UiText = UiText.Res(Res.string.threads)
 
@@ -91,7 +97,8 @@ public sealed class SocialMenu : PickerMenuItem {
     }
 
     public companion object {
-        public val entries: List<SocialMenu> = listOf(Instagram, TikTok, YouTube, Threads)
+        public val entries: ImmutableList<SocialMenu> =
+            persistentListOf(Instagram, TikTok, YouTube, Threads)
 
         public fun title(): UiText = UiText.Res(Res.string.follow_us)
     }

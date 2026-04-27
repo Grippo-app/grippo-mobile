@@ -27,10 +27,11 @@ public data class ExerciseExampleState(
 ) {
     @Composable
     public fun hint(): String? {
-        val equipmentTypes: List<EquipmentEnumState> = remember(equipments) {
+        val equipmentTypes: ImmutableList<EquipmentEnumState> = remember(equipments) {
             equipments
                 .map { it.type }
                 .distinct()
+                .toPersistentList()
         }
 
         if (equipmentTypes.isEmpty()) {
@@ -76,18 +77,21 @@ public data class ExerciseExampleState(
         val hasPrimaryWeightSource =
             equipmentTypes.any { it !in attachmentTypes && it !in placeTypes }
 
-        val orderedBaseCables: List<EquipmentEnumState> = equipmentTypes
+        val orderedBaseCables: ImmutableList<EquipmentEnumState> = equipmentTypes
             .filter { it in baseCableTypes }
             .filterNot { it == EquipmentEnumState.CABLE && hasCrossover }
+            .toPersistentList()
 
-        val orderedAttachments: List<EquipmentEnumState> = equipmentTypes
+        val orderedAttachments: ImmutableList<EquipmentEnumState> = equipmentTypes
             .filter { it in attachmentTypes }
+            .toPersistentList()
 
-        val orderedRest: List<EquipmentEnumState> = equipmentTypes
+        val orderedRest: ImmutableList<EquipmentEnumState> = equipmentTypes
             .filter { it !in baseCableTypes && it !in attachmentTypes }
             .filterNot { it == EquipmentEnumState.BARBELL && hasRack }
+            .toPersistentList()
 
-        val finalOrderedTypes: List<EquipmentEnumState> = buildList {
+        val finalOrderedTypes: ImmutableList<EquipmentEnumState> = buildList {
             if (orderedBaseCables.isNotEmpty()) {
                 addAll(orderedBaseCables)
                 addAll(orderedAttachments)
@@ -96,7 +100,7 @@ public data class ExerciseExampleState(
                 addAll(orderedRest)
                 addAll(orderedAttachments)
             }
-        }
+        }.toPersistentList()
 
         val orderedLines = LinkedHashSet<String>()
 

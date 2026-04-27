@@ -5,12 +5,17 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.providers.StringProvider
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
 
 @Stable
 public sealed interface UiText {
     @Immutable
-    public data class Res(val value: StringResource, val formatArgs: List<Any> = emptyList()) :
+    public data class Res(
+        val value: StringResource,
+        val formatArgs: ImmutableList<Any> = persistentListOf()
+    ) :
         UiText
 
     @Immutable

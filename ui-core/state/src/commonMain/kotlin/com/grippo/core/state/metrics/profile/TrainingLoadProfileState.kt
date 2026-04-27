@@ -4,12 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.muscles.MuscleEnumState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class TrainingLoadProfileState(
     val kind: TrainingProfileKindState,
-    val dimensions: List<TrainingDimensionScoreState>,
+    val dimensions: ImmutableList<TrainingDimensionScoreState>,
     val dominant: TrainingDimensionKindState?,
     val confidence: Int,
     val artifacts: TrainingLoadProfileArtifactsState = TrainingLoadProfileArtifactsState.empty(),
@@ -31,7 +32,7 @@ public data class TrainingLoadProfileState(
 public fun stubTrainingLoadProfile(): TrainingLoadProfileState {
     return TrainingLoadProfileState(
         kind = TrainingProfileKindState.Powerbuilding,
-        dimensions = listOf(
+        dimensions = persistentListOf(
             TrainingDimensionScoreState(
                 kind = TrainingDimensionKindState.Strength,
                 score = 78

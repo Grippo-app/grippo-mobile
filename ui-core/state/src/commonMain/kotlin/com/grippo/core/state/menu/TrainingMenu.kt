@@ -14,6 +14,8 @@ import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Edit
 import com.grippo.design.resources.provider.icons.EyeOn
 import com.grippo.design.resources.provider.selected
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public sealed class TrainingMenu : PickerMenuItem {
@@ -64,7 +66,7 @@ public sealed class TrainingMenu : PickerMenuItem {
     }
 
     public companion object {
-        public val entries: List<TrainingMenu> = listOf(Details, Edit, Delete)
+        public val entries: ImmutableList<TrainingMenu> = persistentListOf(Details, Edit, Delete)
 
         public fun title(): UiText = UiText.Res(Res.string.selected)
     }

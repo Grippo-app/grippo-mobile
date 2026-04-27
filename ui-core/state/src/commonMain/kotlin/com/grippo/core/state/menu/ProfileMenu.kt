@@ -18,6 +18,8 @@ import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import com.grippo.design.resources.provider.weight_and_height
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public sealed class ProfileMenu : PickerMenuItem {
@@ -97,7 +99,8 @@ public sealed class ProfileMenu : PickerMenuItem {
     }
 
     public companion object {
-        public val entries: List<ProfileMenu> = listOf(Body, Experience, Muscles, Equipment, Goal)
+        public val entries: ImmutableList<ProfileMenu> =
+            persistentListOf(Body, Experience, Muscles, Equipment, Goal)
 
         public fun title(): UiText = UiText.Res(Res.string.profile)
     }
