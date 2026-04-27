@@ -31,11 +31,6 @@ internal data class TrainingsState(
     val limitations: DateRange = DateTimeUtils.trailingYear(),
 )
 
-/**
- * Each period owns the data it needs to render — Daily carries its flat timeline items,
- * Monthly carries its pre-built calendar (cells, digest, labels). This makes invalid
- * combinations (e.g. "Daily mode with monthly calendar data") unrepresentable.
- */
 @Immutable
 internal sealed interface TrainingsTimelinePeriod {
     val id: String
@@ -64,11 +59,6 @@ internal sealed interface TrainingsTimelinePeriod {
         }
     }
 
-    /**
-     * Monthly period state — contains everything the monthly view needs to render,
-     * pre-computed by the ViewModel. All dates are exposed as [DateFormatState];
-     * raw LocalDate/LocalDateTime intentionally do not leak out of the state.
-     */
     @Immutable
     data class Monthly(
         val monthReference: DateFormatState = defaultMonthReference(),

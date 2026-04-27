@@ -48,6 +48,7 @@ public class TrainingGoalDetailsViewModel(
 
     private suspend fun provideProgress(trainings: List<Training>) {
         val adherence = goalFollowingUseCase.fromTrainingsByPrimary(trainings)
+
         if (adherence == null) {
             update {
                 it.copy(
@@ -65,8 +66,11 @@ public class TrainingGoalDetailsViewModel(
         }
 
         val progress = adherence.toState()
+
         val insights = buildInsights(progress)
+
         val tips = buildTips(progress)
+
         update {
             it.copy(
                 progress = progress,
@@ -76,11 +80,6 @@ public class TrainingGoalDetailsViewModel(
         }
     }
 
-    /**
-     * Build the list of diagnostic insights to explain *why* the score is
-     * what it is. Order: score-level summary → focus / balance
-     * observations → timeline notes. We cap to a readable length.
-     */
     private fun buildInsights(progress: GoalProgressState): ImmutableList<InsightItem> {
         val items = mutableListOf<InsightItem>()
         val score = progress.score.coerceIn(0, 100)
@@ -213,10 +212,6 @@ public class TrainingGoalDetailsViewModel(
         }
     }
 
-    /**
-     * Build tip recommendations. We pick at most ~3 actionable tips so
-     * the user isn't overwhelmed.
-     */
     private fun buildTips(progress: GoalProgressState): ImmutableList<TipCode> {
         val tips = mutableListOf<TipCode>()
         val score = progress.score.coerceIn(0, 100)

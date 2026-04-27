@@ -117,6 +117,7 @@ internal class ProfileGoalViewModel(
             } else {
                 selected.add(item)
             }
+
             current.copy(selectedPersonalization = selected.toPersistentSet())
         }
     }
