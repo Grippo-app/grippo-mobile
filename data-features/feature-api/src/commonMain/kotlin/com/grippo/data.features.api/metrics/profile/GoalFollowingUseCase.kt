@@ -1012,12 +1012,12 @@ public class GoalFollowingUseCase(
             warnMin = HYPERTROPHY_REP_RANGE_WARN_MIN,
         )
 
-        PRIMARY_GROUPS.forEach { group ->
+        MuscleGroupEnum.entries.forEach { group ->
             val sets = ctx.setsPerWeekPerGroup[group] ?: 0f
             findings += primaryGroupSetsFinding(actual = sets, context = listOf(group.name))
         }
 
-        PRIMARY_GROUPS.forEach { group ->
+        MuscleGroupEnum.entries.forEach { group ->
             val freq = ctx.sessionsPerWeekPerGroup[group] ?: 0f
             findings += atLeastFinding(
                 rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
