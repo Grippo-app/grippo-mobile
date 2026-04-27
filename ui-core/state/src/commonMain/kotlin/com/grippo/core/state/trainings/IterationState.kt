@@ -24,7 +24,7 @@ public data class IterationState(
 ) {
     @Composable
     public fun volume(): VolumeFormatState {
-        return remember(externalWeight, extraWeight, bodyWeight, assistWeight) {
+        return remember(externalWeight, extraWeight, bodyWeight, assistWeight, bodyMultiplier) {
             val external = (externalWeight.value ?: 0f)
             val extra = (extraWeight.value ?: 0f)
             val body = (bodyWeight.value ?: 0f)

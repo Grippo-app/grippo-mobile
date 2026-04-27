@@ -101,8 +101,13 @@ public enum class MuscleEnumState {
         }
     }
 
+    public fun title(): UiText = TITLES.getValue(this)
+
     public companion object {
-        public fun front(): ImmutableList<MuscleEnumState> = persistentListOf(
+        public fun front(): ImmutableList<MuscleEnumState> = FRONT
+        public fun back(): ImmutableList<MuscleEnumState> = BACK
+
+        private val FRONT: ImmutableList<MuscleEnumState> = persistentListOf(
             PECTORALIS_MAJOR_CLAVICULAR,
             PECTORALIS_MAJOR_STERNOCOSTAL,
             PECTORALIS_MAJOR_ABDOMINAL,
@@ -115,7 +120,7 @@ public enum class MuscleEnumState {
             FOREARM
         )
 
-        public fun back(): ImmutableList<MuscleEnumState> = persistentListOf(
+        private val BACK: ImmutableList<MuscleEnumState> = persistentListOf(
             TRAPEZIUS,
             LATISSIMUS_DORSI,
             RHOMBOIDS,
@@ -129,32 +134,33 @@ public enum class MuscleEnumState {
             TRICEPS,
             FOREARM
         )
-    }
 
-    public fun title(): UiText {
-        val r = when (this) {
-            PECTORALIS_MAJOR_CLAVICULAR -> Res.string.muscle_pectoralis_major_clavicular
-            PECTORALIS_MAJOR_STERNOCOSTAL -> Res.string.muscle_pectoralis_major_sternocostal
-            PECTORALIS_MAJOR_ABDOMINAL -> Res.string.muscle_pectoralis_major_abdominal
-            TRAPEZIUS -> Res.string.muscle_trapezius
-            LATISSIMUS_DORSI -> Res.string.muscle_latissimus_dorsi
-            RHOMBOIDS -> Res.string.muscle_rhomboids
-            TERES_MAJOR -> Res.string.muscle_teres_major
-            RECTUS_ABDOMINIS -> Res.string.muscle_rectus_abdominis
-            OBLIQUES -> Res.string.muscle_obliques
-            CALF -> Res.string.muscle_calf
-            GLUTEAL -> Res.string.muscle_gluteal
-            HAMSTRINGS -> Res.string.muscle_hamstrings
-            QUADRICEPS -> Res.string.muscle_quadriceps
-            ADDUCTORS -> Res.string.muscle_adductors
-            ABDUCTORS -> Res.string.muscle_abductors
-            ANTERIOR_DELTOID -> Res.string.muscle_anterior_deltoid
-            LATERAL_DELTOID -> Res.string.muscle_lateral_deltoid
-            POSTERIOR_DELTOID -> Res.string.muscle_posterior_deltoid
-            BICEPS -> Res.string.muscle_biceps
-            TRICEPS -> Res.string.muscle_triceps
-            FOREARM -> Res.string.muscle_forearm
+        private val TITLES: Map<MuscleEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    PECTORALIS_MAJOR_CLAVICULAR -> Res.string.muscle_pectoralis_major_clavicular
+                    PECTORALIS_MAJOR_STERNOCOSTAL -> Res.string.muscle_pectoralis_major_sternocostal
+                    PECTORALIS_MAJOR_ABDOMINAL -> Res.string.muscle_pectoralis_major_abdominal
+                    TRAPEZIUS -> Res.string.muscle_trapezius
+                    LATISSIMUS_DORSI -> Res.string.muscle_latissimus_dorsi
+                    RHOMBOIDS -> Res.string.muscle_rhomboids
+                    TERES_MAJOR -> Res.string.muscle_teres_major
+                    RECTUS_ABDOMINIS -> Res.string.muscle_rectus_abdominis
+                    OBLIQUES -> Res.string.muscle_obliques
+                    CALF -> Res.string.muscle_calf
+                    GLUTEAL -> Res.string.muscle_gluteal
+                    HAMSTRINGS -> Res.string.muscle_hamstrings
+                    QUADRICEPS -> Res.string.muscle_quadriceps
+                    ADDUCTORS -> Res.string.muscle_adductors
+                    ABDUCTORS -> Res.string.muscle_abductors
+                    ANTERIOR_DELTOID -> Res.string.muscle_anterior_deltoid
+                    LATERAL_DELTOID -> Res.string.muscle_lateral_deltoid
+                    POSTERIOR_DELTOID -> Res.string.muscle_posterior_deltoid
+                    BICEPS -> Res.string.muscle_biceps
+                    TRICEPS -> Res.string.muscle_triceps
+                    FOREARM -> Res.string.muscle_forearm
+                }
+            )
         }
-        return UiText.Res(r)
     }
 }

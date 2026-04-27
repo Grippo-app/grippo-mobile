@@ -1,6 +1,5 @@
 package com.grippo.core.state.equipments
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.resources.provider.equipment.AbMachine
@@ -57,54 +56,63 @@ public data class EquipmentState(
     val type: EquipmentEnumState,
 ) {
 
-    @Composable
-    public fun image(): ImageVector {
-        return when (type) {
-            EquipmentEnumState.DUMBBELLS -> Dumbbell
-            EquipmentEnumState.ROPE -> Rope
-            EquipmentEnumState.CORD_HANDLES -> CordHandles
-            EquipmentEnumState.STRAIGHT_BAR -> StraightBar
-            EquipmentEnumState.BARBELL -> Barbell
-            EquipmentEnumState.EZ_BAR -> EzBar
-            EquipmentEnumState.V_BAR -> VBar
-            EquipmentEnumState.CLOSE_GRIP_HANDLE -> CloseGripHandle
-            EquipmentEnumState.WIDE_GRIP_HANDLE -> WideGripHandle
-            EquipmentEnumState.TRAP_BAR -> TrapBar
-            EquipmentEnumState.AB_MACHINES -> AbMachine
-            EquipmentEnumState.BUTTERFLY -> Butterfly
-            EquipmentEnumState.BUTTERFLY_REVERSE -> ButterflyReverse
-            EquipmentEnumState.LEG_EXTENSION_MACHINES -> LegExtensionMachine
-            EquipmentEnumState.LEG_CURL_MACHINES -> LegCurlMachine
-            EquipmentEnumState.CHEST_PRESS_MACHINES -> ChestPressMachines
-            EquipmentEnumState.BICEPS_MACHINES -> BicepsMachine
-            EquipmentEnumState.SMITH_MACHINES -> SmithMachine
-            EquipmentEnumState.HACK_SQUAT_MACHINES -> HackSquatMachines
-            EquipmentEnumState.DEADLIFT_MACHINES -> DeadliftMachines
-            EquipmentEnumState.SHOULDER_PRESS_MACHINES -> ShoulderPressMachines
-            EquipmentEnumState.LATERAL_RAISE_MACHINES -> LateralRaiseMachines
-            EquipmentEnumState.TRICEPS_MACHINES -> TricepsMachines
-            EquipmentEnumState.CALF_RAISE_MACHINES -> CalfRaiseMachines
-            EquipmentEnumState.GLUTE_MACHINES -> GluteMachines
-            EquipmentEnumState.LAT_PULLDOWN -> LatPulldown
-            EquipmentEnumState.CABLE -> Cable
-            EquipmentEnumState.CABLE_CROSSOVER -> Crossover
-            EquipmentEnumState.ROW_CABLE -> RowCable
-            EquipmentEnumState.PULL_UP_BAR -> PullUpBar
-            EquipmentEnumState.DIP_BARS -> DipBar
-            EquipmentEnumState.ROMAIN_CHAIR -> RomanChair
-            EquipmentEnumState.GLUTE_HAM_RAISE_BENCH -> GluteHamRaiseBench
-            EquipmentEnumState.FLAT_BENCH -> FlatBench
-            EquipmentEnumState.ADJUSTABLE_BENCH -> AdjustableBench
-            EquipmentEnumState.ADDUCTOR_MACHINE -> AdductorMachine
-            EquipmentEnumState.ABDUCTOR_MACHINE -> AbductorMachine
-            EquipmentEnumState.DECLINE_BENCH -> DeclineBench
-            EquipmentEnumState.FLAT_BENCH_WITH_RACK -> FlatBenchWithRack
-            EquipmentEnumState.INCLINE_BENCH_WITH_RACK -> InclineBenchWithRack
-            EquipmentEnumState.DECLINE_BENCH_WITH_RACK -> DeclineBenchWithRack
-            EquipmentEnumState.SQUAT_RACK -> SquatRack
-            EquipmentEnumState.PREACHER_CURL_BENCH -> PreacherCurlBench
-            EquipmentEnumState.ROW_BENCH -> RowBench
-            EquipmentEnumState.LEG_PRESS_MACHINE -> LegPressMachine
-        }
+    /**
+     * The icon backing each equipment type. Not @Composable — these are plain
+     * lazily-initialised top-level vals, not composition-aware. Lookup is O(1)
+     * via a precomputed map built once at class load.
+     */
+    public fun image(): ImageVector = IMAGES.getValue(type)
+
+    private companion object {
+        private val IMAGES: Map<EquipmentEnumState, ImageVector> =
+            EquipmentEnumState.entries.associateWith { type ->
+                when (type) {
+                    EquipmentEnumState.DUMBBELLS -> Dumbbell
+                    EquipmentEnumState.ROPE -> Rope
+                    EquipmentEnumState.CORD_HANDLES -> CordHandles
+                    EquipmentEnumState.STRAIGHT_BAR -> StraightBar
+                    EquipmentEnumState.BARBELL -> Barbell
+                    EquipmentEnumState.EZ_BAR -> EzBar
+                    EquipmentEnumState.V_BAR -> VBar
+                    EquipmentEnumState.CLOSE_GRIP_HANDLE -> CloseGripHandle
+                    EquipmentEnumState.WIDE_GRIP_HANDLE -> WideGripHandle
+                    EquipmentEnumState.TRAP_BAR -> TrapBar
+                    EquipmentEnumState.AB_MACHINES -> AbMachine
+                    EquipmentEnumState.BUTTERFLY -> Butterfly
+                    EquipmentEnumState.BUTTERFLY_REVERSE -> ButterflyReverse
+                    EquipmentEnumState.LEG_EXTENSION_MACHINES -> LegExtensionMachine
+                    EquipmentEnumState.LEG_CURL_MACHINES -> LegCurlMachine
+                    EquipmentEnumState.CHEST_PRESS_MACHINES -> ChestPressMachines
+                    EquipmentEnumState.BICEPS_MACHINES -> BicepsMachine
+                    EquipmentEnumState.SMITH_MACHINES -> SmithMachine
+                    EquipmentEnumState.HACK_SQUAT_MACHINES -> HackSquatMachines
+                    EquipmentEnumState.DEADLIFT_MACHINES -> DeadliftMachines
+                    EquipmentEnumState.SHOULDER_PRESS_MACHINES -> ShoulderPressMachines
+                    EquipmentEnumState.LATERAL_RAISE_MACHINES -> LateralRaiseMachines
+                    EquipmentEnumState.TRICEPS_MACHINES -> TricepsMachines
+                    EquipmentEnumState.CALF_RAISE_MACHINES -> CalfRaiseMachines
+                    EquipmentEnumState.GLUTE_MACHINES -> GluteMachines
+                    EquipmentEnumState.LAT_PULLDOWN -> LatPulldown
+                    EquipmentEnumState.CABLE -> Cable
+                    EquipmentEnumState.CABLE_CROSSOVER -> Crossover
+                    EquipmentEnumState.ROW_CABLE -> RowCable
+                    EquipmentEnumState.PULL_UP_BAR -> PullUpBar
+                    EquipmentEnumState.DIP_BARS -> DipBar
+                    EquipmentEnumState.ROMAIN_CHAIR -> RomanChair
+                    EquipmentEnumState.GLUTE_HAM_RAISE_BENCH -> GluteHamRaiseBench
+                    EquipmentEnumState.FLAT_BENCH -> FlatBench
+                    EquipmentEnumState.ADJUSTABLE_BENCH -> AdjustableBench
+                    EquipmentEnumState.ADDUCTOR_MACHINE -> AdductorMachine
+                    EquipmentEnumState.ABDUCTOR_MACHINE -> AbductorMachine
+                    EquipmentEnumState.DECLINE_BENCH -> DeclineBench
+                    EquipmentEnumState.FLAT_BENCH_WITH_RACK -> FlatBenchWithRack
+                    EquipmentEnumState.INCLINE_BENCH_WITH_RACK -> InclineBenchWithRack
+                    EquipmentEnumState.DECLINE_BENCH_WITH_RACK -> DeclineBenchWithRack
+                    EquipmentEnumState.SQUAT_RACK -> SquatRack
+                    EquipmentEnumState.PREACHER_CURL_BENCH -> PreacherCurlBench
+                    EquipmentEnumState.ROW_BENCH -> RowBench
+                    EquipmentEnumState.LEG_PRESS_MACHINE -> LegPressMachine
+                }
+            }
     }
 }

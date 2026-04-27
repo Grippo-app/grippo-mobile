@@ -18,14 +18,7 @@ public enum class WeightTypeEnumState {
     FIXED,
     BODY_WEIGHT;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            FREE -> Res.string.weight_type_free
-            FIXED -> Res.string.weight_type_fixed
-            BODY_WEIGHT -> Res.string.weight_type_body_weight
-        }
-        return UiText.Res(r)
-    }
+    public fun title(): UiText = TITLES.getValue(this)
 
     @Composable
     public fun color(): Color {
@@ -33,6 +26,18 @@ public enum class WeightTypeEnumState {
             FREE -> AppTokens.colors.example.weightType.free
             FIXED -> AppTokens.colors.example.weightType.fixed
             BODY_WEIGHT -> AppTokens.colors.example.weightType.bodyWeight
+        }
+    }
+
+    public companion object {
+        private val TITLES: Map<WeightTypeEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    FREE -> Res.string.weight_type_free
+                    FIXED -> Res.string.weight_type_fixed
+                    BODY_WEIGHT -> Res.string.weight_type_body_weight
+                }
+            )
         }
     }
 }

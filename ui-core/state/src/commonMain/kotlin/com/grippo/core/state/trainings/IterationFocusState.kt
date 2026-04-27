@@ -15,12 +15,17 @@ public enum class IterationFocusState {
     REPETITIONS,
     UNIDENTIFIED;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            VOLUME -> Res.string.iteration_focus_volume
-            REPETITIONS -> Res.string.iteration_focus_repetitions
-            UNIDENTIFIED -> Res.string.iteration_focus_unidentified
+    public fun title(): UiText = TITLES.getValue(this)
+
+    public companion object {
+        private val TITLES: Map<IterationFocusState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    VOLUME -> Res.string.iteration_focus_volume
+                    REPETITIONS -> Res.string.iteration_focus_repetitions
+                    UNIDENTIFIED -> Res.string.iteration_focus_unidentified
+                }
+            )
         }
-        return UiText.Res(r)
     }
 }

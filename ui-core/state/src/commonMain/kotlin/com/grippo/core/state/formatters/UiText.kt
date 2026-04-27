@@ -3,6 +3,7 @@ package com.grippo.core.state.formatters
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.providers.StringProvider
 import kotlinx.collections.immutable.ImmutableList
@@ -25,7 +26,10 @@ public sealed interface UiText {
     public fun text(): String {
         return when (this) {
             is Str -> value
-            is Res -> AppTokens.strings.res(value, *formatArgs.toTypedArray())
+            is Res -> {
+                val args = remember(formatArgs) { formatArgs.toTypedArray() }
+                AppTokens.strings.res(value, *args)
+            }
         }
     }
 

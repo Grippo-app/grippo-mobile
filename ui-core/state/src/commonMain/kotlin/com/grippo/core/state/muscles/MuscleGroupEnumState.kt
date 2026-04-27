@@ -19,15 +19,20 @@ public enum class MuscleGroupEnumState {
     ARMS_AND_FOREARMS,
     SHOULDER_MUSCLES;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            CHEST_MUSCLES -> Res.string.muscle_group_chest_muscles
-            BACK_MUSCLES -> Res.string.muscle_group_back_muscles
-            ABDOMINAL_MUSCLES -> Res.string.muscle_group_abdominal_muscles
-            LEGS -> Res.string.muscle_group_legs
-            ARMS_AND_FOREARMS -> Res.string.muscle_group_arms_and_forearms
-            SHOULDER_MUSCLES -> Res.string.muscle_group_shoulder_muscles
+    public fun title(): UiText = TITLES.getValue(this)
+
+    public companion object {
+        private val TITLES: Map<MuscleGroupEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    CHEST_MUSCLES -> Res.string.muscle_group_chest_muscles
+                    BACK_MUSCLES -> Res.string.muscle_group_back_muscles
+                    ABDOMINAL_MUSCLES -> Res.string.muscle_group_abdominal_muscles
+                    LEGS -> Res.string.muscle_group_legs
+                    ARMS_AND_FOREARMS -> Res.string.muscle_group_arms_and_forearms
+                    SHOULDER_MUSCLES -> Res.string.muscle_group_shoulder_muscles
+                }
+            )
         }
-        return UiText.Res(r)
     }
 }

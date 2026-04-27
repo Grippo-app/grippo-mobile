@@ -20,99 +20,121 @@ import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 @Immutable
-public sealed class AchievementState(
-    public val key: String,
-    public open val exerciseExampleId: String
-) {
+public sealed interface AchievementState {
+
+    public val key: String
+    public val exerciseExampleId: String
+
+    @Immutable
     public data class BestTonnage(
         override val exerciseExampleId: String,
         val exerciseId: String,
         val tonnage: VolumeFormatState
-    ) : AchievementState(
-        key = "best_tonnage",
-        exerciseExampleId = exerciseExampleId,
-    )
+    ) : AchievementState {
+        override val key: String get() = KEY
 
+        public companion object {
+            public const val KEY: String = "best_tonnage"
+        }
+    }
+
+    @Immutable
     public data class BestWeight(
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
         val weight: VolumeFormatState
-    ) : AchievementState(
-        key = "best_weight",
-        exerciseExampleId = exerciseExampleId,
-    )
+    ) : AchievementState {
+        override val key: String get() = KEY
 
+        public companion object {
+            public const val KEY: String = "best_weight"
+        }
+    }
+
+    @Immutable
     public data class LifetimeVolume(
         override val exerciseExampleId: String,
         val totalVolume: VolumeFormatState,
         val sessionsCount: Int
-    ) : AchievementState(
-        key = "lifetime_volume",
-        exerciseExampleId = exerciseExampleId,
-    )
+    ) : AchievementState {
+        override val key: String get() = KEY
 
+        public companion object {
+            public const val KEY: String = "lifetime_volume"
+        }
+    }
+
+    @Immutable
     public data class MaxRepetitions(
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
         val totalVolume: VolumeFormatState,
         val repetitions: RepetitionsFormatState
-    ) : AchievementState(
-        key = "max_repetitions",
-        exerciseExampleId = exerciseExampleId,
-    )
+    ) : AchievementState {
+        override val key: String get() = KEY
 
+        public companion object {
+            public const val KEY: String = "max_repetitions"
+        }
+    }
+
+    @Immutable
     public data class PeakIntensity(
         override val exerciseExampleId: String,
         val exerciseId: String,
         val intensity: IntensityFormatState,
-    ) : AchievementState(
-        key = "peak_intensity",
-        exerciseExampleId = exerciseExampleId,
-    )
+    ) : AchievementState {
+        override val key: String get() = KEY
 
-    public fun text(): UiText {
-        return when (this) {
-            is BestTonnage -> UiText.Res(Res.string.best_tonnage)
-            is BestWeight -> UiText.Res(Res.string.best_weight)
-            is LifetimeVolume -> UiText.Res(Res.string.lifetime_volume)
-            is MaxRepetitions -> UiText.Res(Res.string.max_repetitions)
-            is PeakIntensity -> UiText.Res(Res.string.peak_intensity)
+        public companion object {
+            public const val KEY: String = "peak_intensity"
         }
     }
 
-    @Composable
-    public fun color1(): Color {
-        return when (this) {
-            is BestTonnage -> AppTokens.colors.achievements.bestTonnage1
-            is BestWeight -> AppTokens.colors.achievements.bestWeight1
-            is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume1
-            is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions1
-            is PeakIntensity -> AppTokens.colors.achievements.peakIntensity1
-        }
+    public fun text(): UiText = when (this) {
+        is BestTonnage -> TEXT_BEST_TONNAGE
+        is BestWeight -> TEXT_BEST_WEIGHT
+        is LifetimeVolume -> TEXT_LIFETIME_VOLUME
+        is MaxRepetitions -> TEXT_MAX_REPETITIONS
+        is PeakIntensity -> TEXT_PEAK_INTENSITY
     }
 
     @Composable
-    public fun color2(): Color {
-        return when (this) {
-            is BestTonnage -> AppTokens.colors.achievements.bestTonnage2
-            is BestWeight -> AppTokens.colors.achievements.bestWeight2
-            is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume2
-            is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions2
-            is PeakIntensity -> AppTokens.colors.achievements.peakIntensity2
-        }
+    public fun color1(): Color = when (this) {
+        is BestTonnage -> AppTokens.colors.achievements.bestTonnage1
+        is BestWeight -> AppTokens.colors.achievements.bestWeight1
+        is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume1
+        is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions1
+        is PeakIntensity -> AppTokens.colors.achievements.peakIntensity1
     }
 
     @Composable
-    public fun value(): String {
-        return when (this) {
-            is BestTonnage -> this.tonnage.short()
-            is BestWeight -> this.weight.short()
-            is LifetimeVolume -> this.totalVolume.short()
-            is MaxRepetitions -> this.repetitions.short()
-            is PeakIntensity -> this.intensity.short()
-        }
+    public fun color2(): Color = when (this) {
+        is BestTonnage -> AppTokens.colors.achievements.bestTonnage2
+        is BestWeight -> AppTokens.colors.achievements.bestWeight2
+        is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume2
+        is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions2
+        is PeakIntensity -> AppTokens.colors.achievements.peakIntensity2
+    }
+
+    @Composable
+    public fun value(): String = when (this) {
+        is BestTonnage -> this.tonnage.short()
+        is BestWeight -> this.weight.short()
+        is LifetimeVolume -> this.totalVolume.short()
+        is MaxRepetitions -> this.repetitions.short()
+        is PeakIntensity -> this.intensity.short()
+    }
+
+    public companion object {
+        // Pre-allocated UiText.Res — one instance per kind, reused across recompositions.
+        private val TEXT_BEST_TONNAGE: UiText = UiText.Res(Res.string.best_tonnage)
+        private val TEXT_BEST_WEIGHT: UiText = UiText.Res(Res.string.best_weight)
+        private val TEXT_LIFETIME_VOLUME: UiText = UiText.Res(Res.string.lifetime_volume)
+        private val TEXT_MAX_REPETITIONS: UiText = UiText.Res(Res.string.max_repetitions)
+        private val TEXT_PEAK_INTENSITY: UiText = UiText.Res(Res.string.peak_intensity)
     }
 }
 

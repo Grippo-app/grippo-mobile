@@ -13,12 +13,17 @@ public enum class ResourceTypeEnumState {
     VIDEO,
     TEXT;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            YOUTUBE_VIDEO -> Res.string.resource_type_youtube_video
-            VIDEO -> Res.string.resource_type_video
-            TEXT -> Res.string.resource_type_text
+    public fun title(): UiText = TITLES.getValue(this)
+
+    public companion object {
+        private val TITLES: Map<ResourceTypeEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    YOUTUBE_VIDEO -> Res.string.resource_type_youtube_video
+                    VIDEO -> Res.string.resource_type_video
+                    TEXT -> Res.string.resource_type_text
+                }
+            )
         }
-        return UiText.Res(r)
     }
 }

@@ -18,15 +18,7 @@ public enum class ForceTypeEnumState {
     PUSH,
     HINGE;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            PULL -> Res.string.force_type_pull
-            PUSH -> Res.string.force_type_push
-            HINGE -> Res.string.force_type_hinge
-        }
-
-        return UiText.Res(r)
-    }
+    public fun title(): UiText = TITLES.getValue(this)
 
     @Composable
     public fun color(): Color {
@@ -34,6 +26,18 @@ public enum class ForceTypeEnumState {
             PULL -> AppTokens.colors.example.forceType.pull
             PUSH -> AppTokens.colors.example.forceType.push
             HINGE -> AppTokens.colors.example.forceType.hinge
+        }
+    }
+
+    public companion object {
+        private val TITLES: Map<ForceTypeEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    PULL -> Res.string.force_type_pull
+                    PUSH -> Res.string.force_type_push
+                    HINGE -> Res.string.force_type_hinge
+                }
+            )
         }
     }
 }

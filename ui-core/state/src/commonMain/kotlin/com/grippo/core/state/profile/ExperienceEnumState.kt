@@ -15,9 +15,9 @@ import com.grippo.design.resources.provider.experience_intermediate_description
 import com.grippo.design.resources.provider.experience_intermediate_title
 import com.grippo.design.resources.provider.experience_pro_description
 import com.grippo.design.resources.provider.experience_pro_title
-import com.grippo.design.resources.provider.icons.Intermediate
-import com.grippo.design.resources.provider.icons.Beginner
 import com.grippo.design.resources.provider.icons.Advanced
+import com.grippo.design.resources.provider.icons.Beginner
+import com.grippo.design.resources.provider.icons.Intermediate
 import com.grippo.design.resources.provider.icons.Pro
 
 @Immutable
@@ -27,23 +27,8 @@ public enum class ExperienceEnumState {
     ADVANCED,
     PRO;
 
-    public fun title(): UiText {
-        return when (this) {
-            BEGINNER -> UiText.Res(Res.string.experience_beginner_title)
-            INTERMEDIATE -> UiText.Res(Res.string.experience_intermediate_title)
-            ADVANCED -> UiText.Res(Res.string.experience_advanced_title)
-            PRO -> UiText.Res(Res.string.experience_pro_title)
-        }
-    }
-
-    public fun description(): UiText {
-        return when (this) {
-            BEGINNER -> UiText.Res(Res.string.experience_beginner_description)
-            INTERMEDIATE -> UiText.Res(Res.string.experience_intermediate_description)
-            ADVANCED -> UiText.Res(Res.string.experience_advanced_description)
-            PRO -> UiText.Res(Res.string.experience_pro_description)
-        }
-    }
+    public fun title(): UiText = TITLES.getValue(this)
+    public fun description(): UiText = DESCRIPTIONS.getValue(this)
 
     @Composable
     public fun color(): Color {
@@ -62,6 +47,29 @@ public enum class ExperienceEnumState {
             INTERMEDIATE -> AppTokens.icons.Intermediate
             ADVANCED -> AppTokens.icons.Advanced
             PRO -> AppTokens.icons.Pro
+        }
+    }
+
+    public companion object {
+        private val TITLES: Map<ExperienceEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    BEGINNER -> Res.string.experience_beginner_title
+                    INTERMEDIATE -> Res.string.experience_intermediate_title
+                    ADVANCED -> Res.string.experience_advanced_title
+                    PRO -> Res.string.experience_pro_title
+                }
+            )
+        }
+        private val DESCRIPTIONS: Map<ExperienceEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    BEGINNER -> Res.string.experience_beginner_description
+                    INTERMEDIATE -> Res.string.experience_intermediate_description
+                    ADVANCED -> Res.string.experience_advanced_description
+                    PRO -> Res.string.experience_pro_description
+                }
+            )
         }
     }
 }

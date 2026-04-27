@@ -2,6 +2,7 @@ package com.grippo.core.state.muscles
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
@@ -21,22 +22,26 @@ public data class MuscleGroupState<T : MuscleRepresentationState>(
         selectedMuscleIds: Set<String>,
     ): MuscleColorPreset {
         val colors = AppTokens.colors.muscle
-        val fallback = colors.inactive
-        val outline = colors.outline
-        val background = colors.background
+        // Cache the heavy build by content. Re-runs only on theme change
+        // (`colors` instance flips) or when selection / muscles change.
+        return remember(this, selectedMuscleIds, colors) {
+            val active = colors.active
+            val fallback = colors.inactive
+            val outline = colors.outline
+            val background = colors.background
 
-        val colorMap = muscles.associate { muscleState ->
-            val muscle = muscleState.value
-            val isSelected = muscle.id in selectedMuscleIds
-            val color = if (isSelected) colors.active else fallback
-            muscle.type to color
+            val colorMap = HashMap<MuscleEnumState, Color>(muscles.size)
+            muscles.forEach { muscleState ->
+                val muscle = muscleState.value
+                val color = if (muscle.id in selectedMuscleIds) active else fallback
+                colorMap[muscle.type] = color
+            }
+            colorMap.toMuscleColorPreset(
+                fallback = fallback,
+                outline = outline,
+                background = background,
+            )
         }
-
-        return colorMap.toMuscleColorPreset(
-            fallback = fallback,
-            outline = outline,
-            background = background
-        )
     }
 
     private fun Map<MuscleEnumState, Color>.toMuscleColorPreset(

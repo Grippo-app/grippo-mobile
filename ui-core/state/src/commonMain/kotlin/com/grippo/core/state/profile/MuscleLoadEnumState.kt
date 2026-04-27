@@ -13,12 +13,17 @@ public enum class MuscleLoadEnumState {
     MEDIUM,
     LOW;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            HIGH -> Res.string.muscle_load_high
-            MEDIUM -> Res.string.muscle_load_medium
-            LOW -> Res.string.muscle_load_low
+    public fun title(): UiText = TITLES.getValue(this)
+
+    public companion object {
+        private val TITLES: Map<MuscleLoadEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    HIGH -> Res.string.muscle_load_high
+                    MEDIUM -> Res.string.muscle_load_medium
+                    LOW -> Res.string.muscle_load_low
+                }
+            )
         }
-        return UiText.Res(r)
     }
 }

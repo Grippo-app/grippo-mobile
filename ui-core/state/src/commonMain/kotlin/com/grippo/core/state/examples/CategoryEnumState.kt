@@ -16,19 +16,24 @@ public enum class CategoryEnumState {
     COMPOUND,
     ISOLATION;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            COMPOUND -> Res.string.category_compound
-            ISOLATION -> Res.string.category_isolation
-        }
-        return UiText.Res(r)
-    }
+    public fun title(): UiText = TITLES.getValue(this)
 
     @Composable
     public fun color(): Color {
         return when (this) {
             COMPOUND -> AppTokens.colors.example.category.compound
             ISOLATION -> AppTokens.colors.example.category.isolation
+        }
+    }
+
+    public companion object {
+        private val TITLES: Map<CategoryEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    COMPOUND -> Res.string.category_compound
+                    ISOLATION -> Res.string.category_isolation
+                }
+            )
         }
     }
 }

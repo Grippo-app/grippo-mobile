@@ -17,14 +17,19 @@ public enum class EquipmentGroupEnumState {
     BODY_WEIGHT,
     BENCHES_AND_RACKS;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            FREE_WEIGHT -> Res.string.equipment_group_free_weight
-            MACHINES -> Res.string.equipment_group_machines
-            CABLE_MACHINES -> Res.string.equipment_group_cable_machines
-            BODY_WEIGHT -> Res.string.equipment_group_body_weight
-            BENCHES_AND_RACKS -> Res.string.equipment_group_benches_and_racks
+    public fun title(): UiText = TITLES.getValue(this)
+
+    public companion object {
+        private val TITLES: Map<EquipmentGroupEnumState, UiText> = entries.associateWith {
+            UiText.Res(
+                when (it) {
+                    FREE_WEIGHT -> Res.string.equipment_group_free_weight
+                    MACHINES -> Res.string.equipment_group_machines
+                    CABLE_MACHINES -> Res.string.equipment_group_cable_machines
+                    BODY_WEIGHT -> Res.string.equipment_group_body_weight
+                    BENCHES_AND_RACKS -> Res.string.equipment_group_benches_and_racks
+                }
+            )
         }
-        return UiText.Res(r)
     }
 }

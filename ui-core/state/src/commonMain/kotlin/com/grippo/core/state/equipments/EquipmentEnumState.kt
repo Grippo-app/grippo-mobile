@@ -93,6 +93,7 @@ import com.grippo.design.resources.provider.equipment_trap_bar
 import com.grippo.design.resources.provider.equipment_triceps_machines
 import com.grippo.design.resources.provider.equipment_v_bar
 import com.grippo.design.resources.provider.equipment_wide_grip_handle
+import org.jetbrains.compose.resources.StringResource
 
 @Immutable
 public enum class EquipmentEnumState {
@@ -146,113 +147,125 @@ public enum class EquipmentEnumState {
     PREACHER_CURL_BENCH,
     ROW_BENCH;
 
-    public fun title(): UiText {
-        val r = when (this) {
-            DUMBBELLS -> Res.string.equipment_dumbbells
-            BARBELL -> Res.string.equipment_barbell
-            V_BAR -> Res.string.equipment_v_bar
-            WIDE_GRIP_HANDLE -> Res.string.equipment_wide_grip_handle
-            CLOSE_GRIP_HANDLE -> Res.string.equipment_close_grip_handle
-            EZ_BAR -> Res.string.equipment_ez_bar
-            TRAP_BAR -> Res.string.equipment_trap_bar
-            ROPE -> Res.string.equipment_rope
-            STRAIGHT_BAR -> Res.string.equipment_straight_bar
-            CORD_HANDLES -> Res.string.equipment_cord_handles
+    public fun title(): UiText = TITLES.getValue(this)
+    public fun hint(): UiText = HINTS.getValue(this)
+    public fun hintRes(): StringResource = HINT_RES.getValue(this)
 
-            AB_MACHINES -> Res.string.equipment_ab_machines
-            BUTTERFLY -> Res.string.equipment_butterfly
-            BUTTERFLY_REVERSE -> Res.string.equipment_butterfly_reverse
-            LEG_EXTENSION_MACHINES -> Res.string.equipment_leg_extension_machines
-            LEG_CURL_MACHINES -> Res.string.equipment_leg_curl_machines
-            CHEST_PRESS_MACHINES -> Res.string.equipment_chest_press_machines
-            BICEPS_MACHINES -> Res.string.equipment_biceps_machines
-            SMITH_MACHINES -> Res.string.equipment_smith_machines
-            HACK_SQUAT_MACHINES -> Res.string.equipment_hack_squat_machines
-            LEG_PRESS_MACHINE -> Res.string.equipment_leg_press_machine
-            DEADLIFT_MACHINES -> Res.string.equipment_deadlift_machines
-            SHOULDER_PRESS_MACHINES -> Res.string.equipment_shoulder_press_machines
-            LATERAL_RAISE_MACHINES -> Res.string.equipment_lateral_raise_machines
-            TRICEPS_MACHINES -> Res.string.equipment_triceps_machines
-            CALF_RAISE_MACHINES -> Res.string.equipment_calf_raise_machines
-            GLUTE_MACHINES -> Res.string.equipment_glute_machines
+    public companion object {
+        private val TITLE_RES: Map<EquipmentEnumState, StringResource> =
+            entries.associateWith {
+                when (it) {
+                    DUMBBELLS -> Res.string.equipment_dumbbells
+                    BARBELL -> Res.string.equipment_barbell
+                    V_BAR -> Res.string.equipment_v_bar
+                    WIDE_GRIP_HANDLE -> Res.string.equipment_wide_grip_handle
+                    CLOSE_GRIP_HANDLE -> Res.string.equipment_close_grip_handle
+                    EZ_BAR -> Res.string.equipment_ez_bar
+                    TRAP_BAR -> Res.string.equipment_trap_bar
+                    ROPE -> Res.string.equipment_rope
+                    STRAIGHT_BAR -> Res.string.equipment_straight_bar
+                    CORD_HANDLES -> Res.string.equipment_cord_handles
 
-            LAT_PULLDOWN -> Res.string.equipment_lat_pulldown
-            CABLE -> Res.string.equipment_cable
-            CABLE_CROSSOVER -> Res.string.equipment_cable_crossover
-            ROW_CABLE -> Res.string.equipment_row_cable
+                    AB_MACHINES -> Res.string.equipment_ab_machines
+                    BUTTERFLY -> Res.string.equipment_butterfly
+                    BUTTERFLY_REVERSE -> Res.string.equipment_butterfly_reverse
+                    LEG_EXTENSION_MACHINES -> Res.string.equipment_leg_extension_machines
+                    LEG_CURL_MACHINES -> Res.string.equipment_leg_curl_machines
+                    CHEST_PRESS_MACHINES -> Res.string.equipment_chest_press_machines
+                    BICEPS_MACHINES -> Res.string.equipment_biceps_machines
+                    SMITH_MACHINES -> Res.string.equipment_smith_machines
+                    HACK_SQUAT_MACHINES -> Res.string.equipment_hack_squat_machines
+                    LEG_PRESS_MACHINE -> Res.string.equipment_leg_press_machine
+                    DEADLIFT_MACHINES -> Res.string.equipment_deadlift_machines
+                    SHOULDER_PRESS_MACHINES -> Res.string.equipment_shoulder_press_machines
+                    LATERAL_RAISE_MACHINES -> Res.string.equipment_lateral_raise_machines
+                    TRICEPS_MACHINES -> Res.string.equipment_triceps_machines
+                    CALF_RAISE_MACHINES -> Res.string.equipment_calf_raise_machines
+                    GLUTE_MACHINES -> Res.string.equipment_glute_machines
 
-            PULL_UP_BAR -> Res.string.equipment_pull_up_bar
-            DIP_BARS -> Res.string.equipment_dip_bars
-            ROMAIN_CHAIR -> Res.string.equipment_roman_chair
-            GLUTE_HAM_RAISE_BENCH -> Res.string.equipment_glute_ham_raise_bench
+                    LAT_PULLDOWN -> Res.string.equipment_lat_pulldown
+                    CABLE -> Res.string.equipment_cable
+                    CABLE_CROSSOVER -> Res.string.equipment_cable_crossover
+                    ROW_CABLE -> Res.string.equipment_row_cable
 
-            FLAT_BENCH -> Res.string.equipment_flat_bench
-            ADJUSTABLE_BENCH -> Res.string.equipment_adjustable_bench
-            ADDUCTOR_MACHINE -> Res.string.equipment_adductor_machine
-            ABDUCTOR_MACHINE -> Res.string.equipment_abductor_machine
-            DECLINE_BENCH -> Res.string.equipment_decline_bench
-            FLAT_BENCH_WITH_RACK -> Res.string.equipment_flat_bench_with_rack
-            INCLINE_BENCH_WITH_RACK -> Res.string.equipment_incline_bench_with_rack
-            DECLINE_BENCH_WITH_RACK -> Res.string.equipment_decline_bench_with_rack
-            SQUAT_RACK -> Res.string.equipment_squat_rack
-            PREACHER_CURL_BENCH -> Res.string.equipment_preacher_curl_bench
-            ROW_BENCH -> Res.string.equipment_row_bench
-        }
-        return UiText.Res(r)
-    }
+                    PULL_UP_BAR -> Res.string.equipment_pull_up_bar
+                    DIP_BARS -> Res.string.equipment_dip_bars
+                    ROMAIN_CHAIR -> Res.string.equipment_roman_chair
+                    GLUTE_HAM_RAISE_BENCH -> Res.string.equipment_glute_ham_raise_bench
 
-    public fun hint(): UiText {
-        val r = when (this) {
-            DUMBBELLS -> Res.string.equipment_hint_dumbbells
-            BARBELL -> Res.string.equipment_hint_barbell
-            V_BAR -> Res.string.equipment_hint_v_bar
-            WIDE_GRIP_HANDLE -> Res.string.equipment_hint_wide_grip_handle
-            CLOSE_GRIP_HANDLE -> Res.string.equipment_hint_close_grip_handle
-            EZ_BAR -> Res.string.equipment_hint_ez_bar
-            TRAP_BAR -> Res.string.equipment_hint_trap_bar
-            ROPE -> Res.string.equipment_hint_rope
-            STRAIGHT_BAR -> Res.string.equipment_hint_straight_bar
-            CORD_HANDLES -> Res.string.equipment_hint_cord_handles
+                    FLAT_BENCH -> Res.string.equipment_flat_bench
+                    ADJUSTABLE_BENCH -> Res.string.equipment_adjustable_bench
+                    ADDUCTOR_MACHINE -> Res.string.equipment_adductor_machine
+                    ABDUCTOR_MACHINE -> Res.string.equipment_abductor_machine
+                    DECLINE_BENCH -> Res.string.equipment_decline_bench
+                    FLAT_BENCH_WITH_RACK -> Res.string.equipment_flat_bench_with_rack
+                    INCLINE_BENCH_WITH_RACK -> Res.string.equipment_incline_bench_with_rack
+                    DECLINE_BENCH_WITH_RACK -> Res.string.equipment_decline_bench_with_rack
+                    SQUAT_RACK -> Res.string.equipment_squat_rack
+                    PREACHER_CURL_BENCH -> Res.string.equipment_preacher_curl_bench
+                    ROW_BENCH -> Res.string.equipment_row_bench
+                }
+            }
 
-            AB_MACHINES -> Res.string.equipment_hint_ab_machines
-            BUTTERFLY -> Res.string.equipment_hint_butterfly
-            BUTTERFLY_REVERSE -> Res.string.equipment_hint_butterfly_reverse
-            LEG_EXTENSION_MACHINES -> Res.string.equipment_hint_leg_extension_machines
-            LEG_CURL_MACHINES -> Res.string.equipment_hint_leg_curl_machines
-            CHEST_PRESS_MACHINES -> Res.string.equipment_hint_chest_press_machines
-            BICEPS_MACHINES -> Res.string.equipment_hint_biceps_machines
-            SMITH_MACHINES -> Res.string.equipment_hint_smith_machines
-            HACK_SQUAT_MACHINES -> Res.string.equipment_hint_hack_squat_machines
-            LEG_PRESS_MACHINE -> Res.string.equipment_hint_leg_press_machine
-            DEADLIFT_MACHINES -> Res.string.equipment_hint_deadlift_machines
-            SHOULDER_PRESS_MACHINES -> Res.string.equipment_hint_shoulder_press_machines
-            LATERAL_RAISE_MACHINES -> Res.string.equipment_hint_lateral_raise_machines
-            TRICEPS_MACHINES -> Res.string.equipment_hint_triceps_machines
-            CALF_RAISE_MACHINES -> Res.string.equipment_hint_calf_raise_machines
-            GLUTE_MACHINES -> Res.string.equipment_hint_glute_machines
+        private val HINT_RES: Map<EquipmentEnumState, StringResource> =
+            entries.associateWith {
+                when (it) {
+                    DUMBBELLS -> Res.string.equipment_hint_dumbbells
+                    BARBELL -> Res.string.equipment_hint_barbell
+                    V_BAR -> Res.string.equipment_hint_v_bar
+                    WIDE_GRIP_HANDLE -> Res.string.equipment_hint_wide_grip_handle
+                    CLOSE_GRIP_HANDLE -> Res.string.equipment_hint_close_grip_handle
+                    EZ_BAR -> Res.string.equipment_hint_ez_bar
+                    TRAP_BAR -> Res.string.equipment_hint_trap_bar
+                    ROPE -> Res.string.equipment_hint_rope
+                    STRAIGHT_BAR -> Res.string.equipment_hint_straight_bar
+                    CORD_HANDLES -> Res.string.equipment_hint_cord_handles
 
-            LAT_PULLDOWN -> Res.string.equipment_hint_lat_pulldown
-            CABLE -> Res.string.equipment_hint_cable
-            CABLE_CROSSOVER -> Res.string.equipment_hint_cable_crossover
-            ROW_CABLE -> Res.string.equipment_hint_row_cable
+                    AB_MACHINES -> Res.string.equipment_hint_ab_machines
+                    BUTTERFLY -> Res.string.equipment_hint_butterfly
+                    BUTTERFLY_REVERSE -> Res.string.equipment_hint_butterfly_reverse
+                    LEG_EXTENSION_MACHINES -> Res.string.equipment_hint_leg_extension_machines
+                    LEG_CURL_MACHINES -> Res.string.equipment_hint_leg_curl_machines
+                    CHEST_PRESS_MACHINES -> Res.string.equipment_hint_chest_press_machines
+                    BICEPS_MACHINES -> Res.string.equipment_hint_biceps_machines
+                    SMITH_MACHINES -> Res.string.equipment_hint_smith_machines
+                    HACK_SQUAT_MACHINES -> Res.string.equipment_hint_hack_squat_machines
+                    LEG_PRESS_MACHINE -> Res.string.equipment_hint_leg_press_machine
+                    DEADLIFT_MACHINES -> Res.string.equipment_hint_deadlift_machines
+                    SHOULDER_PRESS_MACHINES -> Res.string.equipment_hint_shoulder_press_machines
+                    LATERAL_RAISE_MACHINES -> Res.string.equipment_hint_lateral_raise_machines
+                    TRICEPS_MACHINES -> Res.string.equipment_hint_triceps_machines
+                    CALF_RAISE_MACHINES -> Res.string.equipment_hint_calf_raise_machines
+                    GLUTE_MACHINES -> Res.string.equipment_hint_glute_machines
 
-            PULL_UP_BAR -> Res.string.equipment_hint_pull_up_bar
-            DIP_BARS -> Res.string.equipment_hint_dip_bars
-            ROMAIN_CHAIR -> Res.string.equipment_hint_romain_chair
-            GLUTE_HAM_RAISE_BENCH -> Res.string.equipment_hint_glute_ham_raise_bench
+                    LAT_PULLDOWN -> Res.string.equipment_hint_lat_pulldown
+                    CABLE -> Res.string.equipment_hint_cable
+                    CABLE_CROSSOVER -> Res.string.equipment_hint_cable_crossover
+                    ROW_CABLE -> Res.string.equipment_hint_row_cable
 
-            FLAT_BENCH -> Res.string.equipment_hint_flat_bench
-            ADJUSTABLE_BENCH -> Res.string.equipment_hint_adjustable_bench
-            ADDUCTOR_MACHINE -> Res.string.equipment_hint_adductor_machine
-            ABDUCTOR_MACHINE -> Res.string.equipment_hint_abductor_machine
-            DECLINE_BENCH -> Res.string.equipment_hint_decline_bench
-            FLAT_BENCH_WITH_RACK -> Res.string.equipment_hint_flat_bench_with_rack
-            INCLINE_BENCH_WITH_RACK -> Res.string.equipment_hint_incline_bench_with_rack
-            DECLINE_BENCH_WITH_RACK -> Res.string.equipment_hint_decline_bench_with_rack
-            SQUAT_RACK -> Res.string.equipment_hint_squat_rack
-            PREACHER_CURL_BENCH -> Res.string.equipment_hint_preacher_curl_bench
-            ROW_BENCH -> Res.string.equipment_hint_row_bench
-        }
-        return UiText.Res(r)
+                    PULL_UP_BAR -> Res.string.equipment_hint_pull_up_bar
+                    DIP_BARS -> Res.string.equipment_hint_dip_bars
+                    ROMAIN_CHAIR -> Res.string.equipment_hint_romain_chair
+                    GLUTE_HAM_RAISE_BENCH -> Res.string.equipment_hint_glute_ham_raise_bench
+
+                    FLAT_BENCH -> Res.string.equipment_hint_flat_bench
+                    ADJUSTABLE_BENCH -> Res.string.equipment_hint_adjustable_bench
+                    ADDUCTOR_MACHINE -> Res.string.equipment_hint_adductor_machine
+                    ABDUCTOR_MACHINE -> Res.string.equipment_hint_abductor_machine
+                    DECLINE_BENCH -> Res.string.equipment_hint_decline_bench
+                    FLAT_BENCH_WITH_RACK -> Res.string.equipment_hint_flat_bench_with_rack
+                    INCLINE_BENCH_WITH_RACK -> Res.string.equipment_hint_incline_bench_with_rack
+                    DECLINE_BENCH_WITH_RACK -> Res.string.equipment_hint_decline_bench_with_rack
+                    SQUAT_RACK -> Res.string.equipment_hint_squat_rack
+                    PREACHER_CURL_BENCH -> Res.string.equipment_hint_preacher_curl_bench
+                    ROW_BENCH -> Res.string.equipment_hint_row_bench
+                }
+            }
+
+        private val TITLES: Map<EquipmentEnumState, UiText> =
+            TITLE_RES.mapValues { (_, res) -> UiText.Res(res) }
+
+        private val HINTS: Map<EquipmentEnumState, UiText> =
+            HINT_RES.mapValues { (_, res) -> UiText.Res(res) }
     }
 }

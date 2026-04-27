@@ -57,11 +57,11 @@ public sealed interface AppErrorState {
     public fun title(): UiText {
         return when (this) {
             is Network.Expected -> UiText.Str(this.title)
-            is Network.NoInternet -> UiText.Res(Res.string.no_internet_connection)
-            is Network.Timeout -> UiText.Res(Res.string.timeout_error)
-            is Network.Unexpected -> UiText.Res(Res.string.unexpected_network_error)
+            is Network.NoInternet -> TITLE_NO_INTERNET
+            is Network.Timeout -> TITLE_TIMEOUT
+            is Network.Unexpected -> TITLE_UNEXPECTED_NETWORK
             is Expected -> UiText.Str(this.title)
-            is Unknown -> UiText.Res(Res.string.something_went_wrong)
+            is Unknown -> TITLE_UNKNOWN
         }
     }
 
@@ -74,5 +74,13 @@ public sealed interface AppErrorState {
             is Expected -> this.description?.let { UiText.Str(it) }
             is Unknown -> null
         }
+    }
+
+    public companion object {
+        private val TITLE_NO_INTERNET: UiText = UiText.Res(Res.string.no_internet_connection)
+        private val TITLE_TIMEOUT: UiText = UiText.Res(Res.string.timeout_error)
+        private val TITLE_UNEXPECTED_NETWORK: UiText =
+            UiText.Res(Res.string.unexpected_network_error)
+        private val TITLE_UNKNOWN: UiText = UiText.Res(Res.string.something_went_wrong)
     }
 }
