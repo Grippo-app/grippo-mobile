@@ -34,12 +34,6 @@ public enum class MuscleEnum(private val key: String) {
     TRICEPS("triceps"),
     FOREARM("forearm");
 
-    /**
-     * Maps each individual muscle to the anatomical group it belongs to.
-     * Used by feature code that needs per-group rollups (e.g. the goal
-     * adherence breakdown card aggregates per-muscle stimulus into the six
-     * canonical groups).
-     */
     public fun group(): MuscleGroupEnum = when (this) {
         PECTORALIS_MAJOR_CLAVICULAR,
         PECTORALIS_MAJOR_STERNOCOSTAL,
