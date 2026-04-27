@@ -477,6 +477,14 @@ public class GoalFollowingUseCase(
      * would split stimulus 2:1:1; with α=1.6 it splits closer to 3:1:1, which
      * lines up with the agonist/synergist set-credit thresholds downstream.
      *
+     * On top of damping, the PUSH-tiny-share penalty is applied per bundle
+     * — same rule and constants as `MuscleLoadingSummaryUseCase` and
+     * [exampleGroupContributions] — so a 4% chest sub-bundle on a triceps
+     * extension cannot bleed into top-N muscles or specialization Top2%.
+     * Total stimulus per exercise is no longer strictly conserved (the
+     * penalty suppresses a small slice), but downstream consumers normalize
+     * by the muscle pool's own sum, so shares remain internally consistent.
+     *
      * Note: this distribution is intentionally simpler than the full
      * `MuscleLoadingSummaryUseCase` model — the fatigue (size/sensitivity),
      * complexity, and category/weight-type factors live there because they
@@ -491,7 +499,8 @@ public class GoalFollowingUseCase(
         val totals = mutableMapOf<MuscleEnum, Float>()
 
         stats.forEach { ex ->
-            val bundles = exampleMap[ex.exampleId]?.bundles ?: return@forEach
+            val example = exampleMap[ex.exampleId] ?: return@forEach
+            val bundles = example.bundles
             if (bundles.isEmpty()) return@forEach
 
             val base = ex.stimulus
@@ -499,11 +508,26 @@ public class GoalFollowingUseCase(
 
             val dampedRatios = MuscleBundleMath.dampedBundleRatios(bundles) ?: return@forEach
 
+            // Pre-compute the bundle pool sum once — used to normalize each
+            // bundle's share to a percent of the pool before the PUSH-penalty
+            // check (the cutoff is calibrated against normalized share, see
+            // `MuscleBundleMath.pushTinySharePenalty` KDoc).
+            val totalShareF = bundles.sumOf { it.percentage.coerceAtLeast(0) }.toFloat()
+            val forceType = example.value.forceType
+
             bundles.forEachIndexed { index, bundle ->
                 val ratio = dampedRatios[index]
                 if (!ratio.isFinite() || ratio <= 0f) return@forEachIndexed
 
-                val add = base * ratio
+                val raw = bundle.percentage.coerceAtLeast(0).toFloat()
+                val normalizedSharePercent =
+                    if (totalShareF > 0f) (raw / totalShareF) * 100f else 0f
+                val penalty = MuscleBundleMath.pushTinySharePenalty(
+                    forceType = forceType,
+                    sharePercent = normalizedSharePercent,
+                )
+
+                val add = base * ratio * penalty
                 if (!add.isFinite() || add <= EPS) return@forEachIndexed
                 totals[bundle.muscle.type] = (totals[bundle.muscle.type] ?: 0f) + add
             }
@@ -821,13 +845,19 @@ public class GoalFollowingUseCase(
         if (totalShare <= 0) return null
 
         val forceType = example.value.forceType
+        val totalShareF = totalShare.toFloat()
         val groupShare = mutableMapOf<MuscleGroupEnum, Float>()
         bundles.forEach { bundle ->
-            val share = bundle.percentage.coerceAtLeast(0).toFloat()
-            if (share <= 0f) return@forEach
-            val penalty = MuscleBundleMath.pushTinySharePenalty(forceType, share)
+            val raw = bundle.percentage.coerceAtLeast(0).toFloat()
+            if (raw <= 0f) return@forEach
+            // Normalize the share to a percent of the bundle pool *first*, then
+            // pass that to the PUSH-tiny-share check — `MuscleLoadingSummaryUseCase`
+            // does the same, so the 4% cutoff behaves identically when the
+            // raw bundle percentages don't sum to exactly 100 (data drift).
+            val normalizedPercent = (raw / totalShareF) * 100f
+            val penalty = MuscleBundleMath.pushTinySharePenalty(forceType, normalizedPercent)
             val group = bundle.muscle.type.group()
-            groupShare[group] = (groupShare[group] ?: 0f) + (share * penalty) / totalShare.toFloat()
+            groupShare[group] = (groupShare[group] ?: 0f) + (normalizedPercent * penalty) / 100f
         }
 
         val out = mutableMapOf<MuscleGroupEnum, Float>()
@@ -1525,10 +1555,20 @@ public class GoalFollowingUseCase(
 
     /**
      * Strict working-set picker — returns sets at or above
-     * [WORKING_MIN_WEIGHT_FRACTION] of the reference (median of the top-3
-     * heaviest weights). When the user did not perform [WORKING_MIN_SETS]
-     * qualifying sets this returns an empty list — callers must omit the
-     * metric rather than infer a 1RM from warm-ups.
+     * [WORKING_MIN_WEIGHT_FRACTION] of the heaviest weight in the list.
+     * When the user did not perform [WORKING_MIN_SETS] qualifying sets this
+     * returns an empty list — callers must omit the metric rather than
+     * infer a 1RM from warm-ups.
+     *
+     * Reference is the **max** weight rather than the previous median of
+     * the top-3 — when the user did 5×100 warm-up + 1×200 working, the
+     * top-3 was `[200, 100, 100]` and its median was `100`, dragging the
+     * threshold to 75 and letting every warm-up slip in. Anchoring on max
+     * (`200 → threshold 150`) cleanly excludes warm-ups; the trade-off is
+     * that a single freak-max attempt with no companion working sets
+     * (e.g. `1×300 + 3×200`) now falls below [WORKING_MIN_SETS] and
+     * returns empty — preferable to inferring an e1RM from a mix of one
+     * PR-attempt and warm-ups.
      */
     private fun pickWorkingSets(sets: List<LiftSet>): List<LiftSet> {
         if (sets.isEmpty()) return emptyList()
@@ -1538,9 +1578,7 @@ public class GoalFollowingUseCase(
             .toList()
         if (weights.isEmpty()) return emptyList()
 
-        val topCount = min(WORKING_REFERENCE_TOP_SETS, weights.size)
-        val topAsc = weights.sortedDescending().take(topCount).sorted()
-        val ref = medianSorted(topAsc)
+        val ref = weights.max()
         if (!ref.isFinite() || ref <= EPS) return emptyList()
 
         val threshold = ref * WORKING_MIN_WEIGHT_FRACTION
@@ -1561,21 +1599,6 @@ public class GoalFollowingUseCase(
         val n = sorted.size
         val mid = n / 2
         return if (n % 2 == 1) sorted[mid] else (sorted[mid - 1] + sorted[mid]) / 2f
-    }
-
-    private fun medianSorted(sortedAsc: List<Float>): Float {
-        val n = sortedAsc.size
-        if (n == 0) return 0f
-        if (n == 1) return sortedAsc[0]
-        val mid = n / 2
-        return if (n % 2 == 1) {
-            sortedAsc[mid]
-        } else {
-            val a = sortedAsc[mid - 1]
-            val b = sortedAsc[mid]
-            val v = a + (b - a) * 0.5f
-            if (v.isFinite()) v else a
-        }
     }
 
     private fun percentileSorted(sorted: List<Float>, q: Float): Float {
@@ -1778,7 +1801,6 @@ public class GoalFollowingUseCase(
         // 1RM estimation
         private const val WORKING_MIN_WEIGHT_FRACTION = 0.75f
         private const val WORKING_MIN_SETS = 2
-        private const val WORKING_REFERENCE_TOP_SETS = 3
         private const val ONE_RM_REPS_CAP = 12
         private const val HEAVY_E1RM_PERCENTILE = 0.90f
 

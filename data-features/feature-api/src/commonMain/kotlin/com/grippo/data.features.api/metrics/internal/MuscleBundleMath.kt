@@ -72,10 +72,15 @@ internal object MuscleBundleMath {
     }
 
     /**
-     * PUSH-tiny-share penalty for a single bundle's raw share (in percent).
+     * PUSH-tiny-share penalty for a single bundle's share, expressed as a
+     * percent of the bundle pool (i.e. normalized so the bundles sum to
+     * 100 — callers must apply this normalization before passing the value
+     * in, otherwise the 4% cutoff drifts when the raw percentages don't
+     * sum exactly to 100 in the database).
+     *
      * Returns `1f` when no penalty applies; [PUSH_TINY_SHARE_FACTOR] when
-     * the exercise is PUSH and the bundle's raw share is at or below
-     * [PUSH_TINY_SHARE_MAX_PERCENT].
+     * the exercise is PUSH and the bundle's normalized share is at or
+     * below [PUSH_TINY_SHARE_MAX_PERCENT].
      */
     internal fun pushTinySharePenalty(forceType: ForceTypeEnum?, sharePercent: Float): Float {
         if (forceType != ForceTypeEnum.PUSH) return 1f
