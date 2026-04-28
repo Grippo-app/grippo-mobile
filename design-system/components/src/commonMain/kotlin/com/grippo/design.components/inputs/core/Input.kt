@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -90,7 +91,6 @@ internal fun Input(
     val isClickable = inputStyle is InputStyle.Clickable
 
     val hasFocus = remember { mutableStateOf(false) }
-    val clickableInteractionSource = remember { MutableInteractionSource() }
 
     // Internal TextFieldValue to control selection
     var tfv by remember {
@@ -177,9 +177,7 @@ internal fun Input(
         modifier = modifier
             .then(
                 if (isClickable && enabled)
-                    Modifier.clickable(
-                        interactionSource = clickableInteractionSource,
-                        indication = null,
+                    Modifier.scalableClick(
                         onClick = inputStyle.onClick
                     )
                 else Modifier
