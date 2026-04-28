@@ -105,7 +105,7 @@
     <string name="training_profile_insight_easy_session_headline">Лёгкая сессия</string>
     <string name="training_profile_insight_easy_session_detail">Стимула было слишком мало, чтобы определить стиль. Это нормально для техничной или восстановительной тренировки.</string>
     <string name="training_profile_insight_mixed_session_headline">Нет чёткого стиля</string>
-    <string name="training_profile_insight_mixed_session_detail">Сила, гипертрофия и выносливость представлены примерно поровну. Более направленная сессия обычно даёт сильнее стимул.</string>
+    <string name="training_profile_insight_mixed_session_detail">Сила, гипертрофия и выносливость представлены примерно поровну. Более направленная сессия обычно даёт более сильный стимул.</string>
     <string name="training_profile_insight_powerbuilding_headline">Паттерн пауэрбилдинга</string>
     <string name="training_profile_insight_powerbuilding_detail">Тяжёлая работа + объём в одной тренировке — поработали и над силой, и над массой.</string>
     <string name="training_profile_insight_clear_dominant_headline">Чёткий фокус</string>

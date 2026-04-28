@@ -124,7 +124,7 @@
     <string name="training_profile_insight_push_pull_imbalance_detail">Один напрям зробив більшу частину роботи. На довгій дистанції баланс верху береже плечі.</string>
     <string name="training_profile_insight_narrow_muscle_focus_headline">Вузький фокус по м\'язах</string>
     <string name="training_profile_insight_narrow_muscle_focus_detail">Більша частина навантаження дісталась лише двом м\'язам. Корисно як спеціалізація, дорожче — якщо так щосесії.</string>
-    <string name="training_profile_insight_action_add_compound_anchor">Додай базу в наступну тренування (присід, жим, тяга, станова).</string>
+    <string name="training_profile_insight_action_add_compound_anchor">Додай базу в наступне тренування (присід, жим, тяга, станова).</string>
     <string name="training_profile_insight_action_diversify_exercises">Краще додай ще одну вправу, ніж додавати підходи до однієї.</string>
     <string name="training_profile_insight_action_add_pulling_work">Додай тягу або підтягування у наступній сесії.</string>
     <string name="training_profile_insight_action_add_pushing_work">Додай жим — горизонтальний або над головою — у наступній сесії.</string>
