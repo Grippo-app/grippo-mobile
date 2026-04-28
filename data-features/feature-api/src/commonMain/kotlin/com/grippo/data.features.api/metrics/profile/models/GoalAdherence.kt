@@ -9,10 +9,6 @@ public data class GoalAdherence(
     val hypertrophyShare: Int,
     val enduranceShare: Int,
     val sessionCount: Int,
-    val compoundRatio: Int,
-    val topExercises: List<TopExerciseContribution>,
-    val topMuscles: List<TopMuscleContribution>,
-    val topMuscleGroups: List<TopMuscleGroupContribution>,
     val findings: List<GoalFitFinding>,
 ) {
     /**

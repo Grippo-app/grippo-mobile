@@ -719,38 +719,9 @@
     <string name="goal_details_tip_dial_back">Cut the heaviest set off each exercise for a week and prioritize recovery.</string>
     <string name="goal_details_tip_review_deadline">Revisit the target date — either extend it or close the goal and start a fresh one.</string>
 
-    <!-- Calculation breakdown section -->
-    <string name="goal_details_breakdown_title">Why this score</string>
-
-    <!-- Summary row labels -->
-    <string name="goal_details_breakdown_sessions">Sessions</string>
-    <string name="goal_details_breakdown_sessions_value">%1$d sessions</string>
-    <string name="goal_details_breakdown_sessions_vs_target">%1$d of %2$d target sessions</string>
-    <string name="goal_details_breakdown_sessions_hint">Unique training days we counted in this period.</string>
-    <string name="goal_details_breakdown_compound">Compound movements</string>
-    <string name="goal_details_breakdown_compound_hint">Share of work from multi-joint lifts (squat, bench, deadlift, rows).</string>
-    <string name="goal_details_breakdown_work_balance">Strength vs Hypertrophy</string>
-    <string name="goal_details_breakdown_work_balance_hint">Split of your total work between strength sets (heavy, low reps) and hypertrophy sets (moderate reps).</string>
-    <string name="goal_details_breakdown_work_balance_general">Strength vs Endurance</string>
-    <string name="goal_details_breakdown_work_balance_general_hint">Split of your total work between strength sets and longer endurance sets.</string>
-
-    <!-- Top exercises / muscles -->
-    <string name="goal_details_breakdown_top_exercises_title">Top exercises by contribution</string>
-    <string name="goal_details_breakdown_top_exercises_hint">Your %1$d biggest contributors by training stimulus (sets × weight × reps). Everything else combined adds up to %2$s.</string>
-    <string name="goal_details_breakdown_top_exercises_empty">No lifts with weight &amp; reps in this range yet.</string>
-    <string name="goal_details_breakdown_top_muscles_title">Muscles that got the most work</string>
-    <string name="goal_details_breakdown_top_muscles_hint">Muscles ranked by total stimulus they received across all your sessions.</string>
-    <string name="goal_details_breakdown_muscle_coverage">%1$d muscle groups worked</string>
-    <string name="goal_details_breakdown_undercoverage">Underworked: %1$s · combined %2$s</string>
-    <string name="goal_details_breakdown_exercise_sets">%1$d sets</string>
-    <string name="goal_details_breakdown_exercise_one_rm">est. 1RM %1$d kg</string>
-    <string name="goal_details_breakdown_exercise_heaviest">top %1$d kg</string>
-    <string name="goal_details_breakdown_exercise_share_caption">of total stimulus</string>
-    <string name="goal_details_breakdown_muscle_share_caption">of muscle work</string>
-
-    <!-- Goal-fit diagnostic block -->
-    <string name="goal_fit_diagnostic_title">Protocol fit</string>
-    <string name="goal_fit_diagnostic_subtitle">Where the training you did matched the goal you set, and where it drifted.</string>
+    <!-- Goal-fit diagnostic sections -->
+    <string name="goal_fit_diagnostic_drifting_title">Drifting</string>
+    <string name="goal_fit_diagnostic_on_track_title">On track</string>
     <string name="goal_fit_severity_pass">On track</string>
     <string name="goal_fit_severity_warn">Watch</string>
     <string name="goal_fit_severity_fail">Off track</string>

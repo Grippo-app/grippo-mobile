@@ -36,10 +36,6 @@ public fun GoalAdherence.toState(): GoalProgressState {
         progressFraction = (daysElapsed.toFloat() / daysTotal.toFloat()).coerceIn(0f, 1f),
         isFinished = now.date >= targetDate,
         sessionCount = sessionCount,
-        compoundRatio = compoundRatio,
-        topExercises = topExercises.map { it.toState() }.toPersistentList(),
-        topMuscles = topMuscles.map { it.toState() }.toPersistentList(),
-        topMuscleGroups = topMuscleGroups.map { it.toState() }.toPersistentList(),
         findings = findings.map { it.toState() }.toPersistentList(),
     )
 }

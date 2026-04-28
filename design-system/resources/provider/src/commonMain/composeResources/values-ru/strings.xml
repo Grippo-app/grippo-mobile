@@ -716,36 +716,9 @@
     <string name="goal_details_tip_dial_back">Убери самый тяжёлый подход из каждого упражнения на неделю и сделай упор на восстановление.</string>
     <string name="goal_details_tip_review_deadline">Пересмотри дату финиша — продли её или закрой цель и начни новую.</string>
 
-    <!-- Секция «Как получен счёт» -->
-    <string name="goal_details_breakdown_title">Из чего сложился счёт</string>
-
-    <string name="goal_details_breakdown_sessions">Тренировки</string>
-    <string name="goal_details_breakdown_sessions_value">%1$d тренировок</string>
-    <string name="goal_details_breakdown_sessions_vs_target">%1$d из %2$d целевых тренировок</string>
-    <string name="goal_details_breakdown_sessions_hint">Сколько отдельных тренировочных дней мы учли в этом периоде.</string>
-    <string name="goal_details_breakdown_compound">Базовые упражнения</string>
-    <string name="goal_details_breakdown_compound_hint">Какая доля работы пришлась на многосуставные движения (присед, жим, тяга).</string>
-    <string name="goal_details_breakdown_work_balance">Сила vs Гипертрофия</string>
-    <string name="goal_details_breakdown_work_balance_hint">Как общая работа делится между силовыми сетами (тяжёлые, мало повторов) и гипертрофическими (умеренные повторы).</string>
-    <string name="goal_details_breakdown_work_balance_general">Сила vs Выносливость</string>
-    <string name="goal_details_breakdown_work_balance_general_hint">Как общая работа делится между силовыми сетами и длинными сетами на выносливость.</string>
-
-    <string name="goal_details_breakdown_top_exercises_title">Топ упражнений по вкладу</string>
-    <string name="goal_details_breakdown_top_exercises_hint">Твои %1$d главных упражнения по нагрузке (сеты × вес × повторы). Остальное вместе даёт %2$s.</string>
-    <string name="goal_details_breakdown_top_exercises_empty">В этом периоде ещё нет сетов с весом и повторениями.</string>
-    <string name="goal_details_breakdown_top_muscles_title">Мышцы, получившие больше всего работы</string>
-    <string name="goal_details_breakdown_top_muscles_hint">Мышцы отсортированы по суммарной нагрузке, которую они получили за все тренировки.</string>
-    <string name="goal_details_breakdown_muscle_coverage">Проработано %1$d мышечных групп</string>
-    <string name="goal_details_breakdown_undercoverage">Недогружено: %1$s · вместе %2$s</string>
-    <string name="goal_details_breakdown_exercise_sets">%1$d сетов</string>
-    <string name="goal_details_breakdown_exercise_one_rm">примерный 1ПМ %1$d кг</string>
-    <string name="goal_details_breakdown_exercise_heaviest">топ %1$d кг</string>
-    <string name="goal_details_breakdown_exercise_share_caption">от общей нагрузки</string>
-    <string name="goal_details_breakdown_muscle_share_caption">от работы мышц</string>
-
-    <!-- Goal-fit diagnostic block -->
-    <string name="goal_fit_diagnostic_title">Соответствие протоколу</string>
-    <string name="goal_fit_diagnostic_subtitle">Где тренировки совпали с целью, а где ты от неё отклонился.</string>
+    <!-- Goal-fit diagnostic sections -->
+    <string name="goal_fit_diagnostic_drifting_title">Отклонения</string>
+    <string name="goal_fit_diagnostic_on_track_title">В норме</string>
     <string name="goal_fit_severity_pass">В норме</string>
     <string name="goal_fit_severity_warn">Следи</string>
     <string name="goal_fit_severity_fail">Мимо цели</string>

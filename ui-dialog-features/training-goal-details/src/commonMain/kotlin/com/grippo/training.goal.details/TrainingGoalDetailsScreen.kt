@@ -16,11 +16,13 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.metrics.profile.GoalFitSeverityState
 import com.grippo.core.state.metrics.profile.stubGoalProgress
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
-import com.grippo.design.components.metrics.profile.goal.GoalCalculationBreakdownCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
+import com.grippo.design.components.metrics.profile.goal.GoalFitDriftingCard
+import com.grippo.design.components.metrics.profile.goal.GoalFitOnTrackCard
 import com.grippo.design.components.metrics.profile.goal.GoalInsightCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyListState
@@ -28,10 +30,11 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_details_breakdown_title
 import com.grippo.design.resources.provider.goal_details_insights_title
 import com.grippo.design.resources.provider.goal_details_subtitle
 import com.grippo.design.resources.provider.goal_details_title
+import com.grippo.design.resources.provider.goal_fit_diagnostic_drifting_title
+import com.grippo.design.resources.provider.goal_fit_diagnostic_on_track_title
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.InsightItem
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.ReasonCode
@@ -103,20 +106,38 @@ internal fun TrainingGoalDetailsScreen(
                 )
             }
 
-            if (progress.hasBreakdown) {
-                item(key = "breakdown_header") {
+            if (progress.findings.any { it.severity != GoalFitSeverityState.PASS }) {
+                item(key = "drifting_header") {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = AppTokens.strings.res(Res.string.goal_details_breakdown_title),
+                        text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_drifting_title),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
                     )
                 }
 
-                item(key = "breakdown") {
-                    GoalCalculationBreakdownCard(
+                item(key = "drifting") {
+                    GoalFitDriftingCard(
                         modifier = Modifier.fillMaxWidth(),
-                        value = progress,
+                        findings = progress.findings,
+                    )
+                }
+            }
+
+            if (progress.findings.any { it.severity == GoalFitSeverityState.PASS }) {
+                item(key = "on_track_header") {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_on_track_title),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
+
+                item(key = "on_track") {
+                    GoalFitOnTrackCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        findings = progress.findings,
                     )
                 }
             }

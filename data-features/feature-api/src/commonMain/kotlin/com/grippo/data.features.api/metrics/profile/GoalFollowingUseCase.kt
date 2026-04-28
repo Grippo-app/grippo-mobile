@@ -24,7 +24,6 @@ import com.grippo.data.features.api.metrics.profile.models.GoalFitFinding
 import com.grippo.data.features.api.metrics.profile.models.GoalFitRule
 import com.grippo.data.features.api.metrics.profile.models.GoalFitSeverity
 import com.grippo.data.features.api.metrics.profile.models.TopExerciseContribution
-import com.grippo.data.features.api.metrics.profile.models.TopMuscleContribution
 import com.grippo.data.features.api.metrics.profile.models.TopMuscleGroupContribution
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
@@ -84,14 +83,8 @@ public class GoalFollowingUseCase(
         val allStats = perSession.flatMap { it.stats }
         val totalStimulus = allStats.sumOf { it.stimulus.toDouble() }.toFloat()
 
-        val compoundRatio =
-            (weightedCategoryRatioByStimulus(allStats, CategoryEnum.COMPOUND) * 100f)
-                .roundToInt()
-                .coerceIn(0, 100)
-
         val muscleTotals = computeMuscleStimulusTotals(allStats, examples)
         val totalMuscle = muscleTotals.values.sumOf { it.toDouble() }.toFloat()
-        val topMuscles = buildTopMuscles(muscleTotals, totalMuscle)
         val topMuscleGroups = buildTopMuscleGroups(muscleTotals, totalMuscle)
         val topExercises = buildTopExercises(allStats, totalStimulus)
 
@@ -112,10 +105,6 @@ public class GoalFollowingUseCase(
             strengthShare = strengthShare,
             hypertrophyShare = hypertrophyShare,
             enduranceShare = enduranceShare,
-            compoundRatio = compoundRatio,
-            topExercises = topExercises,
-            topMuscles = topMuscles,
-            topMuscleGroups = topMuscleGroups,
             findings = findings,
         )
     }
@@ -127,10 +116,6 @@ public class GoalFollowingUseCase(
         hypertrophyShare = hypertrophyShare,
         enduranceShare = enduranceShare,
         sessionCount = sessionCount,
-        compoundRatio = compoundRatio,
-        topExercises = topExercises,
-        topMuscles = topMuscles,
-        topMuscleGroups = topMuscleGroups,
         findings = findings,
     )
 
@@ -572,21 +557,6 @@ public class GoalFollowingUseCase(
     // -------------------------------------------------------------------------
     // Top contributors
     // -------------------------------------------------------------------------
-
-    private fun buildTopMuscles(
-        muscleTotals: Map<MuscleEnum, Float>,
-        totalMuscle: Float,
-    ): List<TopMuscleContribution> = muscleTotals.entries
-        .filter { it.value.isFinite() && it.value > EPS }
-        .sortedByDescending { it.value }
-        .take(TOP_MUSCLES_LIMIT)
-        .map { (muscle, v) ->
-            TopMuscleContribution(
-                muscle = muscle,
-                share = if (totalMuscle > EPS) ((v / totalMuscle) * 100f).roundToInt()
-                    .coerceIn(0, 100) else 0,
-            )
-        }
 
     private fun buildTopMuscleGroups(
         muscleTotals: Map<MuscleEnum, Float>,
@@ -1642,10 +1612,6 @@ public class GoalFollowingUseCase(
         val strengthShare: Int,
         val hypertrophyShare: Int,
         val enduranceShare: Int,
-        val compoundRatio: Int,
-        val topExercises: List<TopExerciseContribution>,
-        val topMuscles: List<TopMuscleContribution>,
-        val topMuscleGroups: List<TopMuscleGroupContribution>,
         val findings: List<GoalFitFinding>,
     ) {
         val isSilent: Boolean
@@ -1659,10 +1625,6 @@ public class GoalFollowingUseCase(
                 strengthShare = 0,
                 hypertrophyShare = 0,
                 enduranceShare = 0,
-                compoundRatio = 0,
-                topExercises = emptyList(),
-                topMuscles = emptyList(),
-                topMuscleGroups = emptyList(),
                 findings = emptyList(),
             )
         }
@@ -1778,7 +1740,6 @@ public class GoalFollowingUseCase(
 
         // Top-N caps for the contribution lists
         private const val TOP_EXERCISES_LIMIT = 5
-        private const val TOP_MUSCLES_LIMIT = 30
         private const val LOAD_PROGRESSION_TOP_N = 5
 
         // Session-length resolution

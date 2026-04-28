@@ -2,10 +2,7 @@ package com.grippo.core.state.metrics.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.formatters.DateTimeFormatState
-import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.GoalState
@@ -23,7 +20,6 @@ import com.grippo.design.resources.provider.goal_card_status_on_track
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
@@ -48,18 +44,8 @@ public data class GoalProgressState(
 
     // Calculation artifacts.
     val sessionCount: Int,
-    val compoundRatio: Int,
-    val topExercises: ImmutableList<TopExerciseContributionState>,
-    val topMuscles: ImmutableList<TopMuscleContributionState>,
-    val topMuscleGroups: ImmutableList<TopMuscleGroupContributionState>,
     val findings: ImmutableList<GoalFitFindingState>,
 ) {
-    public val hasBreakdown: Boolean = sessionCount > 0 ||
-            topExercises.isNotEmpty() ||
-            topMuscles.isNotEmpty() ||
-            topMuscleGroups.isNotEmpty() ||
-            findings.isNotEmpty()
-
     @Composable
     public fun progressLine(): String {
         val day = (daysElapsed + 1).coerceAtMost(daysTotal)
@@ -93,73 +79,8 @@ public data class GoalProgressState(
     public companion object {
         public const val ON_TRACK_MIN: Int = 70
         public const val DRIFTING_MIN: Int = 40
-        public const val CONSISTENCY_TARGET_SESSIONS: Int = 3
     }
 }
-
-private fun stubTopExercises(): ImmutableList<TopExerciseContributionState> = persistentListOf(
-    TopExerciseContributionState(
-        exampleId = "ex-1",
-        name = "Back Squat",
-        totalSets = 12,
-        stimulusShare = 28,
-        heaviestWeight = 140f,
-        estimatedOneRepMax = 155f,
-        category = CategoryEnumState.COMPOUND,
-    ),
-    TopExerciseContributionState(
-        exampleId = "ex-2",
-        name = "Bench Press",
-        totalSets = 10,
-        stimulusShare = 22,
-        heaviestWeight = 105f,
-        estimatedOneRepMax = 118f,
-        category = CategoryEnumState.COMPOUND,
-    ),
-    TopExerciseContributionState(
-        exampleId = "ex-3",
-        name = "Deadlift",
-        totalSets = 6,
-        stimulusShare = 18,
-        heaviestWeight = 180f,
-        estimatedOneRepMax = 198f,
-        category = CategoryEnumState.COMPOUND,
-    ),
-    TopExerciseContributionState(
-        exampleId = "ex-4",
-        name = "Barbell Row",
-        totalSets = 8,
-        stimulusShare = 12,
-        heaviestWeight = 85f,
-        estimatedOneRepMax = 96f,
-        category = CategoryEnumState.COMPOUND,
-    ),
-    TopExerciseContributionState(
-        exampleId = "ex-5",
-        name = "Bicep Curl",
-        totalSets = 9,
-        stimulusShare = 8,
-        heaviestWeight = 22f,
-        estimatedOneRepMax = 26f,
-        category = CategoryEnumState.ISOLATION,
-    ),
-)
-
-private fun stubTopMuscles(): ImmutableList<TopMuscleContributionState> = persistentListOf(
-    TopMuscleContributionState(MuscleEnumState.QUADRICEPS, 32),
-    TopMuscleContributionState(MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL, 22),
-    TopMuscleContributionState(MuscleEnumState.LATISSIMUS_DORSI, 15),
-)
-
-private fun stubTopMuscleGroups(): ImmutableList<TopMuscleGroupContributionState> =
-    persistentListOf(
-        TopMuscleGroupContributionState(MuscleGroupEnumState.LEGS, 35),
-        TopMuscleGroupContributionState(MuscleGroupEnumState.CHEST_MUSCLES, 22),
-        TopMuscleGroupContributionState(MuscleGroupEnumState.BACK_MUSCLES, 18),
-        TopMuscleGroupContributionState(MuscleGroupEnumState.SHOULDER_MUSCLES, 12),
-        TopMuscleGroupContributionState(MuscleGroupEnumState.ARMS_AND_FOREARMS, 10),
-        TopMuscleGroupContributionState(MuscleGroupEnumState.ABDOMINAL_MUSCLES, 3),
-    )
 
 public fun stubGoalProgress(
     primary: GoalPrimaryGoalEnumState = GoalPrimaryGoalEnumState.GET_STRONGER,
@@ -172,10 +93,6 @@ public fun stubGoalProgress(
     daysElapsed: Int = 18,
     isFinished: Boolean = false,
     sessionCount: Int = 6,
-    compoundRatio: Int = 68,
-    topExercises: ImmutableList<TopExerciseContributionState> = stubTopExercises(),
-    topMuscles: ImmutableList<TopMuscleContributionState> = stubTopMuscles(),
-    topMuscleGroups: ImmutableList<TopMuscleGroupContributionState> = stubTopMuscleGroups(),
     findings: ImmutableList<GoalFitFindingState> = stubGoalFitFindings(primary),
 ): GoalProgressState {
     val baseGoal = stubGoal()
@@ -197,18 +114,11 @@ public fun stubGoalProgress(
             .coerceIn(0f, 1f),
         isFinished = isFinished,
         sessionCount = sessionCount,
-        compoundRatio = compoundRatio,
-        topExercises = topExercises,
-        topMuscles = topMuscles,
-        topMuscleGroups = topMuscleGroups,
         findings = findings,
     )
 }
 
 public fun stubGoalProgressList(): ImmutableList<GoalProgressState> {
-    val exercises = stubTopExercises()
-    val muscles = stubTopMuscles()
-    val muscleGroups = stubTopMuscleGroups()
     val seeds = listOf(
         // score, strength/hyp/end, daysTotal, daysElapsed, daysRemaining, fraction, finished
         StubSeed(82, 45, 40, 15, 90, 18, 72, 0.2f, false),
@@ -240,10 +150,6 @@ public fun stubGoalProgressList(): ImmutableList<GoalProgressState> {
             progressFraction = s.fraction,
             isFinished = s.finished,
             sessionCount = 6,
-            compoundRatio = 68,
-            topExercises = exercises,
-            topMuscles = muscles,
-            topMuscleGroups = muscleGroups,
             findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.GET_STRONGER),
         )
     }.toPersistentList()
