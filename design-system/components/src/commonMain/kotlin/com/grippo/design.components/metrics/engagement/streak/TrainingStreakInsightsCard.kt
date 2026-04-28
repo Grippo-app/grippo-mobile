@@ -12,7 +12,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_active_days
-import com.grippo.design.resources.provider.training_streak_confidence_title
 import com.grippo.design.resources.provider.training_streak_confidence_value
 import kotlin.math.roundToInt
 
@@ -27,12 +26,6 @@ public fun TrainingStreakInsightsCard(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
     ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_streak_confidence_title),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
         Text(
             text = AppTokens.strings.res(Res.string.highlight_active_days, value.totalActiveDays),
             style = AppTokens.typography.b14Semi(),

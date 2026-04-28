@@ -5,10 +5,20 @@ public data class TrainingLoadProfileArtifacts(
     val topMuscles: List<TopMuscleContribution>,
     val totalExercisesCount: Int, // unique exercises that contributed to the period
     val totalMusclesCount: Int,   // unique muscles worked across the period
+
     val compoundRatio: Int, // % of stimulus from compound exercises (0..100)
-    val pushRatio: Int,     // % of stimulus from PUSH force-type lifts (0..100)
-    val pullRatio: Int,     // % of stimulus from PULL force-type lifts (0..100)
-    val hingeRatio: Int,    // % of stimulus from HINGE force-type lifts (0..100)
+
+    /** % of the push/pull/hinge pool from PUSH force-type lifts (0..100). */
+    val pushRatio: Int,
+    /** % of the push/pull/hinge pool from PULL force-type lifts (0..100). */
+    val pullRatio: Int,
+    /** % of the push/pull/hinge pool from HINGE force-type lifts (0..100). */
+    val hingeRatio: Int,
+
+    /** Stimulus share of the single biggest exercise (0..100). */
+    val topExerciseShare: Int,
+    /** Stimulus share of the top-2 muscles combined (0..100). */
+    val topTwoMusclesShare: Int,
 ) {
     public companion object {
         public fun empty(): TrainingLoadProfileArtifacts = TrainingLoadProfileArtifacts(
@@ -20,6 +30,8 @@ public data class TrainingLoadProfileArtifacts(
             pushRatio = 0,
             pullRatio = 0,
             hingeRatio = 0,
+            topExerciseShare = 0,
+            topTwoMusclesShare = 0,
         )
     }
 }

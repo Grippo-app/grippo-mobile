@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.profile.TrainingLoadProfileArtifactsState
 import com.grippo.core.state.metrics.profile.stubTrainingLoadProfileArtifacts
@@ -22,14 +23,7 @@ import com.grippo.design.resources.provider.training_profile_artifact_empty
 import com.grippo.design.resources.provider.training_profile_artifact_muscle_focus_footer_all
 import com.grippo.design.resources.provider.training_profile_artifact_muscle_focus_footer_truncated
 import com.grippo.design.resources.provider.training_profile_artifact_muscle_focus_subtitle
-import com.grippo.design.resources.provider.training_profile_artifact_muscle_focus_title
 
-/**
- * Breaks down where the training stimulus actually landed across muscle
- * groups. Each row pairs a muscle name with its share of total stimulus,
- * giving the athlete a concrete read on which muscles were worked the most.
- * A footer makes the "top N of total worked" nature of the list explicit.
- */
 @Composable
 public fun TrainingProfileMuscleFocusCard(
     modifier: Modifier = Modifier,
@@ -46,14 +40,6 @@ public fun TrainingProfileMuscleFocusCard(
                 vertical = AppTokens.dp.metrics.profile.trainingProfile.details.verticalPadding
             ),
     ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_profile_artifact_muscle_focus_title),
-            style = AppTokens.typography.h6(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
-
         Text(
             text = AppTokens.strings.res(Res.string.training_profile_artifact_muscle_focus_subtitle),
             style = AppTokens.typography.b13Med(),
@@ -76,10 +62,12 @@ public fun TrainingProfileMuscleFocusCard(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
             value.topMuscles.forEach { muscle ->
-                ContributionRow(
-                    label = muscle.muscle.title().text(),
-                    sharePercent = muscle.share,
-                )
+                key(muscle.muscle) {
+                    ContributionRow(
+                        label = muscle.muscle.title().text(),
+                        sharePercent = muscle.share,
+                    )
+                }
             }
         }
 

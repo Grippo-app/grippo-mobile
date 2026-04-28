@@ -10,10 +10,20 @@ public data class TrainingLoadProfileArtifactsState(
     val topMuscles: ImmutableList<TopMuscleContributionState>,
     val totalExercisesCount: Int,
     val totalMusclesCount: Int,
+
     val compoundRatio: Int,
+
+    /** % of the push/pull/hinge pool from PUSH lifts (0..100). */
     val pushRatio: Int,
+    /** % of the push/pull/hinge pool from PULL lifts (0..100). */
     val pullRatio: Int,
+    /** % of the push/pull/hinge pool from HINGE lifts (0..100). */
     val hingeRatio: Int,
+
+    /** Stimulus share carried by the single biggest exercise (0..100). */
+    val topExerciseShare: Int,
+    /** Stimulus share of the top-2 muscles combined (0..100). */
+    val topTwoMusclesShare: Int,
 ) {
     public val isEmpty: Boolean
         get() = topExercises.isEmpty() &&
@@ -26,6 +36,9 @@ public data class TrainingLoadProfileArtifactsState(
     public val isolationRatio: Int
         get() = (100 - compoundRatio).coerceIn(0, 100)
 
+    public val hasForceTypePool: Boolean
+        get() = pushRatio + pullRatio + hingeRatio > 0
+
     public companion object {
         public fun empty(): TrainingLoadProfileArtifactsState =
             TrainingLoadProfileArtifactsState(
@@ -37,6 +50,8 @@ public data class TrainingLoadProfileArtifactsState(
                 pushRatio = 0,
                 pullRatio = 0,
                 hingeRatio = 0,
+                topExerciseShare = 0,
+                topTwoMusclesShare = 0,
             )
     }
 }

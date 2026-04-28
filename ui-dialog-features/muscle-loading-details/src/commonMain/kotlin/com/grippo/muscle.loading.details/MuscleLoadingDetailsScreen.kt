@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -33,6 +32,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_loading
+import com.grippo.design.resources.provider.muscle_loading_distribution_title
 import com.grippo.design.resources.provider.value_muscle_loading
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
@@ -75,36 +75,41 @@ internal fun MuscleLoadingDetailsScreen(
             .toPersistentList()
     }
 
-    state.summary?.let { summary ->
-        MuscleLoadingBalanceCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            summary = summary
-        )
-    }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    Segment(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        items = segmentItems,
-        selected = state.mode,
-        onSelect = contract::onSelectMode,
-        segmentWidth = SegmentWidth.EqualFill,
-        style = SegmentStyle.Outline
-    )
-
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f),
+            .weight(1f, false),
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.summary?.let { summary ->
+            item(key = "balance") {
+                MuscleLoadingBalanceCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    summary = summary
+                )
+            }
+
+            item(key = "distribution_header") {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.muscle_loading_distribution_title),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
+
+            item(key = "segment") {
+                Segment(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = segmentItems,
+                    selected = state.mode,
+                    onSelect = contract::onSelectMode,
+                    segmentWidth = SegmentWidth.EqualFill,
+                    style = SegmentStyle.Outline
+                )
+            }
+
             item(key = "overview") {
                 MuscleLoadOverviewCard(
                     modifier = Modifier.fillMaxWidth(),

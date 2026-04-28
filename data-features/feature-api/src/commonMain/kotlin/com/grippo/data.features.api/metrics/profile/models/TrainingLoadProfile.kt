@@ -6,4 +6,5 @@ public data class TrainingLoadProfile(
     val dominant: TrainingDimensionKind?,
     val confidence: Int,
     val artifacts: TrainingLoadProfileArtifacts = TrainingLoadProfileArtifacts.empty(),
+    val insights: List<TrainingProfileInsight> = emptyList(),
 )

@@ -14,6 +14,7 @@ public data class TrainingLoadProfileState(
     val dominant: TrainingDimensionKindState?,
     val confidence: Int,
     val artifacts: TrainingLoadProfileArtifactsState = TrainingLoadProfileArtifactsState.empty(),
+    val insights: ImmutableList<TrainingProfileInsightState> = persistentListOf(),
 ) {
     @Composable
     public fun title(): String = kind.title(this)
@@ -49,6 +50,7 @@ public fun stubTrainingLoadProfile(): TrainingLoadProfileState {
         dominant = TrainingDimensionKindState.Strength,
         confidence = 74,
         artifacts = stubTrainingLoadProfileArtifacts(),
+        insights = stubTrainingProfileInsights(),
     )
 }
 
@@ -111,8 +113,27 @@ public fun stubTrainingLoadProfileArtifacts(): TrainingLoadProfileArtifactsState
         totalExercisesCount = 9,
         totalMusclesCount = 7,
         compoundRatio = 72,
-        pushRatio = 46,
-        pullRatio = 38,
-        hingeRatio = 16,
+        pushRatio = 38,
+        pullRatio = 34,
+        hingeRatio = 28,
+        topExerciseShare = 28,
+        topTwoMusclesShare = 48,
+    )
+}
+
+public fun stubTrainingProfileInsights(): ImmutableList<TrainingProfileInsightState> {
+    return persistentListOf(
+        TrainingProfileInsightState(
+            severity = TrainingProfileInsightSeverityState.Positive,
+            reason = TrainingProfileInsightReasonState.PowerbuildingPattern,
+        ),
+        TrainingProfileInsightState(
+            severity = TrainingProfileInsightSeverityState.Positive,
+            reason = TrainingProfileInsightReasonState.CompoundFoundation,
+        ),
+        TrainingProfileInsightState(
+            severity = TrainingProfileInsightSeverityState.Positive,
+            reason = TrainingProfileInsightReasonState.BalancedExerciseSpread,
+        ),
     )
 }

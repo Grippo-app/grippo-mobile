@@ -14,7 +14,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_period_value
-import com.grippo.design.resources.provider.training_streak_timeline_title
 
 @Composable
 public fun TrainingStreakTimelineCard(
@@ -27,12 +26,6 @@ public fun TrainingStreakTimelineCard(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
     ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
         entries.asReversed().forEach { entry ->
             TrainingStreakTimelineRow(
                 entry = entry

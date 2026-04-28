@@ -1,7 +1,16 @@
 package com.grippo.core.state.metrics.profile
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.kg
+import com.grippo.design.resources.provider.training_profile_artifact_sets
+import com.grippo.design.resources.provider.training_profile_artifact_top_exercise_meta_e1rm
+import com.grippo.design.resources.provider.training_profile_artifact_top_exercise_meta_full
+import com.grippo.design.resources.provider.training_profile_artifact_top_exercise_meta_heaviest
+import kotlin.math.roundToInt
 
 @Immutable
 public data class TopExerciseContributionState(
@@ -13,3 +22,20 @@ public data class TopExerciseContributionState(
     val estimatedOneRepMax: Float,
     val category: CategoryEnumState?,
 )
+
+            heaviest != null -> AppTokens.strings.res(
+                Res.string.training_profile_artifact_top_exercise_meta_heaviest,
+                "${heaviest.roundToInt()} $kgSuffix",
+            )
+
+            e1rm != null -> AppTokens.strings.res(
+                Res.string.training_profile_artifact_top_exercise_meta_e1rm,
+                "${e1rm.roundToInt()} $kgSuffix",
+            )
+
+            else -> null
+        }
+
+        return if (meta != null) "$setsCaption · $meta" else setsCaption
+    }
+}

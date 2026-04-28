@@ -50,7 +50,7 @@ public fun TipCard(
 
 @AppPreview
 @Composable
-private fun TrainingLoadProfileDetailsCardPreview() {
+private fun TipCardPreview() {
     PreviewContainer {
         TipCard(
             value = "My test tip",

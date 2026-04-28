@@ -24,6 +24,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.history
 import com.grippo.design.resources.provider.performance_trend
 import com.grippo.design.resources.provider.value_performance_trend
 import com.grippo.toolkit.date.utils.DateRangeKind
@@ -87,6 +88,17 @@ internal fun PerformanceTrendDetailsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 history = state.history,
             )
+        }
+
+        if (state.history.isNotEmpty()) {
+            item(key = "history_header") {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.history),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
         }
 
         itemsIndexed(

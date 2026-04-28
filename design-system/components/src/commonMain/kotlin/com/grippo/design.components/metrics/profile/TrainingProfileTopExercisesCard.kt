@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.profile.TrainingLoadProfileArtifactsState
 import com.grippo.core.state.metrics.profile.stubTrainingLoadProfileArtifacts
@@ -19,25 +20,16 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_profile_artifact_empty
-import com.grippo.design.resources.provider.training_profile_artifact_sets
 import com.grippo.design.resources.provider.training_profile_artifact_top_exercises_footer_all
 import com.grippo.design.resources.provider.training_profile_artifact_top_exercises_footer_truncated
 import com.grippo.design.resources.provider.training_profile_artifact_top_exercises_subtitle
-import com.grippo.design.resources.provider.training_profile_artifact_top_exercises_title
 
-/**
- * Shows which exercises contributed the most to the current training-load
- * profile, ranked by their share of total stimulus across the period.
- * Each row pairs the exercise name and total set count with a bar that
- * makes the relative contribution easy to scan. A footer clarifies that
- * the list is a "top N of total" — so the user doesn't wonder where the
- * rest of their exercises went.
- */
 @Composable
 public fun TrainingProfileTopExercisesCard(
     modifier: Modifier = Modifier,
     value: TrainingLoadProfileArtifactsState,
 ) {
+
     Column(
         modifier = modifier
             .background(
@@ -49,14 +41,6 @@ public fun TrainingProfileTopExercisesCard(
                 vertical = AppTokens.dp.metrics.profile.trainingProfile.details.verticalPadding
             ),
     ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_profile_artifact_top_exercises_title),
-            style = AppTokens.typography.h6(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
-
         Text(
             text = AppTokens.strings.res(Res.string.training_profile_artifact_top_exercises_subtitle),
             style = AppTokens.typography.b13Med(),
@@ -79,15 +63,13 @@ public fun TrainingProfileTopExercisesCard(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
             value.topExercises.forEach { exercise ->
-                val setsCaption = AppTokens.strings.res(
-                    Res.string.training_profile_artifact_sets,
-                    exercise.totalSets
-                )
-                ContributionRow(
-                    label = exercise.name,
-                    caption = setsCaption,
-                    sharePercent = exercise.stimulusShare,
-                )
+                key(exercise.exampleId) {
+                    ContributionRow(
+                        label = exercise.name,
+                        caption = exercise.caption(),
+                        sharePercent = exercise.stimulusShare,
+                    )
+                }
             }
         }
 

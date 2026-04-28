@@ -23,6 +23,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak
+import com.grippo.design.resources.provider.training_streak_confidence_title
+import com.grippo.design.resources.provider.training_streak_timeline_title
 import com.grippo.design.resources.provider.value_training_streak
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
@@ -74,10 +76,28 @@ internal fun TrainingStreakDetailsScreen(
                 )
             }
 
+            item(key = "insights_header") {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.training_streak_confidence_title),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
+
             item(key = "insights") {
                 TrainingStreakInsightsCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = streak
+                )
+            }
+
+            item(key = "timeline_header") {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
                 )
             }
 

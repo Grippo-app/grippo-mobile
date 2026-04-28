@@ -11,6 +11,10 @@ import com.grippo.data.features.api.metrics.profile.models.TrainingDimensionKind
 import com.grippo.data.features.api.metrics.profile.models.TrainingDimensionScore
 import com.grippo.data.features.api.metrics.profile.models.TrainingLoadProfile
 import com.grippo.data.features.api.metrics.profile.models.TrainingLoadProfileArtifacts
+import com.grippo.data.features.api.metrics.profile.models.TrainingProfileInsight
+import com.grippo.data.features.api.metrics.profile.models.TrainingProfileInsightAction
+import com.grippo.data.features.api.metrics.profile.models.TrainingProfileInsightReason
+import com.grippo.data.features.api.metrics.profile.models.TrainingProfileInsightSeverity
 import com.grippo.data.features.api.metrics.profile.models.TrainingProfileKind
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.training.models.Exercise
@@ -30,23 +34,31 @@ public class TrainingLoadProfileUseCase(
 
     private companion object {
         private const val EPS = 1e-3f
-
         private const val STIMULUS_LN_WEIGHT_SCALE = 8f
 
         private const val WORKING_MIN_WEIGHT_FRACTION = 0.75f
         private const val WORKING_MIN_SETS = 2
         private const val WORKING_REFERENCE_TOP_SETS = 3
-
         private const val ONE_RM_REPS_CAP = 12
         private const val HEAVY_E1RM_PERCENTILE = 0.90f
 
         private const val EASY_TOTAL_WORK_EPS = 30f
-
         private const val CONFIDENCE_GAP_MAX = 25f
         private const val CONFIDENCE_MIN_TOP_SCORE = 40
 
         private const val TOP_EXERCISES_LIMIT = 5
         private const val TOP_MUSCLES_LIMIT = 5
+
+        private const val INSIGHT_CLEAR_DOMINANT_CONFIDENCE = 70
+        private const val INSIGHT_LOW_CONFIDENCE_CEILING = 30
+        private const val INSIGHT_COMPOUND_FOUNDATION_RATIO = 50
+        private const val INSIGHT_ISOLATION_HEAVY_RATIO = 25
+        private const val INSIGHT_TOP_EXERCISE_CONCENTRATION = 40
+        private const val INSIGHT_BALANCED_TOP_EXERCISE_MAX = 30
+        private const val INSIGHT_BALANCED_MIN_EXERCISES = 5
+        private const val INSIGHT_NARROW_MUSCLE_FOCUS_RATIO = 70
+        private const val INSIGHT_PUSH_PULL_GAP_RATIO = 0.6f
+        private const val INSIGHT_PUSH_PULL_MIN_SHARE = 10
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): TrainingLoadProfile {
@@ -110,6 +122,7 @@ public class TrainingLoadProfileUseCase(
             dominant = null,
             confidence = 0,
             artifacts = TrainingLoadProfileArtifacts.empty(),
+            insights = emptyList(),
         )
     }
 
@@ -264,6 +277,16 @@ public class TrainingLoadProfileUseCase(
             confidence = confidence,
         )
 
+        val effectiveDominant = if (kind == TrainingProfileKind.Easy) null else dominant
+        val effectiveConfidence = if (kind == TrainingProfileKind.Easy) 0 else confidence
+
+        val insights = computeInsights(
+            kind = kind,
+            dominant = effectiveDominant,
+            confidence = effectiveConfidence,
+            artifacts = artifacts,
+        )
+
         return TrainingLoadProfile(
             kind = kind,
             dimensions = listOf(
@@ -271,15 +294,12 @@ public class TrainingLoadProfileUseCase(
                 TrainingDimensionScore(TrainingDimensionKind.Hypertrophy, hypertrophy),
                 TrainingDimensionScore(TrainingDimensionKind.Endurance, endurance),
             ),
-            dominant = if (kind == TrainingProfileKind.Easy) null else dominant,
-            confidence = if (kind == TrainingProfileKind.Easy) 0 else confidence,
+            dominant = effectiveDominant,
+            confidence = effectiveConfidence,
             artifacts = artifacts,
+            insights = insights,
         )
     }
-
-    // -------------------------------------------------------------------------
-    // Artifacts — evidence behind the verdict
-    // -------------------------------------------------------------------------
 
     private fun computeArtifacts(
         allStats: List<ExerciseStats>,
@@ -292,9 +312,8 @@ public class TrainingLoadProfileUseCase(
             return TrainingLoadProfileArtifacts.empty()
         }
 
-        // --- Top exercises (by aggregated stimulus across sessions) ---
         val grouped = allStats.groupBy { it.exampleId }
-        val topExercises = grouped.map { (exampleId, list) ->
+        val topExercisesAll = grouped.map { (exampleId, list) ->
             val stimulusSum = list.sumOf { it.stimulus.toDouble() }.toFloat()
             val setsCount = list.sumOf { it.sets.size }
             val heaviest = list
@@ -315,11 +334,10 @@ public class TrainingLoadProfileUseCase(
                 estimatedOneRepMax = if (e1rm.isFinite() && e1rm > 0f) e1rm else 0f,
                 category = first.exercise.exerciseExample.category,
             )
-        }
-            .sortedByDescending { it.stimulusShare }
-            .take(TOP_EXERCISES_LIMIT)
+        }.sortedByDescending { it.stimulusShare }
+        val topExercises = topExercisesAll.take(TOP_EXERCISES_LIMIT)
+        val topExerciseShare = topExercisesAll.firstOrNull()?.stimulusShare ?: 0
 
-        // --- Top muscles (by stimulus distributed via bundle percentages) ---
         val muscleTotals = computeMuscleStimulusTotals(allStats, examples)
         val totalMuscle = muscleTotals.values.sumOf { it.toDouble() }.toFloat()
         val sortedMuscles = muscleTotals.entries
@@ -335,16 +353,34 @@ public class TrainingLoadProfileUseCase(
             }
         } else emptyList()
 
-        // --- Ratio metrics ---
+        val topTwoMusclesShare = if (totalMuscle > EPS) {
+            val topTwoSum = sortedMuscles.take(2).sumOf { it.value.toDouble() }.toFloat()
+            ((topTwoSum / totalMuscle) * 100f).roundToInt().coerceIn(0, 100)
+        } else 0
+
         val compoundRatio =
             (weightedCategoryRatioByStimulus(allStats, CategoryEnum.COMPOUND) * 100f)
                 .roundToInt().coerceIn(0, 100)
-        val pushRatio = (weightedForceTypeRatioByStimulus(allStats, ForceTypeEnum.PUSH) * 100f)
-            .roundToInt().coerceIn(0, 100)
-        val pullRatio = (weightedForceTypeRatioByStimulus(allStats, ForceTypeEnum.PULL) * 100f)
-            .roundToInt().coerceIn(0, 100)
-        val hingeRatio = (weightedForceTypeRatioByStimulus(allStats, ForceTypeEnum.HINGE) * 100f)
-            .roundToInt().coerceIn(0, 100)
+
+        // Push / Pull / Hinge are normalized within their own force-typed
+        // pool so the three add up to 100; lifts without a force type
+        // (carries, isometrics) drop out instead of diluting the bars.
+        val push = weightedForceTypeStimulus(allStats, ForceTypeEnum.PUSH)
+        val pull = weightedForceTypeStimulus(allStats, ForceTypeEnum.PULL)
+        val hinge = weightedForceTypeStimulus(allStats, ForceTypeEnum.HINGE)
+        val pool = push + pull + hinge
+        val pushRatio: Int
+        val pullRatio: Int
+        val hingeRatio: Int
+        if (pool > EPS) {
+            pushRatio = ((push / pool) * 100f).roundToInt().coerceIn(0, 100)
+            pullRatio = ((pull / pool) * 100f).roundToInt().coerceIn(0, 100)
+            hingeRatio = (100 - pushRatio - pullRatio).coerceIn(0, 100)
+        } else {
+            pushRatio = 0
+            pullRatio = 0
+            hingeRatio = 0
+        }
 
         return TrainingLoadProfileArtifacts(
             topExercises = topExercises,
@@ -355,7 +391,118 @@ public class TrainingLoadProfileUseCase(
             pushRatio = pushRatio,
             pullRatio = pullRatio,
             hingeRatio = hingeRatio,
+            topExerciseShare = topExerciseShare,
+            topTwoMusclesShare = topTwoMusclesShare,
         )
+    }
+
+    private fun computeInsights(
+        kind: TrainingProfileKind,
+        dominant: TrainingDimensionKind?,
+        confidence: Int,
+        artifacts: TrainingLoadProfileArtifacts,
+    ): List<TrainingProfileInsight> {
+        val out = mutableListOf<TrainingProfileInsight>()
+
+        if (kind == TrainingProfileKind.Easy) {
+            out += TrainingProfileInsight(
+                severity = TrainingProfileInsightSeverity.Negative,
+                reason = TrainingProfileInsightReason.EasySession,
+                action = TrainingProfileInsightAction.AddOneHardSet,
+            )
+            return out
+        }
+
+        when {
+            kind == TrainingProfileKind.Powerbuilding ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Positive,
+                    reason = TrainingProfileInsightReason.PowerbuildingPattern,
+                )
+
+            kind == TrainingProfileKind.Mixed ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Neutral,
+                    reason = TrainingProfileInsightReason.MixedSession,
+                    action = TrainingProfileInsightAction.PickAClearerStyle,
+                )
+
+            dominant != null && confidence >= INSIGHT_CLEAR_DOMINANT_CONFIDENCE ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Positive,
+                    reason = TrainingProfileInsightReason.ClearDominant,
+                )
+
+            dominant != null && confidence in 1..INSIGHT_LOW_CONFIDENCE_CEILING ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Warning,
+                    reason = TrainingProfileInsightReason.LowConfidence,
+                    action = TrainingProfileInsightAction.PickAClearerStyle,
+                )
+        }
+
+        when {
+            artifacts.compoundRatio >= INSIGHT_COMPOUND_FOUNDATION_RATIO ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Positive,
+                    reason = TrainingProfileInsightReason.CompoundFoundation,
+                )
+
+            artifacts.compoundRatio in 1 until INSIGHT_ISOLATION_HEAVY_RATIO ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Warning,
+                    reason = TrainingProfileInsightReason.IsolationHeavy,
+                    action = TrainingProfileInsightAction.AddCompoundAnchor,
+                )
+        }
+
+        val totalExercises = artifacts.totalExercisesCount
+        val topShare = artifacts.topExerciseShare
+        when {
+            topShare >= INSIGHT_TOP_EXERCISE_CONCENTRATION ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Warning,
+                    reason = TrainingProfileInsightReason.HighExerciseConcentration,
+                    action = TrainingProfileInsightAction.DiversifyExercises,
+                )
+
+            totalExercises >= INSIGHT_BALANCED_MIN_EXERCISES &&
+                    topShare in 1..INSIGHT_BALANCED_TOP_EXERCISE_MAX ->
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Positive,
+                    reason = TrainingProfileInsightReason.BalancedExerciseSpread,
+                )
+        }
+
+        val push = artifacts.pushRatio
+        val pull = artifacts.pullRatio
+        if (push >= INSIGHT_PUSH_PULL_MIN_SHARE || pull >= INSIGHT_PUSH_PULL_MIN_SHARE) {
+            val larger = max(push, pull).toFloat()
+            val smaller = min(push, pull).toFloat()
+            val gap = if (larger > 0f) (larger - smaller) / larger else 0f
+            if (gap >= INSIGHT_PUSH_PULL_GAP_RATIO) {
+                val action = if (push >= pull) {
+                    TrainingProfileInsightAction.AddPullingWork
+                } else {
+                    TrainingProfileInsightAction.AddPushingWork
+                }
+                out += TrainingProfileInsight(
+                    severity = TrainingProfileInsightSeverity.Warning,
+                    reason = TrainingProfileInsightReason.PushPullImbalance,
+                    action = action,
+                )
+            }
+        }
+
+        if (artifacts.topTwoMusclesShare >= INSIGHT_NARROW_MUSCLE_FOCUS_RATIO) {
+            out += TrainingProfileInsight(
+                severity = TrainingProfileInsightSeverity.Warning,
+                reason = TrainingProfileInsightReason.NarrowMuscleFocus,
+                action = TrainingProfileInsightAction.SpreadMuscleFocus,
+            )
+        }
+
+        return out
     }
 
     private fun classify(
@@ -772,6 +919,20 @@ public class TrainingLoadProfileUseCase(
         if (!sum.isFinite() || sum <= EPS) return 0f
         val r = matched / sum
         return if (r.isFinite()) r.coerceIn(0f, 1f) else 0f
+    }
+
+    /** Sum of stimulus across exercises whose force type equals [type]. */
+    private fun weightedForceTypeStimulus(
+        stats: List<ExerciseStats>,
+        type: ForceTypeEnum,
+    ): Float {
+        var matched = 0f
+        stats.forEach { ex ->
+            val w = ex.stimulus
+            if (!w.isFinite() || w <= EPS) return@forEach
+            if (ex.exercise.exerciseExample.forceType == type) matched += w
+        }
+        return if (matched.isFinite() && matched > 0f) matched else 0f
     }
 
     private fun dominantAxis(s: Int, h: Int, e: Int): TrainingDimensionKind? {
