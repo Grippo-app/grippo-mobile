@@ -180,7 +180,7 @@ internal fun Input(
                     Modifier.clickable(
                         interactionSource = clickableInteractionSource,
                         indication = null,
-                        onClick = (inputStyle as InputStyle.Clickable).onClick
+                        onClick = inputStyle.onClick
                     )
                 else Modifier
             )
