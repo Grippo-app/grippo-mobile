@@ -33,8 +33,12 @@ public fun EstimatedOneRepMaxCard(
     ) {
         val title = AppTokens.strings.res(Res.string.estimated_one_rm)
         val kg = AppTokens.strings.res(Res.string.kg)
-        val latest = state.entries.lastOrNull()?.value ?: 0f
-        val peak = state.entries.maxOfOrNull { it.value } ?: latest
+        val latest = remember(state.entries) {
+            state.entries.lastOrNull()?.value ?: 0f
+        }
+        val peak = remember(state.entries, latest) {
+            state.entries.maxOfOrNull { it.value } ?: latest
+        }
         val peakLabel = AppTokens.strings.res(
             Res.string.estimated_one_rm_peak,
             "${peak.roundToInt()} $kg"

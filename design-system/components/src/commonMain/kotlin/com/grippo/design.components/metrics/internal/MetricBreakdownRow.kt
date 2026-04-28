@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class MetricBreakdownItem(
@@ -32,7 +34,7 @@ internal data class MetricBreakdownItem(
 @Composable
 internal fun MetricBreakdownRow(
     modifier: Modifier = Modifier,
-    items: List<MetricBreakdownItem>,
+    items: ImmutableList<MetricBreakdownItem>,
 ) {
     Row(
         modifier = modifier
@@ -101,7 +103,7 @@ private fun MetricBreakdownCell(
 private fun MetricBreakdownRowPreview() {
     PreviewContainer {
         MetricBreakdownRow(
-            items = listOf(
+            items = persistentListOf(
                 MetricBreakdownItem(label = "Duration", value = "1:15"),
                 MetricBreakdownItem(label = "Sets", value = "12"),
                 MetricBreakdownItem(label = "Reps", value = "96"),
@@ -116,7 +118,7 @@ private fun MetricBreakdownRowPreview() {
 private fun MetricBreakdownRowDimmedPreview() {
     PreviewContainer {
         MetricBreakdownRow(
-            items = listOf(
+            items = persistentListOf(
                 MetricBreakdownItem(label = "Duration", value = "0", dimmed = true),
                 MetricBreakdownItem(label = "Sets", value = "0", dimmed = true),
                 MetricBreakdownItem(label = "Reps", value = "0", dimmed = true),

@@ -14,7 +14,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun IterationsCard(
@@ -47,11 +47,11 @@ public fun IterationsCard(
 private fun IterationsCardPreview() {
     PreviewContainer {
         IterationsCard(
-            value = listOf(
+            value = persistentListOf(
                 stubIteration(),
                 stubIteration(),
                 stubIteration()
-            ).toPersistentList()
+            )
         )
     }
 }

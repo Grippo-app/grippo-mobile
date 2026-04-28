@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,21 +87,25 @@ public fun LastTrainingCard(
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
-            val firstExercises = if (value.exercises.size == 4) {
-                value.exercises.take(4)
-            } else {
-                value.exercises.take(3)
+            val firstExercises = remember(value.exercises) {
+                if (value.exercises.size == 4) {
+                    value.exercises.take(4)
+                } else {
+                    value.exercises.take(3)
+                }
             }
 
             firstExercises.forEach { exercise ->
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+                key(exercise.id) {
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "✓ ${exercise.exerciseExample.name}",
-                    style = AppTokens.typography.b13Semi(),
-                    color = AppTokens.colors.text.secondary
-                )
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "✓ ${exercise.exerciseExample.name}",
+                        style = AppTokens.typography.b13Semi(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                }
             }
 
             if (value.exercises.size > 4) {

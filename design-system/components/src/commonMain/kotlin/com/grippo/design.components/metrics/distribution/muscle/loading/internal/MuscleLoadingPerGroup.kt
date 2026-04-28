@@ -31,7 +31,7 @@ internal fun MuscleLoadingPerGroup(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         entries.forEachIndexed { index, colored ->
-            key(index) {
+            key(colored.entry.group) {
                 MuscleLoadingItem(
                     entry = colored.entry,
                     color = colored.color,

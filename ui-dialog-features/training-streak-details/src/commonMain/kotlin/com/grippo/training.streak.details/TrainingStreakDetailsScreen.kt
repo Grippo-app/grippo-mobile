@@ -18,6 +18,8 @@ import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakInsightsCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyListState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -61,7 +63,12 @@ internal fun TrainingStreakDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    val listState = rememberAnchoredLazyListState(
+        behavior = AnchorScrollBehavior.Animated
+    )
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),

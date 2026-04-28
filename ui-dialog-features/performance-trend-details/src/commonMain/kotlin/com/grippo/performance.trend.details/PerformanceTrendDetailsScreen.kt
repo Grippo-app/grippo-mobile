@@ -20,6 +20,8 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyListState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -66,7 +68,12 @@ internal fun PerformanceTrendDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    val listState = rememberAnchoredLazyListState(
+        behavior = AnchorScrollBehavior.Animated
+    )
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),

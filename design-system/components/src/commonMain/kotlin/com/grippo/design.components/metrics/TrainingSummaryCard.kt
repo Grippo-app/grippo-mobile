@@ -42,6 +42,7 @@ import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.tonnage
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun TrainingSummaryCard(
@@ -217,7 +218,7 @@ private fun SummaryBreakdown(
 
     MetricBreakdownRow(
         modifier = modifier,
-        items = listOf(
+        items = persistentListOf(
             MetricBreakdownItem(
                 label = setsLabel,
                 value = setsCount.toString(),

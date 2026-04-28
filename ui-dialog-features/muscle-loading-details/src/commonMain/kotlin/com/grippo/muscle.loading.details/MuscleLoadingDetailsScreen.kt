@@ -27,6 +27,8 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.utils.AnchorScrollBehavior
+import com.grippo.design.components.utils.rememberAnchoredLazyListState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -75,7 +77,12 @@ internal fun MuscleLoadingDetailsScreen(
             .toPersistentList()
     }
 
+    val listState = rememberAnchoredLazyListState(
+        behavior = AnchorScrollBehavior.Animated
+    )
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),

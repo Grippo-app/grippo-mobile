@@ -14,11 +14,12 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_period_value
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 public fun TrainingStreakTimelineCard(
     modifier: Modifier = Modifier,
-    entries: List<TrainingStreakProgressState>,
+    entries: ImmutableList<TrainingStreakProgressState>,
 ) {
     if (entries.isEmpty()) return
 

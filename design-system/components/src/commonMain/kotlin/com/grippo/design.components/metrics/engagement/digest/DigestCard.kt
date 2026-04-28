@@ -33,6 +33,7 @@ import com.grippo.design.resources.provider.total
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateRangePresets
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun DigestCard(
@@ -82,7 +83,7 @@ private fun EmptyDigestBody() {
     )
 
     MetricBreakdownRow(
-        items = listOf(
+        items = persistentListOf(
             MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.trainings),
                 value = "0",
@@ -113,7 +114,7 @@ private fun ContentDigestBody(
     )
 
     MetricBreakdownRow(
-        items = listOf(
+        items = persistentListOf(
             MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.trainings),
                 value = value.trainingsCount.toString(),
