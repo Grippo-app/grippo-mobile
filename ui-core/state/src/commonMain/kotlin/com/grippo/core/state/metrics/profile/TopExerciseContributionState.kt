@@ -21,7 +21,25 @@ public data class TopExerciseContributionState(
     val heaviestWeight: Float,
     val estimatedOneRepMax: Float,
     val category: CategoryEnumState?,
-)
+) {
+    @Composable
+    public fun caption(): String {
+        val kgSuffix = AppTokens.strings.res(Res.string.kg)
+
+        val setsCaption = AppTokens.strings.res(
+            Res.string.training_profile_artifact_sets,
+            totalSets,
+        )
+
+        val heaviest = heaviestWeight.takeIf { it > 0f }
+        val e1rm = estimatedOneRepMax.takeIf { it > 0f }
+
+        val meta = when {
+            heaviest != null && e1rm != null -> AppTokens.strings.res(
+                Res.string.training_profile_artifact_top_exercise_meta_full,
+                "${heaviest.roundToInt()} $kgSuffix",
+                "${e1rm.roundToInt()} $kgSuffix",
+            )
 
             heaviest != null -> AppTokens.strings.res(
                 Res.string.training_profile_artifact_top_exercise_meta_heaviest,
