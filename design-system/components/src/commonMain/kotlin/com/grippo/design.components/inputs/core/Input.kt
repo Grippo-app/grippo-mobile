@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -88,8 +87,10 @@ internal fun Input(
     val shape = RoundedCornerShape(AppTokens.dp.input.radius)
     val height = AppTokens.dp.input.height
 
+    val isClickable = inputStyle is InputStyle.Clickable
+
     val hasFocus = remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
+    val clickableInteractionSource = remember { MutableInteractionSource() }
 
     // Internal TextFieldValue to control selection
     var tfv by remember {
@@ -172,126 +173,131 @@ internal fun Input(
         animationSpec = tween(durationMillis = 100),
     )
 
-    if (interactionSource.collectIsPressedAsState().value) {
-        (inputStyle as? InputStyle.Clickable)?.onClick?.invoke()
-    }
-
-    BasicTextField(
+    Box(
         modifier = modifier
             .then(
-                if (inputStyle is InputStyle.Clickable)
+                if (isClickable && enabled)
                     Modifier.clickable(
-                        interactionSource = interactionSource,
+                        interactionSource = clickableInteractionSource,
                         indication = null,
-                        onClick = inputStyle.onClick
+                        onClick = (inputStyle as InputStyle.Clickable).onClick
                     )
                 else Modifier
             )
-            .background(color = backgroundColor, shape = shape)
-            .border(width = 1.dp, color = borderColor, shape = shape)
-            .heightIn(min = height)
-            .onFocusChanged { hasFocus.value = it.hasFocus }
-            .animateContentSize(),
-        value = tfv,
-        cursorBrush = SolidColor(contentColor),
-        onValueChange = { new ->
-            tfv = new
-            when (inputStyle) {
-                is InputStyle.Clickable -> {}
-
-                is InputStyle.Default -> {
-                    if (new.text != value) {
-                        inputStyle.onValueChange(new.text)
-                    }
-                }
-            }
-        },
-        readOnly = inputStyle is InputStyle.Clickable,
-        minLines = minLines,
-        textStyle = textStyle.copy(color = contentColor),
-        enabled = enabled,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        interactionSource = interactionSource,
-        maxLines = maxLines,
-        singleLine = maxLines == 1,
-        decorationBox = { innerTextField ->
-
-            val rowModifier = Modifier
+    ) {
+        BasicTextField(
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(intrinsicSize = IntrinsicSize.Min)
+                .background(color = backgroundColor, shape = shape)
+                .border(width = 1.dp, color = borderColor, shape = shape)
+                .heightIn(min = height)
+                .onFocusChanged { hasFocus.value = it.hasFocus }
+                .animateContentSize(),
+            value = tfv,
+            cursorBrush = SolidColor(contentColor),
+            onValueChange = { new ->
+                tfv = new
+                when (inputStyle) {
+                    is InputStyle.Clickable -> Unit
 
-            when (placeholder) {
-                PlaceHolder.Empty -> Row(
-                    modifier = rowModifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-
-                    if (leading != null) {
-                        leading.invoke(leadingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .animateContentSize(),
-                        content = { innerTextField() }
-                    )
-
-                    if (trailing != null) {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
-                        trailing.invoke(trailingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
-                    } else {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-                    }
-                }
-
-                is PlaceHolder.OverInput -> Row(
-                    modifier = rowModifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-
-                    if (leading != null) {
-                        leading.invoke(leadingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .animateContentSize()
-                    ) {
-                        Column {
-                            Text(
-                                text = placeholder.value,
-                                style = lerp(
-                                    start = AppTokens.typography.b13Semi()
-                                        .copy(color = placeholderColor),
-                                    stop = AppTokens.typography.b13Semi().copy(color = labelColor),
-                                    fraction = textStyleAnimateFraction.value,
-                                ),
-                                maxLines = maxLines,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            if (hasFocus.value || tfv.text.isNotBlank()) innerTextField()
+                    is InputStyle.Default -> {
+                        if (new.text != value) {
+                            inputStyle.onValueChange(new.text)
                         }
                     }
-                    if (trailing != null) {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
-                        trailing.invoke(trailingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
-                    } else {
+                }
+            },
+            readOnly = isClickable,
+            minLines = minLines,
+            textStyle = textStyle.copy(color = contentColor),
+            // iOS-critical: enabled = false disables the native UITextView's
+            // userInteractionEnabled, so taps pass through to the outer
+            // Box.clickable. readOnly = true alone is NOT enough — the native
+            // field still swallows touches (especially inside LazyColumn,
+            // where it also competes with the list's scroll gestures).
+            enabled = enabled && !isClickable,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            maxLines = maxLines,
+            singleLine = maxLines == 1,
+            decorationBox = { innerTextField ->
+
+                val rowModifier = Modifier
+                    .fillMaxWidth()
+                    .height(intrinsicSize = IntrinsicSize.Min)
+
+                when (placeholder) {
+                    PlaceHolder.Empty -> Row(
+                        modifier = rowModifier,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
+
+                        if (leading != null) {
+                            leading.invoke(leadingColor)
+                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .animateContentSize(),
+                            content = { innerTextField() }
+                        )
+
+                        if (trailing != null) {
+                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                            trailing.invoke(trailingColor)
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
+                        } else {
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
+                        }
+                    }
+
+                    is PlaceHolder.OverInput -> Row(
+                        modifier = rowModifier,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
+
+                        if (leading != null) {
+                            leading.invoke(leadingColor)
+                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .animateContentSize()
+                        ) {
+                            Column {
+                                Text(
+                                    text = placeholder.value,
+                                    style = lerp(
+                                        start = AppTokens.typography.b13Semi()
+                                            .copy(color = placeholderColor),
+                                        stop = AppTokens.typography.b13Semi().copy(color = labelColor),
+                                        fraction = textStyleAnimateFraction.value,
+                                    ),
+                                    maxLines = maxLines,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                if (hasFocus.value || tfv.text.isNotBlank()) innerTextField()
+                            }
+                        }
+                        if (trailing != null) {
+                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                            trailing.invoke(trailingColor)
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
+                        } else {
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
+                        }
                     }
                 }
-            }
-        },
-    )
+            },
+        )
+    }
 }
 
 @AppPreview
