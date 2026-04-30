@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,12 @@ public fun <KEY> Segment(
     onSelect: (KEY) -> Unit,
     segmentWidth: SegmentWidth = SegmentWidth.Unspecified,
 ) {
+    val onSelectState = rememberUpdatedState(onSelect)
+
+    val sizing = when (segmentWidth) {
+        SegmentWidth.Unspecified -> SegmentSizing.Unspecified
+        SegmentWidth.EqualFill -> SegmentSizing.EqualFill
+    }
 
     when (style) {
         SegmentStyle.Fill -> SegmentedFrame(
@@ -58,10 +65,7 @@ public fun <KEY> Segment(
                 ).padding(
                     AppTokens.dp.segment.fill.space
                 ),
-            segmentSizing = when (segmentWidth) {
-                SegmentWidth.Unspecified -> SegmentSizing.Unspecified
-                SegmentWidth.EqualFill -> SegmentSizing.EqualFill
-            },
+            segmentSizing = sizing,
             thumb = {
                 Box(
                     modifier = Modifier
@@ -74,11 +78,12 @@ public fun <KEY> Segment(
             },
             content = {
                 items.forEach { item ->
-
-                    val clickProvider = remember(item.first) { { onSelect.invoke(item.first) } }
+                    val key = item.first
+                    val isSelected = key == selected
+                    val clickProvider = remember(key) { { onSelectState.value.invoke(key) } }
 
                     SegmentBox(
-                        selected = item.first == selected,
+                        selected = isSelected,
                         content = {
                             Text(
                                 modifier = Modifier
@@ -88,12 +93,12 @@ public fun <KEY> Segment(
                                         vertical = AppTokens.dp.contentPadding.subContent
                                     ).wrapContentHeight(),
                                 text = item.second.text(),
-                                style = if (item.first == selected) {
+                                style = if (isSelected) {
                                     AppTokens.typography.b14Bold()
                                 } else {
                                     AppTokens.typography.b14Med()
                                 },
-                                color = if (item.first == selected) {
+                                color = if (isSelected) {
                                     AppTokens.colors.text.primary
                                 } else {
                                     AppTokens.colors.text.tertiary
@@ -107,10 +112,7 @@ public fun <KEY> Segment(
 
         SegmentStyle.Outline -> SegmentedFrame(
             modifier = modifier,
-            segmentSizing = when (segmentWidth) {
-                SegmentWidth.Unspecified -> SegmentSizing.Unspecified
-                SegmentWidth.EqualFill -> SegmentSizing.EqualFill
-            },
+            segmentSizing = sizing,
             thumb = {
                 HorizontalDivider(
                     modifier = Modifier
@@ -122,11 +124,12 @@ public fun <KEY> Segment(
             },
             content = {
                 items.forEach { item ->
-
-                    val clickProvider = remember(item.first) { { onSelect.invoke(item.first) } }
+                    val key = item.first
+                    val isSelected = key == selected
+                    val clickProvider = remember(key) { { onSelectState.value.invoke(key) } }
 
                     SegmentBox(
-                        selected = item.first == selected,
+                        selected = isSelected,
                         content = {
                             Text(
                                 modifier = Modifier
@@ -135,12 +138,12 @@ public fun <KEY> Segment(
                                     .height(AppTokens.dp.segment.outline.height)
                                     .wrapContentHeight(),
                                 text = item.second.text(),
-                                style = if (item.first == selected) {
+                                style = if (isSelected) {
                                     AppTokens.typography.b14Bold()
                                 } else {
                                     AppTokens.typography.b14Med()
                                 },
-                                color = if (item.first == selected) {
+                                color = if (isSelected) {
                                     AppTokens.colors.text.primary
                                 } else {
                                     AppTokens.colors.text.tertiary

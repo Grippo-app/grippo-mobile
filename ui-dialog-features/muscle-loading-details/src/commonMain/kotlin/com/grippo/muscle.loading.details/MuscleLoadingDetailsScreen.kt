@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -80,6 +81,38 @@ internal fun MuscleLoadingDetailsScreen(
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated
     )
+    state.summary?.let { summary ->
+        MuscleLoadingBalanceCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            summary = summary
+        )
+    }
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        text = AppTokens.strings.res(Res.string.muscle_loading_distribution_title),
+        style = AppTokens.typography.h4(),
+        color = AppTokens.colors.text.primary,
+    )
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+    Segment(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        items = segmentItems,
+        selected = state.mode,
+        onSelect = contract::onSelectMode,
+        segmentWidth = SegmentWidth.EqualFill,
+        style = SegmentStyle.Outline
+    )
 
     LazyColumn(
         state = listState,
@@ -90,33 +123,6 @@ internal fun MuscleLoadingDetailsScreen(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.summary?.let { summary ->
-            item(key = "balance") {
-                MuscleLoadingBalanceCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    summary = summary
-                )
-            }
-
-            item(key = "distribution_header") {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.muscle_loading_distribution_title),
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary,
-                )
-            }
-
-            item(key = "segment") {
-                Segment(
-                    modifier = Modifier.fillMaxWidth(),
-                    items = segmentItems,
-                    selected = state.mode,
-                    onSelect = contract::onSelectMode,
-                    segmentWidth = SegmentWidth.EqualFill,
-                    style = SegmentStyle.Outline
-                )
-            }
-
             item(key = "overview") {
                 MuscleLoadOverviewCard(
                     modifier = Modifier.fillMaxWidth(),
