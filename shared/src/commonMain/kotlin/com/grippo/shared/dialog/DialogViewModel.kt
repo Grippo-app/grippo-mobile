@@ -3,6 +3,8 @@ package com.grippo.shared.dialog
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 internal class DialogViewModel(
@@ -22,7 +24,7 @@ internal class DialogViewModel(
         }
 
         val updatedTop = oldStack.last().copy(pendingResult = pendingResult)
-        val newStack = oldStack.dropLast(1) + updatedTop
+        val newStack = (oldStack.dropLast(1) + updatedTop).toPersistentList()
         val nextPhase = if (newStack.size == 1) SheetPhase.Dismissing else SheetPhase.Present
 
         update { it.copy(stack = newStack, phase = nextPhase) }
@@ -36,7 +38,7 @@ internal class DialogViewModel(
         if (state.value.stack.isEmpty()) {
             return
         }
-        update { it.copy(stack = emptyList(), phase = SheetPhase.Dismissing) }
+        update { it.copy(stack = persistentListOf(), phase = SheetPhase.Dismissing) }
     }
 
     override fun onRelease(config: DialogConfig) {
@@ -48,7 +50,7 @@ internal class DialogViewModel(
         current.stack.lastOrNull()?.pendingResult?.invoke()
         config.onDismiss?.invoke()
 
-        update { prev -> prev.copy(stack = emptyList(), phase = SheetPhase.Released) }
+        update { prev -> prev.copy(stack = persistentListOf(), phase = SheetPhase.Released) }
 
         navigateTo(DialogDirection.Dismiss)
     }
@@ -62,7 +64,7 @@ internal class DialogViewModel(
             return
         }
 
-        val newStack = stack + DialogEntry(config, pendingResult = null)
+        val newStack = (stack + DialogEntry(config, pendingResult = null)).toPersistentList()
 
         val destination =
             if (state.value.phase == SheetPhase.Released) DialogDirection.Activate(config)
@@ -80,7 +82,7 @@ internal class DialogViewModel(
         }
 
         val last = stack.last()
-        val newStack = stack.dropLast(1)
+        val newStack = stack.dropLast(1).toPersistentList()
 
         update { it.copy(stack = newStack, phase = SheetPhase.Present) }
         navigateTo(DialogDirection.Pop(last.pendingResult))

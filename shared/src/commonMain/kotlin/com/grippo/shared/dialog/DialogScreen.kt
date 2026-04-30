@@ -26,6 +26,7 @@ import com.grippo.design.components.toolbar.BottomSheetToolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -57,7 +58,7 @@ internal fun DialogScreen(
 @Composable
 private fun BottomSheet(
     config: DialogConfig,
-    stack: List<DialogEntry>,
+    stack: ImmutableList<DialogEntry>,
     phase: SheetPhase,
     component: DialogContentComponent,
     onBack: () -> Unit,

@@ -2,10 +2,12 @@ package com.grippo.shared.dialog
 
 import androidx.compose.runtime.Immutable
 import com.grippo.dialog.api.DialogConfig
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class DialogState(
-    val stack: List<DialogEntry> = emptyList(),
+    val stack: ImmutableList<DialogEntry> = persistentListOf(),
     val phase: SheetPhase = SheetPhase.Released,
 )
 
