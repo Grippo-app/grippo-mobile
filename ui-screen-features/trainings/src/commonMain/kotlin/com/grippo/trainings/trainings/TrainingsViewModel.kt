@@ -55,7 +55,7 @@ internal class TrainingsViewModel(
                     end = range.to
                 ).getOrThrow()
             }
-            .safeLaunch()
+            .safeLaunch(loader = TrainingsLoader.Trainings)
 
         rangeFlow
             .flatMapLatest { range ->
@@ -66,7 +66,7 @@ internal class TrainingsViewModel(
             .onEach { (range, trainings) ->
                 provideTrainings(range, trainings)
             }
-            .safeLaunch()
+            .safeLaunch(loader = TrainingsLoader.Trainings)
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {

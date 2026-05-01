@@ -55,6 +55,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
+import com.grippo.design.resources.provider.empty_exercise_sets
 import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Check
@@ -126,7 +127,8 @@ internal fun ExerciseScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        value = AppTokens.icons.EmptyExercise
+                        value = AppTokens.icons.EmptyExercise,
+                        text = AppTokens.strings.res(Res.string.empty_exercise_sets)
                     )
 
                     false -> LazyColumn(

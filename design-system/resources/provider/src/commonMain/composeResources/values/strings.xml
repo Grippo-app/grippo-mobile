@@ -194,6 +194,10 @@
     <string name="confirm_btn">Confirm</string>
     <string name="no_data_yet">No data yet</string>
     <string name="no_exercises_yet">No exercises yet</string>
+    <string name="empty_training_exercises">No exercises in this workout yet</string>
+    <string name="empty_exercise_sets">No sets recorded yet</string>
+    <string name="empty_daily_trainings">No workouts this day</string>
+    <string name="empty_exercise_examples">No exercises found</string>
     <string name="daily">Daily</string>
     <string name="yearly">Yearly</string>
     <string name="custom">Custom</string>

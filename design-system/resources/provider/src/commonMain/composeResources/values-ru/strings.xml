@@ -194,6 +194,10 @@
     <string name="confirm_btn">Подтвердить</string>
     <string name="no_data_yet">Пока нет данных</string>
     <string name="no_exercises_yet">Пока нет упражнений</string>
+    <string name="empty_training_exercises">В этой тренировке пока нет упражнений</string>
+    <string name="empty_exercise_sets">Пока нет записанных подходов</string>
+    <string name="empty_daily_trainings">В этот день тренировок нет</string>
+    <string name="empty_exercise_examples">Упражнения не найдены</string>
     <string name="daily">Ежедневно</string>
     <string name="yearly">Ежегодно</string>
     <string name="custom">Свой</string>

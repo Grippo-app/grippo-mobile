@@ -33,6 +33,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.empty_exercise_examples
 import com.grippo.design.resources.provider.icons.EmptyExerciseExample
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.Header
@@ -86,7 +87,8 @@ internal fun ExerciseExamplePickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                value = AppTokens.icons.EmptyExerciseExample
+                value = AppTokens.icons.EmptyExerciseExample,
+                text = AppTokens.strings.res(Res.string.empty_exercise_examples)
             )
 
             false -> {

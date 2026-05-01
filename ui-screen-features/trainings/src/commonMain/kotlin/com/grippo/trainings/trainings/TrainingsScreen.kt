@@ -111,6 +111,7 @@ internal fun TrainingsScreen(
                         .fillMaxWidth()
                         .weight(1f),
                     items = period.items,
+                    loaders = loaders,
                     contentPadding = resolvedPadding,
                     onTrainingMenuClick = contract::onTrainingMenuClick,
                     onExerciseClick = contract::onExerciseClick,

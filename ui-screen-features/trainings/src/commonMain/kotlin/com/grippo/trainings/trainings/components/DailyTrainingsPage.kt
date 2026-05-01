@@ -30,25 +30,35 @@ import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.empty_daily_trainings
 import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.trainings.factory.timelineStyle
+import com.grippo.trainings.trainings.TrainingsLoader
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun DailyTrainingsPage(
     modifier: Modifier = Modifier,
     items: ImmutableList<TimelineState.Daily.Item>,
+    loaders: ImmutableSet<TrainingsLoader>,
     contentPadding: PaddingValues,
     onTrainingMenuClick: (String) -> Unit,
     onExerciseClick: (String) -> Unit,
 ) {
-    if (items.isEmpty()) {
+    val isEmpty = items.isEmpty()
+    val isLoading = loaders.contains(TrainingsLoader.Trainings)
+
+    if (isEmpty && isLoading.not()) {
         EmptyState(
             modifier = modifier.fillMaxSize(),
-            value = AppTokens.icons.EmptyExercise
+            value = AppTokens.icons.EmptyExercise,
+            text = AppTokens.strings.res(Res.string.empty_daily_trainings)
         )
         return
     }
@@ -152,6 +162,7 @@ private fun DailyTrainingsPagePreview() {
                 .filterIsInstance<TimelineState.Daily.Item>()
                 .toPersistentList(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            loaders = persistentSetOf(),
             onTrainingMenuClick = {},
             onExerciseClick = {},
         )
@@ -165,6 +176,7 @@ private fun DailyTrainingsEmptyPagePreview() {
         DailyTrainingsPage(
             items = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            loaders = persistentSetOf(),
             onTrainingMenuClick = {},
             onExerciseClick = {},
         )

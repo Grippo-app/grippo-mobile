@@ -1,7 +1,6 @@
 package com.grippo.design.components.empty
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,37 +24,30 @@ import com.grippo.design.resources.provider.no_data_yet
 @Composable
 public fun EmptyState(
     modifier: Modifier = Modifier,
-    value: ImageVector
+    value: ImageVector,
+    text: String,
 ) {
-
-    val text = AppTokens.strings.res(Res.string.no_data_yet)
-
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(Modifier.weight(0.6f))
+        Spacer(Modifier.weight(0.6f))
 
-            Image(
-                modifier = Modifier.height(AppTokens.dp.empty.image),
-                imageVector = value,
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight
-            )
+        Image(
+            modifier = Modifier.height(AppTokens.dp.empty.image),
+            imageVector = value,
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight
+        )
 
-            Text(
-                text = text,
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.tertiary,
-                textAlign = TextAlign.Center
-            )
+        Text(
+            text = text,
+            style = AppTokens.typography.h5(),
+            color = AppTokens.colors.text.tertiary,
+            textAlign = TextAlign.Center
+        )
 
-            Spacer(Modifier.weight(1f))
-        }
+        Spacer(Modifier.weight(1f))
     }
 }
 
@@ -65,7 +57,8 @@ private fun EmptyState1Preview() {
     PreviewContainer {
         EmptyState(
             modifier = Modifier.fillMaxSize(),
-            value = AppTokens.icons.EmptyExercise
+            value = AppTokens.icons.EmptyExercise,
+            text = AppTokens.strings.res(Res.string.no_data_yet)
         )
     }
 }
@@ -76,7 +69,8 @@ private fun EmptyState2Preview() {
     PreviewContainer {
         EmptyState(
             modifier = Modifier.fillMaxSize(),
-            value = AppTokens.icons.EmptyExerciseExample
+            value = AppTokens.icons.EmptyExerciseExample,
+            text = AppTokens.strings.res(Res.string.no_data_yet)
         )
     }
 }

@@ -35,6 +35,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
+import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.training.recording.TrainingRecordingContract
@@ -75,7 +76,8 @@ internal fun ColumnScope.ExercisesPage(
                         EmptyState(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            value = AppTokens.icons.EmptyExercise
+                            value = AppTokens.icons.EmptyExercise,
+                            text = AppTokens.strings.res(Res.string.empty_training_exercises)
                         )
                     }
 
