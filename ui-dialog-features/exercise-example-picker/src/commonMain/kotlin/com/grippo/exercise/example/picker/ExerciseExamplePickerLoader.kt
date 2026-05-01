@@ -6,5 +6,5 @@ import com.grippo.core.foundation.models.BaseLoader
 @Immutable
 public sealed interface ExerciseExamplePickerLoader : BaseLoader {
     @Immutable
-    public data object SuggestExample : ExerciseExamplePickerLoader
+    public data object ExerciseExamples : ExerciseExamplePickerLoader
 }

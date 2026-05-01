@@ -33,6 +33,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.EmptyExerciseExample
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.Header
 import kotlinx.collections.immutable.ImmutableSet
@@ -67,6 +68,9 @@ internal fun ExerciseExamplePickerScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
+    val isLoading = loaders.contains(ExerciseExamplePickerLoader.ExerciseExamples)
+    val isEmpty = state.exerciseExamples.isEmpty()
+
     AnimatedContent(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,13 +79,14 @@ internal fun ExerciseExamplePickerScreen(
             (fadeIn(animationSpec = tween(220, delayMillis = 90)))
                 .togetherWith(fadeOut(animationSpec = tween(90)))
         },
-        targetState = state.exerciseExamples.isEmpty(),
+        targetState = isEmpty && isLoading.not()
     ) {
         when (it) {
             true -> EmptyState(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
+                value = AppTokens.icons.EmptyExerciseExample
             )
 
             false -> {

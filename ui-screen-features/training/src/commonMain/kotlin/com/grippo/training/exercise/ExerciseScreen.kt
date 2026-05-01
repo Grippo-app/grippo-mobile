@@ -58,12 +58,14 @@ import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Check
+import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.sets_value
 import com.grippo.design.resources.provider.tooltip_suspicious_reps_subtitle
 import com.grippo.design.resources.provider.tooltip_suspicious_reps_title
 import com.grippo.design.resources.provider.tooltip_suspicious_weight_subtitle
 import com.grippo.design.resources.provider.tooltip_suspicious_weight_title
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.launch
 
@@ -124,6 +126,7 @@ internal fun ExerciseScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
+                        value = AppTokens.icons.EmptyExercise
                     )
 
                     false -> LazyColumn(
@@ -298,6 +301,23 @@ private fun ExerciseScreenPreview() {
         ExerciseScreen(
             state = ExerciseState(
                 exercise = stubExercise(),
+                exerciseExample = stubExerciseExample(),
+                volumeArtifactIds = persistentSetOf(stubExercise().iterations.random().id),
+                repetitionArtifactIds = persistentSetOf(stubExercise().iterations.random().id),
+            ),
+            loaders = persistentSetOf(),
+            contract = ExerciseContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseScreenEmptyPreview() {
+    PreviewContainer {
+        ExerciseScreen(
+            state = ExerciseState(
+                exercise = stubExercise().copy(iterations = persistentListOf()),
                 exerciseExample = stubExerciseExample(),
                 volumeArtifactIds = persistentSetOf(stubExercise().iterations.random().id),
                 repetitionArtifactIds = persistentSetOf(stubExercise().iterations.random().id),

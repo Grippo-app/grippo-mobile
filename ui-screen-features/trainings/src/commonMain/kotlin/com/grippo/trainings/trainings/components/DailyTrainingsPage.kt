@@ -30,6 +30,7 @@ import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.trainings.factory.timelineStyle
 import kotlinx.collections.immutable.ImmutableList
@@ -46,7 +47,8 @@ internal fun DailyTrainingsPage(
 ) {
     if (items.isEmpty()) {
         EmptyState(
-            modifier = modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize(),
+            value = AppTokens.icons.EmptyExercise
         )
         return
     }

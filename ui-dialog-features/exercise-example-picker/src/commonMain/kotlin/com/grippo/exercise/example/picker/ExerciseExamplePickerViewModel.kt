@@ -11,6 +11,7 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -27,7 +28,7 @@ public class ExerciseExamplePickerViewModel(
     init {
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
-            .safeLaunch()
+            .safeLaunch(loader = ExerciseExamplePickerLoader.ExerciseExamples)
 
         state
             .map { current ->
@@ -45,9 +46,10 @@ public class ExerciseExamplePickerViewModel(
                 )
             }
             .distinctUntilChanged()
+            .debounce(300)
             .flatMapLatest(userExerciseExamplesUseCase::execute)
             .onEach(::provideExerciseExamples)
-            .safeLaunch()
+            .safeLaunch(loader = ExerciseExamplePickerLoader.ExerciseExamples)
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {

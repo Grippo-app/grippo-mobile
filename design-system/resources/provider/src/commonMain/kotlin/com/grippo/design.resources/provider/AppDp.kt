@@ -337,7 +337,6 @@ public data object AppDp {
 
     public data object Empty {
         val image: Dp = icon.xxxxLarge
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object Input {
