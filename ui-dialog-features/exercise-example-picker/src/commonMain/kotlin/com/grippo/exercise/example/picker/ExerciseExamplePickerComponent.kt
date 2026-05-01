@@ -39,7 +39,6 @@ public class ExerciseExamplePickerComponent(
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
-        val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ExerciseExamplePickerScreen(state.value, loaders.value, viewModel)
+        ExerciseExamplePickerScreen(state.value, viewModel)
     }
 }

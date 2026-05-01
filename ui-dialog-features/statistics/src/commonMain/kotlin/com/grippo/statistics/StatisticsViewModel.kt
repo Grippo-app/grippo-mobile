@@ -37,19 +37,21 @@ public class StatisticsViewModel(
                 trainingFeature
                     .observeTrainings(config.range.from, config.range.to)
                     .mapLatest { trainings -> provideTrainingStatistics(config.range, trainings) }
-                    .safeLaunch(loader = StatisticsLoader.Charts)
+                    .safeLaunch()
 
                 safeLaunch {
-                    trainingFeature
-                        .getTrainings(start = config.range.from, end = config.range.to)
-                        .getOrThrow()
+                    withLoader(StatisticsLoader.Charts) {
+                        trainingFeature
+                            .getTrainings(start = config.range.from, end = config.range.to)
+                            .getOrThrow()
+                    }
                 }
             }
 
             is DialogConfig.Statistics.Training -> {
                 trainingFeature.observeTraining(config.id)
                     .mapLatest { training -> provideExerciseStatistics(training) }
-                    .safeLaunch(loader = StatisticsLoader.Charts)
+                    .safeLaunch()
             }
         }
     }

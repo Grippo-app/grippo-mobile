@@ -55,7 +55,7 @@ public class ExerciseExamplePickerViewModel(
             .debounce(SEARCH_DEBOUNCE)
             .flatMapLatest(userExerciseExamplesUseCase::execute)
             .onEach(::provideExerciseExamples)
-            .safeLaunch(loader = ExerciseExamplePickerLoader.ExerciseExamples)
+            .safeLaunch()
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {

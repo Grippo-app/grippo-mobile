@@ -37,15 +37,12 @@ import com.grippo.design.resources.provider.empty_exercise_examples
 import com.grippo.design.resources.provider.icons.EmptyExerciseExample
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.Header
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 internal fun ExerciseExamplePickerScreen(
     state: ExerciseExamplePickerState,
-    loaders: ImmutableSet<ExerciseExamplePickerLoader>,
     contract: ExerciseExamplePickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
@@ -69,7 +66,6 @@ internal fun ExerciseExamplePickerScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-    val isLoading = loaders.contains(ExerciseExamplePickerLoader.ExerciseExamples)
     val isEmpty = state.exerciseExamples.isEmpty()
 
     AnimatedContent(
@@ -80,7 +76,7 @@ internal fun ExerciseExamplePickerScreen(
             (fadeIn(animationSpec = tween(220, delayMillis = 90)))
                 .togetherWith(fadeOut(animationSpec = tween(90)))
         },
-        targetState = isEmpty && isLoading.not()
+        targetState = isEmpty
     ) {
         when (it) {
             true -> EmptyState(
@@ -169,7 +165,6 @@ private fun ScreenPreview() {
                     stubExerciseExample()
                 ),
             ),
-            loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty
         )
     }

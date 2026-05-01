@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
@@ -50,6 +49,18 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
     public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
+
+    protected suspend fun <T> withLoader(
+        loader: LOADER?,
+        block: suspend () -> T
+    ): T {
+        addLoader(loader)
+        return try {
+            block()
+        } finally {
+            removeLoader(loader)
+        }
+    }
 
     private fun addLoader(loader: LOADER?) {
         loader ?: return
@@ -85,11 +96,8 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     protected fun <T> Flow<T>.safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         processing: Processing = Processing.WhileActive,
-        loader: LOADER? = null,
         onError: (() -> Unit) = {},
     ): Job {
-        addLoader(loader)
-
         val flow = when (processing) {
             Processing.WhileActive -> operationManager.whileActive(this@safeLaunch, activation)
             Processing.Infinity -> this@safeLaunch
@@ -98,15 +106,9 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         val job = operationManager.launch(
             dispatcher = dispatcher,
             onError = { t -> sendError(t, onError) },
-            block = {
-                flow
-                    .onEach { removeLoader(loader) }
-                    .collect()
-            }
+            block = { flow.collect() }
         )
 
-        // final cleanup regardless of path (no-op if already removed)
-        job.invokeOnCompletion { removeLoader(loader) }
         return job
     }
 

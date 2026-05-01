@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -107,14 +108,19 @@ internal class HomeViewModel(
                 trainingFeature
                     .observeTrainings(start = period.from, end = period.to)
                     .onEach(::provideTrainings)
-            }.safeLaunch(loader = HomeLoader.Trainings)
+            }.safeLaunch()
 
         state
             .map { it.range.value }
             .filterNotNull()
             .distinctUntilChanged()
-            .onEach { period -> trainingFeature.getTrainings(start = period.from, end = period.to) }
-            .safeLaunch(loader = HomeLoader.Trainings)
+            .mapLatest { period ->
+                withLoader(HomeLoader.Trainings) {
+                    trainingFeature
+                        .getTrainings(start = period.from, end = period.to)
+                }
+            }
+            .safeLaunch()
 
         safeLaunch {
             exerciseExampleFeature.getExerciseExamples()

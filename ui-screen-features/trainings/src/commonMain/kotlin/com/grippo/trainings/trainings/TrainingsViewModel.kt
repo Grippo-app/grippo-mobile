@@ -24,6 +24,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -49,13 +50,15 @@ internal class TrainingsViewModel(
             .map { (date, limitations) -> date.coerceWithin(limitations) }
 
         rangeFlow
-            .onEach { range ->
-                trainingFeature.getTrainings(
-                    start = range.from,
-                    end = range.to
-                ).getOrThrow()
+            .mapLatest { range ->
+                withLoader(TrainingsLoader.Trainings) {
+                    trainingFeature.getTrainings(
+                        start = range.from,
+                        end = range.to
+                    ).getOrThrow()
+                }
             }
-            .safeLaunch(loader = TrainingsLoader.Trainings)
+            .safeLaunch()
 
         rangeFlow
             .flatMapLatest { range ->
@@ -66,7 +69,7 @@ internal class TrainingsViewModel(
             .onEach { (range, trainings) ->
                 provideTrainings(range, trainings)
             }
-            .safeLaunch(loader = TrainingsLoader.Trainings)
+            .safeLaunch()
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {
