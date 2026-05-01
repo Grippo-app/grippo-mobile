@@ -1,5 +1,6 @@
 package com.grippo.dialog.profile
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,22 +76,6 @@ internal fun ProfileScreen(
                             )
                         }.toPersistentList()
 
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = ProfileMenu.title().text(),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.tertiary
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-                    Menu(
-                        items = profileMenu,
-                        onClick = contract::onProfileMenuClick
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
                     val settingsMenu = SettingsMenu.entries
                         .filter { !(state.user?.role != RoleEnumState.ADMIN && it == SettingsMenu.Debug) }
                         .map {
@@ -103,19 +88,37 @@ internal fun ProfileScreen(
                         }
                         .toPersistentList()
 
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = SettingsMenu.title().text(),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.tertiary
-                    )
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = ProfileMenu.title().text(),
+                            style = AppTokens.typography.h4(),
+                            color = AppTokens.colors.text.tertiary
+                        )
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-                    Menu(
-                        items = settingsMenu,
-                        onClick = contract::onSettingsMenuClick
-                    )
+                        Menu(
+                            items = profileMenu,
+                            onClick = contract::onProfileMenuClick
+                        )
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = SettingsMenu.title().text(),
+                            style = AppTokens.typography.h4(),
+                            color = AppTokens.colors.text.tertiary
+                        )
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+                        Menu(
+                            items = settingsMenu,
+                            onClick = contract::onSettingsMenuClick
+                        )
+                    }
                 }
             }
         },

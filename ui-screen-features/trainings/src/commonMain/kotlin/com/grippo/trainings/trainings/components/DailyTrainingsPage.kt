@@ -64,6 +64,7 @@ internal fun DailyTrainingsPage(
             contentType = { it::class }
         ) { value ->
             DailyTimelineItem(
+                modifier = Modifier,
                 value = value,
                 onTrainingMenuClick = onTrainingMenuClick,
                 onExerciseClick = onExerciseClick
@@ -77,12 +78,13 @@ private fun DailyTimelineItem(
     value: TimelineState.Daily.Item,
     onTrainingMenuClick: (String) -> Unit,
     onExerciseClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val style = remember(value) { value.timelineStyle() }
     val exercise = remember(value) { value.exercise() }
 
     TimelineIndicator(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         style = style
     ) {
         if (value is TimelineState.DateTime) {

@@ -136,7 +136,6 @@ internal fun ExerciseScreen(
                         item {
                             Text(
                                 modifier = Modifier
-                                    .animateItem()
                                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                                     .fillMaxWidth(),
                                 text = AppTokens.strings.res(
@@ -166,7 +165,7 @@ internal fun ExerciseScreen(
                             }
 
                             SwipeToReveal(
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier,
                                 actions = {
                                     Button(
                                         modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),

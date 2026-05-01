@@ -109,6 +109,7 @@ internal fun TrainingProfileDetailsScreen(
         state.profile?.let { profile ->
             item(key = "radar") {
                 TrainingProfileRadar(
+                    modifier = Modifier,
                     value = profile,
                     style = TrainingProfileRadarStyle.LARGE
                 )

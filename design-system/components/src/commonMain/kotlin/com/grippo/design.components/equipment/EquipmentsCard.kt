@@ -32,6 +32,7 @@ public fun EquipmentsCard(
     ) {
         items(items = value, key = { it.id }) { item ->
             EquipmentCard(
+                modifier = Modifier,
                 value = item
             )
         }

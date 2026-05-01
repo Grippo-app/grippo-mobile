@@ -243,7 +243,11 @@ internal fun HomeScreen(
                         key = "performance_density",
                         span = { GridItemSpan(if (volumeMetric == null) 2 else 1) }
                     ) {
-                        PerformanceMetricCardItem(metric = densityMetric, contract = contract)
+                        PerformanceMetricCardItem(
+                            modifier = Modifier,
+                            metric = densityMetric,
+                            contract = contract
+                        )
                     }
                 }
 
@@ -253,6 +257,7 @@ internal fun HomeScreen(
                         span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
+                            modifier = Modifier,
                             metric = volumeMetric,
                             contract = contract
                         )
@@ -265,6 +270,7 @@ internal fun HomeScreen(
                         span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
+                            modifier = Modifier,
                             metric = repetitionsMetric,
                             contract = contract
                         )
@@ -277,6 +283,7 @@ internal fun HomeScreen(
                         span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
+                            modifier = Modifier,
                             metric = intensityMetric,
                             contract = contract
                         )
@@ -322,12 +329,13 @@ internal fun HomeScreen(
 private fun PerformanceMetricCardItem(
     metric: PerformanceMetricState,
     contract: HomeContract,
+    modifier: Modifier = Modifier,
 ) {
     val onClick = remember(contract, metric.type) {
         { contract.onPerformanceMetricClick(metric.type) }
     }
     PerformanceMetricCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .scalableClick(onClick = onClick),

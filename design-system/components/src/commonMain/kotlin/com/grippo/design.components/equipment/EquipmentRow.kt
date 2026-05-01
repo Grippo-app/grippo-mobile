@@ -17,7 +17,8 @@ import kotlinx.collections.immutable.persistentListOf
 public fun EquipmentRow(
     equipment: EquipmentState,
     selectedEquipmentIds: ImmutableList<String>,
-    selectEquipment: (id: String) -> Unit
+    selectEquipment: (id: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val selectProvider = remember(equipment.id) {
         { selectEquipment(equipment.id) }
@@ -28,7 +29,7 @@ public fun EquipmentRow(
     }
 
     ToggleSelectableCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         style = ToggleSelectableCardStyle.Medium(
             title = equipment.type.title().text(),
             icon = equipment.image(),

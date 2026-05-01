@@ -98,7 +98,7 @@ internal fun ColumnScope.ExercisesPage(
                                 }
 
                                 SwipeToReveal(
-                                    modifier = Modifier.animateItem(),
+                                    modifier = Modifier,
                                     actions = {
                                         Button(
                                             modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),

@@ -69,7 +69,6 @@ public data object AppDp {
     val iterationsCard: IterationsCard = IterationsCard
     val chip: Chip = Chip
     val toggle: Toggle = Toggle
-    val suggestionCard: SuggestionCard = SuggestionCard
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
@@ -108,12 +107,6 @@ public data object AppDp {
         val top: Dp = padding.small
         val bottom: Dp = padding.xLarge
         val horizontalPadding: Dp = padding.xLarge
-    }
-
-    public data object SuggestionCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object Calendar {
@@ -251,6 +244,8 @@ public data object AppDp {
                 val verticalPadding: Dp = padding.small
                 val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
+                val benefit: Benefit = Benefit
+                val estimate: Estimate = Estimate
 
                 public data object Breakdown {
                     val radius: Dp = Panel.Small.radius
@@ -266,6 +261,18 @@ public data object AppDp {
                     val accentWidth: Dp = 3.dp
                     val textSpacing: Dp = padding.extraSmall
                     val actionIcon: Dp = icon.small
+                }
+
+                public data object Benefit {
+                    val radius: Dp = AppDp.radius.medium
+                    val horizontalPadding: Dp = padding.large
+                    val verticalPadding: Dp = padding.large
+                    val iconBackground: Dp = 36.dp
+                    val icon: Dp = 20.dp
+                }
+
+                public data object Estimate {
+                    val icon: Dp = 16.dp
                 }
             }
         }

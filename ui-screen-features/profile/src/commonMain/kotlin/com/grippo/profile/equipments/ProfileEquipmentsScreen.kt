@@ -117,6 +117,7 @@ internal fun ProfileEquipmentsScreen(
             ) {
                 items(items = equipments, key = { it.id }) { equipment ->
                     EquipmentRow(
+                        modifier = Modifier,
                         equipment = equipment,
                         selectedEquipmentIds = state.selectedEquipmentIds,
                         selectEquipment = contract::onSelectEquipment,

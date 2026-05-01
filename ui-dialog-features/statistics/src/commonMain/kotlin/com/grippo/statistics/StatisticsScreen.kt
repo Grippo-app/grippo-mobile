@@ -113,6 +113,7 @@ internal fun StatisticsScreen(
 
             item(key = "muscles_spliter") {
                 ContentSpliter(
+                    modifier = Modifier,
                     text = AppTokens.strings.res(Res.string.muscles)
                 )
             }
