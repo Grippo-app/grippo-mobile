@@ -18,7 +18,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Mail
+import com.grippo.design.resources.provider.icons.Copy
 import com.grippo.design.resources.provider.push_token
 
 @Composable
@@ -46,7 +46,7 @@ public fun InputToken(
 
             InputTrailingIconButton(
                 visible = value.isNotEmpty(),
-                icon = AppTokens.icons.Mail,
+                icon = AppTokens.icons.Copy,
                 tint = color,
                 onClick = clickProvider,
             )
