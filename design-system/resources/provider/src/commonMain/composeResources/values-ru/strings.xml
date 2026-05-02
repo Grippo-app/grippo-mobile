@@ -7,8 +7,8 @@
     <string name="personal_digests">Персональные дайджесты</string>
     <string name="filters">Фильтры</string>
     <string name="repetitions">Повторения</string>
-    <string name="error_save_training_description">Мы сохранили вашу тренировку. Вы можете продолжать — вы можете завершить и сохранить её в любое время с главной страницы.</string>
-    <string name="search_placeholder">Поиск..</string>
+    <string name="error_save_training_description">Мы сохранили твою тренировку. Можешь завершить и сохранить её в любой момент с главной.</string>
+    <string name="search_placeholder">Поиск…</string>
     <string name="set_value">Подход №%1$s</string>
     <string name="plus_value_more">+ ещё %1$s</string>
     <string name="body_weight_placeholder">Вес тела</string>
@@ -22,7 +22,7 @@
     <string name="spotlight_needs_attention_title">Нужно вернуть</string>
     <string name="spotlight_good_frequency_title">Хорошая частота</string>
     <string name="spotlight_near_best_title">Рядом с лучшим</string>
-    <string name="repetitions_input_hint">1 - 99 повторений</string>
+    <string name="repetitions_input_hint">1–99 повторений</string>
     <string name="exercise_details_btn">Детали упражнения</string>
     <string name="and">И</string>
     <string name="push_token">Пуш-токен</string>
@@ -32,8 +32,8 @@
     <string name="height">Рост</string>
     <string name="current_weight">Текущий вес</string>
     <string name="current_height">Текущий рост</string>
-    <string name="choose_your_experience_level">Выберите свой уровень опыта — мы порекомендуем упражнения, которые подходят вам лучше всего.</string>
-    <string name="weight_input_hint">1 - 999 кг</string>
+    <string name="choose_your_experience_level">Выбери свой уровень — мы порекомендуем упражнения, которые подойдут лучше всего.</string>
+    <string name="weight_input_hint">1–999 кг</string>
     <string name="advice">Совет</string>
     <string name="training_profile">Профиль тренировки</string>
     <string name="training_dimension_strength">Сила</string>
@@ -55,18 +55,18 @@
     <string name="training_profile_subtitle_strength">Большая часть работы смещена к силовому стимулу.</string>
     <string name="training_profile_subtitle_hypertrophy">Большая часть работы смещена к стимулу роста мышц.</string>
     <string name="training_profile_subtitle_endurance">Большая часть работы смещена к выносливости / плотности.</string>
-    <string name="training_profile_tip_easy">Если было слишком легко: добавьте 1 тяжёлый подход в основное упражнение или подойдите ближе к отказу.</string>
+    <string name="training_profile_tip_easy">Если было слишком легко: добавь 1 тяжёлый подход в основное упражнение или подойди ближе к отказу.</string>
     <string name="training_profile_tip_powerbuilding">Простая структура: 1–3 тяжёлых подхода + 2–4 облегчённых (6–10 повторений).</string>
-    <string name="training_profile_tip_mixed">Хотите более чёткий профиль в следующий раз? Выберите один рычаг: тяжелее / больше подходов / короче отдых.</string>
-    <string name="training_profile_tip_strength_high">Сохраняйте качество тяжёлых подходов: длиннее отдых, меньше мусорных подходов, следите за топ-сетами.</string>
-    <string name="training_profile_tip_strength_medium">Чтобы усилить силу: добавьте более тяжёлый топ-сет, затем сократите аксессуары.</string>
-    <string name="training_profile_tip_strength_low">Чтобы сделать фокус явно силовым: меньше повторений, длиннее отдых, меньше упражнений.</string>
-    <string name="training_profile_tip_hypertrophy_high">Держите стабильность: 6–12 повторений, стабильный объём, прогресс через повторения или вес.</string>
-    <string name="training_profile_tip_hypertrophy_medium">Чтобы набрать объём: добавьте 1–2 тяжёлых подхода на ключевые мышцы и держите повторения под контролем.</string>
-    <string name="training_profile_tip_hypertrophy_low">Чтобы сделать фокус явно на гипертрофию: больше рабочих подходов в 6–12 повторениях, короче отдых.</string>
-    <string name="training_profile_tip_endurance_high">Плотность — главное: короче отдых, держите темп, избегайте долгих пауз.</string>
+    <string name="training_profile_tip_mixed">Хочешь более чёткий профиль в следующий раз? Выбери один рычаг: тяжелее / больше подходов / короче отдых.</string>
+    <string name="training_profile_tip_strength_high">Держи качество тяжёлых подходов: длиннее отдых, меньше мусорных подходов, следи за топ-сетами.</string>
+    <string name="training_profile_tip_strength_medium">Чтобы усилить силу: добавь более тяжёлый топ-сет, затем сократи вспомогательные.</string>
+    <string name="training_profile_tip_strength_low">Чтобы фокус стал явно силовым: меньше повторений, длиннее отдых, меньше упражнений.</string>
+    <string name="training_profile_tip_hypertrophy_high">Держи стабильность: 6–12 повторений, стабильный объём, прогресс через повторения или вес.</string>
+    <string name="training_profile_tip_hypertrophy_medium">Чтобы добавить объём: 1–2 тяжёлых подхода на ключевые мышцы, повторения под контролем.</string>
+    <string name="training_profile_tip_hypertrophy_low">Чтобы фокус стал явно на гипертрофию: больше рабочих подходов в 6–12 повторениях, короче отдых.</string>
+    <string name="training_profile_tip_endurance_high">Плотность — главное: короче отдых, держи темп, избегай долгих пауз.</string>
     <string name="training_profile_tip_endurance_medium">Чтобы усилить выносливость: чуть больше повторений и меньше отдых.</string>
-    <string name="training_profile_tip_endurance_low">Чтобы сделать фокус явно на выносливость: больше повторений, короче отдых, держите темп.</string>
+    <string name="training_profile_tip_endurance_low">Чтобы фокус стал явно на выносливость: больше повторений, короче отдых, держи темп.</string>
     <string name="training_profile_confidence">Уверенность %1$d%% • %2$s</string>
     <string name="training_profile_tip_label">Совет</string>
     <string name="training_profile_segment">%1$s %2$d</string>
@@ -75,14 +75,14 @@
     <string name="training_profile_artifact_top_exercises_footer_truncated">Показано топ-%1$d из %2$d упражнений. Остальные внесли меньший вклад.</string>
     <string name="training_profile_artifact_top_exercises_footer_all">Показаны все %1$d упражнений, по убыванию вклада.</string>
     <string name="training_profile_artifact_muscle_focus_title">Фокус по мышцам</string>
-    <string name="training_profile_artifact_muscle_focus_subtitle">Доля общей нагрузки, которая легла на каждую мышцу (с учётом распределения внутри упражнений).</string>
+    <string name="training_profile_artifact_muscle_focus_subtitle">Доля общей нагрузки на каждую мышцу — с учётом того, насколько каждое упражнение её задействует.</string>
     <string name="training_profile_artifact_muscle_focus_footer_truncated">Показано топ-%1$d из %2$d задействованных мышц.</string>
     <string name="training_profile_artifact_muscle_focus_footer_all">Показаны все %1$d задействованные мышцы.</string>
     <string name="training_profile_artifact_movement_style_title">Стиль движений</string>
     <string name="training_profile_artifact_movement_style_subtitle">Как нагрузка распределилась по типу упражнений и по направлению движения.</string>
-    <string name="training_profile_artifact_compound_vs_isolation">Базовые и изолированные</string>
+    <string name="training_profile_artifact_compound_vs_isolation">База и изоляция</string>
     <string name="training_profile_artifact_compound_vs_isolation_hint">Базовые — многосуставные (присед, жим, тяга). Изолированные — односуставные (сгибания, разгибания).</string>
-    <string name="training_profile_artifact_push_vs_pull">Жимы, тяги и хиндж</string>
+    <string name="training_profile_artifact_push_vs_pull">Жим, тяга и хиндж</string>
     <string name="training_profile_artifact_push_vs_pull_hint">Жим: толкание/разгибание (жим лёжа, жим стоя). Тяга: притягивание (тяги, подтягивания). Хиндж: наклон через таз (становая, RDL).</string>
     <string name="training_profile_artifact_share">%1$d%</string>
     <string name="training_profile_artifact_sets">%1$d подх.</string>
@@ -121,7 +121,7 @@
     <string name="training_profile_insight_balanced_exercise_spread_headline">Хорошо распределено</string>
     <string name="training_profile_insight_balanced_exercise_spread_detail">Нагрузка равномерно распределилась по нескольким упражнениям — без явной концентрации.</string>
     <string name="training_profile_insight_push_pull_imbalance_headline">Push/Pull неровно</string>
-    <string name="training_profile_insight_push_pull_imbalance_detail">Одно направление сделало большую часть работы. На длинной дистанции баланс верха бережёт плечи.</string>
+    <string name="training_profile_insight_push_pull_imbalance_detail">Одно направление сделало большую часть работы. Баланс жимов и тяг со временем бережёт плечи.</string>
     <string name="training_profile_insight_narrow_muscle_focus_headline">Узкий фокус по мышцам</string>
     <string name="training_profile_insight_narrow_muscle_focus_detail">Большая часть нагрузки досталась всего двум мышцам. Полезно как специализация, дороже — если так каждую сессию.</string>
     <string name="training_profile_insight_action_add_compound_anchor">Добавь базу в следующую тренировку (присед, жим, тяга, становая).</string>
@@ -136,7 +136,7 @@
     <string name="spotlight_progress_win_action">Повтори этот вес ещё раз, потом повышай.</string>
     <string name="spotlight_needs_attention_metric">%1$d дн. без сессий</string>
     <string name="spotlight_needs_attention_context">Обычный разрыв ~%1$d дн.; сигнал с %2$d дн.</string>
-    <string name="spotlight_needs_attention_action">Верни это движение на этой неделе, если восстановился.</string>
+    <string name="spotlight_needs_attention_action">Верни это упражнение на этой неделе, если восстановился.</string>
     <string name="spotlight_good_frequency_metric">%1$sx/нед. за последние %2$d нед.</string>
     <string name="spotlight_good_frequency_context">Активно в %1$d из %2$d недель, всего %3$d сессий</string>
     <string name="spotlight_good_frequency_action">Держи тот же ритм.</string>
@@ -149,8 +149,8 @@
     <string name="highlight_type_momentum">Ускорение прогресса</string>
     <string name="highlight_type_comeback">Снова в ритме</string>
     <string name="highlight_type_consistency_hint">Активные дни и серия</string>
-    <string name="highlight_type_momentum_hint">Лучше вашего среднего</string>
-    <string name="highlight_type_comeback_hint">Возвращение к рутине</string>
+    <string name="highlight_type_momentum_hint">Лучше твоего среднего</string>
+    <string name="highlight_type_comeback_hint">Возврат к ритму</string>
     <string name="highlight_vs_average">ср.</string>
     <string name="highlight_best_value">Лучшее %1$s</string>
     <string name="highlight_status_record">Рекорд</string>
@@ -169,17 +169,17 @@
     <string name="highlight_streak_rhythm">Серия: %1$d трен. / %2$d отдых</string>
     <string name="highlight_streak_rhythm_target">Цель · %1$d трен. дней · %2$d отдых</string>
     <string name="highlight_streak_pattern_headline_primary">Паттерн: %1$d циклов</string>
-    <string name="highlight_streak_pattern_headline_secondary">%1$d тренировок / %2$d дней</string>
-    <string name="highlight_streak_pattern_target">Цель · %1$d тренировок / %2$d дней</string>
-    <string name="highlight_streak_mood_crushing">🔥 Вы отлично справляетесь. Так держать.</string>
-    <string name="highlight_streak_mood_on_track">💪 Отличный прогресс. Держите стабильный ритм.</string>
-    <string name="highlight_streak_mood_paused">Можно сделать паузу. Возвращайтесь в любое время.</string>
-    <string name="highlight_streak_mood_restart">🚀 Начните заново. Достаточно одного шага.</string>
-    <string name="performance_trend_desc_duration">Это ваш прогресс по длительности — сколько времени обычно занимает тренировка. Смотрите: если линия растёт — тренировки становятся длиннее. Если падает — вы укладываетесь быстрее, и это нормально.</string>
-    <string name="performance_trend_desc_volume">Это ваш прогресс по объёму — сколько работы вы сделали за тренировку. Смотрите: если линия растёт — вы делаете больше работы. Если падает несколько раз подряд — снизьте нагрузку или добавьте отдых.</string>
-    <string name="performance_trend_desc_density">Это ваш темп работы — сколько объёма вы делаете за минуту. Используйте как сигнал эффективности: выше — больше работы за то же время, ниже — более спокойная тренировка или больше отдыха.</string>
-    <string name="performance_trend_desc_repetitions">Это ваш прогресс по повторениям — сколько повторений вы сделали за тренировку. Смотрите: если линия растёт — вы выдерживаете больше работы. Если падает несколько раз подряд — вероятно накопилась усталость.</string>
-    <string name="performance_trend_desc_intensity">Это средний рабочий вес на повторение с весом. Используйте как сигнал тяжести: выше — в тренировке в среднем были более тяжёлые рабочие веса.</string>
+    <string name="highlight_streak_pattern_headline_secondary">%1$d тренировок / %2$d дн.</string>
+    <string name="highlight_streak_pattern_target">Цель · %1$d тренировок / %2$d дн.</string>
+    <string name="highlight_streak_mood_crushing">🔥 Ты отлично справляешься. Так держать.</string>
+    <string name="highlight_streak_mood_on_track">💪 Отличный прогресс. Держи стабильный ритм.</string>
+    <string name="highlight_streak_mood_paused">Можно сделать паузу. Возвращайся в любой момент.</string>
+    <string name="highlight_streak_mood_restart">🚀 Начни заново. Достаточно одного шага.</string>
+    <string name="performance_trend_desc_duration">Показывает, как меняется длительность тренировок. Линия растёт — сессии становятся длиннее; падает — ты заканчиваешь быстрее.</string>
+    <string name="performance_trend_desc_volume">Показывает, сколько работы за тренировку. Линия растёт — работы больше; несколько падений подряд — пора снизить нагрузку или добавить отдых.</string>
+    <string name="performance_trend_desc_density">Темп работы — сколько объёма за минуту. Выше — больше работы за то же время; ниже — более спокойная сессия или больше отдыха.</string>
+    <string name="performance_trend_desc_repetitions">Сколько повторений за тренировку. Линия растёт — выдерживаешь больше работы; несколько падений подряд — скорее всего накопилась усталость.</string>
+    <string name="performance_trend_desc_intensity">Средний рабочий вес на повторение с весом. Выше — в тренировке в среднем были более тяжёлые рабочие веса.</string>
     <string name="sets_value">Подходы (%1$s)</string>
     <string name="value_sets">%1$s подходов</string>
     <string name="one_set">1 подход</string>
@@ -194,10 +194,10 @@
     <string name="confirm_btn">Подтвердить</string>
     <string name="no_data_yet">Пока нет данных</string>
     <string name="no_exercises_yet">Пока нет упражнений</string>
-    <string name="empty_training_exercises">В этой тренировке пока нет упражнений</string>
-    <string name="empty_exercise_sets">Пока нет записанных подходов</string>
-    <string name="empty_daily_trainings">В этот день тренировок нет</string>
-    <string name="empty_exercise_examples">Упражнения не найдены</string>
+    <string name="empty_training_exercises">Добавь первое упражнение, чтобы начать отслеживать тренировку.</string>
+    <string name="empty_exercise_sets">Подходов пока нет. Добавь первый, чтобы начать.</string>
+    <string name="empty_daily_trainings">В этот день тренировок нет.</string>
+    <string name="empty_exercise_examples">По запросу ничего не нашли.</string>
     <string name="daily">Ежедневно</string>
     <string name="yearly">Ежегодно</string>
     <string name="custom">Свой</string>
@@ -213,7 +213,7 @@
     <string name="cancel_btn">Отмена</string>
     <string name="logout_btn">Выйти</string>
     <string name="delete_account">Удалить аккаунт</string>
-    <string name="loading">Загрузка..</string>
+    <string name="loading">Загрузка…</string>
     <string name="submit_btn">Отправить</string>
     <string name="delete_btn">Удалить</string>
     <string name="clear_btn">Очистить</string>
@@ -233,14 +233,14 @@
     <string name="add_set_btn">Добавить подход</string>
     <string name="or">ИЛИ</string>
     <string name="create_account_btn">Создать аккаунт</string>
-    <string name="email_placeholder">Введите email</string>
-    <string name="password_placeholder_default">Введите пароль</string>
-    <string name="password_placeholder_repeat">Повторите пароль</string>
-    <string name="name_placeholder">Введите своё имя</string>
-    <string name="weight_placeholder">Введите свой вес</string>
+    <string name="email_placeholder">Введи email</string>
+    <string name="password_placeholder_default">Введи пароль</string>
+    <string name="password_placeholder_repeat">Повтори пароль</string>
+    <string name="name_placeholder">Введи имя</string>
+    <string name="weight_placeholder">Введи свой вес</string>
     <string name="volume_placeholder">Вес</string>
     <string name="repetitions_placeholder">Повторения</string>
-    <string name="height_placeholder">Введите свой рост</string>
+    <string name="height_placeholder">Введи свой рост</string>
     <string name="exercise_record">Рекорд упражнения</string>
     <string name="not_used_before">Не использовалось ранее</string>
     <string name="ai_suggestion_btn">Подсказать</string>
@@ -250,49 +250,49 @@
 
     <string name="or_continue_with">Или продолжить с</string>
     <string name="login_title">Добро пожаловать в Grippo</string>
-    <string name="track_real_progress_no_fluff">💪 Только прогресс. Без шума.</string>
-    <string name="login_description">Войдите в свой аккаунт</string>
+    <string name="track_real_progress_no_fluff">Персональные тренировки под твой уровень, зал и прогресс.</string>
+    <string name="login_description">Войди, чтобы продолжить.</string>
     <string name="login_button_login">Войти</string>
     <string name="account_deletion">Удаление аккаунта</string>
-    <string name="account_deletion_description">Ваш аккаунт и данные будут удалены безвозвратно. Вы не сможете восстановить их позже.</string>
+    <string name="account_deletion_description">Твой аккаунт и данные будут удалены безвозвратно. Восстановить их позже не получится.</string>
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
     <string name="login_button_registration_label">Нет аккаунта?</string>
     <string name="login_button_registration">Зарегистрироваться</string>
     <string name="at_least_six_characters">Минимум 6 символов</string>
 
-    <string name="registration_credential_title">Давайте зарегистрируемся</string>
-    <string name="registration_credential_description">Создайте аккаунт, чтобы сохранять тренировки и отслеживать прогресс.</string>
+    <string name="registration_credential_title">Создадим аккаунт</string>
+    <string name="registration_credential_description">Создай аккаунт, чтобы сохранять тренировки и отслеживать прогресс.</string>
 
-    <string name="registration_user_title">Настроим профиль</string>
+    <string name="registration_user_title">Настроим твой профиль</string>
 
-    <string name="registration_name_title">Как вас зовут?</string>
-    <string name="registration_name_description">Для более персонального плана.</string>
+    <string name="registration_name_title">Как тебя зовут?</string>
+    <string name="registration_name_description">Чтобы Grippo точнее подстроил тренировки под тебя.</string>
 
-    <string name="registration_body_title">Ваше тело — ваш путь</string>
-    <string name="registration_body_description">Чтобы подобрать рекомендации.</string>
+    <string name="registration_body_title">Пара быстрых деталей</string>
+    <string name="registration_body_description">Нужно, чтобы подобрать рекомендации.</string>
 
-    <string name="registration_experience_title">Сколько вы тренируетесь?</string>
-    <string name="registration_experience_description">Не переживайте — у нас есть планы для любого уровня.</string>
+    <string name="registration_experience_title">Сколько ты тренируешься?</string>
+    <string name="registration_experience_description">Grippo адаптируется под любой уровень.</string>
 
-    <string name="registration_muscles_title">Хотите что-то пропустить?</string>
-    <string name="registration_muscles_description">Если хотите пропустить некоторые группы мышц, просто исключите их.</string>
+    <string name="registration_muscles_title">Хочешь что-то пропустить?</string>
+    <string name="registration_muscles_description">Отключи группы мышц, которые не хочешь тренировать.</string>
 
-    <string name="registration_equipment_title">Чего нет в вашем зале?</string>
-    <string name="registration_equipment_description">Если какого-то оборудования нет, исключите его, и мы уберём такие упражнения.</string>
+    <string name="registration_equipment_title">Чего нет в твоём зале?</string>
+    <string name="registration_equipment_description">Отключи недоступное оборудование — мы уберём упражнения, где оно нужно.</string>
 
     <string name="registration_completed_title">🎉 Всё готово!</string>
 
-    <string name="height_picker_title">Выберите свой рост</string>
-    <string name="height_picker_description">Это поможет персонализировать рекомендации по тренировкам.</string>
+    <string name="height_picker_title">Выбери свой рост</string>
+    <string name="height_picker_description">Нужно для персонализации рекомендаций и расчётов с весом тела.</string>
 
-    <string name="period_picker_title">Выберите период</string>
+    <string name="period_picker_title">Выбери период</string>
 
     <string name="profile">Профиль</string>
 
-    <string name="weight_picker_title">Выберите свой вес</string>
-    <string name="weight_picker_description">Используется для расчёта показателей вроде ИМТ и оптимизации тренировок.</string>
-    <string name="duration_picker_title">Выберите длительность</string>
+    <string name="weight_picker_title">Выбери свой вес</string>
+    <string name="weight_picker_description">Нужно для расчёта ИМТ и калибровки упражнений с весом тела.</string>
+    <string name="duration_picker_title">Выбери длительность</string>
     <string name="hours_short">ч</string>
     <string name="minutes_short">мин</string>
 
@@ -300,10 +300,10 @@
     <string name="experience_intermediate_title">Средний</string>
     <string name="experience_advanced_title">Продвинутый</string>
     <string name="experience_pro_title">Профи</string>
-    <string name="experience_beginner_description">Вы тренируетесь меньше 1 года и сейчас знакомитесь с упражнениями.</string>
-    <string name="experience_intermediate_description">Вы тренируетесь больше 1 года, знакомы с большинством упражнений и уже выстроили крепкую базу.</string>
-    <string name="experience_advanced_description">Вы тренируетесь больше 2 лет, владеете техникой и показываете стабильный прогресс.</string>
-    <string name="experience_pro_description">Вы тренируетесь больше 5 лет, отлично владеете техникой и поддерживаете высокий уровень развития мышц.</string>
+    <string name="experience_beginner_description">Тренируешься меньше года и пока знакомишься с основными упражнениями.</string>
+    <string name="experience_intermediate_description">Тренируешься больше года, уверенно владеешь основными упражнениями и уже выстроил базу.</string>
+    <string name="experience_advanced_description">Тренируешься больше 2 лет, чистая техника и стабильный прогресс.</string>
+    <string name="experience_pro_description">Тренируешься больше 5 лет, отличная техника и высокий уровень развития мышц.</string>
 
 
     <string name="profile_menu_excluded_muscles">Мышцы</string>
@@ -319,14 +319,14 @@
     <string name="density">Плотность</string>
     <string name="sets">Подходы</string>
     <string name="statistics">Статистика</string>
-    <string name="follow_us">Следите за нами</string>
+    <string name="follow_us">Подписывайся</string>
     <string name="instagram">Instagram</string>
     <string name="threads">Threads</string>
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
     <string name="official_grippo_channels">Официальные каналы Grippo</string>
-    <string name="social_hero_headline">Присоединяйтесь к сообществу Grippo</string>
-    <string name="social_hero_subtitle">Советы по тренировкам, обновления и вдохновение от таких же атлетов, как ты</string>
+    <string name="social_hero_headline">Присоединяйся к сообществу Grippo</string>
+    <string name="social_hero_subtitle">Советы для тренировок, обновления Grippo и практичные идеи для зала.</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — мышечная нагрузка</string>
     <string name="muscle_loading">Мышечная нагрузка</string>
@@ -336,7 +336,7 @@
     <string name="muscle_load_balance_status_balanced">ровное распределение</string>
     <string name="muscle_load_balance_status_moderate">умеренный перекос</string>
     <string name="muscle_load_balance_status_strong">сильный перекос</string>
-    <string name="muscle_load_balance_description_1">Показывает, насколько равномерно были натренированы ваши мышцы.</string>
+    <string name="muscle_load_balance_description_1">Показывает, насколько равномерно были натренированы твои мышцы.</string>
     <string name="muscle_load_balance_description_2">100 = идеальный баланс, 0 = перекос в одну группу.</string>
     <string name="muscle_load_bias">Перекос: %1$s +%2$d%</string>
     <string name="muscle_load_gap">Пробел: %1$s %2$s</string>
@@ -361,7 +361,7 @@
     <string name="equipments">Оборудование</string>
     <string name="muscles">Мышцы</string>
     <string name="weight_history">История веса</string>
-    <string name="home_empty_title">Остался один шаг</string>
+    <string name="home_empty_title">Тренировок пока нет</string>
     <string name="home_empty_subtitle">Начни первую тренировку, и здесь появятся подборки.</string>
     <string name="start_workout">Начать тренировку</string>
     <string name="debug">Отладка</string>
@@ -385,8 +385,8 @@
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
     <string name="tomorrow">Завтра</string>
-    <string name="select_date">Выберите дату</string>
-    <string name="select_month">Выберите месяц</string>
+    <string name="select_date">Выбери дату</string>
+    <string name="select_month">Выбери месяц</string>
     <string name="x">x</string>
     <string name="tonnage">Тоннаж</string>
     <string name="spotlight">В центре внимания</string>
@@ -400,19 +400,19 @@
     <string name="volume">Объём</string>
     <string name="sets_label">Подходы:</string>
     <string name="training_progress_lost_title">Выйти из тренировки</string>
-    <string name="training_progress_lost_description">Закрытие сейчас приведёт к потере всего прогресса в этой сессии.</string>
+    <string name="training_progress_lost_description">Если закроешь сейчас, весь прогресс этой сессии будет потерян.</string>
     <string name="confirm_training_completion_title">Завершить тренировку</string>
     <string name="confirm_training_completion_description">Длительность тренировки: %1$s</string>
-    <string name="confirm_training_completion_subtitle">Отличная работа! Готовы завершить тренировку?</string>
-    <string name="confirm_training_completion_hint">Можно изменить длительность.</string>
+    <string name="confirm_training_completion_subtitle">Отличная работа. Готов завершить?</string>
+    <string name="confirm_training_completion_hint">Длительность можно изменить.</string>
     <string name="something_went_wrong">Что-то пошло не так</string>
     <string name="timeout_error">Время ожидания истекло</string>
     <string name="unexpected_network_error">Неожиданная сетевая ошибка</string>
-    <string name="select_exercise">Выберите упражнение</string>
+    <string name="select_exercise">Выбери упражнение</string>
     <string name="draft_training_alert_title_add">Продолжить тренировку</string>
-    <string name="draft_training_alert_description_add">У вас есть незавершённый черновик тренировки, сохранённый локально. Продолжить с места, где вы остановились?</string>
-    <string name="draft_training_alert_title_edit">Продолжить редактирование тренировки</string>
-    <string name="draft_training_alert_description_edit">Вы редактировали сохранённую тренировку и оставили незавершённые изменения. Продолжить редактирование?</string>
+    <string name="draft_training_alert_description_add">На устройстве сохранён незавершённый черновик. Продолжить с места, где остановился?</string>
+    <string name="draft_training_alert_title_edit">Продолжить редактирование</string>
+    <string name="draft_training_alert_description_edit">При редактировании этой тренировки остались несохранённые изменения. Продолжить?</string>
     <string name="not_found">Не найдено</string>
     <string name="reset">Сбросить</string>
     <string name="menu">Меню</string>
@@ -551,16 +551,16 @@
     <string name="iteration_focus_unidentified">Не определено</string>
 
     <!-- Equipment hints -->
-    <string name="equipment_hint_common">Повторы: сколько повторений сделал(а) в этом подходе. Вес: вводи по подсказкам ниже.</string>
+    <string name="equipment_hint_common">Повторы: сколько повторений сделал в этом подходе. Вес: вводи по подсказкам ниже.</string>
     <string name="equipment_hint_none">Вес: если без доп. веса — введи 1. Если держишь блин/гантель/жилет — введи только доп. вес.</string>
 
     <string name="equipment_hint_dumbbells">Укажи суммарный вес пары (2×20 → 40), даже если делаешь поочерёдно.</string>
-    <string name="equipment_hint_barbell">Укажи общий вес на штанге. Считаешь гриф — считай всегда.</string>
+    <string name="equipment_hint_barbell">Вводи общий вес на штанге. Если считаешь гриф, считай его всегда.</string>
     <string name="equipment_hint_v_bar">V-рукоятку держи двумя руками.</string>
     <string name="equipment_hint_wide_grip_handle">Широкую рукоятку держи двумя руками.</string>
     <string name="equipment_hint_close_grip_handle">Узкую рукоятку держи двумя руками.</string>
-    <string name="equipment_hint_ez_bar">Укажи общий вес на EZ-грифе. Считаешь гриф — считай всегда.</string>
-    <string name="equipment_hint_trap_bar">Укажи общий вес на трап-грифе. Считаешь гриф — считай всегда.</string>
+    <string name="equipment_hint_ez_bar">Вводи общий вес на EZ-грифе. Если считаешь гриф, считай его всегда.</string>
+    <string name="equipment_hint_trap_bar">Вводи общий вес на трап-грифе. Если считаешь гриф, считай его всегда.</string>
     <string name="equipment_hint_rope">Канат держи одной или двумя руками — как в упражнении.</string>
     <string name="equipment_hint_straight_bar">Прямой гриф держи двумя руками.</string>
     <string name="equipment_hint_cord_handles">Держи рукоятку одной рукой или парой — как в упражнении.</string>
@@ -572,7 +572,7 @@
     <string name="equipment_hint_leg_curl_machines">Укажи вес на сгибании ног.</string>
     <string name="equipment_hint_chest_press_machines">Укажи вес, который выставил на жиме в тренажёре.</string>
     <string name="equipment_hint_biceps_machines">Укажи вес, который выставил на бицепс-тренажёре.</string>
-    <string name="equipment_hint_smith_machines">Укажи сумму блинов. Про вес грифа просто держи один подход.</string>
+    <string name="equipment_hint_smith_machines">Вводи общий вес блинов. Гриф Смита можно не считать — главное, делай это одинаково каждый раз.</string>
     <string name="equipment_hint_hack_squat_machines">Укажи сумму блинов на гакк-приседе.</string>
     <string name="equipment_hint_leg_press_machine">Укажи сумму блинов на жиме ногами.</string>
     <string name="equipment_hint_deadlift_machines">Укажи сумму блинов на тяговом тренажёре.</string>
@@ -603,10 +603,10 @@
     <string name="equipment_hint_squat_rack">Укажи общий вес штанги в раме.</string>
     <string name="equipment_hint_preacher_curl_bench">Укажи вес, который поднимаешь в упражнении.</string>
     <string name="equipment_hint_row_bench">Укажи вес, который используешь в упражнении.</string>
-    <string name="notification_forgot_training_title">Не забудь про тренировку 💪</string>
-    <string name="notification_forgot_training_description">Вернись, чтобы завершить или сохранить прогресс</string>
-    <string name="notification_weight_title">Проверь свой вес сегодня 👋</string>
-    <string name="notification_weight_description">Обнови данные о прогрессе с помощью быстрого взвешивания.</string>
+    <string name="notification_forgot_training_title">Тренировка ещё открыта 💪</string>
+    <string name="notification_forgot_training_description">Вернись, чтобы завершить или сохранить прогресс.</string>
+    <string name="notification_weight_title">Быстрое взвешивание? 👋</string>
+    <string name="notification_weight_description">Свежий вес держит прогресс и рекомендации точными.</string>
 
     <string name="tooltip_suspicious_weight_title">Необычный вес</string>
     <string name="tooltip_suspicious_weight_subtitle">Возможно, пропущена или лишняя цифра</string>
@@ -620,7 +620,7 @@
     <string name="goal_save_btn">Сохранить цель</string>
     <string name="goal_customize_btn">Настроить подробнее</string>
     <string name="goal_secondary_section">Что ещё важно?</string>
-    <string name="goal_target_date_section">Когда хочешь достичь?</string>
+    <string name="goal_target_date_section">Когда хочешь её достичь?</string>
     <string name="goal_target_date_placeholder">Целевая дата</string>
     <string name="personalizations_schedule_section">Расписание тренировок</string>
     <string name="personalizations_session_duration_section">Длительность сессии</string>
@@ -637,7 +637,7 @@
     <string name="personalizations_set_method_preferences_section">Стиль выполнения</string>
     <string name="personalizations_equipment_preferences_section">Оборудование</string>
     <string name="personalizations_training_phase_section">Фаза цикла</string>
-    <string name="goal_intro">К чему вы сейчас идёте? Подстроим опыт под это.</string>
+    <string name="goal_intro">К чему ты сейчас идёшь? Подстроим тренировки под это.</string>
     <string name="goal_main_section">Главное</string>
     <string name="goal_personalization_section">Личные нюансы</string>
     <string name="goal_review_title">Твоя цель</string>
@@ -658,28 +658,28 @@
     <!-- Secondary goals -->
     <string name="goal_secondary_build_muscle">Набор мышц</string>
     <string name="goal_secondary_get_stronger">Набор силы</string>
-    <string name="goal_secondary_lose_fat">Сжечь жир</string>
+    <string name="goal_secondary_lose_fat">Сжигание жира</string>
     <string name="goal_secondary_return_to_training">Мягкий возврат</string>
-    <string name="goal_secondary_maintain">Поддерживать форму</string>
-    <string name="goal_secondary_general_fitness">Общее самочувствие</string>
+    <string name="goal_secondary_maintain">Сохранение формы</string>
+    <string name="goal_secondary_general_fitness">Общая форма</string>
     <string name="goal_secondary_consistency">Регулярность</string>
 
     <!-- Primary goal descriptions -->
-    <string name="goal_primary_build_muscle_desc">Наращивай массу и прорабатывай рельеф с прогрессивными тренировками на гипертрофию</string>
-    <string name="goal_primary_get_stronger_desc">Пробивай новые рекорды с тяжёлыми базовыми упражнениями и чёткой программой силовых</string>
-    <string name="goal_primary_lose_fat_desc">Сжигай жир и меняй форму тела с тренировками, которые сохраняют мышцы</string>
-    <string name="goal_primary_return_to_training_desc">Возвращайся в строй безопасно и без спешки после перерыва или травмы</string>
-    <string name="goal_primary_maintain_desc">Сохраняй достигнутую форму с регулярными сбалансированными тренировками</string>
-    <string name="goal_primary_general_fitness_desc">Чувствуй себя лучше, двигайся свободнее и живи здоровее с разносторонними тренировками</string>
+    <string name="goal_primary_build_muscle_desc">Тренируйся на рост мышц со структурным объёмом и стабильной прогрессией.</string>
+    <string name="goal_primary_get_stronger_desc">Тяжёлые базовые упражнения, чёткая прогрессия и силовая работа в фокусе.</string>
+    <string name="goal_primary_lose_fat_desc">Поддержи снижение жира стабильными тренировками, которые сохраняют мышцы.</string>
+    <string name="goal_primary_return_to_training_desc">Постепенно восстанавливай режим под контролем нагрузки.</string>
+    <string name="goal_primary_maintain_desc">Удерживай форму регулярными сбалансированными тренировками.</string>
+    <string name="goal_primary_general_fitness_desc">Сбалансированные тренировки на силу, движение и регулярность.</string>
 
     <!-- Secondary goal descriptions -->
-    <string name="goal_secondary_build_muscle_desc">Добавь мышечный объём и улучши рельеф параллельно с основной целью</string>
-    <string name="goal_secondary_get_stronger_desc">Развивай силу и мощь в дополнение к своему главному фокусу</string>
-    <string name="goal_secondary_lose_fat_desc">Снижай процент жира и улучшай состав тела на пути к основной цели</string>
-    <string name="goal_secondary_return_to_training_desc">Постепенно восстанавливай базу, двигаясь к главной цели</string>
-    <string name="goal_secondary_maintain_desc">Удерживай текущий уровень и не теряй набранную форму</string>
-    <string name="goal_secondary_general_fitness_desc">Повышай энергию, выносливость и общее физическое самочувствие</string>
-    <string name="goal_secondary_consistency_desc">Сформируй привычку тренироваться и придерживайся расписания неделю за неделей</string>
+    <string name="goal_secondary_build_muscle_desc">Добавь рост мышц параллельно с основной целью.</string>
+    <string name="goal_secondary_get_stronger_desc">Развивай силу в дополнение к главному фокусу.</string>
+    <string name="goal_secondary_lose_fat_desc">Поддерживай снижение жира на пути к основной цели.</string>
+    <string name="goal_secondary_return_to_training_desc">Постепенно восстанавливай базу, двигаясь к главной цели.</string>
+    <string name="goal_secondary_maintain_desc">Удерживай текущий уровень и не теряй набранное.</string>
+    <string name="goal_secondary_general_fitness_desc">Повышай энергию, выносливость и общее самочувствие.</string>
+    <string name="goal_secondary_consistency_desc">Формируй привычку тренироваться неделю за неделей.</string>
 
     <!-- Goal progress card -->
     <string name="goal_card_title">Цель тренировок</string>
@@ -695,14 +695,14 @@
     <string name="goal_card_progress_due_today">Срок сегодня</string>
     <string name="goal_card_started_label">Старт %1$s</string>
     <string name="goal_card_target_label">Финиш %1$s</string>
-    <string name="goal_card_no_data">Пока мало тренировок для оценки.</string>
-    <string name="goal_card_description_1">Показывает, насколько последние тренировки соответствуют цели.</string>
+    <string name="goal_card_no_data">Запиши ещё пару тренировок, чтобы оценить соответствие цели.</string>
+    <string name="goal_card_description_1">Показывает, насколько твои последние тренировки соответствуют цели.</string>
     <string name="goal_card_description_2">100 — полное соответствие.</string>
     <string name="goal_card_update_btn">Обновить</string>
 
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Детали цели</string>
-    <string name="goal_details_subtitle">Разбираем, насколько твои тренировки совпадают с выбранной целью.</string>
+    <string name="goal_details_subtitle">Смотрим внимательнее, насколько твои тренировки совпадают с выбранной целью.</string>
     <string name="goal_details_insights_title">Что влияет на счёт</string>
 
     <!-- Training goal details: reason headlines -->
@@ -937,7 +937,7 @@
     <string name="personalization_prefer_full_body">Full-body</string>
     <string name="personalization_prefer_upper_lower">Upper / Lower</string>
     <string name="personalization_prefer_push_pull_legs">Push / Pull / Legs</string>
-    <string name="personalization_prefer_split_routine">Split-routine</string>
+    <string name="personalization_prefer_split_routine">Сплит</string>
 
     <!-- Personalizations: set / method preferences -->
     <string name="personalization_prefer_straight_sets">Прямые подходы</string>
@@ -959,7 +959,7 @@
     <string name="personalization_phase_competition_prep">Подготовка к соревнованиям</string>
 
     <!-- Muscle load summary -->
-    <string name="muscle_load_summary_empty">Запишите тренировку, чтобы увидеть нагрузку по мышцам.</string>
+    <string name="muscle_load_summary_empty">Запиши тренировку, чтобы увидеть распределение нагрузки по мышцам.</string>
     <string name="muscle_load_summary_top_group_fallback">топ-группа</string>
     <string name="muscle_load_summary_weakest_group_fallback">самая слабая группа</string>
     <string name="muscle_load_summary_note">Примечание: нагрузка по стимулу. Базовые упражнения получают небольшой бонус; крошечные доли сглаживаются; мелкие/чувствительные мышцы ограничены сверху.</string>
@@ -967,32 +967,32 @@
     <string name="muscle_load_summary_headline_clear_split">Чёткий сплит: топ-2 ~%1$d%% (топ ~%2$d%%, второй ~%3$d%%).</string>
     <string name="muscle_load_summary_headline_balanced">Сбалансировано: топ ~%1$d%%, топ-2 ~%2$d%%.</string>
     <string name="muscle_load_summary_headline_mild_bias">Небольшой перекос: топ ~%1$d%%, топ-2 ~%2$d%% (остальное ~%3$d%%).</string>
-    <string name="muscle_load_summary_action_strong_focus_with_target">Если это цель — держите 2-3 недели. Если нет: добавьте 2-4 подхода/нед. на %1$s, пока доля остальных не превысит ~25%%.</string>
-    <string name="muscle_load_summary_action_strong_focus_no_target">Если это цель — держите 2-3 недели. Если нет: добавьте 2-4 подхода/нед. на наименее тренированную группу, пока доля остальных не превысит ~25%%.</string>
-    <string name="muscle_load_summary_action_clear_split_with_target">Хороший сплит. Чтобы не просела: держите 1-3 подхода/нед. на %1$s и другие группы с малой долей.</string>
-    <string name="muscle_load_summary_action_clear_split_no_target">Хороший сплит. Чтобы не просели: держите 1-3 подхода/нед. на группы с малой долей.</string>
-    <string name="muscle_load_summary_action_balanced">Прочная база. Если прогресс застопорится: выберите одну группу и добавьте 2-3 подхода/нед.</string>
-    <string name="muscle_load_summary_action_mild_bias_with_target">Если хотите ровнее: добавьте 1-2 подхода за сессию на %1$s (или ту, что ниже всех), пока топ-2 не станет ~70-75%%.</string>
-    <string name="muscle_load_summary_action_mild_bias_no_target">Если хотите ровнее: добавьте 1-2 подхода за сессию на группу с наименьшей долей, пока топ-2 не станет ~70-75%%.</string>
+    <string name="muscle_load_summary_action_strong_focus_with_target">Если это цель — держи 2–3 недели. Если нет: добавь 2–4 подхода/нед. на %1$s, пока доля остальных не превысит ~25%%.</string>
+    <string name="muscle_load_summary_action_strong_focus_no_target">Если это цель — держи 2–3 недели. Если нет: добавь 2–4 подхода/нед. на наименее тренированную группу, пока доля остальных не превысит ~25%%.</string>
+    <string name="muscle_load_summary_action_clear_split_with_target">Хороший сплит. Чтобы не просела: держи 1–3 подхода/нед. на %1$s и другие группы с малой долей.</string>
+    <string name="muscle_load_summary_action_clear_split_no_target">Хороший сплит. Чтобы не просели: держи 1–3 подхода/нед. на группы с малой долей.</string>
+    <string name="muscle_load_summary_action_balanced">Прочная база. Если прогресс застопорится: выбери одну группу и добавь 2–3 подхода/нед.</string>
+    <string name="muscle_load_summary_action_mild_bias_with_target">Если хочешь ровнее: добавь 1–2 подхода за сессию на %1$s (или ту, что ниже всех), пока топ-2 не станет ~70–75%%.</string>
+    <string name="muscle_load_summary_action_mild_bias_no_target">Если хочешь ровнее: добавь 1–2 подхода за сессию на группу с наименьшей долей, пока топ-2 не станет ~70–75%%.</string>
     <string name="muscle_load_summary_top_muscle">Топ-мышца: %1$s (~%2$d%%).</string>
-    <string name="muscle_load_summary_volume_higher_than_stimulus">Объём выше стимула для %1$s. Много тоннажа, меньше фокуса. Для размера: добавьте 1-2 облегчённых подхода. Для силы: сохраните и оставьте один тяжёлый топ-сет.</string>
-    <string name="muscle_load_summary_stimulus_higher_than_volume">Стимул выше объёма для %1$s. Больше усилий при меньшем тоннаже. Для силы: добавьте более тяжёлый топ-сет. Для размера: сохраните и добавьте 1 подход.</string>
+    <string name="muscle_load_summary_volume_higher_than_stimulus">Объём выше стимула для %1$s. Много тоннажа, меньше фокуса. Для размера: добавь 1–2 облегчённых подхода. Для силы: сохрани и оставь один тяжёлый топ-сет.</string>
+    <string name="muscle_load_summary_stimulus_higher_than_volume">Стимул выше объёма для %1$s. Больше усилий при меньшем тоннаже. Для силы: добавь более тяжёлый топ-сет. Для размера: сохрани и добавь 1 подход.</string>
     <string name="muscle_load_summary_stimulus_volume_match">Стимул и объём совпадают для топ-группы.</string>
     <string name="muscle_load_summary_second_driver">Второй драйвер: %1$s.</string>
-    <string name="muscle_load_summary_assist_suppressed">Вспомогательные группы выглядят тихо — это ожидаемо. Рейтинг сглаживает мелкие доли, чтобы базовые упражнения не раздували руки/плечи. Если хотите их рост, добавьте 2-6 изолирующих подходов/нед.</string>
-    <string name="muscle_load_summary_tail_with_weakest">Короткий хвост: остальные группы ~%1$d%%. %2$s ~%3$d%%. Рассмотрите короткий блок поддержания.</string>
-    <string name="muscle_load_summary_tail_without_weakest">Короткий хвост: остальные группы ~%1$d%%. Рассмотрите короткий блок поддержания.</string>
+    <string name="muscle_load_summary_assist_suppressed">Вспомогательные группы выглядят тихо — это ожидаемо. Оценка сглаживает мелкие доли, чтобы базовые упражнения не раздували руки и плечи. Если хочешь их рост, добавь 2–6 изолирующих подходов/нед.</string>
+    <string name="muscle_load_summary_tail_with_weakest">Короткий хвост: остальные группы ~%1$d%%. %2$s ~%3$d%%. Рассмотри короткий блок поддержания.</string>
+    <string name="muscle_load_summary_tail_without_weakest">Короткий хвост: остальные группы ~%1$d%%. Рассмотри короткий блок поддержания.</string>
 
     <!-- Goal setup suggestion dialog -->
-    <string name="goal_setup_suggestion_title">Расскажите о вашей цели</string>
-    <string name="goal_setup_suggestion_subtitle">Пара быстрых ответов поможет нам понять, к чему вы идёте. Изменить можно в любой момент.</string>
-    <string name="goal_setup_suggestion_benefit_tailored_title">Пространство под вас</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Мелкие детали помогают увидеть, что действительно важно для вас в тренировках.</string>
+    <string name="goal_setup_suggestion_title">Расскажи о своей цели</string>
+    <string name="goal_setup_suggestion_subtitle">Пара быстрых ответов поможет точнее подстроить тренировки. Изменить можно в любой момент.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_title">Под тебя</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Мелкие детали помогают Grippo сосредоточиться на том, что важно именно тебе.</string>
     <string name="goal_setup_suggestion_benefit_direction_title">Чёткое направление</string>
-    <string name="goal_setup_suggestion_benefit_direction_description">Когда цель названа, каждая тренировка чуть осмысленнее.</string>
+    <string name="goal_setup_suggestion_benefit_direction_description">Когда цель названа, каждая тренировка становится осмысленнее.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Точнее со временем</string>
-    <string name="goal_setup_suggestion_benefit_evolves_description">Чем дольше вы тренируетесь, тем больше ваша цель становится ориентиром, с которым мы растём вместе.</string>
+    <string name="goal_setup_suggestion_benefit_evolves_description">Чем дольше тренируешься, тем точнее цель становится ориентиром, с которым мы растём вместе.</string>
     <string name="goal_setup_suggestion_estimate">Около минуты</string>
-    <string name="goal_setup_suggestion_primary_btn">Поделиться целью</string>
+    <string name="goal_setup_suggestion_primary_btn">Указать цель</string>
     <string name="goal_setup_suggestion_secondary_btn">Может позже</string>
 </resources>

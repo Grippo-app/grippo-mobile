@@ -12,7 +12,6 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -26,10 +25,6 @@ public class ExerciseExamplePickerViewModel(
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState(queries = Queries(selectedMuscleGroupId = targetMuscleGroupId))
 ), ExerciseExamplePickerContract {
-
-    private companion object {
-        private const val SEARCH_DEBOUNCE = 300L
-    }
 
     init {
         muscleFeature.observeMuscles()
@@ -52,7 +47,6 @@ public class ExerciseExamplePickerViewModel(
                 )
             }
             .distinctUntilChanged()
-            .debounce(SEARCH_DEBOUNCE)
             .flatMapLatest(userExerciseExamplesUseCase::execute)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
