@@ -27,7 +27,6 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.inputs.InputHeight
 import com.grippo.design.components.inputs.InputWeight
-import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -38,9 +37,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
-import com.grippo.design.resources.provider.current_height
-import com.grippo.design.resources.provider.current_weight
-import com.grippo.design.resources.provider.more
 import com.grippo.design.resources.provider.weight_and_height
 import com.grippo.design.resources.provider.weight_history
 import kotlinx.collections.immutable.ImmutableSet
@@ -62,31 +58,13 @@ internal fun ProfileBodyScreen(
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
 
-    Text(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        text = AppTokens.strings.res(Res.string.current_height),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary
-    )
-
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
     InputHeight(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         value = state.height,
         onClick = contract::onHeightPickerClick
     )
 
-    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
-
-    Text(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        text = AppTokens.strings.res(Res.string.current_weight),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary
-    )
-
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
     InputWeight(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
@@ -96,18 +74,13 @@ internal fun ProfileBodyScreen(
 
     Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
-    ContentSpliter(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        text = AppTokens.strings.res(Res.string.more)
-    )
-
-    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
-
     Text(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         text = AppTokens.strings.res(Res.string.weight_history),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary
+        style = AppTokens.typography.h4(),
+        color = AppTokens.colors.text.primary,
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
@@ -132,16 +105,20 @@ internal fun ProfileBodyScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 contentPadding = resolvedPadding
             ) {
-                item {
+                item("weight_history_chart") {
                     WeightHistoryChart(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .animateItem()
+                            .fillMaxWidth(),
                         list = state.history
                     )
                 }
 
-                items(state.history) { item ->
+                items(state.history, key = { it.id }) { item ->
                     WeightHistoryCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .animateItem()
+                            .fillMaxWidth(),
                         value = item
                     )
                 }
