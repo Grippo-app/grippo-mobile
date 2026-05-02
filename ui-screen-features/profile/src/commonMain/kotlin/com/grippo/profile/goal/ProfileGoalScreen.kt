@@ -44,7 +44,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_intro
-import com.grippo.design.resources.provider.goal_main_section
 import com.grippo.design.resources.provider.goal_save_btn
 import com.grippo.design.resources.provider.goal_target_date_placeholder
 import com.grippo.design.resources.provider.goal_title
@@ -179,15 +178,6 @@ private fun MainGoalSection(
     Column(
         modifier = modifier.animateContentSize()
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.goal_main_section),
-            style = AppTokens.typography.h4(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
         InputPrimaryGoal(
             modifier = Modifier.fillMaxWidth(),
             value = primary,

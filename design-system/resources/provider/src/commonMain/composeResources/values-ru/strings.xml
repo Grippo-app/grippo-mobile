@@ -14,6 +14,7 @@
     <string name="body_weight_placeholder">Вес тела</string>
     <string name="view_workout">Просмотреть тренировку</string>
     <string name="weight_and_height">Вес и рост</string>
+    <string name="update_your_body_metrics">Держи вес и рост актуальными — мы используем их, чтобы точнее настраивать твой план.</string>
     <string name="external_weight_placeholder">Внешний вес</string>
     <string name="extra_weight_placeholder">Дополнительный вес</string>
     <string name="assist_weight_placeholder">Ассистированный вес</string>

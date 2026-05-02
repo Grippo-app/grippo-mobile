@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.HeightFormatState
@@ -37,6 +38,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
+import com.grippo.design.resources.provider.update_your_body_metrics
 import com.grippo.design.resources.provider.weight_and_height
 import com.grippo.design.resources.provider.weight_history
 import kotlinx.collections.immutable.ImmutableSet
@@ -54,6 +56,18 @@ internal fun ProfileBodyScreen(
         title = AppTokens.strings.res(Res.string.weight_and_height),
         style = ToolbarStyle.Transparent,
         leading = Leading.Back(contract::onBack)
+    )
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.update_your_body_metrics),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary,
+        textAlign = TextAlign.Center
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.block))

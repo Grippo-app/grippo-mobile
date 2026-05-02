@@ -14,6 +14,7 @@
     <string name="body_weight_placeholder">Вага тіла</string>
     <string name="view_workout">Переглянути тренування</string>
     <string name="weight_and_height">Вага та зріст</string>
+    <string name="update_your_body_metrics">Тримай вагу та зріст актуальними — ми використовуємо їх, щоб точніше налаштовувати твій план.</string>
     <string name="external_weight_placeholder">Зовнішня вага</string>
     <string name="extra_weight_placeholder">Додаткова вага</string>
     <string name="assist_weight_placeholder">Асистована вага</string>
