@@ -21,30 +21,46 @@ public val AppIcon.LineUp: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+            // L-axis: vertical (left) + horizontal (bottom).
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(4f, 3f)
+                curveTo(4.552f, 3f, 5f, 3.448f, 5f, 4f)
+                verticalLineTo(20f)
+                horizontalLineTo(21f)
+                curveTo(21.552f, 20f, 22f, 20.448f, 22f, 21f)
+                curveTo(22f, 21.552f, 21.552f, 22f, 21f, 22f)
+                horizontalLineTo(4f)
+                curveTo(3.448f, 22f, 3f, 21.552f, 3f, 21f)
+                verticalLineTo(4f)
+                curveTo(3f, 3.448f, 3.448f, 3f, 4f, 3f)
+                close()
+            }
+            // Trend polyline as rounded stroke — endpoint at the inner corner of the arrow.
             path(
                 stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
+                strokeLineWidth = 2.4f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(21f, 6f)
-                lineTo(15.707f, 11.293f)
-                curveTo(15.317f, 11.683f, 14.683f, 11.683f, 14.293f, 11.293f)
-                lineTo(12.707f, 9.707f)
-                curveTo(12.317f, 9.317f, 11.683f, 9.317f, 11.293f, 9.707f)
-                lineTo(7f, 14f)
+                moveTo(7f, 17f)
+                lineTo(11f, 13f)
+                lineTo(14f, 15f)
+                lineTo(19f, 7f)
             }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(3f, 3f)
-                verticalLineTo(17.8f)
-                curveTo(3f, 18.92f, 3f, 19.48f, 3.218f, 19.908f)
-                curveTo(3.41f, 20.284f, 3.716f, 20.59f, 4.092f, 20.782f)
-                curveTo(4.52f, 21f, 5.08f, 21f, 6.2f, 21f)
-                horizontalLineTo(21f)
+            // Arrow head — L-bracket pointing up-right; inner corner at (19, 7) so the
+            // trend stroke visually flows into it.
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(15.5f, 5f)
+                horizontalLineTo(20f)
+                curveTo(20.552f, 5f, 21f, 5.448f, 21f, 6f)
+                verticalLineTo(10.5f)
+                curveTo(21f, 11.052f, 20.552f, 11.5f, 20f, 11.5f)
+                curveTo(19.448f, 11.5f, 19f, 11.052f, 19f, 10.5f)
+                verticalLineTo(7f)
+                horizontalLineTo(15.5f)
+                curveTo(14.948f, 7f, 14.5f, 6.552f, 14.5f, 6f)
+                curveTo(14.5f, 5.448f, 14.948f, 5f, 15.5f, 5f)
+                close()
             }
         }.build()
 

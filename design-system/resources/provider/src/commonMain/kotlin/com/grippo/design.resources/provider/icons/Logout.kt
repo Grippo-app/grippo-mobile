@@ -19,62 +19,50 @@ public val AppIcon.Logout: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+            // Door — narrow rectangle (x = 3..12) with all corners rounded.
             path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(3f, 12.5f)
-                lineTo(2.215f, 11.88f)
-                lineTo(1.726f, 12.5f)
-                lineTo(2.215f, 13.12f)
-                lineTo(3f, 12.5f)
-                close()
-                moveTo(11f, 13.5f)
-                curveTo(11.552f, 13.5f, 12f, 13.052f, 12f, 12.5f)
-                curveTo(12f, 11.948f, 11.552f, 11.5f, 11f, 11.5f)
-                verticalLineTo(12.5f)
-                verticalLineTo(13.5f)
-                close()
-                moveTo(6.556f, 8f)
-                lineTo(5.771f, 7.38f)
-                lineTo(2.215f, 11.88f)
-                lineTo(3f, 12.5f)
-                lineTo(3.785f, 13.12f)
-                lineTo(7.34f, 8.62f)
-                lineTo(6.556f, 8f)
-                close()
-                moveTo(3f, 12.5f)
-                lineTo(2.215f, 13.12f)
-                lineTo(5.771f, 17.62f)
-                lineTo(6.556f, 17f)
-                lineTo(7.34f, 16.38f)
-                lineTo(3.785f, 11.88f)
-                lineTo(3f, 12.5f)
-                close()
-                moveTo(3f, 12.5f)
-                verticalLineTo(13.5f)
-                horizontalLineTo(11f)
-                verticalLineTo(12.5f)
-                verticalLineTo(11.5f)
-                horizontalLineTo(3f)
-                verticalLineTo(12.5f)
+                moveTo(5f, 3f)
+                horizontalLineTo(10f)
+                curveTo(11.105f, 3f, 12f, 3.895f, 12f, 5f)
+                verticalLineTo(7f)
+                curveTo(12f, 7.552f, 11.552f, 8f, 11f, 8f)
+                curveTo(10.448f, 8f, 10f, 7.552f, 10f, 7f)
+                verticalLineTo(5.5f)
+                curveTo(10f, 5.224f, 9.776f, 5f, 9.5f, 5f)
+                horizontalLineTo(5.5f)
+                curveTo(5.224f, 5f, 5f, 5.224f, 5f, 5.5f)
+                verticalLineTo(18.5f)
+                curveTo(5f, 18.776f, 5.224f, 19f, 5.5f, 19f)
+                horizontalLineTo(9.5f)
+                curveTo(9.776f, 19f, 10f, 18.776f, 10f, 18.5f)
+                verticalLineTo(17f)
+                curveTo(10f, 16.448f, 10.448f, 16f, 11f, 16f)
+                curveTo(11.552f, 16f, 12f, 16.448f, 12f, 17f)
+                verticalLineTo(19f)
+                curveTo(12f, 20.105f, 11.105f, 21f, 10f, 21f)
+                horizontalLineTo(5f)
+                curveTo(3.895f, 21f, 3f, 20.105f, 3f, 19f)
+                verticalLineTo(5f)
+                curveTo(3f, 3.895f, 3.895f, 3f, 5f, 3f)
                 close()
             }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(10f, 8.519f)
-                verticalLineTo(8.199f)
-                curveTo(10f, 6.576f, 10f, 5.764f, 10.476f, 5.204f)
-                curveTo(10.952f, 4.644f, 11.752f, 4.513f, 13.354f, 4.251f)
-                lineTo(14.031f, 4.14f)
-                curveTo(17.267f, 3.611f, 18.885f, 3.346f, 19.942f, 4.245f)
-                curveTo(21f, 5.143f, 21f, 6.783f, 21f, 10.062f)
-                verticalLineTo(13.938f)
-                curveTo(21f, 17.217f, 21f, 18.857f, 19.942f, 19.755f)
-                curveTo(18.885f, 20.654f, 17.267f, 20.389f, 14.031f, 19.86f)
-                lineTo(13.354f, 19.749f)
-                curveTo(11.752f, 19.487f, 10.952f, 19.356f, 10.476f, 18.796f)
-                curveTo(10f, 18.236f, 10f, 17.424f, 10f, 15.801f)
-                verticalLineTo(15.659f)
+            // Arrow — sleek pointed shape: short shaft + sharp triangular head.
+            // Shaft pill from x = 12.5..17 at y = 11..13. Head triangle from x = 17..21
+            // with tip at (21, 12). Tail rounded cap touches door right edge at x = 12.
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(13f, 11f)
+                horizontalLineTo(17f)
+                verticalLineTo(8f)
+                curveTo(17f, 7.11f, 18.07f, 6.67f, 18.7f, 7.3f)
+                lineTo(20.7f, 9.3f)
+                curveTo(22.183f, 10.783f, 22.183f, 13.217f, 20.7f, 14.7f)
+                lineTo(18.7f, 16.7f)
+                curveTo(18.07f, 17.33f, 17f, 16.89f, 17f, 16f)
+                verticalLineTo(13f)
+                horizontalLineTo(13f)
+                curveTo(12.448f, 13f, 12f, 12.552f, 12f, 12f)
+                curveTo(12f, 11.448f, 12.448f, 11f, 13f, 11f)
+                close()
             }
         }.build()
 
@@ -83,5 +71,3 @@ public val AppIcon.Logout: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _Logout: ImageVector? = null
-
-
