@@ -2,7 +2,6 @@ package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,30 +19,26 @@ public val AppIcon.User: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(12f, 7f)
-                moveToRelative(-4f, 0f)
-                arcToRelative(4f, 4f, 0f, isMoreThanHalf = true, isPositiveArc = true, 8f, 0f)
-                arcToRelative(4f, 4f, 0f, isMoreThanHalf = true, isPositiveArc = true, -8f, 0f)
+            // Head — solid filled circle (radius 4 at center 12, 7).
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(12f, 3f)
+                curveTo(14.209f, 3f, 16f, 4.791f, 16f, 7f)
+                curveTo(16f, 9.209f, 14.209f, 11f, 12f, 11f)
+                curveTo(9.791f, 11f, 8f, 9.209f, 8f, 7f)
+                curveTo(8f, 4.791f, 9.791f, 3f, 12f, 3f)
+                close()
             }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(5.338f, 18.321f)
-                curveTo(5.999f, 15.527f, 8.772f, 14f, 11.643f, 14f)
+            // Shoulders / torso — rounded "wing" silhouette underneath the head.
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(11.643f, 13f)
                 horizontalLineTo(12.357f)
-                curveTo(15.228f, 14f, 18.001f, 15.527f, 18.662f, 18.321f)
-                curveTo(18.79f, 18.861f, 18.892f, 19.427f, 18.949f, 20.002f)
-                curveTo(19.004f, 20.551f, 18.552f, 21f, 18f, 21f)
-                horizontalLineTo(6f)
-                curveTo(5.448f, 21f, 4.996f, 20.551f, 5.051f, 20.002f)
-                curveTo(5.108f, 19.427f, 5.21f, 18.861f, 5.338f, 18.321f)
+                curveTo(15.69f, 13f, 19.014f, 14.829f, 19.768f, 18.045f)
+                curveTo(19.926f, 18.717f, 20.052f, 19.422f, 20.122f, 20.135f)
+                curveTo(20.214f, 21.066f, 19.471f, 21.825f, 18.535f, 21.825f)
+                horizontalLineTo(5.465f)
+                curveTo(4.529f, 21.825f, 3.786f, 21.066f, 3.878f, 20.135f)
+                curveTo(3.948f, 19.422f, 4.074f, 18.717f, 4.232f, 18.045f)
+                curveTo(4.986f, 14.829f, 8.31f, 13f, 11.643f, 13f)
                 close()
             }
         }.build()
@@ -53,4 +48,3 @@ public val AppIcon.User: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _User: ImageVector? = null
-
