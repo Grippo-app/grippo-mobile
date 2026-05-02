@@ -32,7 +32,7 @@ public sealed class TrainingMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.brand.color5
     }
 
     public data object Edit : TrainingMenu() {
@@ -47,7 +47,7 @@ public sealed class TrainingMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.brand.color2
     }
 
     public data object Delete : TrainingMenu() {

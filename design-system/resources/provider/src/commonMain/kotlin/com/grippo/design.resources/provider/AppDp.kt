@@ -161,6 +161,8 @@ public data object AppDp {
 
         public data object LastTraining {
             val image: Dp = icon.xxxxLarge
+            val metaIcon: Dp = icon.small
+            val checkIcon: Dp = icon.small
         }
 
         public data object TrainingSummary {

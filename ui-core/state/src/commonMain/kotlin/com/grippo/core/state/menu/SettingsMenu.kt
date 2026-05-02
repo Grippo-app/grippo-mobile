@@ -32,7 +32,7 @@ public sealed class SettingsMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.icon.secondary
     }
 
     public data object Social : SettingsMenu() {
@@ -47,7 +47,7 @@ public sealed class SettingsMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.brand.color5
     }
 
     public data object Debug : SettingsMenu() {
@@ -59,10 +59,10 @@ public sealed class SettingsMenu : PickerMenuItem {
         override fun icon(): ImageVector = AppTokens.icons.Bug
 
         @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
+        override fun textColor(): Color = AppTokens.colors.semantic.error
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.semantic.error
     }
 
     public companion object {

@@ -39,7 +39,7 @@ public sealed class SocialMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.brand.color1
     }
 
     public data object TikTok : SocialMenu() {
@@ -57,7 +57,7 @@ public sealed class SocialMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.brand.color4
     }
 
     public data object YouTube : SocialMenu() {
@@ -75,7 +75,7 @@ public sealed class SocialMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.semantic.error
     }
 
     public data object Threads : SocialMenu() {
@@ -93,7 +93,7 @@ public sealed class SocialMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.primary
+        override fun iconColor(): Color = AppTokens.colors.text.primary
     }
 
     public companion object {

@@ -1,15 +1,18 @@
 package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -17,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -29,28 +34,36 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
+import com.grippo.design.resources.provider.icons.Check
+import com.grippo.design.resources.provider.icons.Dumbbell
+import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.last_workout
 import com.grippo.design.resources.provider.plate
 import com.grippo.design.resources.provider.plus_value_more
 import kotlinx.collections.immutable.toPersistentList
 
+/**
+ * Compact "last workout" teaser shown on Home. Designed to read at a glance:
+ * date as the subtitle, a soft icon-led meta row (duration · volume), then up
+ * to a few exercise names with a check mark. Tonnage stays available but
+ * loses the noisy bullet-separator style so it doesn't compete with the
+ * primary heading.
+ */
 @Composable
 public fun LastTrainingCard(
     modifier: Modifier = Modifier,
     value: TrainingState,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-
     val volume = value.total.volume.short()
 
-    val string = remember(value.createdAt, value.duration, volume) {
-        buildString {
-            append(value.createdAt.display)
-            append(" · ")
-            append(value.duration.display)
-            append(" · ")
-            append(volume)
-        }
+    // Show 4 names when there are exactly 4 exercises so the UI never has to
+    // render a useless "+1 more" line; otherwise show 3 and collapse the rest.
+    val visibleExercises = remember(value.exercises) {
+        if (value.exercises.size == 4) value.exercises.take(4) else value.exercises.take(3)
+    }
+    val hiddenExercises = remember(value.exercises.size) {
+        (value.exercises.size - visibleExercises.size).coerceAtLeast(0)
     }
 
     Box(modifier = modifier.height(intrinsicSize = IntrinsicSize.Max)) {
@@ -69,57 +82,25 @@ public fun LastTrainingCard(
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            Text(
+            Header(
                 modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.last_workout),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary
+                date = value.createdAt.display,
             )
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = string,
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary
+            MetaRow(
+                duration = value.duration.display,
+                volume = volume,
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            val firstExercises = remember(value.exercises) {
-                if (value.exercises.size == 4) {
-                    value.exercises.take(4)
-                } else {
-                    value.exercises.take(3)
-                }
-            }
-
-            firstExercises.forEach { exercise ->
-                key(exercise.id) {
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "✓ ${exercise.exerciseExample.name}",
-                        style = AppTokens.typography.b13Semi(),
-                        color = AppTokens.colors.text.secondary
-                    )
-                }
-            }
-
-            if (value.exercises.size > 4) {
-                val lastExercisesCount = value.exercises.size - 3
-
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.plus_value_more, lastExercisesCount),
-                    style = AppTokens.typography.b13Semi(),
-                    color = AppTokens.colors.text.secondary
-                )
-            }
+            ExerciseList(
+                modifier = Modifier.fillMaxWidth(),
+                names = visibleExercises.map { it.id to it.exerciseExample.name },
+                hiddenCount = hiddenExercises,
+            )
 
             Spacer(Modifier.weight(1f))
 
@@ -129,11 +110,134 @@ public fun LastTrainingCard(
                 content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.calendar)),
                 size = ButtonSize.Small,
                 style = ButtonStyle.Secondary,
-                onClick = onClick
+                onClick = onClick,
             )
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
         }
+    }
+}
+
+@Composable
+private fun Header(
+    modifier: Modifier = Modifier,
+    date: String,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
+        Text(
+            text = AppTokens.strings.res(Res.string.last_workout),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
+        )
+
+        Text(
+            text = date,
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun MetaRow(
+    modifier: Modifier = Modifier,
+    duration: String,
+    volume: String,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        MetaItem(icon = AppTokens.icons.Timer, value = duration)
+        MetaItem(icon = AppTokens.icons.Dumbbell, value = volume)
+    }
+}
+
+@Composable
+private fun MetaItem(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    value: String,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.metrics.lastTraining.metaIcon),
+            imageVector = icon,
+            tint = AppTokens.colors.icon.tertiary,
+            contentDescription = null,
+        )
+
+        Text(
+            text = value,
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.tertiary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun ExerciseList(
+    modifier: Modifier = Modifier,
+    names: List<Pair<String, String>>,
+    hiddenCount: Int,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
+        names.forEach { (id, name) ->
+            key(id) {
+                ExerciseRow(name = name)
+            }
+        }
+
+        if (hiddenCount > 0) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = AppTokens.strings.res(Res.string.plus_value_more, hiddenCount),
+                style = AppTokens.typography.b13Semi(),
+                color = AppTokens.colors.text.tertiary,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExerciseRow(
+    modifier: Modifier = Modifier,
+    name: String,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.metrics.lastTraining.checkIcon),
+            imageVector = AppTokens.icons.Check,
+            tint = AppTokens.colors.semantic.success,
+            contentDescription = null,
+        )
+
+        Text(
+            text = name,
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
