@@ -18,7 +18,7 @@ import com.grippo.design.resources.provider.experience_pro_title
 import com.grippo.design.resources.provider.icons.Advanced
 import com.grippo.design.resources.provider.icons.Beginner
 import com.grippo.design.resources.provider.icons.Intermediate
-import com.grippo.design.resources.provider.icons.Pro
+import com.grippo.design.resources.provider.icons.Trophy
 
 @Immutable
 public enum class ExperienceEnumState {
@@ -46,7 +46,7 @@ public enum class ExperienceEnumState {
             BEGINNER -> AppTokens.icons.Beginner
             INTERMEDIATE -> AppTokens.icons.Intermediate
             ADVANCED -> AppTokens.icons.Advanced
-            PRO -> AppTokens.icons.Pro
+            PRO -> AppTokens.icons.Trophy
         }
     }
 

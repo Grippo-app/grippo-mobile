@@ -22,7 +22,7 @@ import coil3.compose.AsyncImage
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Question
+import com.grippo.design.resources.provider.icons.QuestionCircle
 
 @Immutable
 public enum class ExerciseExampleImageStyle {
@@ -37,7 +37,7 @@ public fun ExerciseExampleImage(
     style: ExerciseExampleImageStyle,
     value: String?
 ) {
-    val fallback = rememberInsetVectorPainter(AppTokens.icons.Question, 12.dp)
+    val fallback = rememberInsetVectorPainter(AppTokens.icons.QuestionCircle, 12.dp)
 
     when (style) {
         ExerciseExampleImageStyle.MEDIUM -> AsyncImage(

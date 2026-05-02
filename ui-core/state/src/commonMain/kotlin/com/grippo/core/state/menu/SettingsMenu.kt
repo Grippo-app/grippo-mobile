@@ -11,7 +11,7 @@ import com.grippo.design.resources.provider.debug
 import com.grippo.design.resources.provider.follow_us
 import com.grippo.design.resources.provider.icons.Bug
 import com.grippo.design.resources.provider.icons.ChatAlt
-import com.grippo.design.resources.provider.icons.Filter
+import com.grippo.design.resources.provider.icons.Tune
 import com.grippo.design.resources.provider.more
 import com.grippo.design.resources.provider.settings
 import kotlinx.collections.immutable.ImmutableList
@@ -26,7 +26,7 @@ public sealed class SettingsMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.settings)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Filter
+        override fun icon(): ImageVector = AppTokens.icons.Tune
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary

@@ -8,11 +8,11 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_menu
-import com.grippo.design.resources.provider.icons.Pro
+import com.grippo.design.resources.provider.icons.Body
+import com.grippo.design.resources.provider.icons.Kettlebell
+import com.grippo.design.resources.provider.icons.Medal
+import com.grippo.design.resources.provider.icons.Muscle
 import com.grippo.design.resources.provider.icons.Trophy
-import com.grippo.design.resources.provider.icons.User
-import com.grippo.design.resources.provider.icons.Volume
-import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
@@ -30,7 +30,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.weight_and_height)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Weight
+        override fun icon(): ImageVector = AppTokens.icons.Body
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary
@@ -45,7 +45,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.profile_menu_experience)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Pro
+        override fun icon(): ImageVector = AppTokens.icons.Medal
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary
@@ -60,7 +60,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.profile_menu_excluded_muscles)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.User
+        override fun icon(): ImageVector = AppTokens.icons.Muscle
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary
@@ -74,7 +74,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.profile_menu_missing_equipment)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Volume
+        override fun icon(): ImageVector = AppTokens.icons.Kettlebell
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary

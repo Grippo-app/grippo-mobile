@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Pro
+import com.grippo.design.resources.provider.icons.Sparkle
 
 @Composable
 public fun BenefitRow(
@@ -83,7 +83,7 @@ private fun BenefitRowPreview() {
     PreviewContainer {
         BenefitRow(
             modifier = Modifier.fillMaxWidth(),
-            icon = AppTokens.icons.Pro,
+            icon = AppTokens.icons.Sparkle,
             title = "A space that knows you",
             description = "The little details help us see what really matters to you in training.",
         )

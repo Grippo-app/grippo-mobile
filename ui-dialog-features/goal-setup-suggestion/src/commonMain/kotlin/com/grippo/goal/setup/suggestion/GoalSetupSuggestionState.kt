@@ -12,8 +12,8 @@ import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_evolve
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
 import com.grippo.design.resources.provider.icons.LineUp
-import com.grippo.design.resources.provider.icons.Pro
 import com.grippo.design.resources.provider.icons.Repeat
+import com.grippo.design.resources.provider.icons.Sparkle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -30,7 +30,7 @@ public data class GoalSetupSuggestionState(
 
         @Composable
         public fun icon(): ImageVector = when (this) {
-            Tailored -> AppTokens.icons.Pro
+            Tailored -> AppTokens.icons.Sparkle
             Direction -> AppTokens.icons.LineUp
             Evolves -> AppTokens.icons.Repeat
         }

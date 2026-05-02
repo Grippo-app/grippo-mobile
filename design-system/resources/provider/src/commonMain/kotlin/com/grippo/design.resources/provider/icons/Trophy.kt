@@ -1,8 +1,8 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,77 +20,55 @@ public val AppIcon.Trophy: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+            // Cup body with rounded rim, soft cup body, and handle holes via EvenOdd.
             path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
+                fill = SolidColor(Color(0xFF33363F)),
+                pathFillType = PathFillType.EvenOdd
             ) {
-                moveTo(16.5f, 20.5f)
-                horizontalLineTo(7.5f)
-            }
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(13f, 18.5f)
-                curveTo(13f, 19.052f, 12.552f, 19.5f, 12f, 19.5f)
-                curveTo(11.448f, 19.5f, 11f, 19.052f, 11f, 18.5f)
-                horizontalLineTo(12f)
-                horizontalLineTo(13f)
-                close()
-                moveTo(12f, 18.5f)
-                horizontalLineTo(11f)
-                verticalLineTo(16f)
-                horizontalLineTo(12f)
-                horizontalLineTo(13f)
+                // Top rim (rounded corners)
+                moveTo(6f, 3f)
+                horizontalLineTo(18f)
+                curveTo(18.552f, 3f, 19f, 3.448f, 19f, 4f)
+                verticalLineTo(5f)
+                horizontalLineTo(20f)
+                curveTo(21.105f, 5f, 22f, 5.895f, 22f, 7f)
+                verticalLineTo(9f)
+                curveTo(22f, 11.209f, 20.209f, 13f, 18f, 13f)
+                horizontalLineTo(17.4f)
+                curveTo(16.5f, 14.95f, 14.7f, 16.4f, 13f, 16.85f)
                 verticalLineTo(18.5f)
-                horizontalLineTo(12f)
+                curveTo(13f, 18.776f, 13.224f, 19f, 13.5f, 19f)
+                horizontalLineTo(15.5f)
+                curveTo(16.052f, 19f, 16.5f, 19.448f, 16.5f, 20f)
+                curveTo(16.5f, 20.552f, 16.052f, 21f, 15.5f, 21f)
+                horizontalLineTo(8.5f)
+                curveTo(7.948f, 21f, 7.5f, 20.552f, 7.5f, 20f)
+                curveTo(7.5f, 19.448f, 7.948f, 19f, 8.5f, 19f)
+                horizontalLineTo(10.5f)
+                curveTo(10.776f, 19f, 11f, 18.776f, 11f, 18.5f)
+                verticalLineTo(16.85f)
+                curveTo(9.3f, 16.4f, 7.5f, 14.95f, 6.6f, 13f)
+                horizontalLineTo(6f)
+                curveTo(3.791f, 13f, 2f, 11.209f, 2f, 9f)
+                verticalLineTo(7f)
+                curveTo(2f, 5.895f, 2.895f, 5f, 4f, 5f)
+                horizontalLineTo(5f)
+                verticalLineTo(4f)
+                curveTo(5f, 3.448f, 5.448f, 3f, 6f, 3f)
                 close()
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(10.5f, 9.5f)
-                horizontalLineTo(13.5f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(5.5f, 14.5f)
-                curveTo(5.5f, 14.5f, 3.5f, 13f, 3.5f, 10.5f)
-                curveTo(3.5f, 9.735f, 3.5f, 9.063f, 3.5f, 8.499f)
-                curveTo(3.5f, 7.395f, 4.395f, 6.5f, 5.5f, 6.5f)
-                curveTo(6.605f, 6.5f, 7.5f, 7.395f, 7.5f, 8.5f)
-                verticalLineTo(9.5f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(18.5f, 14.5f)
-                curveTo(18.5f, 14.5f, 20.5f, 13f, 20.5f, 10.5f)
-                curveTo(20.5f, 9.735f, 20.5f, 9.063f, 20.5f, 8.499f)
-                curveTo(20.5f, 7.395f, 19.605f, 6.5f, 18.5f, 6.5f)
-                curveTo(17.395f, 6.5f, 16.5f, 7.395f, 16.5f, 8.5f)
-                verticalLineTo(9.5f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(16.5f, 11.359f)
-                verticalLineTo(7.5f)
-                curveTo(16.5f, 6.395f, 15.605f, 5.5f, 14.5f, 5.5f)
-                horizontalLineTo(9.5f)
-                curveTo(8.395f, 5.5f, 7.5f, 6.395f, 7.5f, 7.5f)
-                verticalLineTo(11.359f)
-                curveTo(7.5f, 12.697f, 8.168f, 13.946f, 9.281f, 14.688f)
-                lineTo(11.445f, 16.13f)
-                curveTo(11.781f, 16.354f, 12.219f, 16.354f, 12.555f, 16.13f)
-                lineTo(14.719f, 14.688f)
-                curveTo(15.832f, 13.946f, 16.5f, 12.697f, 16.5f, 11.359f)
+                // Left handle hole
+                moveTo(4.5f, 7f)
+                verticalLineTo(9f)
+                curveTo(4.5f, 10.105f, 5.395f, 11f, 6.5f, 11f)
+                verticalLineTo(7f)
+                curveTo(6.5f, 7f, 4.5f, 7f, 4.5f, 7f)
+                close()
+                // Right handle hole
+                moveTo(19.5f, 7f)
+                verticalLineTo(9f)
+                curveTo(19.5f, 10.105f, 18.605f, 11f, 17.5f, 11f)
+                verticalLineTo(7f)
+                curveTo(17.5f, 7f, 19.5f, 7f, 19.5f, 7f)
                 close()
             }
         }.build()
@@ -100,4 +78,3 @@ public val AppIcon.Trophy: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _Trophy: ImageVector? = null
-

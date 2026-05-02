@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Warning
+import com.grippo.design.resources.provider.icons.Info
 
 @Composable
 public fun TipCard(
@@ -36,7 +36,7 @@ public fun TipCard(
     ) {
         Icon(
             modifier = Modifier.size(AppTokens.dp.tip.image),
-            imageVector = AppTokens.icons.Warning,
+            imageVector = AppTokens.icons.Info,
             tint = AppTokens.colors.semantic.success,
             contentDescription = null
         )

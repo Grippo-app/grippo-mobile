@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -19,33 +20,31 @@ public val AppIcon.Warning: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(12f, 12f)
-                moveToRelative(-9f, 0f)
-                arcToRelative(9f, 9f, 0f, isMoreThanHalf = true, isPositiveArc = true, 18f, 0f)
-                arcToRelative(9f, 9f, 0f, isMoreThanHalf = true, isPositiveArc = true, -18f, 0f)
-            }
+            // Filled circle with exclamation cut-out
             path(
                 fill = SolidColor(Color(0xFF33363F)),
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 1f
+                pathFillType = PathFillType.EvenOdd
             ) {
-                moveTo(12.5f, 7.5f)
-                curveTo(12.5f, 7.776f, 12.276f, 8f, 12f, 8f)
-                curveTo(11.724f, 8f, 11.5f, 7.776f, 11.5f, 7.5f)
-                curveTo(11.5f, 7.224f, 11.724f, 7f, 12f, 7f)
-                curveTo(12.276f, 7f, 12.5f, 7.224f, 12.5f, 7.5f)
+                // Outer circle
+                moveTo(12f, 2f)
+                curveTo(6.477f, 2f, 2f, 6.477f, 2f, 12f)
+                curveTo(2f, 17.523f, 6.477f, 22f, 12f, 22f)
+                curveTo(17.523f, 22f, 22f, 17.523f, 22f, 12f)
+                curveTo(22f, 6.477f, 17.523f, 2f, 12f, 2f)
                 close()
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(12f, 17f)
-                verticalLineTo(10f)
+                // Exclamation stem cut-out
+                moveTo(11f, 6.5f)
+                horizontalLineTo(13f)
+                verticalLineTo(14f)
+                horizontalLineTo(11f)
+                close()
+                // Dot cut-out
+                moveTo(12f, 15.5f)
+                curveTo(11.31f, 15.5f, 10.75f, 16.06f, 10.75f, 16.75f)
+                curveTo(10.75f, 17.44f, 11.31f, 18f, 12f, 18f)
+                curveTo(12.69f, 18f, 13.25f, 17.44f, 13.25f, 16.75f)
+                curveTo(13.25f, 16.06f, 12.69f, 15.5f, 12f, 15.5f)
+                close()
             }
         }.build()
 

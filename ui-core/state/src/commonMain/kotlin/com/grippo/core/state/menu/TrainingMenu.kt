@@ -12,7 +12,7 @@ import com.grippo.design.resources.provider.details
 import com.grippo.design.resources.provider.edit_btn
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Edit
-import com.grippo.design.resources.provider.icons.EyeOn
+import com.grippo.design.resources.provider.icons.Info
 import com.grippo.design.resources.provider.selected
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -26,7 +26,7 @@ public sealed class TrainingMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.details)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.EyeOn
+        override fun icon(): ImageVector = AppTokens.icons.Info
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary

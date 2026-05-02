@@ -33,7 +33,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_daily_trainings
 import com.grippo.design.resources.provider.icons.EmptyExercise
-import com.grippo.design.resources.provider.icons.Menu
+import com.grippo.design.resources.provider.icons.MoreVertical
 import com.grippo.trainings.factory.timelineStyle
 import com.grippo.trainings.trainings.TrainingsLoader
 import kotlinx.collections.immutable.ImmutableList
@@ -128,7 +128,7 @@ private fun DailyTimelineItem(
 
                 Button(
                     content = ButtonContent.Icon(
-                        icon = ButtonIcon.Icon(AppTokens.icons.Menu),
+                        icon = ButtonIcon.Icon(AppTokens.icons.MoreVertical),
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,

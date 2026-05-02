@@ -1,8 +1,8 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,41 +20,46 @@ public val AppIcon.Timer: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(12f, 14f)
-                moveToRelative(-8f, 0f)
-                arcToRelative(8f, 8f, 0f, isMoreThanHalf = true, isPositiveArc = true, 16f, 0f)
-                arcToRelative(8f, 8f, 0f, isMoreThanHalf = true, isPositiveArc = true, -16f, 0f)
+            // Top knob (rounded pill)
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(10f, 1f)
+                horizontalLineTo(14f)
+                curveTo(14.552f, 1f, 15f, 1.448f, 15f, 2f)
+                curveTo(15f, 2.552f, 14.552f, 3f, 14f, 3f)
+                horizontalLineTo(10f)
+                curveTo(9.448f, 3f, 9f, 2.552f, 9f, 2f)
+                curveTo(9f, 1.448f, 9.448f, 1f, 10f, 1f)
+                close()
             }
+            // Clock face filled with hand cut-outs (rounded)
             path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
+                fill = SolidColor(Color(0xFF33363F)),
+                pathFillType = PathFillType.EvenOdd
             ) {
-                moveTo(12f, 14f)
-                lineTo(12f, 11f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(17.5f, 7.5f)
-                lineTo(19f, 6f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(10.068f, 2.371f)
-                curveTo(10.182f, 2.264f, 10.433f, 2.17f, 10.783f, 2.103f)
-                curveTo(11.132f, 2.036f, 11.56f, 2f, 12f, 2f)
-                curveTo(12.44f, 2f, 12.868f, 2.036f, 13.217f, 2.103f)
-                curveTo(13.567f, 2.17f, 13.818f, 2.264f, 13.932f, 2.371f)
+                // Outer circle
+                moveTo(12f, 4f)
+                curveTo(16.971f, 4f, 21f, 8.029f, 21f, 13f)
+                curveTo(21f, 17.971f, 16.971f, 22f, 12f, 22f)
+                curveTo(7.029f, 22f, 3f, 17.971f, 3f, 13f)
+                curveTo(3f, 8.029f, 7.029f, 4f, 12f, 4f)
+                close()
+                // Vertical hand cut-out (rounded pill)
+                moveTo(12f, 7f)
+                curveTo(11.448f, 7f, 11f, 7.448f, 11f, 8f)
+                verticalLineTo(13f)
+                curveTo(11f, 13.552f, 11.448f, 14f, 12f, 14f)
+                curveTo(12.552f, 14f, 13f, 13.552f, 13f, 13f)
+                verticalLineTo(8f)
+                curveTo(13f, 7.448f, 12.552f, 7f, 12f, 7f)
+                close()
+                // Horizontal hand cut-out (rounded pill)
+                moveTo(12f, 12f)
+                curveTo(11.448f, 12f, 11f, 12.448f, 11f, 13f)
+                curveTo(11f, 13.552f, 11.448f, 14f, 12f, 14f)
+                horizontalLineTo(16f)
+                curveTo(16.552f, 14f, 17f, 13.552f, 17f, 13f)
+                curveTo(17f, 12.448f, 16.552f, 12f, 16f, 12f)
+                close()
             }
         }.build()
 

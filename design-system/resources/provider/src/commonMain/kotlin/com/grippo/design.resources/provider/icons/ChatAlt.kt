@@ -1,9 +1,8 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -21,40 +20,43 @@ public val AppIcon.ChatAlt: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+            // Speech bubble with soft tail and pill-shaped message lines cut out.
             path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
+                fill = SolidColor(Color(0xFF33363F)),
+                pathFillType = PathFillType.EvenOdd
             ) {
-                moveTo(20f, 12f)
-                curveTo(20f, 8.229f, 20f, 6.343f, 18.828f, 5.172f)
-                curveTo(17.657f, 4f, 15.771f, 4f, 12f, 4f)
-                curveTo(8.229f, 4f, 6.343f, 4f, 5.172f, 5.172f)
-                curveTo(4f, 6.343f, 4f, 8.229f, 4f, 12f)
-                verticalLineTo(18f)
-                curveTo(4f, 18.943f, 4f, 19.414f, 4.293f, 19.707f)
-                curveTo(4.586f, 20f, 5.057f, 20f, 6f, 20f)
-                horizontalLineTo(12f)
-                curveTo(15.771f, 20f, 17.657f, 20f, 18.828f, 18.828f)
-                curveTo(20f, 17.657f, 20f, 15.771f, 20f, 12f)
+                // Outer bubble shape with tail
+                moveTo(6f, 3f)
+                horizontalLineTo(18f)
+                curveTo(19.657f, 3f, 21f, 4.343f, 21f, 6f)
+                verticalLineTo(14f)
+                curveTo(21f, 15.657f, 19.657f, 17f, 18f, 17f)
+                horizontalLineTo(12.5f)
+                lineTo(7.7f, 21.2f)
+                curveTo(7.0f, 21.8f, 6f, 21.3f, 6f, 20.4f)
+                verticalLineTo(17f)
+                curveTo(4.343f, 17f, 3f, 15.657f, 3f, 14f)
+                verticalLineTo(6f)
+                curveTo(3f, 4.343f, 4.343f, 3f, 6f, 3f)
                 close()
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(9f, 10f)
-                lineTo(15f, 10f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(9f, 14f)
-                horizontalLineTo(12f)
+                // Top message line cut-out (pill)
+                moveTo(7f, 8f)
+                curveTo(7f, 7.448f, 7.448f, 7f, 8f, 7f)
+                horizontalLineTo(16f)
+                curveTo(16.552f, 7f, 17f, 7.448f, 17f, 8f)
+                curveTo(17f, 8.552f, 16.552f, 9f, 16f, 9f)
+                horizontalLineTo(8f)
+                curveTo(7.448f, 9f, 7f, 8.552f, 7f, 8f)
+                close()
+                // Bottom message line cut-out (shorter pill)
+                moveTo(7f, 12f)
+                curveTo(7f, 11.448f, 7.448f, 11f, 8f, 11f)
+                horizontalLineTo(13f)
+                curveTo(13.552f, 11f, 14f, 11.448f, 14f, 12f)
+                curveTo(14f, 12.552f, 13.552f, 13f, 13f, 13f)
+                horizontalLineTo(8f)
+                curveTo(7.448f, 13f, 7f, 12.552f, 7f, 12f)
+                close()
             }
         }.build()
 
