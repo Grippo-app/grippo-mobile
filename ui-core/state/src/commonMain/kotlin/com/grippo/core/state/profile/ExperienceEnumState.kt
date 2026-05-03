@@ -15,10 +15,10 @@ import com.grippo.design.resources.provider.experience_intermediate_description
 import com.grippo.design.resources.provider.experience_intermediate_title
 import com.grippo.design.resources.provider.experience_pro_description
 import com.grippo.design.resources.provider.experience_pro_title
-import com.grippo.design.resources.provider.icons.Advanced
-import com.grippo.design.resources.provider.icons.Beginner
-import com.grippo.design.resources.provider.icons.Intermediate
-import com.grippo.design.resources.provider.icons.Trophy
+import com.grippo.design.resources.provider.icons.ExperienceAdvanced
+import com.grippo.design.resources.provider.icons.ExperienceBeginner
+import com.grippo.design.resources.provider.icons.ExperienceIntermediate
+import com.grippo.design.resources.provider.icons.ExperiencePro
 
 @Immutable
 public enum class ExperienceEnumState {
@@ -43,10 +43,10 @@ public enum class ExperienceEnumState {
     @Composable
     public fun icon(): ImageVector {
         return when (this) {
-            BEGINNER -> AppTokens.icons.Beginner
-            INTERMEDIATE -> AppTokens.icons.Intermediate
-            ADVANCED -> AppTokens.icons.Advanced
-            PRO -> AppTokens.icons.Trophy
+            BEGINNER -> AppTokens.icons.ExperienceBeginner
+            INTERMEDIATE -> AppTokens.icons.ExperienceIntermediate
+            ADVANCED -> AppTokens.icons.ExperienceAdvanced
+            PRO -> AppTokens.icons.ExperiencePro
         }
     }
 
