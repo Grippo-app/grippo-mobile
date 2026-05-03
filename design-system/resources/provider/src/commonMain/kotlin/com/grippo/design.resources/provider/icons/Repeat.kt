@@ -20,28 +20,34 @@ public val AppIcon.Repeat: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+            // 270° open arc — refresh-style. Starts at 12 o'clock, sweeps clockwise
+            // through 3 → 6 → 9 o'clock. Open at the top so the arrow can sit in the gap.
             path(
                 stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(14f, 11f)
-                lineTo(10f, 15f)
-                lineTo(14f, 19f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
+                strokeLineWidth = 2.5f,
                 strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(4.206f, 12.75f)
-                curveTo(3.215f, 11.892f, 2.818f, 10.895f, 3.077f, 9.913f)
-                curveTo(3.336f, 8.931f, 4.235f, 8.018f, 5.636f, 7.318f)
-                curveTo(7.037f, 6.618f, 8.861f, 6.168f, 10.825f, 6.038f)
-                curveTo(12.79f, 5.909f, 14.784f, 6.108f, 16.5f, 6.603f)
-                curveTo(18.216f, 7.098f, 19.557f, 7.863f, 20.315f, 8.778f)
-                curveTo(21.073f, 9.693f, 21.206f, 10.708f, 20.693f, 11.665f)
-                curveTo(20.181f, 12.622f, 19.051f, 13.467f, 17.479f, 14.07f)
-                curveTo(15.907f, 14.673f, 13.981f, 15f, 12f, 15f)
+                moveTo(12f, 4f)
+                curveTo(16.418f, 4f, 20f, 7.582f, 20f, 12f)
+                curveTo(20f, 16.418f, 16.418f, 20f, 12f, 20f)
+                curveTo(7.582f, 20f, 4f, 16.418f, 4f, 12f)
+            }
+            // Arrow head — triangle pointing LEFT, with all three corners softly rounded.
+            // Back-edge sits at the arc's start (12, 4) so they merge cleanly.
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                // Top-back corner (rounded)
+                moveTo(13f, 1.5f)
+                curveTo(13.55f, 1.5f, 14f, 1.95f, 14f, 2.5f)
+                // Back side going down
+                verticalLineTo(5.5f)
+                // Bottom-back corner (rounded)
+                curveTo(14f, 6.05f, 13.55f, 6.5f, 13f, 6.5f)
+                // Diagonal down-left to tip
+                lineTo(8.5f, 4.3f)
+                // Tip corner (rounded — small arc)
+                curveTo(8f, 4.05f, 8f, 3.95f, 8.5f, 3.7f)
+                // Diagonal up-left back to top-back
+                close()
             }
         }.build()
 
