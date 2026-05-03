@@ -1,9 +1,7 @@
 package com.grippo.design.components.inputs
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -21,7 +19,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Cancel
-import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.name_placeholder
 
 @Composable
@@ -42,14 +39,6 @@ public fun InputName(
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
-        leading = { color ->
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.input.icon),
-                imageVector = AppTokens.icons.User,
-                tint = color,
-                contentDescription = null
-            )
-        },
         trailing = { color ->
             InputTrailingIconButton(
                 visible = value.display.isNotEmpty(),
