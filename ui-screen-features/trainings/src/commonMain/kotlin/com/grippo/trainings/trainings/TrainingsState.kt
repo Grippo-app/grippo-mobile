@@ -40,6 +40,8 @@ internal sealed interface TrainingsTimelinePeriod {
 
     fun rangeFor(anchor: LocalDateTime): DateRange
 
+    fun effectiveRange(anchor: LocalDateTime, limitations: DateRange): DateRange
+
     @Immutable
     data class Daily(
         val items: ImmutableList<TimelineState.Daily.Item> = persistentListOf(),
@@ -53,6 +55,11 @@ internal sealed interface TrainingsTimelinePeriod {
             from = DateTimeUtils.startOfDay(anchor),
             to = DateTimeUtils.endOfDay(anchor),
         )
+
+        override fun effectiveRange(
+            anchor: LocalDateTime,
+            limitations: DateRange,
+        ): DateRange = rangeFor(anchor).coerceWithin(limitations)
 
         companion object {
             const val ID: String = "daily"
@@ -83,6 +90,11 @@ internal sealed interface TrainingsTimelinePeriod {
                 to = DateTimeUtils.endOfDay(lastDay),
             )
         }
+
+        override fun effectiveRange(
+            anchor: LocalDateTime,
+            limitations: DateRange,
+        ): DateRange = rangeFor(anchor)
 
         companion object {
             const val ID: String = "monthly"

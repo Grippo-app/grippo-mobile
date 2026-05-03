@@ -45,9 +45,9 @@ internal class TrainingsViewModel(
 
     init {
         val rangeFlow = state
-            .map { it.date to it.limitations }
+            .map { Triple(it.date, it.limitations, it.period) }
             .distinctUntilChanged()
-            .map { (date, limitations) -> date.coerceWithin(limitations) }
+            .map { (date, limitations, period) -> period.effectiveRange(date.from, limitations) }
 
         rangeFlow
             .mapLatest { range ->
@@ -230,12 +230,6 @@ internal class TrainingsViewModel(
         if (shifted == current.date) return
 
         update { it.copy(date = shifted) }
-    }
-
-    private fun DateRange.coerceWithin(limitations: DateRange): DateRange {
-        val start = if (from < limitations.from) limitations.from else from
-        val end = if (to > limitations.to) limitations.to else to
-        return if (end < start) DateRange(start, start) else DateRange(start, end)
     }
 
     private fun openTrainingEdit(id: String) {

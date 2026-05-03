@@ -11,6 +11,17 @@ public data class DateRange(
     val to: LocalDateTime,
 ) {
     public fun isWellFormed(): Boolean = from <= to
+
+    /**
+     * Clamps this range inside [limitations]. If the resulting range would be
+     * inverted (end before start), collapses it to a zero-length range at the
+     * coerced start.
+     */
+    public fun coerceWithin(limitations: DateRange): DateRange {
+        val start = if (from < limitations.from) limitations.from else from
+        val end = if (to > limitations.to) limitations.to else to
+        return if (end < start) DateRange(start, start) else DateRange(start, end)
+    }
 }
 
 @Serializable
