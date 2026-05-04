@@ -32,9 +32,11 @@ internal fun MuscleLoadingItem(
         if (dominant) AppTokens.typography.h6()
         else AppTokens.typography.b13Med()
 
+    // Values use a lighter weight than labels so percentages stop competing
+    // with card titles for visual attention.
     val valueStyle =
-        if (dominant) AppTokens.typography.h6()
-        else AppTokens.typography.b13Semi()
+        if (dominant) AppTokens.typography.b15Med()
+        else AppTokens.typography.b12Med()
 
     val textColor =
         if (dominant) AppTokens.colors.text.primary

@@ -1,6 +1,5 @@
 package com.grippo.design.components.metrics.engagement.streak
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +24,10 @@ import com.grippo.design.resources.provider.highlight_streak_mood_on_track
 import com.grippo.design.resources.provider.highlight_streak_mood_paused
 import com.grippo.design.resources.provider.highlight_streak_mood_restart
 import com.grippo.design.resources.provider.highlight_streak_pattern_headline_primary
-import com.grippo.design.resources.provider.highlight_streak_pattern_headline_secondary
 import com.grippo.design.resources.provider.highlight_streak_pattern_target
 import com.grippo.design.resources.provider.highlight_streak_rhythm
 import com.grippo.design.resources.provider.highlight_streak_rhythm_target
 import com.grippo.design.resources.provider.highlight_streak_weekly_headline_primary
-import com.grippo.design.resources.provider.highlight_streak_weekly_headline_secondary
 import com.grippo.design.resources.provider.highlight_streak_weekly_target
 import com.grippo.design.resources.provider.highlight_streaks
 
@@ -45,33 +42,26 @@ public fun TrainingStreakCard(
     ) {
         val title = AppTokens.strings.res(Res.string.highlight_streaks)
 
-        val (headlinePrimary, headlineSecondary) = when (val featured = value.featured) {
+        val headlinePrimary = when (val featured = value.featured) {
             is TrainingStreakFeaturedState.Daily -> AppTokens.strings.res(
                 Res.string.highlight_streak,
                 featured.length
-            ) to null
+            )
 
             is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
                 Res.string.highlight_streak_weekly_headline_primary,
                 featured.length
-            ) to AppTokens.strings.res(
-                Res.string.highlight_streak_weekly_headline_secondary,
-                featured.targetSessionsPerPeriod
             )
 
             is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
                 Res.string.highlight_streak_rhythm,
                 featured.workDays,
                 featured.restDays
-            ) to null
+            )
 
             is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
                 Res.string.highlight_streak_pattern_headline_primary,
                 featured.length
-            ) to AppTokens.strings.res(
-                Res.string.highlight_streak_pattern_headline_secondary,
-                featured.targetSessionsPerPeriod,
-                featured.periodLengthDays,
             )
         }
         val cadenceLabel = when (val featured = value.featured) {
@@ -121,25 +111,13 @@ public fun TrainingStreakCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        Column {
-            Text(
-                text = headlinePrimary,
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            headlineSecondary?.let { secondary ->
-                Text(
-                    text = secondary,
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
+        Text(
+            text = headlinePrimary,
+            style = AppTokens.typography.h5(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
 
         Text(
             text = cadenceLabel,
@@ -163,11 +141,13 @@ public fun TrainingStreakCard(
             overflow = TextOverflow.Ellipsis
         )
 
+        // Mood/advice line gets up to 2 lines so it stops being clipped
+        // mid-word like "Можна зробити паузу. По…".
         Text(
             text = moodLabel,
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.tertiary,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
     }
