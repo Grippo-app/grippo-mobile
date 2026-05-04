@@ -71,6 +71,7 @@ public data object AppDp {
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
+    val onboarding: Onboarding = Onboarding
     val empty: Empty = Empty
     val tip: Tip = Tip
     val badge: Badge = Badge
@@ -312,6 +313,47 @@ public data object AppDp {
             val icon: Dp = AppDp.icon.small
             val space: Dp = padding.extraSmall
             val dividerWidth: Dp = 1.dp
+        }
+    }
+
+    public data object Onboarding {
+        val card: Card = Card
+        val iconBadge: IconBadge = IconBadge
+        val checkmark: Checkmark = Checkmark
+        val progress: Progress = Progress
+        val recapChip: RecapChip = RecapChip
+
+        public data object Card {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val space: Dp = padding.medium
+        }
+
+        public data object IconBadge {
+            val size: Dp = AppDp.size.medium
+            val icon: Dp = AppDp.icon.large
+        }
+
+        public data object Checkmark {
+            val size: Dp = icon.small
+        }
+
+        public data object Progress {
+            val ring: Dp = 20.dp
+            val ringStroke: Dp = 3.dp
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.small
+            val space: Dp = padding.small
+        }
+
+        public data object RecapChip {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val icon: Dp = AppDp.icon.small
+            val space: Dp = padding.extraSmall
+            val gap: Dp = padding.small
         }
     }
 

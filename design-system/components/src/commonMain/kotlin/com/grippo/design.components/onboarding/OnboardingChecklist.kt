@@ -47,11 +47,11 @@ public fun OnboardingChecklist(
         modifier = modifier
             .background(
                 color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.userCard.compact.radius)
+                shape = RoundedCornerShape(AppTokens.dp.onboarding.card.radius)
             )
             .padding(
-                horizontal = AppTokens.dp.userCard.compact.horizontalPadding,
-                vertical = AppTokens.dp.userCard.compact.verticalPadding
+                horizontal = AppTokens.dp.onboarding.card.horizontalPadding,
+                vertical = AppTokens.dp.onboarding.card.verticalPadding
             ),
     ) {
         Text(
@@ -91,7 +91,7 @@ private fun ChecklistRow(
     ) {
         Box(
             modifier = Modifier
-                .size(AppTokens.dp.userCard.experience.icon)
+                .size(AppTokens.dp.onboarding.checkmark.size)
                 .background(
                     color = accent.copy(alpha = 0.18f),
                     shape = CircleShape
@@ -99,7 +99,7 @@ private fun ChecklistRow(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.userCard.experience.icon),
+                modifier = Modifier.size(AppTokens.dp.onboarding.checkmark.size),
                 imageVector = AppTokens.icons.Check,
                 contentDescription = null,
                 tint = accent,

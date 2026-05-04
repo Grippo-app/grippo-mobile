@@ -284,6 +284,28 @@
     <string name="registration_equipment_description">Turn off unavailable equipment and we’ll hide exercises that need it.</string>
 
     <string name="registration_completed_title">🎉 You’re all set!</string>
+    <string name="registration_completed_subtitle">Profile created — let’s get to your first workout.</string>
+
+    <string name="onboarding_progress_complete">Profile 100%</string>
+
+    <string name="onboarding_check_profile">Profile created</string>
+    <string name="onboarding_check_experience">Experience selected</string>
+    <string name="onboarding_check_muscles">Muscles configured</string>
+    <string name="onboarding_check_equipment">Equipment configured</string>
+    <string name="onboarding_checklist_title">Onboarding completed</string>
+
+    <string name="onboarding_recap_muscles_all">All muscles</string>
+    <string name="onboarding_recap_muscles_excluded">%1$d excluded</string>
+    <string name="onboarding_recap_equipment_all">All equipment</string>
+    <string name="onboarding_recap_equipment_missing">%1$d missing</string>
+
+    <string name="onboarding_motto_beginner">Every expert started with the very first set.</string>
+    <string name="onboarding_motto_intermediate">The base is set — time to push to the next level.</string>
+    <string name="onboarding_motto_advanced">Consistency is what makes champions.</string>
+    <string name="onboarding_motto_pro">A tool that matches your level. Time to deliver results.</string>
+
+    <string name="onboarding_exercise_pack_title">Your exercise set is ready</string>
+    <string name="onboarding_exercise_pack_subtitle">Tailored to your equipment and muscles.</string>
 
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">Used to personalize recommendations and body-weight calculations.</string>

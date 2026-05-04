@@ -23,7 +23,11 @@ internal class ProfileCompletedViewModel(
     userFeature: UserFeature,
     private val createProfileUseCase: CreateProfileUseCase,
 ) : BaseViewModel<ProfileCompletedState, ProfileCompletedDirection, ProfileCompletedLoader>(
-    ProfileCompletedState()
+    ProfileCompletedState(
+        experience = experience,
+        excludedMusclesCount = excludedMuscleIds.size,
+        missingEquipmentCount = missingEquipmentIds.size,
+    )
 ), ProfileCompletedContract {
 
     init {

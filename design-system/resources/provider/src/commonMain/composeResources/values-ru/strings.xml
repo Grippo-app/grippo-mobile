@@ -283,6 +283,28 @@
     <string name="registration_equipment_description">Отключи недоступное оборудование — мы уберём упражнения, где оно нужно.</string>
 
     <string name="registration_completed_title">🎉 Всё готово!</string>
+    <string name="registration_completed_subtitle">Профиль создан — пора к первой тренировке.</string>
+
+    <string name="onboarding_progress_complete">Профиль 100%</string>
+
+    <string name="onboarding_check_profile">Профиль создан</string>
+    <string name="onboarding_check_experience">Уровень выбран</string>
+    <string name="onboarding_check_muscles">Мышцы настроены</string>
+    <string name="onboarding_check_equipment">Оборудование настроено</string>
+    <string name="onboarding_checklist_title">Онбординг завершён</string>
+
+    <string name="onboarding_recap_muscles_all">Все мышцы</string>
+    <string name="onboarding_recap_muscles_excluded">%1$d исключено</string>
+    <string name="onboarding_recap_equipment_all">Всё оборудование</string>
+    <string name="onboarding_recap_equipment_missing">%1$d недоступно</string>
+
+    <string name="onboarding_motto_beginner">Каждый эксперт когда-то делал свой первый подход.</string>
+    <string name="onboarding_motto_intermediate">База есть — время выходить на новый уровень.</string>
+    <string name="onboarding_motto_advanced">Стабильность делает чемпионов.</string>
+    <string name="onboarding_motto_pro">Инструмент под твой уровень. Время показывать результат.</string>
+
+    <string name="onboarding_exercise_pack_title">Твой набор упражнений готов</string>
+    <string name="onboarding_exercise_pack_subtitle">Подобрано под твоё оборудование и мышцы.</string>
 
     <string name="height_picker_title">Выбери свой рост</string>
     <string name="height_picker_description">Нужно для персонализации рекомендаций и расчётов с весом тела.</string>

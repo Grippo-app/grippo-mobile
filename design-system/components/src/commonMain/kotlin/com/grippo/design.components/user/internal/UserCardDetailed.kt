@@ -26,8 +26,6 @@ internal fun UserCardDetailed(
     value: UserState,
 ) {
     val experienceColor = value.experience.color()
-    val experienceIcon = value.experience.icon()
-    val experienceTitle = value.experience.title().text()
 
     val stats = rememberUserStats(value)
 
@@ -44,14 +42,6 @@ internal fun UserCardDetailed(
         )
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-        UserExperienceBadge(
-            text = experienceTitle,
-            icon = experienceIcon,
-            color = experienceColor,
-        )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
         Text(
             text = value.name,

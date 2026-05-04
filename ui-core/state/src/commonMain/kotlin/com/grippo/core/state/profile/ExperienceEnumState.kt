@@ -19,6 +19,10 @@ import com.grippo.design.resources.provider.icons.ExperienceAdvanced
 import com.grippo.design.resources.provider.icons.ExperienceBeginner
 import com.grippo.design.resources.provider.icons.ExperienceIntermediate
 import com.grippo.design.resources.provider.icons.ExperiencePro
+import com.grippo.design.resources.provider.onboarding_motto_advanced
+import com.grippo.design.resources.provider.onboarding_motto_beginner
+import com.grippo.design.resources.provider.onboarding_motto_intermediate
+import com.grippo.design.resources.provider.onboarding_motto_pro
 
 @Immutable
 public enum class ExperienceEnumState {
@@ -48,6 +52,17 @@ public enum class ExperienceEnumState {
             ADVANCED -> AppTokens.icons.ExperienceAdvanced
             PRO -> AppTokens.icons.ExperiencePro
         }
+    }
+
+    @Composable
+    public fun motto(): String {
+        val resource = when (this) {
+            BEGINNER -> Res.string.onboarding_motto_beginner
+            INTERMEDIATE -> Res.string.onboarding_motto_intermediate
+            ADVANCED -> Res.string.onboarding_motto_advanced
+            PRO -> Res.string.onboarding_motto_pro
+        }
+        return AppTokens.strings.res(resource)
     }
 
     public companion object {
