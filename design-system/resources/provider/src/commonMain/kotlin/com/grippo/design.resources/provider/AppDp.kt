@@ -279,7 +279,6 @@ public data object AppDp {
         val compact: Compact = Compact
         val detailed: Detailed = Detailed
         val avatar: Avatar = Avatar
-        val experience: Experience = Experience
         val stats: Stats = Stats
 
         public data object Compact {
@@ -296,14 +295,6 @@ public data object AppDp {
         public data object Avatar {
             val small: Dp = size.medium
             val large: Dp = icon.xxLarge
-        }
-
-        public data object Experience {
-            val radius: Dp = AppDp.radius.small
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.extraSmall
-            val icon: Dp = AppDp.icon.small
-            val space: Dp = padding.extraSmall
         }
 
         public data object Stats {

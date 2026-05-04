@@ -23,8 +23,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.profile.GoalFitFindingState
 import com.grippo.core.state.metrics.profile.GoalFitRuleState
 import com.grippo.core.state.metrics.profile.GoalFitSeverityState
+import com.grippo.core.state.metrics.profile.stubGoalFitFindings
+import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun GoalFitFindingsBlock(
@@ -230,3 +236,118 @@ private data class FindingGroup(
     val findings: List<GoalFitFindingState>,
     val worstSeverity: GoalFitSeverityState,
 )
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockSingleRowPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = persistentListOf(
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_HYPERTROPHY_REP_RANGE_SHARE,
+                    severity = GoalFitSeverityState.WARN,
+                    actualValue = 48f,
+                    targetMin = 60f,
+                    targetMax = null,
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockInversionPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = persistentListOf(
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_ACCESSORY_INVERSION,
+                    severity = GoalFitSeverityState.FAIL,
+                    actualValue = 2f,
+                    targetMin = null,
+                    targetMax = 0f,
+                    context = persistentListOf("ARMS_AND_FOREARMS", "SHOULDER_MUSCLES"),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockGroupedSubRowsPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = persistentListOf(
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
+                    severity = GoalFitSeverityState.WARN,
+                    actualValue = 8f,
+                    targetMin = 10f,
+                    targetMax = 20f,
+                    context = persistentListOf("CHEST_MUSCLES"),
+                ),
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
+                    severity = GoalFitSeverityState.FAIL,
+                    actualValue = 3f,
+                    targetMin = 10f,
+                    targetMax = 20f,
+                    context = persistentListOf("LEGS"),
+                ),
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
+                    severity = GoalFitSeverityState.PASS,
+                    actualValue = 14f,
+                    targetMin = 10f,
+                    targetMax = 20f,
+                    context = persistentListOf("BACK_MUSCLES"),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockMixedSeveritiesPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = persistentListOf(
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_LOAD_PROGRESSION,
+                    severity = GoalFitSeverityState.FAIL,
+                    actualValue = -0.02f,
+                    targetMin = 0.01f,
+                    targetMax = null,
+                ),
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_HYPERTROPHY_REP_RANGE_SHARE,
+                    severity = GoalFitSeverityState.WARN,
+                    actualValue = 48f,
+                    targetMin = 60f,
+                    targetMax = null,
+                ),
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_ACCESSORY_INVERSION,
+                    severity = GoalFitSeverityState.PASS,
+                    actualValue = 0f,
+                    targetMin = null,
+                    targetMax = 0f,
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockFromStubPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.BUILD_MUSCLE)
+                .toPersistentList(),
+        )
+    }
+}

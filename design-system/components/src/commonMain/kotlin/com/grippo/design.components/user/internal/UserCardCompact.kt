@@ -24,8 +24,6 @@ internal fun UserCardCompact(
     value: UserState,
 ) {
     val experienceColor = value.experience.color()
-    val experienceIcon = value.experience.icon()
-    val experienceTitle = value.experience.title().text()
 
     Row(
         modifier = modifier
@@ -67,12 +65,6 @@ internal fun UserCardCompact(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-
-        UserExperienceBadge(
-            text = experienceTitle,
-            icon = experienceIcon,
-            color = experienceColor,
-        )
     }
 }
 
