@@ -1,23 +1,18 @@
 package com.grippo.design.components.metrics.engagement.digest.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -97,35 +92,6 @@ internal fun DigestHero(
     }
 }
 
-@Composable
-internal fun DigestFooter(
-    modifier: Modifier = Modifier,
-    accentColor: Color,
-    text: String,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(6.dp)
-                .clip(CircleShape)
-                .background(accentColor)
-        )
-
-        Text(
-            modifier = Modifier.weight(1f),
-            text = text,
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
 @AppPreview
 @Composable
 private fun DigestsSectionPreview() {
@@ -140,11 +106,6 @@ private fun DigestsSectionPreview() {
         DigestHero(
             value = "3 250 kg",
             label = "Volume",
-        )
-
-        DigestFooter(
-            accentColor = AppTokens.colors.brand.color6,
-            text = "Average 1 080 kg · 8 active days",
         )
     }
 }

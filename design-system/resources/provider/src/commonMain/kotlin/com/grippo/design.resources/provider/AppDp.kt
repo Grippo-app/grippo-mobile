@@ -167,7 +167,7 @@ public data object AppDp {
         }
 
         public data object TrainingSummary {
-            val spot: Dp = icon.xxxxLarge
+            val spot: Dp = icon.xxxLarge
         }
 
         public data object Engagement {

@@ -8,10 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
-import com.grippo.design.components.metrics.engagement.digest.internal.DigestFooter
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHeader
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHero
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
@@ -24,8 +22,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
-import com.grippo.design.resources.provider.highlight_active_days
-import com.grippo.design.resources.provider.highlight_vs_average
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.sets
@@ -130,40 +126,6 @@ private fun ContentDigestBody(
             ),
         )
     )
-
-    val avgVolumeText: String? = if (value.avgVolume is VolumeFormatState.Valid) {
-        value.avgVolume.short()
-    } else null
-
-    val footerText = buildDigestFooter(
-        avgVolume = avgVolumeText,
-        activeDays = value.activeDays,
-    )
-
-    if (footerText != null) {
-        DigestFooter(
-            accentColor = accentColor,
-            text = footerText,
-        )
-    }
-}
-
-@Composable
-private fun buildDigestFooter(
-    avgVolume: String?,
-    activeDays: Int,
-): String? {
-    val avgSegment = if (!avgVolume.isNullOrBlank()) {
-        val avgLabel = AppTokens.strings.res(Res.string.highlight_vs_average)
-        "$avgLabel $avgVolume"
-    } else null
-
-    val activeDaysSegment = if (activeDays > 0) {
-        AppTokens.strings.res(Res.string.highlight_active_days, activeDays)
-    } else null
-
-    val segments = listOfNotNull(avgSegment, activeDaysSegment)
-    return segments.takeIf { it.isNotEmpty() }?.joinToString(separator = " · ")
 }
 
 @AppPreview
