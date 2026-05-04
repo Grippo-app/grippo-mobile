@@ -119,7 +119,6 @@ public data object AppDp {
     }
 
     public data object Metrics {
-        val highlights: Highlights = Highlights
         val panel: Panel = Panel
         val status: Status = Status
         val lastTraining: LastTraining = LastTraining
@@ -130,10 +129,6 @@ public data object AppDp {
         val performance: Performance = Performance
         val profile: Profile = Profile
         val volume: Volume = Volume
-
-        public data object Highlights {
-            val icon: Dp = AppDp.icon.medium
-        }
 
         public data object Status {
             val radius: Dp = AppDp.radius.small
@@ -179,12 +174,7 @@ public data object AppDp {
         }
 
         public data object Distribution {
-            val chart: Chart = Chart
             val muscleLoad: MuscleLoad = MuscleLoad
-
-            public data object Chart {
-                val size: Dp = icon.xxxLarge
-            }
 
             public data object MuscleLoad {
                 val balance: Balance = Balance
@@ -216,7 +206,6 @@ public data object AppDp {
             val goal: Goal = Goal
 
             public data object TrainingProfile {
-                val icon: Dp = AppDp.icon.xLarge
                 val radar: Radar = Radar
                 val details: Details = Details
 
@@ -242,9 +231,6 @@ public data object AppDp {
 
             public data object Goal {
                 val chart: Dp = size.xLarge
-                val radius: Dp = AppDp.radius.medium
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.small
                 val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
                 val benefit: Benefit = Benefit
