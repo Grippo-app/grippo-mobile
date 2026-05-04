@@ -26,7 +26,7 @@ public fun VolumeChip(
     size: ChipSize,
     style: VolumeChipStyle
 ) {
-    val colors = AppTokens.colors.chip.volume
+    val colors = AppTokens.colors.training.volume
 
     val text = when (style) {
         VolumeChipStyle.SHORT -> ChipLabel.Empty

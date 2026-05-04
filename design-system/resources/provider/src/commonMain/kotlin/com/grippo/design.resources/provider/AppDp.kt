@@ -60,7 +60,6 @@ public data object AppDp {
     val achievementCard: AchievementCard = AchievementCard
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
-    val timeLabel: TimeLabel = TimeLabel
     val exerciseCard: ExerciseCard = ExerciseCard
     val weightHistoryCard: WeightHistoryCard = WeightHistoryCard
     val deleteUserCard: DeleteUserCard = DeleteUserCard
@@ -76,6 +75,8 @@ public data object AppDp {
     val tip: Tip = Tip
     val badge: Badge = Badge
     val tooltip: Tooltip = Tooltip
+    val training: Training = Training
+    val accent: Accent = Accent
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -260,7 +261,6 @@ public data object AppDp {
                     val radius: Dp = Panel.Small.radius
                     val horizontalPadding: Dp = Panel.Small.horizontalPadding
                     val verticalPadding: Dp = Panel.Small.verticalPadding
-                    val accentWidth: Dp = 3.dp
                     val textSpacing: Dp = padding.extraSmall
                     val actionIcon: Dp = icon.small
                 }
@@ -337,6 +337,14 @@ public data object AppDp {
         val elevation: Dp = 8.dp
     }
 
+    public data object Training {
+        val height: Dp = size.medium
+        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.small
+        val textSpacing: Dp = padding.tiny
+    }
+
     public data object Empty {
         val image: Dp = icon.xxxxLarge
     }
@@ -377,11 +385,6 @@ public data object AppDp {
             val verticalPadding: Dp = padding.large
             val icon: Dp = AppDp.icon.small
         }
-    }
-
-    public data object TimeLabel {
-        val icon: Dp = AppDp.icon.large
-        val spacer: Dp = padding.extraSmall
     }
 
     public data object Timeline {
@@ -533,6 +536,11 @@ public data object AppDp {
 
     public data object Semantic {
         val icon: Dp = AppDp.icon.xxLarge
+    }
+
+
+    public data object Accent {
+        val smallWidth: Dp = padding.extraSmall
     }
 
     public data object Loader {

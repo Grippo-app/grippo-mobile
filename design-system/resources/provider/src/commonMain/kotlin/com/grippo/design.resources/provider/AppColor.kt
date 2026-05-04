@@ -18,31 +18,17 @@ public interface AppColor {
     public val muscle: MuscleColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
-    public val chip: ChipColors
+    public val training: TrainingColors
     public val radio: RadioColors
     public val charts: Charts
     public val example: ExampleColors
     public val profile: ProfileColors
     public val palette: PaletteColors
     public val static: Static
-    public val achievements: Achievements
     public val selectableCardColors: SelectableCardColors
 
     public interface DividerColors {
         public val default: Color
-    }
-
-    public interface Achievements {
-        public val bestTonnage1: Color
-        public val bestTonnage2: Color
-        public val bestWeight1: Color
-        public val bestWeight2: Color
-        public val lifetimeVolume1: Color
-        public val lifetimeVolume2: Color
-        public val maxRepetitions1: Color
-        public val maxRepetitions2: Color
-        public val peakIntensity1: Color
-        public val peakIntensity2: Color
     }
 
     public interface Static {
@@ -225,7 +211,7 @@ public interface AppColor {
         }
     }
 
-    public interface ChipColors {
+    public interface TrainingColors {
         public val intensity: GradientColors
         public val volume: GradientColors
         public val repetitions: GradientColors

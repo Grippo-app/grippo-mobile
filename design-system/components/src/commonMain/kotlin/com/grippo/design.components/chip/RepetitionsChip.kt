@@ -26,7 +26,7 @@ public fun RepetitionsChip(
     size: ChipSize,
     style: RepetitionsChipStyle
 ) {
-    val colors = AppTokens.colors.chip.repetitions
+    val colors = AppTokens.colors.training.repetitions
 
     val text = when (style) {
         RepetitionsChipStyle.SHORT -> ChipLabel.Empty

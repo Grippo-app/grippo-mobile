@@ -46,7 +46,7 @@ internal fun CheckSelectableCardMedium(
     )
 
     val decorationWidth by animateDpAsState(
-        targetValue = if (isSelected) AppTokens.dp.metrics.status.verticalPadding else 0.dp,
+        targetValue = if (isSelected) AppTokens.dp.accent.smallWidth else 0.dp,
         animationSpec = tween(durationMillis = 300),
         label = "decorationWidth"
     )

@@ -1,4 +1,4 @@
-package com.grippo.training.recording.pages
+package com.grippo.training.recording.internal
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -54,7 +54,7 @@ internal fun ColumnScope.ExercisesPage(
         state.exercises
     }
 
-    val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.block)
+    val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
 
     BottomOverlayContainer(
         modifier = Modifier

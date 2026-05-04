@@ -1,9 +1,14 @@
 package com.grippo.training.exercise
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -260,33 +265,45 @@ internal fun ExerciseScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-
                 Button(
                     modifier = Modifier.weight(1f),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.add_set_btn),
-                    ),
+                    content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.add_set_btn)),
                     style = ButtonStyle.Secondary,
                     onClick = contract::onAddIteration
                 )
 
-                val buttonState = remember(loaders, state.exercise.iterations) {
-                    when {
-                        state.exercise.iterations.isEmpty() -> ButtonState.Disabled
-                        else -> ButtonState.Enabled
-                    }
+                val buttonVisible = remember(state.exercise.iterations) {
+                    state.exercise.iterations.isNotEmpty()
                 }
 
-                Button(
-                    content = ButtonContent.Icon(
-                        icon = ButtonIcon.Icon(AppTokens.icons.Check),
-                    ),
-                    style = ButtonStyle.Primary,
-                    state = buttonState,
-                    onClick = contract::onSave
-                )
+                AnimatedVisibility(
+                    visible = buttonVisible,
+                    enter = expandHorizontally(
+                        animationSpec = tween(durationMillis = 250),
+                        expandFrom = Alignment.Start
+                    ) + slideInHorizontally(
+                        animationSpec = tween(durationMillis = 250),
+                        initialOffsetX = { it }
+                    ) + fadeIn(animationSpec = tween(durationMillis = 250)),
+                    exit = shrinkHorizontally(
+                        animationSpec = tween(durationMillis = 200),
+                        shrinkTowards = Alignment.Start
+                    ) + slideOutHorizontally(
+                        animationSpec = tween(durationMillis = 200),
+                        targetOffsetX = { it }
+                    ) + fadeOut(animationSpec = tween(durationMillis = 200))
+                ) {
+                    Button(
+                        modifier = Modifier.padding(start = AppTokens.dp.contentPadding.content),
+                        content = ButtonContent.Icon(
+                            icon = ButtonIcon.Icon(AppTokens.icons.Check),
+                        ),
+                        style = ButtonStyle.Primary,
+                        state = ButtonState.Enabled,
+                        onClick = contract::onSave
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

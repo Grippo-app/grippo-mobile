@@ -66,7 +66,7 @@ public fun ProfileInsightCard(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .fillMaxHeight()
-                .width(tokens.accentWidth)
+                .width(AppTokens.dp.accent.smallWidth)
                 .background(accent.copy(alpha = 0.7f)),
         )
 

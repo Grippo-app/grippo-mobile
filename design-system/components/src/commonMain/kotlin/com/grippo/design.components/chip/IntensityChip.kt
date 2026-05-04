@@ -26,7 +26,7 @@ public fun IntensityChip(
     size: ChipSize,
     style: IntensityChipStyle
 ) {
-    val colors = AppTokens.colors.chip.intensity
+    val colors = AppTokens.colors.training.intensity
 
     val text = when (style) {
         IntensityChipStyle.SHORT -> ChipLabel.Empty

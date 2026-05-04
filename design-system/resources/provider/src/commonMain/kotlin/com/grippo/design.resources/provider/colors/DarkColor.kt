@@ -62,23 +62,6 @@ public object DarkColor : AppColor {
         override val default = AppPalette.NeutralDark.N250
     }
 
-    override val achievements: AppColor.Achievements = object : AppColor.Achievements {
-        override val bestTonnage1: Color = AppPalette.Unique.Red
-        override val bestTonnage2: Color = AppPalette.Unique.Coral
-
-        override val bestWeight1: Color = AppPalette.Unique.Green
-        override val bestWeight2: Color = AppPalette.Unique.Teal
-
-        override val lifetimeVolume1: Color = AppPalette.Unique.Indigo
-        override val lifetimeVolume2: Color = AppPalette.Unique.Sky
-
-        override val maxRepetitions1: Color = AppPalette.Unique.Purple
-        override val maxRepetitions2: Color = AppPalette.Unique.Violet
-
-        override val peakIntensity1: Color = AppPalette.Unique.Brown
-        override val peakIntensity2: Color = AppPalette.Unique.Copper
-    }
-
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val placeholder = AppPalette.NeutralDark.N500
         override val label = AppPalette.NeutralDark.N500
@@ -161,18 +144,18 @@ public object DarkColor : AppColor {
                 }
         }
 
-    override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
-        override val intensity = object : AppColor.ChipColors.GradientColors {
+    override val training: AppColor.TrainingColors = object : AppColor.TrainingColors {
+        override val intensity = object : AppColor.TrainingColors.GradientColors {
             override val startColor = AppPalette.Unique.Green
             override val endColor = AppPalette.Unique.Teal
             override val contentColor = AppPalette.Common.White
         }
-        override val volume = object : AppColor.ChipColors.GradientColors {
+        override val volume = object : AppColor.TrainingColors.GradientColors {
             override val startColor = AppPalette.Unique.Blue
             override val endColor = AppPalette.Unique.Cyan
             override val contentColor = AppPalette.Common.White
         }
-        override val repetitions = object : AppColor.ChipColors.GradientColors {
+        override val repetitions = object : AppColor.TrainingColors.GradientColors {
             override val startColor = AppPalette.Unique.Purple
             override val endColor = AppPalette.Unique.Violet
             override val contentColor = AppPalette.Common.White

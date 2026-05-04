@@ -79,7 +79,7 @@ internal fun DraftTrainingScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    if (state.exercises.isNotEmpty()) BottomOverlayContainer(
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),

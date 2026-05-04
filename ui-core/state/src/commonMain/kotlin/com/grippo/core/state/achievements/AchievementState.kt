@@ -103,20 +103,20 @@ public sealed interface AchievementState {
 
     @Composable
     public fun color1(): Color = when (this) {
-        is BestTonnage -> AppTokens.colors.achievements.bestTonnage1
-        is BestWeight -> AppTokens.colors.achievements.bestWeight1
-        is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume1
-        is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions1
-        is PeakIntensity -> AppTokens.colors.achievements.peakIntensity1
+        is BestTonnage -> AppTokens.colors.training.volume.startColor
+        is BestWeight -> AppTokens.colors.training.volume.startColor
+        is LifetimeVolume -> AppTokens.colors.training.volume.startColor
+        is MaxRepetitions -> AppTokens.colors.training.repetitions.startColor
+        is PeakIntensity -> AppTokens.colors.training.intensity.startColor
     }
 
     @Composable
     public fun color2(): Color = when (this) {
-        is BestTonnage -> AppTokens.colors.achievements.bestTonnage2
-        is BestWeight -> AppTokens.colors.achievements.bestWeight2
-        is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume2
-        is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions2
-        is PeakIntensity -> AppTokens.colors.achievements.peakIntensity2
+        is BestTonnage -> AppTokens.colors.training.volume.endColor
+        is BestWeight -> AppTokens.colors.training.volume.endColor
+        is LifetimeVolume -> AppTokens.colors.training.volume.endColor
+        is MaxRepetitions -> AppTokens.colors.training.repetitions.endColor
+        is PeakIntensity -> AppTokens.colors.training.intensity.endColor
     }
 
     @Composable
@@ -129,7 +129,6 @@ public sealed interface AchievementState {
     }
 
     public companion object {
-        // Pre-allocated UiText.Res — one instance per kind, reused across recompositions.
         private val TEXT_BEST_TONNAGE: UiText = UiText.Res(Res.string.best_tonnage)
         private val TEXT_BEST_WEIGHT: UiText = UiText.Res(Res.string.best_weight)
         private val TEXT_LIFETIME_VOLUME: UiText = UiText.Res(Res.string.lifetime_volume)

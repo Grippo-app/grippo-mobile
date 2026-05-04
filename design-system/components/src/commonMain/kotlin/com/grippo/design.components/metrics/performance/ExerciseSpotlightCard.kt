@@ -74,7 +74,7 @@ private fun ExerciseSpotlightCard(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .fillMaxHeight()
-                    .width(AppTokens.dp.metrics.status.verticalPadding)
+                    .width(AppTokens.dp.accent.smallWidth)
                     .background(color.copy(alpha = 0.7f))
             )
         }
