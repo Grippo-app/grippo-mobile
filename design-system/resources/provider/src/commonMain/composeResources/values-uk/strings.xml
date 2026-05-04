@@ -291,7 +291,8 @@
     <string name="onboarding_check_experience">Рівень досвіду обрано</string>
     <string name="onboarding_check_muscles">М’язи налаштовано</string>
     <string name="onboarding_check_equipment">Обладнання налаштовано</string>
-    <string name="onboarding_checklist_title">Онбординг завершено</string>
+    <string name="onboarding_section_progress_title">Прогрес онбордингу</string>
+    <string name="onboarding_section_benefits_title">Що ти отримаєш</string>
 
     <string name="onboarding_facts_muscles_all">Усі м’язи</string>
     <string name="onboarding_facts_muscles_excluded">%1$d виключено</string>
@@ -303,8 +304,12 @@
     <string name="onboarding_motto_advanced">Стабільність створює чемпіонів.</string>
     <string name="onboarding_motto_pro">Інструмент під твій рівень. Час показати результат.</string>
 
-    <string name="onboarding_exercise_pack_title">Твій набір вправ готовий</string>
-    <string name="onboarding_exercise_pack_subtitle">Підібрано під твоє обладнання та м’язи.</string>
+    <string name="onboarding_benefit_pack_title">Твій набір вправ готовий</string>
+    <string name="onboarding_benefit_pack_subtitle">Підібрано під твоє обладнання та м’язи.</string>
+    <string name="onboarding_benefit_progress_title">Прогрес під контролем</string>
+    <string name="onboarding_benefit_progress_subtitle">Тоннаж, повторення та час фіксуються в кожному тренуванні.</string>
+    <string name="onboarding_benefit_history_title">Повна історія тренувань</string>
+    <string name="onboarding_benefit_history_subtitle">Кожен підхід збережено — повертайся коли захочеш.</string>
 
     <string name="height_picker_title">Обери свій зріст</string>
     <string name="height_picker_description">Потрібно для персоналізації рекомендацій і розрахунків з вагою тіла.</string>

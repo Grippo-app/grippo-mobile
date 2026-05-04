@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,21 +17,31 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.design.resources.provider.icons.Sparkle
-import com.grippo.design.resources.provider.onboarding_exercise_pack_subtitle
-import com.grippo.design.resources.provider.onboarding_exercise_pack_title
+import com.grippo.design.resources.provider.icons.Stack
+import com.grippo.design.resources.provider.onboarding_benefit_history_subtitle
+import com.grippo.design.resources.provider.onboarding_benefit_history_title
+import com.grippo.design.resources.provider.onboarding_benefit_pack_subtitle
+import com.grippo.design.resources.provider.onboarding_benefit_pack_title
+import com.grippo.design.resources.provider.onboarding_benefit_progress_subtitle
+import com.grippo.design.resources.provider.onboarding_benefit_progress_title
 
 @Composable
-public fun OnboardingExercisePackCard(
+public fun OnboardingBenefitCard(
     modifier: Modifier = Modifier,
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    tint: Color,
 ) {
-    val accent = AppTokens.colors.brand.color2
-
     Row(
         modifier = modifier
             .background(
@@ -48,22 +59,22 @@ public fun OnboardingExercisePackCard(
             modifier = Modifier
                 .size(AppTokens.dp.onboarding.iconBadge.size)
                 .background(
-                    color = accent.copy(alpha = 0.18f),
+                    color = tint.copy(alpha = 0.18f),
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 modifier = Modifier.size(AppTokens.dp.onboarding.iconBadge.icon),
-                imageVector = AppTokens.icons.Sparkle,
+                imageVector = icon,
                 contentDescription = null,
-                tint = accent,
+                tint = tint,
             )
         }
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = AppTokens.strings.res(Res.string.onboarding_exercise_pack_title),
+                text = title,
                 style = AppTokens.typography.h5(),
                 color = AppTokens.colors.text.primary,
                 maxLines = 1,
@@ -73,7 +84,7 @@ public fun OnboardingExercisePackCard(
             Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
             Text(
-                text = AppTokens.strings.res(Res.string.onboarding_exercise_pack_subtitle),
+                text = subtitle,
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.tertiary,
                 maxLines = 2,
@@ -85,8 +96,42 @@ public fun OnboardingExercisePackCard(
 
 @AppPreview
 @Composable
-private fun OnboardingExercisePackCardPreview() {
+private fun OnboardingBenefitCardPackPreview() {
     PreviewContainer {
-        OnboardingExercisePackCard()
+        OnboardingBenefitCard(
+            modifier = Modifier.fillMaxWidth(),
+            title = AppTokens.strings.res(Res.string.onboarding_benefit_pack_title),
+            subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_pack_subtitle),
+            icon = AppTokens.icons.Sparkle,
+            tint = AppTokens.colors.brand.color2,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun OnboardingBenefitCardProgressPreview() {
+    PreviewContainer {
+        OnboardingBenefitCard(
+            modifier = Modifier.fillMaxWidth(),
+            title = AppTokens.strings.res(Res.string.onboarding_benefit_progress_title),
+            subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_progress_subtitle),
+            icon = AppTokens.icons.LineUp,
+            tint = AppTokens.colors.brand.color5,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun OnboardingBenefitCardHistoryPreview() {
+    PreviewContainer {
+        OnboardingBenefitCard(
+            modifier = Modifier.fillMaxWidth(),
+            title = AppTokens.strings.res(Res.string.onboarding_benefit_history_title),
+            subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_history_subtitle),
+            icon = AppTokens.icons.Stack,
+            tint = AppTokens.colors.brand.color1,
+        )
     }
 }

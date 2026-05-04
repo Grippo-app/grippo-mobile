@@ -292,7 +292,8 @@
     <string name="onboarding_check_experience">Experience selected</string>
     <string name="onboarding_check_muscles">Muscles configured</string>
     <string name="onboarding_check_equipment">Equipment configured</string>
-    <string name="onboarding_checklist_title">Onboarding completed</string>
+    <string name="onboarding_section_progress_title">Onboarding progress</string>
+    <string name="onboarding_section_benefits_title">What you’ll get</string>
 
     <string name="onboarding_facts_muscles_all">All muscles</string>
     <string name="onboarding_facts_muscles_excluded">%1$d excluded</string>
@@ -304,8 +305,12 @@
     <string name="onboarding_motto_advanced">Consistency is what makes champions.</string>
     <string name="onboarding_motto_pro">A tool that matches your level. Time to deliver results.</string>
 
-    <string name="onboarding_exercise_pack_title">Your exercise set is ready</string>
-    <string name="onboarding_exercise_pack_subtitle">Tailored to your equipment and muscles.</string>
+    <string name="onboarding_benefit_pack_title">Your exercise set is ready</string>
+    <string name="onboarding_benefit_pack_subtitle">Tailored to your equipment and muscles.</string>
+    <string name="onboarding_benefit_progress_title">Progress, tracked</string>
+    <string name="onboarding_benefit_progress_subtitle">Volume, repetitions, and time logged for every workout.</string>
+    <string name="onboarding_benefit_history_title">Full training history</string>
+    <string name="onboarding_benefit_history_subtitle">Every set saved, ready to revisit anytime.</string>
 
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">Used to personalize recommendations and body-weight calculations.</string>

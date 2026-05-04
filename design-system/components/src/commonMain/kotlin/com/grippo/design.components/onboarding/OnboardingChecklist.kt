@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,7 +27,6 @@ import com.grippo.design.resources.provider.onboarding_check_equipment
 import com.grippo.design.resources.provider.onboarding_check_experience
 import com.grippo.design.resources.provider.onboarding_check_muscles
 import com.grippo.design.resources.provider.onboarding_check_profile
-import com.grippo.design.resources.provider.onboarding_checklist_title
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -40,7 +38,6 @@ public data class OnboardingChecklistItem(
 @Composable
 public fun OnboardingChecklist(
     modifier: Modifier = Modifier,
-    title: String,
     items: ImmutableList<OnboardingChecklistItem>,
 ) {
     Column(
@@ -53,25 +50,14 @@ public fun OnboardingChecklist(
                 horizontal = AppTokens.dp.onboarding.card.horizontalPadding,
                 vertical = AppTokens.dp.onboarding.card.verticalPadding
             ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        Text(
-            text = title,
-            style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-        items.forEachIndexed { index, item ->
-            ChecklistRow(
-                modifier = Modifier.fillMaxWidth(),
-                text = item.text,
-            )
-
-            if (index < items.lastIndex) {
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+        items.forEach { item ->
+            key(item) {
+                ChecklistRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = item.text,
+                )
             }
         }
     }
@@ -122,7 +108,6 @@ private fun OnboardingChecklistPreview() {
     PreviewContainer {
         OnboardingChecklist(
             modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.onboarding_checklist_title),
             items = persistentListOf(
                 OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_profile)),
                 OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_experience)),

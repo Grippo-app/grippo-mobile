@@ -291,7 +291,8 @@
     <string name="onboarding_check_experience">Уровень выбран</string>
     <string name="onboarding_check_muscles">Мышцы настроены</string>
     <string name="onboarding_check_equipment">Оборудование настроено</string>
-    <string name="onboarding_checklist_title">Онбординг завершён</string>
+    <string name="onboarding_section_progress_title">Прогресс онбординга</string>
+    <string name="onboarding_section_benefits_title">Что ты получишь</string>
 
     <string name="onboarding_facts_muscles_all">Все мышцы</string>
     <string name="onboarding_facts_muscles_excluded">%1$d исключено</string>
@@ -303,8 +304,12 @@
     <string name="onboarding_motto_advanced">Стабильность делает чемпионов.</string>
     <string name="onboarding_motto_pro">Инструмент под твой уровень. Время показывать результат.</string>
 
-    <string name="onboarding_exercise_pack_title">Твой набор упражнений готов</string>
-    <string name="onboarding_exercise_pack_subtitle">Подобрано под твоё оборудование и мышцы.</string>
+    <string name="onboarding_benefit_pack_title">Твой набор упражнений готов</string>
+    <string name="onboarding_benefit_pack_subtitle">Подобрано под твоё оборудование и мышцы.</string>
+    <string name="onboarding_benefit_progress_title">Прогресс под контролем</string>
+    <string name="onboarding_benefit_progress_subtitle">Тоннаж, повторения и время фиксируются в каждой тренировке.</string>
+    <string name="onboarding_benefit_history_title">Полная история тренировок</string>
+    <string name="onboarding_benefit_history_subtitle">Каждый подход сохранён — возвращайся когда захочешь.</string>
 
     <string name="height_picker_title">Выбери свой рост</string>
     <string name="height_picker_description">Нужно для персонализации рекомендаций и расчётов с весом тела.</string>

@@ -39,9 +39,9 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.onboarding.OnboardingBenefitCard
 import com.grippo.design.components.onboarding.OnboardingChecklist
 import com.grippo.design.components.onboarding.OnboardingChecklistItem
-import com.grippo.design.components.onboarding.OnboardingExercisePackCard
 import com.grippo.design.components.onboarding.OnboardingProfileFacts
 import com.grippo.design.components.onboarding.OnboardingProgressBadge
 import com.grippo.design.components.onboarding.OnboardingWelcomeBlock
@@ -54,11 +54,21 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.get_started_btn
+import com.grippo.design.resources.provider.icons.LineUp
+import com.grippo.design.resources.provider.icons.Sparkle
+import com.grippo.design.resources.provider.icons.Stack
+import com.grippo.design.resources.provider.onboarding_benefit_history_subtitle
+import com.grippo.design.resources.provider.onboarding_benefit_history_title
+import com.grippo.design.resources.provider.onboarding_benefit_pack_subtitle
+import com.grippo.design.resources.provider.onboarding_benefit_pack_title
+import com.grippo.design.resources.provider.onboarding_benefit_progress_subtitle
+import com.grippo.design.resources.provider.onboarding_benefit_progress_title
 import com.grippo.design.resources.provider.onboarding_check_equipment
 import com.grippo.design.resources.provider.onboarding_check_experience
 import com.grippo.design.resources.provider.onboarding_check_muscles
 import com.grippo.design.resources.provider.onboarding_check_profile
-import com.grippo.design.resources.provider.onboarding_checklist_title
+import com.grippo.design.resources.provider.onboarding_section_benefits_title
+import com.grippo.design.resources.provider.onboarding_section_progress_title
 import com.grippo.design.resources.provider.registration_completed_subtitle
 import com.grippo.design.resources.provider.registration_completed_title
 import kotlinx.collections.immutable.ImmutableSet
@@ -75,7 +85,6 @@ internal fun ProfileCompletedScreen(
         value = AppTokens.colors.background.screen,
     )
 ) {
-
     if (loaders.contains(ProfileCompletedLoader.ProfileCreation)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen
@@ -176,8 +185,6 @@ private fun ProfileCompletedContent(
         OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_equipment)),
     )
 
-    val checklistTitle = AppTokens.strings.res(Res.string.onboarding_checklist_title)
-
     LazyColumn(
         modifier = modifier,
         contentPadding = contentPadding,
@@ -217,29 +224,66 @@ private fun ProfileCompletedContent(
         }
 
         item("welcome") {
-            Box(
+            OnboardingWelcomeBlock(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                OnboardingWelcomeBlock(
-                    modifier = Modifier.fillMaxWidth(),
-                    experience = experience,
-                )
-            }
+                experience = experience,
+            )
+        }
+
+        item("progress-header") {
+            Text(
+                modifier = modifier,
+                text = AppTokens.strings.res(Res.string.onboarding_section_progress_title),
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+            )
         }
 
         item("checklist") {
             OnboardingChecklist(
                 modifier = Modifier.fillMaxWidth(),
-                title = checklistTitle,
                 items = checklistItems,
             )
         }
 
-        item("exercise-pack") {
-            OnboardingExercisePackCard(
-                modifier = Modifier.fillMaxWidth(),
+        item("benefits-header") {
+            Text(
+                modifier = modifier.fillMaxWidth(),
+                text = AppTokens.strings.res(Res.string.onboarding_section_benefits_title),
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
             )
+        }
+
+        item("benefits") {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                OnboardingBenefitCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = AppTokens.strings.res(Res.string.onboarding_benefit_pack_title),
+                    subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_pack_subtitle),
+                    icon = AppTokens.icons.Sparkle,
+                    tint = AppTokens.colors.brand.color2,
+                )
+
+                OnboardingBenefitCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = AppTokens.strings.res(Res.string.onboarding_benefit_progress_title),
+                    subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_progress_subtitle),
+                    icon = AppTokens.icons.LineUp,
+                    tint = AppTokens.colors.brand.color5,
+                )
+
+                OnboardingBenefitCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = AppTokens.strings.res(Res.string.onboarding_benefit_history_title),
+                    subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_history_subtitle),
+                    icon = AppTokens.icons.Stack,
+                    tint = AppTokens.colors.brand.color1,
+                )
+            }
         }
     }
 }

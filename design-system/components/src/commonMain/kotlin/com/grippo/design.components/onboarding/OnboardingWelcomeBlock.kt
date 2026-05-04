@@ -28,7 +28,7 @@ public fun OnboardingWelcomeBlock(
     val accent = experience.color()
     val cardColor = AppTokens.colors.background.card
 
-    val brush = remember(accent, cardColor) {
+    val gradient = remember(accent) {
         Brush.verticalGradient(
             colors = listOf(
                 accent.copy(alpha = 0.18f),
@@ -42,7 +42,7 @@ public fun OnboardingWelcomeBlock(
     Column(
         modifier = modifier
             .background(color = cardColor, shape = shape)
-            .background(brush = brush, shape = shape)
+            .background(brush = gradient, shape = shape)
             .padding(
                 horizontal = AppTokens.dp.onboarding.card.horizontalPadding,
                 vertical = AppTokens.dp.onboarding.card.verticalPadding
