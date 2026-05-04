@@ -321,7 +321,7 @@ public data object AppDp {
         val iconBadge: IconBadge = IconBadge
         val checkmark: Checkmark = Checkmark
         val progress: Progress = Progress
-        val recapChip: RecapChip = RecapChip
+        val factChip: FactChip = FactChip
 
         public data object Card {
             val radius: Dp = AppDp.radius.medium
@@ -347,7 +347,7 @@ public data object AppDp {
             val space: Dp = padding.small
         }
 
-        public data object RecapChip {
+        public data object FactChip {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium

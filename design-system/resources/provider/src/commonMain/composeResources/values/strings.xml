@@ -294,10 +294,10 @@
     <string name="onboarding_check_equipment">Equipment configured</string>
     <string name="onboarding_checklist_title">Onboarding completed</string>
 
-    <string name="onboarding_recap_muscles_all">All muscles</string>
-    <string name="onboarding_recap_muscles_excluded">%1$d excluded</string>
-    <string name="onboarding_recap_equipment_all">All equipment</string>
-    <string name="onboarding_recap_equipment_missing">%1$d missing</string>
+    <string name="onboarding_facts_muscles_all">All muscles</string>
+    <string name="onboarding_facts_muscles_excluded">%1$d excluded</string>
+    <string name="onboarding_facts_equipment_all">All equipment</string>
+    <string name="onboarding_facts_equipment_missing">%1$d missing</string>
 
     <string name="onboarding_motto_beginner">Every expert started with the very first set.</string>
     <string name="onboarding_motto_intermediate">The base is set — time to push to the next level.</string>

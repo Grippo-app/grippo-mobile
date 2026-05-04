@@ -26,6 +26,8 @@ internal fun UserExperienceBadge(
     icon: ImageVector,
     color: Color,
 ) {
+    val contentColor = AppTokens.colors.static.white
+
     Row(
         modifier = modifier
             .background(
@@ -43,13 +45,13 @@ internal fun UserExperienceBadge(
             modifier = Modifier.size(AppTokens.dp.userCard.experience.icon),
             imageVector = icon,
             contentDescription = null,
-            tint = AppTokens.colors.icon.primary,
+            tint = contentColor,
         )
 
         Text(
             text = text,
             style = AppTokens.typography.b13Semi(),
-            color = AppTokens.colors.text.primary,
+            color = contentColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

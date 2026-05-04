@@ -293,10 +293,10 @@
     <string name="onboarding_check_equipment">Обладнання налаштовано</string>
     <string name="onboarding_checklist_title">Онбординг завершено</string>
 
-    <string name="onboarding_recap_muscles_all">Усі м’язи</string>
-    <string name="onboarding_recap_muscles_excluded">%1$d виключено</string>
-    <string name="onboarding_recap_equipment_all">Усе обладнання</string>
-    <string name="onboarding_recap_equipment_missing">%1$d недоступно</string>
+    <string name="onboarding_facts_muscles_all">Усі м’язи</string>
+    <string name="onboarding_facts_muscles_excluded">%1$d виключено</string>
+    <string name="onboarding_facts_equipment_all">Усе обладнання</string>
+    <string name="onboarding_facts_equipment_missing">%1$d недоступно</string>
 
     <string name="onboarding_motto_beginner">Кожен експерт колись починав з першого підходу.</string>
     <string name="onboarding_motto_intermediate">База є — час забирати на новий рівень.</string>

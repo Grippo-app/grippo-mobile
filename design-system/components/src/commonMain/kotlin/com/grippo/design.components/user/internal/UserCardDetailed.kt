@@ -9,12 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.formatters.DurationFormatState
-import com.grippo.core.state.formatters.RepetitionsFormatState
-import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.core.state.profile.UserState
-import com.grippo.core.state.profile.UserStatsState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -26,8 +22,6 @@ internal fun UserCardDetailed(
     value: UserState,
 ) {
     val experienceColor = value.experience.color()
-
-    val stats = rememberUserStats(value)
 
     Column(
         modifier = modifier,
@@ -62,12 +56,6 @@ internal fun UserCardDetailed(
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
-
-        if (stats.isNotEmpty()) {
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-            UserStatsStrip(stats = stats)
-        }
     }
 }
 
@@ -80,23 +68,5 @@ private fun UserCardDetailedPreview() {
                 value = stubUser().copy(experience = experience)
             )
         }
-    }
-}
-
-@AppPreview
-@Composable
-private fun UserCardDetailedEmptyStatsPreview() {
-    PreviewContainer {
-        UserCardDetailed(
-            value = stubUser().copy(
-                experience = ExperienceEnumState.ADVANCED,
-                stats = UserStatsState(
-                    totalVolume = VolumeFormatState.Empty(),
-                    totalRepetitions = RepetitionsFormatState.Empty(),
-                    totalDuration = DurationFormatState.Empty(),
-                    trainingsCount = 0
-                )
-            )
-        )
     }
 }

@@ -42,8 +42,8 @@ import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.onboarding.OnboardingChecklist
 import com.grippo.design.components.onboarding.OnboardingChecklistItem
 import com.grippo.design.components.onboarding.OnboardingExercisePackCard
+import com.grippo.design.components.onboarding.OnboardingProfileFacts
 import com.grippo.design.components.onboarding.OnboardingProgressBadge
-import com.grippo.design.components.onboarding.OnboardingRecapChips
 import com.grippo.design.components.onboarding.OnboardingWelcomeBlock
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -206,19 +206,26 @@ private fun ProfileCompletedContent(
             )
         }
 
-        item("recap") {
-            OnboardingRecapChips(
+        item("profile-facts") {
+            OnboardingProfileFacts(
                 modifier = Modifier.fillMaxWidth(),
+                heightDisplay = user.height.display,
+                weightDisplay = user.weight.display,
                 excludedMusclesCount = excludedMusclesCount,
                 missingEquipmentCount = missingEquipmentCount,
             )
         }
 
         item("welcome") {
-            OnboardingWelcomeBlock(
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                experience = experience,
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                OnboardingWelcomeBlock(
+                    modifier = Modifier.fillMaxWidth(),
+                    experience = experience,
+                )
+            }
         }
 
         item("checklist") {

@@ -29,7 +29,7 @@ import com.grippo.design.resources.provider.onboarding_exercise_pack_title
 public fun OnboardingExercisePackCard(
     modifier: Modifier = Modifier,
 ) {
-    val accent = AppTokens.colors.semantic.success
+    val accent = AppTokens.colors.brand.color2
 
     Row(
         modifier = modifier
