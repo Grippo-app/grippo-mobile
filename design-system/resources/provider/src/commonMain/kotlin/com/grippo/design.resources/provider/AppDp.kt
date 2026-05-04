@@ -231,7 +231,7 @@ public data object AppDp {
             }
 
             public data object Goal {
-                val chart: Dp = size.xLarge
+                val chart: Dp = 100.dp
                 val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
                 val benefit: Benefit = Benefit

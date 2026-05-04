@@ -12,14 +12,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.design.components.button.Button
@@ -35,9 +40,10 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_card_adherence_score
+import com.grippo.design.resources.provider.goal_card_progress_day
 import com.grippo.design.resources.provider.goal_card_title
 import com.grippo.design.resources.provider.goal_card_update_btn
+import com.grippo.design.resources.provider.percent
 
 @Composable
 internal fun GoalCardContent(
@@ -45,8 +51,8 @@ internal fun GoalCardContent(
     onUpdateClick: () -> Unit
 ) {
     val score = value.score.coerceIn(0, 100)
-    val ringColors = ringColors(score = score, isFinished = value.isFinished)
-    val indicatorColors = indicatorColors(score = score, isFinished = value.isFinished)
+    val ringColors = goalRingColors(score = score, isFinished = value.isFinished)
+    goalStatusColor(score = score, isFinished = value.isFinished)
 
     Row(
         modifier = Modifier
@@ -80,12 +86,13 @@ internal fun GoalCardContent(
                 .fillMaxWidth()
                 .padding(top = AppTokens.dp.contentPadding.text),
             progress = value.progressFraction,
-            colors = indicatorColors,
+            colors = AppTokens.colors.charts.indicator.muted,
+            barHeight = 4.dp,
             labelSpacing = AppTokens.dp.contentPadding.text,
             startLabel = {
                 Text(
                     text = value.goal.createdAt.display,
-                    style = AppTokens.typography.b13Med(),
+                    style = AppTokens.typography.b11Med(),
                     color = AppTokens.colors.text.secondary,
                     maxLines = 1,
                 )
@@ -93,15 +100,17 @@ internal fun GoalCardContent(
             endLabel = {
                 Text(
                     text = value.goal.target.display,
-                    style = AppTokens.typography.b13Med(),
+                    style = AppTokens.typography.b11Med(),
                     color = AppTokens.colors.text.secondary,
                     maxLines = 1,
                 )
             },
             marker = {
-                Text(
-                    text = "\uD83D\uDD25\uFE0F",
-                    style = AppTokens.typography.h4(),
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(AppTokens.colors.text.primary),
                 )
             },
         )
@@ -113,24 +122,16 @@ internal fun GoalCardContent(
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = if (isOverdue) {
-                    value.remainingLine()
-                } else {
-                    "${value.progressLine()} · ${value.remainingLine()}"
-                },
-                style = AppTokens.typography.b13Med(),
-                color = if (isOverdue) {
-                    AppTokens.colors.semantic.warning
-                } else {
-                    AppTokens.colors.text.secondary
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-
             if (isOverdue) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = value.remainingLine(),
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.semantic.warning,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
                 Button(
                     size = ButtonSize.Small,
                     style = ButtonStyle.Secondary,
@@ -139,7 +140,38 @@ internal fun GoalCardContent(
                     ),
                     onClick = onUpdateClick
                 )
+            } else {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = progressLineHighlighted(value),
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun progressLineHighlighted(value: GoalProgressState): AnnotatedString {
+    val day = (value.daysElapsed + 1).coerceAtMost(value.daysTotal)
+    val total = value.daysTotal
+    val formatted = AppTokens.strings.res(Res.string.goal_card_progress_day, day, total)
+    val dayText = day.toString()
+    val highlightStart = formatted.indexOf(dayText)
+    return buildAnnotatedString {
+        append(formatted)
+        if (highlightStart >= 0) {
+            addStyle(
+                style = SpanStyle(
+                    color = AppTokens.colors.text.primary,
+                    fontWeight = FontWeight.SemiBold,
+                ),
+                start = highlightStart,
+                end = highlightStart + dayText.length,
+            )
         }
     }
 }
@@ -175,23 +207,27 @@ private fun GoalTitleBlock(
             overflow = TextOverflow.Ellipsis,
         )
 
-        val pillShape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
-        val statusColor = statusColor(score = score, isFinished = isFinished)
+        val statusColor = goalStatusColor(score = score, isFinished = isFinished)
 
-        Text(
-            modifier = Modifier
-                .clip(pillShape)
-                .background(statusColor.copy(alpha = 0.20f), shape = pillShape)
-                .padding(
-                    horizontal = AppTokens.dp.metrics.status.horizontalPadding,
-                    vertical = AppTokens.dp.metrics.status.verticalPadding,
-                ),
-            text = statusText,
-            style = AppTokens.typography.b11Semi(),
-            color = statusColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(statusColor),
+            )
+
+            Text(
+                text = statusText,
+                style = AppTokens.typography.b11Semi(),
+                color = statusColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
 
         Spacer(Modifier.weight(1f))
     }
@@ -214,45 +250,23 @@ private fun AdherenceRing(
             colors = ringColors,
         )
 
+        val percent = AppTokens.strings.res(Res.string.percent)
+
         Text(
-            text = AppTokens.strings.res(Res.string.goal_card_adherence_score, score),
-            style = AppTokens.typography.h3(),
+            text = buildAnnotatedString {
+                withStyle(
+                    AppTokens.typography.h1().toSpanStyle()
+                        .copy(color = AppTokens.colors.text.primary)
+                ) { append(score.toString()) }
+                withStyle(
+                    AppTokens.typography.h4().toSpanStyle()
+                        .copy(color = AppTokens.colors.text.secondary)
+                ) { append(percent) }
+            },
+            style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
         )
     }
-}
-
-@Composable
-private fun statusColor(
-    score: Int,
-    isFinished: Boolean,
-): Color = when {
-    isFinished && score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.semantic.success
-    score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.semantic.success
-    score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.semantic.warning
-    else -> AppTokens.colors.semantic.error
-}
-
-@Composable
-private fun ringColors(
-    score: Int,
-    isFinished: Boolean,
-): AppColor.Charts.RingColor.RingPalette = when {
-    isFinished && score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.ring.success
-    score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.ring.success
-    score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.charts.ring.warning
-    else -> AppTokens.colors.charts.ring.error
-}
-
-@Composable
-private fun indicatorColors(
-    score: Int,
-    isFinished: Boolean,
-): AppColor.Charts.IndicatorColors.IndicatorColors = when {
-    isFinished && score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.indicator.success
-    score >= GoalProgressState.ON_TRACK_MIN -> AppTokens.colors.charts.indicator.success
-    score >= GoalProgressState.DRIFTING_MIN -> AppTokens.colors.charts.indicator.warning
-    else -> AppTokens.colors.charts.indicator.error
 }
 
 @AppPreview

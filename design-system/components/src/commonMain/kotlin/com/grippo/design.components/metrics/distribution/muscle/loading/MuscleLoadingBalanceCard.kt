@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.design.components.chart.internal.RingChart
@@ -54,7 +56,6 @@ public fun MuscleLoadingBalanceCard(
     }
 
     val status = AppTokens.strings.res(statusRes)
-    val percentSymbol = AppTokens.strings.res(Res.string.percent)
 
     val biasLine = if (topEntry != null && secondEntry != null) {
         val diff = (topEntry.value - secondEntry.value).roundToInt().coerceAtLeast(0)
@@ -150,7 +151,6 @@ public fun MuscleLoadingBalanceCard(
                 modifier = Modifier.size(AppTokens.dp.metrics.distribution.muscleLoad.balance.chart),
                 score = balanceScore,
                 caption = AppTokens.strings.res(Res.string.muscle_load_balance_score_label),
-                percentSymbol = percentSymbol
             )
         }
     }
@@ -160,7 +160,6 @@ public fun MuscleLoadingBalanceCard(
 private fun BalanceRing(
     score: Int,
     caption: String,
-    percentSymbol: String,
     modifier: Modifier = Modifier,
 ) {
     val colors = when {
@@ -180,14 +179,26 @@ private fun BalanceRing(
             colors = colors
         )
 
+        val percent = AppTokens.strings.res(Res.string.percent)
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "$score$percentSymbol",
-                style = AppTokens.typography.h3(),
-                color = AppTokens.colors.text.primary
+                text = buildAnnotatedString {
+                    withStyle(
+                        AppTokens.typography.h3().toSpanStyle()
+                            .copy(color = AppTokens.colors.text.primary)
+                    ) { append(score.toString()) }
+                    withStyle(
+                        AppTokens.typography.h6().toSpanStyle()
+                            .copy(color = AppTokens.colors.text.secondary)
+                    ) { append(percent) }
+                },
+                style = AppTokens.typography.h1(),
+                color = AppTokens.colors.text.primary,
             )
+
             Text(
                 text = caption,
                 style = AppTokens.typography.b11Med(),
