@@ -21,6 +21,7 @@ import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.menu.Menu
 import com.grippo.design.components.menu.MenuItem
 import com.grippo.design.components.user.UserCard
+import com.grippo.design.components.user.UserCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,7 +43,8 @@ internal fun ProfileScreen(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
-            value = state.user
+            value = state.user,
+            style = UserCardStyle.Compact
         )
     }
 

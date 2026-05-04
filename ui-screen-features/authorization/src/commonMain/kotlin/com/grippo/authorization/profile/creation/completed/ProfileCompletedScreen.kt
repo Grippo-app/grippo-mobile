@@ -37,6 +37,7 @@ import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.user.UserCard
+import com.grippo.design.components.user.UserCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -117,7 +118,8 @@ internal fun ProfileCompletedScreen(
                         .fillMaxWidth()
                         .offset(y = offsetY)
                         .alpha(alpha),
-                    value = state.user
+                    value = state.user,
+                    style = UserCardStyle.Detailed
                 )
             }
 

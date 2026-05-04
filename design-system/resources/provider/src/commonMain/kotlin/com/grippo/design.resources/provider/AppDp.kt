@@ -289,8 +289,27 @@ public data object AppDp {
     }
 
     public data object UserCard {
+        val compact: Compact = Compact
+        val detailed: Detailed = Detailed
+        val avatar: Avatar = Avatar
         val experience: Experience = Experience
         val stats: Stats = Stats
+
+        public data object Compact {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val space: Dp = padding.medium
+        }
+
+        public data object Detailed {
+            val avatarRing: Dp = 3.dp
+        }
+
+        public data object Avatar {
+            val small: Dp = size.medium
+            val large: Dp = icon.xxLarge
+        }
 
         public data object Experience {
             val radius: Dp = AppDp.radius.small
