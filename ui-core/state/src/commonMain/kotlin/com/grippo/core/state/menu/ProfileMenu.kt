@@ -36,7 +36,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color5
+        override fun iconColor(): Color = AppTokens.colors.context.body
     }
 
     public data object Experience : ProfileMenu() {
@@ -51,7 +51,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color4
+        override fun iconColor(): Color = AppTokens.colors.context.experience
     }
 
     public data object Muscles : ProfileMenu() {
@@ -66,7 +66,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color2
+        override fun iconColor(): Color = AppTokens.colors.context.muscle
     }
 
     public data object Equipment : ProfileMenu() {
@@ -80,7 +80,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color3
+        override fun iconColor(): Color = AppTokens.colors.context.equipment
     }
 
     public data object Goal : ProfileMenu() {
@@ -95,7 +95,7 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color1
+        override fun iconColor(): Color = AppTokens.colors.context.goal
     }
 
     public companion object {

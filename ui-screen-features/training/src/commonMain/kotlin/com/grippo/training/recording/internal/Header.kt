@@ -25,10 +25,6 @@ public fun Header(
     volume: VolumeFormatState,
     repetitions: RepetitionsFormatState,
 ) {
-    val intensityColors = AppTokens.colors.training.intensity
-    val volumeColors = AppTokens.colors.training.volume
-    val repetitionsColors = AppTokens.colors.training.repetitions
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -39,22 +35,22 @@ public fun Header(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.duration),
             value = duration,
-            accentColor = intensityColors.startColor,
-            contentColor = intensityColors.contentColor,
+            accentColor = AppTokens.colors.context.duration,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.tonnage),
             value = volume.short(),
-            accentColor = volumeColors.startColor,
-            contentColor = volumeColors.contentColor,
+            accentColor = AppTokens.colors.context.volume,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.reps),
             value = repetitions.short(),
-            accentColor = repetitionsColors.startColor,
-            contentColor = repetitionsColors.contentColor,
+            accentColor = AppTokens.colors.context.repetitions,
+            contentColor = AppTokens.colors.text.primary,
         )
     }
 }

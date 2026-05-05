@@ -18,12 +18,12 @@ public interface AppColor {
     public val muscle: MuscleColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
-    public val training: TrainingColors
     public val charts: Charts
     public val example: ExampleColors
     public val profile: ProfileColors
     public val palette: PaletteColors
     public val static: Static
+    public val context: ContextColors
     public val selectableCardColors: SelectableCardColors
 
     public interface DividerColors {
@@ -132,6 +132,21 @@ public interface AppColor {
         public val disabled: Color
     }
 
+    public interface ContextColors {
+        // Profile
+        public val muscle: Color
+        public val equipment: Color
+        public val experience: Color
+        public val goal: Color
+        public val body: Color
+
+        // Training
+        public val volume: Color
+        public val intensity: Color
+        public val duration: Color
+        public val repetitions: Color
+    }
+
     public interface ProfileColors {
         public val experience: ExperienceColors
 
@@ -197,17 +212,6 @@ public interface AppColor {
         public interface Small {
             public val selectedBackground1: Color
             public val selectedBackground2: Color
-        }
-    }
-
-    public interface TrainingColors {
-        public val intensity: GradientColors
-        public val volume: GradientColors
-        public val repetitions: GradientColors
-
-        public interface GradientColors {
-            public val startColor: Color
-            public val contentColor: Color
         }
     }
 

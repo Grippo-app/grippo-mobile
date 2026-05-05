@@ -26,8 +26,6 @@ public fun RepetitionsChip(
     size: ChipSize,
     style: RepetitionsChipStyle
 ) {
-    val colors = AppTokens.colors.training.repetitions
-
     val text = when (style) {
         RepetitionsChipStyle.SHORT -> ChipLabel.Empty
         RepetitionsChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.repetitions_chip)))
@@ -40,8 +38,8 @@ public fun RepetitionsChip(
         trailing = ChipTrailing.Icon(AppTokens.icons.Repeat),
         size = size,
         stype = ChipStype.Default,
-        textColor = colors.contentColor,
-        iconColor = colors.startColor,
+        textColor = AppTokens.colors.text.primary,
+        iconColor = AppTokens.colors.context.repetitions,
         brush = SolidColor(AppTokens.colors.background.card)
     )
 }

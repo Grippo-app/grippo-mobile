@@ -72,14 +72,14 @@ public fun WelcomeProfileFacts(
                 modifier = Modifier.weight(1f),
                 icon = AppTokens.icons.Height,
                 text = "$heightDisplay $heightUnit",
-                tint = AppTokens.colors.icon.secondary,
+                tint = AppTokens.colors.context.body
             )
 
             FactChip(
                 modifier = Modifier.weight(1f),
                 icon = AppTokens.icons.Weight,
                 text = "$weightDisplay $weightUnit",
-                tint = AppTokens.colors.icon.secondary,
+                tint = AppTokens.colors.context.body,
             )
         }
 
@@ -91,14 +91,14 @@ public fun WelcomeProfileFacts(
                 modifier = Modifier.weight(1f),
                 icon = AppTokens.icons.Muscle,
                 text = musclesText,
-                tint = AppTokens.colors.brand.color2,
+                tint = AppTokens.colors.context.muscle,
             )
 
             FactChip(
                 modifier = Modifier.weight(1f),
                 icon = AppTokens.icons.Dumbbell,
                 text = equipmentText,
-                tint = AppTokens.colors.brand.color3,
+                tint = AppTokens.colors.context.equipment,
             )
         }
     }

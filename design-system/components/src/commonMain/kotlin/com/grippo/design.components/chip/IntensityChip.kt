@@ -26,8 +26,6 @@ public fun IntensityChip(
     size: ChipSize,
     style: IntensityChipStyle
 ) {
-    val colors = AppTokens.colors.training.intensity
-
     val text = when (style) {
         IntensityChipStyle.SHORT -> ChipLabel.Empty
         IntensityChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.intensity_chip)))
@@ -40,8 +38,8 @@ public fun IntensityChip(
         trailing = ChipTrailing.Icon(AppTokens.icons.Flame),
         size = size,
         stype = ChipStype.Default,
-        textColor = colors.contentColor,
-        iconColor = colors.startColor,
+        textColor = AppTokens.colors.text.primary,
+        iconColor = AppTokens.colors.context.intensity,
         brush = SolidColor(AppTokens.colors.background.card)
     )
 }

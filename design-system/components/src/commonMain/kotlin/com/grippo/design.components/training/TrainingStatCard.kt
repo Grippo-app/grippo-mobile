@@ -80,20 +80,20 @@ private fun TrainingStatPreview() {
         TrainingStat(
             label = "Duration",
             value = "00:45",
-            accentColor = AppTokens.colors.training.intensity.startColor,
-            contentColor = AppTokens.colors.training.intensity.contentColor,
+            accentColor = AppTokens.colors.context.intensity,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             label = "Tonnage",
             value = "5 628 кг",
-            accentColor = AppTokens.colors.training.volume.startColor,
-            contentColor = AppTokens.colors.training.volume.contentColor,
+            accentColor = AppTokens.colors.context.volume,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             label = "Reps",
             value = "x73",
-            accentColor = AppTokens.colors.training.repetitions.startColor,
-            contentColor = AppTokens.colors.training.repetitions.contentColor,
+            accentColor = AppTokens.colors.context.repetitions,
+            contentColor = AppTokens.colors.text.primary,
         )
     }
 }

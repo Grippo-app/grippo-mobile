@@ -26,8 +26,6 @@ public fun VolumeChip(
     size: ChipSize,
     style: VolumeChipStyle
 ) {
-    val colors = AppTokens.colors.training.volume
-
     val text = when (style) {
         VolumeChipStyle.SHORT -> ChipLabel.Empty
         VolumeChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.tonnage_chip)))
@@ -40,8 +38,8 @@ public fun VolumeChip(
         trailing = ChipTrailing.Icon(AppTokens.icons.Stack),
         size = size,
         stype = ChipStype.Default,
-        textColor = colors.contentColor,
-        iconColor = colors.startColor,
+        textColor = AppTokens.colors.text.primary,
+        iconColor = AppTokens.colors.context.volume,
         brush = SolidColor(AppTokens.colors.background.card)
     )
 }

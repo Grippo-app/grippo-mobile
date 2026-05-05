@@ -136,19 +136,19 @@ public object DarkColor : AppColor {
                 }
         }
 
-    override val training: AppColor.TrainingColors = object : AppColor.TrainingColors {
-        override val intensity = object : AppColor.TrainingColors.GradientColors {
-            override val startColor = AppPalette.Unique.Green
-            override val contentColor = AppPalette.Common.White
-        }
-        override val volume = object : AppColor.TrainingColors.GradientColors {
-            override val startColor = AppPalette.Unique.Blue
-            override val contentColor = AppPalette.Common.White
-        }
-        override val repetitions = object : AppColor.TrainingColors.GradientColors {
-            override val startColor = AppPalette.Unique.Purple
-            override val contentColor = AppPalette.Common.White
-        }
+    override val context: AppColor.ContextColors = object : AppColor.ContextColors {
+        // Profile
+        override val muscle: Color = AppPalette.Unique.Coral
+        override val goal: Color = AppPalette.Unique.Magenta
+        override val equipment: Color = AppPalette.Unique.Green
+        override val experience: Color = AppPalette.Unique.Teal
+        override val body: Color = AppPalette.Unique.Sky
+
+        // Training
+        override val volume: Color = AppPalette.Unique.Blue
+        override val repetitions: Color = AppPalette.Unique.Purple
+        override val intensity: Color = AppPalette.Unique.Green
+        override val duration: Color = AppPalette.NeutralDark.N400
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
