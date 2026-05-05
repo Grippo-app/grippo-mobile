@@ -60,7 +60,7 @@ internal fun UserCardCompact(
             Text(
                 text = value.email,
                 style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.tertiary,
+                color = AppTokens.colors.text.secondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

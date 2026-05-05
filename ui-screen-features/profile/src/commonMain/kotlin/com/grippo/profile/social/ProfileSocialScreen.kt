@@ -25,7 +25,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.follow_us
+import com.grippo.design.resources.provider.community
 import com.grippo.design.resources.provider.icons.GrippoLogo
 import com.grippo.design.resources.provider.social_hero_headline
 import com.grippo.design.resources.provider.social_hero_subtitle
@@ -41,7 +41,7 @@ internal fun ProfileSocialScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.follow_us),
+        title = AppTokens.strings.res(Res.string.community),
         style = ToolbarStyle.Transparent,
         leading = Leading.Back(contract::onBack)
     )

@@ -45,17 +45,6 @@ internal fun UserCardDetailed(
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-        Text(
-            text = value.email,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-        )
     }
 }
 

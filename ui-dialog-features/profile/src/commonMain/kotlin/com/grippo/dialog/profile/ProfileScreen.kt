@@ -91,15 +91,6 @@ internal fun ProfileScreen(
                         .toPersistentList()
 
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = ProfileMenu.title().text(),
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary
-                        )
-
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
                         Menu(
                             items = profileMenu,
                             onClick = contract::onProfileMenuClick
@@ -111,7 +102,7 @@ internal fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             text = SettingsMenu.title().text(),
                             style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary
+                            color = AppTokens.colors.text.tertiary
                         )
 
                         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))

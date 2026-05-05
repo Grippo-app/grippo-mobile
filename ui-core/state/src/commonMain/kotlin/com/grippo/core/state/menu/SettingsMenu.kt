@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.community
 import com.grippo.design.resources.provider.debug
-import com.grippo.design.resources.provider.follow_us
 import com.grippo.design.resources.provider.icons.Bug
 import com.grippo.design.resources.provider.icons.ChatAlt
 import com.grippo.design.resources.provider.icons.Tune
@@ -38,7 +38,7 @@ public sealed class SettingsMenu : PickerMenuItem {
     public data object Social : SettingsMenu() {
         override val id: String get() = "social"
 
-        override fun text(): UiText = UiText.Res(Res.string.follow_us)
+        override fun text(): UiText = UiText.Res(Res.string.community)
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.ChatAlt

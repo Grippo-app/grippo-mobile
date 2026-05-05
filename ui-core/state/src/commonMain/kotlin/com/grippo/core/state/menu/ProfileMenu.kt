@@ -100,7 +100,7 @@ public sealed class ProfileMenu : PickerMenuItem {
 
     public companion object {
         public val entries: ImmutableList<ProfileMenu> =
-            persistentListOf(Body, Experience, Muscles, Equipment, Goal)
+            persistentListOf(Goal, Muscles, Equipment, Experience, Body)
 
         public fun title(): UiText = UiText.Res(Res.string.profile)
     }

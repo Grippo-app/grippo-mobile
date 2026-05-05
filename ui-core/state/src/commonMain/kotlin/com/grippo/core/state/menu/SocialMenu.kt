@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.follow_us
+import com.grippo.design.resources.provider.community
 import com.grippo.design.resources.provider.icons.Instagram
 import com.grippo.design.resources.provider.icons.Threads
 import com.grippo.design.resources.provider.icons.Tiktok
@@ -100,6 +100,6 @@ public sealed class SocialMenu : PickerMenuItem {
         public val entries: ImmutableList<SocialMenu> =
             persistentListOf(Instagram, TikTok, YouTube, Threads)
 
-        public fun title(): UiText = UiText.Res(Res.string.follow_us)
+        public fun title(): UiText = UiText.Res(Res.string.community)
     }
 }
