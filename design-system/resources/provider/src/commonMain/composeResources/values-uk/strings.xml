@@ -372,6 +372,8 @@
     <string name="sets_label">Підходи:</string>
     <string name="training_progress_lost_title">Вийти з тренування</string>
     <string name="training_progress_lost_description">Якщо закриєш зараз, увесь прогрес цієї сесії буде втрачено.</string>
+    <string name="planned_sets_unfinished_title">Незакриті підходи</string>
+    <string name="planned_sets_unfinished_description">Кілька запланованих підходів ще порожні. Вони не потраплять до тренування при завершенні.</string>
     <string name="confirm_training_completion_title">Завершити тренування</string>
     <string name="confirm_training_completion_subtitle">Чудова робота. Готовий завершити?</string>
     <string name="confirm_training_completion_hint">Тривалість можна змінити.</string>

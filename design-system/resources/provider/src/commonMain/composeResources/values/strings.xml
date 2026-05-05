@@ -374,6 +374,8 @@
     <string name="sets_label">Sets:</string>
     <string name="training_progress_lost_title">Exit workout</string>
     <string name="training_progress_lost_description">Closing now will discard all progress from this session.</string>
+    <string name="planned_sets_unfinished_title">Unfinished sets</string>
+    <string name="planned_sets_unfinished_description">Some planned sets are still empty. They will be dropped when you finish the workout.</string>
     <string name="confirm_training_completion_title">Finish workout</string>
     <string name="confirm_training_completion_subtitle">Nice work. Ready to wrap it up?</string>
     <string name="confirm_training_completion_hint">You can edit the duration.</string>

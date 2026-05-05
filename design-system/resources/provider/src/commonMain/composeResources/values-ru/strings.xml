@@ -373,6 +373,8 @@
     <string name="sets_label">Подходы:</string>
     <string name="training_progress_lost_title">Выйти из тренировки</string>
     <string name="training_progress_lost_description">Если закроешь сейчас, весь прогресс этой сессии будет потерян.</string>
+    <string name="planned_sets_unfinished_title">Незакрытые подходы</string>
+    <string name="planned_sets_unfinished_description">Некоторые запланированные подходы ещё пусты. Они будут отброшены при завершении тренировки.</string>
     <string name="confirm_training_completion_title">Завершить тренировку</string>
     <string name="confirm_training_completion_subtitle">Отличная работа. Готов завершить?</string>
     <string name="confirm_training_completion_hint">Длительность можно изменить.</string>

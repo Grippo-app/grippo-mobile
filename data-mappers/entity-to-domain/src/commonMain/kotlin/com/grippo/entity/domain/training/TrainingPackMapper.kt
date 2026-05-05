@@ -25,7 +25,7 @@ public fun TrainingPack.toDomain(): Training {
 }
 
 public fun DraftTrainingPack.toSetDomain(): SetDraftTraining {
-    val training = SetTraining(
+    val setTraining = SetTraining(
         exercises = exercises.toSetDomain(),
         volume = training.volume,
         repetitions = training.repetitions,
@@ -34,7 +34,7 @@ public fun DraftTrainingPack.toSetDomain(): SetDraftTraining {
     )
 
     return SetDraftTraining(
-        trainingId = this.training.trainingId,
-        training = training
+        trainingId = training.trainingId,
+        training = setTraining,
     )
 }

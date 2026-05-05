@@ -2,6 +2,7 @@ package com.grippo.training
 
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 
@@ -11,7 +12,8 @@ public sealed interface TrainingDirection : BaseDirection {
     public data object Back : TrainingDirection
 
     public data class ToRecording(
-        val stage: StageState
+        val stage: StageState,
+        val seed: TrainingSeed,
     ) : TrainingDirection
 
     public data class ToExercise(
