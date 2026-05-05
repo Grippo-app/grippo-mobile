@@ -1,4 +1,4 @@
-package com.grippo.design.components.onboarding
+package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -19,7 +19,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-public fun OnboardingWelcomeBlock(
+public fun WelcomeBlock(
     modifier: Modifier = Modifier,
     experience: ExperienceEnumState,
 ) {
@@ -37,15 +37,15 @@ public fun OnboardingWelcomeBlock(
         )
     }
 
-    val shape = RoundedCornerShape(AppTokens.dp.onboarding.card.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
 
     Column(
         modifier = modifier
             .background(color = cardColor, shape = shape)
             .background(brush = gradient, shape = shape)
             .padding(
-                horizontal = AppTokens.dp.onboarding.card.horizontalPadding,
-                vertical = AppTokens.dp.onboarding.card.verticalPadding
+                horizontal = AppTokens.dp.welcome.card.horizontalPadding,
+                vertical = AppTokens.dp.welcome.card.verticalPadding
             ),
     ) {
         Text(
@@ -68,9 +68,9 @@ public fun OnboardingWelcomeBlock(
 
 @AppPreview
 @Composable
-private fun OnboardingWelcomeBlockBeginnerPreview() {
+private fun WelcomeBlockBeginnerPreview() {
     PreviewContainer {
-        OnboardingWelcomeBlock(
+        WelcomeBlock(
             modifier = Modifier.fillMaxWidth(),
             experience = ExperienceEnumState.BEGINNER,
         )
@@ -79,9 +79,9 @@ private fun OnboardingWelcomeBlockBeginnerPreview() {
 
 @AppPreview
 @Composable
-private fun OnboardingWelcomeBlockProPreview() {
+private fun WelcomeBlockProPreview() {
     PreviewContainer {
-        OnboardingWelcomeBlock(
+        WelcomeBlock(
             modifier = Modifier.fillMaxWidth(),
             experience = ExperienceEnumState.PRO,
         )

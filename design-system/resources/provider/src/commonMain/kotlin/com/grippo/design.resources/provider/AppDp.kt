@@ -71,7 +71,7 @@ public data object AppDp {
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
-    val onboarding: Onboarding = Onboarding
+    val welcome: Welcome = Welcome
     val empty: Empty = Empty
     val tip: Tip = Tip
     val badge: Badge = Badge
@@ -297,7 +297,7 @@ public data object AppDp {
         }
     }
 
-    public data object Onboarding {
+    public data object Welcome {
         val card: Card = Card
         val iconBadge: IconBadge = IconBadge
         val checkmark: Checkmark = Checkmark

@@ -39,7 +39,9 @@ internal class HomeComponent(
             notificationManager = getKoin().get(),
             goalFollowingUseCase = getKoin().get(),
             goalSetupSuggestionUseCase = getKoin().get(),
-            userFeature = getKoin().get()
+            userFeature = getKoin().get(),
+            excludedMusclesFeature = getKoin().get(),
+            excludedEquipmentsFeature = getKoin().get(),
         )
     }
 

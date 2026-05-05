@@ -19,10 +19,10 @@ import com.grippo.design.resources.provider.icons.ExperienceAdvanced
 import com.grippo.design.resources.provider.icons.ExperienceBeginner
 import com.grippo.design.resources.provider.icons.ExperienceIntermediate
 import com.grippo.design.resources.provider.icons.ExperiencePro
-import com.grippo.design.resources.provider.onboarding_motto_advanced
-import com.grippo.design.resources.provider.onboarding_motto_beginner
-import com.grippo.design.resources.provider.onboarding_motto_intermediate
-import com.grippo.design.resources.provider.onboarding_motto_pro
+import com.grippo.design.resources.provider.welcome_motto_advanced
+import com.grippo.design.resources.provider.welcome_motto_beginner
+import com.grippo.design.resources.provider.welcome_motto_intermediate
+import com.grippo.design.resources.provider.welcome_motto_pro
 
 @Immutable
 public enum class ExperienceEnumState {
@@ -57,10 +57,10 @@ public enum class ExperienceEnumState {
     @Composable
     public fun motto(): String {
         val resource = when (this) {
-            BEGINNER -> Res.string.onboarding_motto_beginner
-            INTERMEDIATE -> Res.string.onboarding_motto_intermediate
-            ADVANCED -> Res.string.onboarding_motto_advanced
-            PRO -> Res.string.onboarding_motto_pro
+            BEGINNER -> Res.string.welcome_motto_beginner
+            INTERMEDIATE -> Res.string.welcome_motto_intermediate
+            ADVANCED -> Res.string.welcome_motto_advanced
+            PRO -> Res.string.welcome_motto_pro
         }
         return AppTokens.strings.res(resource)
     }

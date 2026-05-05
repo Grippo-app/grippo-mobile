@@ -1,4 +1,4 @@
-package com.grippo.design.components.onboarding
+package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +26,13 @@ import com.grippo.design.resources.provider.icons.Height
 import com.grippo.design.resources.provider.icons.Muscle
 import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.kg
-import com.grippo.design.resources.provider.onboarding_facts_equipment_all
-import com.grippo.design.resources.provider.onboarding_facts_equipment_missing
-import com.grippo.design.resources.provider.onboarding_facts_muscles_all
-import com.grippo.design.resources.provider.onboarding_facts_muscles_excluded
+import com.grippo.design.resources.provider.welcome_facts_equipment_all
+import com.grippo.design.resources.provider.welcome_facts_equipment_missing
+import com.grippo.design.resources.provider.welcome_facts_muscles_all
+import com.grippo.design.resources.provider.welcome_facts_muscles_excluded
 
 @Composable
-public fun OnboardingProfileFacts(
+public fun WelcomeProfileFacts(
     modifier: Modifier = Modifier,
     heightDisplay: String,
     weightDisplay: String,
@@ -43,22 +43,22 @@ public fun OnboardingProfileFacts(
     val weightUnit = AppTokens.strings.res(Res.string.kg)
 
     val musclesText = when {
-        excludedMusclesCount <= 0 -> AppTokens.strings.res(Res.string.onboarding_facts_muscles_all)
+        excludedMusclesCount <= 0 -> AppTokens.strings.res(Res.string.welcome_facts_muscles_all)
         else -> AppTokens.strings.res(
-            Res.string.onboarding_facts_muscles_excluded,
+            Res.string.welcome_facts_muscles_excluded,
             excludedMusclesCount
         )
     }
 
     val equipmentText = when {
-        missingEquipmentCount <= 0 -> AppTokens.strings.res(Res.string.onboarding_facts_equipment_all)
+        missingEquipmentCount <= 0 -> AppTokens.strings.res(Res.string.welcome_facts_equipment_all)
         else -> AppTokens.strings.res(
-            Res.string.onboarding_facts_equipment_missing,
+            Res.string.welcome_facts_equipment_missing,
             missingEquipmentCount
         )
     }
 
-    val gap = AppTokens.dp.onboarding.factChip.gap
+    val gap = AppTokens.dp.welcome.factChip.gap
 
     Column(
         modifier = modifier,
@@ -115,17 +115,17 @@ private fun FactChip(
         modifier = modifier
             .background(
                 color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.onboarding.factChip.radius)
+                shape = RoundedCornerShape(AppTokens.dp.welcome.factChip.radius)
             )
             .padding(
-                horizontal = AppTokens.dp.onboarding.factChip.horizontalPadding,
-                vertical = AppTokens.dp.onboarding.factChip.verticalPadding
+                horizontal = AppTokens.dp.welcome.factChip.horizontalPadding,
+                vertical = AppTokens.dp.welcome.factChip.verticalPadding
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.onboarding.factChip.space)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.welcome.factChip.space)
     ) {
         Icon(
-            modifier = Modifier.size(AppTokens.dp.onboarding.factChip.icon),
+            modifier = Modifier.size(AppTokens.dp.welcome.factChip.icon),
             imageVector = icon,
             contentDescription = null,
             tint = tint,
@@ -143,9 +143,9 @@ private fun FactChip(
 
 @AppPreview
 @Composable
-private fun OnboardingProfileFactsAllAvailablePreview() {
+private fun WelcomeProfileFactsAllAvailablePreview() {
     PreviewContainer {
-        OnboardingProfileFacts(
+        WelcomeProfileFacts(
             modifier = Modifier.fillMaxWidth(),
             heightDisplay = "175",
             weightDisplay = "70.0",
@@ -157,9 +157,9 @@ private fun OnboardingProfileFactsAllAvailablePreview() {
 
 @AppPreview
 @Composable
-private fun OnboardingProfileFactsCustomizedPreview() {
+private fun WelcomeProfileFactsCustomizedPreview() {
     PreviewContainer {
-        OnboardingProfileFacts(
+        WelcomeProfileFacts(
             modifier = Modifier.fillMaxWidth(),
             heightDisplay = "179",
             weightDisplay = "80.0",

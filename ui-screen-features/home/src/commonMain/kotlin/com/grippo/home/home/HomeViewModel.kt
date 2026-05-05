@@ -5,6 +5,8 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
+import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.goal.GoalSetupSuggestionUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
@@ -68,6 +70,8 @@ internal class HomeViewModel(
     private val goalFollowingUseCase: GoalFollowingUseCase,
     private val goalSetupSuggestionUseCase: GoalSetupSuggestionUseCase,
     userFeature: UserFeature,
+    excludedMusclesFeature: ExcludedMusclesFeature,
+    excludedEquipmentsFeature: ExcludedEquipmentsFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -76,6 +80,16 @@ internal class HomeViewModel(
         userFeature
             .observeUser()
             .onEach(::provideUser)
+            .safeLaunch()
+
+        excludedMusclesFeature
+            .observeExcludedMuscles()
+            .onEach { update { state -> state.copy(excludedMusclesCount = it.size) } }
+            .safeLaunch()
+
+        excludedEquipmentsFeature
+            .observeExcludedEquipments()
+            .onEach { update { state -> state.copy(missingEquipmentCount = it.size) } }
             .safeLaunch()
 
         localSettingsFeature.observeRange()

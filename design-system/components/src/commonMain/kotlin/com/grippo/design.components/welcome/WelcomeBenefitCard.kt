@@ -1,4 +1,4 @@
-package com.grippo.design.components.onboarding
+package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,15 +27,15 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Stack
-import com.grippo.design.resources.provider.onboarding_benefit_history_subtitle
-import com.grippo.design.resources.provider.onboarding_benefit_history_title
-import com.grippo.design.resources.provider.onboarding_benefit_pack_subtitle
-import com.grippo.design.resources.provider.onboarding_benefit_pack_title
-import com.grippo.design.resources.provider.onboarding_benefit_progress_subtitle
-import com.grippo.design.resources.provider.onboarding_benefit_progress_title
+import com.grippo.design.resources.provider.welcome_benefit_history_subtitle
+import com.grippo.design.resources.provider.welcome_benefit_history_title
+import com.grippo.design.resources.provider.welcome_benefit_pack_subtitle
+import com.grippo.design.resources.provider.welcome_benefit_pack_title
+import com.grippo.design.resources.provider.welcome_benefit_progress_subtitle
+import com.grippo.design.resources.provider.welcome_benefit_progress_title
 
 @Composable
-public fun OnboardingBenefitCard(
+public fun WelcomeBenefitCard(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
@@ -46,18 +46,18 @@ public fun OnboardingBenefitCard(
         modifier = modifier
             .background(
                 color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.onboarding.card.radius)
+                shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
             )
             .padding(
-                horizontal = AppTokens.dp.onboarding.card.horizontalPadding,
-                vertical = AppTokens.dp.onboarding.card.verticalPadding
+                horizontal = AppTokens.dp.welcome.card.horizontalPadding,
+                vertical = AppTokens.dp.welcome.card.verticalPadding
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.onboarding.card.space)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.welcome.card.space)
     ) {
         Box(
             modifier = Modifier
-                .size(AppTokens.dp.onboarding.iconBadge.size)
+                .size(AppTokens.dp.welcome.iconBadge.size)
                 .background(
                     color = tint.copy(alpha = 0.18f),
                     shape = CircleShape
@@ -65,7 +65,7 @@ public fun OnboardingBenefitCard(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.onboarding.iconBadge.icon),
+                modifier = Modifier.size(AppTokens.dp.welcome.iconBadge.icon),
                 imageVector = icon,
                 contentDescription = null,
                 tint = tint,
@@ -96,12 +96,12 @@ public fun OnboardingBenefitCard(
 
 @AppPreview
 @Composable
-private fun OnboardingBenefitCardPackPreview() {
+private fun WelcomeBenefitCardPackPreview() {
     PreviewContainer {
-        OnboardingBenefitCard(
+        WelcomeBenefitCard(
             modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.onboarding_benefit_pack_title),
-            subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_pack_subtitle),
+            title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
+            subtitle = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
             icon = AppTokens.icons.Sparkle,
             tint = AppTokens.colors.brand.color2,
         )
@@ -110,12 +110,12 @@ private fun OnboardingBenefitCardPackPreview() {
 
 @AppPreview
 @Composable
-private fun OnboardingBenefitCardProgressPreview() {
+private fun WelcomeBenefitCardProgressPreview() {
     PreviewContainer {
-        OnboardingBenefitCard(
+        WelcomeBenefitCard(
             modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.onboarding_benefit_progress_title),
-            subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_progress_subtitle),
+            title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
+            subtitle = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
             icon = AppTokens.icons.LineUp,
             tint = AppTokens.colors.brand.color5,
         )
@@ -124,12 +124,12 @@ private fun OnboardingBenefitCardProgressPreview() {
 
 @AppPreview
 @Composable
-private fun OnboardingBenefitCardHistoryPreview() {
+private fun WelcomeBenefitCardHistoryPreview() {
     PreviewContainer {
-        OnboardingBenefitCard(
+        WelcomeBenefitCard(
             modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.onboarding_benefit_history_title),
-            subtitle = AppTokens.strings.res(Res.string.onboarding_benefit_history_subtitle),
+            title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
+            subtitle = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
             icon = AppTokens.icons.Stack,
             tint = AppTokens.colors.brand.color1,
         )

@@ -1,4 +1,4 @@
-package com.grippo.design.components.onboarding
+package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -19,28 +19,28 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.onboarding_progress_complete
+import com.grippo.design.resources.provider.welcome_progress_complete
 
 @Composable
-public fun OnboardingProgressBadge(
+public fun WelcomeProgressBadge(
     modifier: Modifier = Modifier,
 ) {
     val accent = AppTokens.colors.semantic.success
     val track = AppTokens.colors.background.card
-    val ringStroke = AppTokens.dp.onboarding.progress.ringStroke
+    val ringStroke = AppTokens.dp.welcome.progress.ringStroke
 
     Row(
         modifier = modifier
             .background(color = track, shape = CircleShape)
             .padding(
-                horizontal = AppTokens.dp.onboarding.progress.horizontalPadding,
-                vertical = AppTokens.dp.onboarding.progress.verticalPadding
+                horizontal = AppTokens.dp.welcome.progress.horizontalPadding,
+                vertical = AppTokens.dp.welcome.progress.verticalPadding
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.onboarding.progress.space)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.welcome.progress.space)
     ) {
 
-        Canvas(modifier = Modifier.size(AppTokens.dp.onboarding.progress.ring)) {
+        Canvas(modifier = Modifier.size(AppTokens.dp.welcome.progress.ring)) {
             val stroke = Stroke(width = ringStroke.toPx())
             val inset = stroke.width / 2f
             val arcSize = Size(
@@ -71,7 +71,7 @@ public fun OnboardingProgressBadge(
         }
 
         Text(
-            text = AppTokens.strings.res(Res.string.onboarding_progress_complete),
+            text = AppTokens.strings.res(Res.string.welcome_progress_complete),
             style = AppTokens.typography.b13Semi(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,
@@ -82,8 +82,8 @@ public fun OnboardingProgressBadge(
 
 @AppPreview
 @Composable
-private fun OnboardingProgressBadgePreview() {
+private fun WelcomeProgressBadgePreview() {
     PreviewContainer {
-        OnboardingProgressBadge()
+        WelcomeProgressBadge()
     }
 }

@@ -29,7 +29,6 @@ internal class ProfileCompletedComponent(
             experience = experience,
             excludedMuscleIds = excludedMuscleIds,
             missingEquipmentIds = missingEquipmentIds,
-            userFeature = getKoin().get(),
             createProfileUseCase = getKoin().get()
         )
     }

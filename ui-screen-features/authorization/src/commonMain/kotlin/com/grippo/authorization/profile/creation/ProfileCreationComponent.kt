@@ -120,7 +120,7 @@ internal class ProfileCreationComponent(
                     excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
                     missingEquipmentIds = viewModel.state.value.missingEquipmentIds,
                     toHome = viewModel::toHome,
-                    back = viewModel::toHome
+                    back = viewModel::onBack
                 ),
             )
         }

@@ -191,7 +191,6 @@
     <string name="submit_btn">Надіслати</string>
     <string name="delete_btn">Видалити</string>
     <string name="edit_btn">Редагувати</string>
-    <string name="get_started_btn">Почати</string>
     <string name="continue_btn">Продовжити</string>
     <string name="exercises">Вправи</string>
     <string name="add_exercise_btn">Додати вправу</string>
@@ -245,34 +244,34 @@
     <string name="registration_equipment_title">Чого немає у твоєму залі?</string>
     <string name="registration_equipment_description">Вимкни недоступне обладнання — ми приберемо вправи, яким воно потрібне.</string>
 
-    <string name="registration_completed_title">🎉 Усе готово!</string>
-    <string name="registration_completed_subtitle">Профіль створено — час до першого тренування.</string>
+    <string name="welcome_title">Час до першого тренування</string>
+    <string name="welcome_subtitle">Почни стежити за прогресом з першого тренування.</string>
 
-    <string name="onboarding_progress_complete">Профіль 100%</string>
+    <string name="welcome_progress_complete">Профіль готовий</string>
 
-    <string name="onboarding_check_profile">Профіль створено</string>
-    <string name="onboarding_check_experience">Рівень досвіду обрано</string>
-    <string name="onboarding_check_muscles">М’язи налаштовано</string>
-    <string name="onboarding_check_equipment">Обладнання налаштовано</string>
-    <string name="onboarding_section_progress_title">Прогрес онбордингу</string>
-    <string name="onboarding_section_benefits_title">Що ти отримаєш</string>
+    <string name="welcome_check_profile">Профіль створено</string>
+    <string name="welcome_check_experience">Рівень досвіду обрано</string>
+    <string name="welcome_check_muscles">М’язи налаштовано</string>
+    <string name="welcome_check_equipment">Обладнання налаштовано</string>
+    <string name="welcome_section_progress_title">Прогрес налаштування</string>
+    <string name="welcome_section_benefits_title">Що в тебе є</string>
 
-    <string name="onboarding_facts_muscles_all">Усі м’язи</string>
-    <string name="onboarding_facts_muscles_excluded">%1$d виключено</string>
-    <string name="onboarding_facts_equipment_all">Усе обладнання</string>
-    <string name="onboarding_facts_equipment_missing">%1$d недоступно</string>
+    <string name="welcome_facts_muscles_all">Усі м’язи</string>
+    <string name="welcome_facts_muscles_excluded">%1$d виключено</string>
+    <string name="welcome_facts_equipment_all">Усе обладнання</string>
+    <string name="welcome_facts_equipment_missing">%1$d недоступно</string>
 
-    <string name="onboarding_motto_beginner">Кожен експерт колись починав з першого підходу.</string>
-    <string name="onboarding_motto_intermediate">База є — час забирати на новий рівень.</string>
-    <string name="onboarding_motto_advanced">Стабільність створює чемпіонів.</string>
-    <string name="onboarding_motto_pro">Інструмент під твій рівень. Час показати результат.</string>
+    <string name="welcome_motto_beginner">Кожен експерт колись починав з першого підходу.</string>
+    <string name="welcome_motto_intermediate">База є — час виходити на новий рівень.</string>
+    <string name="welcome_motto_advanced">Стабільність створює чемпіонів.</string>
+    <string name="welcome_motto_pro">Інструмент під твій рівень. Час показати результат.</string>
 
-    <string name="onboarding_benefit_pack_title">Твій набір вправ готовий</string>
-    <string name="onboarding_benefit_pack_subtitle">Підібрано під твоє обладнання та м’язи.</string>
-    <string name="onboarding_benefit_progress_title">Прогрес під контролем</string>
-    <string name="onboarding_benefit_progress_subtitle">Тоннаж, повторення та час фіксуються в кожному тренуванні.</string>
-    <string name="onboarding_benefit_history_title">Повна історія тренувань</string>
-    <string name="onboarding_benefit_history_subtitle">Кожен підхід збережено — повертайся коли захочеш.</string>
+    <string name="welcome_benefit_pack_title">Твій набір вправ готовий</string>
+    <string name="welcome_benefit_pack_subtitle">Підібрано під твоє обладнання та м’язи.</string>
+    <string name="welcome_benefit_progress_title">Прогрес під контролем</string>
+    <string name="welcome_benefit_progress_subtitle">Обсяг, повторення та час фіксуються в кожному тренуванні.</string>
+    <string name="welcome_benefit_history_title">Повна історія тренувань</string>
+    <string name="welcome_benefit_history_subtitle">Кожен підхід збережено — повертайся коли захочеш.</string>
 
     <string name="height_picker_title">Обери свій зріст</string>
     <string name="period_picker_title">Обери період</string>
@@ -341,8 +340,6 @@
     <string name="equipments">Обладнання</string>
     <string name="muscles">М’язи</string>
     <string name="weight_history">Історія ваги</string>
-    <string name="home_empty_title">Тренувань поки немає</string>
-    <string name="home_empty_subtitle">Почни перше тренування, і тут з’являться підбірки.</string>
     <string name="start_workout">Почати тренування</string>
     <string name="debug">Налагодження</string>
     <string name="clear_logs">Очистити логи</string>

@@ -1,4 +1,4 @@
-package com.grippo.design.components.onboarding
+package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,32 +23,32 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Check
-import com.grippo.design.resources.provider.onboarding_check_equipment
-import com.grippo.design.resources.provider.onboarding_check_experience
-import com.grippo.design.resources.provider.onboarding_check_muscles
-import com.grippo.design.resources.provider.onboarding_check_profile
+import com.grippo.design.resources.provider.welcome_check_equipment
+import com.grippo.design.resources.provider.welcome_check_experience
+import com.grippo.design.resources.provider.welcome_check_muscles
+import com.grippo.design.resources.provider.welcome_check_profile
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-public data class OnboardingChecklistItem(
+public data class WelcomeChecklistItem(
     val text: String,
 )
 
 @Composable
-public fun OnboardingChecklist(
+public fun WelcomeChecklist(
     modifier: Modifier = Modifier,
-    items: ImmutableList<OnboardingChecklistItem>,
+    items: ImmutableList<WelcomeChecklistItem>,
 ) {
     Column(
         modifier = modifier
             .background(
                 color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.onboarding.card.radius)
+                shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
             )
             .padding(
-                horizontal = AppTokens.dp.onboarding.card.horizontalPadding,
-                vertical = AppTokens.dp.onboarding.card.verticalPadding
+                horizontal = AppTokens.dp.welcome.card.horizontalPadding,
+                vertical = AppTokens.dp.welcome.card.verticalPadding
             ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
@@ -77,7 +77,7 @@ private fun ChecklistRow(
     ) {
         Box(
             modifier = Modifier
-                .size(AppTokens.dp.onboarding.checkmark.size)
+                .size(AppTokens.dp.welcome.checkmark.size)
                 .background(
                     color = accent.copy(alpha = 0.18f),
                     shape = CircleShape
@@ -85,7 +85,7 @@ private fun ChecklistRow(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.onboarding.checkmark.size),
+                modifier = Modifier.size(AppTokens.dp.welcome.checkmark.size),
                 imageVector = AppTokens.icons.Check,
                 contentDescription = null,
                 tint = accent,
@@ -104,15 +104,15 @@ private fun ChecklistRow(
 
 @AppPreview
 @Composable
-private fun OnboardingChecklistPreview() {
+private fun WelcomeChecklistPreview() {
     PreviewContainer {
-        OnboardingChecklist(
+        WelcomeChecklist(
             modifier = Modifier.fillMaxWidth(),
             items = persistentListOf(
-                OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_profile)),
-                OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_experience)),
-                OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_muscles)),
-                OnboardingChecklistItem(AppTokens.strings.res(Res.string.onboarding_check_equipment)),
+                WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_profile)),
+                WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_experience)),
+                WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_muscles)),
+                WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_equipment)),
             )
         )
     }

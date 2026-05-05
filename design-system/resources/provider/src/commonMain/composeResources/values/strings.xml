@@ -191,7 +191,6 @@
     <string name="submit_btn">Submit</string>
     <string name="delete_btn">Delete</string>
     <string name="edit_btn">Edit</string>
-    <string name="get_started_btn">Get started</string>
     <string name="continue_btn">Continue</string>
     <string name="exercises">Exercises</string>
     <string name="add_exercise_btn">Add exercise</string>
@@ -246,34 +245,34 @@
     <string name="registration_equipment_title">What’s missing from your gym?</string>
     <string name="registration_equipment_description">Turn off unavailable equipment and we’ll hide exercises that need it.</string>
 
-    <string name="registration_completed_title">🎉 You’re all set!</string>
-    <string name="registration_completed_subtitle">Profile created — let’s get to your first workout.</string>
+    <string name="welcome_title">Time for your first workout</string>
+    <string name="welcome_subtitle">Start tracking your progress with your first session.</string>
 
-    <string name="onboarding_progress_complete">Profile 100%</string>
+    <string name="welcome_progress_complete">Profile complete</string>
 
-    <string name="onboarding_check_profile">Profile created</string>
-    <string name="onboarding_check_experience">Experience selected</string>
-    <string name="onboarding_check_muscles">Muscles configured</string>
-    <string name="onboarding_check_equipment">Equipment configured</string>
-    <string name="onboarding_section_progress_title">Onboarding progress</string>
-    <string name="onboarding_section_benefits_title">What you’ll get</string>
+    <string name="welcome_check_profile">Profile created</string>
+    <string name="welcome_check_experience">Experience selected</string>
+    <string name="welcome_check_muscles">Muscles configured</string>
+    <string name="welcome_check_equipment">Equipment configured</string>
+    <string name="welcome_section_progress_title">Setup progress</string>
+    <string name="welcome_section_benefits_title">What you have</string>
 
-    <string name="onboarding_facts_muscles_all">All muscles</string>
-    <string name="onboarding_facts_muscles_excluded">%1$d excluded</string>
-    <string name="onboarding_facts_equipment_all">All equipment</string>
-    <string name="onboarding_facts_equipment_missing">%1$d missing</string>
+    <string name="welcome_facts_muscles_all">All muscles</string>
+    <string name="welcome_facts_muscles_excluded">%1$d excluded</string>
+    <string name="welcome_facts_equipment_all">All equipment</string>
+    <string name="welcome_facts_equipment_missing">%1$d missing</string>
 
-    <string name="onboarding_motto_beginner">Every expert started with the very first set.</string>
-    <string name="onboarding_motto_intermediate">The base is set — time to push to the next level.</string>
-    <string name="onboarding_motto_advanced">Consistency is what makes champions.</string>
-    <string name="onboarding_motto_pro">A tool that matches your level. Time to deliver results.</string>
+    <string name="welcome_motto_beginner">Every expert started with the very first set.</string>
+    <string name="welcome_motto_intermediate">The base is set — time to push to the next level.</string>
+    <string name="welcome_motto_advanced">Consistency is what makes champions.</string>
+    <string name="welcome_motto_pro">A tool that matches your level. Time to deliver results.</string>
 
-    <string name="onboarding_benefit_pack_title">Your exercise set is ready</string>
-    <string name="onboarding_benefit_pack_subtitle">Tailored to your equipment and muscles.</string>
-    <string name="onboarding_benefit_progress_title">Progress, tracked</string>
-    <string name="onboarding_benefit_progress_subtitle">Volume, repetitions, and time logged for every workout.</string>
-    <string name="onboarding_benefit_history_title">Full training history</string>
-    <string name="onboarding_benefit_history_subtitle">Every set saved, ready to revisit anytime.</string>
+    <string name="welcome_benefit_pack_title">Your exercise set is ready</string>
+    <string name="welcome_benefit_pack_subtitle">Tailored to your equipment and muscles.</string>
+    <string name="welcome_benefit_progress_title">Progress, tracked</string>
+    <string name="welcome_benefit_progress_subtitle">Volume, repetitions, and time logged for every workout.</string>
+    <string name="welcome_benefit_history_title">Full training history</string>
+    <string name="welcome_benefit_history_subtitle">Every set saved, ready to revisit anytime.</string>
 
     <string name="height_picker_title">Select your height</string>
     <string name="period_picker_title">Select period</string>
@@ -343,8 +342,6 @@
     <string name="equipments">Equipment</string>
     <string name="muscles">Muscles</string>
     <string name="weight_history">Weight history</string>
-    <string name="home_empty_title">No workouts yet</string>
-    <string name="home_empty_subtitle">Start your first workout to see highlights here.</string>
     <string name="start_workout">Start workout</string>
     <string name="debug">Debug</string>
     <string name="clear_logs">Clear logs</string>
