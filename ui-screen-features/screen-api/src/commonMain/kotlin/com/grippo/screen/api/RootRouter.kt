@@ -2,6 +2,7 @@ package com.grippo.screen.api
 
 import com.grippo.core.foundation.models.BaseRouter
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -23,5 +24,5 @@ public sealed class RootRouter : BaseRouter {
     public data object Debug : RootRouter()
 
     @Serializable
-    public data class Training(val stage: StageState) : RootRouter()
+    public data class Training(val stage: StageState, val seed: TrainingSeed) : RootRouter()
 }

@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.isPending
 import com.grippo.core.state.trainings.stubIteration
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -20,15 +22,23 @@ internal fun IterationCardSmallView(
     modifier: Modifier = Modifier,
     value: IterationState,
 ) {
+    val isPending = value.isPending()
+
+    val color = if (isPending) {
+        AppTokens.colors.text.tertiary
+    } else {
+        AppTokens.colors.text.secondary
+    }
+
     Row(
         modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
         Text(
-            text = value.volume().short(),
+            text = if (isPending) "—" else value.volume().short(),
             style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.secondary
+            color = color
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
@@ -36,7 +46,7 @@ internal fun IterationCardSmallView(
         Text(
             text = value.repetitions.short(),
             style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary
+            color = color
         )
     }
 }
@@ -52,10 +62,10 @@ private fun IterationCardSmallViewPreview() {
             value = stubIteration(),
         )
         IterationCardSmallView(
-            value = stubIteration(),
+            value = stubPendingIteration(),
         )
         IterationCardSmallView(
-            value = stubIteration(),
+            value = stubPendingIteration(),
         )
     }
 }

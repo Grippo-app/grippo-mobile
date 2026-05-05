@@ -32,6 +32,6 @@ public fun DraftIterationEntity.toSetDomain(): SetIteration {
         assistWeight = assistWeight,
         bodyWeight = bodyWeight,
         repetitions = repetitions,
-        bodyMultiplier = bodyMultiplier
+        bodyMultiplier = bodyMultiplier,
     )
 }

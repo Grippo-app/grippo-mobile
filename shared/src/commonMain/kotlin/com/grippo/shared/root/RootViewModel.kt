@@ -2,6 +2,7 @@ package com.grippo.shared.root
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.toolkit.connectivity.Connectivity
@@ -49,7 +50,7 @@ public class RootViewModel(
     }
 
     private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(raw)) {
-        Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft)
+        Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft, TrainingSeed.Blank)
         Deeplink.WeightHistory -> RootDirection.WeightHistory
         null -> null
     }
@@ -66,8 +67,8 @@ public class RootViewModel(
         navigateTo(RootDirection.Trainings)
     }
 
-    override fun toTraining(stage: StageState) {
-        navigateTo(RootDirection.Training(stage))
+    override fun toTraining(stage: StageState, seed: TrainingSeed) {
+        navigateTo(RootDirection.Training(stage, seed))
     }
 
     override fun toWeightHistory() {
