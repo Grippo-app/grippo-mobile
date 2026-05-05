@@ -222,7 +222,7 @@ private fun WelcomeBody(
                     title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
                     subtitle = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
                     icon = AppTokens.icons.LineUp,
-                    tint = AppTokens.colors.brand.color5,
+                    tint = AppTokens.colors.brand.color2,
                 )
 
                 BenefitCard(
@@ -230,7 +230,7 @@ private fun WelcomeBody(
                     title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
                     subtitle = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
                     icon = AppTokens.icons.Stack,
-                    tint = AppTokens.colors.brand.color1,
+                    tint = AppTokens.colors.brand.color2,
                 )
             }
         }

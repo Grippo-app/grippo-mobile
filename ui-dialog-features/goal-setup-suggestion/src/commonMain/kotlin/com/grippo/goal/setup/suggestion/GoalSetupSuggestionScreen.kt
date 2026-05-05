@@ -77,7 +77,7 @@ internal fun GoalSetupSuggestionScreen(
                 icon = code.icon(),
                 title = title,
                 subtitle = description,
-                tint = AppTokens.colors.brand.color1,
+                tint = AppTokens.colors.context.goal,
             )
         }
     }
