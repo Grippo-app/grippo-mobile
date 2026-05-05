@@ -69,3 +69,13 @@ public fun stubIteration(): IterationState = listOf(
         bodyMultiplier = MultiplierFormatState.of(0.43f)
     )
 ).random()
+
+public fun stubPendingIteration(): IterationState = IterationState(
+    id = Uuid.random().toString(),
+    externalWeight = VolumeFormatState.Empty(),
+    extraWeight = VolumeFormatState.Empty(),
+    assistWeight = VolumeFormatState.Empty(),
+    bodyWeight = WeightFormatState.Empty(),
+    bodyMultiplier = MultiplierFormatState.Empty(),
+    repetitions = RepetitionsFormatState.of(Random.nextInt(6, 12)),
+)
