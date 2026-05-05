@@ -67,7 +67,7 @@ internal fun TrainingRecordingScreen(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
         title = when (state.stage) {
-            StageState.Add -> AppTokens.strings.res(Res.string.training)
+            is StageState.Add -> AppTokens.strings.res(Res.string.training)
             StageState.Draft -> AppTokens.strings.res(Res.string.training)
             is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
         },
@@ -140,6 +140,21 @@ private fun ScreenEmptyPreview() {
             state = TrainingRecordingState(
                 stage = StageState.Add,
                 exercises = persistentListOf(),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingRecordingContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPresetPreview() {
+    PreviewContainer {
+        TrainingRecordingScreen(
+            state = TrainingRecordingState(
+                stage = StageState.Add,
+                exercises = persistentListOf(stubPendingExercise()),
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty

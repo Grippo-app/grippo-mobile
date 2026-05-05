@@ -53,3 +53,21 @@ public fun stubExercise(): ExerciseState = ExerciseState(
         format = DateFormat.DateOnly.DateMmmDdYyyy
     )
 )
+
+
+public fun stubPendingExercise(): ExerciseState = ExerciseState(
+    id = Uuid.random().toString(),
+    name = "Bench press",
+    iterations = buildList {
+        repeat(Random.nextInt(1, 12)) {
+            add(stubPendingIteration())
+        }
+    }.toPersistentList(),
+    total = stubTotal(),
+    exerciseExample = stubExerciseExampleValueState(),
+    createdAt = DateTimeFormatState.of(
+        value = DateTimeUtils.now(),
+        range = DateRangePresets.infinity(),
+        format = DateFormat.DateOnly.DateMmmDdYyyy
+    )
+)
