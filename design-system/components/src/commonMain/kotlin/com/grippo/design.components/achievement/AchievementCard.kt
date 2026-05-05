@@ -51,13 +51,13 @@ public fun AchievementCard(
                     .size(AppTokens.dp.achievementCard.emblem.size)
                     .clip(emblemShape)
                     .background(
-                        value.color1().copy(alpha = 0.08f),
+                        value.color().copy(alpha = 0.08f),
                         shape = emblemShape
                     )
                     .padding(AppTokens.dp.achievementCard.emblem.padding)
                     .size(AppTokens.dp.achievementCard.icon),
                 imageVector = AppTokens.icons.Trophy,
-                tint = value.color1(),
+                tint = value.color(),
                 contentDescription = null
             )
 

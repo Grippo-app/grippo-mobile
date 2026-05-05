@@ -19,7 +19,6 @@ public interface AppColor {
     public val segment: SegmentColors
     public val konfetti: Konfetti
     public val training: TrainingColors
-    public val radio: RadioColors
     public val charts: Charts
     public val example: ExampleColors
     public val profile: ProfileColors
@@ -67,16 +66,6 @@ public interface AppColor {
         public val uncheckedThumb: Color
         public val uncheckedTrack1: Color
         public val uncheckedTrack2: Color
-    }
-
-    public interface RadioColors {
-        public val selectedThumb: Color
-        public val selectedTrack: Color
-
-        public val unselectedTrack: Color
-
-        public val disabledSelectedThumb: Color
-        public val disabledUnselectedTrack: Color
     }
 
     public interface InputColors {
@@ -218,14 +207,12 @@ public interface AppColor {
 
         public interface GradientColors {
             public val startColor: Color
-            public val endColor: Color
             public val contentColor: Color
         }
     }
 
     public interface Charts {
         public val area: AreaColors
-        public val heatmap: HeatmapColors
         public val progress: ProgressColors
         public val radar: RadarColors
         public val sparkline: SparklineColors
@@ -266,8 +253,6 @@ public interface AppColor {
             public val lineA: Color
             public val lineB: Color
             public val fillBase: Color
-            public val dot: Color
-            public val middle: Color
         }
 
         public interface TooltipColor {
@@ -280,10 +265,6 @@ public interface AppColor {
 
         public interface RadarColors {
             public val grid: Color
-        }
-
-        public interface HeatmapColors {
-            public val missingCell: Color
         }
 
         public interface AreaColors {

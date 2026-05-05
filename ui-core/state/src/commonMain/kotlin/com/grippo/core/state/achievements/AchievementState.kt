@@ -102,21 +102,12 @@ public sealed interface AchievementState {
     }
 
     @Composable
-    public fun color1(): Color = when (this) {
+    public fun color(): Color = when (this) {
         is BestTonnage -> AppTokens.colors.training.volume.startColor
         is BestWeight -> AppTokens.colors.training.volume.startColor
         is LifetimeVolume -> AppTokens.colors.training.volume.startColor
         is MaxRepetitions -> AppTokens.colors.training.repetitions.startColor
         is PeakIntensity -> AppTokens.colors.training.intensity.startColor
-    }
-
-    @Composable
-    public fun color2(): Color = when (this) {
-        is BestTonnage -> AppTokens.colors.training.volume.endColor
-        is BestWeight -> AppTokens.colors.training.volume.endColor
-        is LifetimeVolume -> AppTokens.colors.training.volume.endColor
-        is MaxRepetitions -> AppTokens.colors.training.repetitions.endColor
-        is PeakIntensity -> AppTokens.colors.training.intensity.endColor
     }
 
     @Composable

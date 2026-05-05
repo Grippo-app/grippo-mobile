@@ -34,7 +34,6 @@ internal fun MuscleLoadingPerMuscle(
             key(index) {
                 MuscleLoadingItem(
                     entry = colored.entry,
-                    color = colored.color,
                     label = colored.entry.muscles.firstOrNull()?.title()?.text() ?: "-",
                     indicatorColors = indicatorColorsForRank(index, muscleEntries.size),
                     dominant = index == 0,

@@ -50,14 +50,6 @@ public object DarkColor : AppColor {
         override val uncheckedTrack2 = AppPalette.NeutralDark.N300
     }
 
-    override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
-        override val selectedThumb = AppPalette.Blue.P500
-        override val selectedTrack = AppPalette.Blue.P500
-        override val unselectedTrack = AppPalette.NeutralDark.N300
-        override val disabledSelectedThumb = AppPalette.NeutralDark.N300
-        override val disabledUnselectedTrack = AppPalette.NeutralDark.N300
-    }
-
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
         override val default = AppPalette.NeutralDark.N250
     }
@@ -147,17 +139,14 @@ public object DarkColor : AppColor {
     override val training: AppColor.TrainingColors = object : AppColor.TrainingColors {
         override val intensity = object : AppColor.TrainingColors.GradientColors {
             override val startColor = AppPalette.Unique.Green
-            override val endColor = AppPalette.Unique.Teal
             override val contentColor = AppPalette.Common.White
         }
         override val volume = object : AppColor.TrainingColors.GradientColors {
             override val startColor = AppPalette.Unique.Blue
-            override val endColor = AppPalette.Unique.Cyan
             override val contentColor = AppPalette.Common.White
         }
         override val repetitions = object : AppColor.TrainingColors.GradientColors {
             override val startColor = AppPalette.Unique.Purple
-            override val endColor = AppPalette.Unique.Violet
             override val contentColor = AppPalette.Common.White
         }
     }
@@ -208,8 +197,6 @@ public object DarkColor : AppColor {
             override val lineA = AppPalette.Blue.P400
             override val lineB = AppPalette.Unique.Green
             override val fillBase = AppPalette.Blue.P400
-            override val dot = AppPalette.Common.White
-            override val middle = AppPalette.NeutralDark.N400
         }
         override val tooltip = object : AppColor.Charts.TooltipColor {
             override val background: Color = AppPalette.NeutralDark.N400
@@ -224,9 +211,6 @@ public object DarkColor : AppColor {
             override val fillBase = AppPalette.Unique.Green
             override val glow = AppPalette.Unique.Green
             override val dot = AppPalette.Unique.Green
-        }
-        override val heatmap = object : AppColor.Charts.HeatmapColors {
-            override val missingCell = AppPalette.Common.White.copy(alpha = 0.08f)
         }
         override val radar = object : AppColor.Charts.RadarColors {
             override val grid = AppPalette.NeutralDark.N300

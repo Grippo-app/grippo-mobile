@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
@@ -60,10 +59,7 @@ public fun DigestCard(
 
         when (value) {
             is DigestState.Empty -> EmptyDigestBody()
-            is DigestState.Content -> ContentDigestBody(
-                value = value,
-                accentColor = accentColor,
-            )
+            is DigestState.Content -> ContentDigestBody(value = value)
         }
     }
 }
@@ -102,7 +98,6 @@ private fun EmptyDigestBody() {
 @Composable
 private fun ContentDigestBody(
     value: DigestState.Content,
-    accentColor: Color,
 ) {
     DigestHero(
         value = value.total.short(),

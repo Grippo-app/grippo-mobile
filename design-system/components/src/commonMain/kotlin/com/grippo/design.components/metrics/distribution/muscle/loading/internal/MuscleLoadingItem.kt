@@ -20,7 +20,6 @@ import kotlin.math.roundToInt
 @Composable
 internal fun MuscleLoadingItem(
     entry: MuscleLoadEntryState,
-    color: Color,
     label: String,
     indicatorColors: AppColor.Charts.IndicatorColors.IndicatorColors,
     modifier: Modifier = Modifier,
@@ -131,11 +130,9 @@ private fun MuscleLoadingItemPreview() {
     PreviewContainer {
         val summary = stubMuscleLoadSummary()
         val entry = summary.perGroup.entries.first()
-        val color = AppTokens.colors.muscle.palette6MuscleCalm.last()
 
         MuscleLoadingItem(
             entry = entry,
-            color = color,
             label = entry.group.title().text(),
             indicatorColors = AppTokens.colors.charts.indicator.success,
             dominant = true,

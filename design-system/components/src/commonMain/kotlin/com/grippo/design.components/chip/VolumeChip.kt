@@ -33,16 +33,11 @@ public fun VolumeChip(
         VolumeChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.tonnage_chip)))
     }
 
-    val trailing = when (style) {
-        VolumeChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.Stack)
-        VolumeChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.Stack)
-    }
-
     Chip(
         modifier = modifier,
         label = text,
         value = value.short(),
-        trailing = trailing,
+        trailing = ChipTrailing.Icon(AppTokens.icons.Stack),
         size = size,
         stype = ChipStype.Default,
         textColor = colors.contentColor,

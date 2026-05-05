@@ -4,7 +4,6 @@
     <string name="ex">Ex</string>
     <string name="kg">kg</string>
     <string name="reps">reps</string>
-    <string name="personal_digests">Personal digests</string>
     <string name="filters">Filters</string>
     <string name="repetitions">Repetitions</string>
     <string name="error_save_training_description">We saved your workout. You can finish and save it anytime from the dashboard.</string>
@@ -12,10 +11,8 @@
     <string name="set_value">Set #%1$s</string>
     <string name="plus_value_more">+ %1$s more</string>
     <string name="body_weight_placeholder">Body weight</string>
-    <string name="view_workout">View workout</string>
     <string name="weight_and_height">Weight &amp; height</string>
     <string name="update_your_body_metrics">Keep your weight and height up to date — we use them to fine-tune your plan.</string>
-    <string name="external_weight_placeholder">External weight</string>
     <string name="extra_weight_placeholder">Extra weight</string>
     <string name="assist_weight_placeholder">Assist weight</string>
     <string name="last_workout">Last workout</string>
@@ -31,8 +28,6 @@
     <string name="start_new">Start new</string>
     <string name="weight">Weight</string>
     <string name="height">Height</string>
-    <string name="current_weight">Current weight</string>
-    <string name="current_height">Current height</string>
     <string name="choose_your_experience_level">Pick your experience level — we’ll recommend exercises that fit you best.</string>
     <string name="weight_input_hint">1–999 kg</string>
     <string name="advice">Advice</string>
@@ -68,9 +63,6 @@
     <string name="training_profile_tip_endurance_high">Density is king: shorter rests, keep pace, avoid long downtime.</string>
     <string name="training_profile_tip_endurance_medium">To push endurance: slightly higher reps and reduce rest times.</string>
     <string name="training_profile_tip_endurance_low">To make it clearly endurance-focused: higher reps, shorter rests, keep pace.</string>
-    <string name="training_profile_confidence">Confidence %1$d%% • %2$s</string>
-    <string name="training_profile_tip_label">Tip</string>
-    <string name="training_profile_segment">%1$s %2$d</string>
     <string name="training_profile_artifact_top_exercises_title">Top exercises</string>
     <string name="training_profile_artifact_top_exercises_subtitle">Ranked by their share of total training load. Load = sets × reps × weight, adjusted by intensity (%% of 1RM).</string>
     <string name="training_profile_artifact_top_exercises_footer_truncated">Showing top %1$d of %2$d exercises. The rest contributed less to the load.</string>
@@ -82,9 +74,7 @@
     <string name="training_profile_artifact_movement_style_title">Movement style</string>
     <string name="training_profile_artifact_movement_style_subtitle">How your load splits by exercise type and by pushing/pulling pattern.</string>
     <string name="training_profile_artifact_compound_vs_isolation">Compound vs isolation</string>
-    <string name="training_profile_artifact_compound_vs_isolation_hint">Compound: multi-joint (squat, bench, row). Isolation: single-joint (curl, extension).</string>
     <string name="training_profile_artifact_push_vs_pull">Push vs pull vs hinge</string>
-    <string name="training_profile_artifact_push_vs_pull_hint">Push: press/extend (bench, OHP). Pull: pull toward you (row, pull-up). Hinge: hip-dominant (deadlift, RDL).</string>
     <string name="training_profile_artifact_share">%1$d%</string>
     <string name="training_profile_artifact_sets">%1$d sets</string>
     <string name="training_profile_artifact_empty">Not enough data yet — log more sets to see the breakdown.</string>
@@ -102,7 +92,6 @@
     <string name="training_profile_details_subtitle">A read-out of how today\'s work shaped up — what you did, where it landed, and what to notice.</string>
     <string name="training_profile_drifting_title">Worth a look</string>
     <string name="training_profile_on_track_title">What\'s working</string>
-    <string name="training_profile_insights_title">Insights</string>
     <string name="training_profile_insight_easy_session_headline">Easy session</string>
     <string name="training_profile_insight_easy_session_detail">There wasn\'t enough working stimulus to classify a style today. That\'s fine for technique or recovery days.</string>
     <string name="training_profile_insight_mixed_session_headline">No clear style</string>
@@ -146,31 +135,22 @@
     <string name="spotlight_near_best_action">Same setup next time and go for it.</string>
     <string name="dashboard">Dashboard</string>
     <string name="highlights">Highlights</string>
-    <string name="highlight_type_consistency">Consistency win</string>
-    <string name="highlight_type_momentum">Momentum boost</string>
-    <string name="highlight_type_comeback">Back on track</string>
-    <string name="highlight_type_consistency_hint">Active days &amp; streak</string>
-    <string name="highlight_type_momentum_hint">Better vs your avg</string>
-    <string name="highlight_type_comeback_hint">Back to routine</string>
     <string name="highlight_vs_average">avg</string>
     <string name="highlight_best_value">Best %1$s</string>
     <string name="highlight_status_record">Record</string>
     <string name="highlight_status_improved">Uptrend</string>
     <string name="highlight_status_stable">Steady</string>
     <string name="highlight_status_declined">Focus</string>
-    <string name="highlight_focus_exercise">Focus exercise</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
     <string name="highlight_streaks">Streaks</string>
     <string name="highlight_active_days">%1$s active days</string>
     <string name="highlight_streak">%1$d-day streak</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-week streak</string>
-    <string name="highlight_streak_weekly_headline_secondary">at %1$d/week</string>
     <string name="highlight_streak_weekly_target">Goal · %1$d workouts/week</string>
     <string name="highlight_streak_daily_target">Goal · Back-to-back days</string>
     <string name="highlight_streak_rhythm">%1$d-on / %2$d-off streak</string>
     <string name="highlight_streak_rhythm_target">Goal · %1$d training days · %2$d rest</string>
     <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
-    <string name="highlight_streak_pattern_headline_secondary">%1$d workouts / %2$d days</string>
     <string name="highlight_streak_pattern_target">Goal · %1$d workouts / %2$d days</string>
     <string name="highlight_streak_mood_crushing">🔥 You’re doing great. Keep it up.</string>
     <string name="highlight_streak_mood_on_track">💪 Nice progress. Stay consistent.</string>
@@ -182,19 +162,15 @@
     <string name="performance_trend_desc_repetitions">Total reps per workout. A rising line means you’re handling more work; several drops in a row often signal fatigue.</string>
     <string name="performance_trend_desc_intensity">Average working weight per weighted rep. Higher means heavier working loads on average.</string>
     <string name="sets_value">Sets (%1$s)</string>
-    <string name="value_sets">%1$s sets</string>
-    <string name="one_set">1 set</string>
     <string name="percent">%</string>
     <string name="complete">Complete</string>
     <string name="selected">Selected</string>
     <string name="cm">cm</string>
-    <string name="next_btn">Next</string>
     <string name="apply_btn">Apply</string>
     <string name="generate_training_btn">Generate workout</string>
     <string name="got_it_btn">Got it</string>
     <string name="confirm_btn">Confirm</string>
     <string name="no_data_yet">No data yet</string>
-    <string name="no_exercises_yet">No exercises yet</string>
     <string name="empty_training_exercises">Add your first exercise to start tracking this workout.</string>
     <string name="empty_exercise_sets">No sets yet. Add one to start tracking.</string>
     <string name="empty_daily_trainings">No workouts on this day.</string>
@@ -202,14 +178,11 @@
     <string name="daily">Daily</string>
     <string name="yearly">Yearly</string>
     <string name="custom">Custom</string>
-    <string name="weekly_digest">Weekly digest</string>
     <string name="danger_zone">Danger zone</string>
     <string name="digest">Digest</string>
     <string name="of_body_weight">of body weight</string>
     <string name="weekly">Weekly</string>
     <string name="monthly">Monthly</string>
-    <string name="monthly_digest_template">%1$s digest</string>
-    <string name="daily_digest_template">%1$s digest</string>
     <string name="details">Details</string>
     <string name="cancel_btn">Cancel</string>
     <string name="logout_btn">Logout</string>
@@ -217,26 +190,22 @@
     <string name="loading">Loading…</string>
     <string name="submit_btn">Submit</string>
     <string name="delete_btn">Delete</string>
-    <string name="clear_btn">Clear</string>
     <string name="edit_btn">Edit</string>
     <string name="get_started_btn">Get started</string>
     <string name="continue_btn">Continue</string>
     <string name="exercises">Exercises</string>
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
-    <string name="workout_saved">Workout saved</string>
     <string name="workout_summary">Workout summary</string>
     <string name="go_to_dashboard">Go to dashboard</string>
     <string name="total">Total</string>
     <string name="per_group">Per group</string>
     <string name="per_muscle">Per muscle</string>
-    <string name="total_value">Total %1$s</string>
     <string name="add_set_btn">Add set</string>
     <string name="or">Or</string>
     <string name="create_account_btn">Create account</string>
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder_default">Enter password</string>
-    <string name="password_placeholder_repeat">Repeat password</string>
     <string name="name_placeholder">Enter your name</string>
     <string name="weight_placeholder">Enter your weight</string>
     <string name="volume_placeholder">Weight</string>
@@ -244,7 +213,6 @@
     <string name="height_placeholder">Enter your height</string>
     <string name="exercise_record">Exercise record</string>
     <string name="not_used_before">Not used before</string>
-    <string name="ai_suggestion_btn">Suggest</string>
     <string name="more">More</string>
     <string name="history">History</string>
     <string name="achievements">Achievements</string>
@@ -252,7 +220,6 @@
 
     <string name="or_continue_with">Or continue with</string>
     <string name="login_title">Welcome to Grippo</string>
-    <string name="login_description">Sign in to continue.</string>
     <string name="login_button_login">Sign in</string>
     <string name="account_deletion">Account deletion</string>
     <string name="account_deletion_description">Your account and data will be permanently removed. You won’t be able to restore them later.</string>
@@ -268,11 +235,7 @@
 
     <string name="registration_user_title">Let’s set up your profile</string>
 
-    <string name="registration_name_title">What’s your name?</string>
     <string name="registration_name_description">This helps Grippo personalize your workouts.</string>
-
-    <string name="registration_body_title">A few quick details</string>
-    <string name="registration_body_description">Used to personalize recommendations.</string>
 
     <string name="registration_experience_title">How long have you been training?</string>
     <string name="registration_experience_description">Grippo adapts to any level.</string>
@@ -313,14 +276,11 @@
     <string name="onboarding_benefit_history_subtitle">Every set saved, ready to revisit anytime.</string>
 
     <string name="height_picker_title">Select your height</string>
-    <string name="height_picker_description">Used to personalize recommendations and body-weight calculations.</string>
-
     <string name="period_picker_title">Select period</string>
 
     <string name="profile">Profile</string>
 
     <string name="weight_picker_title">Select your weight</string>
-    <string name="weight_picker_description">Used to track BMI and calibrate body-weight exercises.</string>
     <string name="duration_picker_title">Select duration</string>
     <string name="hours_short">h</string>
     <string name="minutes_short">min</string>
@@ -341,7 +301,6 @@
 
     <string name="trainings">Workouts</string>
     <string name="trainings_period_daily">Daily</string>
-    <string name="trainings_period_weekly">Weekly</string>
     <string name="trainings_period_monthly">Monthly</string>
     <string name="training">Workout</string>
     <string name="duration">Duration</string>
@@ -353,7 +312,6 @@
     <string name="threads">Threads</string>
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
-    <string name="official_grippo_channels">Official Grippo channels</string>
     <string name="social_hero_headline">Join the Grippo community</string>
     <string name="social_hero_subtitle">Workout tips, product updates, and practical training ideas.</string>
     <string name="value_statistics">%1$s statistics</string>
@@ -379,12 +337,7 @@
     <string name="training_streak_confidence_title">Consistency insight</string>
     <string name="training_streak_confidence_value">%1$d% confidence</string>
     <string name="training_streak_timeline_title">Timeline progress</string>
-    <string name="training_streak_period_label">Cycle %1$d</string>
     <string name="training_streak_period_value">%1$d of %2$d sessions completed</string>
-    <string name="trends">Trends</string>
-    <string name="exercise_categories">Exercise categories</string>
-    <string name="exercise_weight_types">Weight types</string>
-    <string name="exercise_force_types">Force types</string>
     <string name="estimated_one_rm">Estimated 1RM</string>
     <string name="estimated_one_rm_peak">Peak %1$s</string>
     <string name="equipments">Equipment</string>
@@ -399,16 +352,11 @@
     <string name="activity">Activity</string>
     <string name="overview">Overview</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="this_day">This day</string>
-    <string name="this_week">This week</string>
-    <string name="this_year">This year</string>
-    <string name="this_month">This month</string>
     <string name="last_7_days">7 days</string>
     <string name="last_14_days">14 days</string>
     <string name="last_30_days">30 days</string>
     <string name="last_60_days">60 days</string>
     <string name="last_365_days">365 days</string>
-    <string name="custom_range">Custom</string>
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="today">Today</string>
@@ -418,7 +366,6 @@
     <string name="select_month">Select month</string>
     <string name="x">x</string>
     <string name="tonnage">Tonnage</string>
-    <string name="spotlight">Spotlight</string>
     <string name="insights">Insights</string>
     <string name="progress">Progress</string>
     <string name="tonnage_chip">Tonnage</string>
@@ -431,7 +378,6 @@
     <string name="training_progress_lost_title">Exit workout</string>
     <string name="training_progress_lost_description">Closing now will discard all progress from this session.</string>
     <string name="confirm_training_completion_title">Finish workout</string>
-    <string name="confirm_training_completion_description">Workout duration: %1$s</string>
     <string name="confirm_training_completion_subtitle">Nice work. Ready to wrap it up?</string>
     <string name="confirm_training_completion_hint">You can edit the duration.</string>
     <string name="something_went_wrong">Something went wrong</string>
@@ -442,8 +388,6 @@
     <string name="draft_training_alert_description_add">You have an unfinished workout saved on this device. Continue where you left off?</string>
     <string name="draft_training_alert_title_edit">Resume editing</string>
     <string name="draft_training_alert_description_edit">You left some changes unsaved while editing this workout. Continue editing?</string>
-    <string name="not_found">Not found</string>
-    <string name="reset">Reset</string>
     <string name="menu">Menu</string>
     <string name="calendar">Calendar</string>
 
@@ -456,10 +400,6 @@
     <string name="last_used_label">Last used:</string>
 
     <string name="edit_training_title">Edit workout</string>
-
-    <string name="filter_weight_type">Weight type</string>
-    <string name="filter_force_type">Force type</string>
-    <string name="filter_category">Category</string>
 
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Pull</string>
@@ -649,9 +589,7 @@
     <string name="goal_picker_primary_title">Primary goal</string>
     <string name="goal_picker_secondary_title">Secondary goal</string>
     <string name="goal_save_btn">Save goal</string>
-    <string name="goal_customize_btn">Customize in detail</string>
     <string name="goal_secondary_section">What else matters?</string>
-    <string name="goal_target_date_section">When do you want to reach it?</string>
     <string name="goal_target_date_placeholder">Target date</string>
     <string name="personalizations_schedule_section">Training schedule</string>
     <string name="personalizations_session_duration_section">Session duration</string>
@@ -669,13 +607,8 @@
     <string name="personalizations_equipment_preferences_section">Equipment preferences</string>
     <string name="personalizations_training_phase_section">Training phase</string>
     <string name="goal_intro">What are you working toward right now? We’ll shape the experience around it.</string>
-    <string name="goal_main_section">The essentials</string>
-    <string name="goal_personalization_section">Personal touches</string>
-    <string name="goal_review_title">Your goal</string>
-    <string name="goal_no_date">No date</string>
     <string name="goal_in_8_12_weeks">In 8–12 weeks</string>
     <string name="goal_in_6_months">In 6 months</string>
-    <string name="goal_pick_date">Pick a date</string>
     <string name="goal_menu">Training goal</string>
 
     <!-- Primary goals -->
@@ -714,8 +647,6 @@
 
     <!-- Goal progress card -->
     <string name="goal_card_title">Training goal</string>
-    <string name="goal_card_adherence_score">%1$d%</string>
-    <string name="goal_card_adherence_label">on track</string>
     <string name="goal_card_status_on_track">On track</string>
     <string name="goal_card_status_drifting">Drifting</string>
     <string name="goal_card_status_off_track">Off track</string>
@@ -724,9 +655,6 @@
     <string name="goal_card_progress_days_left">%1$d days left</string>
     <string name="goal_card_progress_overdue">Overdue by %1$d days</string>
     <string name="goal_card_progress_due_today">Due today</string>
-    <string name="goal_card_started_label">Started %1$s</string>
-    <string name="goal_card_target_label">Target %1$s</string>
-    <string name="goal_card_no_data">Log a few more workouts so we can score adherence.</string>
     <string name="goal_card_description_1">Shows how closely your recent work matches your goal.</string>
     <string name="goal_card_description_2">100 = perfect adherence.</string>
     <string name="goal_card_update_btn">Update</string>
@@ -799,10 +727,6 @@
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">Drifting</string>
     <string name="goal_fit_diagnostic_on_track_title">On track</string>
-    <string name="goal_fit_severity_pass">On track</string>
-    <string name="goal_fit_severity_warn">Watch</string>
-    <string name="goal_fit_severity_fail">Off track</string>
-
     <!-- Goal-fit target formats: actual / target line uses %1$s (actual), %2$s (target) -->
     <string name="goal_fit_value_target">%1$s · target %2$s</string>
     <string name="goal_fit_target_at_least">≥%1$s</string>

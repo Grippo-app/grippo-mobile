@@ -4,7 +4,6 @@
     <string name="ex">Упр.</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
-    <string name="personal_digests">Персональные дайджесты</string>
     <string name="filters">Фильтры</string>
     <string name="repetitions">Повторения</string>
     <string name="error_save_training_description">Мы сохранили твою тренировку. Можешь завершить и сохранить её в любой момент с главной.</string>
@@ -12,10 +11,8 @@
     <string name="set_value">Подход №%1$s</string>
     <string name="plus_value_more">+ ещё %1$s</string>
     <string name="body_weight_placeholder">Вес тела</string>
-    <string name="view_workout">Просмотреть тренировку</string>
     <string name="weight_and_height">Вес и рост</string>
     <string name="update_your_body_metrics">Держи вес и рост актуальными — мы используем их, чтобы точнее настраивать твой план.</string>
-    <string name="external_weight_placeholder">Внешний вес</string>
     <string name="extra_weight_placeholder">Дополнительный вес</string>
     <string name="assist_weight_placeholder">Ассистированный вес</string>
     <string name="last_workout">Последняя тренировка</string>
@@ -31,8 +28,6 @@
     <string name="start_new">Начать новое</string>
     <string name="weight">Вес</string>
     <string name="height">Рост</string>
-    <string name="current_weight">Текущий вес</string>
-    <string name="current_height">Текущий рост</string>
     <string name="choose_your_experience_level">Выбери свой уровень — мы порекомендуем упражнения, которые подойдут лучше всего.</string>
     <string name="weight_input_hint">1–999 кг</string>
     <string name="advice">Совет</string>
@@ -68,9 +63,6 @@
     <string name="training_profile_tip_endurance_high">Плотность — главное: короче отдых, держи темп, избегай долгих пауз.</string>
     <string name="training_profile_tip_endurance_medium">Чтобы усилить выносливость: чуть больше повторений и меньше отдых.</string>
     <string name="training_profile_tip_endurance_low">Чтобы фокус стал явно на выносливость: больше повторений, короче отдых, держи темп.</string>
-    <string name="training_profile_confidence">Уверенность %1$d%% • %2$s</string>
-    <string name="training_profile_tip_label">Совет</string>
-    <string name="training_profile_segment">%1$s %2$d</string>
     <string name="training_profile_artifact_top_exercises_title">Топ упражнений</string>
     <string name="training_profile_artifact_top_exercises_subtitle">Отсортировано по доле общей нагрузки. Нагрузка = подходы × повторы × вес, с поправкой на интенсивность (%% от 1ПМ).</string>
     <string name="training_profile_artifact_top_exercises_footer_truncated">Показано топ-%1$d из %2$d упражнений. Остальные внесли меньший вклад.</string>
@@ -82,9 +74,7 @@
     <string name="training_profile_artifact_movement_style_title">Стиль движений</string>
     <string name="training_profile_artifact_movement_style_subtitle">Как нагрузка распределилась по типу упражнений и по направлению движения.</string>
     <string name="training_profile_artifact_compound_vs_isolation">База и изоляция</string>
-    <string name="training_profile_artifact_compound_vs_isolation_hint">Базовые — многосуставные (присед, жим, тяга). Изолированные — односуставные (сгибания, разгибания).</string>
     <string name="training_profile_artifact_push_vs_pull">Жим, тяга и хиндж</string>
-    <string name="training_profile_artifact_push_vs_pull_hint">Жим: толкание/разгибание (жим лёжа, жим стоя). Тяга: притягивание (тяги, подтягивания). Хиндж: наклон через таз (становая, RDL).</string>
     <string name="training_profile_artifact_share">%1$d%</string>
     <string name="training_profile_artifact_sets">%1$d подх.</string>
     <string name="training_profile_artifact_empty">Пока мало данных — запиши ещё подходы, чтобы увидеть разбивку.</string>
@@ -102,7 +92,6 @@
     <string name="training_profile_details_subtitle">Сводка о тренировке — что сделал, куда легло, на что обратить внимание.</string>
     <string name="training_profile_drifting_title">Стоит обратить внимание</string>
     <string name="training_profile_on_track_title">Что работает</string>
-    <string name="training_profile_insights_title">Заметки</string>
     <string name="training_profile_insight_easy_session_headline">Лёгкая сессия</string>
     <string name="training_profile_insight_easy_session_detail">Стимула было слишком мало, чтобы определить стиль. Это нормально для техничной или восстановительной тренировки.</string>
     <string name="training_profile_insight_mixed_session_headline">Нет чёткого стиля</string>
@@ -146,31 +135,22 @@
     <string name="spotlight_near_best_action">Повтори тот же сетап и попробуй добрать.</string>
     <string name="dashboard">Главная</string>
     <string name="highlights">Хайлайты</string>
-    <string name="highlight_type_consistency">Победа в регулярности</string>
-    <string name="highlight_type_momentum">Ускорение прогресса</string>
-    <string name="highlight_type_comeback">Снова в ритме</string>
-    <string name="highlight_type_consistency_hint">Активные дни и серия</string>
-    <string name="highlight_type_momentum_hint">Лучше твоего среднего</string>
-    <string name="highlight_type_comeback_hint">Возврат к ритму</string>
     <string name="highlight_vs_average">ср.</string>
     <string name="highlight_best_value">Лучшее %1$s</string>
     <string name="highlight_status_record">Рекорд</string>
     <string name="highlight_status_improved">Рост</string>
     <string name="highlight_status_stable">Стабильно</string>
     <string name="highlight_status_declined">Фокус</string>
-    <string name="highlight_focus_exercise">Фокус-упражнение</string>
     <string name="highlight_muscle_focus">Фокус на мышцы</string>
     <string name="highlight_streaks">Серии</string>
     <string name="highlight_active_days">%1$s активных дней</string>
     <string name="highlight_streak">%1$d-дневная серия</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-недельная серия</string>
-    <string name="highlight_streak_weekly_headline_secondary">по %1$d/нед.</string>
     <string name="highlight_streak_weekly_target">Цель · %1$d тренировок/нед.</string>
     <string name="highlight_streak_daily_target">Цель · Дни подряд</string>
     <string name="highlight_streak_rhythm">Серия: %1$d трен. / %2$d отдых</string>
     <string name="highlight_streak_rhythm_target">Цель · %1$d трен. дней · %2$d отдых</string>
     <string name="highlight_streak_pattern_headline_primary">Паттерн: %1$d циклов</string>
-    <string name="highlight_streak_pattern_headline_secondary">%1$d тренировок / %2$d дн.</string>
     <string name="highlight_streak_pattern_target">Цель · %1$d тренировок / %2$d дн.</string>
     <string name="highlight_streak_mood_crushing">🔥 Ты отлично справляешься. Так держать.</string>
     <string name="highlight_streak_mood_on_track">💪 Отличный прогресс. Держи стабильный ритм.</string>
@@ -182,19 +162,15 @@
     <string name="performance_trend_desc_repetitions">Сколько повторений за тренировку. Линия растёт — выдерживаешь больше работы; несколько падений подряд — скорее всего накопилась усталость.</string>
     <string name="performance_trend_desc_intensity">Средний рабочий вес на повторение с весом. Выше — в тренировке в среднем были более тяжёлые рабочие веса.</string>
     <string name="sets_value">Подходы (%1$s)</string>
-    <string name="value_sets">%1$s подходов</string>
-    <string name="one_set">1 подход</string>
     <string name="percent">%</string>
     <string name="complete">Завершить</string>
     <string name="selected">Выбрано</string>
     <string name="cm">см</string>
-    <string name="next_btn">Далее</string>
     <string name="apply_btn">Применить</string>
     <string name="generate_training_btn">Сгенерировать тренировку</string>
     <string name="got_it_btn">Понятно</string>
     <string name="confirm_btn">Подтвердить</string>
     <string name="no_data_yet">Пока нет данных</string>
-    <string name="no_exercises_yet">Пока нет упражнений</string>
     <string name="empty_training_exercises">Добавь первое упражнение, чтобы начать отслеживать тренировку.</string>
     <string name="empty_exercise_sets">Подходов пока нет. Добавь первый, чтобы начать.</string>
     <string name="empty_daily_trainings">В этот день тренировок нет.</string>
@@ -202,14 +178,11 @@
     <string name="daily">Ежедневно</string>
     <string name="yearly">Ежегодно</string>
     <string name="custom">Свой</string>
-    <string name="weekly_digest">Еженедельный дайджест</string>
     <string name="danger_zone">Опасная зона</string>
     <string name="digest">Дайджест</string>
     <string name="of_body_weight">от массы тела</string>
     <string name="weekly">Еженедельно</string>
     <string name="monthly">Ежемесячно</string>
-    <string name="monthly_digest_template">Дайджест за %1$s</string>
-    <string name="daily_digest_template">Дайджест за %1$s</string>
     <string name="details">Детали</string>
     <string name="cancel_btn">Отмена</string>
     <string name="logout_btn">Выйти</string>
@@ -217,26 +190,22 @@
     <string name="loading">Загрузка…</string>
     <string name="submit_btn">Отправить</string>
     <string name="delete_btn">Удалить</string>
-    <string name="clear_btn">Очистить</string>
     <string name="edit_btn">Редактировать</string>
     <string name="get_started_btn">Начать</string>
     <string name="continue_btn">Продолжить</string>
     <string name="exercises">Упражнения</string>
     <string name="add_exercise_btn">Добавить упражнение</string>
     <string name="save_btn">Сохранить</string>
-    <string name="workout_saved">Тренировка сохранена</string>
     <string name="workout_summary">Сводка тренировки</string>
     <string name="go_to_dashboard">Перейти на панель</string>
     <string name="total">Всего</string>
     <string name="per_group">По группам</string>
     <string name="per_muscle">По мышцам</string>
-    <string name="total_value">Всего %1$s</string>
     <string name="add_set_btn">Добавить подход</string>
     <string name="or">ИЛИ</string>
     <string name="create_account_btn">Создать аккаунт</string>
     <string name="email_placeholder">Введи email</string>
     <string name="password_placeholder_default">Введи пароль</string>
-    <string name="password_placeholder_repeat">Повтори пароль</string>
     <string name="name_placeholder">Введи имя</string>
     <string name="weight_placeholder">Введи свой вес</string>
     <string name="volume_placeholder">Вес</string>
@@ -244,7 +213,6 @@
     <string name="height_placeholder">Введи свой рост</string>
     <string name="exercise_record">Рекорд упражнения</string>
     <string name="not_used_before">Не использовалось ранее</string>
-    <string name="ai_suggestion_btn">Подсказать</string>
     <string name="more">Ещё</string>
     <string name="history">История</string>
     <string name="achievements">Достижения</string>
@@ -252,7 +220,6 @@
     <string name="or_continue_with">Или продолжить с</string>
     <string name="login_title">Добро пожаловать в Grippo</string>
     <string name="track_real_progress_no_fluff">Персональные тренировки под твой уровень, зал и прогресс.</string>
-    <string name="login_description">Войди, чтобы продолжить.</string>
     <string name="login_button_login">Войти</string>
     <string name="account_deletion">Удаление аккаунта</string>
     <string name="account_deletion_description">Твой аккаунт и данные будут удалены безвозвратно. Восстановить их позже не получится.</string>
@@ -267,11 +234,7 @@
 
     <string name="registration_user_title">Настроим твой профиль</string>
 
-    <string name="registration_name_title">Как тебя зовут?</string>
     <string name="registration_name_description">Чтобы Grippo точнее подстроил тренировки под тебя.</string>
-
-    <string name="registration_body_title">Пара быстрых деталей</string>
-    <string name="registration_body_description">Нужно, чтобы подобрать рекомендации.</string>
 
     <string name="registration_experience_title">Сколько ты тренируешься?</string>
     <string name="registration_experience_description">Grippo адаптируется под любой уровень.</string>
@@ -312,14 +275,11 @@
     <string name="onboarding_benefit_history_subtitle">Каждый подход сохранён — возвращайся когда захочешь.</string>
 
     <string name="height_picker_title">Выбери свой рост</string>
-    <string name="height_picker_description">Нужно для персонализации рекомендаций и расчётов с весом тела.</string>
-
     <string name="period_picker_title">Выбери период</string>
 
     <string name="profile">Профиль</string>
 
     <string name="weight_picker_title">Выбери свой вес</string>
-    <string name="weight_picker_description">Нужно для расчёта ИМТ и калибровки упражнений с весом тела.</string>
     <string name="duration_picker_title">Выбери длительность</string>
     <string name="hours_short">ч</string>
     <string name="minutes_short">мин</string>
@@ -340,7 +300,6 @@
 
     <string name="trainings">Тренировки</string>
     <string name="trainings_period_daily">День</string>
-    <string name="trainings_period_weekly">Неделя</string>
     <string name="trainings_period_monthly">Месяц</string>
     <string name="training">Тренировка</string>
     <string name="duration">Длительность</string>
@@ -352,7 +311,6 @@
     <string name="threads">Threads</string>
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
-    <string name="official_grippo_channels">Официальные каналы Grippo</string>
     <string name="social_hero_headline">Присоединяйся к сообществу Grippo</string>
     <string name="social_hero_subtitle">Советы для тренировок, обновления Grippo и практичные идеи для зала.</string>
     <string name="value_statistics">%1$s — статистика</string>
@@ -378,12 +336,7 @@
     <string name="training_streak_confidence_title">Стабильность стрика</string>
     <string name="training_streak_confidence_value">%1$d% уверенности</string>
     <string name="training_streak_timeline_title">Прогресс по периодам</string>
-    <string name="training_streak_period_label">Цикл %1$d</string>
     <string name="training_streak_period_value">%1$d из %2$d тренировок выполнено</string>
-    <string name="trends">Тренды</string>
-    <string name="exercise_categories">Категории упражнений</string>
-    <string name="exercise_weight_types">Типы отягощения</string>
-    <string name="exercise_force_types">Типы усилий</string>
     <string name="estimated_one_rm">Расчётный 1ПМ</string>
     <string name="estimated_one_rm_peak">Пик %1$s</string>
     <string name="equipments">Оборудование</string>
@@ -398,16 +351,11 @@
     <string name="activity">Активность</string>
     <string name="overview">Обзор</string>
     <string name="no_internet_connection">Нет подключения к интернету</string>
-    <string name="this_day">Этот день</string>
-    <string name="this_week">Эта неделя</string>
-    <string name="this_year">Этот год</string>
-    <string name="this_month">Этот месяц</string>
     <string name="last_7_days">7 дней</string>
     <string name="last_14_days">14 дней</string>
     <string name="last_30_days">30 дней</string>
     <string name="last_60_days">60 дней</string>
     <string name="last_365_days">365 дней</string>
-    <string name="custom_range">Свой</string>
     <string name="show_more">Показать больше</string>
     <string name="show_less">Показать меньше</string>
     <string name="today">Сегодня</string>
@@ -417,7 +365,6 @@
     <string name="select_month">Выбери месяц</string>
     <string name="x">x</string>
     <string name="tonnage">Тоннаж</string>
-    <string name="spotlight">В центре внимания</string>
     <string name="insights">Инсайты</string>
     <string name="progress">Прогресс</string>
     <string name="tonnage_chip">Тоннаж</string>
@@ -430,7 +377,6 @@
     <string name="training_progress_lost_title">Выйти из тренировки</string>
     <string name="training_progress_lost_description">Если закроешь сейчас, весь прогресс этой сессии будет потерян.</string>
     <string name="confirm_training_completion_title">Завершить тренировку</string>
-    <string name="confirm_training_completion_description">Длительность тренировки: %1$s</string>
     <string name="confirm_training_completion_subtitle">Отличная работа. Готов завершить?</string>
     <string name="confirm_training_completion_hint">Длительность можно изменить.</string>
     <string name="something_went_wrong">Что-то пошло не так</string>
@@ -441,8 +387,6 @@
     <string name="draft_training_alert_description_add">На устройстве сохранён незавершённый черновик. Продолжить с места, где остановился?</string>
     <string name="draft_training_alert_title_edit">Продолжить редактирование</string>
     <string name="draft_training_alert_description_edit">При редактировании этой тренировки остались несохранённые изменения. Продолжить?</string>
-    <string name="not_found">Не найдено</string>
-    <string name="reset">Сбросить</string>
     <string name="menu">Меню</string>
     <string name="calendar">Календарь</string>
 
@@ -455,10 +399,6 @@
     <string name="last_used_label">Последнее использование:</string>
 
     <string name="edit_training_title">Редактировать тренировку</string>
-
-    <string name="filter_weight_type">Тип веса</string>
-    <string name="filter_force_type">Тип усилия</string>
-    <string name="filter_category">Категория</string>
 
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Тяга</string>
@@ -646,9 +586,7 @@
     <string name="goal_picker_primary_title">Основная цель</string>
     <string name="goal_picker_secondary_title">Дополнительная цель</string>
     <string name="goal_save_btn">Сохранить цель</string>
-    <string name="goal_customize_btn">Настроить подробнее</string>
     <string name="goal_secondary_section">Что ещё важно?</string>
-    <string name="goal_target_date_section">Когда хочешь её достичь?</string>
     <string name="goal_target_date_placeholder">Целевая дата</string>
     <string name="personalizations_schedule_section">Расписание тренировок</string>
     <string name="personalizations_session_duration_section">Длительность сессии</string>
@@ -666,13 +604,8 @@
     <string name="personalizations_equipment_preferences_section">Оборудование</string>
     <string name="personalizations_training_phase_section">Фаза цикла</string>
     <string name="goal_intro">К чему ты сейчас идёшь? Подстроим тренировки под это.</string>
-    <string name="goal_main_section">Главное</string>
-    <string name="goal_personalization_section">Личные нюансы</string>
-    <string name="goal_review_title">Твоя цель</string>
-    <string name="goal_no_date">Без даты</string>
     <string name="goal_in_8_12_weeks">Через 8–12 недель</string>
     <string name="goal_in_6_months">Через 6 месяцев</string>
-    <string name="goal_pick_date">Выбрать дату</string>
     <string name="goal_menu">Цель тренировок</string>
 
     <!-- Primary goals -->
@@ -711,8 +644,6 @@
 
     <!-- Goal progress card -->
     <string name="goal_card_title">Цель тренировок</string>
-    <string name="goal_card_adherence_score">%1$d%</string>
-    <string name="goal_card_adherence_label">по плану</string>
     <string name="goal_card_status_on_track">По плану</string>
     <string name="goal_card_status_drifting">Уходишь в сторону</string>
     <string name="goal_card_status_off_track">Сбился с цели</string>
@@ -721,9 +652,6 @@
     <string name="goal_card_progress_days_left">Осталось %1$d дн.</string>
     <string name="goal_card_progress_overdue">Просрочено на %1$d дн.</string>
     <string name="goal_card_progress_due_today">Срок сегодня</string>
-    <string name="goal_card_started_label">Старт %1$s</string>
-    <string name="goal_card_target_label">Финиш %1$s</string>
-    <string name="goal_card_no_data">Запиши ещё пару тренировок, чтобы оценить соответствие цели.</string>
     <string name="goal_card_description_1">Показывает, насколько твои последние тренировки соответствуют цели.</string>
     <string name="goal_card_description_2">100 — полное соответствие.</string>
     <string name="goal_card_update_btn">Обновить</string>
@@ -796,10 +724,6 @@
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">Отклонения</string>
     <string name="goal_fit_diagnostic_on_track_title">В норме</string>
-    <string name="goal_fit_severity_pass">В норме</string>
-    <string name="goal_fit_severity_warn">Следи</string>
-    <string name="goal_fit_severity_fail">Мимо цели</string>
-
     <string name="goal_fit_value_target">%1$s · цель %2$s</string>
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>

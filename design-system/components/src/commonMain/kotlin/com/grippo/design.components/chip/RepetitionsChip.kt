@@ -33,16 +33,11 @@ public fun RepetitionsChip(
         RepetitionsChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.repetitions_chip)))
     }
 
-    val trailing = when (style) {
-        RepetitionsChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.Repeat)
-        RepetitionsChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.Repeat)
-    }
-
     Chip(
         modifier = modifier,
         label = text,
         value = value.short(),
-        trailing = trailing,
+        trailing = ChipTrailing.Icon(AppTokens.icons.Repeat),
         size = size,
         stype = ChipStype.Default,
         textColor = colors.contentColor,

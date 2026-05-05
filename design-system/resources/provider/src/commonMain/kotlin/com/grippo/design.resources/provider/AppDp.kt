@@ -279,7 +279,6 @@ public data object AppDp {
         val compact: Compact = Compact
         val detailed: Detailed = Detailed
         val avatar: Avatar = Avatar
-        val stats: Stats = Stats
 
         public data object Compact {
             val radius: Dp = AppDp.radius.medium
@@ -295,15 +294,6 @@ public data object AppDp {
         public data object Avatar {
             val small: Dp = size.medium
             val large: Dp = icon.xxLarge
-        }
-
-        public data object Stats {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val icon: Dp = AppDp.icon.small
-            val space: Dp = padding.extraSmall
-            val dividerWidth: Dp = 1.dp
         }
     }
 

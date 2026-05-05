@@ -52,7 +52,6 @@ internal fun GoalCardContent(
 ) {
     val score = value.score.coerceIn(0, 100)
     val ringColors = goalRingColors(score = score, isFinished = value.isFinished)
-    goalStatusColor(score = score, isFinished = value.isFinished)
 
     Row(
         modifier = Modifier
