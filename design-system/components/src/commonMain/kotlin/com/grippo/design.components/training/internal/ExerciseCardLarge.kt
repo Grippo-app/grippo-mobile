@@ -11,7 +11,9 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.isPending
 import com.grippo.core.state.trainings.stubExercise
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
@@ -24,6 +26,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.sets_label
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun ExerciseCardLarge(
@@ -31,7 +34,10 @@ internal fun ExerciseCardLarge(
     value: ExerciseState,
     onClick: () -> Unit
 ) {
-    Column(modifier = modifier.scalableClick(onClick = onClick)) {
+    Column(
+        modifier = modifier
+            .scalableClick(onClick = onClick)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
@@ -60,11 +66,29 @@ internal fun ExerciseCardLarge(
                 )
 
                 if (value.iterations.isNotEmpty()) {
-                    Text(
-                        text = "${AppTokens.strings.res(Res.string.sets_label)} ${value.iterations.size}",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.tertiary
-                    )
+                    val total = value.iterations.size
+                    val pendingCount = value.iterations.count { it.isPending() }
+                    val done = total - pendingCount
+                    val hasPending = pendingCount > 0
+
+                    if (hasPending) {
+                        val badgeColor = if (done == total) {
+                            AppTokens.colors.semantic.success
+                        } else {
+                            AppTokens.colors.semantic.warning
+                        }
+                        Text(
+                            text = "$done/$total",
+                            style = AppTokens.typography.b14Med(),
+                            color = badgeColor,
+                        )
+                    } else {
+                        Text(
+                            text = "${AppTokens.strings.res(Res.string.sets_label)} $total",
+                            style = AppTokens.typography.b14Med(),
+                            color = AppTokens.colors.text.tertiary,
+                        )
+                    }
 
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
@@ -92,6 +116,20 @@ private fun ExerciseCardLargePreview() {
     PreviewContainer {
         ExerciseCardLarge(
             value = stubExercise(),
+            onClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseCardLargePendingPreview() {
+    PreviewContainer {
+        val base = stubExercise()
+        val mixedIterations = (base.iterations.take(2) + List(3) { stubPendingIteration() })
+            .toPersistentList()
+        ExerciseCardLarge(
+            value = base.copy(iterations = mixedIterations),
             onClick = {}
         )
     }

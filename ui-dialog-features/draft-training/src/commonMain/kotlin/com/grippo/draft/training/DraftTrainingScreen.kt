@@ -52,7 +52,7 @@ internal fun DraftTrainingScreen(
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         text = when (state.stage) {
-            StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+            is StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
             StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
             is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_title_edit)
         },
@@ -68,7 +68,7 @@ internal fun DraftTrainingScreen(
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         text = when (state.stage) {
-            StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+            is StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
             StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
             is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_description_edit)
         },
