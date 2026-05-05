@@ -75,7 +75,7 @@ internal class TrainingCompletedViewModel(
                 duration = duration,
                 volume = totals.volume.value ?: 0f,
                 intensity = totals.intensity.value ?: 0f,
-                repetitions = totals.repetitions.value ?: 0
+                repetitions = totals.repetitions.value ?: 0,
             )
 
             val id = when (val allocatedId = stage.id) {

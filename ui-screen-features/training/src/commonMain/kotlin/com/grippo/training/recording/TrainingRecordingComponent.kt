@@ -9,12 +9,14 @@ import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKeys
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
     stage: StageState,
+    seed: TrainingSeed,
     private val toCompleted: (stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime) -> Unit,
     private val toExercise: (exercise: ExerciseState) -> Unit,
     private val back: () -> Unit,
@@ -30,13 +32,15 @@ internal class TrainingRecordingComponent(
     override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
         TrainingRecordingViewModel(
             stage = stage,
+            seed = seed,
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
-            notificationManager = getKoin().get()
+            notificationManager = getKoin().get(),
+            generatePresetTrainingUseCase = getKoin().get(),
         )
     }
 

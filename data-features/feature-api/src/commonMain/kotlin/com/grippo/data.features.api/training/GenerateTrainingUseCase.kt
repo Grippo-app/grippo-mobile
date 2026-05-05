@@ -45,7 +45,7 @@ public class GenerateTrainingUseCase(
             duration = duration,
             repetitions = trainingTotals.totalRepetitions,
             intensity = trainingTotals.intensity,
-            volume = trainingTotals.totalVolume
+            volume = trainingTotals.totalVolume,
         )
     }
 
