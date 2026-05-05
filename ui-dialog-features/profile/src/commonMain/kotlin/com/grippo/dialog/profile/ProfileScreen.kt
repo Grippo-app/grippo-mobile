@@ -48,7 +48,7 @@ internal fun ProfileScreen(
         )
     }
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.dialog.horizontalPadding,
