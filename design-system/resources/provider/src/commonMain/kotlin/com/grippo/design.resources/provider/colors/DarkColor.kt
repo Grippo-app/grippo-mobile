@@ -148,7 +148,7 @@ public object DarkColor : AppColor {
         override val volume: Color = AppPalette.Unique.Blue
         override val repetitions: Color = AppPalette.Unique.Purple
         override val intensity: Color = AppPalette.Unique.Green
-        override val duration: Color = AppPalette.NeutralDark.N400
+        override val duration: Color = AppPalette.Unique.Copper
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
