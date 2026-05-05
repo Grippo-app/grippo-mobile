@@ -19,13 +19,13 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
+import com.grippo.design.components.benefit.BenefitCard
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.components.user.UserCardStyle
-import com.grippo.design.components.welcome.WelcomeBenefitCard
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
 import com.grippo.design.components.welcome.WelcomeChecklistItem
@@ -209,7 +209,7 @@ private fun WelcomeBody(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
-                WelcomeBenefitCard(
+                BenefitCard(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
                     subtitle = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
@@ -217,7 +217,7 @@ private fun WelcomeBody(
                     tint = AppTokens.colors.brand.color2,
                 )
 
-                WelcomeBenefitCard(
+                BenefitCard(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
                     subtitle = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
@@ -225,7 +225,7 @@ private fun WelcomeBody(
                     tint = AppTokens.colors.brand.color5,
                 )
 
-                WelcomeBenefitCard(
+                BenefitCard(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
                     subtitle = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),

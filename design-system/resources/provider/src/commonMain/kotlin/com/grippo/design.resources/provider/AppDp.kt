@@ -72,6 +72,7 @@ public data object AppDp {
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
     val welcome: Welcome = Welcome
+    val benefit: Benefit = Benefit
     val empty: Empty = Empty
     val tip: Tip = Tip
     val badge: Badge = Badge
@@ -234,8 +235,6 @@ public data object AppDp {
                 val chart: Dp = 100.dp
                 val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
-                val benefit: Benefit = Benefit
-                val estimate: Estimate = Estimate
 
                 public data object Breakdown {
                     val radius: Dp = Panel.Small.radius
@@ -250,18 +249,6 @@ public data object AppDp {
                     val verticalPadding: Dp = Panel.Small.verticalPadding
                     val textSpacing: Dp = padding.extraSmall
                     val actionIcon: Dp = icon.small
-                }
-
-                public data object Benefit {
-                    val radius: Dp = AppDp.radius.medium
-                    val horizontalPadding: Dp = padding.large
-                    val verticalPadding: Dp = padding.large
-                    val iconBackground: Dp = 36.dp
-                    val icon: Dp = 20.dp
-                }
-
-                public data object Estimate {
-                    val icon: Dp = 16.dp
                 }
             }
         }
@@ -299,7 +286,6 @@ public data object AppDp {
 
     public data object Welcome {
         val card: Card = Card
-        val iconBadge: IconBadge = IconBadge
         val checkmark: Checkmark = Checkmark
         val progress: Progress = Progress
         val factChip: FactChip = FactChip
@@ -309,11 +295,6 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
             val space: Dp = padding.medium
-        }
-
-        public data object IconBadge {
-            val size: Dp = AppDp.size.medium
-            val icon: Dp = AppDp.icon.large
         }
 
         public data object Checkmark {
@@ -336,6 +317,15 @@ public data object AppDp {
             val space: Dp = padding.extraSmall
             val gap: Dp = padding.small
         }
+    }
+
+    public data object Benefit {
+        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.medium
+        val space: Dp = padding.medium
+        val iconBackground: Dp = size.medium
+        val icon: Dp = AppDp.icon.large
     }
 
     public data object Tip {

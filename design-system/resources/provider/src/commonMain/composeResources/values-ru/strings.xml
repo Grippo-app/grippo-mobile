@@ -933,7 +933,7 @@
     <string name="muscle_load_summary_tail_without_weakest">Короткий хвост: остальные группы ~%1$d%%. Рассмотри короткий блок поддержания.</string>
 
     <!-- Goal setup suggestion dialog -->
-    <string name="goal_setup_suggestion_title">Расскажи о своей цели</string>
+    <string name="goal_setup_suggestion_title">Какая у тебя цель?</string>
     <string name="goal_setup_suggestion_subtitle">Пара быстрых ответов поможет точнее подстроить тренировки. Изменить можно в любой момент.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Под тебя</string>
     <string name="goal_setup_suggestion_benefit_tailored_description">Мелкие детали помогают Grippo сосредоточиться на том, что важно именно тебе.</string>
@@ -941,7 +941,6 @@
     <string name="goal_setup_suggestion_benefit_direction_description">Когда цель названа, каждая тренировка становится осмысленнее.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Точнее со временем</string>
     <string name="goal_setup_suggestion_benefit_evolves_description">Чем дольше тренируешься, тем точнее цель становится ориентиром, с которым мы растём вместе.</string>
-    <string name="goal_setup_suggestion_estimate">Около минуты</string>
     <string name="goal_setup_suggestion_primary_btn">Указать цель</string>
-    <string name="goal_setup_suggestion_secondary_btn">Может позже</string>
+    <string name="goal_setup_suggestion_secondary_btn">Пропустить</string>
 </resources>

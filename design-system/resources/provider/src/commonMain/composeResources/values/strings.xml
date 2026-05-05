@@ -945,7 +945,7 @@
     <string name="muscle_load_summary_tail_without_weakest">Low tail: remaining groups ~%1$d%%. Consider a short maintenance block.</string>
 
     <!-- Goal setup suggestion dialog -->
-    <string name="goal_setup_suggestion_title">Tell us about your goal</string>
+    <string name="goal_setup_suggestion_title">What\'s your goal?</string>
     <string name="goal_setup_suggestion_subtitle">A few quick answers help us tailor your training. You can change it anytime.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Tailored to you</string>
     <string name="goal_setup_suggestion_benefit_tailored_description">Small details help Grippo focus on what matters most for your training.</string>
@@ -953,7 +953,6 @@
     <string name="goal_setup_suggestion_benefit_direction_description">Naming your goal makes each session more intentional.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Better over time</string>
     <string name="goal_setup_suggestion_benefit_evolves_description">As you train, your goal becomes a steady anchor we can grow with.</string>
-    <string name="goal_setup_suggestion_estimate">Takes about a minute</string>
     <string name="goal_setup_suggestion_primary_btn">Set my goal</string>
-    <string name="goal_setup_suggestion_secondary_btn">Maybe later</string>
+    <string name="goal_setup_suggestion_secondary_btn">Skip</string>
 </resources>
