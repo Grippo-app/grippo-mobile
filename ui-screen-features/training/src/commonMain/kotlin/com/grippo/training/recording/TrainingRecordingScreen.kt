@@ -14,6 +14,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.stubPendingExercise
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
