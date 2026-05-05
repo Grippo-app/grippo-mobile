@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.core.state.trainings.isPending
 import com.grippo.core.state.trainings.stubIteration
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.modifiers.scalableClick
@@ -38,29 +37,27 @@ internal fun IterationCardEditable(
     volumeDecorator: @Composable BoxScope.() -> Unit,
     repetitionDecorator: @Composable BoxScope.() -> Unit,
 ) {
-    val isPending = value.isPending()
-
     val shape = RoundedCornerShape(AppTokens.dp.iterationCard.editable.radius)
 
-    val cellLabelColor = if (isPending) {
+    val cellLabelColor = if (value.isPending) {
         AppTokens.colors.text.secondary
     } else {
         AppTokens.colors.text.primary
     }
 
-    val cellTextColor = if (isPending) {
+    val cellTextColor = if (value.isPending) {
         AppTokens.colors.text.secondary
     } else {
         AppTokens.colors.text.primary
     }
 
-    val cellBackground = if (isPending) {
+    val cellBackground = if (value.isPending) {
         Color.Transparent
     } else {
         AppTokens.colors.background.card
     }
 
-    val cellBorderModifier: Modifier = if (isPending) {
+    val cellBorderModifier: Modifier = if (value.isPending) {
         Modifier.border(
             width = 1.dp,
             color = AppTokens.colors.border.default,

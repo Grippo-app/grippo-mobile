@@ -11,7 +11,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.isPending
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.chip.ChipSize
@@ -67,7 +66,7 @@ internal fun ExerciseCardLarge(
 
                 if (value.iterations.isNotEmpty()) {
                     val total = value.iterations.size
-                    val pendingCount = value.iterations.count { it.isPending() }
+                    val pendingCount = value.iterations.count { it.isPending }
                     val done = total - pendingCount
                     val hasPending = pendingCount > 0
 

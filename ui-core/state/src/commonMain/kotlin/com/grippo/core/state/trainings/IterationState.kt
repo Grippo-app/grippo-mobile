@@ -22,6 +22,11 @@ public data class IterationState(
     val bodyMultiplier: MultiplierFormatState,
     val repetitions: RepetitionsFormatState,
 ) {
+    public val isPending: Boolean = externalWeight.value == null
+            && extraWeight.value == null
+            && assistWeight.value == null
+            && bodyWeight.value == null
+
     @Composable
     public fun volume(): VolumeFormatState {
         return remember(externalWeight, extraWeight, bodyWeight, assistWeight, bodyMultiplier) {
