@@ -2,6 +2,7 @@ package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.TrainingMenu
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.data.features.api.metrics.engagement.TrainingDigestUseCase
 import com.grippo.data.features.api.training.DeleteTrainingUseCase
@@ -128,8 +129,8 @@ internal class TrainingsViewModel(
         dialogController.show(config)
     }
 
-    override fun onAddTraining() {
-        navigateTo(TrainingsDirection.AddTraining)
+    override fun onStartTraining() {
+        navigateTo(TrainingsDirection.StartTraining(TrainingSeed.Blank))
     }
 
     override fun onSelectPeriod(id: String) {

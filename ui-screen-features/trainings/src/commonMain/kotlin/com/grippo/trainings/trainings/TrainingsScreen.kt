@@ -134,12 +134,12 @@ internal fun TrainingsScreen(
             Button(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(1f),
+                    .fillMaxWidth(),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.start_workout),
                 ),
                 style = ButtonStyle.Primary,
-                onClick = contract::onAddTraining
+                onClick = contract::onStartTraining
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

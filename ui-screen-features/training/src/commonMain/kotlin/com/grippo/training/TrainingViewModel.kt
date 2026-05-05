@@ -2,6 +2,7 @@ package com.grippo.training
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 import com.grippo.training.TrainingState as ScreenTrainingState
@@ -18,8 +19,8 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.Close)
     }
 
-    override fun toRecording(stage: StageState) {
-        navigateTo(TrainingDirection.ToRecording(stage))
+    override fun toRecording(stage: StageState, seed: TrainingSeed) {
+        navigateTo(TrainingDirection.ToRecording(stage, seed))
     }
 
     override fun toExercise(exercise: ExerciseState) {
