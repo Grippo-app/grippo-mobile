@@ -22,6 +22,6 @@ public fun SetIteration.toState(): IterationState {
         assistWeight = VolumeFormatState.of(assistWeight),
         bodyWeight = WeightFormatState.of(bodyWeight),
         bodyMultiplier = MultiplierFormatState.of(bodyMultiplier),
-        repetitions = RepetitionsFormatState.of(repetitions)
+        repetitions = RepetitionsFormatState.of(repetitions),
     )
 }

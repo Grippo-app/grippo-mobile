@@ -1,6 +1,7 @@
 package com.grippo.home
 
 import com.grippo.core.foundation.models.BaseDirection
+import com.grippo.core.state.stage.TrainingSeed
 
 public sealed interface HomeRootDirection : BaseDirection {
     public data object Back : HomeRootDirection
@@ -10,7 +11,7 @@ public sealed interface HomeRootDirection : BaseDirection {
     public data object Experience : HomeRootDirection
     public data object Debug : HomeRootDirection
     public data object Trainings : HomeRootDirection
-    public data object AddTraining : HomeRootDirection
+    public data class StartTraining(val seed: TrainingSeed) : HomeRootDirection
     public data object DraftTraining : HomeRootDirection
     public data object Settings : HomeRootDirection
     public data object Social : HomeRootDirection

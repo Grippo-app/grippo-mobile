@@ -1,6 +1,7 @@
 package com.grippo.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.stage.TrainingSeed
 
 public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection, HomeRootLoader>(
     HomeRootState
@@ -30,8 +31,8 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
         navigateTo(HomeRootDirection.Trainings)
     }
 
-    override fun toAddTraining() {
-        navigateTo(HomeRootDirection.AddTraining)
+    override fun toStartTraining(seed: TrainingSeed) {
+        navigateTo(HomeRootDirection.StartTraining(seed))
     }
 
     override fun toDraftTraining() {

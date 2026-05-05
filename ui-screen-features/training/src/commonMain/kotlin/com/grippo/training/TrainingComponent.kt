@@ -37,7 +37,7 @@ public class TrainingComponent(
     override suspend fun eventListener(direction: TrainingDirection) {
         when (direction) {
             is TrainingDirection.ToRecording -> navigation.replaceAll(
-                TrainingRouter.Recording(direction.stage)
+                TrainingRouter.Recording(direction.stage, direction.seed)
             )
 
             is TrainingDirection.ToExercise -> navigation.push(
@@ -71,6 +71,7 @@ public class TrainingComponent(
                 TrainingRecordingComponent(
                     componentContext = context,
                     stage = router.stage,
+                    seed = router.seed,
                     toCompleted = viewModel::toCompleted,
                     toExercise = viewModel::toExercise,
                     back = viewModel::onClose

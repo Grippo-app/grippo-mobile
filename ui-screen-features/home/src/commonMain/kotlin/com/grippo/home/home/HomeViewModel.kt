@@ -5,6 +5,7 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -220,11 +221,11 @@ internal class HomeViewModel(
                 goalSetupSuggestionUseCase.markShown()
                 val config = DialogConfig.GoalSetupSuggestion(
                     onConfigure = { navigateTo(HomeDirection.Goal) },
-                    onLater = { navigateTo(HomeDirection.AddTraining) },
+                    onLater = { navigateTo(HomeDirection.StartTraining(TrainingSeed.Blank)) },
                 )
                 dialogController.show(config)
             } else {
-                navigateTo(HomeDirection.AddTraining)
+                navigateTo(HomeDirection.StartTraining(TrainingSeed.Blank))
             }
         }
     }
@@ -313,7 +314,7 @@ internal class HomeViewModel(
     override fun onResumeTraining() {
         val config = DialogConfig.DraftTraining(
             onContinue = { navigateTo(HomeDirection.DraftTraining) },
-            onStartNew = { navigateTo(HomeDirection.AddTraining) }
+            onStartNew = { navigateTo(HomeDirection.StartTraining(TrainingSeed.Blank)) }
         )
 
         dialogController.show(config)
