@@ -19,6 +19,7 @@ import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.volume.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.DeleteTrainingUseCase
 import com.grippo.data.features.api.training.ExerciseValidatorUseCase
+import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.training.SetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
@@ -124,6 +125,16 @@ public class FeatureApiModule {
 
         single {
             GenerateTrainingUseCase(
+                exerciseExampleFeature = get(),
+            )
+        }
+
+        single {
+            GeneratePresetTrainingUseCase(
+                userFeature = get(),
+                goalFeature = get(),
+                excludedMusclesFeature = get(),
+                excludedEquipmentsFeature = get(),
                 exerciseExampleFeature = get(),
             )
         }

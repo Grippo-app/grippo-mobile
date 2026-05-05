@@ -22,7 +22,7 @@ public sealed interface IterationCardStyle {
         val onVolumeClick: () -> Unit,
         val onRepetitionClick: () -> Unit,
         val volumeDecorator: @Composable BoxScope.() -> Unit,
-        val repetitionDecorator: @Composable BoxScope.() -> Unit
+        val repetitionDecorator: @Composable BoxScope.() -> Unit,
     ) : IterationCardStyle
 }
 
@@ -45,7 +45,7 @@ public fun IterationCard(
             onVolumeClick = style.onVolumeClick,
             onRepetitionClick = style.onRepetitionClick,
             volumeDecorator = style.volumeDecorator,
-            repetitionDecorator = style.repetitionDecorator
+            repetitionDecorator = style.repetitionDecorator,
         )
     }
 }
