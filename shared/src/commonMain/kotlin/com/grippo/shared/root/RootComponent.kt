@@ -187,7 +187,8 @@ public class RootComponent(
             is RootRouter.Debug -> Debug(
                 DebugComponent(
                     componentContext = context,
-                    close = viewModel::onBack
+                    close = viewModel::onBack,
+                    toTraining = viewModel::toTraining,
                 )
             )
 

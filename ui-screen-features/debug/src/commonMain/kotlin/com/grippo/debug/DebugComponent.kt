@@ -6,10 +6,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 
 public class DebugComponent(
     componentContext: ComponentContext,
-    private val close: () -> Unit
+    private val close: () -> Unit,
+    private val toTraining: (stage: StageState, seed: TrainingSeed) -> Unit,
 ) : BaseComponent<DebugDirection>(componentContext) {
 
     override val viewModel: DebugViewModel = componentContext.retainedInstance {
@@ -29,6 +32,7 @@ public class DebugComponent(
     override suspend fun eventListener(direction: DebugDirection) {
         when (direction) {
             DebugDirection.Back -> close.invoke()
+            DebugDirection.StartPresetTraining -> toTraining.invoke(StageState.Add, TrainingSeed.FromPreset)
         }
     }
 

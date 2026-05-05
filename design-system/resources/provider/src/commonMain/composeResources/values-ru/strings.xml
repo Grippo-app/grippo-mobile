@@ -167,7 +167,6 @@
     <string name="selected">Выбрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Применить</string>
-    <string name="generate_training_btn">Сгенерировать тренировку</string>
     <string name="got_it_btn">Понятно</string>
     <string name="confirm_btn">Подтвердить</string>
     <string name="no_data_yet">Пока нет данных</string>

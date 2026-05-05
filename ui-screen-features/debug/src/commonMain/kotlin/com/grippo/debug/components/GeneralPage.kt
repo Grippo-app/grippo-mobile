@@ -21,8 +21,6 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputToken
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.generate_training_btn
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -38,7 +36,7 @@ internal fun GeneralPage(
     }
 
     Column(modifier = modifier) {
-        val buttonState = remember(loaders) {
+        val generateState = remember(loaders) {
             when {
                 loaders.contains(DebugLoader.GenerateTraining) -> ButtonState.Loading
                 else -> ButtonState.Enabled
@@ -66,10 +64,19 @@ internal fun GeneralPage(
             item(key = "generate_training_btn") {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    content = ButtonContent.Text(AppTokens.strings.res(Res.string.generate_training_btn)),
+                    content = ButtonContent.Text("Generate workout"),
                     style = ButtonStyle.Primary,
-                    state = buttonState,
+                    state = generateState,
                     onClick = contract::generateTraining
+                )
+            }
+
+            item(key = "generate_preset_training_btn") {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    content = ButtonContent.Text("Start preset workout"),
+                    style = ButtonStyle.Secondary,
+                    onClick = contract::generatePresetTraining
                 )
             }
         }
