@@ -48,7 +48,7 @@ internal fun ProfileScreen(
         )
     }
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.dialog.horizontalPadding,
@@ -96,7 +96,7 @@ internal fun ProfileScreen(
                             onClick = contract::onProfileMenuClick
                         )
 
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
                         Text(
                             modifier = Modifier.fillMaxWidth(),
@@ -105,7 +105,7 @@ internal fun ProfileScreen(
                             color = AppTokens.colors.text.tertiary
                         )
 
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
                         Menu(
                             items = settingsMenu,
