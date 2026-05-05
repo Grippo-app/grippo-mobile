@@ -7,5 +7,5 @@ public data class SetTraining(
     val duration: Duration,
     val repetitions: Int,
     val intensity: Float,
-    val volume: Float
+    val volume: Float,
 )
