@@ -63,7 +63,11 @@ internal fun HomeScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
-        title = AppTokens.strings.res(Res.string.dashboard),
+        title = if (isEmptyState && state.user != null) {
+            null
+        } else {
+            AppTokens.strings.res(Res.string.dashboard)
+        },
         trailing = {
             Button(
                 modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
