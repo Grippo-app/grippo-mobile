@@ -96,9 +96,10 @@ internal class TrainingExerciseViewModel(
     }
 
     override fun onAddIteration() {
+        val example = state.value.exerciseExample ?: return
         safeLaunch {
-            val example = state.value.exerciseExample ?: return@safeLaunch
             val initial = buildBlankIteration(example)
+                .withResolvedBodyWeight(example)
 
             showIterationDialog(
                 initial = initial,
@@ -144,13 +145,32 @@ internal class TrainingExerciseViewModel(
         val index = iterations.indexOfFirst { it.id == id }
         if (index < 0) return
 
-        showIterationDialog(
-            initial = iterations[index],
-            example = example,
-            number = index + 1,
-            focus = focus,
-            onResult = { iteration -> replaceIteration(id = id, value = iteration) },
-        )
+        safeLaunch {
+            val initial = iterations[index]
+                .withResolvedBodyWeight(example)
+
+            showIterationDialog(
+                initial = initial,
+                example = example,
+                number = index + 1,
+                focus = focus,
+                onResult = { iteration -> replaceIteration(id = id, value = iteration) },
+            )
+        }
+    }
+
+    private suspend fun IterationState.withResolvedBodyWeight(example: ExerciseExampleState): IterationState {
+        if (bodyWeight.value != null) return this
+        val needsBodyWeight = when (example.components) {
+            is ExerciseExampleComponentsState.BodyAndAssist,
+            is ExerciseExampleComponentsState.BodyAndExtra,
+            is ExerciseExampleComponentsState.BodyOnly -> true
+
+            is ExerciseExampleComponentsState.External -> false
+        }
+        if (!needsBodyWeight) return this
+        val weight = weightHistoryFeature.observeLastWeight().firstOrNull()?.weight ?: return this
+        return copy(bodyWeight = WeightFormatState.of(weight))
     }
 
     private fun showIterationDialog(
@@ -172,21 +192,8 @@ internal class TrainingExerciseViewModel(
         dialogController.show(dialog)
     }
 
-    private suspend fun buildBlankIteration(example: ExerciseExampleState): IterationState {
-        val components = example.components
-
-        val bodyWeight = when (components) {
-            is ExerciseExampleComponentsState.BodyAndAssist,
-            is ExerciseExampleComponentsState.BodyAndExtra,
-            is ExerciseExampleComponentsState.BodyOnly -> weightHistoryFeature
-                .observeLastWeight()
-                .firstOrNull()
-                ?.weight
-
-            is ExerciseExampleComponentsState.External -> null
-        }
-
-        val bodyMultiplier = when (components) {
+    private fun buildBlankIteration(example: ExerciseExampleState): IterationState {
+        val bodyMultiplier = when (val components = example.components) {
             is ExerciseExampleComponentsState.BodyAndAssist -> components.bodyMultiplier
             is ExerciseExampleComponentsState.BodyAndExtra -> components.bodyMultiplier
             is ExerciseExampleComponentsState.BodyOnly -> components.bodyMultiplier
@@ -199,7 +206,7 @@ internal class TrainingExerciseViewModel(
             extraWeight = VolumeFormatState.Empty(),
             assistWeight = VolumeFormatState.Empty(),
             bodyMultiplier = MultiplierFormatState.of(bodyMultiplier),
-            bodyWeight = WeightFormatState.of(bodyWeight),
+            bodyWeight = WeightFormatState.Empty(),
             repetitions = RepetitionsFormatState.Empty(),
         )
     }
