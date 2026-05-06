@@ -56,13 +56,13 @@ public class StartTrainingViewModel(
     }
 
     private fun toRecentOption(training: Training): StartTrainingOption.Recent {
-        val state = training.toState()
-        val presetExercises = state.exercises
+        val mapped = training.toState()
+        val presetExercises = mapped.exercises
             .map { it.asPreset() }
             .toPersistentList()
         return StartTrainingOption.Recent(
-            trainingId = state.id,
-            createdAt = state.createdAt,
+            trainingId = mapped.id,
+            createdAt = mapped.createdAt,
             exercises = presetExercises,
         )
     }

@@ -70,15 +70,6 @@ internal fun GeneralPage(
                     onClick = contract::generateTraining
                 )
             }
-
-            item(key = "generate_preset_training_btn") {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    content = ButtonContent.Text("Start preset workout"),
-                    style = ButtonStyle.Secondary,
-                    onClick = contract::generatePresetTraining
-                )
-            }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

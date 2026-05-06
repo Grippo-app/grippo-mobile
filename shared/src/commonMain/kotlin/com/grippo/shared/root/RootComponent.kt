@@ -188,7 +188,6 @@ public class RootComponent(
                 DebugComponent(
                     componentContext = context,
                     close = viewModel::onBack,
-                    toTraining = viewModel::toTraining,
                 )
             )
 

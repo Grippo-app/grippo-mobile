@@ -395,8 +395,6 @@
     <string name="start_training_option_recent_title">Recent workout</string>
     <string name="start_training_use_btn">Use this</string>
     <string name="start_training_exercises_count">%1$s exercises</string>
-    <string name="not_found">Not found</string>
-    <string name="reset">Reset</string>
     <string name="menu">Menu</string>
     <string name="calendar">Calendar</string>
 

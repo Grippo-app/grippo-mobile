@@ -46,10 +46,6 @@ public class DebugViewModel(
         }
     }
 
-    override fun generatePresetTraining() {
-        navigateTo(DebugDirection.StartPresetTraining)
-    }
-
     override fun onSelect(value: DebugMenu) {
         update { it.copy(selected = value) }
         if (value == DebugMenu.Logger) {
