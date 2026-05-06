@@ -19,7 +19,6 @@ import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 import com.grippo.data.features.api.training.models.PresetExercise
 import com.grippo.data.features.api.training.models.PresetIteration
 import com.grippo.data.features.api.training.models.PresetTraining
-import com.grippo.data.features.api.training.models.PresetWeight
 import com.grippo.data.features.api.user.UserFeature
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -355,8 +354,8 @@ public class GeneratePresetTrainingUseCase(
         example.bundles.maxByOrNull { it.percentage }?.muscle?.type?.group()
 
     // -------------------------------------------------------------------------
-    // Iterations: identical sets per exercise; the suggested weight variant is
-    // dictated by the exercise's component shape.
+    // Iterations: identical sets per exercise; nullability of weight fields
+    // mirrors the exercise's component shape (same convention as SetIteration).
     // -------------------------------------------------------------------------
 
     private fun buildIterations(
@@ -367,33 +366,44 @@ public class GeneratePresetTrainingUseCase(
         val sets = profile.setsPerExercise
         val reps = (profile.repsRange.first + profile.repsRange.last) / 2
 
-        val suggestedWeight: PresetWeight = when (val components = example.components) {
-            is ExerciseExampleComponents.External -> PresetWeight.External(
-                value = computeExternalWeight(example, profile, bodyWeight),
+        val template: PresetIteration = when (val components = example.components) {
+            is ExerciseExampleComponents.External -> PresetIteration(
+                externalWeight = computeExternalWeight(example, profile, bodyWeight),
+                extraWeight = null,
+                assistWeight = null,
+                bodyWeight = null,
+                bodyMultiplier = null,
+                repetitions = reps,
             )
 
-            is ExerciseExampleComponents.BodyOnly -> PresetWeight.BodyOnly(
+            is ExerciseExampleComponents.BodyOnly -> PresetIteration(
+                externalWeight = null,
+                extraWeight = null,
+                assistWeight = null,
                 bodyWeight = bodyWeight,
-                multiplier = components.multiplier,
+                bodyMultiplier = components.multiplier,
+                repetitions = reps,
             )
 
-            is ExerciseExampleComponents.BodyAndExtra -> PresetWeight.BodyAndExtra(
+            is ExerciseExampleComponents.BodyAndExtra -> PresetIteration(
+                externalWeight = null,
+                extraWeight = computeExtraWeight(profile, bodyWeight),
+                assistWeight = null,
                 bodyWeight = bodyWeight,
-                multiplier = components.bodyMultiplier,
-                extra = computeExtraWeight(profile, bodyWeight),
+                bodyMultiplier = components.bodyMultiplier,
+                repetitions = reps,
             )
 
-            is ExerciseExampleComponents.BodyAndAssist -> PresetWeight.BodyAndAssist(
+            is ExerciseExampleComponents.BodyAndAssist -> PresetIteration(
+                externalWeight = null,
+                extraWeight = null,
+                assistWeight = computeAssistWeight(profile, bodyWeight, components.bodyMultiplier),
                 bodyWeight = bodyWeight,
-                multiplier = components.bodyMultiplier,
-                assist = computeAssistWeight(profile, bodyWeight, components.bodyMultiplier),
+                bodyMultiplier = components.bodyMultiplier,
+                repetitions = reps,
             )
         }
 
-        val template = PresetIteration(
-            repetitions = reps,
-            suggestedWeight = suggestedWeight,
-        )
         return List(sets) { template }
     }
 

@@ -9,7 +9,8 @@ public data class Iteration(
     val bodyMultiplier: Float?,
     val repetitions: Int,
 ) {
-    val volume: Float
-        get() = (externalWeight ?: 0f) + (extraWeight ?: 0f) + (bodyWeight ?: 0f) - (assistWeight
-            ?: 0f)
+    val volume: Float = (externalWeight ?: 0f) +
+            (extraWeight ?: 0f) +
+            ((bodyWeight ?: 0f) * (bodyMultiplier ?: 0f)) -
+            (assistWeight ?: 0f)
 }

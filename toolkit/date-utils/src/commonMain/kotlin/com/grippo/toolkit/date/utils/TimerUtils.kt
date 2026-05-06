@@ -30,8 +30,7 @@ public fun timerTextFlow(
 
 /**
  * Renders elapsed seconds as `HH:mm:ss` with hours unbounded — workouts that
- * exceed 24 hours render as `25:00:00` rather than wrapping to `01:00:00` (or
- * crashing on `LocalTime(hour = 24)`).
+ * exceed 24 hours render as `25:00:00` rather than wrapping to `01:00:00`.
  *
  * Hours are zero-padded to at least two digits; longer hour strings (3+ digits)
  * grow naturally rather than overflow.
