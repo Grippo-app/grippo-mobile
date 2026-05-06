@@ -72,7 +72,7 @@ import com.grippo.services.database.entity.WeightHistoryEntity
 
         GoalEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(StringListConverter::class)
