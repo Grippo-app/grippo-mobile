@@ -20,7 +20,4 @@ public data class DraftTrainingEntity(
     val trainingId: String?, // [null for "Add"] [nonNull for "Edit"]
     val profileId: String,
     val duration: Long,
-    val volume: Float,
-    val repetitions: Int,
-    val intensity: Float,
 )

@@ -8,17 +8,11 @@ import kotlin.uuid.Uuid
 public fun DraftTraining.toEntity(profileId: String): DraftTrainingPack {
     val id = Uuid.random().toString()
 
-    // Drafts are aggregate-free in the domain. The entity columns below are
-    // legacy artifacts of the previous SetTraining-shaped draft and are kept
-    // at zero — they are not read back into the domain model.
     val training = DraftTrainingEntity(
         id = id,
         profileId = profileId,
         trainingId = trainingId,
         duration = duration.inWholeMinutes,
-        volume = 0f,
-        repetitions = 0,
-        intensity = 0f,
     )
 
     return DraftTrainingPack(

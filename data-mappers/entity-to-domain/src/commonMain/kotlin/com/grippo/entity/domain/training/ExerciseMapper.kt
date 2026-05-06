@@ -23,6 +23,6 @@ public fun ExercisePack.toDomain(): Exercise? {
         repetitions = exercise.repetitions,
         intensity = exercise.intensity,
         createdAt = DateTimeUtils.toLocalDateTime(exercise.createdAt),
-        exerciseExample = mappedExerciseExample
+        exerciseExample = mappedExerciseExample,
     )
 }

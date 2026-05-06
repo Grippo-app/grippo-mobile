@@ -9,22 +9,16 @@ import kotlin.uuid.Uuid
 public fun DraftExercise.toEntity(trainingId: String): DraftExercisePack {
     val id = Uuid.random().toString()
 
-    // Aggregate columns (volume / repetitions / intensity) are vestigial — see
-    // DraftTrainingMapper.toEntity for the rationale.
     val exercise = DraftExerciseEntity(
         id = id,
-        name = name,
         trainingId = trainingId,
-        volume = 0f,
-        repetitions = 0,
-        intensity = 0f,
         exerciseExampleId = exerciseExample.id,
-        createdAt = DateTimeUtils.toUtcIso(createdAt)
+        createdAt = DateTimeUtils.toUtcIso(createdAt),
     )
 
     return DraftExercisePack(
         exercise = exercise,
         iterations = iterations.map { it.toEntity(id) },
-        example = null
+        example = null,
     )
 }

@@ -21,7 +21,7 @@ public fun List<DraftExercise>.toState(): PersistentList<ExerciseState> {
 public fun DraftExercise.toState(): ExerciseState {
     return ExerciseState(
         id = Uuid.random().toString(),
-        name = name,
+        name = exerciseExample.name,
         iterations = iterations.toState(),
         exerciseExample = exerciseExample.toState(),
         createdAt = DateTimeFormatState.of(

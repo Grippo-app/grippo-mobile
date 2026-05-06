@@ -16,9 +16,8 @@ public fun DraftExercisePack.toDraftDomain(): DraftExercise? {
     } ?: return null
 
     return DraftExercise(
-        name = exercise.name,
         iterations = iterations.toSetDomain(),
         createdAt = DateTimeUtils.toLocalDateTime(exercise.createdAt),
-        exerciseExample = mappedExerciseExample
+        exerciseExample = mappedExerciseExample,
     )
 }

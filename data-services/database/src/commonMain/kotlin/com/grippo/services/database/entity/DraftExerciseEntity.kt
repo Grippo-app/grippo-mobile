@@ -24,9 +24,5 @@ public data class DraftExerciseEntity(
     @PrimaryKey val id: String,
     val trainingId: String,
     val exerciseExampleId: String,
-    val name: String,
-    val volume: Float,
-    val repetitions: Int,
     val createdAt: String,
-    val intensity: Float,
 )
