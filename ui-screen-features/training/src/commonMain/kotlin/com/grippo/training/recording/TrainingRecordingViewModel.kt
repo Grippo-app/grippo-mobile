@@ -19,7 +19,7 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.DraftTraining
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.PresetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.notification_forgot_training_description
@@ -101,7 +101,7 @@ internal class TrainingRecordingViewModel(
                         }
 
                         TrainingSeed.FromPreset -> {
-                            val preset = generatePresetTrainingUseCase.execute(DateTimeUtils.now())
+                            val preset = generatePresetTrainingUseCase.execute()
                             if (preset != null) {
                                 seedFromPreset(preset)
                             } else {
@@ -156,25 +156,10 @@ internal class TrainingRecordingViewModel(
         update { it.copy(exercises = exercises, startAt = startAt) }
     }
 
-    private fun seedFromPreset(value: SetTraining) {
-        val seedExercises = value.exercises.map { exercise ->
-            exercise.copy(
-                iterations = exercise.iterations.map { iteration ->
-                    iteration.copy(
-                        externalWeight = null,
-                        extraWeight = null,
-                        assistWeight = null,
-                        bodyWeight = null,
-                    )
-                },
-                volume = 0f,
-                intensity = 0f,
-                repetitions = 0,
-            )
-        }
+    private fun seedFromPreset(value: PresetTraining) {
         update {
             it.copy(
-                exercises = seedExercises.toState(),
+                exercises = value.toState(),
                 startAt = DateTimeUtils.now(),
             )
         }

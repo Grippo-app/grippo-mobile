@@ -16,17 +16,15 @@ import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.GoalPrimaryGoalEnum
 import com.grippo.data.features.api.goal.models.GoalSecondaryGoalEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
-import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.data.features.api.training.models.SetIteration
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.PresetExercise
+import com.grippo.data.features.api.training.models.PresetIteration
+import com.grippo.data.features.api.training.models.PresetTraining
+import com.grippo.data.features.api.training.models.PresetWeight
 import com.grippo.data.features.api.user.UserFeature
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.LocalDateTime
 import kotlin.math.max
 import kotlin.math.roundToInt
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 public class GeneratePresetTrainingUseCase(
     private val userFeature: UserFeature,
@@ -36,7 +34,7 @@ public class GeneratePresetTrainingUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
 ) {
 
-    public suspend fun execute(date: LocalDateTime): SetTraining? {
+    public suspend fun execute(): PresetTraining? {
         val user = userFeature.observeUser().firstOrNull() ?: return null
         val bodyWeight = user.weight.takeIf { it > 0f } ?: return null
         val goal = goalFeature.observeGoal().firstOrNull()
@@ -61,27 +59,13 @@ public class GeneratePresetTrainingUseCase(
         if (selected.size < MIN_EXERCISES_FOR_TRAINING) return null
 
         val exercises = selected.map { example ->
-            val iterations = buildIterations(
-                example = example,
-                profile = profile,
-                bodyWeight = bodyWeight,
+            PresetExercise(
+                exerciseExample = example.value,
+                iterations = buildIterations(example, profile, bodyWeight),
             )
-            buildSetExercise(example, iterations, date)
         }
 
-        val totals = aggregateTraining(exercises)
-        val totalSets = exercises.sumOf { it.iterations.size }
-        val workSeconds = totalSets * profile.timePerSetSeconds
-        val transitionSeconds = (exercises.size - 1).coerceAtLeast(0) * EXERCISE_TRANSITION_SECONDS
-        val duration: Duration = (WARMUP_SECONDS + workSeconds + transitionSeconds).seconds
-
-        return SetTraining(
-            exercises = exercises,
-            duration = duration,
-            repetitions = totals.totalRepetitions,
-            intensity = totals.intensity,
-            volume = totals.totalVolume,
-        )
+        return PresetTraining(exercises = exercises)
     }
 
     // -------------------------------------------------------------------------
@@ -99,7 +83,6 @@ public class GeneratePresetTrainingUseCase(
                 repsRange = 3..6,
                 loadFactor = 1.1f,
                 compoundShare = 0.85f,
-                timePerSetSeconds = 180,
             )
 
             GoalPrimaryGoalEnum.BUILD_MUSCLE -> TrainingProfile(
@@ -108,7 +91,6 @@ public class GeneratePresetTrainingUseCase(
                 repsRange = 8..12,
                 loadFactor = 0.95f,
                 compoundShare = 0.55f,
-                timePerSetSeconds = 130,
             )
 
             GoalPrimaryGoalEnum.LOSE_FAT -> TrainingProfile(
@@ -117,7 +99,6 @@ public class GeneratePresetTrainingUseCase(
                 repsRange = 12..18,
                 loadFactor = 0.7f,
                 compoundShare = 0.55f,
-                timePerSetSeconds = 80,
             )
 
             GoalPrimaryGoalEnum.RETURN_TO_TRAINING -> TrainingProfile(
@@ -126,7 +107,6 @@ public class GeneratePresetTrainingUseCase(
                 repsRange = 10..12,
                 loadFactor = 0.65f,
                 compoundShare = 0.5f,
-                timePerSetSeconds = 120,
             )
 
             GoalPrimaryGoalEnum.MAINTAIN -> TrainingProfile(
@@ -135,7 +115,6 @@ public class GeneratePresetTrainingUseCase(
                 repsRange = 8..10,
                 loadFactor = 0.85f,
                 compoundShare = 0.6f,
-                timePerSetSeconds = 110,
             )
 
             GoalPrimaryGoalEnum.GENERAL_FITNESS -> TrainingProfile(
@@ -144,7 +123,6 @@ public class GeneratePresetTrainingUseCase(
                 repsRange = 8..15,
                 loadFactor = 0.85f,
                 compoundShare = 0.55f,
-                timePerSetSeconds = 100,
             )
         }
 
@@ -185,7 +163,6 @@ public class GeneratePresetTrainingUseCase(
     ): TrainingProfile = when (secondary) {
         GoalSecondaryGoalEnum.LOSE_FAT -> profile.copy(
             repsRange = profile.repsRange.first..(profile.repsRange.last + 4),
-            timePerSetSeconds = (profile.timePerSetSeconds * 0.85f).toInt(),
         )
 
         GoalSecondaryGoalEnum.GET_STRONGER -> {
@@ -378,56 +355,45 @@ public class GeneratePresetTrainingUseCase(
         example.bundles.maxByOrNull { it.percentage }?.muscle?.type?.group()
 
     // -------------------------------------------------------------------------
-    // Iterations: identical sets per exercise; fields driven strictly by
-    // ExerciseExampleComponents variant.
+    // Iterations: identical sets per exercise; the suggested weight variant is
+    // dictated by the exercise's component shape.
     // -------------------------------------------------------------------------
 
     private fun buildIterations(
         example: ExerciseExample,
         profile: TrainingProfile,
         bodyWeight: Float,
-    ): List<SetIteration> {
+    ): List<PresetIteration> {
         val sets = profile.setsPerExercise
         val reps = (profile.repsRange.first + profile.repsRange.last) / 2
 
-        val template: SetIteration = when (val components = example.components) {
-            is ExerciseExampleComponents.External -> SetIteration(
-                externalWeight = computeExternalWeight(example, profile, bodyWeight),
-                bodyWeight = null,
-                bodyMultiplier = null,
-                extraWeight = null,
-                assistWeight = null,
-                repetitions = reps,
+        val suggestedWeight: PresetWeight = when (val components = example.components) {
+            is ExerciseExampleComponents.External -> PresetWeight.External(
+                value = computeExternalWeight(example, profile, bodyWeight),
             )
 
-            is ExerciseExampleComponents.BodyOnly -> SetIteration(
-                externalWeight = null,
+            is ExerciseExampleComponents.BodyOnly -> PresetWeight.BodyOnly(
                 bodyWeight = bodyWeight,
-                bodyMultiplier = components.multiplier,
-                extraWeight = null,
-                assistWeight = null,
-                repetitions = reps,
+                multiplier = components.multiplier,
             )
 
-            is ExerciseExampleComponents.BodyAndExtra -> SetIteration(
-                externalWeight = null,
+            is ExerciseExampleComponents.BodyAndExtra -> PresetWeight.BodyAndExtra(
                 bodyWeight = bodyWeight,
-                bodyMultiplier = components.bodyMultiplier,
-                extraWeight = computeExtraWeight(profile, bodyWeight),
-                assistWeight = null,
-                repetitions = reps,
+                multiplier = components.bodyMultiplier,
+                extra = computeExtraWeight(profile, bodyWeight),
             )
 
-            is ExerciseExampleComponents.BodyAndAssist -> SetIteration(
-                externalWeight = null,
+            is ExerciseExampleComponents.BodyAndAssist -> PresetWeight.BodyAndAssist(
                 bodyWeight = bodyWeight,
-                bodyMultiplier = components.bodyMultiplier,
-                extraWeight = null,
-                assistWeight = computeAssistWeight(profile, bodyWeight, components.bodyMultiplier),
-                repetitions = reps,
+                multiplier = components.bodyMultiplier,
+                assist = computeAssistWeight(profile, bodyWeight, components.bodyMultiplier),
             )
         }
 
+        val template = PresetIteration(
+            repetitions = reps,
+            suggestedWeight = suggestedWeight,
+        )
         return List(sets) { template }
     }
 
@@ -471,60 +437,6 @@ public class GeneratePresetTrainingUseCase(
     }
 
     // -------------------------------------------------------------------------
-    // Aggregation
-    // -------------------------------------------------------------------------
-
-    private fun buildSetExercise(
-        example: ExerciseExample,
-        iterations: List<SetIteration>,
-        createdAt: LocalDateTime,
-    ): SetExercise {
-        var volume = 0f
-        var totalRepetitions = 0
-        var weightedRepetitions = 0
-
-        iterations.forEach { iteration ->
-            volume += iteration.volume * iteration.repetitions
-            totalRepetitions += iteration.repetitions
-            if (iteration.volume > 0f) weightedRepetitions += iteration.repetitions
-        }
-
-        val intensity = if (weightedRepetitions > 0) volume / weightedRepetitions else 0f
-
-        return SetExercise(
-            name = example.value.name,
-            iterations = iterations,
-            exerciseExample = example.value,
-            repetitions = totalRepetitions,
-            intensity = intensity.round1(),
-            volume = volume.round1(),
-            createdAt = createdAt,
-        )
-    }
-
-    private fun aggregateTraining(exercises: List<SetExercise>): TrainingTotals {
-        var volume = 0f
-        var totalRepetitions = 0
-        var weightedRepetitions = 0
-
-        exercises.forEach { exercise ->
-            volume += exercise.volume
-            totalRepetitions += exercise.repetitions
-            exercise.iterations.forEach { iteration ->
-                if (iteration.volume > 0f) weightedRepetitions += iteration.repetitions
-            }
-        }
-
-        val intensity = if (weightedRepetitions > 0) volume / weightedRepetitions else 0f
-
-        return TrainingTotals(
-            totalVolume = volume.round1(),
-            totalRepetitions = totalRepetitions,
-            intensity = intensity.round1(),
-        )
-    }
-
-    // -------------------------------------------------------------------------
     // Internals
     // -------------------------------------------------------------------------
 
@@ -534,16 +446,8 @@ public class GeneratePresetTrainingUseCase(
         val repsRange: IntRange,
         val loadFactor: Float,
         val compoundShare: Float,
-        val timePerSetSeconds: Int,
     )
 
-    private data class TrainingTotals(
-        val totalVolume: Float,
-        val totalRepetitions: Int,
-        val intensity: Float,
-    )
-
-    private fun Float.round1(): Float = (this * 10f).roundToInt() / 10f
     private fun Float.round25(): Float = (this / 2.5f).roundToInt() * 2.5f
 
     private companion object {
@@ -558,7 +462,5 @@ public class GeneratePresetTrainingUseCase(
         private const val EXTRA_WEIGHT_SCALE = 0.25f
         private const val ASSIST_PIVOT = 0.85f
         private const val MAX_ASSIST_FRACTION = 0.6f
-        private const val WARMUP_SECONDS = 480
-        private const val EXERCISE_TRANSITION_SECONDS = 90
     }
 }
