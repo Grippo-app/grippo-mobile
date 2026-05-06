@@ -1,8 +1,6 @@
 package com.grippo.entity.domain.training
 
-import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.services.database.models.DraftTrainingPack
 import com.grippo.services.database.models.TrainingPack
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlin.time.Duration.Companion.minutes
@@ -20,13 +18,5 @@ public fun TrainingPack.toDomain(): Training {
         intensity = training.intensity,
         duration = training.duration.minutes,
         createdAt = DateTimeUtils.toLocalDateTime(training.createdAt)
-    )
-}
-
-public fun DraftTrainingPack.toDraftDomain(): DraftTraining {
-    return DraftTraining(
-        trainingId = training.trainingId,
-        duration = training.duration.minutes,
-        exercises = exercises.toDraftDomain(),
     )
 }

@@ -1,8 +1,6 @@
 package com.grippo.entity.domain.training
 
 import com.grippo.data.features.api.training.models.Iteration
-import com.grippo.data.features.api.training.models.SetIteration
-import com.grippo.services.database.entity.DraftIterationEntity
 import com.grippo.services.database.entity.IterationEntity
 
 public fun List<IterationEntity>.toDomain(): List<Iteration> {
@@ -18,20 +16,5 @@ public fun IterationEntity.toDomain(): Iteration {
         bodyWeight = bodyWeight,
         repetitions = repetitions,
         bodyMultiplier = bodyMultiplier
-    )
-}
-
-public fun List<DraftIterationEntity>.toSetDomain(): List<SetIteration> {
-    return map { it.toSetDomain() }
-}
-
-public fun DraftIterationEntity.toSetDomain(): SetIteration {
-    return SetIteration(
-        externalWeight = externalWeight,
-        extraWeight = extraWeight,
-        assistWeight = assistWeight,
-        bodyWeight = bodyWeight,
-        repetitions = repetitions,
-        bodyMultiplier = bodyMultiplier,
     )
 }

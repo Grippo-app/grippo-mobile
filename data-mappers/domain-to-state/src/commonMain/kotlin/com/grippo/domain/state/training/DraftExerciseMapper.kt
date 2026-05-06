@@ -19,8 +19,6 @@ public fun List<DraftExercise>.toState(): PersistentList<ExerciseState> {
 }
 
 public fun DraftExercise.toState(): ExerciseState {
-    // Drafts carry no aggregates; consumers recompute totals from completed
-    // iterations after restore.
     return ExerciseState(
         id = Uuid.random().toString(),
         name = name,
