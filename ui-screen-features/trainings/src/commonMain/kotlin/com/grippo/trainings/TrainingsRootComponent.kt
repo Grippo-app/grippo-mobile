@@ -11,14 +11,13 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
-import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.screen.api.TrainingsRouter
 import com.grippo.trainings.trainings.TrainingsComponent
 
 public class TrainingsRootComponent(
     initial: TrainingsRouter,
     componentContext: ComponentContext,
-    private val toTraining: (stage: StageState, seed: TrainingSeed) -> Unit,
+    private val toTraining: (stage: StageState) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<TrainingsRootDirection>(componentContext) {
 
@@ -38,20 +37,9 @@ public class TrainingsRootComponent(
     override suspend fun eventListener(direction: TrainingsRootDirection) {
         when (direction) {
             TrainingsRootDirection.Back -> close.invoke()
-            is TrainingsRootDirection.StartTraining -> toTraining.invoke(
-                StageState.Add,
-                direction.seed
-            )
-
-            TrainingsRootDirection.DraftTraining -> toTraining.invoke(
-                StageState.Draft,
-                TrainingSeed.Blank
-            )
-
-            is TrainingsRootDirection.EditTraining -> toTraining.invoke(
-                StageState.Edit(direction.id),
-                TrainingSeed.Blank
-            )
+            TrainingsRootDirection.StartTraining -> toTraining.invoke(StageState.Add)
+            TrainingsRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft)
+            is TrainingsRootDirection.EditTraining -> toTraining.invoke(StageState.Edit(direction.id))
         }
     }
 
