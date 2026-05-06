@@ -9,17 +9,13 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.stage.StageState
-import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.DraftTraining
-import com.grippo.data.features.api.training.models.PresetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.notification_forgot_training_description
@@ -32,12 +28,10 @@ import com.grippo.design.resources.provider.training_progress_lost_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
-import com.grippo.state.domain.training.toDomain
 import com.grippo.state.domain.training.toDraftDomain
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -47,7 +41,6 @@ import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -58,22 +51,15 @@ import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
     stage: StageState,
-    seed: TrainingSeed,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
-    private val trainingTotalUseCase: TrainingTotalUseCase,
     private val notificationManager: NotificationManager,
-    private val generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
-
-    private companion object {
-        private const val EMPTY_BOOTSTRAP_DELAY_MS = 400L
-    }
 
     init {
         FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
@@ -93,23 +79,7 @@ internal class TrainingRecordingViewModel(
             when (val stage = state.value.stage) {
                 StageState.Add -> {
                     trainingFeature.deleteDraftTraining().getOrThrow()
-
-                    when (seed) {
-                        TrainingSeed.Blank -> {
-                            delay(EMPTY_BOOTSTRAP_DELAY_MS)
-                            if (state.value.exercises.isEmpty()) onAddExercise()
-                        }
-
-                        TrainingSeed.FromPreset -> {
-                            val preset = generatePresetTrainingUseCase.execute()
-                            if (preset != null) {
-                                seedFromPreset(preset)
-                            } else {
-                                delay(EMPTY_BOOTSTRAP_DELAY_MS)
-                                if (state.value.exercises.isEmpty()) onAddExercise()
-                            }
-                        }
-                    }
+                    showStartTrainingDialog()
                 }
 
                 is StageState.Edit -> {
@@ -126,24 +96,29 @@ internal class TrainingRecordingViewModel(
         }
     }
 
+    private fun showStartTrainingDialog() {
+        val dialog = DialogConfig.StartTraining(
+            onStartEmpty = ::onAddExercise,
+            onUseExercises = { exercises ->
+                if (exercises.isEmpty()) return@StartTraining
+                update { it.copy(exercises = exercises.toPersistentList()) }
+                saveDraftTraining()
+            },
+        )
+        dialogController.show(dialog)
+    }
+
     private fun provideDraftTraining(value: DraftTraining?) {
         value ?: return
-
-        val exercises = value.exercises.toState().map { exercise ->
-            val completed = exercise.iterations.filterNot { it.isPending }.toDomain()
-            val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
-            exercise.copy(total = totals)
-        }
-
+        val exercises = value.exercises.toState()
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
-
         update {
             it.copy(
                 stage = when (val trainingId = value.trainingId) {
                     null -> StageState.Add
                     else -> StageState.Edit(trainingId)
                 },
-                exercises = exercises.toPersistentList(),
+                exercises = exercises,
                 startAt = startAt,
             )
         }
@@ -154,15 +129,6 @@ internal class TrainingRecordingViewModel(
         val exercises = value.exercises.toState()
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
         update { it.copy(exercises = exercises, startAt = startAt) }
-    }
-
-    private fun seedFromPreset(value: PresetTraining) {
-        update {
-            it.copy(
-                exercises = value.toState(),
-                startAt = DateTimeUtils.now(),
-            )
-        }
     }
 
     private fun provideMuscles(value: List<MuscleGroup>) {

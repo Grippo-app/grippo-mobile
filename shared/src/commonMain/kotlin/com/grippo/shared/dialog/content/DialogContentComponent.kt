@@ -36,6 +36,7 @@ import com.grippo.performance.trend.details.PerformanceTrendDetailsComponent
 import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.primary.goal.picker.PrimaryGoalPickerComponent
 import com.grippo.secondary.goal.picker.SecondaryGoalPickerComponent
+import com.grippo.start.training.StartTrainingComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.training.goal.details.TrainingGoalDetailsComponent
 import com.grippo.training.profile.details.TrainingProfileDetailsComponent
@@ -276,6 +277,15 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.StartTraining -> Child.StartTraining(
+                StartTrainingComponent(
+                    componentContext = context,
+                    onStartEmpty = { viewModel.onBack { router.onStartEmpty.invoke() } },
+                    onUseExercises = { exercises -> viewModel.onBack { router.onUseExercises.invoke(exercises) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
                 ExerciseExamplePickerComponent(
                     componentContext = context,
@@ -422,6 +432,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class DraftTraining(override val component: DraftTrainingComponent) :
+            Child(component)
+
+        data class StartTraining(override val component: StartTrainingComponent) :
             Child(component)
 
         data class MenuPicker(override val component: MenuPickerComponent) :
