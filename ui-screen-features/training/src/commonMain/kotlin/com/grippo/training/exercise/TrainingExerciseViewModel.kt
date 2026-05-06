@@ -168,6 +168,7 @@ internal class TrainingExerciseViewModel(
             example = example,
             onResult = onResult,
         )
+
         dialogController.show(dialog)
     }
 
@@ -239,12 +240,14 @@ internal class TrainingExerciseViewModel(
         )
 
         update { it.copy(exercise = updatedExercise) }
+
         navigateTo(TrainingExerciseDirection.Update(updatedExercise))
     }
 
     private fun recalculateTotal(iterations: List<IterationState>): TrainingTotalState {
         val completed = iterations.filterNot { it.isPending }
         val domainIterations = completed.toDomain()
+
         return trainingTotalUseCase.fromSetIterations(domainIterations).toState()
     }
 }
