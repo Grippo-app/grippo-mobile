@@ -89,43 +89,38 @@ internal class TrainingRecordingViewModel(
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
-        safeLaunch { bootstrap(seed) }
-    }
+        safeLaunch {
+            when (val stage = state.value.stage) {
+                StageState.Add -> {
+                    trainingFeature.deleteDraftTraining().getOrThrow()
 
-    private suspend fun bootstrap(seed: TrainingSeed) {
-        when (val stage = state.value.stage) {
-            StageState.Add -> bootstrapAdd(seed)
+                    when (seed) {
+                        TrainingSeed.Blank -> {
+                            delay(EMPTY_BOOTSTRAP_DELAY_MS)
+                            if (state.value.exercises.isEmpty()) onAddExercise()
+                        }
 
-            is StageState.Edit -> {
-                trainingFeature.deleteDraftTraining().getOrThrow()
-                val training = trainingFeature.observeTraining(stage.id).firstOrNull()
-                provideTraining(training)
-            }
+                        TrainingSeed.FromPreset -> {
+                            val preset = generatePresetTrainingUseCase.execute(DateTimeUtils.now())
+                            if (preset != null) {
+                                seedFromPreset(preset)
+                            } else {
+                                delay(EMPTY_BOOTSTRAP_DELAY_MS)
+                                if (state.value.exercises.isEmpty()) onAddExercise()
+                            }
+                        }
+                    }
+                }
 
-            StageState.Draft -> {
-                exerciseExampleFeature.getExerciseExamples().getOrThrow()
-                val draft = trainingFeature.getDraftTraining().firstOrNull()
-                provideDraftTraining(draft)
-            }
-        }
-    }
+                is StageState.Edit -> {
+                    trainingFeature.deleteDraftTraining().getOrThrow()
+                    val training = trainingFeature.observeTraining(stage.id).firstOrNull()
+                    provideTraining(training)
+                }
 
-    private suspend fun bootstrapAdd(seed: TrainingSeed) {
-        when (seed) {
-            TrainingSeed.Blank -> {
-                trainingFeature.deleteDraftTraining().getOrThrow()
-                delay(EMPTY_BOOTSTRAP_DELAY_MS)
-                if (state.value.exercises.isEmpty()) onAddExercise()
-            }
-
-            TrainingSeed.FromPreset -> {
-                trainingFeature.deleteDraftTraining().getOrThrow()
-                val preset = generatePresetTrainingUseCase.execute(DateTimeUtils.now())
-                if (preset != null) {
-                    seedFromPreset(preset)
-                } else {
-                    delay(EMPTY_BOOTSTRAP_DELAY_MS)
-                    if (state.value.exercises.isEmpty()) onAddExercise()
+                StageState.Draft -> {
+                    val draft = trainingFeature.getDraftTraining().firstOrNull()
+                    provideDraftTraining(draft)
                 }
             }
         }
@@ -134,8 +129,6 @@ internal class TrainingRecordingViewModel(
     private fun provideDraftTraining(value: DraftTraining?) {
         value ?: return
 
-        // Drafts carry no aggregates — rebuild totals from completed
-        // iterations so the recording header reflects real progress on resume.
         val exercises = value.exercises.toState().map { exercise ->
             val completed = exercise.iterations.filterNot { it.isPending }.toDomain()
             val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
@@ -164,9 +157,6 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun seedFromPreset(value: SetTraining) {
-        // Preset arrives with weights as planning hints; strip them so each
-        // iteration shows up as Pending (null weights). Exercise totals reset
-        // to zero — nothing has been performed yet.
         val seedExercises = value.exercises.map { exercise ->
             exercise.copy(
                 iterations = exercise.iterations.map { iteration ->
@@ -230,19 +220,22 @@ internal class TrainingRecordingViewModel(
 
     override fun onDeleteExercise(id: String) {
         update { current ->
-            val exercises = current.exercises
-                .filterNot { it.id == id }
-                .toPersistentList()
-            current.copy(exercises = exercises)
+            current.copy(
+                exercises = current.exercises
+                    .filterNot { it.id == id }
+                    .toPersistentList()
+            )
         }
 
-        safeLaunch {
-            if (state.value.exercises.isEmpty()) {
-                trainingFeature.deleteDraftTraining().getOrThrow()
-            } else {
-                saveDraftTraining()
-            }
+        if (state.value.exercises.isEmpty()) {
+            clearDraftTraining()
+        } else {
+            saveDraftTraining()
         }
+    }
+
+    private fun clearDraftTraining() {
+        safeLaunch { trainingFeature.deleteDraftTraining().getOrThrow() }
     }
 
     override fun onSave() {
@@ -265,11 +258,6 @@ internal class TrainingRecordingViewModel(
         }
     }
 
-    /**
-     * Strips Pending iterations and exercises that no longer have any sets,
-     * then opens the completion dialog. The server save downstream receives
-     * only what was actually performed.
-     */
     private fun completeAndShowSummary() {
         update { current ->
             val cleaned = current.exercises
@@ -305,42 +293,46 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun toCompleteTraining() {
-        val direction = TrainingRecordingDirection.ToCompleted(
-            stage = state.value.stage,
-            exercises = state.value.exercises,
-            startAt = state.value.startAt
+        val snapshot = state.value
+        navigateTo(
+            TrainingRecordingDirection.ToCompleted(
+                stage = snapshot.stage,
+                exercises = snapshot.exercises,
+                startAt = snapshot.startAt,
+            )
         )
-        navigateTo(direction)
     }
 
     override fun onBack() {
-        safeLaunch {
-            if (state.value.exercises.isEmpty()) {
-                trainingFeature.deleteDraftTraining().getOrThrow()
-                navigateTo(TrainingRecordingDirection.Back)
-                return@safeLaunch
-            }
+        if (state.value.exercises.isEmpty()) {
+            discardDraftAndExit()
+            return
+        }
 
+        safeLaunch {
             val dialog = DialogConfig.Confirmation(
                 title = stringProvider.get(Res.string.training_progress_lost_title),
                 description = stringProvider.get(Res.string.training_progress_lost_description),
-                onResult = {
-                    safeLaunch {
-                        trainingFeature.deleteDraftTraining().getOrThrow()
-                        navigateTo(TrainingRecordingDirection.Back)
-                    }
-                }
+                onResult = ::discardDraftAndExit,
             )
             dialogController.show(dialog)
         }
     }
 
+    private fun discardDraftAndExit() {
+        safeLaunch {
+            trainingFeature.deleteDraftTraining().getOrThrow()
+            navigateTo(TrainingRecordingDirection.Back)
+        }
+    }
+
     private fun saveDraftTraining() {
         safeLaunch {
+            val snapshot = state.value
             val draft = DraftTraining(
-                trainingId = state.value.stage.id,
-                duration = DateTimeUtils.ago(state.value.startAt),
-                exercises = state.value.exercises.toDraftDomain(),
+                trainingId = snapshot.stage.id,
+                duration = DateTimeUtils.ago(snapshot.startAt),
+                exercises = snapshot.exercises.toDraftDomain(),
             )
             trainingFeature.setDraftTraining(draft).getOrThrow()
             scheduleNotificationReminder()
@@ -361,15 +353,11 @@ internal class TrainingRecordingViewModel(
         notificationManager.cancel(NotificationKey.FinishWorkout)
     }
 
-    /**
-     * Walks exercises from newest to oldest and returns the muscle group of the
-     * dominant muscle for the most recent exercise that resolves cleanly. Used
-     * to pre-select the picker on the next "Add exercise" tap.
-     */
     private fun lastTargetMuscleGroupId(): String? {
-        val exercises = state.value.exercises.reversed()
-        val examples = state.value.examples
-        val muscles = state.value.muscles
+        val snapshot = state.value
+        val exercises = snapshot.exercises.reversed()
+        val examples = snapshot.examples
+        val muscles = snapshot.muscles
 
         for (exercise in exercises) {
             val example = examples.firstOrNull { it.value.id == exercise.exerciseExample.id }
