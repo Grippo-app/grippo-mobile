@@ -3,7 +3,7 @@ package com.grippo.trainings
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.data.features.api.training.models.SetDraftTraining
+import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import kotlinx.coroutines.flow.firstOrNull
@@ -22,7 +22,7 @@ public class TrainingsRootViewModel(
         }
     }
 
-    private fun provideDraftTraining(value: SetDraftTraining?) {
+    private fun provideDraftTraining(value: DraftTraining?) {
         val hasDraftTraining = value != null
 
         if (hasDraftTraining) {

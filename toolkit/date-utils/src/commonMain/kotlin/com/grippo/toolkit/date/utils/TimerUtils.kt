@@ -4,7 +4,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
@@ -29,36 +28,29 @@ public fun timerTextFlow(
     }
 }
 
-// Builds LocalTime from total seconds and optionally reports overflow days and sign.
-private fun toLocalTime(
-    totalSeconds: Long,
-    onOverflowDays: ((days: Int, negative: Boolean) -> Unit)? = null
-): LocalTime {
+/**
+ * Renders elapsed seconds as `HH:mm:ss` with hours unbounded — workouts that
+ * exceed 24 hours render as `25:00:00` rather than wrapping to `01:00:00` (or
+ * crashing on `LocalTime(hour = 24)`).
+ *
+ * Hours are zero-padded to at least two digits; longer hour strings (3+ digits)
+ * grow naturally rather than overflow.
+ */
+private fun formatFromSeconds(totalSeconds: Long): String {
     val negative = totalSeconds < 0
     val s = abs(totalSeconds)
 
-    val days = (s / 86_400).toInt()
-    val hours = ((s % 86_400) / 3_600).toInt()
-    val minutes = ((s % 3_600) / 60).toInt()
-    val seconds = (s % 60).toInt()
+    val hours = s / 3_600
+    val minutes = (s % 3_600) / 60
+    val seconds = s % 60
 
-    onOverflowDays?.invoke(days, negative)
-
-    return LocalTime(
-        hour = hours,
-        minute = minutes,
-        second = seconds
-    )
-}
-
-// Formats from total seconds directly (no extra types).
-private fun formatFromSeconds(totalSeconds: Long): String {
-    var negative = false
-    val time = toLocalTime(totalSeconds) { _, neg ->
-        negative = neg
+    val core = buildString {
+        append(hours.toString().padStart(2, '0'))
+        append(':')
+        append(minutes.toString().padStart(2, '0'))
+        append(':')
+        append(seconds.toString().padStart(2, '0'))
     }
-
-    val core = DateTimeUtils.format(time, DateFormat.TimeOnly.Time24hHhMm)
 
     return if (negative) "-$core" else core
 }

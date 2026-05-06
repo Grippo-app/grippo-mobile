@@ -19,7 +19,7 @@ import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
 import com.grippo.data.features.api.metrics.profile.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.data.features.api.training.models.SetDraftTraining
+import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
@@ -156,7 +156,7 @@ internal class HomeViewModel(
         update { it.copy(range = DateRangeFormatState.of(kind)) }
     }
 
-    private fun provideDraftTraining(value: SetDraftTraining?) {
+    private fun provideDraftTraining(value: DraftTraining?) {
         val hasDraftTraining = value != null
         update { it.copy(hasDraftTraining = hasDraftTraining) }
     }

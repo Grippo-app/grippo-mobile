@@ -60,7 +60,7 @@ public fun Header(
 private fun HeaderActivePreview() {
     PreviewContainer {
         Header(
-            duration = "00:45",
+            duration = "00:45:12",
             volume = VolumeFormatState.of(5628f),
             repetitions = RepetitionsFormatState.of(73),
         )
@@ -72,7 +72,7 @@ private fun HeaderActivePreview() {
 private fun HeaderJustStartedPreview() {
     PreviewContainer {
         Header(
-            duration = "00:02",
+            duration = "00:02:08",
             volume = VolumeFormatState.of(150f),
             repetitions = RepetitionsFormatState.of(8),
         )
@@ -84,7 +84,7 @@ private fun HeaderJustStartedPreview() {
 private fun HeaderHeavyPreview() {
     PreviewContainer {
         Header(
-            duration = "01:35",
+            duration = "01:35:42",
             volume = VolumeFormatState.of(12480f),
             repetitions = RepetitionsFormatState.of(96),
         )
@@ -96,7 +96,7 @@ private fun HeaderHeavyPreview() {
 private fun HeaderEmptyPreview() {
     PreviewContainer {
         Header(
-            duration = "00:00",
+            duration = "00:00:00",
             volume = VolumeFormatState.of(0f),
             repetitions = RepetitionsFormatState.of(0),
         )

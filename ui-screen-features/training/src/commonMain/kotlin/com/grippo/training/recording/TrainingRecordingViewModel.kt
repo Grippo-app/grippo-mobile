@@ -1,6 +1,7 @@
 package com.grippo.training.recording
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -8,19 +9,23 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.data.features.api.training.models.SetDraftTraining
+import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.notification_forgot_training_description
 import com.grippo.design.resources.provider.notification_forgot_training_title
+import com.grippo.design.resources.provider.planned_sets_unfinished_description
+import com.grippo.design.resources.provider.planned_sets_unfinished_title
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
@@ -33,6 +38,7 @@ import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
+import com.grippo.state.domain.training.toDraftDomain
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -52,6 +58,7 @@ import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
     stage: StageState,
+    seed: TrainingSeed,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
@@ -59,9 +66,14 @@ internal class TrainingRecordingViewModel(
     private val stringProvider: StringProvider,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val notificationManager: NotificationManager,
+    private val generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
+
+    private companion object {
+        private const val EMPTY_BOOTSTRAP_DELAY_MS = 400L
+    }
 
     init {
         FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
@@ -71,42 +83,67 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         state
-            .map { it.exercises.map { exercise -> exercise.exerciseExample.id }.toSet().toList() }
+            .map { it.exercises.map { exercise -> exercise.exerciseExample.id }.distinct() }
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
-        safeLaunch {
-            when (val stage = state.value.stage) {
-                StageState.Add -> {
-                    trainingFeature.deleteDraftTraining().getOrThrow()
-                }
+        safeLaunch { bootstrap(seed) }
+    }
 
-                is StageState.Edit -> {
-                    trainingFeature.deleteDraftTraining().getOrThrow()
-                    val training = trainingFeature.observeTraining(stage.id).firstOrNull()
-                    provideTraining(training)
-                }
+    private suspend fun bootstrap(seed: TrainingSeed) {
+        when (val stage = state.value.stage) {
+            StageState.Add -> bootstrapAdd(seed)
 
-                StageState.Draft -> {
-                    val training = trainingFeature.getDraftTraining().firstOrNull()
-                    provideDraftTraining(training)
-                }
+            is StageState.Edit -> {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+                val training = trainingFeature.observeTraining(stage.id).firstOrNull()
+                provideTraining(training)
             }
-        }
 
-        if (state.value.exercises.isEmpty() && stage is StageState.Add) {
-            safeLaunch {
-                delay(400)
-                onAddExercise()
+            StageState.Draft -> {
+                exerciseExampleFeature.getExerciseExamples().getOrThrow()
+                val draft = trainingFeature.getDraftTraining().firstOrNull()
+                provideDraftTraining(draft)
             }
         }
     }
 
-    private fun provideDraftTraining(value: SetDraftTraining?) {
-        val exercises = value?.training?.exercises?.toState() ?: return
-        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.training.duration)
+    private suspend fun bootstrapAdd(seed: TrainingSeed) {
+        when (seed) {
+            TrainingSeed.Blank -> {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+                delay(EMPTY_BOOTSTRAP_DELAY_MS)
+                if (state.value.exercises.isEmpty()) onAddExercise()
+            }
+
+            TrainingSeed.FromPreset -> {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+                val preset = generatePresetTrainingUseCase.execute(DateTimeUtils.now())
+                if (preset != null) {
+                    seedFromPreset(preset)
+                } else {
+                    delay(EMPTY_BOOTSTRAP_DELAY_MS)
+                    if (state.value.exercises.isEmpty()) onAddExercise()
+                }
+            }
+        }
+    }
+
+    private fun provideDraftTraining(value: DraftTraining?) {
+        value ?: return
+
+        // Drafts carry no aggregates — rebuild totals from completed
+        // iterations so the recording header reflects real progress on resume.
+        val exercises = value.exercises.toState().map { exercise ->
+            val completed = exercise.iterations.filterNot { it.isPending }.toDomain()
+            val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
+            exercise.copy(total = totals)
+        }
+
+        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
+
         update {
             it.copy(
                 stage = when (val trainingId = value.trainingId) {
@@ -114,78 +151,61 @@ internal class TrainingRecordingViewModel(
                     else -> StageState.Edit(trainingId)
                 },
                 exercises = exercises.toPersistentList(),
-                startAt = startAt
+                startAt = startAt,
             )
         }
     }
 
     private fun provideTraining(value: Training?) {
-        val exercises = value?.exercises?.toState() ?: return
+        value ?: return
+        val exercises = value.exercises.toState()
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
-        update { it.copy(exercises = exercises.toPersistentList(), startAt = startAt) }
+        update { it.copy(exercises = exercises, startAt = startAt) }
+    }
+
+    private fun seedFromPreset(value: SetTraining) {
+        // Preset arrives with weights as planning hints; strip them so each
+        // iteration shows up as Pending (null weights). Exercise totals reset
+        // to zero — nothing has been performed yet.
+        val seedExercises = value.exercises.map { exercise ->
+            exercise.copy(
+                iterations = exercise.iterations.map { iteration ->
+                    iteration.copy(
+                        externalWeight = null,
+                        extraWeight = null,
+                        assistWeight = null,
+                        bodyWeight = null,
+                    )
+                },
+                volume = 0f,
+                intensity = 0f,
+                repetitions = 0,
+            )
+        }
+        update {
+            it.copy(
+                exercises = seedExercises.toState(),
+                startAt = DateTimeUtils.now(),
+            )
+        }
     }
 
     private fun provideMuscles(value: List<MuscleGroup>) {
-        val muscles = value.toState()
-        update { it.copy(muscles = muscles) }
+        update { it.copy(muscles = value.toState()) }
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
-        val examples = value.toState()
-        update { it.copy(examples = examples) }
+        update { it.copy(examples = value.toState()) }
     }
 
     override fun onAddExercise() {
-        val lastTargetMuscleGroupId = run {
-            val exercises = state.value.exercises.reversed()
-            val examples = state.value.examples
-            val muscles = state.value.muscles
-
-            for (exercise in exercises) {
-                val example =
-                    examples.firstOrNull { it.value.id == exercise.exerciseExample.id } ?: continue
-
-                val muscleId = example.bundles
-                    .maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }
-                    ?.muscle
-                    ?.id ?: continue
-
-                val muscleGroupId = muscles
-                    .find { it.muscles.any { a -> a.value.id == muscleId } }
-                    ?.id
-
-                if (muscleGroupId != null) {
-                    return@run muscleGroupId
-                }
-            }
-
-            null
-        }
-
         val dialog = DialogConfig.ExerciseExamplePicker(
-            targetMuscleGroupId = lastTargetMuscleGroupId,
+            targetMuscleGroupId = lastTargetMuscleGroupId(),
             onResult = { example ->
-                val exercise = ExerciseState(
-                    id = Uuid.random().toString(),
-                    name = example.value.name,
-                    iterations = persistentListOf(),
-                    exerciseExample = example.value,
-                    createdAt = DateTimeFormatState.of(
-                        value = DateTimeUtils.now(),
-                        range = DateRangePresets.infinity(),
-                        format = DateFormat.DateOnly.DateMmmDdYyyy,
-                    ),
-                    total = TrainingTotalState(
-                        volume = VolumeFormatState.of(0f),
-                        repetitions = RepetitionsFormatState.of(0),
-                        intensity = IntensityFormatState.of(0f),
-                    ),
-                )
-
+                val exercise = createExerciseFromExample(example.value)
                 navigateTo(TrainingRecordingDirection.ToExercise(exercise))
             }
         )
-
         dialogController.show(dialog)
     }
 
@@ -195,37 +215,28 @@ internal class TrainingRecordingViewModel(
     }
 
     fun updateExercise(value: ExerciseState) {
-        update {
-            val exercises = it.exercises
-
-            val index = exercises.indexOfFirst { exercise -> exercise.id == value.id }
-
-            val updatedExercises = if (index >= 0) {
-                exercises.toMutableList().apply { this[index] = value }
+        update { current ->
+            val index = current.exercises.indexOfFirst { it.id == value.id }
+            val updated = if (index >= 0) {
+                current.exercises.toMutableList().apply { this[index] = value }
             } else {
-                exercises + value
+                current.exercises + value
             }
-
-            it.copy(exercises = updatedExercises.toPersistentList())
+            current.copy(exercises = updated.toPersistentList())
         }
 
         saveDraftTraining()
     }
 
     override fun onDeleteExercise(id: String) {
-        update { s ->
-            val exercises = s.exercises
-                .toMutableList()
-                .apply {
-                    val idx = indexOfFirst { it.id == id }
-                    if (idx >= 0) removeAt(idx)
-                }.toPersistentList()
-
-            s.copy(exercises = exercises)
+        update { current ->
+            val exercises = current.exercises
+                .filterNot { it.id == id }
+                .toPersistentList()
+            current.copy(exercises = exercises)
         }
 
         safeLaunch {
-            trainingFeature.getDraftTraining().firstOrNull()
             if (state.value.exercises.isEmpty()) {
                 trainingFeature.deleteDraftTraining().getOrThrow()
             } else {
@@ -235,9 +246,52 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
+        val hasPending = state.value.exercises.any { exercise ->
+            exercise.iterations.any { it.isPending }
+        }
+
+        if (!hasPending) {
+            completeAndShowSummary()
+            return
+        }
+
+        safeLaunch {
+            val dialog = DialogConfig.Confirmation(
+                title = stringProvider.get(Res.string.planned_sets_unfinished_title),
+                description = stringProvider.get(Res.string.planned_sets_unfinished_description),
+                onResult = ::completeAndShowSummary
+            )
+            dialogController.show(dialog)
+        }
+    }
+
+    /**
+     * Strips Pending iterations and exercises that no longer have any sets,
+     * then opens the completion dialog. The server save downstream receives
+     * only what was actually performed.
+     */
+    private fun completeAndShowSummary() {
+        update { current ->
+            val cleaned = current.exercises
+                .map { exercise ->
+                    exercise.copy(
+                        iterations = exercise.iterations
+                            .filterNot { it.isPending }
+                            .toPersistentList()
+                    )
+                }
+                .filter { it.iterations.isNotEmpty() }
+                .toPersistentList()
+            current.copy(exercises = cleaned)
+        }
+
+        showCompletionDialog()
+    }
+
+    private fun showCompletionDialog() {
         val duration = DateTimeUtils.ago(state.value.startAt)
 
-        val config = DialogConfig.ConfirmTrainingCompletion(
+        val dialog = DialogConfig.ConfirmTrainingCompletion(
             initial = duration,
             onResult = { result ->
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
@@ -247,7 +301,7 @@ internal class TrainingRecordingViewModel(
             }
         )
 
-        dialogController.show(config)
+        dialogController.show(dialog)
     }
 
     private fun toCompleteTraining() {
@@ -256,7 +310,6 @@ internal class TrainingRecordingViewModel(
             exercises = state.value.exercises,
             startAt = state.value.startAt
         )
-
         navigateTo(direction)
     }
 
@@ -265,47 +318,30 @@ internal class TrainingRecordingViewModel(
             if (state.value.exercises.isEmpty()) {
                 trainingFeature.deleteDraftTraining().getOrThrow()
                 navigateTo(TrainingRecordingDirection.Back)
-            } else {
-                val dialog = DialogConfig.Confirmation(
-                    title = stringProvider.get(Res.string.training_progress_lost_title),
-                    description = stringProvider.get(Res.string.training_progress_lost_description),
-                    onResult = {
-                        safeLaunch {
-                            trainingFeature.deleteDraftTraining().getOrThrow()
-                            navigateTo(TrainingRecordingDirection.Back)
-                        }
-                    }
-                )
-
-                dialogController.show(dialog)
+                return@safeLaunch
             }
+
+            val dialog = DialogConfig.Confirmation(
+                title = stringProvider.get(Res.string.training_progress_lost_title),
+                description = stringProvider.get(Res.string.training_progress_lost_description),
+                onResult = {
+                    safeLaunch {
+                        trainingFeature.deleteDraftTraining().getOrThrow()
+                        navigateTo(TrainingRecordingDirection.Back)
+                    }
+                }
+            )
+            dialogController.show(dialog)
         }
     }
 
     private fun saveDraftTraining() {
         safeLaunch {
-            val exercises = state.value.exercises
-            val duration = DateTimeUtils.ago(state.value.startAt)
-            val domainExercises = exercises.toDomain()
-            val totals = trainingTotalUseCase
-                .fromSetExercises(domainExercises)
-                .toState()
-
-            val training = SetTraining(
-                exercises = domainExercises,
-                duration = duration,
-                volume = totals.volume.value ?: 0f,
-                intensity = totals.intensity.value ?: 0f,
-                repetitions = totals.repetitions.value ?: 0
+            val draft = DraftTraining(
+                trainingId = state.value.stage.id,
+                duration = DateTimeUtils.ago(state.value.startAt),
+                exercises = state.value.exercises.toDraftDomain(),
             )
-
-            val trainingId = state.value.stage.id
-
-            val draft = SetDraftTraining(
-                trainingId = trainingId,
-                training = training
-            )
-
             trainingFeature.setDraftTraining(draft).getOrThrow()
             scheduleNotificationReminder()
         }
@@ -323,5 +359,53 @@ internal class TrainingRecordingViewModel(
 
     private fun cancelNotificationReminder() {
         notificationManager.cancel(NotificationKey.FinishWorkout)
+    }
+
+    /**
+     * Walks exercises from newest to oldest and returns the muscle group of the
+     * dominant muscle for the most recent exercise that resolves cleanly. Used
+     * to pre-select the picker on the next "Add exercise" tap.
+     */
+    private fun lastTargetMuscleGroupId(): String? {
+        val exercises = state.value.exercises.reversed()
+        val examples = state.value.examples
+        val muscles = state.value.muscles
+
+        for (exercise in exercises) {
+            val example = examples.firstOrNull { it.value.id == exercise.exerciseExample.id }
+                ?: continue
+
+            val muscleId = example.bundles
+                .maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }
+                ?.muscle
+                ?.id ?: continue
+
+            val muscleGroupId = muscles
+                .find { group -> group.muscles.any { it.value.id == muscleId } }
+                ?.id
+
+            if (muscleGroupId != null) return muscleGroupId
+        }
+
+        return null
+    }
+
+    private fun createExerciseFromExample(example: ExerciseExampleValueState): ExerciseState {
+        return ExerciseState(
+            id = Uuid.random().toString(),
+            name = example.name,
+            iterations = persistentListOf(),
+            exerciseExample = example,
+            createdAt = DateTimeFormatState.of(
+                value = DateTimeUtils.now(),
+                range = DateRangePresets.infinity(),
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
+            total = TrainingTotalState(
+                volume = VolumeFormatState.Empty(),
+                repetitions = RepetitionsFormatState.Empty(),
+                intensity = IntensityFormatState.Empty(),
+            ),
+        )
     }
 }

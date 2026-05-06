@@ -1,6 +1,7 @@
 package com.grippo.state.domain.training
 
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.data.features.api.training.models.DraftExercise
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.state.domain.example.toDomain
 import kotlinx.collections.immutable.toPersistentList
@@ -17,6 +18,19 @@ public fun ExerciseState.toDomain(): SetExercise? {
         repetitions = total.repetitions.value ?: return null,
         volume = total.volume.value ?: return null,
         intensity = total.intensity.value ?: return null,
+        createdAt = createdAt.value ?: return null
+    )
+}
+
+public fun List<ExerciseState>.toDraftDomain(): List<DraftExercise> {
+    return mapNotNull { it.toDraftDomain() }.toPersistentList()
+}
+
+public fun ExerciseState.toDraftDomain(): DraftExercise? {
+    return DraftExercise(
+        name = name,
+        iterations = iterations.toDomain(),
+        exerciseExample = exerciseExample.toDomain(),
         createdAt = createdAt.value ?: return null
     )
 }

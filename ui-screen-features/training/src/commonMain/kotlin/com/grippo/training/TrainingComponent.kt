@@ -15,7 +15,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.TrainingRouter
 import com.grippo.training.completed.TrainingCompletedComponent
-import com.grippo.training.exercise.ExerciseComponent
+import com.grippo.training.exercise.TrainingExerciseComponent
 import com.grippo.training.recording.TrainingRecordingComponent
 
 public class TrainingComponent(
@@ -79,7 +79,7 @@ public class TrainingComponent(
             )
 
             is TrainingRouter.Exercise -> Child.Exercise(
-                ExerciseComponent(
+                TrainingExerciseComponent(
                     componentContext = context,
                     exercise = router.exercise,
                     back = viewModel::onBack,
@@ -109,7 +109,7 @@ public class TrainingComponent(
         data class Recording(override val component: TrainingRecordingComponent) :
             Child(component)
 
-        data class Exercise(override val component: ExerciseComponent) :
+        data class Exercise(override val component: TrainingExerciseComponent) :
             Child(component)
 
         data class Completed(override val component: TrainingCompletedComponent) :

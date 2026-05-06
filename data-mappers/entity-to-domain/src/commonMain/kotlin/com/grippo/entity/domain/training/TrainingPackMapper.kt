@@ -1,7 +1,6 @@
 package com.grippo.entity.domain.training
 
-import com.grippo.data.features.api.training.models.SetDraftTraining
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.services.database.models.DraftTrainingPack
 import com.grippo.services.database.models.TrainingPack
@@ -24,17 +23,10 @@ public fun TrainingPack.toDomain(): Training {
     )
 }
 
-public fun DraftTrainingPack.toSetDomain(): SetDraftTraining {
-    val setTraining = SetTraining(
-        exercises = exercises.toSetDomain(),
-        volume = training.volume,
-        repetitions = training.repetitions,
-        intensity = training.intensity,
-        duration = training.duration.minutes,
-    )
-
-    return SetDraftTraining(
+public fun DraftTrainingPack.toDraftDomain(): DraftTraining {
+    return DraftTraining(
         trainingId = training.trainingId,
-        training = setTraining,
+        duration = training.duration.minutes,
+        exercises = exercises.toDraftDomain(),
     )
 }

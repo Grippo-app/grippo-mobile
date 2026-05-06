@@ -1,8 +1,8 @@
 package com.grippo.data.features.trainings.domain
 
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Exercise
-import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.Flow
@@ -42,15 +42,15 @@ internal class TrainingFeatureImpl(
         return repository.deleteTraining(id)
     }
 
-    override suspend fun setDraftTraining(training: SetDraftTraining): Result<Unit> {
-        return repository.setDraftTraining(training)
+    override suspend fun setDraftTraining(draft: DraftTraining): Result<Unit> {
+        return repository.setDraftTraining(draft)
     }
 
     override suspend fun deleteDraftTraining(): Result<Unit> {
         return repository.deleteDraftTraining()
     }
 
-    override fun getDraftTraining(): Flow<SetDraftTraining?> {
+    override fun getDraftTraining(): Flow<DraftTraining?> {
         return repository.getDraftTraining()
     }
 }

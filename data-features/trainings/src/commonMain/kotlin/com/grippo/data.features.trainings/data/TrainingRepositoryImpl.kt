@@ -1,7 +1,7 @@
 package com.grippo.data.features.trainings.data
 
+import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Exercise
-import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
@@ -10,7 +10,7 @@ import com.grippo.domain.entity.training.toEntity
 import com.grippo.dto.entity.training.toEntities
 import com.grippo.dto.entity.training.toEntityOrNull
 import com.grippo.entity.domain.training.toDomain
-import com.grippo.entity.domain.training.toSetDomain
+import com.grippo.entity.domain.training.toDraftDomain
 import com.grippo.services.backend.GrippoApi
 import com.grippo.services.backend.dto.training.TrainingResponse
 import com.grippo.services.database.dao.DraftTrainingDao
@@ -78,11 +78,11 @@ internal class TrainingRepositoryImpl(
         )
 
         response.onSuccess {
-            val training = api.getTraining(id).getOrNull() ?: return@onSuccess
-            provideTraining(training)
+            val updated = api.getTraining(id).getOrNull() ?: return@onSuccess
+            provideTraining(updated)
         }
 
-        return Result.success(id)
+        return response.map { id }
     }
 
     override suspend fun setTraining(training: SetTraining): Result<String?> {
@@ -117,18 +117,18 @@ internal class TrainingRepositoryImpl(
         return training.id
     }
 
-    override fun getDraftTraining(): Flow<SetDraftTraining?> {
+    override fun getDraftTraining(): Flow<DraftTraining?> {
         return draftTrainingDao.get()
-            .map { it?.toSetDomain() }
+            .map { it?.toDraftDomain() }
     }
 
-    override suspend fun setDraftTraining(training: SetDraftTraining): Result<Unit> {
+    override suspend fun setDraftTraining(draft: DraftTraining): Result<Unit> {
         val profileId = userActiveDao.get()
             .firstOrNull()
             ?.let { userDao.getById(it).firstOrNull()?.profileId }
             ?: return Result.success(Unit)
 
-        val pack = training.toEntity(profileId)
+        val pack = draft.toEntity(profileId)
 
         val training = pack.training
         val exercises = pack.exercises.map { it.exercise }

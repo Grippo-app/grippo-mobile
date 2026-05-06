@@ -88,12 +88,6 @@ public sealed interface DateFormat {
     public sealed interface TimeOnly : DateFormat {
         @Immutable
         @Serializable
-        public data object Time24hHhMm : TimeOnly {
-            override val pattern: String = "HH:mm"
-        }
-
-        @Immutable
-        @Serializable
         public data object Time24hHm : TimeOnly {
             override val pattern: String = "H:mm"
         }
