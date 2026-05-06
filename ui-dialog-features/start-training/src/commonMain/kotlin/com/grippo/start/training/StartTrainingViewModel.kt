@@ -1,6 +1,8 @@
 package com.grippo.start.training
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
@@ -55,15 +57,32 @@ public class StartTrainingViewModel(
 
     private fun toRecentOption(training: Training): StartTrainingOption.Recent {
         val state = training.toState()
+        val presetExercises = state.exercises
+            .map { it.asPreset() }
+            .toPersistentList()
         return StartTrainingOption.Recent(
             trainingId = state.id,
             createdAt = state.createdAt,
-            exercises = state.exercises,
+            exercises = presetExercises,
         )
     }
 
+    private fun ExerciseState.asPreset(): ExerciseState = copy(
+        iterations = iterations
+            .map { it.asPreset() }
+            .toPersistentList(),
+    )
+
+    private fun IterationState.asPreset(): IterationState = copy(
+        externalWeight = VolumeFormatState.Empty(),
+        extraWeight = VolumeFormatState.Empty(),
+        assistWeight = VolumeFormatState.Empty(),
+        bodyWeight = WeightFormatState.Empty(),
+    )
+
     override fun onSelect(key: String) {
         val option = state.value.options.firstOrNull { it.key == key } ?: return
+
         when (option) {
             StartTrainingOption.Empty -> navigateTo(StartTrainingDirection.StartEmpty)
             is StartTrainingOption.Preset -> emitExercises(option.exercises)

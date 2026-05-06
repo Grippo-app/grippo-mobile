@@ -79,6 +79,7 @@ public data object AppDp {
     val tooltip: Tooltip = Tooltip
     val training: Training = Training
     val accent: Accent = Accent
+    val pagerIndicator: PagerIndicator = PagerIndicator
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -559,6 +560,12 @@ public data object AppDp {
 
     public data object Accent {
         val smallWidth: Dp = padding.extraSmall
+    }
+
+    public data object PagerIndicator {
+        val dotSize: Dp = 6.dp
+        val dotSizeActive: Dp = 18.dp
+        val dotSpacing: Dp = 6.dp
     }
 
     public data object Loader {
