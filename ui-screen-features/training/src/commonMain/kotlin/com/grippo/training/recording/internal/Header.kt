@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.components.training.TrainingStat
@@ -34,21 +35,21 @@ public fun Header(
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.duration),
-            value = duration,
+            value = AnnotatedString(duration),
             accentColor = AppTokens.colors.context.duration,
             contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.tonnage),
-            value = volume.short(),
+            value = volume.shortAnnotated(),
             accentColor = AppTokens.colors.context.volume,
             contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.reps),
-            value = repetitions.short(),
+            value = repetitions.shortAnnotated(),
             accentColor = AppTokens.colors.context.repetitions,
             contentColor = AppTokens.colors.text.primary,
         )

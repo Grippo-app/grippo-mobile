@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -25,7 +26,7 @@ import com.grippo.design.preview.PreviewContainer
 public fun TrainingStat(
     modifier: Modifier = Modifier,
     label: String,
-    value: String,
+    value: AnnotatedString,
     accentColor: Color,
     contentColor: Color,
 ) {
@@ -79,19 +80,19 @@ private fun TrainingStatPreview() {
     PreviewContainer {
         TrainingStat(
             label = "Duration",
-            value = "00:45",
+            value = AnnotatedString("00:45"),
             accentColor = AppTokens.colors.context.intensity,
             contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             label = "Tonnage",
-            value = "5 628 кг",
+            value = AnnotatedString("5 628 кг"),
             accentColor = AppTokens.colors.context.volume,
             contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             label = "Reps",
-            value = "x73",
+            value = AnnotatedString("x73"),
             accentColor = AppTokens.colors.context.repetitions,
             contentColor = AppTokens.colors.text.primary,
         )

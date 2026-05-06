@@ -98,7 +98,7 @@ internal fun IterationCardEditable(
                     .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
                     .height(AppTokens.dp.iterationCard.editable.height)
                     .wrapContentHeight(),
-                text = value.volume().short(),
+                text = value.volume().shortAnnotated(),
                 textAlign = TextAlign.Center,
                 style = AppTokens.typography.b14Bold(),
                 color = cellTextColor
@@ -121,7 +121,7 @@ internal fun IterationCardEditable(
                     .height(AppTokens.dp.iterationCard.editable.height)
                     .wrapContentHeight(),
                 textAlign = TextAlign.Center,
-                text = value.repetitions.short(),
+                text = value.repetitions.shortAnnotated(),
                 style = AppTokens.typography.b14Bold(),
                 color = cellTextColor
             )

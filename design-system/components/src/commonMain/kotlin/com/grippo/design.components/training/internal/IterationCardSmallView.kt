@@ -21,29 +21,23 @@ internal fun IterationCardSmallView(
     modifier: Modifier = Modifier,
     value: IterationState,
 ) {
-    val color = if (value.isPending) {
-        AppTokens.colors.text.tertiary
-    } else {
-        AppTokens.colors.text.secondary
-    }
-
     Row(
         modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
         Text(
-            text = if (value.isPending) "—" else value.volume().short(),
+            text = value.volume().shortAnnotated(),
             style = AppTokens.typography.b14Bold(),
-            color = color
+            color = AppTokens.colors.text.secondary
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
-            text = value.repetitions.short(),
+            text = value.repetitions.shortAnnotated(),
             style = AppTokens.typography.b14Semi(),
-            color = color
+            color = AppTokens.colors.text.secondary
         )
     }
 }
