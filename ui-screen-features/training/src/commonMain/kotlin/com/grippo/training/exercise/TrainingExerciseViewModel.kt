@@ -60,10 +60,6 @@ internal class TrainingExerciseViewModel(
             .map(exerciseValidatorUseCase::execute)
             .onEach(::provideValidation)
             .safeLaunch()
-
-        state.value.exercise.iterations
-            .firstOrNull { it.isPending }
-            ?.let { onEditVolume(it.id) }
     }
 
     private fun provideValidation(value: ExerciseArtifacts?) {
