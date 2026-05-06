@@ -382,9 +382,20 @@
     <string name="unexpected_network_error">Неожиданная сетевая ошибка</string>
     <string name="select_exercise">Выбери упражнение</string>
     <string name="draft_training_alert_title_add">Продолжить тренировку</string>
-    <string name="draft_training_alert_description_add">На устройстве сохранён незавершённый черновик. Продолжить с места, где остановился?</string>
-    <string name="draft_training_alert_title_edit">Продолжить редактирование</string>
-    <string name="draft_training_alert_description_edit">При редактировании этой тренировки остались несохранённые изменения. Продолжить?</string>
+    <string name="draft_training_alert_description_add">У вас есть незавершённый черновик тренировки, сохранённый локально. Продолжить с места, где вы остановились?</string>
+    <string name="draft_training_alert_title_edit">Продолжить редактирование тренировки</string>
+    <string name="draft_training_alert_description_edit">Вы редактировали сохранённую тренировку и оставили незавершённые изменения. Продолжить редактирование?</string>
+    <string name="start_training_title">Начать тренировку</string>
+    <string name="start_training_description">Начните с чистого листа или выберите шаблон.</string>
+    <string name="start_training_option_empty_title">Пустая тренировка</string>
+    <string name="start_training_option_empty_description">Соберите тренировку упражнение за упражнением.</string>
+    <string name="start_training_option_preset_title">Готовый пресет</string>
+    <string name="start_training_option_preset_description">Сбалансированная тренировка, подобранная для вас.</string>
+    <string name="start_training_option_recent_title">Недавняя тренировка</string>
+    <string name="start_training_use_btn">Использовать</string>
+    <string name="start_training_exercises_count">упражнений: %1$s</string>
+    <string name="not_found">Не найдено</string>
+    <string name="reset">Сбросить</string>
     <string name="menu">Меню</string>
     <string name="calendar">Календарь</string>
 

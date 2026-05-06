@@ -2,7 +2,6 @@ package com.grippo.shared.root
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.stage.StageState
-import com.grippo.core.state.stage.TrainingSeed
 
 @Immutable
 public interface RootContract {
@@ -11,7 +10,7 @@ public interface RootContract {
     public fun toProfile()
     public fun toDebug()
     public fun toTrainings()
-    public fun toTraining(stage: StageState, seed: TrainingSeed)
+    public fun toTraining(stage: StageState)
     public fun toWeightHistory()
     public fun toMissingEquipment()
     public fun toExcludedMuscles()
@@ -28,7 +27,7 @@ public interface RootContract {
         override fun toProfile() {}
         override fun toDebug() {}
         override fun toTrainings() {}
-        override fun toTraining(stage: StageState, seed: TrainingSeed) {}
+        override fun toTraining(stage: StageState) {}
         override fun toWeightHistory() {}
         override fun toMissingEquipment() {}
         override fun toExcludedMuscles() {}

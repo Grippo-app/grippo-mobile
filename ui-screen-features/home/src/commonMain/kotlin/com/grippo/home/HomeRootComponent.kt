@@ -11,7 +11,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
-import com.grippo.core.state.stage.TrainingSeed
 import com.grippo.home.home.HomeComponent
 import com.grippo.screen.api.HomeRouter
 
@@ -23,7 +22,7 @@ public class HomeRootComponent(
     private val toBody: () -> Unit,
     private val toExperience: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toTraining: (stage: StageState, seed: TrainingSeed) -> Unit,
+    private val toTraining: (stage: StageState) -> Unit,
     private val toTrainings: () -> Unit,
     private val toSettings: () -> Unit,
     private val toSocial: () -> Unit,
@@ -49,8 +48,8 @@ public class HomeRootComponent(
             HomeRootDirection.Body -> toBody.invoke()
             HomeRootDirection.Experience -> toExperience.invoke()
             HomeRootDirection.Debug -> toDebug.invoke()
-            is HomeRootDirection.StartTraining -> toTraining.invoke(StageState.Add, direction.seed)
-            HomeRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft, TrainingSeed.Blank)
+            HomeRootDirection.StartTraining -> toTraining.invoke(StageState.Add)
+            HomeRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft)
             HomeRootDirection.Trainings -> toTrainings.invoke()
             HomeRootDirection.Settings -> toSettings.invoke()
             HomeRootDirection.Social -> toSocial.invoke()

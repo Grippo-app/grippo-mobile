@@ -383,9 +383,20 @@
     <string name="unexpected_network_error">Unexpected network error</string>
     <string name="select_exercise">Select exercise</string>
     <string name="draft_training_alert_title_add">Resume workout</string>
-    <string name="draft_training_alert_description_add">You have an unfinished workout saved on this device. Continue where you left off?</string>
-    <string name="draft_training_alert_title_edit">Resume editing</string>
-    <string name="draft_training_alert_description_edit">You left some changes unsaved while editing this workout. Continue editing?</string>
+    <string name="draft_training_alert_description_add">You have an unfinished draft workout saved locally. Continue where you left off?</string>
+    <string name="draft_training_alert_title_edit">Resume editing workout</string>
+    <string name="draft_training_alert_description_edit">You were editing a saved workout and left some changes unfinished. Continue editing?</string>
+    <string name="start_training_title">Start workout</string>
+    <string name="start_training_description">Begin from a clean slate or pick a template.</string>
+    <string name="start_training_option_empty_title">Empty workout</string>
+    <string name="start_training_option_empty_description">Build your session exercise by exercise.</string>
+    <string name="start_training_option_preset_title">Suggested preset</string>
+    <string name="start_training_option_preset_description">A balanced session generated for you.</string>
+    <string name="start_training_option_recent_title">Recent workout</string>
+    <string name="start_training_use_btn">Use this</string>
+    <string name="start_training_exercises_count">%1$s exercises</string>
+    <string name="not_found">Not found</string>
+    <string name="reset">Reset</string>
     <string name="menu">Menu</string>
     <string name="calendar">Calendar</string>
 

@@ -98,7 +98,7 @@ public class RootComponent(
             )
 
             is RootDirection.Training -> navigation.push(
-                RootRouter.Training(direction.stage, direction.seed)
+                RootRouter.Training(direction.stage)
             )
 
             RootDirection.WeightHistory -> navigation.push(
@@ -195,7 +195,7 @@ public class RootComponent(
             is RootRouter.Training -> Training(
                 TrainingComponent(
                     componentContext = context,
-                    initial = TrainingRouter.Recording(router.stage, router.seed),
+                    initial = TrainingRouter.Recording(router.stage),
                     close = viewModel::onBack
                 )
             )

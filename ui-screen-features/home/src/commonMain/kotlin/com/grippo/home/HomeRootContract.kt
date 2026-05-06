@@ -1,7 +1,6 @@
 package com.grippo.home
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.stage.TrainingSeed
 
 @Immutable
 internal interface HomeRootContract {
@@ -11,7 +10,7 @@ internal interface HomeRootContract {
     fun toExperience()
     fun toDebug()
     fun toTrainings()
-    fun toStartTraining(seed: TrainingSeed)
+    fun toStartTraining()
     fun toDraftTraining()
     fun toSettings()
     fun toSocial()
@@ -27,7 +26,7 @@ internal interface HomeRootContract {
         override fun toExperience() {}
         override fun toDebug() {}
         override fun toTrainings() {}
-        override fun toStartTraining(seed: TrainingSeed) {}
+        override fun toStartTraining() {}
         override fun toDraftTraining() {}
         override fun toSettings() {}
         override fun toSocial() {}
