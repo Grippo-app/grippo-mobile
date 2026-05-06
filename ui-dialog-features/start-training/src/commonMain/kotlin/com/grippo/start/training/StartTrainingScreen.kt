@@ -1,10 +1,9 @@
 package com.grippo.start.training
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,7 +32,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.start_training_description
 import com.grippo.design.resources.provider.start_training_title
 import com.grippo.design.resources.provider.start_training_use_btn
 import com.grippo.start.training.internal.StartTrainingPage
@@ -64,33 +62,22 @@ internal fun StartTrainingScreen(
         textAlign = TextAlign.Center,
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.start_training_description),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center,
-    )
-
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    val options = state.options
-    val pagerState = rememberPagerState(pageCount = { options.size })
+    val pagerState = rememberPagerState(
+        pageCount = { state.options.size }
+    )
 
-    LaunchedEffect(options.size, pagerState) {
-        val size = options.size
+    LaunchedEffect(state.options.size, pagerState) {
+        val size = state.options.size
         if (pagerState.currentPage >= size && size > 0) {
             pagerState.scrollToPage(size - 1)
         }
     }
 
-    val activeKey by remember(options) {
+    val activeKey by remember(state.options) {
         derivedStateOf {
-            options.getOrNull(pagerState.currentPage)?.key
+            state.options.getOrNull(pagerState.currentPage)?.key
         }
     }
 
@@ -98,22 +85,18 @@ internal fun StartTrainingScreen(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
-        contentPadding = PaddingValues(
-            top = AppTokens.dp.contentPadding.subContent,
-            bottom = AppTokens.dp.contentPadding.block,
-        ),
         overlay = AppTokens.colors.background.dialog,
         content = { containerModifier, resolvedPadding ->
             HorizontalPager(
-                modifier = containerModifier
-                    .fillMaxWidth()
-                    .heightIn(min = MIN_PAGE_HEIGHT),
+                modifier = containerModifier.fillMaxSize(),
                 state = pagerState,
                 contentPadding = resolvedPadding,
                 pageSpacing = AppTokens.dp.contentPadding.subContent,
-                key = { index -> options.getOrNull(index)?.key ?: index },
+                key = { index -> state.options.getOrNull(index)?.key ?: index },
             ) { index ->
-                val option = options.getOrNull(index) ?: return@HorizontalPager
+                val option = state.options.getOrNull(index)
+                    ?: return@HorizontalPager
+
                 StartTrainingPage(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -123,17 +106,17 @@ internal fun StartTrainingScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             PagerIndicator(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
-                pageCount = options.size,
+                pageCount = state.options.size,
                 selectedIndex = pagerState.currentPage,
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Button(
                 modifier = Modifier
@@ -154,7 +137,6 @@ internal fun StartTrainingScreen(
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     )
-
 }
 
 private val MIN_PAGE_HEIGHT = 280.dp

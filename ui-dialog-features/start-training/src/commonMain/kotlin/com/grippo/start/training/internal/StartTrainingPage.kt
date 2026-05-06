@@ -31,8 +31,6 @@ import com.grippo.design.resources.provider.start_training_exercises_count
 import com.grippo.design.resources.provider.start_training_option_empty_description
 import com.grippo.design.resources.provider.start_training_option_empty_title
 import com.grippo.design.resources.provider.start_training_option_preset_description
-import com.grippo.design.resources.provider.start_training_option_preset_title
-import com.grippo.design.resources.provider.start_training_option_recent_title
 import com.grippo.start.training.StartTrainingOption
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -51,14 +49,12 @@ internal fun StartTrainingPage(
 
         is StartTrainingOption.Preset -> ExercisesPage(
             modifier = modifier,
-            title = AppTokens.strings.res(Res.string.start_training_option_preset_title),
             subtitle = AppTokens.strings.res(Res.string.start_training_option_preset_description),
             exercises = option.exercises,
         )
 
         is StartTrainingOption.Recent -> ExercisesPage(
             modifier = modifier,
-            title = AppTokens.strings.res(Res.string.start_training_option_recent_title),
             subtitle = option.createdAt.display.takeIf { it.isNotBlank() },
             exercises = option.exercises,
         )
@@ -104,7 +100,6 @@ private fun EmptyPage(
 @Composable
 private fun ExercisesPage(
     modifier: Modifier = Modifier,
-    title: String,
     subtitle: String?,
     exercises: ImmutableList<ExerciseState>,
 ) {
@@ -112,14 +107,6 @@ private fun ExercisesPage(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center,
-        )
-
         val countLabel = AppTokens.strings.res(
             Res.string.start_training_exercises_count,
             exercises.size.toString()
@@ -144,7 +131,7 @@ private fun ExercisesPage(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f, fill = false),
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             contentPadding = PaddingValues(bottom = AppTokens.dp.contentPadding.subContent),
         ) {

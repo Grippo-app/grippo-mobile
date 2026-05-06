@@ -44,37 +44,14 @@ internal fun ExerciseCardMedium(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
             ) {
-                val total = value.iterations.size
-                val pendingCount = value.iterations.count { it.isPending }
-                val done = total - pendingCount
-                val hasPending = pendingCount > 0
-
-                Row(
+                Text(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = value.exerciseExample.name,
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    if (hasPending) {
-                        val badgeColor = if (done == total) {
-                            AppTokens.colors.semantic.success
-                        } else {
-                            AppTokens.colors.semantic.warning
-                        }
-                        Text(
-                            text = "$done/$total",
-                            style = AppTokens.typography.b14Med(),
-                            color = badgeColor,
-                        )
-                    }
-                }
+                    text = value.exerciseExample.name,
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
