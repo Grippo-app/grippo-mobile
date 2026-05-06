@@ -2,6 +2,10 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
@@ -88,6 +92,24 @@ public sealed class IntensityFormatState : FormatState<Float> {
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
         return "${value?.roundToInt() ?: "-"}$kg"
+    }
+
+    @Composable
+    public fun shortAnnotated(): AnnotatedString {
+        val kg = AppTokens.strings.res(Res.string.kg)
+        val tertiary = AppTokens.colors.text.tertiary
+        val display = value?.roundToInt()
+        return buildAnnotatedString {
+            if (display != null) {
+                append(display.toString())
+                append(kg)
+            } else {
+                withStyle(SpanStyle(color = tertiary)) {
+                    append("-")
+                    append(kg)
+                }
+            }
+        }
     }
 
     @Immutable

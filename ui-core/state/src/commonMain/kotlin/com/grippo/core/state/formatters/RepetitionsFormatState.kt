@@ -2,6 +2,10 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.repetitions_input_hint
@@ -89,6 +93,24 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     public fun short(): String {
         val x = AppTokens.strings.res(Res.string.x)
         return "$x${value ?: "-"}"
+    }
+
+    @Composable
+    public fun shortAnnotated(): AnnotatedString {
+        val x = AppTokens.strings.res(Res.string.x)
+        val tertiary = AppTokens.colors.text.tertiary
+        val display = value
+        return buildAnnotatedString {
+            if (display != null) {
+                append(x)
+                append(display.toString())
+            } else {
+                withStyle(SpanStyle(color = tertiary)) {
+                    append(x)
+                    append("-")
+                }
+            }
+        }
     }
 
     private object RepetitionsValidator {

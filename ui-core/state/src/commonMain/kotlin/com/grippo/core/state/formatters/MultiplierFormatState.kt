@@ -2,6 +2,11 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import com.grippo.design.core.AppTokens
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -72,8 +77,23 @@ public sealed class MultiplierFormatState : FormatState<Float> {
 
     @Composable
     public fun short(): String {
-        val percent = (value ?: 0f) * 100f
-        return "${percent.roundToInt()}%"
+        val raw = value ?: return "-%"
+        return "${(raw * 100f).roundToInt()}%"
+    }
+
+    @Composable
+    public fun shortAnnotated(): AnnotatedString {
+        val tertiary = AppTokens.colors.text.tertiary
+        val raw = value
+        return buildAnnotatedString {
+            if (raw != null) {
+                append("${(raw * 100f).roundToInt()}%")
+            } else {
+                withStyle(SpanStyle(color = tertiary)) {
+                    append("-%")
+                }
+            }
+        }
     }
 
     private object MultiplierValidator {
