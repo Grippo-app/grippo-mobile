@@ -1,11 +1,10 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.models.BaseDirection
-import com.grippo.core.state.stage.TrainingSeed
 
 internal sealed interface HomeDirection : BaseDirection {
     data object Back : HomeDirection
-    data class StartTraining(val seed: TrainingSeed) : HomeDirection
+    data object StartTraining : HomeDirection
     data object Trainings : HomeDirection
     data object DraftTraining : HomeDirection
 

@@ -6,7 +6,6 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.core.state.stage.TrainingSeed
 
 internal class HomeComponent(
     componentContext: ComponentContext,
@@ -15,7 +14,7 @@ internal class HomeComponent(
     private val toMissingEquipment: () -> Unit,
     private val toExperience: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toStartTraining: (seed: TrainingSeed) -> Unit,
+    private val toStartTraining: () -> Unit,
     private val toTrainings: () -> Unit,
     private val toDraftTraining: () -> Unit,
     private val toSettings: () -> Unit,
@@ -55,7 +54,7 @@ internal class HomeComponent(
     override suspend fun eventListener(direction: HomeDirection) {
         when (direction) {
             HomeDirection.Back -> back.invoke()
-            is HomeDirection.StartTraining -> toStartTraining.invoke(direction.seed)
+            HomeDirection.StartTraining -> toStartTraining.invoke()
             HomeDirection.DraftTraining -> toDraftTraining.invoke()
             HomeDirection.Debug -> toDebug.invoke()
             HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
