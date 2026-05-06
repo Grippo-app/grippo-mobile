@@ -8,6 +8,7 @@ import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
+import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.toolkit.date.utils.DateFormat
@@ -271,6 +272,18 @@ public sealed class DialogConfig(
     ) {
         override val key: String
             get() = buildKey("DraftTraining")
+    }
+
+    @Serializable
+    public data class StartTraining(
+        @Transient val onStartEmpty: () -> Unit = {},
+        @Transient val onUseExercises: (exercises: List<ExerciseState>) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    ) {
+        override val key: String
+            get() = buildKey("StartTraining")
     }
 
     @Serializable
