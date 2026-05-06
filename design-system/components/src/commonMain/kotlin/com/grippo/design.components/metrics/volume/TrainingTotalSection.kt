@@ -24,31 +24,34 @@ public fun TrainingTotalSection(
     value: TrainingTotalState,
     size: ChipSize = ChipSize.Medium,
 ) {
+    val volume = value.volume
+        .takeIf { it.value != null }
+    val repetitions = value.repetitions
+        .takeIf { it.value != null }
+
+    if (volume == null && repetitions == null) return
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        value.volume
-            .takeIf { it.value != null }
-            ?.let { value ->
-                VolumeChip(
-                    modifier = Modifier.weight(1f),
-                    value = value,
-                    style = VolumeChipStyle.LONG,
-                    size = size,
-                )
-            }
+        volume?.let { value ->
+            VolumeChip(
+                modifier = Modifier.weight(1f),
+                value = value,
+                style = VolumeChipStyle.LONG,
+                size = size,
+            )
+        }
 
-        value.repetitions
-            .takeIf { it.value != null }
-            ?.let { value ->
-                RepetitionsChip(
-                    modifier = Modifier.weight(1f),
-                    value = value,
-                    style = RepetitionsChipStyle.LONG,
-                    size = size,
-                )
-            }
+        repetitions?.let { value ->
+            RepetitionsChip(
+                modifier = Modifier.weight(1f),
+                value = value,
+                style = RepetitionsChipStyle.LONG,
+                size = size,
+            )
+        }
     }
 }
 
