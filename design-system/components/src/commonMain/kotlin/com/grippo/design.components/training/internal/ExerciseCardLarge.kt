@@ -23,8 +23,6 @@ import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.sets_label
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
@@ -50,21 +48,19 @@ internal fun ExerciseCardLarge(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
             ) {
-                Text(
-                    text = value.exerciseExample.name,
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                TrainingTotalSection(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    value = value.total,
-                    size = ChipSize.Small,
-                )
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = value.exerciseExample.name,
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
-                if (value.iterations.isNotEmpty()) {
                     val total = value.iterations.size
                     val pendingCount = value.iterations.count { it.isPending }
                     val done = total - pendingCount
@@ -81,14 +77,16 @@ internal fun ExerciseCardLarge(
                             style = AppTokens.typography.b14Med(),
                             color = badgeColor,
                         )
-                    } else {
-                        Text(
-                            text = "${AppTokens.strings.res(Res.string.sets_label)} $total",
-                            style = AppTokens.typography.b14Med(),
-                            color = AppTokens.colors.text.tertiary,
-                        )
                     }
+                }
 
+                TrainingTotalSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = value.total,
+                    size = ChipSize.Small,
+                )
+
+                if (value.iterations.isNotEmpty()) {
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),

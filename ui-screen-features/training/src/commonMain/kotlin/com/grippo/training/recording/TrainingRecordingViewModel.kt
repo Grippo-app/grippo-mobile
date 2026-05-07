@@ -107,7 +107,10 @@ internal class TrainingRecordingViewModel(
             onStartEmpty = ::onAddExercise,
             onUseExercises = { exercises ->
                 if (exercises.isEmpty()) return@StartTraining
-                update { it.copy(exercises = exercises.toPersistentList()) }
+                val refreshed = exercises
+                    .map { it.withRecalculatedTotal() }
+                    .toPersistentList()
+                update { it.copy(exercises = refreshed) }
                 saveDraftTraining()
             },
         )
@@ -134,19 +137,24 @@ internal class TrainingRecordingViewModel(
         }
     }
 
+    /**
+     * Single source of truth for an exercise's aggregate metrics. Always
+     * recomputes from completed iterations only — pending placeholders don't
+     * contribute. No early return on empty: stale totals (e.g. inherited from
+     * a past Recent training picked as a preset) must be replaced with zeros,
+     * not preserved.
+     */
     private fun ExerciseState.withRecalculatedTotal(): ExerciseState {
-        val completed = iterations.filterNot { it.isPending }
-        if (completed.isEmpty()) return this
-        val totals = trainingTotalUseCase
-            .fromSetIterations(completed.toDomain())
-            .toState()
-
+        val completed = iterations.filterNot { it.isPending }.toDomain()
+        val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
         return copy(total = totals)
     }
 
     private fun provideTraining(value: Training?) {
         value ?: return
         val exercises = value.exercises.toState()
+            .map { it.withRecalculatedTotal() }
+            .toPersistentList()
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
         update { it.copy(exercises = exercises, startAt = startAt) }
     }
