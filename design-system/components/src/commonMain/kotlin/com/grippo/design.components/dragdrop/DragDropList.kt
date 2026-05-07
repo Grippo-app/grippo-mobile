@@ -16,10 +16,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -59,14 +61,13 @@ public class DragDropListState<K : Any> internal constructor(
     private var initialOffset by mutableIntStateOf(0)
     private var draggingDelta by mutableFloatStateOf(0f)
     private var settleTranslation by mutableFloatStateOf(0f)
-    private val draggableKeys = mutableSetOf<K>()
+    private val draggableKeys = mutableStateSetOf<K>()
     private var didMove = false
     private var settleJob: Job? = null
 
-    private val draggingItem: LazyListItemInfo?
-        get() = draggingKey?.let { key ->
-            listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }
-        }
+    private val draggingItem: LazyListItemInfo? by derivedStateOf {
+        draggingKey?.let { key -> listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == key } }
+    }
 
     private fun draggingTranslation(): Float = draggingItem
         ?.let { (initialOffset + draggingDelta) - it.offset.toFloat() }
