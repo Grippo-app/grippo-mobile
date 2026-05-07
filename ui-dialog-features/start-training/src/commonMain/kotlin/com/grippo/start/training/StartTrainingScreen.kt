@@ -14,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -62,7 +64,7 @@ internal fun StartTrainingScreen(
         textAlign = TextAlign.Center,
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     val pagerState = rememberPagerState(
         pageCount = { state.options.size }
@@ -73,6 +75,21 @@ internal fun StartTrainingScreen(
         if (pagerState.currentPage >= size && size > 0) {
             pagerState.scrollToPage(size - 1)
         }
+    }
+
+    var didInitialFocusOnEmpty by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(state.options) {
+        if (didInitialFocusOnEmpty) return@LaunchedEffect
+        if (state.options.size <= 1) return@LaunchedEffect
+
+        val emptyIndex = state.options.indexOfFirst { it is StartTrainingOption.Empty }
+        if (emptyIndex >= 0 && pagerState.currentPage != emptyIndex) {
+            pagerState.scrollToPage(emptyIndex)
+        }
+        didInitialFocusOnEmpty = true
     }
 
     val activeKey by remember(state.options) {

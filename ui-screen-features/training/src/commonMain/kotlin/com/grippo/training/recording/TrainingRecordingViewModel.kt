@@ -44,6 +44,7 @@ import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -100,7 +101,8 @@ internal class TrainingRecordingViewModel(
         }
     }
 
-    private fun showStartTrainingDialog() {
+    private suspend fun showStartTrainingDialog() {
+        delay(400)
         val dialog = DialogConfig.StartTraining(
             onStartEmpty = ::onAddExercise,
             onUseExercises = { exercises ->
