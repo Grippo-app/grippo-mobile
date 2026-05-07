@@ -288,10 +288,10 @@
     <string name="experience_intermediate_title">Intermediate</string>
     <string name="experience_advanced_title">Advanced</string>
     <string name="experience_pro_title">Pro</string>
-    <string name="experience_beginner_description">Under 1 year — learning the basics.</string>
-    <string name="experience_intermediate_description">1+ year, with a solid base.</string>
-    <string name="experience_advanced_description">2+ years of training, steady progress.</string>
-    <string name="experience_pro_description">5+ years, excellent form.</string>
+    <string name="experience_beginner_description">Under a year of training — learning the main exercises and building a foundation.</string>
+    <string name="experience_intermediate_description">Over a year of experience, comfortable with the main exercises and a solid base.</string>
+    <string name="experience_advanced_description">2+ years of training, with good form and steady progress.</string>
+    <string name="experience_pro_description">5+ years of experience — excellent form and a high level of muscle development.</string>
 
 
     <string name="profile_menu_excluded_muscles">Muscles</string>
@@ -959,7 +959,7 @@
     <string name="goal_setup_suggestion_title">What's your goal?</string>
     <string name="goal_setup_suggestion_subtitle">We'll tailor exercises and volume to match it.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Better-matched workouts</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Less filler, more of what actually works toward your goal.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Less filler, more of what works. We tailor exercises, volume, and pace to your goal, so every session moves you closer to the result.</string>
     <string name="goal_setup_suggestion_benefit_direction_title">A clearer direction</string>
     <string name="goal_setup_suggestion_benefit_direction_description">Naming your goal makes each session more intentional.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Better over time</string>

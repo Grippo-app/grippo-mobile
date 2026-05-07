@@ -285,10 +285,10 @@
     <string name="experience_intermediate_title">Середній</string>
     <string name="experience_advanced_title">Досвідчений</string>
     <string name="experience_pro_title">Профі</string>
-    <string name="experience_beginner_description">Менше року — знайомишся з основами.</string>
-    <string name="experience_intermediate_description">Понад рік досвіду, упевнена база.</string>
-    <string name="experience_advanced_description">2+ роки тренувань, стабільний прогрес.</string>
-    <string name="experience_pro_description">5+ років, відмінна техніка.</string>
+    <string name="experience_beginner_description">Менше року тренувань — знайомишся з основними вправами й будуєш базу.</string>
+    <string name="experience_intermediate_description">Понад рік досвіду, упевнено володієш основними вправами та маєш міцну базу.</string>
+    <string name="experience_advanced_description">2+ роки тренувань, добра техніка та стабільний прогрес.</string>
+    <string name="experience_pro_description">5+ років досвіду — відмінна техніка та високий рівень розвитку м’язів.</string>
 
     <string name="profile">Профіль</string>
 
@@ -938,7 +938,7 @@
     <string name="goal_setup_suggestion_title">Яка твоя ціль?</string>
     <string name="goal_setup_suggestion_subtitle">Підберемо вправи й обсяг саме під неї.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Точніший підбір тренувань</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Менше зайвого, більше того, що працює для твоєї цілі.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Менше зайвого — більше того, що працює. Підбираємо вправи, обсяг і темп під твою ціль, щоб кожне тренування наближало до результату.</string>
     <string name="goal_setup_suggestion_benefit_direction_title">Чіткий напрямок</string>
     <string name="goal_setup_suggestion_benefit_direction_description">Коли ціль названа, кожне тренування стає усвідомленішим.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Точніше з часом</string>

@@ -287,10 +287,10 @@
     <string name="experience_intermediate_title">Средний</string>
     <string name="experience_advanced_title">Продвинутый</string>
     <string name="experience_pro_title">Профи</string>
-    <string name="experience_beginner_description">Меньше года — знакомишься с основами.</string>
-    <string name="experience_intermediate_description">Больше года опыта, уверенная база.</string>
-    <string name="experience_advanced_description">2+ года тренировок, стабильный прогресс.</string>
-    <string name="experience_pro_description">5+ лет, отличная техника.</string>
+    <string name="experience_beginner_description">Меньше года тренировок — знакомишься с основными упражнениями и выстраиваешь базу.</string>
+    <string name="experience_intermediate_description">Больше года опыта, уверенно владеешь основными упражнениями и есть прочная база.</string>
+    <string name="experience_advanced_description">2+ года тренировок, хорошая техника и стабильный прогресс.</string>
+    <string name="experience_pro_description">5+ лет опыта — отличная техника и высокий уровень развития мышц.</string>
 
 
     <string name="profile_menu_excluded_muscles">Мышцы</string>
@@ -947,7 +947,7 @@
     <string name="goal_setup_suggestion_title">Какая у тебя цель?</string>
     <string name="goal_setup_suggestion_subtitle">Подберём упражнения и объём именно под неё.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Точнее подбор тренировок</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Меньше лишнего, больше того, что работает для твоей цели.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Меньше лишнего — больше того, что работает. Подбираем упражнения, объём и темп под твою цель, чтобы каждая тренировка приближала к результату.</string>
     <string name="goal_setup_suggestion_benefit_direction_title">Чёткое направление</string>
     <string name="goal_setup_suggestion_benefit_direction_description">Когда цель названа, каждая тренировка становится осмысленнее.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Точнее со временем</string>
