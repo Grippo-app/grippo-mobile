@@ -261,10 +261,10 @@
     <string name="welcome_facts_equipment_all">Всё оборудование</string>
     <string name="welcome_facts_equipment_missing">%1$d недоступно</string>
 
-    <string name="welcome_motto_beginner">Каждый эксперт когда-то делал свой первый подход.</string>
-    <string name="welcome_motto_intermediate">База есть — время выходить на новый уровень.</string>
+    <string name="welcome_motto_beginner">Первый подход — самый важный.</string>
+    <string name="welcome_motto_intermediate">Время выходить на новый уровень.</string>
     <string name="welcome_motto_advanced">Стабильность делает чемпионов.</string>
-    <string name="welcome_motto_pro">Инструмент под твой уровень. Время показывать результат.</string>
+    <string name="welcome_motto_pro">Время показывать результат.</string>
 
     <string name="welcome_benefit_pack_title">Твой набор упражнений готов</string>
     <string name="welcome_benefit_pack_subtitle">Подобрано под твоё оборудование и мышцы.</string>
@@ -287,10 +287,10 @@
     <string name="experience_intermediate_title">Средний</string>
     <string name="experience_advanced_title">Продвинутый</string>
     <string name="experience_pro_title">Профи</string>
-    <string name="experience_beginner_description">Тренируешься меньше года и пока знакомишься с основными упражнениями.</string>
-    <string name="experience_intermediate_description">Тренируешься больше года, уверенно владеешь основными упражнениями и уже выстроил базу.</string>
-    <string name="experience_advanced_description">Тренируешься больше 2 лет, чистая техника и стабильный прогресс.</string>
-    <string name="experience_pro_description">Тренируешься больше 5 лет, отличная техника и высокий уровень развития мышц.</string>
+    <string name="experience_beginner_description">Меньше года — знакомишься с основами.</string>
+    <string name="experience_intermediate_description">Больше года опыта, уверенная база.</string>
+    <string name="experience_advanced_description">2+ года тренировок, стабильный прогресс.</string>
+    <string name="experience_pro_description">5+ лет, отличная техника.</string>
 
 
     <string name="profile_menu_excluded_muscles">Мышцы</string>

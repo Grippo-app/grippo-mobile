@@ -288,7 +288,6 @@ public data object AppDp {
     public data object Welcome {
         val card: Card = Card
         val checkmark: Checkmark = Checkmark
-        val progress: Progress = Progress
         val factChip: FactChip = FactChip
 
         public data object Card {
@@ -300,14 +299,6 @@ public data object AppDp {
 
         public data object Checkmark {
             val size: Dp = icon.small
-        }
-
-        public data object Progress {
-            val ring: Dp = 20.dp
-            val ringStroke: Dp = 3.dp
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.small
-            val space: Dp = padding.small
         }
 
         public data object FactChip {

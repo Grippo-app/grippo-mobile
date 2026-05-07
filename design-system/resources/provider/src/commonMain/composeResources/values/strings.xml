@@ -262,10 +262,10 @@
     <string name="welcome_facts_equipment_all">All equipment</string>
     <string name="welcome_facts_equipment_missing">%1$d missing</string>
 
-    <string name="welcome_motto_beginner">Every expert started with the very first set.</string>
-    <string name="welcome_motto_intermediate">The base is set — time to push to the next level.</string>
-    <string name="welcome_motto_advanced">Consistency is what makes champions.</string>
-    <string name="welcome_motto_pro">A tool that matches your level. Time to deliver results.</string>
+    <string name="welcome_motto_beginner">The first set matters most.</string>
+    <string name="welcome_motto_intermediate">Time to level up.</string>
+    <string name="welcome_motto_advanced">Consistency makes champions.</string>
+    <string name="welcome_motto_pro">Time to deliver results.</string>
 
     <string name="welcome_benefit_pack_title">Your exercise set is ready</string>
     <string name="welcome_benefit_pack_subtitle">Tailored to your equipment and muscles.</string>
@@ -288,10 +288,10 @@
     <string name="experience_intermediate_title">Intermediate</string>
     <string name="experience_advanced_title">Advanced</string>
     <string name="experience_pro_title">Pro</string>
-    <string name="experience_beginner_description">Less than 1 year of training. Still getting familiar with the main exercises.</string>
-    <string name="experience_intermediate_description">Over 1 year of training. Comfortable with most exercises and have a solid base.</string>
-    <string name="experience_advanced_description">Over 2 years of training. Good form and steady physical progress.</string>
-    <string name="experience_pro_description">Over 5 years of training. Excellent form and a high level of muscular development.</string>
+    <string name="experience_beginner_description">Under 1 year — learning the basics.</string>
+    <string name="experience_intermediate_description">1+ year, with a solid base.</string>
+    <string name="experience_advanced_description">2+ years of training, steady progress.</string>
+    <string name="experience_pro_description">5+ years, excellent form.</string>
 
 
     <string name="profile_menu_excluded_muscles">Muscles</string>

@@ -261,10 +261,10 @@
     <string name="welcome_facts_equipment_all">Усе обладнання</string>
     <string name="welcome_facts_equipment_missing">%1$d недоступно</string>
 
-    <string name="welcome_motto_beginner">Кожен експерт колись починав з першого підходу.</string>
-    <string name="welcome_motto_intermediate">База є — час виходити на новий рівень.</string>
+    <string name="welcome_motto_beginner">Перший підхід — найважливіший.</string>
+    <string name="welcome_motto_intermediate">Час виходити на новий рівень.</string>
     <string name="welcome_motto_advanced">Стабільність створює чемпіонів.</string>
-    <string name="welcome_motto_pro">Інструмент під твій рівень. Час показати результат.</string>
+    <string name="welcome_motto_pro">Час показати результат.</string>
 
     <string name="welcome_benefit_pack_title">Твій набір вправ готовий</string>
     <string name="welcome_benefit_pack_subtitle">Підібрано під твоє обладнання та м’язи.</string>
@@ -285,10 +285,10 @@
     <string name="experience_intermediate_title">Середній</string>
     <string name="experience_advanced_title">Досвідчений</string>
     <string name="experience_pro_title">Профі</string>
-    <string name="experience_beginner_description">Тренуєшся менше року й лише знайомишся з основними вправами.</string>
-    <string name="experience_intermediate_description">Тренуєшся понад рік, упевнено володієш основними вправами та маєш міцну базу.</string>
-    <string name="experience_advanced_description">Тренуєшся понад 2 роки, маєш добру техніку та стабільний прогрес.</string>
-    <string name="experience_pro_description">Тренуєшся понад 5 років, відмінна техніка та високий рівень розвитку м’язів.</string>
+    <string name="experience_beginner_description">Менше року — знайомишся з основами.</string>
+    <string name="experience_intermediate_description">Понад рік досвіду, упевнена база.</string>
+    <string name="experience_advanced_description">2+ роки тренувань, стабільний прогрес.</string>
+    <string name="experience_pro_description">5+ років, відмінна техніка.</string>
 
     <string name="profile">Профіль</string>
 

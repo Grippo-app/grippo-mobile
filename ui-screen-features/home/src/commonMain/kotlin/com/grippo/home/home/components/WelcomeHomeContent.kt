@@ -1,7 +1,6 @@
 package com.grippo.home.home.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +29,6 @@ import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
 import com.grippo.design.components.welcome.WelcomeChecklistItem
 import com.grippo.design.components.welcome.WelcomeProfileFacts
-import com.grippo.design.components.welcome.WelcomeProgressBadge
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -163,15 +161,6 @@ private fun WelcomeBody(
             HeroBlock(
                 modifier = Modifier.fillMaxWidth()
             )
-        }
-
-        item("progress") {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                WelcomeProgressBadge()
-            }
         }
 
         item("user-card") {
