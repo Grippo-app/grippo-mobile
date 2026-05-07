@@ -9,7 +9,20 @@ import kotlinx.collections.immutable.persistentListOf
 internal data class DialogState(
     val stack: ImmutableList<DialogEntry> = persistentListOf(),
     val phase: SheetPhase = SheetPhase.Released,
-)
+    val pending: DialogConfig? = null,
+) {
+    val sessionConfig: DialogConfig? = if (phase == SheetPhase.Released) {
+        null
+    } else {
+        stack.firstOrNull()?.config
+    }
+
+    val innerConfigs: List<DialogConfig> = if (stack.size <= 1) {
+        emptyList()
+    } else {
+        stack.drop(1).map { it.config }
+    }
+}
 
 @Immutable
 internal data class DialogEntry(
