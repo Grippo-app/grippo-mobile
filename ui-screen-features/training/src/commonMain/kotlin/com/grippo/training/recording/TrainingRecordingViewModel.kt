@@ -137,13 +137,6 @@ internal class TrainingRecordingViewModel(
         }
     }
 
-    /**
-     * Single source of truth for an exercise's aggregate metrics. Always
-     * recomputes from completed iterations only — pending placeholders don't
-     * contribute. No early return on empty: stale totals (e.g. inherited from
-     * a past Recent training picked as a preset) must be replaced with zeros,
-     * not preserved.
-     */
     private fun ExerciseState.withRecalculatedTotal(): ExerciseState {
         val completed = iterations.filterNot { it.isPending }.toDomain()
         val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
