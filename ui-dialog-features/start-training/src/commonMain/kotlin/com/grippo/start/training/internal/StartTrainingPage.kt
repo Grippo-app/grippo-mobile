@@ -169,7 +169,6 @@ private fun SwipeHint(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
         if (direction == SwipeHintDirection.Previous) {
             AnimatedHintIcon(
@@ -180,13 +179,13 @@ private fun SwipeHint(
             )
             Text(
                 text = label,
-                style = AppTokens.typography.b12Med(),
+                style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.tertiary,
             )
         } else {
             Text(
                 text = label,
-                style = AppTokens.typography.b12Med(),
+                style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.tertiary,
             )
             AnimatedHintIcon(
@@ -221,7 +220,7 @@ private fun AnimatedHintIcon(
     )
 }
 
-private val SWIPE_HINT_TRAVEL = 8.dp
+private val SWIPE_HINT_TRAVEL = 4.dp
 private const val SWIPE_HINT_SCALE_MIN = 0.92f
 private const val SWIPE_HINT_SCALE_MAX = 1.12f
 
@@ -291,6 +290,7 @@ private const val SUBTITLE_SEPARATOR = " · "
 private fun StartTrainingPageEmptyPreview() {
     PreviewContainer {
         StartTrainingPage(
+            modifier = Modifier.fillMaxSize(),
             option = StartTrainingOption.Empty
         )
     }
@@ -301,6 +301,7 @@ private fun StartTrainingPageEmptyPreview() {
 private fun StartTrainingPageEmptyWithBothHintsPreview() {
     PreviewContainer {
         StartTrainingPage(
+            modifier = Modifier.fillMaxSize(),
             option = StartTrainingOption.Empty,
             previousOption = StartTrainingOption.Preset(stubExercises()),
             nextOption = StartTrainingOption.Recent(
@@ -321,6 +322,7 @@ private fun StartTrainingPageEmptyWithBothHintsPreview() {
 private fun StartTrainingPageEmptyWithPresetHintPreview() {
     PreviewContainer {
         StartTrainingPage(
+            modifier = Modifier.fillMaxSize(),
             option = StartTrainingOption.Empty,
             previousOption = StartTrainingOption.Preset(stubExercises()),
         )
@@ -332,6 +334,7 @@ private fun StartTrainingPageEmptyWithPresetHintPreview() {
 private fun StartTrainingPageEmptyWithRecentHintPreview() {
     PreviewContainer {
         StartTrainingPage(
+            modifier = Modifier.fillMaxSize(),
             option = StartTrainingOption.Empty,
             nextOption = StartTrainingOption.Recent(
                 trainingId = "stub",
@@ -351,6 +354,7 @@ private fun StartTrainingPageEmptyWithRecentHintPreview() {
 private fun StartTrainingPagePresetPreview() {
     PreviewContainer {
         StartTrainingPage(
+            modifier = Modifier.fillMaxSize(),
             option = StartTrainingOption.Preset(stubExercises())
         )
     }
@@ -361,6 +365,7 @@ private fun StartTrainingPagePresetPreview() {
 private fun StartTrainingPageRecentPreview() {
     PreviewContainer {
         StartTrainingPage(
+            modifier = Modifier.fillMaxSize(),
             option = StartTrainingOption.Recent(
                 trainingId = "stub",
                 createdAt = DateTimeFormatState.of(
