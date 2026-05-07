@@ -241,7 +241,7 @@ internal class TrainingRecordingViewModel(
         }
 
         if (!hasPending) {
-            completeAndShowSummary()
+            showCompletionDialog()
             return
         }
 
@@ -249,38 +249,37 @@ internal class TrainingRecordingViewModel(
             val dialog = DialogConfig.Confirmation(
                 title = stringProvider.get(Res.string.planned_sets_unfinished_title),
                 description = stringProvider.get(Res.string.planned_sets_unfinished_description),
-                onResult = ::completeAndShowSummary
+                onResult = ::showCompletionDialog
             )
             dialogController.show(dialog)
         }
     }
 
-    private fun completeAndShowSummary() {
-        update { current ->
-            val cleaned = current.exercises
-                .map { exercise ->
-                    exercise.copy(
-                        iterations = exercise.iterations
-                            .filterNot { it.isPending }
-                            .toPersistentList()
-                    )
-                }
-                .filter { it.iterations.isNotEmpty() }
-                .toPersistentList()
-            current.copy(exercises = cleaned)
-        }
-
-        showCompletionDialog()
-    }
-
     private fun showCompletionDialog() {
+        val hasCompletedSets = state.value.exercises.any { exercise ->
+            exercise.iterations.any { !it.isPending }
+        }
+        if (!hasCompletedSets) return
+
         val duration = DateTimeUtils.ago(state.value.startAt)
 
         val dialog = DialogConfig.ConfirmTrainingCompletion(
             initial = duration,
             onResult = { result ->
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
-                update { it.copy(startAt = startAt) }
+                update { current ->
+                    val cleaned = current.exercises
+                        .map { exercise ->
+                            exercise.copy(
+                                iterations = exercise.iterations
+                                    .filterNot { it.isPending }
+                                    .toPersistentList()
+                            )
+                        }
+                        .filter { it.iterations.isNotEmpty() }
+                        .toPersistentList()
+                    current.copy(exercises = cleaned, startAt = startAt)
+                }
                 cancelNotificationReminder()
                 toCompleteTraining()
             }

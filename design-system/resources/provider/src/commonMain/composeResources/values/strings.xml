@@ -392,9 +392,9 @@
     <string name="start_training_description">Begin from a clean slate or pick a template.</string>
     <string name="start_training_option_empty_title">Empty workout</string>
     <string name="start_training_option_empty_description">Build your session exercise by exercise.</string>
-    <string name="start_training_option_preset_title">Suggested preset</string>
+    <string name="start_training_option_preset_title">Preset</string>
     <string name="start_training_option_preset_description">A balanced session generated for you.</string>
-    <string name="start_training_option_recent_title">Recent workout</string>
+    <string name="start_training_option_recent_title">Recent</string>
     <string name="start_training_use_btn">Use this</string>
     <string name="start_training_exercises_count">%1$s exercises</string>
     <string name="menu">Menu</string>

@@ -391,9 +391,9 @@
     <string name="start_training_description">Начните с чистого листа или выберите шаблон.</string>
     <string name="start_training_option_empty_title">Пустая тренировка</string>
     <string name="start_training_option_empty_description">Соберите тренировку упражнение за упражнением.</string>
-    <string name="start_training_option_preset_title">Готовый пресет</string>
+    <string name="start_training_option_preset_title">Пресет</string>
     <string name="start_training_option_preset_description">Сбалансированная тренировка, подобранная для вас.</string>
-    <string name="start_training_option_recent_title">Недавняя тренировка</string>
+    <string name="start_training_option_recent_title">Недавняя</string>
     <string name="start_training_use_btn">Использовать</string>
     <string name="start_training_exercises_count">упражнений: %1$s</string>
     <string name="menu">Меню</string>
