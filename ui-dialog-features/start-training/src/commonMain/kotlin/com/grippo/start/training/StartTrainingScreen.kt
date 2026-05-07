@@ -1,9 +1,11 @@
 package com.grippo.start.training
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,7 +30,6 @@ import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.indicators.PagerIndicator
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -43,6 +44,8 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+
+internal val OverlayReservedHeight = 116.dp
 
 @Composable
 internal fun StartTrainingScreen(
@@ -98,33 +101,37 @@ internal fun StartTrainingScreen(
         }
     }
 
-    BottomOverlayContainer(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
-        overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
-            HorizontalPager(
-                modifier = containerModifier.fillMaxSize(),
-                state = pagerState,
-                contentPadding = resolvedPadding,
-                pageSpacing = AppTokens.dp.contentPadding.subContent,
-                key = { index -> state.options.getOrNull(index)?.key ?: index },
-            ) { index ->
-                val option = state.options.getOrNull(index)
-                    ?: return@HorizontalPager
+            .weight(1f)
+            .navigationBarsPadding(),
+    ) {
+        HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
+            state = pagerState,
+            pageSpacing = AppTokens.dp.contentPadding.subContent,
+            key = { index -> state.options.getOrNull(index)?.key ?: index },
+        ) { index ->
+            val option = state.options.getOrNull(index)
+                ?: return@HorizontalPager
 
-                StartTrainingPage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    option = option,
-                    previousOption = state.options.getOrNull(index - 1),
-                    nextOption = state.options.getOrNull(index + 1),
-                )
-            }
-        },
-        bottom = {
+            StartTrainingPage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                option = option,
+                previousOption = state.options.getOrNull(index - 1),
+                nextOption = state.options.getOrNull(index + 1),
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(OverlayReservedHeight),
+        ) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             PagerIndicator(
@@ -152,13 +159,9 @@ internal fun StartTrainingScreen(
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    )
+    }
 }
-
-private val MIN_PAGE_HEIGHT = 280.dp
 
 @AppPreview
 @Composable

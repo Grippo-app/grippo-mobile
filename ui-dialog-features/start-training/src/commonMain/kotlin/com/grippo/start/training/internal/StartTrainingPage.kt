@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercises
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -46,6 +48,7 @@ import com.grippo.design.resources.provider.start_training_exercises_count
 import com.grippo.design.resources.provider.start_training_option_empty_description
 import com.grippo.design.resources.provider.start_training_option_empty_title
 import com.grippo.design.resources.provider.start_training_option_preset_description
+import com.grippo.start.training.OverlayReservedHeight
 import com.grippo.start.training.StartTrainingOption
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -91,7 +94,7 @@ private fun EmptyPage(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .padding(bottom = OverlayReservedHeight)
             .background(
                 color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.exerciseCard.small.radius)
@@ -241,19 +244,19 @@ private fun ExercisesPage(
     subtitle: String?,
     exercises: ImmutableList<ExerciseState>,
 ) {
+    val countLabel = AppTokens.strings.res(
+        Res.string.start_training_exercises_count,
+        exercises.size.toString()
+    )
+
+    val combinedSubtitle = listOfNotNull(subtitle, countLabel)
+        .filter { it.isNotBlank() }
+        .joinToString(separator = SUBTITLE_SEPARATOR)
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        val countLabel = AppTokens.strings.res(
-            Res.string.start_training_exercises_count,
-            exercises.size.toString()
-        )
-
-        val combinedSubtitle = listOfNotNull(subtitle, countLabel)
-            .filter { it.isNotBlank() }
-            .joinToString(separator = SUBTITLE_SEPARATOR)
-
         if (combinedSubtitle.isNotBlank()) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -266,21 +269,31 @@ private fun ExercisesPage(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-        LazyColumn(
+        BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            overlay = AppTokens.colors.background.dialog,
             contentPadding = PaddingValues(bottom = AppTokens.dp.contentPadding.subContent),
-        ) {
-            items(exercises, key = { it.id }) { exercise ->
-                ExerciseCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = exercise,
-                    style = ExerciseCardStyle.Medium {},
-                )
+            bottom = {
+                Spacer(modifier = Modifier.height(OverlayReservedHeight))
+            },
+            content = { containerModifier, resolvedPadding ->
+                LazyColumn(
+                    modifier = containerModifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    contentPadding = resolvedPadding,
+                ) {
+                    items(exercises, key = { it.id }) { exercise ->
+                        ExerciseCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = exercise,
+                            style = ExerciseCardStyle.Medium {},
+                        )
+                    }
+                }
             }
-        }
+        )
     }
 }
 
