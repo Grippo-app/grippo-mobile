@@ -119,6 +119,8 @@ internal fun StartTrainingScreen(
                         .fillMaxWidth()
                         .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                     option = option,
+                    previousOption = state.options.getOrNull(index - 1),
+                    nextOption = state.options.getOrNull(index + 1),
                 )
             }
         },

@@ -5,13 +5,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -27,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
@@ -93,117 +90,100 @@ internal fun TrainingCompletedScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        style = ToolbarStyle.Transparent
+        style = ToolbarStyle.Transparent,
+        title = AppTokens.strings.res(Res.string.workout_summary)
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-    ) {
-        Column(
+    val basePadding = PaddingValues(
+        start = AppTokens.dp.screen.horizontalPadding,
+        end = AppTokens.dp.screen.horizontalPadding,
+        top = AppTokens.dp.contentPadding.content
+    )
+
+    if (cardVisible.value) {
+        BottomOverlayContainer(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = basePadding,
+            content = { containerModifier, resolvedPadding ->
+                LazyColumn(
+                    modifier = containerModifier
+                        .fillMaxSize()
+                        .offset(y = offsetY)
+                        .alpha(alpha),
+                    contentPadding = resolvedPadding,
+                ) {
+                    val training = state.training
+                    val muscleLoad = state.muscleLoad
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                    if (training != null && muscleLoad != null) {
+                        item(key = "training_summary") {
+                            TrainingSummaryCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                training = training,
+                                muscleLoad = muscleLoad,
+                                volumeTrend = state.volumeTrend,
+                                onClick = contract::onSummaryClick,
+                            )
 
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.workout_summary),
-                style = AppTokens.typography.h1(),
-                color = AppTokens.colors.text.primary,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-            if (cardVisible.value) {
-                BottomOverlayContainer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    content = { containerModifier, resolvedPadding ->
-                        LazyColumn(
-                            modifier = containerModifier
-                                .fillMaxSize()
-                                .offset(y = offsetY)
-                                .alpha(alpha),
-                            contentPadding = resolvedPadding,
-                        ) {
-                            val training = state.training
-                            val muscleLoad = state.muscleLoad
-
-                            if (training != null && muscleLoad != null) {
-                                item(key = "training_summary") {
-                                    TrainingSummaryCard(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        training = training,
-                                        muscleLoad = muscleLoad,
-                                        volumeTrend = state.volumeTrend,
-                                        onClick = contract::onSummaryClick,
-                                    )
-
-                                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-                                }
-                            }
-
-                            val exerciseCount = state.training?.exercises?.size ?: 0
-                            if (exerciseCount > 0) {
-                                item(key = "exercises_section") {
-                                    ExercisesSectionHeader(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        count = exerciseCount,
-                                    )
-                                }
-                            }
-
-                            items(
-                                items = state.timeline,
-                                key = { it.key },
-                                contentType = { it::class }
-                            ) { value ->
-                                val exercise = remember(value.key) { value.exercise() }
-
-                                if (exercise != null) {
-                                    val clickProvider = remember(exercise.id) {
-                                        { contract.onExerciseClick(exercise.id) }
-                                    }
-
-                                    ExerciseCard(
-                                        modifier = Modifier
-                                            .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                                            .fillMaxWidth(),
-                                        value = exercise,
-                                        style = ExerciseCardStyle.Medium(clickProvider)
-                                    )
-                                }
-                            }
+                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
                         }
-                    },
-                    overlay = AppTokens.colors.background.screen,
-                    bottom = {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            content = ButtonContent.Text(
-                                text = AppTokens.strings.res(Res.string.go_to_dashboard),
-                            ),
-                            style = ButtonStyle.Primary,
-                            onClick = contract::onBack
-                        )
-
-                        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
+
+                    val exerciseCount = state.training?.exercises?.size ?: 0
+                    if (exerciseCount > 0) {
+                        item(key = "exercises_section") {
+                            ExercisesSectionHeader(
+                                modifier = Modifier.fillMaxWidth(),
+                                count = exerciseCount,
+                            )
+                        }
+                    }
+
+                    items(
+                        items = state.timeline,
+                        key = { it.key },
+                        contentType = { it::class }
+                    ) { value ->
+                        val exercise = remember(value.key) { value.exercise() }
+
+                        if (exercise != null) {
+                            val clickProvider = remember(exercise.id) {
+                                { contract.onExerciseClick(exercise.id) }
+                            }
+
+                            ExerciseCard(
+                                modifier = Modifier
+                                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                                    .fillMaxWidth(),
+                                value = exercise,
+                                style = ExerciseCardStyle.Medium(clickProvider)
+                            )
+                        }
+                    }
+                }
+            },
+            overlay = AppTokens.colors.background.screen,
+            bottom = {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                Button(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .fillMaxWidth(),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.go_to_dashboard),
+                    ),
+                    style = ButtonStyle.Primary,
+                    onClick = contract::onBack
                 )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
-        }
+        )
     }
 }
 

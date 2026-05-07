@@ -194,6 +194,7 @@
     <string name="exercises">Упражнения</string>
     <string name="add_exercise_btn">Добавить упражнение</string>
     <string name="save_btn">Сохранить</string>
+    <string name="update_btn">Обновить</string>
     <string name="workout_summary">Сводка тренировки</string>
     <string name="go_to_dashboard">Перейти на панель</string>
     <string name="total">Всего</string>

@@ -194,6 +194,7 @@
     <string name="exercises">Exercises</string>
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
+    <string name="update_btn">Update</string>
     <string name="workout_summary">Workout summary</string>
     <string name="go_to_dashboard">Go to dashboard</string>
     <string name="total">Total</string>

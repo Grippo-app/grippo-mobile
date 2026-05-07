@@ -1,10 +1,17 @@
 package com.grippo.start.training.internal
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +20,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercises
@@ -27,6 +40,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.ArrowLeft
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.start_training_exercises_count
 import com.grippo.design.resources.provider.start_training_option_empty_description
 import com.grippo.design.resources.provider.start_training_option_empty_title
@@ -41,10 +56,14 @@ import kotlinx.collections.immutable.ImmutableList
 internal fun StartTrainingPage(
     modifier: Modifier = Modifier,
     option: StartTrainingOption,
+    previousOption: StartTrainingOption? = null,
+    nextOption: StartTrainingOption? = null,
 ) {
     when (option) {
         StartTrainingOption.Empty -> EmptyPage(
-            modifier = modifier
+            modifier = modifier,
+            previousOption = previousOption,
+            nextOption = nextOption,
         )
 
         is StartTrainingOption.Preset -> ExercisesPage(
@@ -64,7 +83,12 @@ internal fun StartTrainingPage(
 @Composable
 private fun EmptyPage(
     modifier: Modifier = Modifier,
+    previousOption: StartTrainingOption? = null,
+    nextOption: StartTrainingOption? = null,
 ) {
+    val previousLabel = previousOption?.hint()
+    val nextLabel = nextOption?.hint()
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -73,12 +97,13 @@ private fun EmptyPage(
                 shape = RoundedCornerShape(AppTokens.dp.exerciseCard.small.radius)
             )
             .padding(AppTokens.dp.contentPadding.block),
-        contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
             Text(
                 text = AppTokens.strings.res(Res.string.start_training_option_empty_title),
@@ -94,8 +119,121 @@ private fun EmptyPage(
                 textAlign = TextAlign.Center,
             )
         }
+
+        if (previousLabel != null || nextLabel != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+            ) {
+                if (previousLabel != null) {
+                    SwipeHint(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        direction = SwipeHintDirection.Previous,
+                        label = previousLabel,
+                    )
+                }
+                if (nextLabel != null) {
+                    SwipeHint(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        direction = SwipeHintDirection.Next,
+                        label = nextLabel,
+                    )
+                }
+            }
+        }
     }
 }
+
+private enum class SwipeHintDirection { Previous, Next }
+
+@Composable
+private fun SwipeHint(
+    modifier: Modifier = Modifier,
+    direction: SwipeHintDirection,
+    label: String,
+) {
+    val accent = AppTokens.colors.semantic.notice
+
+    val transition = rememberInfiniteTransition(
+        label = "swipe-hint"
+    )
+
+    val pulse by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "pulse",
+    )
+
+    val icon: ImageVector = when (direction) {
+        SwipeHintDirection.Previous -> AppTokens.icons.ArrowLeft
+        SwipeHintDirection.Next -> AppTokens.icons.ArrowRight
+    }
+
+    val translationSign = if (direction == SwipeHintDirection.Previous) -1f else 1f
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
+        if (direction == SwipeHintDirection.Previous) {
+            AnimatedHintIcon(
+                icon = icon,
+                tint = accent,
+                translationSign = translationSign,
+                pulse = pulse,
+            )
+            Text(
+                text = label,
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.tertiary,
+            )
+        } else {
+            Text(
+                text = label,
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.tertiary,
+            )
+            AnimatedHintIcon(
+                icon = icon,
+                tint = accent,
+                translationSign = translationSign,
+                pulse = pulse,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AnimatedHintIcon(
+    icon: ImageVector,
+    tint: Color,
+    translationSign: Float,
+    pulse: Float,
+) {
+    val scale = SWIPE_HINT_SCALE_MIN + pulse * (SWIPE_HINT_SCALE_MAX - SWIPE_HINT_SCALE_MIN)
+    Icon(
+        modifier = Modifier
+            .size(AppTokens.dp.training.startTraining.icon)
+            .graphicsLayer {
+                translationX = translationSign * pulse * SWIPE_HINT_TRAVEL.toPx()
+                scaleX = scale
+                scaleY = scale
+            },
+        imageVector = icon,
+        tint = tint,
+        contentDescription = null,
+    )
+}
+
+private val SWIPE_HINT_TRAVEL = 8.dp
+private const val SWIPE_HINT_SCALE_MIN = 0.92f
+private const val SWIPE_HINT_SCALE_MAX = 1.12f
 
 @Composable
 private fun ExercisesPage(
@@ -154,6 +292,56 @@ private fun StartTrainingPageEmptyPreview() {
     PreviewContainer {
         StartTrainingPage(
             option = StartTrainingOption.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingPageEmptyWithBothHintsPreview() {
+    PreviewContainer {
+        StartTrainingPage(
+            option = StartTrainingOption.Empty,
+            previousOption = StartTrainingOption.Preset(stubExercises()),
+            nextOption = StartTrainingOption.Recent(
+                trainingId = "stub",
+                createdAt = DateTimeFormatState.of(
+                    value = DateTimeUtils.now(),
+                    range = DateRangePresets.infinity(),
+                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                ),
+                exercises = stubExercises(),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingPageEmptyWithPresetHintPreview() {
+    PreviewContainer {
+        StartTrainingPage(
+            option = StartTrainingOption.Empty,
+            previousOption = StartTrainingOption.Preset(stubExercises()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingPageEmptyWithRecentHintPreview() {
+    PreviewContainer {
+        StartTrainingPage(
+            option = StartTrainingOption.Empty,
+            nextOption = StartTrainingOption.Recent(
+                trainingId = "stub",
+                createdAt = DateTimeFormatState.of(
+                    value = DateTimeUtils.now(),
+                    range = DateRangePresets.infinity(),
+                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                ),
+                exercises = stubExercises(),
+            ),
         )
     }
 }

@@ -349,6 +349,12 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small
         val textSpacing: Dp = padding.tiny
+
+        val startTraining: StartTraining = StartTraining
+
+        public data object StartTraining {
+            val icon: Dp = AppDp.icon.medium
+        }
     }
 
     public data object Empty {

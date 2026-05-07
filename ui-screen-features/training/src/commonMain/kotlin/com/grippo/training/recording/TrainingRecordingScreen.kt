@@ -28,9 +28,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.training
+import com.grippo.design.resources.provider.update_btn
 import com.grippo.toolkit.date.utils.timerTextFlow
 import com.grippo.training.recording.internal.ExercisesPage
 import com.grippo.training.recording.internal.Header
@@ -67,11 +67,7 @@ internal fun TrainingRecordingScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
-        title = when (state.stage) {
-            is StageState.Add -> AppTokens.strings.res(Res.string.training)
-            StageState.Draft -> AppTokens.strings.res(Res.string.training)
-            is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
-        },
+        title = AppTokens.strings.res(Res.string.training),
         leading = Leading.Back(contract::onBack),
         trailing = {
             val buttonVisible = remember(state.exercises) {
@@ -87,8 +83,14 @@ internal fun TrainingRecordingScreen(
                 }
             }
 
+            val buttonText = when (state.stage) {
+                is StageState.Add -> AppTokens.strings.res(Res.string.save_btn)
+                StageState.Draft -> AppTokens.strings.res(Res.string.save_btn)
+                is StageState.Edit -> AppTokens.strings.res(Res.string.update_btn)
+            }
+
             Button(
-                content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.save_btn)),
+                content = ButtonContent.Text(text = buttonText),
                 size = ButtonSize.Small,
                 style = ButtonStyle.Primary,
                 state = buttonState,
