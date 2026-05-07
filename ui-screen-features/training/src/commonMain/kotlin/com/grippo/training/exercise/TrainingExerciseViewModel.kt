@@ -162,6 +162,7 @@ internal class TrainingExerciseViewModel(
         }
         if (!needsBodyWeight) return this
         val weight = weightHistoryFeature.observeLastWeight().firstOrNull()?.weight ?: return this
+
         return copy(bodyWeight = WeightFormatState.of(weight))
     }
 

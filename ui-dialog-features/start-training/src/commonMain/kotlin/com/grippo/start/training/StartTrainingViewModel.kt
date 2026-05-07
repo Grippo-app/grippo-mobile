@@ -46,8 +46,8 @@ public class StartTrainingViewModel(
                 ?.let(StartTrainingOption::Preset)
 
             val options = buildList {
-                add(StartTrainingOption.Empty)
                 preset?.let(::add)
+                add(StartTrainingOption.Empty)
                 addAll(recents)
             }.toPersistentList()
 
