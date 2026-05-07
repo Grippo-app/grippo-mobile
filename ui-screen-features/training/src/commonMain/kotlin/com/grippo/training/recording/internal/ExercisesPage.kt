@@ -25,6 +25,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.dragdrop.DraggableItem
+import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.swipe.SwipeToReveal
@@ -57,9 +59,7 @@ internal fun ColumnScope.ExercisesPage(
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
 
     BottomOverlayContainer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
@@ -82,10 +82,14 @@ internal fun ColumnScope.ExercisesPage(
                     }
 
                     false -> {
+                        val dragDropState = rememberDragDropListState(
+                            onMove = contract::onStartReorderExercises,
+                            onDragEnd = contract::onEndReorderExercises,
+                        )
+
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
+                            modifier = Modifier.fillMaxSize(),
+                            state = dragDropState.listState,
                             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                             contentPadding = resolvedPadding
                         ) {
@@ -101,28 +105,30 @@ internal fun ColumnScope.ExercisesPage(
                                     { contract.onDeleteExercise(exercise.id) }
                                 }
 
-                                SwipeToReveal(
-                                    modifier = Modifier,
-                                    actions = {
-                                        Button(
-                                            modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
-                                            content = ButtonContent.Icon(
-                                                icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
+                                DraggableItem(state = dragDropState, key = exercise.id) {
+                                    SwipeToReveal(
+                                        modifier = Modifier,
+                                        actions = {
+                                            Button(
+                                                modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
+                                                content = ButtonContent.Icon(
+                                                    icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
+                                                ),
+                                                style = ButtonStyle.Error,
+                                                onClick = deleteExerciseProvider
+                                            )
+                                        }
+                                    ) {
+                                        ExerciseCard(
+                                            modifier = Modifier
+                                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                                .fillMaxWidth(),
+                                            value = exercise,
+                                            style = ExerciseCardStyle.Large(
+                                                onClick = editExerciseProvider
                                             ),
-                                            style = ButtonStyle.Error,
-                                            onClick = deleteExerciseProvider
                                         )
                                     }
-                                ) {
-                                    ExerciseCard(
-                                        modifier = Modifier
-                                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                                            .fillMaxWidth(),
-                                        value = exercise,
-                                        style = ExerciseCardStyle.Large(
-                                            onClick = editExerciseProvider
-                                        ),
-                                    )
                                 }
                             }
                         }

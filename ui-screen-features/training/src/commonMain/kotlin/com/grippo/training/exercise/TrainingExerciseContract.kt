@@ -9,6 +9,8 @@ internal interface TrainingExerciseContract {
     fun onEditVolume(id: String)
     fun onEditRepetition(id: String)
     fun onDeleteIteration(id: String)
+    fun onStartReorderIterations(fromId: String, toId: String)
+    fun onEndReorderIterations()
     fun onSave()
     fun onBack()
 
@@ -19,6 +21,8 @@ internal interface TrainingExerciseContract {
         override fun onEditVolume(id: String) {}
         override fun onEditRepetition(id: String) {}
         override fun onDeleteIteration(id: String) {}
+        override fun onStartReorderIterations(fromId: String, toId: String) {}
+        override fun onEndReorderIterations() {}
         override fun onSave() {}
         override fun onBack() {}
     }

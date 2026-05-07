@@ -70,6 +70,7 @@ internal class TrainingExerciseViewModel(
                 when (artifact) {
                     is ExerciseArtifacts.Artifact.SuspiciousWeight,
                     is ExerciseArtifacts.Artifact.SuspiciousVolume -> volumeIds += iteration.id
+
                     is ExerciseArtifacts.Artifact.SuspiciousRepetitions -> repetitionIds += iteration.id
                     null -> Unit
                 }
@@ -113,6 +114,23 @@ internal class TrainingExerciseViewModel(
 
     override fun onDeleteIteration(id: String) {
         mutateIterations { iterations -> iterations.filter { it.id != id } }
+    }
+
+    override fun onStartReorderIterations(fromId: String, toId: String) {
+        if (fromId == toId) return
+        val iterations = state.value.exercise.iterations
+        val from = iterations.indexOfFirst { it.id == fromId }
+        val to = iterations.indexOfFirst { it.id == toId }
+        if (from < 0 || to < 0) return
+
+        val reordered = iterations.toMutableList().apply { add(to, removeAt(from)) }
+        update {
+            it.copy(exercise = it.exercise.copy(iterations = reordered.toPersistentList()))
+        }
+    }
+
+    override fun onEndReorderIterations() {
+        navigateTo(TrainingExerciseDirection.Update(state.value.exercise))
     }
 
     override fun onExampleClick() {

@@ -208,6 +208,24 @@ internal class TrainingRecordingViewModel(
         }
     }
 
+    override fun onStartReorderExercises(fromId: String, toId: String) {
+        if (fromId == toId) return
+        update { current ->
+            val exercises = current.exercises
+            val from = exercises.indexOfFirst { it.id == fromId }
+            val to = exercises.indexOfFirst { it.id == toId }
+            if (from < 0 || to < 0) return@update current
+            val mutable = exercises.toMutableList()
+            mutable.add(to, mutable.removeAt(from))
+            current.copy(exercises = mutable.toPersistentList())
+        }
+    }
+
+    override fun onEndReorderExercises() {
+        if (state.value.exercises.isEmpty()) return
+        saveDraftTraining()
+    }
+
     private fun clearDraftTraining() {
         safeLaunch { trainingFeature.deleteDraftTraining().getOrThrow() }
     }

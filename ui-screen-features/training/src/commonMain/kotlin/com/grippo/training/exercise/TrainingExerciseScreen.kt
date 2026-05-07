@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.dragdrop.DraggableItem
+import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
@@ -136,122 +139,138 @@ internal fun TrainingExerciseScreen(
                         text = AppTokens.strings.res(Res.string.empty_exercise_sets)
                     )
 
-                    false -> LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                        contentPadding = resolvedPadding
-                    ) {
-                        item {
-                            Text(
-                                modifier = Modifier
-                                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                                    .fillMaxWidth(),
-                                text = AppTokens.strings.res(
-                                    Res.string.sets_value,
-                                    state.exercise.iterations.size
-                                ),
-                                style = AppTokens.typography.h4(),
-                                color = AppTokens.colors.text.primary,
-                                textAlign = TextAlign.Start
-                            )
-                        }
+                    false -> {
+                        val dragDropState = rememberDragDropListState(
+                            onMove = contract::onStartReorderIterations,
+                            onDragEnd = contract::onEndReorderIterations,
+                        )
 
-                        itemsIndexed(
-                            items = state.exercise.iterations,
-                            key = { _, item -> item.id }
-                        ) { index, iteration ->
-                            val editVolumeProvider = remember(iteration.id) {
-                                { contract.onEditVolume(iteration.id) }
-                            }
-
-                            val editRepetitionProvider = remember(iteration.id) {
-                                { contract.onEditRepetition(iteration.id) }
-                            }
-
-                            val deleteIterationProvider = remember(iteration.id) {
-                                { contract.onDeleteIteration(iteration.id) }
-                            }
-
-                            SwipeToReveal(
-                                modifier = Modifier,
-                                actions = {
-                                    Button(
-                                        modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
-                                        content = ButtonContent.Icon(
-                                            icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
-                                        ),
-                                        style = ButtonStyle.Error,
-                                        onClick = deleteIterationProvider
-                                    )
-                                }
-                            ) {
-                                IterationCard(
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = dragDropState.listState,
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                            contentPadding = resolvedPadding
+                        ) {
+                            item {
+                                Text(
                                     modifier = Modifier
                                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                                         .fillMaxWidth(),
-                                    value = iteration,
-                                    style = IterationCardStyle.Editable(
-                                        label = (index + 1).toString(),
-                                        onVolumeClick = editVolumeProvider,
-                                        onRepetitionClick = editRepetitionProvider,
-                                        volumeDecorator = {
-                                            if (iteration.id in state.volumeArtifactIds) {
-                                                val tooltipState = rememberTooltipState()
-                                                val scope = rememberCoroutineScope()
-
-                                                Box(
-                                                    modifier = Modifier
-                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                        .align(Alignment.CenterEnd),
-                                                ) {
-                                                    Tooltip(
-                                                        state = tooltipState,
-                                                        tooltipContent = TooltipContent.Rich(
-                                                            title = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_title),
-                                                            subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_weight_subtitle),
-                                                        ),
-                                                        placement = TooltipPlacement.Top,
-                                                        variant = TooltipVariant.Warning,
-                                                    ) {
-                                                        Badge(
-                                                            style = BadgeStyle.Warning,
-                                                            onClick = { scope.launch { tooltipState.show() } }
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        repetitionDecorator = {
-                                            if (iteration.id in state.repetitionArtifactIds) {
-                                                val tooltipState = rememberTooltipState()
-                                                val scope = rememberCoroutineScope()
-
-                                                Box(
-                                                    modifier = Modifier
-                                                        .padding(end = AppTokens.dp.contentPadding.subContent)
-                                                        .align(Alignment.CenterEnd),
-                                                ) {
-                                                    Tooltip(
-                                                        state = tooltipState,
-                                                        tooltipContent = TooltipContent.Rich(
-                                                            title = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_title),
-                                                            subtitle = AppTokens.strings.res(Res.string.tooltip_suspicious_reps_subtitle),
-                                                        ),
-                                                        placement = TooltipPlacement.Start,
-                                                        variant = TooltipVariant.Warning,
-                                                    ) {
-                                                        Badge(
-                                                            style = BadgeStyle.Warning,
-                                                            onClick = { scope.launch { tooltipState.show() } }
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    )
+                                    text = AppTokens.strings.res(
+                                        Res.string.sets_value,
+                                        state.exercise.iterations.size
+                                    ),
+                                    style = AppTokens.typography.h4(),
+                                    color = AppTokens.colors.text.primary,
+                                    textAlign = TextAlign.Start
                                 )
+                            }
+
+                            itemsIndexed(
+                                items = state.exercise.iterations,
+                                key = { _, item -> item.id }
+                            ) { index, iteration ->
+                                val editVolumeProvider = remember(iteration.id) {
+                                    { contract.onEditVolume(iteration.id) }
+                                }
+
+                                val editRepetitionProvider = remember(iteration.id) {
+                                    { contract.onEditRepetition(iteration.id) }
+                                }
+
+                                val deleteIterationProvider = remember(iteration.id) {
+                                    { contract.onDeleteIteration(iteration.id) }
+                                }
+
+                                DraggableItem(state = dragDropState, key = iteration.id) {
+                                    SwipeToReveal(
+                                        modifier = Modifier,
+                                        actions = {
+                                            Button(
+                                                modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
+                                                content = ButtonContent.Icon(
+                                                    icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
+                                                ),
+                                                style = ButtonStyle.Error,
+                                                onClick = deleteIterationProvider
+                                            )
+                                        }
+                                    ) {
+                                        IterationCard(
+                                            modifier = Modifier
+                                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                                .fillMaxWidth(),
+                                            value = iteration,
+                                            style = IterationCardStyle.Editable(
+                                                label = (index + 1).toString(),
+                                                onVolumeClick = editVolumeProvider,
+                                                onRepetitionClick = editRepetitionProvider,
+                                                volumeDecorator = {
+                                                    if (iteration.id in state.volumeArtifactIds) {
+                                                        val tooltipState = rememberTooltipState()
+                                                        val scope = rememberCoroutineScope()
+
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                                .align(Alignment.CenterEnd),
+                                                        ) {
+                                                            Tooltip(
+                                                                state = tooltipState,
+                                                                tooltipContent = TooltipContent.Rich(
+                                                                    title = AppTokens.strings.res(
+                                                                        Res.string.tooltip_suspicious_weight_title
+                                                                    ),
+                                                                    subtitle = AppTokens.strings.res(
+                                                                        Res.string.tooltip_suspicious_weight_subtitle
+                                                                    ),
+                                                                ),
+                                                                placement = TooltipPlacement.Top,
+                                                                variant = TooltipVariant.Warning,
+                                                            ) {
+                                                                Badge(
+                                                                    style = BadgeStyle.Warning,
+                                                                    onClick = { scope.launch { tooltipState.show() } }
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                repetitionDecorator = {
+                                                    if (iteration.id in state.repetitionArtifactIds) {
+                                                        val tooltipState = rememberTooltipState()
+                                                        val scope = rememberCoroutineScope()
+
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .padding(end = AppTokens.dp.contentPadding.subContent)
+                                                                .align(Alignment.CenterEnd),
+                                                        ) {
+                                                            Tooltip(
+                                                                state = tooltipState,
+                                                                tooltipContent = TooltipContent.Rich(
+                                                                    title = AppTokens.strings.res(
+                                                                        Res.string.tooltip_suspicious_reps_title
+                                                                    ),
+                                                                    subtitle = AppTokens.strings.res(
+                                                                        Res.string.tooltip_suspicious_reps_subtitle
+                                                                    ),
+                                                                ),
+                                                                placement = TooltipPlacement.Start,
+                                                                variant = TooltipVariant.Warning,
+                                                            ) {
+                                                                Badge(
+                                                                    style = BadgeStyle.Warning,
+                                                                    onClick = { scope.launch { tooltipState.show() } }
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
