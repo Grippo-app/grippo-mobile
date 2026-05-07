@@ -72,10 +72,10 @@ public data object AppDp {
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
     val welcome: Welcome = Welcome
-    val benefit: Benefit = Benefit
     val empty: Empty = Empty
     val tip: Tip = Tip
     val badge: Badge = Badge
+    val bannerCard: BannerCard = BannerCard
     val tooltip: Tooltip = Tooltip
     val training: Training = Training
     val accent: Accent = Accent
@@ -307,15 +307,6 @@ public data object AppDp {
         }
     }
 
-    public data object Benefit {
-        val radius: Dp = AppDp.radius.medium
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.medium
-        val space: Dp = padding.medium
-        val iconBackground: Dp = size.medium
-        val icon: Dp = AppDp.icon.large
-    }
-
     public data object Tip {
         val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.small
@@ -328,6 +319,23 @@ public data object AppDp {
         val verticalPadding: Dp = padding.tiny
         val icon: Dp = AppDp.icon.extraSmall
         val spaceBetween: Dp = padding.extraSmall
+    }
+
+    public data object BannerCard {
+        val radius: Dp = AppDp.radius.medium
+        val borderWidth: Dp = 1.dp
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.medium
+        val space: Dp = padding.medium
+        val iconBackground: Dp = 40.dp
+        val icon: Dp = AppDp.icon.medium
+        val textSpacing: Dp = padding.tiny
+        val trailing: Trailing = Trailing
+
+        public data object Trailing {
+            val horizontalPadding: Dp = padding.small
+            val verticalPadding: Dp = padding.extraSmall
+        }
     }
 
     public data object Tooltip {

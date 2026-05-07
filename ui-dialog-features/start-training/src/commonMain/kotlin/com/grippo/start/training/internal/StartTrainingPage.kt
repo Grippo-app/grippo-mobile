@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercises
+import com.grippo.design.components.banner.BannerCard
+import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -43,10 +46,16 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.ArrowRight
+import com.grippo.design.resources.provider.icons.Sparkle
+import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.start_training_exercises_count
 import com.grippo.design.resources.provider.start_training_option_empty_description
 import com.grippo.design.resources.provider.start_training_option_empty_title
 import com.grippo.design.resources.provider.start_training_option_preset_description
+import com.grippo.design.resources.provider.start_training_option_preset_title
+import com.grippo.design.resources.provider.start_training_option_recent_title
+import com.grippo.design.resources.provider.today
+import com.grippo.design.resources.provider.yesterday
 import com.grippo.start.training.StartTrainingOption
 import com.grippo.start.training.overlayReservedHeight
 import com.grippo.toolkit.date.utils.DateFormat
@@ -70,16 +79,25 @@ internal fun StartTrainingPage(
 
         is StartTrainingOption.Preset -> ExercisesPage(
             modifier = modifier,
-            subtitle = AppTokens.strings.res(Res.string.start_training_option_preset_description),
+            header = ExerciseHeader.Preset,
             exercises = option.exercises,
         )
 
         is StartTrainingOption.Recent -> ExercisesPage(
             modifier = modifier,
-            subtitle = option.createdAt.display.takeIf { it.isNotBlank() },
+            header = ExerciseHeader.Recent(option.createdAt),
             exercises = option.exercises,
         )
     }
+}
+
+@Immutable
+private sealed interface ExerciseHeader {
+    @Immutable
+    data object Preset : ExerciseHeader
+
+    @Immutable
+    data class Recent(val createdAt: DateTimeFormatState) : ExerciseHeader
 }
 
 @Composable
@@ -227,40 +245,25 @@ private const val SWIPE_HINT_SCALE_MAX = 1.12f
 @Composable
 private fun ExercisesPage(
     modifier: Modifier = Modifier,
-    subtitle: String?,
+    header: ExerciseHeader,
     exercises: ImmutableList<ExerciseState>,
 ) {
-    val countLabel = AppTokens.strings.res(
-        Res.string.start_training_exercises_count,
-        exercises.size.toString()
-    )
-
-    val combinedSubtitle = listOfNotNull(subtitle, countLabel)
-        .filter { it.isNotBlank() }
-        .joinToString(separator = SUBTITLE_SEPARATOR)
-
     Column(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        if (combinedSubtitle.isNotBlank()) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = combinedSubtitle,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-                textAlign = TextAlign.Center,
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+        ExerciseHeaderBanner(
+            modifier = Modifier.fillMaxWidth(),
+            header = header,
+            exercisesCount = exercises.size,
+        )
 
         BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
             overlay = AppTokens.colors.background.dialog,
-            contentPadding = PaddingValues(bottom = AppTokens.dp.contentPadding.subContent),
+            contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.subContent),
             bottom = {
                 Spacer(modifier = Modifier.height(overlayReservedHeight))
             },
@@ -283,7 +286,66 @@ private fun ExercisesPage(
     }
 }
 
-private const val SUBTITLE_SEPARATOR = " · "
+@Composable
+private fun ExerciseHeaderBanner(
+    modifier: Modifier = Modifier,
+    header: ExerciseHeader,
+    exercisesCount: Int,
+) {
+    val style: BannerCardStyle
+    val icon: ImageVector
+    val title: String
+    val description: String
+
+    when (header) {
+        ExerciseHeader.Preset -> {
+            style = BannerCardStyle.Notice
+            icon = AppTokens.icons.Sparkle
+            title = AppTokens.strings.res(Res.string.start_training_option_preset_title)
+            description = AppTokens.strings.res(Res.string.start_training_option_preset_description)
+        }
+
+        is ExerciseHeader.Recent -> {
+            style = BannerCardStyle.Info
+            icon = AppTokens.icons.Timer
+            title = AppTokens.strings.res(Res.string.start_training_option_recent_title)
+            description = rememberRecentDescription(header.createdAt)
+        }
+    }
+
+    BannerCard(
+        modifier = modifier,
+        style = style,
+        icon = icon,
+        title = title,
+        description = description,
+        trailing = AppTokens.strings.res(
+            Res.string.start_training_exercises_count,
+            exercisesCount.toString(),
+        ),
+    )
+}
+
+@Composable
+private fun rememberRecentDescription(state: DateTimeFormatState): String {
+    val today = AppTokens.strings.res(Res.string.today)
+    val yesterday = AppTokens.strings.res(Res.string.yesterday)
+    val value = state.value
+
+    return remember(value, today, yesterday, state.display) {
+        if (value == null) return@remember state.display
+
+        val time = DateTimeUtils.format(value.time, DateFormat.TimeOnly.Time24hHm)
+        when {
+            DateTimeUtils.isToday(value.date) -> "$today, $time"
+            DateTimeUtils.isYesterday(value.date) -> "$yesterday, $time"
+            else -> {
+                val date = DateTimeUtils.format(value, DateFormat.DateOnly.DateMmmDdComma)
+                "$date, $time"
+            }
+        }
+    }
+}
 
 @AppPreview
 @Composable

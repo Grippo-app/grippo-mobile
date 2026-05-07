@@ -14,7 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.design.components.benefit.BenefitCard
+import com.grippo.design.components.banner.BannerCard
+import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -72,12 +73,12 @@ internal fun GoalSetupSuggestionScreen(
     ) {
         state.benefits.forEach { code ->
             val (title, description) = code.text()
-            BenefitCard(
+            BannerCard(
                 modifier = Modifier.fillMaxWidth(),
+                style = BannerCardStyle.Custom(AppTokens.colors.context.goal),
                 icon = code.icon(),
                 title = title,
-                subtitle = description,
-                tint = AppTokens.colors.context.goal,
+                description = description,
             )
         }
     }

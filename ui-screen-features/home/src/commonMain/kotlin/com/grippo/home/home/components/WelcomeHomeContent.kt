@@ -18,7 +18,8 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
-import com.grippo.design.components.benefit.BenefitCard
+import com.grippo.design.components.banner.BannerCard
+import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -211,28 +212,28 @@ private fun WelcomeBody(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
-                BenefitCard(
+                BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
-                    subtitle = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color4),
                     icon = AppTokens.icons.Sparkle,
-                    tint = AppTokens.colors.brand.color2,
+                    title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
+                    description = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
                 )
 
-                BenefitCard(
+                BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
-                    subtitle = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color4),
                     icon = AppTokens.icons.LineUp,
-                    tint = AppTokens.colors.brand.color2,
+                    title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
+                    description = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
                 )
 
-                BenefitCard(
+                BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
-                    subtitle = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color4),
                     icon = AppTokens.icons.Stack,
-                    tint = AppTokens.colors.brand.color2,
+                    title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
+                    description = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
                 )
             }
         }
