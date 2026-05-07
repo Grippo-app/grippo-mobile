@@ -1,6 +1,5 @@
 package com.grippo.start.training
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -123,6 +121,7 @@ internal fun StartTrainingScreen(
             pageSpacing = AppTokens.dp.contentPadding.subContent,
             key = { index -> state.options.getOrNull(index)?.key ?: index },
         ) { index ->
+
             val option = state.options.getOrNull(index)
                 ?: return@HorizontalPager
 
@@ -146,15 +145,6 @@ internal fun StartTrainingScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             PagerIndicator(
-                modifier = Modifier
-                    .background(
-                        color = AppTokens.colors.background.card,
-                        shape = CircleShape,
-                    )
-                    .padding(
-                        horizontal = AppTokens.dp.contentPadding.content,
-                        vertical = AppTokens.dp.contentPadding.subContent,
-                    ),
                 pageCount = state.options.size,
                 selectedIndex = pagerState.currentPage,
             )
