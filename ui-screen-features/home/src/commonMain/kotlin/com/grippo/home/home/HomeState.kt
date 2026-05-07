@@ -30,4 +30,5 @@ internal data class HomeState(
     val spotlights: ImmutableList<ExerciseSpotlightState> = persistentListOf(),
     val excludedMusclesCount: Int = 0,
     val missingEquipmentCount: Int = 0,
+    val hasGoal: Boolean = false,
 )

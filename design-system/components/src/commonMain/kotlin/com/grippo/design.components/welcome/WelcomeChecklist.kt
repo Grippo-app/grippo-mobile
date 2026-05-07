@@ -25,6 +25,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.welcome_check_equipment
 import com.grippo.design.resources.provider.welcome_check_experience
+import com.grippo.design.resources.provider.welcome_check_goal
 import com.grippo.design.resources.provider.welcome_check_muscles
 import com.grippo.design.resources.provider.welcome_check_profile
 import kotlinx.collections.immutable.ImmutableList
@@ -33,6 +34,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 public data class WelcomeChecklistItem(
     val text: String,
+    val isCompleted: Boolean = true,
 )
 
 @Composable
@@ -57,6 +59,7 @@ public fun WelcomeChecklist(
                 ChecklistRow(
                     modifier = Modifier.fillMaxWidth(),
                     text = item.text,
+                    isCompleted = item.isCompleted,
                 )
             }
         }
@@ -67,8 +70,19 @@ public fun WelcomeChecklist(
 private fun ChecklistRow(
     modifier: Modifier = Modifier,
     text: String,
+    isCompleted: Boolean,
 ) {
-    val accent = AppTokens.colors.semantic.success
+    val accent = if (isCompleted) {
+        AppTokens.colors.semantic.success
+    } else {
+        AppTokens.colors.text.tertiary
+    }
+
+    val textColor = if (isCompleted) {
+        AppTokens.colors.text.secondary
+    } else {
+        AppTokens.colors.text.tertiary
+    }
 
     Row(
         modifier = modifier,
@@ -95,7 +109,7 @@ private fun ChecklistRow(
         Text(
             text = text,
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
+            color = textColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -113,6 +127,10 @@ private fun WelcomeChecklistPreview() {
                 WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_experience)),
                 WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_muscles)),
                 WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_equipment)),
+                WelcomeChecklistItem(
+                    text = AppTokens.strings.res(Res.string.welcome_check_goal),
+                    isCompleted = false,
+                ),
             )
         )
     }

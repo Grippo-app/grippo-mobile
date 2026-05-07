@@ -48,6 +48,7 @@ import com.grippo.design.resources.provider.welcome_benefit_progress_subtitle
 import com.grippo.design.resources.provider.welcome_benefit_progress_title
 import com.grippo.design.resources.provider.welcome_check_equipment
 import com.grippo.design.resources.provider.welcome_check_experience
+import com.grippo.design.resources.provider.welcome_check_goal
 import com.grippo.design.resources.provider.welcome_check_muscles
 import com.grippo.design.resources.provider.welcome_check_profile
 import com.grippo.design.resources.provider.welcome_section_benefits_title
@@ -63,6 +64,7 @@ internal fun WelcomeHomeContent(
     experience: ExperienceEnumState,
     excludedMusclesCount: Int,
     missingEquipmentCount: Int,
+    hasGoal: Boolean,
     hasDraftTraining: Boolean,
     onStartTraining: () -> Unit,
     onResumeTraining: () -> Unit,
@@ -84,6 +86,7 @@ internal fun WelcomeHomeContent(
                 experience = experience,
                 excludedMusclesCount = excludedMusclesCount,
                 missingEquipmentCount = missingEquipmentCount,
+                hasGoal = hasGoal,
             )
         },
         bottom = {
@@ -126,12 +129,29 @@ private fun WelcomeBody(
     experience: ExperienceEnumState,
     excludedMusclesCount: Int,
     missingEquipmentCount: Int,
+    hasGoal: Boolean,
 ) {
     val checklistItems = persistentListOf(
-        WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_profile)),
-        WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_experience)),
-        WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_muscles)),
-        WelcomeChecklistItem(AppTokens.strings.res(Res.string.welcome_check_equipment)),
+        WelcomeChecklistItem(
+            AppTokens.strings.res(Res.string.welcome_check_profile),
+            isCompleted = true
+        ),
+        WelcomeChecklistItem(
+            AppTokens.strings.res(Res.string.welcome_check_experience),
+            isCompleted = true
+        ),
+        WelcomeChecklistItem(
+            AppTokens.strings.res(Res.string.welcome_check_muscles),
+            isCompleted = true
+        ),
+        WelcomeChecklistItem(
+            AppTokens.strings.res(Res.string.welcome_check_equipment),
+            isCompleted = true
+        ),
+        WelcomeChecklistItem(
+            text = AppTokens.strings.res(Res.string.welcome_check_goal),
+            isCompleted = hasGoal
+        ),
     )
 
     LazyColumn(
@@ -275,6 +295,7 @@ private fun WelcomeHomeContentPreview() {
             experience = ExperienceEnumState.PRO,
             excludedMusclesCount = 3,
             missingEquipmentCount = 5,
+            hasGoal = true,
             hasDraftTraining = false,
             onStartTraining = {},
             onResumeTraining = {},
@@ -292,6 +313,7 @@ private fun WelcomeHomeContentDraftPreview() {
             experience = ExperienceEnumState.BEGINNER,
             excludedMusclesCount = 0,
             missingEquipmentCount = 0,
+            hasGoal = false,
             hasDraftTraining = true,
             onStartTraining = {},
             onResumeTraining = {},

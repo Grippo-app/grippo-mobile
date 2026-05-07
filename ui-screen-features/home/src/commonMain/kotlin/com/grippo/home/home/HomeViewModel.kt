@@ -8,6 +8,7 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.GoalSetupSuggestionUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.Range
@@ -72,6 +73,7 @@ internal class HomeViewModel(
     userFeature: UserFeature,
     excludedMusclesFeature: ExcludedMusclesFeature,
     excludedEquipmentsFeature: ExcludedEquipmentsFeature,
+    goalFeature: GoalFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -90,6 +92,11 @@ internal class HomeViewModel(
         excludedEquipmentsFeature
             .observeExcludedEquipments()
             .onEach { update { state -> state.copy(missingEquipmentCount = it.size) } }
+            .safeLaunch()
+
+        goalFeature
+            .observeGoal()
+            .onEach { goal -> update { state -> state.copy(hasGoal = goal != null) } }
             .safeLaunch()
 
         localSettingsFeature.observeRange()

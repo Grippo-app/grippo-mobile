@@ -42,6 +42,7 @@ internal class HomeComponent(
             userFeature = getKoin().get(),
             excludedMusclesFeature = getKoin().get(),
             excludedEquipmentsFeature = getKoin().get(),
+            goalFeature = getKoin().get(),
         )
     }
 

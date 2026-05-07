@@ -252,6 +252,7 @@
     <string name="welcome_check_experience">Уровень выбран</string>
     <string name="welcome_check_muscles">Мышцы настроены</string>
     <string name="welcome_check_equipment">Оборудование настроено</string>
+    <string name="welcome_check_goal">Цель задана</string>
     <string name="welcome_section_progress_title">Прогресс настройки</string>
     <string name="welcome_section_benefits_title">Что у тебя есть</string>
 

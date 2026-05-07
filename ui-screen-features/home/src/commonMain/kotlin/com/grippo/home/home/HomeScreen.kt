@@ -88,6 +88,7 @@ internal fun HomeScreen(
             experience = state.user.experience,
             excludedMusclesCount = state.excludedMusclesCount,
             missingEquipmentCount = state.missingEquipmentCount,
+            hasGoal = state.hasGoal,
             hasDraftTraining = state.hasDraftTraining,
             onStartTraining = contract::onStartTraining,
             onResumeTraining = contract::onResumeTraining,

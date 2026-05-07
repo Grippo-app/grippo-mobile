@@ -253,6 +253,7 @@
     <string name="welcome_check_experience">Experience selected</string>
     <string name="welcome_check_muscles">Muscles configured</string>
     <string name="welcome_check_equipment">Equipment configured</string>
+    <string name="welcome_check_goal">Goal set</string>
     <string name="welcome_section_progress_title">Setup progress</string>
     <string name="welcome_section_benefits_title">What you have</string>
 
