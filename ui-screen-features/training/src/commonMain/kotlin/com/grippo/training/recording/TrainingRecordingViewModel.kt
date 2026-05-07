@@ -12,6 +12,7 @@ import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
@@ -28,10 +29,12 @@ import com.grippo.design.resources.provider.training_progress_lost_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
+import com.grippo.state.domain.training.toDomain
 import com.grippo.state.domain.training.toDraftDomain
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -57,6 +60,7 @@ internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val notificationManager: NotificationManager,
+    private val trainingTotalUseCase: TrainingTotalUseCase,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
@@ -110,7 +114,11 @@ internal class TrainingRecordingViewModel(
 
     private fun provideDraftTraining(value: DraftTraining?) {
         value ?: return
+
         val exercises = value.exercises.toState()
+            .map { it.withRecalculatedTotal() }
+            .toPersistentList()
+
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
         update {
             it.copy(
@@ -122,6 +130,16 @@ internal class TrainingRecordingViewModel(
                 startAt = startAt,
             )
         }
+    }
+
+    private fun ExerciseState.withRecalculatedTotal(): ExerciseState {
+        val completed = iterations.filterNot { it.isPending }
+        if (completed.isEmpty()) return this
+        val totals = trainingTotalUseCase
+            .fromSetIterations(completed.toDomain())
+            .toState()
+
+        return copy(total = totals)
     }
 
     private fun provideTraining(value: Training?) {
@@ -156,12 +174,14 @@ internal class TrainingRecordingViewModel(
     }
 
     fun updateExercise(value: ExerciseState) {
+        val refreshed = value.withRecalculatedTotal()
+
         update { current ->
-            val index = current.exercises.indexOfFirst { it.id == value.id }
+            val index = current.exercises.indexOfFirst { it.id == refreshed.id }
             val updated = if (index >= 0) {
-                current.exercises.toMutableList().apply { this[index] = value }
+                current.exercises.toMutableList().apply { this[index] = refreshed }
             } else {
-                current.exercises + value
+                current.exercises + refreshed
             }
             current.copy(exercises = updated.toPersistentList())
         }
