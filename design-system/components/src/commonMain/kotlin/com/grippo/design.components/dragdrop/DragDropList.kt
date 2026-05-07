@@ -222,8 +222,12 @@ public fun <K : Any> LazyItemScope.DraggableItem(
     }
 
     val haptic = LocalHapticFeedback.current
-    val isDragging = state.isDragging(key)
-    val isInteracting = state.isInteracting(key)
+    val isDragging by remember(state, key) {
+        derivedStateOf { state.isDragging(key) }
+    }
+    val isInteracting by remember(state, key) {
+        derivedStateOf { state.isInteracting(key) }
+    }
 
     val gestureModifier = Modifier.pointerInput(state, key) {
         awaitEachGesture {

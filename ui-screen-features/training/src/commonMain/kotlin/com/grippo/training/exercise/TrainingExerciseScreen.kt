@@ -191,7 +191,7 @@ internal fun TrainingExerciseScreen(
                                                 content = ButtonContent.Icon(
                                                     icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
                                                 ),
-                                                style = ButtonStyle.Error,
+                                                style = ButtonStyle.Transparent,
                                                 onClick = deleteIterationProvider
                                             )
                                         }
