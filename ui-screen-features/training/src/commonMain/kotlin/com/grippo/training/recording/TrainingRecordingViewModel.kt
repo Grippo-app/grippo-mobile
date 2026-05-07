@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
@@ -65,6 +66,10 @@ internal class TrainingRecordingViewModel(
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
+
+    companion object {
+        private val START_TRAINING_DIALOG_DELAY = 300.milliseconds
+    }
 
     init {
         FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
@@ -102,7 +107,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private suspend fun showStartTrainingDialog() {
-        delay(400)
+        delay(START_TRAINING_DIALOG_DELAY)
         val dialog = DialogConfig.StartTraining(
             onStartEmpty = ::onAddExercise,
             onUseExercises = { exercises ->
