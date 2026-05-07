@@ -54,8 +54,6 @@ public data class GoalSetupSuggestionState(
     public companion object {
         internal val DEFAULT_BENEFITS: ImmutableList<BenefitCode> = persistentListOf(
             BenefitCode.Tailored,
-            BenefitCode.Direction,
-            BenefitCode.Evolves,
         )
     }
 }

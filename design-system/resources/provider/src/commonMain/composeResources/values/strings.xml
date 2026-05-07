@@ -89,11 +89,11 @@
     <string name="training_profile_dimensions_strength_caption">Heavy reps near a top set</string>
     <string name="training_profile_dimensions_hypertrophy_caption">Mid-range reps in the muscle-building zone</string>
     <string name="training_profile_dimensions_endurance_caption">Higher reps and lighter loads</string>
-    <string name="training_profile_details_subtitle">A read-out of how today\'s work shaped up — what you did, where it landed, and what to notice.</string>
+    <string name="training_profile_details_subtitle">A read-out of how today's work shaped up — what you did, where it landed, and what to notice.</string>
     <string name="training_profile_drifting_title">Worth a look</string>
-    <string name="training_profile_on_track_title">What\'s working</string>
+    <string name="training_profile_on_track_title">What's working</string>
     <string name="training_profile_insight_easy_session_headline">Easy session</string>
-    <string name="training_profile_insight_easy_session_detail">There wasn\'t enough working stimulus to classify a style today. That\'s fine for technique or recovery days.</string>
+    <string name="training_profile_insight_easy_session_detail">There wasn't enough working stimulus to classify a style today. That's fine for technique or recovery days.</string>
     <string name="training_profile_insight_mixed_session_headline">No clear style</string>
     <string name="training_profile_insight_mixed_session_detail">Strength, hypertrophy and endurance all showed up. A more specific session is usually a stronger stimulus.</string>
     <string name="training_profile_insight_powerbuilding_headline">Powerbuilding pattern</string>
@@ -113,7 +113,7 @@
     <string name="training_profile_insight_push_pull_imbalance_headline">Push/Pull is uneven</string>
     <string name="training_profile_insight_push_pull_imbalance_detail">One direction did most of the work. Balancing push and pull over time protects the shoulders.</string>
     <string name="training_profile_insight_narrow_muscle_focus_headline">Narrow muscle focus</string>
-    <string name="training_profile_insight_narrow_muscle_focus_detail">Most of the load went to just two muscles. Useful as specialization, costly if it\'s every session.</string>
+    <string name="training_profile_insight_narrow_muscle_focus_detail">Most of the load went to just two muscles. Useful as specialization, costly if it's every session.</string>
     <string name="training_profile_insight_action_add_compound_anchor">Anchor the next session with a compound (squat, bench, row, deadlift).</string>
     <string name="training_profile_insight_action_diversify_exercises">Swap in another exercise instead of stacking sets on one.</string>
     <string name="training_profile_insight_action_add_pulling_work">Add a pulling movement next session — row or pull-up.</string>
@@ -224,7 +224,7 @@
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
     <string name="track_real_progress_no_fluff">Personalized workouts for your level, gym, and progress.</string>
-    <string name="login_button_registration_label">Don\'t have an account?</string>
+    <string name="login_button_registration_label">Don't have an account?</string>
     <string name="login_button_registration">Sign up</string>
     <string name="at_least_six_characters">At least 6 characters</string>
 
@@ -670,44 +670,44 @@
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Goal details</string>
     <string name="goal_details_subtitle">A closer look at how your training matches the goal you picked.</string>
-    <string name="goal_details_insights_title">What\'s driving your score</string>
+    <string name="goal_details_insights_title">What's driving your score</string>
 
     <!-- Training goal details: reason headlines -->
     <string name="goal_details_reason_no_data_title">Not enough data yet</string>
     <string name="goal_details_reason_no_data_detail">Log a few workouts in this period so we can score adherence.</string>
-    <string name="goal_details_reason_too_early_title">It\'s still early</string>
+    <string name="goal_details_reason_too_early_title">It's still early</string>
     <string name="goal_details_reason_too_early_detail">Your goal just started — a stable pattern usually takes about a week of training to show up.</string>
     <string name="goal_details_reason_overdue_title">Target date has passed</string>
-    <string name="goal_details_reason_overdue_detail">You\'re past the original target. Consider extending the deadline or wrapping the goal up.</string>
+    <string name="goal_details_reason_overdue_detail">You're past the original target. Consider extending the deadline or wrapping the goal up.</string>
     <string name="goal_details_reason_almost_done_title">Home stretch</string>
-    <string name="goal_details_reason_almost_done_detail">You\'re in the final stretch. Lock in the pattern that has been working.</string>
+    <string name="goal_details_reason_almost_done_detail">You're in the final stretch. Lock in the pattern that has been working.</string>
     <string name="goal_details_reason_completed_title">Goal reached</string>
     <string name="goal_details_reason_completed_detail">Your training matched the plan through the full period — nice work.</string>
     <string name="goal_details_reason_on_track_title">On track</string>
     <string name="goal_details_reason_on_track_detail">Your recent training pattern matches the goal you chose.</string>
     <string name="goal_details_reason_drifting_title">Slightly off</string>
-    <string name="goal_details_reason_drifting_detail">Some sessions don\'t fit the pattern this goal needs. Small adjustments will get you back.</string>
+    <string name="goal_details_reason_drifting_detail">Some sessions don't fit the pattern this goal needs. Small adjustments will get you back.</string>
     <string name="goal_details_reason_off_track_title">Off track</string>
     <string name="goal_details_reason_off_track_detail">Most of your recent work goes toward a different quality than what this goal needs.</string>
 
     <!-- Training goal details: per-axis reasons -->
     <string name="goal_details_reason_strength_low_title">Not enough heavy work</string>
-    <string name="goal_details_reason_strength_low_detail">Low-rep, high-load sets are the key driver of getting stronger, and they\'re a small share of your volume.</string>
+    <string name="goal_details_reason_strength_low_detail">Low-rep, high-load sets are the key driver of getting stronger, and they're a small share of your volume.</string>
     <string name="goal_details_reason_strength_ok_title">Strength focus looks right</string>
     <string name="goal_details_reason_strength_ok_detail">A clear majority of your work is heavy enough to build strength.</string>
 
     <string name="goal_details_reason_hypertrophy_low_title">Too little hypertrophy work</string>
-    <string name="goal_details_reason_hypertrophy_low_detail">Moderate-load, moderate-rep sets (6–12 reps) drive muscle growth — you\'re not doing enough of them.</string>
+    <string name="goal_details_reason_hypertrophy_low_detail">Moderate-load, moderate-rep sets (6–12 reps) drive muscle growth — you're not doing enough of them.</string>
     <string name="goal_details_reason_hypertrophy_ok_title">Hypertrophy focus looks right</string>
     <string name="goal_details_reason_hypertrophy_ok_detail">Most of your work lives in the hypertrophy rep range.</string>
 
     <string name="goal_details_reason_endurance_low_title">Not enough metabolic work</string>
-    <string name="goal_details_reason_endurance_low_detail">Fat-loss goals benefit from higher reps and shorter rest — you\'re leaning heavy instead.</string>
+    <string name="goal_details_reason_endurance_low_detail">Fat-loss goals benefit from higher reps and shorter rest — you're leaning heavy instead.</string>
     <string name="goal_details_reason_endurance_ok_title">Endurance emphasis is right</string>
-    <string name="goal_details_reason_endurance_ok_detail">You\'re keeping the pace high enough to drive the conditioning you need.</string>
+    <string name="goal_details_reason_endurance_ok_detail">You're keeping the pace high enough to drive the conditioning you need.</string>
 
     <string name="goal_details_reason_balance_drift_title">Your axes are off balance</string>
-    <string name="goal_details_reason_balance_drift_detail">This goal rewards a rough 50/50 split between the two core qualities — you\'re leaning into one.</string>
+    <string name="goal_details_reason_balance_drift_detail">This goal rewards a rough 50/50 split between the two core qualities — you're leaning into one.</string>
     <string name="goal_details_reason_balance_ok_title">Balance looks healthy</string>
     <string name="goal_details_reason_balance_ok_detail">The two core qualities are trading weight evenly, which is what this goal needs.</string>
 
@@ -715,11 +715,11 @@
     <string name="goal_details_reason_suppressed_axis_high_detail">The quality this goal wants suppressed is taking up too much of your session time.</string>
 
     <string name="goal_details_reason_rtt_under_title">Still ramping up slowly</string>
-    <string name="goal_details_reason_rtt_under_detail">You\'re training below the minimum work needed to rebuild capacity. Add a couple more light sessions.</string>
+    <string name="goal_details_reason_rtt_under_detail">You're training below the minimum work needed to rebuild capacity. Add a couple more light sessions.</string>
     <string name="goal_details_reason_rtt_over_title">Coming back too hot</string>
     <string name="goal_details_reason_rtt_over_detail">Volume and intensity are already high for a return phase. Pull back to protect recovery.</string>
     <string name="goal_details_reason_rtt_in_range_title">Ramp-up pace looks right</string>
-    <string name="goal_details_reason_rtt_in_range_detail">You\'re training enough to rebuild without overshooting.</string>
+    <string name="goal_details_reason_rtt_in_range_detail">You're training enough to rebuild without overshooting.</string>
 
     <!-- Training goal details: actionable tips -->
     <string name="goal_details_tip_add_heavy">Work in 3–5 reps at 85%+ of your 1RM on a main compound lift.</string>
@@ -951,15 +951,15 @@
     <string name="muscle_load_summary_stimulus_higher_than_volume">Stimulus is higher than volume for %1$s. More effort with less tonnage. For strength: add a heavier top set. For size: keep it and add 1 set.</string>
     <string name="muscle_load_summary_stimulus_volume_match">Stimulus and volume match for the top group.</string>
     <string name="muscle_load_summary_second_driver">Second driver: %1$s.</string>
-    <string name="muscle_load_summary_assist_suppressed">Assist groups look quiet — expected. The score dampens tiny shares, so compounds don\'t inflate arms or shoulders. If you want them to grow, add 2–6 isolation sets/week.</string>
+    <string name="muscle_load_summary_assist_suppressed">Assist groups look quiet — expected. The score dampens tiny shares, so compounds don't inflate arms or shoulders. If you want them to grow, add 2–6 isolation sets/week.</string>
     <string name="muscle_load_summary_tail_with_weakest">Low tail: remaining groups ~%1$d%%. %2$s ~%3$d%%. Consider a short maintenance block.</string>
     <string name="muscle_load_summary_tail_without_weakest">Low tail: remaining groups ~%1$d%%. Consider a short maintenance block.</string>
 
     <!-- Goal setup suggestion dialog -->
-    <string name="goal_setup_suggestion_title">What\'s your goal?</string>
-    <string name="goal_setup_suggestion_subtitle">A few quick answers help us tailor your training. You can change it anytime.</string>
-    <string name="goal_setup_suggestion_benefit_tailored_title">Tailored to you</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Small details help Grippo focus on what matters most for your training.</string>
+    <string name="goal_setup_suggestion_title">What's your goal?</string>
+    <string name="goal_setup_suggestion_subtitle">We'll tailor exercises and volume to match it.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_title">Better-matched workouts</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Less filler, more of what actually works toward your goal.</string>
     <string name="goal_setup_suggestion_benefit_direction_title">A clearer direction</string>
     <string name="goal_setup_suggestion_benefit_direction_description">Naming your goal makes each session more intentional.</string>
     <string name="goal_setup_suggestion_benefit_evolves_title">Better over time</string>

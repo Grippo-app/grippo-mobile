@@ -113,7 +113,7 @@ internal class ProfileBodyViewModel(
                 body = stringProvider.get(Res.string.notification_weight_description),
                 deeplink = Deeplink.WeightHistory.key
             )
-            notificationManager.show(notification, 3.days)
+            notificationManager.show(notification, 7.days)
 
             navigateTo(ProfileBodyDirection.Back)
         }
