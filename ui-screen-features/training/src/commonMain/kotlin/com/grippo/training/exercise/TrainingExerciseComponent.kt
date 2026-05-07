@@ -19,7 +19,6 @@ internal class TrainingExerciseComponent(
         TrainingExerciseViewModel(
             exercise = exercise,
             exerciseExampleFeature = getKoin().get(),
-            trainingTotalUseCase = getKoin().get(),
             dialogController = getKoin().get(),
             weightHistoryFeature = getKoin().get(),
             exerciseValidatorUseCase = getKoin().get()

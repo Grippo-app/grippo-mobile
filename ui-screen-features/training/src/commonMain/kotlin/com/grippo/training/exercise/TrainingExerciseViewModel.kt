@@ -7,20 +7,17 @@ import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
-import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.training.ExerciseValidatorUseCase
 import com.grippo.data.features.api.training.models.ExerciseArtifacts
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.state.domain.training.toDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
@@ -33,7 +30,6 @@ import kotlin.uuid.Uuid
 internal class TrainingExerciseViewModel(
     exercise: ExerciseState,
     exerciseExampleFeature: ExerciseExampleFeature,
-    private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val exerciseValidatorUseCase: ExerciseValidatorUseCase,
@@ -236,21 +232,10 @@ internal class TrainingExerciseViewModel(
     private fun mutateIterations(transform: (List<IterationState>) -> List<IterationState>) {
         val currentExercise = state.value.exercise
         val iterations = transform(currentExercise.iterations).toPersistentList()
-
-        val updatedExercise = currentExercise.copy(
-            iterations = iterations,
-            total = recalculateTotal(iterations),
-        )
+        val updatedExercise = currentExercise.copy(iterations = iterations)
 
         update { it.copy(exercise = updatedExercise) }
 
         navigateTo(TrainingExerciseDirection.Update(updatedExercise))
-    }
-
-    private fun recalculateTotal(iterations: List<IterationState>): TrainingTotalState {
-        val completed = iterations.filterNot { it.isPending }
-        val domainIterations = completed.toDomain()
-
-        return trainingTotalUseCase.fromSetIterations(domainIterations).toState()
     }
 }
