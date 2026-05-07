@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.trainings.ExerciseState
@@ -46,6 +45,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.ArrowRight
+import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.start_training_exercises_count
@@ -109,42 +109,39 @@ private fun EmptyPage(
     val previousLabel = previousOption?.hint()
     val nextLabel = nextOption?.hint()
 
-    Box(modifier = modifier.padding(bottom = overlayReservedHeight)) {
-        Column(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = overlayReservedHeight),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+    ) {
+        BannerCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
+            icon = AppTokens.icons.EmptyExercise,
+            title = AppTokens.strings.res(Res.string.start_training_option_empty_title),
+            description = AppTokens.strings.res(Res.string.start_training_option_empty_description),
+        )
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                .weight(1f),
         ) {
-            Text(
-                text = AppTokens.strings.res(Res.string.start_training_option_empty_title),
-                style = AppTokens.typography.h3(),
-                color = AppTokens.colors.text.primary,
-                textAlign = TextAlign.Center,
-            )
-
-            Text(
-                text = AppTokens.strings.res(Res.string.start_training_option_empty_description),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-                textAlign = TextAlign.Center,
-            )
-        }
-
-        if (previousLabel != null) {
-            SwipeHint(
-                modifier = Modifier.align(Alignment.BottomStart),
-                direction = SwipeHintDirection.Previous,
-                label = previousLabel,
-            )
-        }
-        if (nextLabel != null) {
-            SwipeHint(
-                modifier = Modifier.align(Alignment.BottomEnd),
-                direction = SwipeHintDirection.Next,
-                label = nextLabel,
-            )
+            if (previousLabel != null) {
+                SwipeHint(
+                    modifier = Modifier.align(Alignment.BottomStart),
+                    direction = SwipeHintDirection.Previous,
+                    label = previousLabel,
+                )
+            }
+            if (nextLabel != null) {
+                SwipeHint(
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    direction = SwipeHintDirection.Next,
+                    label = nextLabel,
+                )
+            }
         }
     }
 }

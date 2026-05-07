@@ -280,7 +280,7 @@ public sealed class DialogConfig(
         @Transient val onUseExercises: (exercises: List<ExerciseState>) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = true
+        dismissBySwipe = false
     ) {
         override val key: String
             get() = buildKey("StartTraining")
