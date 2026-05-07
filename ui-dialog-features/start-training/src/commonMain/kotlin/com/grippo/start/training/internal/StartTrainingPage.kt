@@ -36,6 +36,7 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
+import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -43,6 +44,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.EmptyExercise
@@ -128,6 +130,12 @@ private fun EmptyPage(
                 .fillMaxWidth()
                 .weight(1f),
         ) {
+            EmptyState(
+                modifier = Modifier.fillMaxSize(),
+                value = AppTokens.icons.EmptyExercise,
+                text = AppTokens.strings.res(Res.string.empty_training_exercises),
+            )
+
             if (previousLabel != null) {
                 SwipeHint(
                     modifier = Modifier.align(Alignment.BottomStart),
