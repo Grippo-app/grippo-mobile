@@ -19,6 +19,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +46,7 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.launch
 
 internal val overlayReservedHeight: Dp
     @Composable
@@ -109,6 +111,8 @@ internal fun StartTrainingScreen(
         }
     }
 
+    val pagerScope = rememberCoroutineScope()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -132,6 +136,18 @@ internal fun StartTrainingScreen(
                 option = option,
                 previousOption = state.options.getOrNull(index - 1),
                 nextOption = state.options.getOrNull(index + 1),
+                onSwipePrevious = {
+                    pagerScope.launch {
+                        pagerState.animateScrollToPage((index - 1).coerceAtLeast(0))
+                    }
+                },
+                onSwipeNext = {
+                    pagerScope.launch {
+                        pagerState.animateScrollToPage(
+                            (index + 1).coerceAtMost(state.options.lastIndex)
+                        )
+                    }
+                },
             )
         }
 

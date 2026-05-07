@@ -38,6 +38,7 @@ import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -48,6 +49,7 @@ import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.EmptyExercise
+import com.grippo.design.resources.provider.icons.Muscle
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.start_training_exercises_count
@@ -71,12 +73,16 @@ internal fun StartTrainingPage(
     option: StartTrainingOption,
     previousOption: StartTrainingOption? = null,
     nextOption: StartTrainingOption? = null,
+    onSwipePrevious: () -> Unit = {},
+    onSwipeNext: () -> Unit = {},
 ) {
     when (option) {
         StartTrainingOption.Empty -> EmptyPage(
             modifier = modifier,
             previousOption = previousOption,
             nextOption = nextOption,
+            onSwipePrevious = onSwipePrevious,
+            onSwipeNext = onSwipeNext,
         )
 
         is StartTrainingOption.Preset -> ExercisesPage(
@@ -107,6 +113,8 @@ private fun EmptyPage(
     modifier: Modifier = Modifier,
     previousOption: StartTrainingOption? = null,
     nextOption: StartTrainingOption? = null,
+    onSwipePrevious: () -> Unit = {},
+    onSwipeNext: () -> Unit = {},
 ) {
     val previousLabel = previousOption?.hint()
     val nextLabel = nextOption?.hint()
@@ -120,7 +128,7 @@ private fun EmptyPage(
         BannerCard(
             modifier = Modifier.fillMaxWidth(),
             style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
-            icon = AppTokens.icons.EmptyExercise,
+            icon = AppTokens.icons.Muscle,
             title = AppTokens.strings.res(Res.string.start_training_option_empty_title),
             description = AppTokens.strings.res(Res.string.start_training_option_empty_description),
         )
@@ -141,6 +149,7 @@ private fun EmptyPage(
                     modifier = Modifier.align(Alignment.BottomStart),
                     direction = SwipeHintDirection.Previous,
                     label = previousLabel,
+                    onClick = onSwipePrevious,
                 )
             }
             if (nextLabel != null) {
@@ -148,6 +157,7 @@ private fun EmptyPage(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     direction = SwipeHintDirection.Next,
                     label = nextLabel,
+                    onClick = onSwipeNext,
                 )
             }
         }
@@ -165,6 +175,7 @@ private fun SwipeHint(
     modifier: Modifier = Modifier,
     direction: SwipeHintDirection,
     label: String,
+    onClick: () -> Unit,
 ) {
     val accent = AppTokens.colors.semantic.notice
 
@@ -190,7 +201,7 @@ private fun SwipeHint(
     val translationSign = if (direction == SwipeHintDirection.Previous) -1f else 1f
 
     Row(
-        modifier = modifier,
+        modifier = modifier.scalableClick(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (direction == SwipeHintDirection.Previous) {
