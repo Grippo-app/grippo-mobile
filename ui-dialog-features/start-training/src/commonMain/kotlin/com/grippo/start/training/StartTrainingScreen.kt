@@ -1,5 +1,6 @@
 package com.grippo.start.training
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -45,7 +48,14 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
-internal val OverlayReservedHeight = 116.dp
+internal val overlayReservedHeight: Dp
+    @Composable
+    @ReadOnlyComposable
+    get() = AppTokens.dp.contentPadding.block +
+            (AppTokens.dp.pagerIndicator.dotSize + AppTokens.dp.contentPadding.subContent * 2) +
+            AppTokens.dp.contentPadding.block +
+            AppTokens.dp.button.medium.height +
+            AppTokens.dp.dialog.bottom
 
 @Composable
 internal fun StartTrainingScreen(
@@ -130,14 +140,21 @@ internal fun StartTrainingScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(OverlayReservedHeight),
+                .height(overlayReservedHeight),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             PagerIndicator(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
+                    .background(
+                        color = AppTokens.colors.background.card,
+                        shape = CircleShape,
+                    )
+                    .padding(
+                        horizontal = AppTokens.dp.contentPadding.content,
+                        vertical = AppTokens.dp.contentPadding.subContent,
+                    ),
                 pageCount = state.options.size,
                 selectedIndex = pagerState.currentPage,
             )

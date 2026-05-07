@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,10 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,8 +47,8 @@ import com.grippo.design.resources.provider.start_training_exercises_count
 import com.grippo.design.resources.provider.start_training_option_empty_description
 import com.grippo.design.resources.provider.start_training_option_empty_title
 import com.grippo.design.resources.provider.start_training_option_preset_description
-import com.grippo.start.training.OverlayReservedHeight
 import com.grippo.start.training.StartTrainingOption
+import com.grippo.start.training.overlayReservedHeight
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -92,15 +91,7 @@ private fun EmptyPage(
     val previousLabel = previousOption?.hint()
     val nextLabel = nextOption?.hint()
 
-    Box(
-        modifier = modifier
-            .padding(bottom = OverlayReservedHeight)
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.exerciseCard.small.radius)
-            )
-            .padding(AppTokens.dp.contentPadding.block),
-    ) {
+    Box(modifier = modifier.padding(bottom = overlayReservedHeight)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,32 +114,28 @@ private fun EmptyPage(
             )
         }
 
-        if (previousLabel != null || nextLabel != null) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-            ) {
-                if (previousLabel != null) {
-                    SwipeHint(
-                        modifier = Modifier.align(Alignment.CenterStart),
-                        direction = SwipeHintDirection.Previous,
-                        label = previousLabel,
-                    )
-                }
-                if (nextLabel != null) {
-                    SwipeHint(
-                        modifier = Modifier.align(Alignment.CenterEnd),
-                        direction = SwipeHintDirection.Next,
-                        label = nextLabel,
-                    )
-                }
-            }
+        if (previousLabel != null) {
+            SwipeHint(
+                modifier = Modifier.align(Alignment.BottomStart),
+                direction = SwipeHintDirection.Previous,
+                label = previousLabel,
+            )
+        }
+        if (nextLabel != null) {
+            SwipeHint(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                direction = SwipeHintDirection.Next,
+                label = nextLabel,
+            )
         }
     }
 }
 
-private enum class SwipeHintDirection { Previous, Next }
+@Immutable
+private enum class SwipeHintDirection {
+    Previous,
+    Next
+}
 
 @Composable
 private fun SwipeHint(
@@ -276,7 +263,7 @@ private fun ExercisesPage(
             overlay = AppTokens.colors.background.dialog,
             contentPadding = PaddingValues(bottom = AppTokens.dp.contentPadding.subContent),
             bottom = {
-                Spacer(modifier = Modifier.height(OverlayReservedHeight))
+                Spacer(modifier = Modifier.height(overlayReservedHeight))
             },
             content = { containerModifier, resolvedPadding ->
                 LazyColumn(
