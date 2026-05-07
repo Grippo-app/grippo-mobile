@@ -288,23 +288,19 @@ public data object AppDp {
     public data object Welcome {
         val card: Card = Card
         val checkmark: Checkmark = Checkmark
-        val factChip: FactChip = FactChip
+        val fact: Fact = Fact
 
         public data object Card {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
-            val space: Dp = padding.medium
         }
 
         public data object Checkmark {
             val size: Dp = icon.small
         }
 
-        public data object FactChip {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
+        public data object Fact {
             val icon: Dp = AppDp.icon.small
             val space: Dp = padding.extraSmall
             val gap: Dp = padding.small

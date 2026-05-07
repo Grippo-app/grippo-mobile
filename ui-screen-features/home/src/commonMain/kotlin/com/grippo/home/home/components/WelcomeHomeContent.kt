@@ -28,7 +28,6 @@ import com.grippo.design.components.user.UserCardStyle
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
 import com.grippo.design.components.welcome.WelcomeChecklistItem
-import com.grippo.design.components.welcome.WelcomeProfileFacts
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -171,20 +170,14 @@ private fun WelcomeBody(
             )
         }
 
-        item("profile-facts") {
-            WelcomeProfileFacts(
-                modifier = Modifier.fillMaxWidth(),
-                heightDisplay = user.height.display,
-                weightDisplay = user.weight.display,
-                excludedMusclesCount = excludedMusclesCount,
-                missingEquipmentCount = missingEquipmentCount,
-            )
-        }
-
         item("welcome-block") {
             WelcomeBlock(
                 modifier = Modifier.fillMaxWidth(),
                 experience = experience,
+                heightDisplay = user.height.display,
+                weightDisplay = user.weight.display,
+                excludedMusclesCount = excludedMusclesCount,
+                missingEquipmentCount = missingEquipmentCount,
             )
         }
 

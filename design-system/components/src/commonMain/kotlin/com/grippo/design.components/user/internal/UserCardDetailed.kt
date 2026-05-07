@@ -35,7 +35,7 @@ internal fun UserCardDetailed(
             ringWidth = AppTokens.dp.userCard.detailed.avatarRing,
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
         Text(
             text = value.name,

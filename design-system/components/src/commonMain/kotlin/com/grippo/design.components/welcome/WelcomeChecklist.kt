@@ -22,6 +22,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.welcome_check_equipment
 import com.grippo.design.resources.provider.welcome_check_experience
@@ -75,13 +76,19 @@ private fun ChecklistRow(
     val accent = if (isCompleted) {
         AppTokens.colors.semantic.success
     } else {
-        AppTokens.colors.text.tertiary
+        AppTokens.colors.semantic.notice
     }
 
     val textColor = if (isCompleted) {
         AppTokens.colors.text.secondary
     } else {
-        AppTokens.colors.text.tertiary
+        AppTokens.colors.semantic.notice
+    }
+
+    val icon = if (isCompleted) {
+        AppTokens.icons.Check
+    } else {
+        AppTokens.icons.Cancel
     }
 
     Row(
@@ -100,7 +107,7 @@ private fun ChecklistRow(
         ) {
             Icon(
                 modifier = Modifier.size(AppTokens.dp.welcome.checkmark.size),
-                imageVector = AppTokens.icons.Check,
+                imageVector = icon,
                 contentDescription = null,
                 tint = accent,
             )
