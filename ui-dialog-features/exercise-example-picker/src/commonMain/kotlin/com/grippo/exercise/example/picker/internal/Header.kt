@@ -65,7 +65,6 @@ internal fun Header(
                 }
 
                 CheckSelectableCard(
-                    modifier = Modifier,
                     style = CheckSelectableCardStyle.Small(
                         title = item.type.title().text()
                     ),

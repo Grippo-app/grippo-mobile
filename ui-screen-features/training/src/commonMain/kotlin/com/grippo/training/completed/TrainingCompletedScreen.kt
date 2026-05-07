@@ -70,10 +70,8 @@ internal fun TrainingCompletedScreen(
 
     val cardVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(state.timeline, loaders) {
-        val hasLoader = loaders.contains(TrainingCompletedLoader.SaveTraining)
-        val hasTraining = state.timeline.isNotEmpty()
-        cardVisible.value = hasTraining && hasLoader.not()
+    LaunchedEffect(state.timeline) {
+        cardVisible.value = state.timeline.isNotEmpty()
     }
 
     val alpha by animateFloatAsState(

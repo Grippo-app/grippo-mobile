@@ -52,10 +52,7 @@ internal fun ColumnScope.ExercisesPage(
     state: TrainingRecordingState,
     contract: TrainingRecordingContract
 ) {
-    val exercises = remember(state.exercises) {
-        state.exercises
-    }
-
+    val exercises = state.exercises
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
 
     BottomOverlayContainer(
@@ -107,7 +104,6 @@ internal fun ColumnScope.ExercisesPage(
 
                                 DraggableItem(state = dragDropState, key = exercise.id) {
                                     SwipeToReveal(
-                                        modifier = Modifier,
                                         actions = {
                                             Button(
                                                 modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
@@ -142,7 +138,7 @@ internal fun ColumnScope.ExercisesPage(
             Button(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(1f),
+                    .fillMaxWidth(),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.add_exercise_btn),
                 ),

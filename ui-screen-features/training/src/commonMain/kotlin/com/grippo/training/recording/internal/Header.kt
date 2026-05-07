@@ -20,7 +20,7 @@ import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.tonnage
 
 @Composable
-public fun Header(
+internal fun Header(
     modifier: Modifier = Modifier,
     duration: String,
     volume: VolumeFormatState,

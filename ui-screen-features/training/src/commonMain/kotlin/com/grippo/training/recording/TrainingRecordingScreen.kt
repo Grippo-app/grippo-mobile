@@ -71,18 +71,7 @@ internal fun TrainingRecordingScreen(
         title = AppTokens.strings.res(Res.string.training),
         leading = Leading.Back(contract::onBack),
         trailing = {
-            val buttonVisible = remember(state.exercises) {
-                state.exercises.isNotEmpty()
-            }
-
-            if (buttonVisible.not()) return@Toolbar
-
-            val buttonState = remember(loaders, state.exercises) {
-                when {
-                    state.exercises.isEmpty() -> ButtonState.Disabled
-                    else -> ButtonState.Enabled
-                }
-            }
+            if (state.exercises.isEmpty()) return@Toolbar
 
             val buttonText = when (state.stage) {
                 is StageState.Add -> AppTokens.strings.res(Res.string.save_btn)
@@ -94,7 +83,7 @@ internal fun TrainingRecordingScreen(
                 content = ButtonContent.Text(text = buttonText),
                 size = ButtonSize.Small,
                 style = ButtonStyle.Primary,
-                state = buttonState,
+                state = ButtonState.Enabled,
                 onClick = contract::onSave
             )
         },

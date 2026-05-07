@@ -56,7 +56,6 @@ import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.HomeContract
 import com.grippo.home.home.HomeState
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Duration.Companion.hours
 
 @Composable
@@ -81,10 +80,6 @@ internal fun DashboardHomeContent(
     }
     val intensityMetric = remember(state.performance) {
         state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Intensity }
-    }
-
-    val spotlightsList = remember(state.spotlights) {
-        state.spotlights.toPersistentList()
     }
 
     val gridState = rememberAnchoredLazyGridState(
@@ -177,11 +172,11 @@ internal fun DashboardHomeContent(
                     }
                 }
 
-                if (spotlightsList.isNotEmpty()) {
+                if (state.spotlights.isNotEmpty()) {
                     item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
                         ExerciseSpotlightsCard(
                             modifier = Modifier.fillMaxWidth(),
-                            value = spotlightsList,
+                            value = state.spotlights,
                             onExampleClick = contract::onOpenExample
                         )
                     }
@@ -193,7 +188,6 @@ internal fun DashboardHomeContent(
                         span = { GridItemSpan(if (volumeMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
-                            modifier = Modifier,
                             metric = densityMetric,
                             contract = contract
                         )
@@ -206,7 +200,6 @@ internal fun DashboardHomeContent(
                         span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
-                            modifier = Modifier,
                             metric = volumeMetric,
                             contract = contract
                         )
@@ -219,7 +212,6 @@ internal fun DashboardHomeContent(
                         span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
-                            modifier = Modifier,
                             metric = repetitionsMetric,
                             contract = contract
                         )
@@ -232,7 +224,6 @@ internal fun DashboardHomeContent(
                         span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
                     ) {
                         PerformanceMetricCardItem(
-                            modifier = Modifier,
                             metric = intensityMetric,
                             contract = contract
                         )

@@ -104,7 +104,7 @@ public fun Toolbar(
 
             title?.let {
                 Text(
-                    modifier = Modifier.fillMaxWidth(1f),
+                    modifier = Modifier.fillMaxWidth(),
                     text = it,
                     style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,

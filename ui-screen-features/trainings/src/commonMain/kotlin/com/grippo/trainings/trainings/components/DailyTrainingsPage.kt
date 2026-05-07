@@ -76,7 +76,6 @@ internal fun DailyTrainingsPage(
             contentType = { it::class }
         ) { value ->
             DailyTimelineItem(
-                modifier = Modifier,
                 value = value,
                 onTrainingMenuClick = onTrainingMenuClick,
                 onExerciseClick = onExerciseClick

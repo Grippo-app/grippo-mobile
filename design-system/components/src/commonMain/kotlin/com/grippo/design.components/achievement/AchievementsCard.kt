@@ -27,7 +27,6 @@ public fun AchievementsCard(
     ) {
         items(items = value, key = { it.key }) { item ->
             AchievementCard(
-                modifier = Modifier,
                 value = item
             )
         }

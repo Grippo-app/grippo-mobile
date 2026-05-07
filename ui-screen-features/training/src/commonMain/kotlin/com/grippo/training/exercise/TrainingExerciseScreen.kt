@@ -184,7 +184,6 @@ internal fun TrainingExerciseScreen(
 
                                 DraggableItem(state = dragDropState, key = iteration.id) {
                                     SwipeToReveal(
-                                        modifier = Modifier,
                                         actions = {
                                             Button(
                                                 modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),

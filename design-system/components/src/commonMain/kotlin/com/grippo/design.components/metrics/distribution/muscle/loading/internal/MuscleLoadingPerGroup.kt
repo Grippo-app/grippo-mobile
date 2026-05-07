@@ -48,7 +48,6 @@ internal fun MuscleLoadingPerGroup(
 private fun MuscleLoadingPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingPerGroup(
-            modifier = Modifier,
             summary = stubMuscleLoadSummary(),
         )
     }

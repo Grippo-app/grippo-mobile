@@ -157,7 +157,7 @@ internal fun ProfileBodyScreen(
             Button(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(1f),
+                    .fillMaxWidth(),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.apply_btn),
                 ),

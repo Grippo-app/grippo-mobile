@@ -39,25 +39,16 @@ public sealed class PercentageFormatState : FormatState<Int> {
 
     public companion object {
 
-        private fun normalize(value: Float): Int = value.roundToInt()
-
         public fun of(display: String): PercentageFormatState {
             val raw = display.trim()
             if (raw.isEmpty()) return Empty()
 
-            val parsed: Float? = raw.replace(',', '.').toFloatOrNull()
-            val normalized: Int? = parsed?.let(::normalize) ?: raw.toIntOrNull()
+            val normalized = raw.replace(',', '.').toFloatOrNull()?.roundToInt()
+                ?: return Invalid(display = display, value = null)
 
             return when {
-                normalized == null -> Invalid(display = display, value = null)
                 normalized == 0 -> Empty()
-
-                PercentageValidator.isValid(normalized) -> Valid(
-                    display = normalized.toString(),
-                    value = normalized
-                )
-
-                else -> Invalid(
+                else -> Valid(
                     display = normalized.toString(),
                     value = normalized
                 )
@@ -67,13 +58,7 @@ public sealed class PercentageFormatState : FormatState<Int> {
         public fun of(value: Int): PercentageFormatState {
             return when {
                 value == 0 -> Empty()
-
-                PercentageValidator.isValid(value) -> Valid(
-                    display = value.toString(),
-                    value = value
-                )
-
-                else -> Invalid(
+                else -> Valid(
                     display = value.toString(),
                     value = value
                 )
@@ -102,12 +87,6 @@ public sealed class PercentageFormatState : FormatState<Int> {
                     append(percent)
                 }
             }
-        }
-    }
-
-    private object PercentageValidator {
-        fun isValid(value: Int): Boolean {
-            return true
         }
     }
 }

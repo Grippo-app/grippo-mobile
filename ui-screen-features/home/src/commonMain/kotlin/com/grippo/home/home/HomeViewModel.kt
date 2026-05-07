@@ -347,16 +347,6 @@ internal class HomeViewModel(
         dialogController.show(dialog)
     }
 
-    override fun onOpenDigest() {
-        val range = state.value.range.value ?: return
-
-        val config = DialogConfig.Statistics.Trainings(
-            range = range
-        )
-
-        dialogController.show(config)
-    }
-
     override fun onAddGoal() {
         navigateTo(HomeDirection.Goal)
     }

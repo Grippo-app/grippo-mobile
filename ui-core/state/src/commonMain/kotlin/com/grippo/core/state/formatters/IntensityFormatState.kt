@@ -40,29 +40,20 @@ public sealed class IntensityFormatState : FormatState<Float> {
 
     public companion object {
 
-        private const val SCALE: Int = 10 // 10 = 1dp, 100 = 2dp
+        private fun tenths(value: Float): Int = (value * 10f).roundToInt()
 
-        private fun scaled(value: Float): Int = (value * SCALE.toFloat()).roundToInt()
-
-        private fun normalize(value: Float): Float {
-            val s = scaled(value)
-            return s / SCALE.toFloat()
+        private fun normalize1dp(value: Float): Float {
+            val t = tenths(value)
+            return t / 10f
         }
 
-        private fun display(value: Float): String {
-            val s = scaled(value)
-            val absS = abs(s)
-            val intPart = absS / SCALE
-            val frac = absS % SCALE
-            val sign = if (s < 0) "-" else ""
-
-            val fracStr = when (SCALE) {
-                10 -> frac.toString()
-                100 -> if (frac < 10) "0$frac" else frac.toString()
-                else -> frac.toString()
-            }
-
-            return "$sign$intPart.$fracStr"
+        private fun display1dp(value: Float): String {
+            val t = tenths(value)
+            val absT = abs(t)
+            val intPart = absT / 10
+            val frac = absT % 10
+            val sign = if (t < 0) "-" else ""
+            return "$sign$intPart.$frac"
         }
 
         public fun of(value: Float): IntensityFormatState {
@@ -70,19 +61,13 @@ public sealed class IntensityFormatState : FormatState<Float> {
                 return Invalid(display = value.toString(), value = null)
             }
 
-            val trimmed = normalize(value)
+            val normalized = normalize1dp(value)
 
             return when {
-                trimmed == 0f -> Empty()
-
-                IntensityValidator.isValid(trimmed) -> Valid(
-                    display = display(trimmed),
-                    value = trimmed
-                )
-
-                else -> Invalid(
-                    display = display(trimmed),
-                    value = trimmed
+                normalized == 0f -> Empty()
+                else -> Valid(
+                    display = display1dp(normalized),
+                    value = normalized
                 )
             }
         }
@@ -126,12 +111,6 @@ public sealed class IntensityFormatState : FormatState<Float> {
             v < 20f -> Average.LOW
             v < 40f -> Average.MEDIUM
             else -> Average.LARGE
-        }
-    }
-
-    private object IntensityValidator {
-        fun isValid(value: Float): Boolean {
-            return true
         }
     }
 }
