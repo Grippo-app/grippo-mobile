@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import com.grippo.wheel.picker.internal.BindWheel
+import com.grippo.wheel.picker.internal.BindWheelHaptics
 import com.grippo.wheel.picker.internal.WheelPicker
 import com.grippo.wheel.picker.internal.WheelPickerDefaults
 
@@ -31,6 +32,8 @@ public data class WheelColumn<T : Comparable<T>>(
             onSelect = onSelect,
             isValid = isValid
         )
+
+        BindWheelHaptics(listState = listState)
 
         WheelPicker(
             modifier = modifier.height(height * rowCount),

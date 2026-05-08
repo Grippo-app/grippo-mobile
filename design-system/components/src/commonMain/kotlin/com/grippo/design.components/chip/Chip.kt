@@ -97,7 +97,10 @@ public fun Chip(
                 brush = brush,
                 shape = shape
             ).let {
-                if (stype is ChipStype.Clickable) it.scalableClick(onClick = stype.onClick) else it
+                if (stype is ChipStype.Clickable) it.scalableClick(
+                    onClick = stype.onClick,
+                    haptic = true
+                ) else it
             }.padding(
                 horizontal = tokens.horizontalPadding,
             ).height(

@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 @Composable
 internal fun <T> BindWheel(
@@ -57,33 +56,49 @@ internal fun <T> BindWheel(
         }
     }
 
-    // --- After the user scrolls and the list snaps, ensure the snapped item is valid.
-    // If it's invalid, automatically animate to the nearest valid item.
-    // `distinctUntilChanged` prevents duplicate triggers; `collectLatest` cancels older animations.
-    LaunchedEffect(listState, items, isValidRef.value) {
-        snapshotFlow { listState.isScrollInProgress }
+    // --- Validate the snapped item whenever the wheel is idle. Re-fires on three triggers:
+    //   1) scroll settles (isScrollInProgress flips false),
+    //   2) snapped index changes,
+    //   3) the externally provided `isValid` lambda changes — relevant when one column's
+    //      validity depends on another (e.g. day validity depends on the selected month/year).
+    //
+    // The lambda identity is intentionally NOT a LaunchedEffect key. Keying on it would
+    // restart the effect on every parent recomposition (lambdas are typically a fresh
+    // instance) and cancel `collectLatest` mid-flight — which on the post-snap path can
+    // pre-empt `onSelect` and silently drop the user's selection. Instead, `isValidRef.value`
+    // is read inside `snapshotFlow`: rememberUpdatedState propagates the swap as a Compose
+    // state change, snapshotFlow re-emits, and the effect itself stays mounted.
+    LaunchedEffect(listState, items) {
+        snapshotFlow {
+            Triple(
+                listState.isScrollInProgress,
+                calculateSnappedItemIndex(listState),
+                isValidRef.value,
+            )
+        }
+            .filter { !it.first }
             .distinctUntilChanged()
-            .filter { !it }
-            .map { calculateSnappedItemIndex(listState) }
-            .collectLatest { snapped ->
+            .collectLatest { (_, snapped, isValidNow) ->
                 val curr = items.getOrNull(snapped) ?: return@collectLatest
-                if (isValidRef.value(curr)) {
+                if (isValidNow(curr)) {
                     onSelectRef.value(curr)
                 } else {
                     val target = nearestValidIndex(
                         items = items,
                         fromIndex = snapped,
-                        isValid = isValidRef.value
+                        isValid = isValidNow,
                     ) ?: return@collectLatest
 
                     listState.animateScrollToItem(target)
-                    items.getOrNull(target)?.let { onSelectRef.value(it) }
+                    // onSelect for `target` is delivered by the next emission of this same
+                    // flow once the animation settles: isScrollInProgress flips false,
+                    // snapped == target, items[target] is valid by construction.
                 }
             }
     }
 }
 
-private fun calculateSnappedItemIndex(state: LazyListState): Int {
+internal fun calculateSnappedItemIndex(state: LazyListState): Int {
     val i = state.firstVisibleItemIndex
     val itemH = state.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return i
     val off = state.firstVisibleItemScrollOffset

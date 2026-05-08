@@ -154,7 +154,8 @@ public fun Button(
     val baseModifier = modifier
         .scalableClick(
             enabled = state == ButtonState.Enabled,
-            onClick = onClick
+            onClick = onClick,
+            haptic = true
         ).background(
             Brush.horizontalGradient(
                 0f to colorTokens.background1,

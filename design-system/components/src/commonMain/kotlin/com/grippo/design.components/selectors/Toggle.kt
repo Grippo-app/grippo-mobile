@@ -45,7 +45,7 @@ public fun Toggle(
                 this.selected = checked
                 stateDescription = if (checked) "On" else "Off"
             }
-            .scalableClick(onClick = click.value)
+            .scalableClick(onClick = click.value, haptic = true)
             .size(width = dp.width, height = dp.height)
             .background(color = Color.Transparent)
     ) {
