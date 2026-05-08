@@ -33,7 +33,10 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
+import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
 import com.grippo.design.resources.provider.icons.LineUp
+import com.grippo.design.resources.provider.icons.Medal
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Stack
 import com.grippo.design.resources.provider.resume_training_btn
@@ -214,7 +217,7 @@ private fun WelcomeBody(
             ) {
                 BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color4),
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
                     icon = AppTokens.icons.Sparkle,
                     title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
                     description = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
@@ -222,7 +225,7 @@ private fun WelcomeBody(
 
                 BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color4),
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
                     icon = AppTokens.icons.LineUp,
                     title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
                     description = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
@@ -230,11 +233,21 @@ private fun WelcomeBody(
 
                 BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color4),
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
                     icon = AppTokens.icons.Stack,
                     title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
                     description = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
                 )
+
+                if (hasGoal) {
+                    BannerCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
+                        icon = AppTokens.icons.Medal,
+                        title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
+                        description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),
+                    )
+                }
             }
         }
     }

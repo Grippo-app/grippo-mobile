@@ -938,12 +938,8 @@
     <!-- Goal setup suggestion dialog -->
     <string name="goal_setup_suggestion_title">Яка твоя ціль?</string>
     <string name="goal_setup_suggestion_subtitle">Підберемо вправи й обсяг саме під неї.</string>
-    <string name="goal_setup_suggestion_benefit_tailored_title">Точніший підбір тренувань</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Менше зайвого — більше того, що працює. Підбираємо вправи, обсяг і темп під твою ціль, щоб кожне тренування наближало до результату.</string>
-    <string name="goal_setup_suggestion_benefit_direction_title">Чіткий напрямок</string>
-    <string name="goal_setup_suggestion_benefit_direction_description">Коли ціль названа, кожне тренування стає усвідомленішим.</string>
-    <string name="goal_setup_suggestion_benefit_evolves_title">Точніше з часом</string>
-    <string name="goal_setup_suggestion_benefit_evolves_description">Що довше ти тренуєшся, то точніше ціль стає орієнтиром, з яким ми ростемо разом.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_title">Тренування під ціль</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Повторення й інтенсивність підлаштовані під твій результат.</string>
     <string name="goal_setup_suggestion_primary_btn">Вказати ціль</string>
     <string name="goal_setup_suggestion_secondary_btn">Пропустити</string>
 </resources>

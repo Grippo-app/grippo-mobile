@@ -173,5 +173,13 @@ private fun BannerCardPreview() {
             title = "Custom tint",
             description = "Pass any Color via Custom — useful for brand or context palettes.",
         )
+
+        BannerCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = BannerCardStyle.Custom(AppTokens.colors.context.goal),
+            icon = AppTokens.icons.Sparkle,
+            title = "My test message with title",
+            description = "Super long description. Super long description. Super long description. Super long description. Super long description.",
+        )
     }
 }
