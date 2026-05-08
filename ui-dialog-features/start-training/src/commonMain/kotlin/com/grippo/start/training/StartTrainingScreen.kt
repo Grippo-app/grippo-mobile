@@ -77,7 +77,7 @@ internal fun StartTrainingScreen(
         textAlign = TextAlign.Center,
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
     val pagerState = rememberPagerState(
         pageCount = { state.options.size }
