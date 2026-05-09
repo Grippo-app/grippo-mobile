@@ -151,11 +151,19 @@ public fun Button(
     // Minimum side for square icon-only layout
     val minSide = metrics.height
 
+    val haptic = when (style) {
+        ButtonStyle.Primary -> true
+        ButtonStyle.Secondary -> true
+        ButtonStyle.Tertiary -> false
+        ButtonStyle.Transparent -> false
+        ButtonStyle.Error -> true
+    }
+
     val baseModifier = modifier
         .scalableClick(
             enabled = state == ButtonState.Enabled,
             onClick = onClick,
-            haptic = true
+            haptic = haptic
         ).background(
             Brush.horizontalGradient(
                 0f to colorTokens.background1,
