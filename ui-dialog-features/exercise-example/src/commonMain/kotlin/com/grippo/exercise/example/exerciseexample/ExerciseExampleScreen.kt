@@ -21,12 +21,16 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExampleDescriptionText
 import com.grippo.design.components.example.ExampleTypeSection
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.performance.EstimatedOneRepMaxCard
@@ -49,163 +53,184 @@ internal fun ExerciseExampleScreen(
     contract: ExerciseExampleContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Column(
+    val basePadding = PaddingValues(top = AppTokens.dp.dialog.top)
+
+    BottomOverlayContainer(
         modifier = Modifier
-            .fillMaxSize()
-            .weight(1f, fill = false)
-            .verticalScroll(rememberScrollState()),
-    ) {
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = basePadding,
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            Column(
+                modifier = containerModifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(resolvedPadding),
+            ) {
+                val example = state.example ?: return@Column
 
-        val example = state.example ?: return@BaseComposeScreen
+                ExerciseExampleImage(
+                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    value = example.value.imageUrl,
+                    style = ExerciseExampleImageStyle.LARGE
+                )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        ExerciseExampleImage(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            value = example.value.imageUrl,
-            style = ExerciseExampleImageStyle.LARGE
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            text = example.value.name,
-            style = AppTokens.typography.h1(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        ExampleTypeSection(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            value = example.value
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        ExampleDescriptionText(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            text = example.value.description,
-        )
-
-        if (example.equipments.isNotEmpty()) {
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            EquipmentsCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = example.equipments,
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            )
-        }
-
-        state.muscleLoad
-            ?.takeIf { it.perGroup.entries.isNotEmpty() }
-            ?.let { summary ->
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                MuscleLoading(
+                Text(
                     modifier = Modifier
                         .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                         .fillMaxWidth(),
-                    summary = summary,
-                    mode = MuscleLoadingMode.PerGroup,
-                )
-            }
-
-        if (state.achievements.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    text = AppTokens.strings.res(Res.string.achievements),
-                    style = AppTokens.typography.h4(),
+                    text = example.value.name,
+                    style = AppTokens.typography.h1(),
                     color = AppTokens.colors.text.primary,
+                )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+                ExampleTypeSection(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                        .fillMaxWidth(),
+                    value = example.value
                 )
 
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-                AchievementsCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.achievements,
-                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                ExampleDescriptionText(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                        .fillMaxWidth(),
+                    text = example.value.description,
                 )
 
-                if (state.estimatedOneRepMax != null) {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                if (example.equipments.isNotEmpty()) {
 
-                    EstimatedOneRepMaxCard(
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    EquipmentsCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = example.equipments,
+                        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    )
+                }
+
+                state.muscleLoad
+                    ?.takeIf { it.perGroup.entries.isNotEmpty() }
+                    ?.let { summary ->
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                        MuscleLoading(
+                            modifier = Modifier
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                .fillMaxWidth(),
+                            summary = summary,
+                            mode = MuscleLoadingMode.PerGroup,
+                        )
+                    }
+
+                if (state.achievements.isNotEmpty()) {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        state = state.estimatedOneRepMax,
+                        text = AppTokens.strings.res(Res.string.achievements),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                    )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                    AchievementsCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.achievements,
+                        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    )
+
+                    if (state.estimatedOneRepMax != null) {
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                        EstimatedOneRepMaxCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                            state = state.estimatedOneRepMax,
+                        )
+                    }
+                }
+
+                if (state.recent.isNotEmpty()) {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                        text = AppTokens.strings.res(Res.string.history),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                    )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                    state.exerciseVolume
+                        ?.takeIf { it.entries.isNotEmpty() }
+                        ?.let { data ->
+                            VolumeMetricChart(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                                value = data,
+                                xAxisLabels = BarChartXAxisLabels.WithoutLabels
+                            )
+
+                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                        }
+
+                    state.recent.forEachIndexed { index, item ->
+                        key(item.id) {
+                            ExerciseCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                                value = item,
+                                style = ExerciseCardStyle.Small,
+                            )
+                        }
+
+                        if (index < state.recent.lastIndex) {
+                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                        }
+                    }
+                }
+            }
+        },
+        bottom = {
+            when (val mode = state.mode) {
+                ExerciseExampleModeState.Default -> Unit
+                is ExerciseExampleModeState.Action -> {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                        content = ButtonContent.Text(text = mode.title),
+                        style = ButtonStyle.Secondary,
+                        onClick = contract::onAction,
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-
-        if (state.recent.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    text = AppTokens.strings.res(Res.string.history),
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary,
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                state.exerciseVolume
-                    ?.takeIf { it.entries.isNotEmpty() }
-                    ?.let { data ->
-                        VolumeMetricChart(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                            value = data,
-                            xAxisLabels = BarChartXAxisLabels.WithoutLabels
-                        )
-
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-                    }
-
-                state.recent.forEachIndexed { index, item ->
-                    key(item.id) {
-                        ExerciseCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                            value = item,
-                            style = ExerciseCardStyle.Small,
-                        )
-                    }
-
-                    if (index < state.recent.lastIndex) {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
-    }
+    )
 }
 
 @AppPreview
@@ -233,6 +258,22 @@ private fun ScreenPreview2() {
                 recent = stubExercises(),
                 estimatedOneRepMax = stubEstimatedOneRepMax(),
                 achievements = stubAchievements()
+            ),
+            contract = ExerciseExampleContract.Empty,
+            loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewWithAction() {
+    PreviewContainer {
+        ExerciseExampleScreen(
+            state = ExerciseExampleState(
+                mode = ExerciseExampleModeState.Action(title = "Change"),
+                example = stubExerciseExample(),
+                recent = stubExercises(),
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()

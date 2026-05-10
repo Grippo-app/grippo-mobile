@@ -126,6 +126,12 @@ internal class DialogContentComponent(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
+                    mode = router.mode,
+                    onAction = {
+                        (router.mode as? DialogConfig.ExerciseExample.Mode.Action)?.let { action ->
+                            viewModel.onBack { action.onClick.invoke() }
+                        }
+                    },
                     back = { viewModel.onBack(null) },
                 )
             )

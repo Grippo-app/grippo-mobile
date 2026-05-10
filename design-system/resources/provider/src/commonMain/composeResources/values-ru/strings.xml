@@ -190,6 +190,7 @@
     <string name="submit_btn">Отправить</string>
     <string name="delete_btn">Удалить</string>
     <string name="edit_btn">Редактировать</string>
+    <string name="change_btn">Изменить</string>
     <string name="continue_btn">Продолжить</string>
     <string name="exercises">Упражнения</string>
     <string name="add_exercise_btn">Добавить упражнение</string>

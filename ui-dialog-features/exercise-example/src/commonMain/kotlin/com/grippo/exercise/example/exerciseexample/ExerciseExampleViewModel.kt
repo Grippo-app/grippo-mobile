@@ -20,13 +20,14 @@ import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleViewModel(
     id: String,
+    mode: ExerciseExampleModeState,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
-    ExerciseExampleState()
+    ExerciseExampleState(mode = mode)
 ), ExerciseExampleContract {
 
     init {
@@ -92,5 +93,9 @@ public class ExerciseExampleViewModel(
 
     override fun onDismiss() {
         navigateTo(ExerciseExampleDirection.Back)
+    }
+
+    override fun onAction() {
+        navigateTo(ExerciseExampleDirection.Action)
     }
 }

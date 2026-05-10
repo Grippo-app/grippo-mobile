@@ -53,12 +53,26 @@ public sealed class DialogConfig(
     @Serializable
     public data class ExerciseExample(
         val id: String,
+        val mode: Mode = Mode.Default,
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
         override val key: String
-            get() = buildKey("ExerciseExample", id)
+            get() = buildKey("ExerciseExample", id, mode)
+
+        @Serializable
+        public sealed interface Mode {
+
+            @Serializable
+            public data object Default : Mode
+
+            @Serializable
+            public data class Action(
+                val title: String,
+                @Transient val onClick: () -> Unit = {},
+            ) : Mode
+        }
     }
 
     @Serializable

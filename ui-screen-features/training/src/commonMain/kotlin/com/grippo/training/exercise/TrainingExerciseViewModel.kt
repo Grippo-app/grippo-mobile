@@ -15,14 +15,19 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.training.ExerciseValidatorUseCase
 import com.grippo.data.features.api.training.models.ExerciseArtifacts
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.change_btn
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.domain.training.toDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
@@ -33,13 +38,16 @@ internal class TrainingExerciseViewModel(
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val exerciseValidatorUseCase: ExerciseValidatorUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel<TrainingExerciseState, TrainingExerciseDirection, TrainingExerciseLoader>(
     TrainingExerciseState(exercise = exercise)
 ), TrainingExerciseContract {
 
     init {
-        exerciseExampleFeature
-            .observeExerciseExample(exercise.exerciseExample.id)
+        state
+            .map { it.exercise.exerciseExample.id }
+            .distinctUntilChanged()
+            .flatMapLatest(exerciseExampleFeature::observeExerciseExample)
             .onEach(::provideExerciseExample)
             .safeLaunch()
 
@@ -134,11 +142,17 @@ internal class TrainingExerciseViewModel(
     }
 
     override fun onExampleClick() {
-        val dialog = DialogConfig.ExerciseExample(
-            id = state.value.exercise.exerciseExample.id,
-        )
-
-        dialogController.show(dialog)
+        safeLaunch {
+            val title = stringProvider.get(Res.string.change_btn)
+            val dialog = DialogConfig.ExerciseExample(
+                id = state.value.exercise.exerciseExample.id,
+                mode = DialogConfig.ExerciseExample.Mode.Action(
+                    title = title,
+                    onClick = ::showExercisePicker,
+                ),
+            )
+            dialogController.show(dialog)
+        }
     }
 
     override fun onSave() {
@@ -147,6 +161,27 @@ internal class TrainingExerciseViewModel(
 
     override fun onBack() {
         navigateTo(TrainingExerciseDirection.Back)
+    }
+
+    private fun showExercisePicker() {
+        val dialog = DialogConfig.ExerciseExamplePicker(
+            targetMuscleGroupId = null,
+            onResult = ::swapExerciseExample,
+        )
+        dialogController.show(dialog)
+    }
+
+    private fun swapExerciseExample(value: ExerciseExampleState) {
+        val current = state.value.exercise
+        if (current.exerciseExample.id == value.value.id) return
+
+        val updated = current.copy(
+            name = value.value.name,
+            exerciseExample = value.value,
+        )
+
+        update { it.copy(exercise = updated) }
+        navigateTo(TrainingExerciseDirection.Update(updated))
     }
 
     private fun editIteration(id: String, focus: IterationFocusState) {

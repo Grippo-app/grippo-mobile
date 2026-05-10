@@ -190,6 +190,7 @@
     <string name="submit_btn">Submit</string>
     <string name="delete_btn">Delete</string>
     <string name="edit_btn">Edit</string>
+    <string name="change_btn">Change</string>
     <string name="continue_btn">Continue</string>
     <string name="exercises">Exercises</string>
     <string name="add_exercise_btn">Add exercise</string>
