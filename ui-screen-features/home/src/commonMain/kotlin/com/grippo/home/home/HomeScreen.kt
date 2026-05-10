@@ -90,6 +90,7 @@ internal fun HomeScreen(
             missingEquipmentCount = state.missingEquipmentCount,
             hasGoal = state.hasGoal,
             hasDraftTraining = state.hasDraftTraining,
+            showWelcomeConfetti = state.showWelcomeConfetti,
             onStartTraining = contract::onStartTraining,
             onResumeTraining = contract::onResumeTraining,
         )

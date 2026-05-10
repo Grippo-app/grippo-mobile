@@ -31,4 +31,5 @@ internal data class HomeState(
     val excludedMusclesCount: Int = 0,
     val missingEquipmentCount: Int = 0,
     val hasGoal: Boolean = false,
+    val showWelcomeConfetti: Boolean = false,
 )

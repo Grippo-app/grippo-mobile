@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.local.settings.domain.LocalSettingsRepository
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -20,6 +21,7 @@ internal class LocalSettingsRepositoryImpl(
     companion object {
         val RangeKey = stringPreferencesKey("range")
         val LastGoalSuggestionShownAtKey = stringPreferencesKey("last_goal_suggestion_shown_at")
+        val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
     }
 
     override fun observeRange(): Flow<Range?> {
@@ -54,6 +56,20 @@ internal class LocalSettingsRepositoryImpl(
                 } else {
                     preferences[LastGoalSuggestionShownAtKey] = DateTimeUtils.toUtcIso(value)
                 }
+            }
+        }
+    }
+
+    override fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus> {
+        return dataStore.data.map { preferences ->
+            HomeWelcomeStatus.of(preferences[HomeWelcomeStatusKey])
+        }
+    }
+
+    override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit> {
+        return runCatching {
+            dataStore.edit { preferences ->
+                preferences[HomeWelcomeStatusKey] = value.key
             }
         }
     }

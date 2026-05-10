@@ -1,6 +1,7 @@
 package com.grippo.home.home.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.components.user.UserCardStyle
 import com.grippo.design.components.welcome.WelcomeBlock
@@ -67,6 +69,7 @@ internal fun WelcomeHomeContent(
     missingEquipmentCount: Int,
     hasGoal: Boolean,
     hasDraftTraining: Boolean,
+    showWelcomeConfetti: Boolean,
     onStartTraining: () -> Unit,
     onResumeTraining: () -> Unit,
 ) {
@@ -75,51 +78,57 @@ internal fun WelcomeHomeContent(
         vertical = AppTokens.dp.screen.verticalPadding,
     )
 
-    BottomOverlayContainer(
-        modifier = modifier,
-        contentPadding = basePadding,
-        overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
-            WelcomeBody(
-                modifier = containerModifier.fillMaxSize(),
-                contentPadding = resolvedPadding,
-                user = user,
-                experience = experience,
-                excludedMusclesCount = excludedMusclesCount,
-                missingEquipmentCount = missingEquipmentCount,
-                hasGoal = hasGoal,
-            )
-        },
-        bottom = {
-            if (hasDraftTraining) {
-                Button(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .fillMaxWidth(),
-                    onClick = onResumeTraining,
-                    style = ButtonStyle.Error,
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.resume_training_btn)
+    Box(modifier = modifier) {
+        BottomOverlayContainer(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = basePadding,
+            overlay = AppTokens.colors.background.screen,
+            content = { containerModifier, resolvedPadding ->
+                WelcomeBody(
+                    modifier = containerModifier.fillMaxSize(),
+                    contentPadding = resolvedPadding,
+                    user = user,
+                    experience = experience,
+                    excludedMusclesCount = excludedMusclesCount,
+                    missingEquipmentCount = missingEquipmentCount,
+                    hasGoal = hasGoal,
+                )
+            },
+            bottom = {
+                if (hasDraftTraining) {
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                            .fillMaxWidth(),
+                        onClick = onResumeTraining,
+                        style = ButtonStyle.Error,
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.resume_training_btn)
+                        )
                     )
-                )
-            } else {
-                Button(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .fillMaxWidth(),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.start_workout),
-                    ),
-                    style = ButtonStyle.Primary,
-                    onClick = onStartTraining
-                )
+                } else {
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                            .fillMaxWidth(),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.start_workout),
+                        ),
+                        style = ButtonStyle.Primary,
+                        onClick = onStartTraining
+                    )
+                }
+
+                Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+
+                Spacer(Modifier.navigationBarsPadding())
             }
+        )
 
-            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
-
-            Spacer(Modifier.navigationBarsPadding())
+        if (showWelcomeConfetti) {
+            KonfettiParade()
         }
-    )
+    }
 }
 
 @Composable
@@ -293,6 +302,7 @@ private fun WelcomeHomeContentPreview() {
             missingEquipmentCount = 5,
             hasGoal = true,
             hasDraftTraining = false,
+            showWelcomeConfetti = false,
             onStartTraining = {},
             onResumeTraining = {},
         )
@@ -311,6 +321,26 @@ private fun WelcomeHomeContentDraftPreview() {
             missingEquipmentCount = 0,
             hasGoal = false,
             hasDraftTraining = true,
+            showWelcomeConfetti = false,
+            onStartTraining = {},
+            onResumeTraining = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WelcomeHomeContentCelebrationPreview() {
+    PreviewContainer {
+        WelcomeHomeContent(
+            modifier = Modifier.fillMaxSize(),
+            user = stubUser(),
+            experience = ExperienceEnumState.BEGINNER,
+            excludedMusclesCount = 0,
+            missingEquipmentCount = 0,
+            hasGoal = false,
+            hasDraftTraining = false,
+            showWelcomeConfetti = true,
             onStartTraining = {},
             onResumeTraining = {},
         )

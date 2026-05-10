@@ -2,6 +2,8 @@ package com.grippo.authorization.profile.creation.completed
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.ExperienceEnumState
+import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.services.firebase.FirebaseProvider
@@ -17,6 +19,7 @@ internal class ProfileCompletedViewModel(
     excludedMuscleIds: ImmutableList<String>,
     missingEquipmentIds: ImmutableList<String>,
     private val createProfileUseCase: CreateProfileUseCase,
+    private val localSettingsFeature: LocalSettingsFeature,
 ) : BaseViewModel<ProfileCompletedState, ProfileCompletedDirection, ProfileCompletedLoader>(
     ProfileCompletedState
 ), ProfileCompletedContract {
@@ -43,6 +46,8 @@ internal class ProfileCompletedViewModel(
                 )
 
                 createProfileUseCase.execute(profile)
+
+                localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration)
 
                 navigateTo(ProfileCompletedDirection.Home)
             }

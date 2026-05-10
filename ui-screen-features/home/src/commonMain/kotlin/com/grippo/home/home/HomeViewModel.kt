@@ -11,6 +11,7 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.GoalSetupSuggestionUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
@@ -47,6 +48,7 @@ import com.grippo.toolkit.permission.PermissionManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -150,6 +152,14 @@ internal class HomeViewModel(
         trainingFeature.getDraftTraining()
             .onEach(::provideDraftTraining)
             .safeLaunch()
+
+        safeLaunch {
+            val status = localSettingsFeature.observeHomeWelcomeStatus().first()
+            if (status == HomeWelcomeStatus.PendingCelebration) {
+                update { it.copy(showWelcomeConfetti = true) }
+                localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.Celebrated)
+            }
+        }
     }
 
     private fun provideUser(value: User?) {

@@ -1,6 +1,7 @@
 package com.grippo.data.features.local.settings.domain
 
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
@@ -25,6 +26,14 @@ internal class LocalSettingsFeatureImpl(
 
     override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit> {
         return repository.setLastGoalSuggestionShownAt(value)
+    }
+
+    override fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus> {
+        return repository.observeHomeWelcomeStatus()
+    }
+
+    override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit> {
+        return repository.setHomeWelcomeStatus(value)
     }
 
     override suspend fun clear(): Result<Unit> {
