@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal interface ExerciseExamplePickerContract {
     fun onExerciseExampleSelectClick(id: String)
+    fun onSuggestionsClick()
     fun onMuscleGroupClick(id: String)
     fun onQueryChange(value: String)
     fun onLoadNextPage()
@@ -13,6 +14,7 @@ internal interface ExerciseExamplePickerContract {
     @Immutable
     companion object Empty : ExerciseExamplePickerContract {
         override fun onExerciseExampleSelectClick(id: String) {}
+        override fun onSuggestionsClick() {}
         override fun onMuscleGroupClick(id: String) {}
         override fun onQueryChange(value: String) {}
         override fun onLoadNextPage() {}

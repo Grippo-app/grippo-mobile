@@ -61,6 +61,7 @@ internal fun ExerciseExamplePickerScreen(
     Header(
         modifier = Modifier.fillMaxWidth(),
         value = state.queries,
+        canShowSuggestions = state.canShowSuggestions,
         contract = contract,
     )
 
@@ -160,6 +161,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
+                mode = ExerciseExamplePickerMode.Default(preselectedMuscleGroupId = null),
                 exerciseExamples = persistentListOf(
                     stubExerciseExample(),
                     stubExerciseExample()

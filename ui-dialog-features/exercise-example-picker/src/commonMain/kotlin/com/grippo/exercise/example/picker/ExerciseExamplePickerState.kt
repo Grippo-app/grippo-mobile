@@ -10,17 +10,48 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class ExerciseExamplePickerState(
+    val mode: ExerciseExamplePickerMode,
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val pagination: PaginationState = PaginationState.Next(),
     val queries: Queries = Queries(),
-)
+) {
+    val canShowSuggestions: Boolean get() = mode is ExerciseExamplePickerMode.SimilarTo
+}
+
+@Immutable
+public sealed interface ExerciseExamplePickerMode {
+
+    @Immutable
+    public data class Default(
+        public val preselectedMuscleGroupId: String?,
+    ) : ExerciseExamplePickerMode
+
+    @Immutable
+    public data class SimilarTo(
+        public val targetExerciseExampleId: String,
+    ) : ExerciseExamplePickerMode
+}
+
 
 @Immutable
 public data class Queries(
     val name: String = "",
-    val selectedMuscleGroupId: String? = null,
+    val filter: QueryFilter = QueryFilter.All,
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 )
+
+@Immutable
+public sealed interface QueryFilter {
+
+    @Immutable
+    public data object All : QueryFilter
+
+    @Immutable
+    public data object Suggestions : QueryFilter
+
+    @Immutable
+    public data class Group(val id: String) : QueryFilter
+}
 
 @Immutable
 public sealed class PaginationState {

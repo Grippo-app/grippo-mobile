@@ -5,6 +5,7 @@ import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleParams
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
+import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
@@ -19,11 +20,14 @@ import kotlinx.coroutines.flow.onEach
 
 @OptIn(FlowPreview::class)
 public class ExerciseExamplePickerViewModel(
-    targetMuscleGroupId: String?,
+    mode: ExerciseExamplePickerMode,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     muscleFeature: MuscleFeature,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
-    ExerciseExamplePickerState(queries = Queries(selectedMuscleGroupId = targetMuscleGroupId))
+    ExerciseExamplePickerState(
+        mode = mode,
+        queries = Queries(filter = initialFilter(mode)),
+    )
 ), ExerciseExamplePickerContract {
 
     init {
@@ -33,13 +37,19 @@ public class ExerciseExamplePickerViewModel(
 
         state
             .map { current ->
-                val manual = current.queries
+                val scope: ExampleScope = when (val filter = current.queries.filter) {
+                    QueryFilter.Suggestions -> when (val m = current.mode) {
+                        is ExerciseExamplePickerMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
+                        is ExerciseExamplePickerMode.Default -> ExampleScope.All()
+                    }
+
+                    is QueryFilter.Group -> ExampleScope.All(muscleGroupId = filter.id)
+                    QueryFilter.All -> ExampleScope.All()
+                }
 
                 ExampleParams(
-                    queries = ExampleQueries(
-                        name = manual.name.trim(),
-                        muscleGroupId = manual.selectedMuscleGroupId
-                    ),
+                    queries = ExampleQueries(name = current.queries.name.trim()),
+                    scope = scope,
                     page = ExamplePage(
                         limits = current.pagination.limit,
                         number = current.pagination.page
@@ -92,12 +102,27 @@ public class ExerciseExamplePickerViewModel(
         }
     }
 
+    override fun onSuggestionsClick() {
+        if (state.value.mode !is ExerciseExamplePickerMode.SimilarTo) return
+        updateWithPaginationReset {
+            val nextFilter = if (it.queries.filter is QueryFilter.Suggestions) {
+                QueryFilter.All
+            } else {
+                QueryFilter.Suggestions
+            }
+            it.copy(queries = it.queries.copy(filter = nextFilter))
+        }
+    }
+
     override fun onMuscleGroupClick(id: String) {
         updateWithPaginationReset {
-            val value = if (it.queries.selectedMuscleGroupId == id) null else id
-            it.copy(
-                queries = it.queries.copy(selectedMuscleGroupId = value),
-            )
+            val nextFilter =
+                if (it.queries.filter is QueryFilter.Group && it.queries.filter.id == id) {
+                    QueryFilter.All
+                } else {
+                    QueryFilter.Group(id)
+                }
+            it.copy(queries = it.queries.copy(filter = nextFilter))
         }
     }
 
@@ -147,6 +172,15 @@ public class ExerciseExamplePickerViewModel(
                     isEndReached = false
                 )
             )
+        }
+    }
+
+    private companion object {
+        private fun initialFilter(mode: ExerciseExamplePickerMode): QueryFilter = when (mode) {
+            is ExerciseExamplePickerMode.SimilarTo -> QueryFilter.Suggestions
+            is ExerciseExamplePickerMode.Default -> mode.preselectedMuscleGroupId
+                ?.let(QueryFilter::Group)
+                ?: QueryFilter.All
         }
     }
 }

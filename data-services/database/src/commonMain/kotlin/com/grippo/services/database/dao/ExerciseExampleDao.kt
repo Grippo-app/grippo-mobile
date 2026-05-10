@@ -214,6 +214,238 @@ public interface ExerciseExampleDao {
     ): Flow<List<ExerciseExamplePack>>
 
     @Transaction
+    @Query(
+        """
+    SELECT DISTINCT ee.*
+    FROM exercise_example ee
+    WHERE ee.id != :targetId
+      AND (:name IS NULL OR LOWER(ee.name) LIKE '%' || LOWER(:name) || '%')
+
+      -- Experience ladder filter
+      AND (
+          :experience IS NULL
+          OR (
+              CASE ee.experience
+                  WHEN 'beginner'     THEN 1
+                  WHEN 'intermediate' THEN 2
+                  WHEN 'advanced'     THEN 3
+                  WHEN 'pro'          THEN 4
+                  ELSE 0
+              END
+              <=
+              CASE :experience
+                  WHEN 'beginner'     THEN 1
+                  WHEN 'intermediate' THEN 2
+                  WHEN 'advanced'     THEN 3
+                  WHEN 'pro'          THEN 4
+                  ELSE 4
+              END
+          )
+      )
+
+      -- Same dominant muscle group as target's dominant muscle
+      AND EXISTS (
+          SELECT 1
+          FROM exercise_example_bundle eb
+          INNER JOIN muscle m ON m.id = eb.muscleId
+          WHERE eb.exerciseExampleId = ee.id
+            AND eb.percentage = (
+                SELECT MAX(eb2.percentage)
+                FROM exercise_example_bundle eb2
+                WHERE eb2.exerciseExampleId = ee.id
+            )
+            AND m.muscleGroupId IN (
+                SELECT DISTINCT mt.muscleGroupId
+                FROM exercise_example_bundle ebt
+                INNER JOIN muscle mt ON mt.id = ebt.muscleId
+                WHERE ebt.exerciseExampleId = :targetId
+                  AND ebt.percentage = (
+                      SELECT MAX(ebt2.percentage)
+                      FROM exercise_example_bundle ebt2
+                      WHERE ebt2.exerciseExampleId = :targetId
+                  )
+            )
+      )
+
+      -- EXCLUDE: any top-percentage muscle is in excludedMuscleIds
+      AND NOT EXISTS (
+          SELECT 1
+          FROM exercise_example_bundle ebx
+          WHERE ebx.exerciseExampleId = ee.id
+            AND ebx.percentage = (
+                SELECT MAX(eb2.percentage)
+                FROM exercise_example_bundle eb2
+                WHERE eb2.exerciseExampleId = ee.id
+            )
+            AND ebx.muscleId IN (:excludedMuscleIds)
+      )
+
+      -- EXCLUDE: any equipment is in excludedEquipmentIds
+      AND NOT EXISTS (
+          SELECT 1
+          FROM exercise_example_equipment eee
+          WHERE eee.exerciseExampleId = ee.id
+            AND eee.equipmentId IN (:excludedEquipmentIds)
+      )
+
+    ORDER BY
+      -- Primary: bundle overlap score (sum of min percentages over shared muscles)
+      (
+          SELECT COALESCE(SUM(MIN(t_eb.percentage, c_eb.percentage)), 0)
+          FROM exercise_example_bundle t_eb
+          INNER JOIN exercise_example_bundle c_eb
+            ON c_eb.exerciseExampleId = ee.id
+           AND c_eb.muscleId = t_eb.muscleId
+          WHERE t_eb.exerciseExampleId = :targetId
+      ) DESC,
+      -- Bonus: same category as target
+      CASE WHEN ee.category = (SELECT category FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
+      -- Bonus: same forceType as target
+      CASE WHEN ee.forceType = (SELECT forceType FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
+      -- Tiebreakers
+      CASE WHEN :sorting = 'new_added'     THEN ee.createdAt END DESC,
+      CASE WHEN :sorting = 'recently_used' THEN ee.lastUsed END DESC,
+      CASE WHEN :sorting = 'mostly_used'   THEN ee.usageCount END DESC,
+      ee.name ASC
+    LIMIT CASE WHEN :limits IS NULL THEN -1 ELSE :limits END
+    OFFSET CASE
+        WHEN :limits IS NULL OR :number IS NULL OR :number <= 1 THEN 0
+        ELSE (:number - 1) * :limits
+    END
+    """
+    )
+    public fun getAllSimilar(
+        targetId: String,
+        name: String? = null,
+        experience: String? = null,
+        excludedEquipmentIds: Set<String>,
+        excludedMuscleIds: Set<String>,
+        sorting: String,
+        limits: Int?,
+        number: Int?,
+    ): Flow<List<ExerciseExamplePack>>
+
+    @Transaction
+    @Query(
+        """
+    SELECT ee.*
+    FROM exercise_example ee
+    INNER JOIN exercise_example_search_prefix esp ON esp.exerciseExampleId = ee.id
+    WHERE esp.prefix IN (:searchTokens)
+      AND ee.id != :targetId
+
+      -- Experience ladder filter
+      AND (
+          :experience IS NULL
+          OR (
+              CASE ee.experience
+                  WHEN 'beginner'     THEN 1
+                  WHEN 'intermediate' THEN 2
+                  WHEN 'advanced'     THEN 3
+                  WHEN 'pro'          THEN 4
+                  ELSE 0
+              END
+              <=
+              CASE :experience
+                  WHEN 'beginner'     THEN 1
+                  WHEN 'intermediate' THEN 2
+                  WHEN 'advanced'     THEN 3
+                  WHEN 'pro'          THEN 4
+                  ELSE 4
+              END
+          )
+      )
+
+      -- Same dominant muscle group as target's dominant muscle
+      AND EXISTS (
+          SELECT 1
+          FROM exercise_example_bundle eb
+          INNER JOIN muscle m ON m.id = eb.muscleId
+          WHERE eb.exerciseExampleId = ee.id
+            AND eb.percentage = (
+                SELECT MAX(eb2.percentage)
+                FROM exercise_example_bundle eb2
+                WHERE eb2.exerciseExampleId = ee.id
+            )
+            AND m.muscleGroupId IN (
+                SELECT DISTINCT mt.muscleGroupId
+                FROM exercise_example_bundle ebt
+                INNER JOIN muscle mt ON mt.id = ebt.muscleId
+                WHERE ebt.exerciseExampleId = :targetId
+                  AND ebt.percentage = (
+                      SELECT MAX(ebt2.percentage)
+                      FROM exercise_example_bundle ebt2
+                      WHERE ebt2.exerciseExampleId = :targetId
+                  )
+            )
+      )
+
+      -- EXCLUDE: any top-percentage muscle is in excludedMuscleIds
+      AND NOT EXISTS (
+          SELECT 1
+          FROM exercise_example_bundle ebx
+          WHERE ebx.exerciseExampleId = ee.id
+            AND ebx.percentage = (
+                SELECT MAX(eb2.percentage)
+                FROM exercise_example_bundle eb2
+                WHERE eb2.exerciseExampleId = ee.id
+            )
+            AND ebx.muscleId IN (:excludedMuscleIds)
+      )
+
+      -- EXCLUDE: any equipment is in excludedEquipmentIds
+      AND NOT EXISTS (
+          SELECT 1
+          FROM exercise_example_equipment eee
+          WHERE eee.exerciseExampleId = ee.id
+            AND eee.equipmentId IN (:excludedEquipmentIds)
+      )
+
+    GROUP BY ee.id
+    HAVING COUNT(DISTINCT esp.prefix) = :searchTokenCount
+
+    ORDER BY
+      -- Search ranking
+      CASE WHEN LOWER(ee.name) = :searchPhrase THEN 1 ELSE 0 END DESC,
+      CASE WHEN LOWER(ee.name) LIKE :searchPhrase || '%' THEN 1 ELSE 0 END DESC,
+      COUNT(DISTINCT CASE WHEN esp.prefix = esp.token THEN esp.prefix END) DESC,
+      -- Primary similarity: bundle overlap score
+      (
+          SELECT COALESCE(SUM(MIN(t_eb.percentage, c_eb.percentage)), 0)
+          FROM exercise_example_bundle t_eb
+          INNER JOIN exercise_example_bundle c_eb
+            ON c_eb.exerciseExampleId = ee.id
+           AND c_eb.muscleId = t_eb.muscleId
+          WHERE t_eb.exerciseExampleId = :targetId
+      ) DESC,
+      CASE WHEN ee.category = (SELECT category FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
+      CASE WHEN ee.forceType = (SELECT forceType FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
+      LENGTH(ee.name) ASC,
+      CASE WHEN :sorting = 'new_added'     THEN ee.createdAt END DESC,
+      CASE WHEN :sorting = 'recently_used' THEN ee.lastUsed END DESC,
+      CASE WHEN :sorting = 'mostly_used'   THEN ee.usageCount END DESC,
+      ee.name ASC
+    LIMIT CASE WHEN :limits IS NULL THEN -1 ELSE :limits END
+    OFFSET CASE
+        WHEN :limits IS NULL OR :number IS NULL OR :number <= 1 THEN 0
+        ELSE (:number - 1) * :limits
+    END
+    """
+    )
+    public fun searchAllSimilar(
+        targetId: String,
+        searchPhrase: String,
+        searchTokens: List<String>,
+        searchTokenCount: Int,
+        experience: String? = null,
+        excludedEquipmentIds: Set<String>,
+        excludedMuscleIds: Set<String>,
+        sorting: String,
+        limits: Int?,
+        number: Int?,
+    ): Flow<List<ExerciseExamplePack>>
+
+    @Transaction
     @Query("SELECT * FROM exercise_example WHERE id IN (:ids) ORDER BY updatedAt DESC")
     public fun get(ids: List<String>): Flow<List<ExerciseExamplePack>>
 

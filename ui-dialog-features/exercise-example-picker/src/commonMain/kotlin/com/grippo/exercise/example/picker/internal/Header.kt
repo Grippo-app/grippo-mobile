@@ -20,13 +20,17 @@ import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_example_picker_suggestions_chip
 import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
 import com.grippo.exercise.example.picker.Queries
+import com.grippo.exercise.example.picker.QueryFilter
 
 @Composable
 internal fun Header(
     modifier: Modifier = Modifier,
     value: Queries,
+    canShowSuggestions: Boolean,
     contract: ExerciseExamplePickerContract,
 ) {
     Column(modifier = modifier) {
@@ -43,11 +47,17 @@ internal fun Header(
         val groupsListState = rememberLazyListState()
 
         LaunchedEffect(value.muscleGroups) {
-            val index = value.muscleGroups
-                .map { it.id }
-                .indexOf(value.selectedMuscleGroupId)
-                .takeIf { it >= 0 } ?: return@LaunchedEffect
-            groupsListState.scrollToItem(index)
+            val groupOffset = if (canShowSuggestions) 1 else 0
+            val targetIndex = when (val filter = value.filter) {
+                QueryFilter.Suggestions -> if (canShowSuggestions) 0 else null
+                is QueryFilter.Group -> value.muscleGroups
+                    .indexOfFirst { it.id == filter.id }
+                    .takeIf { it >= 0 }
+                    ?.plus(groupOffset)
+
+                QueryFilter.All -> null
+            } ?: return@LaunchedEffect
+            groupsListState.scrollToItem(targetIndex)
         }
 
         LazyRow(
@@ -56,6 +66,22 @@ internal fun Header(
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
             state = groupsListState
         ) {
+            if (canShowSuggestions) {
+                item(key = "suggestions") {
+                    val suggestionsClickProvider = remember {
+                        { contract.onSuggestionsClick() }
+                    }
+
+                    CheckSelectableCard(
+                        style = CheckSelectableCardStyle.Small(
+                            title = AppTokens.strings.res(Res.string.exercise_example_picker_suggestions_chip)
+                        ),
+                        isSelected = value.filter is QueryFilter.Suggestions,
+                        onSelect = suggestionsClickProvider
+                    )
+                }
+            }
+
             items(
                 items = value.muscleGroups,
                 key = { it.id },
@@ -68,7 +94,7 @@ internal fun Header(
                     style = CheckSelectableCardStyle.Small(
                         title = item.type.title().text()
                     ),
-                    isSelected = value.selectedMuscleGroupId == item.id,
+                    isSelected = value.filter is QueryFilter.Group && value.filter.id == item.id,
                     onSelect = clickProvider
                 )
             }
@@ -83,8 +109,9 @@ private fun HeaderPreview() {
         Header(
             value = Queries(
                 name = "Bench",
-                selectedMuscleGroupId = null,
+                filter = QueryFilter.Suggestions,
             ),
+            canShowSuggestions = true,
             contract = ExerciseExamplePickerContract.Empty,
         )
     }
