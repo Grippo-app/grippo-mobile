@@ -2,6 +2,7 @@ package com.grippo.data.features.exercise.examples.data
 
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
+import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
@@ -30,6 +31,7 @@ internal class ExerciseExampleRepositoryImpl(
 
     override fun observeExerciseExamples(
         queries: ExampleQueries,
+        scope: ExampleScope,
         sorting: ExampleSortingEnum,
         rules: UserExerciseExampleRules,
         page: ExamplePage,
@@ -46,30 +48,58 @@ internal class ExerciseExampleRepositoryImpl(
             ?.takeIf { it.length > 2 }
             ?.let(PrefixSearch::parseQueryOrNull)
 
-        val flow = if (searchQuery == null) {
-            exerciseExampleDao.getAll(
-                name = shortNameQuery,
-                experience = experience.key,
-                muscleGroupId = queries.muscleGroupId,
-                excludedEquipmentIds = rules.excludedEquipmentIds,
-                excludedMuscleIds = rules.excludedMuscleIds,
-                sorting = sorting.key,
-                limits = page.limits,
-                number = page.number
-            )
-        } else {
-            exerciseExampleDao.searchAll(
-                searchPhrase = searchQuery.phraseLowercase,
-                searchTokens = searchQuery.tokens,
-                searchTokenCount = searchQuery.tokens.size,
-                experience = experience.key,
-                muscleGroupId = queries.muscleGroupId,
-                excludedEquipmentIds = rules.excludedEquipmentIds,
-                excludedMuscleIds = rules.excludedMuscleIds,
-                sorting = sorting.key,
-                limits = page.limits,
-                number = page.number
-            )
+        val flow = when (scope) {
+            is ExampleScope.All -> if (searchQuery == null) {
+                exerciseExampleDao.getAll(
+                    name = shortNameQuery,
+                    experience = experience.key,
+                    muscleGroupId = scope.muscleGroupId,
+                    excludedEquipmentIds = rules.excludedEquipmentIds,
+                    excludedMuscleIds = rules.excludedMuscleIds,
+                    sorting = sorting.key,
+                    limits = page.limits,
+                    number = page.number
+                )
+            } else {
+                exerciseExampleDao.searchAll(
+                    searchPhrase = searchQuery.phraseLowercase,
+                    searchTokens = searchQuery.tokens,
+                    searchTokenCount = searchQuery.tokens.size,
+                    experience = experience.key,
+                    muscleGroupId = scope.muscleGroupId,
+                    excludedEquipmentIds = rules.excludedEquipmentIds,
+                    excludedMuscleIds = rules.excludedMuscleIds,
+                    sorting = sorting.key,
+                    limits = page.limits,
+                    number = page.number
+                )
+            }
+
+            is ExampleScope.SimilarTo -> if (searchQuery == null) {
+                exerciseExampleDao.getAllSimilar(
+                    targetId = scope.targetId,
+                    name = shortNameQuery,
+                    experience = experience.key,
+                    excludedEquipmentIds = rules.excludedEquipmentIds,
+                    excludedMuscleIds = rules.excludedMuscleIds,
+                    sorting = sorting.key,
+                    limits = page.limits,
+                    number = page.number
+                )
+            } else {
+                exerciseExampleDao.searchAllSimilar(
+                    targetId = scope.targetId,
+                    searchPhrase = searchQuery.phraseLowercase,
+                    searchTokens = searchQuery.tokens,
+                    searchTokenCount = searchQuery.tokens.size,
+                    experience = experience.key,
+                    excludedEquipmentIds = rules.excludedEquipmentIds,
+                    excludedMuscleIds = rules.excludedMuscleIds,
+                    sorting = sorting.key,
+                    limits = page.limits,
+                    number = page.number
+                )
+            }
         }
 
         return flow.map { it.toDomain() }

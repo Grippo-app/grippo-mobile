@@ -174,6 +174,7 @@
     <string name="empty_exercise_sets">Подходов пока нет. Добавь первый, чтобы начать.</string>
     <string name="empty_daily_trainings">В этот день тренировок нет.</string>
     <string name="empty_exercise_examples">По запросу ничего не нашли.</string>
+    <string name="exercise_example_picker_suggestions_chip">Похожие</string>
     <string name="daily">Ежедневно</string>
     <string name="yearly">Ежегодно</string>
     <string name="custom">Свой</string>

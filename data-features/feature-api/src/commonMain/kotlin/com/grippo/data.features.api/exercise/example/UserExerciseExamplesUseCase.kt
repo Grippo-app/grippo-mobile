@@ -44,6 +44,7 @@ public class UserExerciseExamplesUseCase(
             .flatMapLatest { rules ->
                 exerciseExampleFeature.observeExerciseExamples(
                     queries = params.queries,
+                    scope = params.scope,
                     sorting = ExampleSortingEnum.RecentlyUsed,
                     rules = rules,
                     page = params.page,

@@ -166,8 +166,8 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddExercise() {
-        val dialog = DialogConfig.ExerciseExamplePicker(
-            targetMuscleGroupId = lastTargetMuscleGroupId(),
+        val dialog = DialogConfig.ExerciseExamplePicker.Default(
+            preselectedMuscleGroupId = lastTargetMuscleGroupId(),
             onResult = { example ->
                 val exercise = createExerciseFromExample(example.value)
                 navigateTo(TrainingRecordingDirection.ToExercise(exercise))

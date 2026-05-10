@@ -164,8 +164,8 @@ internal class TrainingExerciseViewModel(
     }
 
     private fun showExercisePicker() {
-        val dialog = DialogConfig.ExerciseExamplePicker(
-            targetMuscleGroupId = null,
+        val dialog = DialogConfig.ExerciseExamplePicker.SimilarTo(
+            targetExerciseExampleId = state.value.exercise.exerciseExample.id,
             onResult = ::swapExerciseExample,
         )
         dialogController.show(dialog)

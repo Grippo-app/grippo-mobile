@@ -26,6 +26,7 @@ import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.exercise.example.picker.ExerciseExamplePickerComponent
+import com.grippo.exercise.example.picker.ExerciseExamplePickerMode
 import com.grippo.goal.setup.suggestion.GoalSetupSuggestionComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
@@ -287,7 +288,13 @@ internal class DialogContentComponent(
                 StartTrainingComponent(
                     componentContext = context,
                     onStartEmpty = { viewModel.onBack { router.onStartEmpty.invoke() } },
-                    onUseExercises = { exercises -> viewModel.onBack { router.onUseExercises.invoke(exercises) } },
+                    onUseExercises = { exercises ->
+                        viewModel.onBack {
+                            router.onUseExercises.invoke(
+                                exercises
+                            )
+                        }
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -295,7 +302,15 @@ internal class DialogContentComponent(
             is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
                 ExerciseExamplePickerComponent(
                     componentContext = context,
-                    targetMuscleGroupId = router.targetMuscleGroupId,
+                    mode = when (router) {
+                        is DialogConfig.ExerciseExamplePicker.Default -> ExerciseExamplePickerMode.Default(
+                            preselectedMuscleGroupId = router.preselectedMuscleGroupId,
+                        )
+
+                        is DialogConfig.ExerciseExamplePicker.SimilarTo -> ExerciseExamplePickerMode.SimilarTo(
+                            targetExerciseExampleId = router.targetExerciseExampleId,
+                        )
+                    },
                     onResult = { example -> viewModel.onBack { router.onResult.invoke(example) } },
                     back = { viewModel.onBack(null) }
                 )

@@ -301,15 +301,29 @@ public sealed class DialogConfig(
     }
 
     @Serializable
-    public data class ExerciseExamplePicker(
-        val targetMuscleGroupId: String?,
-        @Transient val onResult: (ExerciseExampleState) -> Unit = {},
-    ) : DialogConfig(
+    public sealed class ExerciseExamplePicker : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     ) {
-        override val key: String
-            get() = buildKey("ExerciseExamplePicker", targetMuscleGroupId)
+        public abstract val onResult: (ExerciseExampleState) -> Unit
+
+        @Serializable
+        public data class Default(
+            public val preselectedMuscleGroupId: String? = null,
+            @Transient override val onResult: (ExerciseExampleState) -> Unit = {},
+        ) : ExerciseExamplePicker() {
+            override val key: String
+                get() = buildKey("ExerciseExamplePicker.Default", preselectedMuscleGroupId)
+        }
+
+        @Serializable
+        public data class SimilarTo(
+            public val targetExerciseExampleId: String,
+            @Transient override val onResult: (ExerciseExampleState) -> Unit = {},
+        ) : ExerciseExamplePicker() {
+            override val key: String
+                get() = buildKey("ExerciseExamplePicker.SimilarTo", targetExerciseExampleId)
+        }
     }
 
     @Serializable
