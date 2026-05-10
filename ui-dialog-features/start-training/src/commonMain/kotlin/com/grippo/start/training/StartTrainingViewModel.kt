@@ -9,6 +9,8 @@ import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.training.toState
+import com.grippo.services.firebase.FirebaseProvider
+import com.grippo.services.firebase.FirebaseProvider.Event
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -84,9 +86,18 @@ public class StartTrainingViewModel(
         val option = state.value.options.firstOrNull { it.key == key } ?: return
 
         when (option) {
-            StartTrainingOption.Empty -> navigateTo(StartTrainingDirection.StartEmpty)
-            is StartTrainingOption.Preset -> emitExercises(option.exercises)
-            is StartTrainingOption.Recent -> emitExercises(option.exercises)
+            StartTrainingOption.Empty -> {
+                FirebaseProvider.logEvent(Event.START_WORKOUT_EMPTY)
+                navigateTo(StartTrainingDirection.StartEmpty)
+            }
+            is StartTrainingOption.Preset -> {
+                FirebaseProvider.logEvent(Event.START_WORKOUT_SUGGESTION)
+                emitExercises(option.exercises)
+            }
+            is StartTrainingOption.Recent -> {
+                FirebaseProvider.logEvent(Event.START_WORKOUT_RECENT)
+                emitExercises(option.exercises)
+            }
         }
     }
 

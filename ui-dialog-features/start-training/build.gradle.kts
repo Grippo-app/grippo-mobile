@@ -16,6 +16,7 @@ kotlin {
         implementation(projects.toolkit.dateUtils)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataFeatures.featureApi)
+        implementation(projects.dataServices.firebase)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)

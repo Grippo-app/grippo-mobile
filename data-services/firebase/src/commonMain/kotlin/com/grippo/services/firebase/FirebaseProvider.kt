@@ -20,6 +20,9 @@ public object FirebaseProvider {
         REGISTRATION_COMPLETED("registration_completed"),
         WORKOUT_STARTED("workout_started"),
         WORKOUT_COMPLETED("workout_completed"),
+        START_WORKOUT_SUGGESTION("start_workout_suggestion"),
+        START_WORKOUT_EMPTY("start_workout_empty"),
+        START_WORKOUT_RECENT("start_workout_recent"),
     }
 
     public suspend fun getMessagingToken(): String? {
