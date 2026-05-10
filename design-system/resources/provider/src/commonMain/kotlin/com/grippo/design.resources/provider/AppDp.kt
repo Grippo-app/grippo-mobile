@@ -352,7 +352,6 @@ public data object AppDp {
     }
 
     public data object Training {
-        val height: Dp = size.medium
         val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small

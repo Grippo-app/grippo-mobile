@@ -3,6 +3,7 @@ package com.grippo.design.components.training
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -35,7 +36,7 @@ public fun TrainingStat(
 
     Row(
         modifier = modifier
-            .height(tokens.height)
+            .height(intrinsicSize = IntrinsicSize.Min)
             .clip(shape)
             .background(AppTokens.colors.background.card, shape),
         verticalAlignment = Alignment.CenterVertically
