@@ -14,8 +14,10 @@ public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val pagination: PaginationState = PaginationState.Next(),
     val queries: Queries = Queries(),
+    val hasSuggestionsResults: Boolean = true,
 ) {
-    val canShowSuggestions: Boolean get() = mode is ExerciseExamplePickerMode.SimilarTo
+    val canShowSuggestions: Boolean =
+        mode is ExerciseExamplePickerMode.SimilarTo && hasSuggestionsResults
 }
 
 @Immutable
@@ -31,7 +33,6 @@ public sealed interface ExerciseExamplePickerMode {
         public val targetExerciseExampleId: String,
     ) : ExerciseExamplePickerMode
 }
-
 
 @Immutable
 public data class Queries(

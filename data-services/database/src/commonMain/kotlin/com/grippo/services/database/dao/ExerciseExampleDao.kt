@@ -298,6 +298,14 @@ public interface ExerciseExampleDao {
            AND c_eb.muscleId = t_eb.muscleId
           WHERE t_eb.exerciseExampleId = :targetId
       ) DESC,
+      -- Bonus: shared equipment with target (practical for swap UX)
+      CASE WHEN EXISTS (
+          SELECT 1
+          FROM exercise_example_equipment ce
+          INNER JOIN exercise_example_equipment te ON te.equipmentId = ce.equipmentId
+          WHERE ce.exerciseExampleId = ee.id
+            AND te.exerciseExampleId = :targetId
+      ) THEN 1 ELSE 0 END DESC,
       -- Bonus: same category as target
       CASE WHEN ee.category = (SELECT category FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
       -- Bonus: same forceType as target
@@ -418,6 +426,14 @@ public interface ExerciseExampleDao {
            AND c_eb.muscleId = t_eb.muscleId
           WHERE t_eb.exerciseExampleId = :targetId
       ) DESC,
+      -- Bonus: shared equipment with target (practical for swap UX)
+      CASE WHEN EXISTS (
+          SELECT 1
+          FROM exercise_example_equipment ce
+          INNER JOIN exercise_example_equipment te ON te.equipmentId = ce.equipmentId
+          WHERE ce.exerciseExampleId = ee.id
+            AND te.exerciseExampleId = :targetId
+      ) THEN 1 ELSE 0 END DESC,
       CASE WHEN ee.category = (SELECT category FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
       CASE WHEN ee.forceType = (SELECT forceType FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
       LENGTH(ee.name) ASC,

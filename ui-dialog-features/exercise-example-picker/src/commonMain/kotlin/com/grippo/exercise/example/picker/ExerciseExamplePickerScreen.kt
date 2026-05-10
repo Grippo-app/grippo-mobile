@@ -102,10 +102,10 @@ internal fun ExerciseExamplePickerScreen(
                     overlay = AppTokens.colors.background.dialog,
                     content = { containerModifier, resolvedPadding ->
                         val listState = rememberLazyListState()
-                        val canLoadMore =
-                            !state.pagination.isEndReached && !state.pagination.isLoadingNextPage
+                        val canLoadMore = !state.pagination.isEndReached &&
+                                !state.pagination.isLoadingNextPage
 
-                        LaunchedEffect(listState, canLoadMore, state.exerciseExamples.size) {
+                        LaunchedEffect(listState, canLoadMore) {
                             if (!canLoadMore) return@LaunchedEffect
                             snapshotFlow {
                                 val layoutInfo = listState.layoutInfo

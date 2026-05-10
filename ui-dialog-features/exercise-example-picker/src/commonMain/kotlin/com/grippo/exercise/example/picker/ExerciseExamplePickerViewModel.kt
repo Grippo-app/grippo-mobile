@@ -10,6 +10,7 @@ import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,60 +36,106 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
 
         state
-            .map { current ->
-                val scope: ExampleScope = when (val filter = current.queries.filter) {
-                    QueryFilter.Suggestions -> when (val m = current.mode) {
-                        is ExerciseExamplePickerMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
-                        is ExerciseExamplePickerMode.Default -> ExampleScope.All()
-                    }
-
-                    is QueryFilter.Group -> ExampleScope.All(muscleGroupId = filter.id)
-                    QueryFilter.All -> ExampleScope.All()
-                }
-
-                ExampleParams(
-                    name = current.queries.name.trim(),
-                    scope = scope,
-                    page = ExamplePage(
-                        limits = current.pagination.limit,
-                        number = current.pagination.page
-                    )
-                )
-            }
+            .map(::buildParams)
             .distinctUntilChanged()
-            .flatMapLatest(userExerciseExamplesUseCase::execute)
-            .onEach(::provideExerciseExamples)
+            .flatMapLatest { params ->
+                userExerciseExamplesUseCase.execute(params).map { results -> params to results }
+            }
+            .onEach { (params, results) -> provideExerciseExamples(params, results) }
             .safeLaunch()
+    }
+
+    private fun buildParams(current: ExerciseExamplePickerState): ExampleParams {
+        val scope: ExampleScope = when (val filter = current.queries.filter) {
+            QueryFilter.Suggestions -> when (val m = current.mode) {
+                is ExerciseExamplePickerMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
+                is ExerciseExamplePickerMode.Default -> ExampleScope.All()
+            }
+
+            is QueryFilter.Group -> ExampleScope.All(muscleGroupId = filter.id)
+            QueryFilter.All -> ExampleScope.All()
+        }
+
+        return ExampleParams(
+            name = current.queries.name.trim(),
+            scope = scope,
+            page = ExamplePage(
+                limits = current.pagination.limit,
+                number = current.pagination.page,
+            ),
+        )
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        update { it.copy(queries = it.queries.copy(muscleGroups = suggestions)) }
+        update { current ->
+            val filter = current.queries.filter
+            val groupVanished =
+                filter is QueryFilter.Group && suggestions.none { it.id == filter.id }
+            val nextFilter = if (groupVanished) QueryFilter.All else filter
+            val nextPagination = if (groupVanished) {
+                PaginationState.Restartable(
+                    page = ExamplePage.Chunk.number,
+                    limit = current.pagination.limit,
+                    isLoadingNextPage = false,
+                    isEndReached = false,
+                )
+            } else {
+                current.pagination
+            }
+            current.copy(
+                queries = current.queries.copy(
+                    muscleGroups = suggestions,
+                    filter = nextFilter,
+                ),
+                pagination = nextPagination,
+            )
+        }
     }
 
-    private fun provideExerciseExamples(value: List<ExerciseExample>) {
-        val incoming = value.toState()
-
+    private fun provideExerciseExamples(
+        emittedParams: ExampleParams,
+        value: List<ExerciseExample>
+    ) {
         update { current ->
+            if (buildParams(current) != emittedParams) return@update current
+
             val pagination = current.pagination
-            val shouldReplace = pagination is PaginationState.Restartable ||
+            val isFirstPage = pagination is PaginationState.Restartable ||
                     pagination.page == ExamplePage.Chunk.number
-            val examples = if (shouldReplace) {
-                incoming
-            } else {
-                (current.exerciseExamples + incoming)
-                    .distinctBy { it.value.id }
-                    .toPersistentList()
+            val isSuggestionsActive = current.queries.filter is QueryFilter.Suggestions &&
+                    current.mode is ExerciseExamplePickerMode.SimilarTo
+
+            // Auto-switch: empty Suggestions on first page → fall back to All, hide chip
+            if (isSuggestionsActive && isFirstPage && value.isEmpty()) {
+                return@update current.copy(
+                    queries = current.queries.copy(filter = QueryFilter.All),
+                    exerciseExamples = persistentListOf(),
+                    hasSuggestionsResults = false,
+                    pagination = PaginationState.Restartable(),
+                )
             }
 
+            val incoming = value.toState()
+            val items = if (isFirstPage) {
+                incoming.toPersistentList()
+            } else {
+                (current.exerciseExamples + incoming).distinctBy { it.value.id }.toPersistentList()
+            }
+
+            val nextHasSuggestionsResults =
+                if (isSuggestionsActive && isFirstPage) value.isNotEmpty()
+                else current.hasSuggestionsResults
+
             current.copy(
-                exerciseExamples = examples,
+                exerciseExamples = items,
+                hasSuggestionsResults = nextHasSuggestionsResults,
                 pagination = PaginationState.Next(
                     page = pagination.page,
                     limit = pagination.limit,
                     isLoadingNextPage = false,
-                    isEndReached = value.size < pagination.limit
-                )
+                    isEndReached = value.size < pagination.limit,
+                ),
             )
         }
     }
@@ -149,7 +196,7 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onExerciseExampleSelectClick(id: String) {
-        val example = state.value.exerciseExamples.find { f -> f.value.id == id } ?: return
+        val example = state.value.exerciseExamples.find { it.value.id == id } ?: return
         navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
     }
 
