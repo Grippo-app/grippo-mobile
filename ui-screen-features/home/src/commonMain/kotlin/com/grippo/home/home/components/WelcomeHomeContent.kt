@@ -222,7 +222,7 @@ private fun WelcomeBody(
         item("benefits") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             ) {
                 BannerCard(
                     modifier = Modifier.fillMaxWidth(),

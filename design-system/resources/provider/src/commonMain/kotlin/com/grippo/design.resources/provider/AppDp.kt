@@ -76,6 +76,7 @@ public data object AppDp {
     val tip: Tip = Tip
     val badge: Badge = Badge
     val bannerCard: BannerCard = BannerCard
+    val focusFrame: FocusFrame = FocusFrame
     val tooltip: Tooltip = Tooltip
     val training: Training = Training
     val accent: Accent = Accent
@@ -322,10 +323,6 @@ public data object AppDp {
     }
 
     public data object BannerCard {
-        val radius: Dp = AppDp.radius.medium
-        val borderWidth: Dp = 1.dp
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.medium
         val space: Dp = padding.medium
         val iconBackground: Dp = 40.dp
         val icon: Dp = AppDp.icon.medium
@@ -336,6 +333,13 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.small
             val verticalPadding: Dp = padding.extraSmall
         }
+    }
+
+    public data object FocusFrame {
+        val radius: Dp = AppDp.radius.medium
+        val borderWidth: Dp = 1.dp
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.medium
     }
 
     public data object Tooltip {

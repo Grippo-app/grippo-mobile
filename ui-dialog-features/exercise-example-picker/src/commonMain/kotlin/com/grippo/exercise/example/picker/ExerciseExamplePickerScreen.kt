@@ -37,6 +37,7 @@ import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -93,12 +94,16 @@ internal fun ExerciseExamplePickerScreen(
         Column(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            ExerciseExampleCard(
+            FocusFrame(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                style = ExerciseExampleCardStyle.Small(value = target),
-            )
+            ) {
+                ExerciseExampleCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    style = ExerciseExampleCardStyle.Small(value = target),
+                )
+            }
         }
     }
 

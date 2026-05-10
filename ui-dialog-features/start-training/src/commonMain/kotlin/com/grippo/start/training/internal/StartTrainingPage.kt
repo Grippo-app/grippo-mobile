@@ -4,24 +4,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercises
-import com.grippo.design.components.banner.BannerCard
-import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -29,6 +33,7 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -115,9 +120,9 @@ private fun EmptyPage(
             .padding(bottom = overlayReservedHeight),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        BannerCard(
+        StartTrainingInfoCard(
             modifier = Modifier.fillMaxWidth(),
-            style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
+            accent = AppTokens.colors.text.tertiary,
             icon = AppTokens.icons.Muscle,
             title = AppTokens.strings.res(Res.string.start_training_option_empty_title),
             description = AppTokens.strings.res(Res.string.start_training_option_empty_description),
@@ -237,30 +242,30 @@ private fun ExerciseHeaderBanner(
     header: ExerciseHeader,
     exercisesCount: Int,
 ) {
-    val style: BannerCardStyle
+    val accent: Color
     val icon: ImageVector
     val title: String
     val description: String
 
     when (header) {
         ExerciseHeader.Preset -> {
-            style = BannerCardStyle.Notice
+            accent = AppTokens.colors.semantic.notice
             icon = AppTokens.icons.Sparkle
             title = AppTokens.strings.res(Res.string.start_training_option_preset_title)
             description = AppTokens.strings.res(Res.string.start_training_option_preset_description)
         }
 
         is ExerciseHeader.Recent -> {
-            style = BannerCardStyle.Info
+            accent = AppTokens.colors.semantic.info
             icon = AppTokens.icons.Timer
             title = AppTokens.strings.res(Res.string.start_training_option_recent_title)
             description = rememberRecentDescription(header.createdAt)
         }
     }
 
-    BannerCard(
+    StartTrainingInfoCard(
         modifier = modifier,
-        style = style,
+        accent = accent,
         icon = icon,
         title = title,
         description = description,
@@ -269,6 +274,62 @@ private fun ExerciseHeaderBanner(
             exercisesCount.toString(),
         ),
     )
+}
+
+@Composable
+private fun StartTrainingInfoCard(
+    modifier: Modifier = Modifier,
+    accent: Color,
+    icon: ImageVector,
+    title: String,
+    description: String,
+    trailing: String? = null,
+) {
+    FocusFrame(
+        modifier = modifier,
+        accent = accent,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.bannerCard.icon),
+                imageVector = icon,
+                tint = accent,
+                contentDescription = null,
+            )
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                Text(
+                    text = title,
+                    style = AppTokens.typography.b14Semi(),
+                    color = AppTokens.colors.text.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = description,
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            if (trailing != null) {
+                Text(
+                    text = trailing,
+                    style = AppTokens.typography.b11Semi(),
+                    color = accent,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
 }
 
 @Composable

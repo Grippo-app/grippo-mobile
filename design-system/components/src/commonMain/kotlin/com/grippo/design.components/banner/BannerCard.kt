@@ -1,7 +1,6 @@
 package com.grippo.design.components.banner
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,16 +59,9 @@ public fun BannerCard(
 ) {
     val tokens = resolveBannerCardTokens(style)
     val dp = AppTokens.dp.bannerCard
-    val shape = RoundedCornerShape(dp.radius)
 
     Row(
-        modifier = modifier
-            .background(color = tokens.background, shape = shape)
-            .border(width = dp.borderWidth, color = tokens.border, shape = shape)
-            .padding(
-                horizontal = dp.horizontalPadding,
-                vertical = dp.verticalPadding,
-            ),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dp.space),
     ) {
