@@ -2,6 +2,7 @@ package com.grippo.exercise.example.picker
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
@@ -31,6 +32,7 @@ public sealed interface ExerciseExamplePickerMode {
     @Immutable
     public data class SimilarTo(
         public val targetExerciseExampleId: String,
+        public val target: ExerciseExampleValueState? = null,
     ) : ExerciseExamplePickerMode
 }
 

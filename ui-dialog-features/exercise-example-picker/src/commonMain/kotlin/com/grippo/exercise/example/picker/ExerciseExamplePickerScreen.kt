@@ -1,15 +1,20 @@
 package com.grippo.exercise.example.picker
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +22,16 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
@@ -34,6 +43,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_exercise_examples
+import com.grippo.design.resources.provider.exercise_example_picker_title_replace
 import com.grippo.design.resources.provider.icons.EmptyExerciseExample
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.Header
@@ -48,13 +58,49 @@ internal fun ExerciseExamplePickerScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
+    val replaceMode = state.mode as? ExerciseExamplePickerMode.SimilarTo
+
+    val title = if (replaceMode != null) {
+        AppTokens.strings.res(Res.string.exercise_example_picker_title_replace)
+    } else {
+        AppTokens.strings.res(Res.string.select_exercise)
+    }
+
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.select_exercise),
+        text = title,
         style = AppTokens.typography.h2(),
         color = AppTokens.colors.text.primary,
         textAlign = TextAlign.Center
     )
+
+    var cachedCardTarget by remember {
+        mutableStateOf<ExerciseExampleValueState?>(null)
+    }
+
+    LaunchedEffect(replaceMode?.target) {
+        if (replaceMode?.target != null) cachedCardTarget = replaceMode.target
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxWidth(),
+        visible = replaceMode?.target != null,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
+    ) {
+        val target = replaceMode?.target ?: cachedCardTarget ?: return@AnimatedVisibility
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            ExerciseExampleCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                style = ExerciseExampleCardStyle.Small(value = target),
+            )
+        }
+    }
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -157,17 +203,52 @@ internal fun ExerciseExamplePickerScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ScreenPreviewDefault() {
     PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
                 mode = ExerciseExamplePickerMode.Default(preselectedMuscleGroupId = null),
                 exerciseExamples = persistentListOf(
                     stubExerciseExample(),
-                    stubExerciseExample()
+                    stubExerciseExample(),
                 ),
             ),
-            contract = ExerciseExamplePickerContract.Empty
+            contract = ExerciseExamplePickerContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewReplace() {
+    val targetExample = stubExerciseExample().value
+    PreviewContainer {
+        ExerciseExamplePickerScreen(
+            state = ExerciseExamplePickerState(
+                mode = ExerciseExamplePickerMode.SimilarTo(
+                    targetExerciseExampleId = targetExample.id,
+                    target = targetExample,
+                ),
+                exerciseExamples = persistentListOf(
+                    stubExerciseExample(),
+                    stubExerciseExample(),
+                ),
+                queries = Queries(filter = QueryFilter.Suggestions),
+            ),
+            contract = ExerciseExamplePickerContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEmpty() {
+    PreviewContainer {
+        ExerciseExamplePickerScreen(
+            state = ExerciseExamplePickerState(
+                mode = ExerciseExamplePickerMode.Default(preselectedMuscleGroupId = null),
+            ),
+            contract = ExerciseExamplePickerContract.Empty,
         )
     }
 }

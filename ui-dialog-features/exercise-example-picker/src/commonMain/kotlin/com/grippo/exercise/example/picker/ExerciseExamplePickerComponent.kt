@@ -19,6 +19,7 @@ public class ExerciseExamplePickerComponent(
         ExerciseExamplePickerViewModel(
             mode = mode,
             userExerciseExamplesUseCase = getKoin().get(),
+            exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
         )
     }

@@ -1,6 +1,7 @@
 package com.grippo.exercise.example.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleParams
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.onEach
 public class ExerciseExamplePickerViewModel(
     mode: ExerciseExamplePickerMode,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
+    exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState(
@@ -31,6 +33,12 @@ public class ExerciseExamplePickerViewModel(
 ), ExerciseExamplePickerContract {
 
     init {
+        if (mode is ExerciseExamplePickerMode.SimilarTo) {
+            exerciseExampleFeature.observeExerciseExample(mode.targetExerciseExampleId)
+                .onEach(::provideTarget)
+                .safeLaunch()
+        }
+
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
             .safeLaunch()
@@ -64,6 +72,14 @@ public class ExerciseExamplePickerViewModel(
                 number = current.pagination.page,
             ),
         )
+    }
+
+    private fun provideTarget(value: ExerciseExample?) {
+        update { current ->
+            if (current.mode !is ExerciseExamplePickerMode.SimilarTo) return@update current
+
+            current.copy(mode = current.mode.copy(target = value?.toState()?.value))
+        }
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {

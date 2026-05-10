@@ -175,6 +175,7 @@
     <string name="empty_daily_trainings">No workouts on this day.</string>
     <string name="empty_exercise_examples">No exercises match your search.</string>
     <string name="exercise_example_picker_suggestions_chip">Suggested</string>
+    <string name="exercise_example_picker_title_replace">Replace</string>
     <string name="daily">Daily</string>
     <string name="yearly">Yearly</string>
     <string name="custom">Custom</string>
