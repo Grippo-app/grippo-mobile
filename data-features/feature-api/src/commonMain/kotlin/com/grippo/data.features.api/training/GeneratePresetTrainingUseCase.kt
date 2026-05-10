@@ -5,7 +5,6 @@ import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
-import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -196,7 +195,6 @@ public class GeneratePresetTrainingUseCase(
         excludedMuscleIds: Set<String>,
         excludedEquipmentIds: Set<String>,
     ): List<ExerciseExample>? {
-        val queries = ExampleQueries(name = null)
         val page = ExamplePage(limits = POOL_LIMIT, number = 1)
 
         return experienceLadder(experience).firstNotNullOfOrNull { exp ->
@@ -207,7 +205,7 @@ public class GeneratePresetTrainingUseCase(
             )
             exerciseExampleFeature
                 .observeExerciseExamples(
-                    queries = queries,
+                    name = null,
                     scope = ExampleScope.All(),
                     sorting = ExampleSortingEnum.MostlyUsed,
                     rules = rules,

@@ -2,7 +2,6 @@ package com.grippo.data.features.api.training
 
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
-import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -51,8 +50,6 @@ public class GenerateTrainingUseCase(
     }
 
     private suspend fun loadExamples(random: Random): List<ExerciseExample>? {
-        val queries = ExampleQueries(name = null)
-
         val page = ExamplePage(limits = 100, number = 1)
 
         val experiences = ExperienceEnum.entries.toMutableList().apply { shuffle(random) }
@@ -66,7 +63,7 @@ public class GenerateTrainingUseCase(
 
             exerciseExampleFeature
                 .observeExerciseExamples(
-                    queries = queries,
+                    name = null,
                     scope = ExampleScope.All(),
                     sorting = ExampleSortingEnum.RecentlyUsed,
                     rules = rules,

@@ -4,7 +4,6 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleParams
-import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
@@ -48,7 +47,7 @@ public class ExerciseExamplePickerViewModel(
                 }
 
                 ExampleParams(
-                    queries = ExampleQueries(name = current.queries.name.trim()),
+                    name = current.queries.name.trim(),
                     scope = scope,
                     page = ExamplePage(
                         limits = current.pagination.limit,

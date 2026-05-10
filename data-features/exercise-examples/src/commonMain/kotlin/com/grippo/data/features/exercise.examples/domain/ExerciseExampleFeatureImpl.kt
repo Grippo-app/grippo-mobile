@@ -2,7 +2,6 @@ package com.grippo.data.features.exercise.examples.domain
 
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
-import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -17,14 +16,14 @@ internal class ExerciseExampleFeatureImpl(
 ) : ExerciseExampleFeature {
 
     override fun observeExerciseExamples(
-        queries: ExampleQueries,
+        name: String?,
         scope: ExampleScope,
         sorting: ExampleSortingEnum,
         rules: UserExerciseExampleRules,
         page: ExamplePage,
         experience: ExperienceEnum
     ): Flow<List<ExerciseExample>> {
-        return repository.observeExerciseExamples(queries, scope, sorting, rules, page, experience)
+        return repository.observeExerciseExamples(name, scope, sorting, rules, page, experience)
     }
 
     override fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>> {

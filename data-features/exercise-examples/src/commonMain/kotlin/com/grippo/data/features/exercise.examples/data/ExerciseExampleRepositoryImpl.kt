@@ -1,7 +1,6 @@
 package com.grippo.data.features.exercise.examples.data
 
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
-import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -30,14 +29,14 @@ internal class ExerciseExampleRepositoryImpl(
 ) : ExerciseExampleRepository {
 
     override fun observeExerciseExamples(
-        queries: ExampleQueries,
+        name: String?,
         scope: ExampleScope,
         sorting: ExampleSortingEnum,
         rules: UserExerciseExampleRules,
         page: ExamplePage,
         experience: ExperienceEnum
     ): Flow<List<ExerciseExample>> {
-        val nameQuery = queries.name
+        val nameQuery = name
             ?.trim()
             ?.takeIf { it.isNotEmpty() }
 

@@ -43,7 +43,7 @@ public class UserExerciseExamplesUseCase(
             .distinctUntilChanged()
             .flatMapLatest { rules ->
                 exerciseExampleFeature.observeExerciseExamples(
-                    queries = params.queries,
+                    name = params.name,
                     scope = params.scope,
                     sorting = ExampleSortingEnum.RecentlyUsed,
                     rules = rules,
