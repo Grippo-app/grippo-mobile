@@ -10,6 +10,7 @@ import com.grippo.core.foundation.models.ResultKeys
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.screen.api.TrainingRouter
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingRecordingComponent(
@@ -21,9 +22,14 @@ internal class TrainingRecordingComponent(
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
 
     init {
-        observeResult<Result<ExerciseState>>(
+        observeResult<Result<TrainingRouter.Exercise.Action>>(
             key = ResultKeys.create("exercise"),
-            onResult = { viewModel.updateExercise(it.data) }
+            onResult = {
+                when (val action = it.data) {
+                    is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
+                    is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
+                }
+            }
         )
     }
 

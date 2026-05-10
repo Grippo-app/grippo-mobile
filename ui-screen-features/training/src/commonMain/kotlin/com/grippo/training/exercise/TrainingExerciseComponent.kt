@@ -8,6 +8,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.models.ResultKeys
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.screen.api.TrainingRouter
 
 internal class TrainingExerciseComponent(
     componentContext: ComponentContext,
@@ -37,10 +38,22 @@ internal class TrainingExerciseComponent(
             TrainingExerciseDirection.Back -> back.invoke()
 
             is TrainingExerciseDirection.Update ->
-                sendResult(ResultKeys.create("exercise"), direction.exercise)
+                sendResult(
+                    ResultKeys.create("exercise"),
+                    TrainingRouter.Exercise.Action.Sync(direction.exercise)
+                )
+
+            is TrainingExerciseDirection.Delete ->
+                sendResult(
+                    ResultKeys.create("exercise"),
+                    TrainingRouter.Exercise.Action.Remove(direction.id)
+                )
 
             is TrainingExerciseDirection.Save -> {
-                sendResult(ResultKeys.create("exercise"), direction.exercise)
+                sendResult(
+                    ResultKeys.create("exercise"),
+                    TrainingRouter.Exercise.Action.Sync(direction.exercise)
+                )
                 back.invoke()
             }
         }

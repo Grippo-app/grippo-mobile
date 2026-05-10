@@ -307,9 +307,24 @@ Fully separate subgraph parallel to the screen stack navigator:
 - **`ResultManager` via `ResultKey`** — for cases where a callback cannot be threaded:
   - Between two screens in different feature modules.
   - When the initiator and consumer are split by lifecycle (one dialog launched another, the answer needs to reach the initiator).
-  - When fan-out semantics are required (multiple subscribers for one result).
 
   Usage: `Component A` calls `sendResult(MyKey, data)`, `Component B` subscribes via `observeResult(MyKey) { data -> ... }`. `ResultEmitter` — singleton `Channel<Pair<String, BaseResult>>(BUFFERED)`; `ResultManager` is per-component with `Job` subscriptions.
+
+  **Action types live inside the child's `Router.<Screen>` config.** When a screen emits results to a parent, declare them as a nested `public sealed interface Action` (or similar) on the corresponding `*Router.<Screen>` data class in `:screen-api`. Sender and observer reference the same fully-qualified path, e.g. `TrainingRouter.Exercise.Action.Sync(exercise)` / `Action.Remove(id)`. This keeps the screen's full contract (input + output) in one place and avoids leaking the result protocol into shared internal packages.
+
+  **One `observeResult` call per Component per domain.** `ResultEmitter`'s `Channel` is single-consumer — multiple subscriptions inside one Component compete via FIFO and a non-matching filter silently drops the item. Use a single subscription with `when` dispatch on the sealed subtypes:
+
+  ```kotlin
+  observeResult<Result<TrainingRouter.Exercise.Action>>(
+      key = ResultKeys.create("exercise"),
+      onResult = {
+          when (val action = it.data) {
+              is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
+              is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
+          }
+      }
+  )
+  ```
 
 ---
 

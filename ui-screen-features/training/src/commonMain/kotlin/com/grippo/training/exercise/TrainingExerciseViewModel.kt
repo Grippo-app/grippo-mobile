@@ -292,7 +292,13 @@ internal class TrainingExerciseViewModel(
 
     private fun updateExercise(exercise: ExerciseState) {
         update { it.copy(exercise = exercise) }
-        if (exercise.iterations.isEmpty()) return
-        navigateTo(TrainingExerciseDirection.Update(exercise))
+
+        val direction = if (exercise.iterations.isEmpty()) {
+            TrainingExerciseDirection.Delete(exercise.id)
+        } else {
+            TrainingExerciseDirection.Update(exercise)
+        }
+
+        navigateTo(direction)
     }
 }

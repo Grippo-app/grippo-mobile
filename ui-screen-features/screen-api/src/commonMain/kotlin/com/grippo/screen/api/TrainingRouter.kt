@@ -17,7 +17,12 @@ public sealed class TrainingRouter : BaseRouter {
     @Serializable
     public data class Exercise(
         val exercise: ExerciseState
-    ) : TrainingRouter()
+    ) : TrainingRouter() {
+        public sealed interface Action {
+            public data class Sync(val exercise: ExerciseState) : Action
+            public data class Remove(val id: String) : Action
+        }
+    }
 
     @Serializable
     public data class Completed(

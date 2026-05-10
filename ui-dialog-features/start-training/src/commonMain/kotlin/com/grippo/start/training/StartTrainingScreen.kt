@@ -1,5 +1,7 @@
 package com.grippo.start.training
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,8 +24,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.grippo.core.foundation.BaseComposeScreen
@@ -46,6 +52,7 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 internal val overlayReservedHeight: Dp
@@ -105,6 +112,14 @@ internal fun StartTrainingScreen(
         didInitialFocusOnEmpty = true
     }
 
+    val haptic = LocalHapticFeedback.current
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .drop(1)
+            .collect { haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove) }
+    }
+
     val activeKey by remember(state.options) {
         derivedStateOf {
             state.options.getOrNull(pagerState.currentPage)?.key
@@ -124,6 +139,14 @@ internal fun StartTrainingScreen(
             state = pagerState,
             pageSpacing = AppTokens.dp.contentPadding.subContent,
             key = { index -> state.options.getOrNull(index)?.key ?: index },
+            flingBehavior = PagerDefaults.flingBehavior(
+                state = pagerState,
+                snapPositionalThreshold = 0.2f,
+                snapAnimationSpec = tween(
+                    durationMillis = 280,
+                    easing = FastOutSlowInEasing,
+                ),
+            ),
         ) { index ->
 
             val option = state.options.getOrNull(index)
