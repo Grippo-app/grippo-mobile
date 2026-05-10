@@ -138,7 +138,7 @@ internal class TrainingExerciseViewModel(
     }
 
     override fun onEndReorderIterations() {
-        navigateTo(TrainingExerciseDirection.Update(state.value.exercise))
+        updateExercise(state.value.exercise)
     }
 
     override fun onExampleClick() {
@@ -180,8 +180,7 @@ internal class TrainingExerciseViewModel(
             exerciseExample = value.value,
         )
 
-        update { it.copy(exercise = updated) }
-        navigateTo(TrainingExerciseDirection.Update(updated))
+        updateExercise(updated)
     }
 
     private fun editIteration(id: String, focus: IterationFocusState) {
@@ -288,8 +287,12 @@ internal class TrainingExerciseViewModel(
         val iterations = transform(currentExercise.iterations).toPersistentList()
         val updatedExercise = currentExercise.copy(iterations = iterations)
 
-        update { it.copy(exercise = updatedExercise) }
+        updateExercise(updatedExercise)
+    }
 
-        navigateTo(TrainingExerciseDirection.Update(updatedExercise))
+    private fun updateExercise(exercise: ExerciseState) {
+        update { it.copy(exercise = exercise) }
+        if (exercise.iterations.isEmpty()) return
+        navigateTo(TrainingExerciseDirection.Update(exercise))
     }
 }
