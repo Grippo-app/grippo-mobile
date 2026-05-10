@@ -99,6 +99,7 @@ public class ExerciseExamplePickerViewModel(
             } else {
                 current.pagination
             }
+
             current.copy(
                 queries = current.queries.copy(
                     muscleGroups = suggestions,
