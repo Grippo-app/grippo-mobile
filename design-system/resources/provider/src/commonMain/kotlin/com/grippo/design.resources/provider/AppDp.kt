@@ -50,7 +50,6 @@ public data object AppDp {
     val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
-    val semantic: Semantic = Semantic
     val loader: Loader = Loader
     val segment: Segment = Segment
     val menu: Menu = Menu
@@ -73,7 +72,6 @@ public data object AppDp {
     val userCard: UserCard = UserCard
     val welcome: Welcome = Welcome
     val empty: Empty = Empty
-    val tip: Tip = Tip
     val badge: Badge = Badge
     val bannerCard: BannerCard = BannerCard
     val focusFrame: FocusFrame = FocusFrame
@@ -306,13 +304,6 @@ public data object AppDp {
             val space: Dp = padding.extraSmall
             val gap: Dp = padding.small
         }
-    }
-
-    public data object Tip {
-        val radius: Dp = AppDp.radius.medium
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.small
-        val image: Dp = icon.large
     }
 
     public data object Badge {
@@ -556,11 +547,6 @@ public data object AppDp {
             val icon: Dp = AppDp.icon.small
         }
     }
-
-    public data object Semantic {
-        val icon: Dp = AppDp.icon.xxLarge
-    }
-
 
     public data object Accent {
         val smallWidth: Dp = padding.extraSmall

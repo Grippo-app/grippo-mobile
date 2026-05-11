@@ -1,8 +1,8 @@
 package com.grippo.trainings.trainings.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
+import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.metrics.engagement.digest.DigestCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -152,20 +153,9 @@ private fun MonthCalendarDayCell(
     val hasTrainings = day.trainingCount > 0
     val isHighlighted = day.isCurrentMonth && day.isToday
     val shape = RoundedCornerShape(AppTokens.dp.contentPadding.subContent)
-    val defaultBorder = AppTokens.colors.border.default.copy(alpha = 0.3f)
-    val backgroundColor = when {
-        isHighlighted -> AppTokens.colors.brand.color6.copy(alpha = 0.16f)
-        else -> Color.Transparent
-    }
-    val borderColor = when {
-        isHighlighted -> AppTokens.colors.brand.color6
-        hasTrainings -> AppTokens.colors.border.default
-        else -> defaultBorder
-    }
     val textColor = when {
         !day.isCurrentMonth -> AppTokens.colors.text.disabled
-        isHighlighted -> AppTokens.colors.text.primary
-        hasTrainings -> AppTokens.colors.text.primary
+        isHighlighted || hasTrainings -> AppTokens.colors.text.primary
         else -> AppTokens.colors.text.secondary
     }
     val clickableModifier = if (day.isClickable) {
@@ -174,15 +164,39 @@ private fun MonthCalendarDayCell(
         Modifier
     }
 
-    Column(
-        modifier = modifier
-            .then(clickableModifier)
-            .clip(shape)
-            .border(width = 1.dp, color = borderColor, shape = shape)
-            .background(color = backgroundColor, shape = shape)
-            .padding(AppTokens.dp.contentPadding.subContent),
-        verticalArrangement = Arrangement.Top,
-    ) {
+    val cellModifier = modifier.then(clickableModifier)
+
+    if (isHighlighted) {
+        FocusFrame(
+            modifier = cellModifier,
+            accent = AppTokens.colors.brand.color6,
+        ) {
+            MonthCalendarDayCellContent(day, textColor, hasTrainings)
+        }
+    } else {
+        val borderColor = if (hasTrainings) {
+            AppTokens.colors.border.default
+        } else {
+            AppTokens.colors.border.default.copy(alpha = 0.3f)
+        }
+        Box(
+            modifier = cellModifier
+                .clip(shape)
+                .border(width = 1.dp, color = borderColor, shape = shape)
+                .padding(AppTokens.dp.contentPadding.subContent),
+        ) {
+            MonthCalendarDayCellContent(day, textColor, hasTrainings)
+        }
+    }
+}
+
+@Composable
+private fun MonthCalendarDayCellContent(
+    day: MonthlyCalendarDayState,
+    textColor: Color,
+    hasTrainings: Boolean,
+) {
+    Column(verticalArrangement = Arrangement.Top) {
         Text(
             text = day.dayOfMonth.toString(),
             style = AppTokens.typography.b14Med(),

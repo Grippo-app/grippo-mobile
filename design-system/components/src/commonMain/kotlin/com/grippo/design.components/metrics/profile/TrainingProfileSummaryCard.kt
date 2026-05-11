@@ -4,24 +4,28 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.metrics.profile.TrainingLoadProfileState
 import com.grippo.core.state.metrics.profile.TrainingProfileKindState
 import com.grippo.core.state.metrics.profile.stubTrainingLoadProfile
-import com.grippo.design.components.tip.TipCard
+import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Info
 import com.grippo.design.resources.provider.training_profile_summary_confidence_label
 import com.grippo.design.resources.provider.training_profile_summary_dominant_label
 import com.grippo.design.resources.provider.training_profile_summary_no_dominant
@@ -90,10 +94,27 @@ public fun TrainingProfileSummaryCard(
         value.tip()?.let { tip ->
             Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-            TipCard(
+            FocusFrame(
                 modifier = Modifier.fillMaxWidth(),
-                value = tip
-            )
+                accent = AppTokens.colors.semantic.success,
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                ) {
+                    Icon(
+                        modifier = Modifier.size(AppTokens.dp.bannerCard.icon),
+                        imageVector = AppTokens.icons.Info,
+                        tint = AppTokens.colors.semantic.success,
+                        contentDescription = null,
+                    )
+                    Text(
+                        text = tip,
+                        style = AppTokens.typography.b13Semi(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
+            }
         }
     }
 }
