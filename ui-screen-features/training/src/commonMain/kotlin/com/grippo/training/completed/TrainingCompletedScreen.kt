@@ -121,7 +121,6 @@ internal fun TrainingCompletedScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 training = training,
                                 muscleLoad = muscleLoad,
-                                volumeTrend = state.volumeTrend,
                                 onClick = contract::onSummaryClick,
                             )
 
@@ -223,7 +222,6 @@ private fun ScreenPreview() {
                 timeline = stubDailyTrainingTimeline(),
                 training = stubTraining(),
                 muscleLoad = stubMuscleLoadSummary(),
-                volumeTrend = null,
             ),
             loaders = persistentSetOf(),
             contract = TrainingCompletedContract.Empty

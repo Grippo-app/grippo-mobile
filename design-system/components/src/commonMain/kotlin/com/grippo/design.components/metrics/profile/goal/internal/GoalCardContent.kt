@@ -86,7 +86,6 @@ internal fun GoalCardContent(
                 .padding(top = AppTokens.dp.contentPadding.text),
             progress = value.progressFraction,
             colors = AppTokens.colors.charts.indicator.muted,
-            barHeight = 4.dp,
             labelSpacing = AppTokens.dp.contentPadding.text,
             startLabel = {
                 Text(

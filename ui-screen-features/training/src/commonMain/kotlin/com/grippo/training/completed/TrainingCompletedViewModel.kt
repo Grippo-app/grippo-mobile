@@ -2,12 +2,10 @@ package com.grippo.training.completed
 
 import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
-import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.training.SetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -22,13 +20,11 @@ import com.grippo.design.resources.provider.something_went_wrong
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.distribution.toState
-import com.grippo.domain.state.metrics.performance.toState
 import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.services.firebase.FirebaseProvider.Event
 import com.grippo.state.domain.training.toDomain
-import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
@@ -45,15 +41,10 @@ internal class TrainingCompletedViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
-    private val performanceTrendUseCase: PerformanceTrendUseCase,
     private val stringProvider: StringProvider,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
-
-    private companion object {
-        private const val MIN_TRAININGS_FOR_TREND = 3
-    }
 
     init {
         FirebaseProvider.logEvent(Event.WORKOUT_COMPLETED)
@@ -128,45 +119,14 @@ internal class TrainingCompletedViewModel(
             .toState()
 
         val training = value.toState()
-        val volumeTrend = resolveVolumeTrend(latest = value)
 
         update {
             it.copy(
                 timeline = timeline,
                 training = training,
                 muscleLoad = muscleLoad,
-                volumeTrend = volumeTrend,
             )
         }
-    }
-
-    private suspend fun resolveVolumeTrend(
-        latest: Training,
-    ): PerformanceMetricState.Volume? {
-        val infinity = DateRangePresets.infinity()
-
-        trainingFeature
-            .getTrainings(start = infinity.from, end = infinity.to)
-            .getOrElse { return null }
-
-        val stored = trainingFeature
-            .observeTrainings(start = infinity.from, end = infinity.to)
-            .firstOrNull()
-            .orEmpty()
-
-        // Guarantee the freshly saved training is present exactly once. The
-        // trainings flow may not have re-emitted after the write, or may still
-        // hold a pre-update copy with the same id — re-inserting `latest`
-        // covers both cases. PerformanceTrendUseCase sorts by createdAt
-        // internally, so list order here is irrelevant.
-        val timeline = stored.filterNot { it.id == latest.id } + latest
-        if (timeline.size < MIN_TRAININGS_FOR_TREND) return null
-
-        return performanceTrendUseCase
-            .fromTrainings(timeline)
-            .toState()
-            .filterIsInstance<PerformanceMetricState.Volume>()
-            .firstOrNull()
     }
 
     override fun onSummaryClick() {
@@ -180,7 +140,9 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onExerciseClick(id: String) {
-        val dialog = DialogConfig.Exercise(id = id)
+        val dialog = DialogConfig.Exercise(
+            id = id
+        )
 
         dialogController.show(dialog)
     }
