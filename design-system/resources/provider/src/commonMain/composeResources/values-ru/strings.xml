@@ -847,7 +847,7 @@
     <string name="home_unlock_duration_trend_description">Узнавай как меняется длительность твоих сессий со временем</string>
     <string name="home_unlock_performance_trends_title">Тренды производительности</string>
     <string name="home_unlock_performance_trends_description">Тренды по объёму, плотности, повторениям и интенсивности</string>
-    <string name="home_unlock_set_goal_title">Поставь цель</string>
-    <string name="home_unlock_set_goal_description">Отслеживай насколько тренировки приближают тебя к цели</string>
-    <string name="home_unlock_set_goal_cta">Поставить цель</string>
+    <string name="home_unlock_set_goal_title">Соответствие цели</string>
+    <string name="home_unlock_set_goal_description">Сверяй тренировки с целью</string>
+    <string name="home_unlock_set_goal_cta">Поставить</string>
 </resources>

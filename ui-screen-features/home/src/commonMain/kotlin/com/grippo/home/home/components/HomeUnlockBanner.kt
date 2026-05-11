@@ -11,10 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.profile.UserStatsState
@@ -33,7 +35,6 @@ import com.grippo.design.resources.provider.home_unlock_set_goal_cta
 import com.grippo.design.resources.provider.home_unlock_set_goal_description
 import com.grippo.design.resources.provider.home_unlock_set_goal_title
 import com.grippo.design.resources.provider.icons.Lock
-import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
 import com.grippo.home.home.HomeUnlock
@@ -76,8 +77,8 @@ internal fun HomeUnlockBanner(
         if (showGoalSection) {
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Notice,
-                icon = AppTokens.icons.Trophy,
+                style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
+                icon = AppTokens.icons.Lock,
                 title = AppTokens.strings.res(Res.string.home_unlock_set_goal_title),
                 description = AppTokens.strings.res(Res.string.home_unlock_set_goal_description),
                 trailing = {
@@ -135,6 +136,9 @@ private fun LifetimeStatsRow(
     modifier: Modifier = Modifier,
     stats: UserStatsState,
 ) {
+    val primary = AppTokens.colors.text.primary
+    val tertiary = AppTokens.colors.text.tertiary
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
@@ -143,16 +147,19 @@ private fun LifetimeStatsRow(
         StatsCell(
             modifier = Modifier.weight(1f),
             value = stats.trainingsCount.toString(),
+            valueColor = if (stats.trainingsCount == 0) tertiary else primary,
             label = AppTokens.strings.res(Res.string.trainings),
         )
         StatsCell(
             modifier = Modifier.weight(1f),
             value = stats.totalVolume.short(),
+            valueColor = if (stats.totalVolume is FormatState.Empty<*>) tertiary else primary,
             label = AppTokens.strings.res(Res.string.volume),
         )
         StatsCell(
             modifier = Modifier.weight(1f),
             value = stats.totalDuration.display.ifBlank { "—" },
+            valueColor = if (stats.totalDuration is FormatState.Empty<*>) tertiary else primary,
             label = AppTokens.strings.res(Res.string.duration),
         )
     }
@@ -162,6 +169,7 @@ private fun LifetimeStatsRow(
 private fun StatsCell(
     modifier: Modifier = Modifier,
     value: String,
+    valueColor: Color,
     label: String,
 ) {
     Column(
@@ -172,7 +180,7 @@ private fun StatsCell(
         Text(
             text = value,
             style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary,
+            color = valueColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
