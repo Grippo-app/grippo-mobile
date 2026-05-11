@@ -128,8 +128,11 @@ internal class DialogContentComponent(
                     id = router.id,
                     mode = router.mode,
                     onAction = {
-                        (router.mode as? DialogConfig.ExerciseExample.Mode.Action)?.let { action ->
+                        val action = router.mode as? DialogConfig.ExerciseExample.Mode.Action
+                        if (action != null) {
                             viewModel.onBack { action.onClick.invoke() }
+                        } else {
+                            viewModel.onBack(null)
                         }
                     },
                     back = { viewModel.onBack(null) },
@@ -279,13 +282,7 @@ internal class DialogContentComponent(
                 StartTrainingComponent(
                     componentContext = context,
                     onStartEmpty = { viewModel.onBack { router.onStartEmpty.invoke() } },
-                    onUseExercises = { exercises ->
-                        viewModel.onBack {
-                            router.onUseExercises.invoke(
-                                exercises
-                            )
-                        }
-                    },
+                    onUseExercises = { exercises -> viewModel.onBack { router.onUseExercises.invoke(exercises) } },
                     back = { viewModel.onBack(null) }
                 )
             )

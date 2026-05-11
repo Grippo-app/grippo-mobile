@@ -140,9 +140,7 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onExerciseClick(id: String) {
-        val dialog = DialogConfig.Exercise(
-            id = id
-        )
+        val dialog = DialogConfig.Exercise(id = id)
 
         dialogController.show(dialog)
     }

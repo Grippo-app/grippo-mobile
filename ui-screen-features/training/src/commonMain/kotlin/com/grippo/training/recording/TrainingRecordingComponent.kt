@@ -27,7 +27,7 @@ internal class TrainingRecordingComponent(
             onResult = {
                 when (val action = it.data) {
                     is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
-                    is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
+                    is TrainingRouter.Exercise.Action.Remove -> viewModel.onDeleteExercise(action.id)
                 }
             }
         )

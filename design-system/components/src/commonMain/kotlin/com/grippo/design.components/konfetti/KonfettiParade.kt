@@ -28,7 +28,7 @@ public fun KonfettiParade() {
         )
     }
 
-    val konfetti = remember { parade(konfettiColors) }
+    val konfetti = remember(konfettiColors) { parade(konfettiColors) }
 
     Konfetti(
         modifier = Modifier

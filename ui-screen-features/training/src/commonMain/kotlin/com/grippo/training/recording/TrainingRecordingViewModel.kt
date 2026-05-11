@@ -197,10 +197,6 @@ internal class TrainingRecordingViewModel(
         saveDraftTraining()
     }
 
-    fun removeExercise(id: String) {
-        onDeleteExercise(id)
-    }
-
     override fun onDeleteExercise(id: String) {
         update { current ->
             current.copy(
