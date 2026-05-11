@@ -876,4 +876,15 @@
     <string name="goal_setup_suggestion_benefit_tailored_description">Reps and intensity tuned to your goal.</string>
     <string name="goal_setup_suggestion_primary_btn">Set my goal</string>
     <string name="goal_setup_suggestion_secondary_btn">Skip</string>
+
+    <!-- Home unlock banner -->
+    <string name="home_unlock_banner_header">Unlock your dashboard</string>
+    <string name="home_unlock_progress_format">%1$d of %2$d trainings</string>
+    <string name="home_unlock_duration_trend_title">Workout duration trend</string>
+    <string name="home_unlock_duration_trend_description">See how the length of your sessions changes over time</string>
+    <string name="home_unlock_performance_trends_title">Performance trends</string>
+    <string name="home_unlock_performance_trends_description">See trends for volume, density, repetitions, and intensity</string>
+    <string name="home_unlock_set_goal_title">Pick a training goal</string>
+    <string name="home_unlock_set_goal_description">Track how well your training matches what you want to achieve</string>
+    <string name="home_unlock_set_goal_cta">Pick a goal</string>
 </resources>

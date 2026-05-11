@@ -855,4 +855,15 @@
     <string name="goal_setup_suggestion_benefit_tailored_description">Повторення й інтенсивність підлаштовані під твій результат.</string>
     <string name="goal_setup_suggestion_primary_btn">Вказати ціль</string>
     <string name="goal_setup_suggestion_secondary_btn">Пропустити</string>
+
+    <!-- Home unlock banner -->
+    <string name="home_unlock_banner_header">Відкрий свій дашборд</string>
+    <string name="home_unlock_progress_format">%1$d з %2$d тренувань</string>
+    <string name="home_unlock_duration_trend_title">Тренд тривалості тренування</string>
+    <string name="home_unlock_duration_trend_description">Дивись як змінюється тривалість твоїх сесій з часом</string>
+    <string name="home_unlock_performance_trends_title">Тренди продуктивності</string>
+    <string name="home_unlock_performance_trends_description">Тренди обсягу, щільності, повторень та інтенсивності</string>
+    <string name="home_unlock_set_goal_title">Постав ціль</string>
+    <string name="home_unlock_set_goal_description">Відстежуй наскільки тренування наближають тебе до цілі</string>
+    <string name="home_unlock_set_goal_cta">Поставити ціль</string>
 </resources>
