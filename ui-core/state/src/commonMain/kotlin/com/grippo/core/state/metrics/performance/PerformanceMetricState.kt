@@ -1,5 +1,6 @@
 package com.grippo.core.state.metrics.performance
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DensityFormatState
@@ -20,6 +21,43 @@ public sealed interface PerformanceMetricState {
     public val deltaPercentage: Int
     public val currentVsAveragePercentage: Int
     public val status: PerformanceTrendStatusState
+
+    public fun isEmpty(): Boolean = status == PerformanceTrendStatusState.Empty
+
+    public fun hasComparison(): Boolean = when (this) {
+        is Volume -> (average.value ?: 0f) > 0f
+        is Density -> (average.value ?: 0f) > 0f
+        is Intensity -> (average.value ?: 0f) > 0f
+        is Duration -> (average.value ?: kotlin.time.Duration.ZERO) > kotlin.time.Duration.ZERO
+        is Repetitions -> (average.value ?: 0) > 0
+    }
+
+    @Composable
+    public fun currentDisplay(): String = when (this) {
+        is Duration -> current.display
+        is Volume -> current.short()
+        is Density -> current.short()
+        is Repetitions -> current.short()
+        is Intensity -> current.short()
+    }
+
+    @Composable
+    public fun averageDisplay(): String = when (this) {
+        is Duration -> average.display
+        is Volume -> average.short()
+        is Density -> average.short()
+        is Repetitions -> average.short()
+        is Intensity -> average.short()
+    }
+
+    @Composable
+    public fun bestDisplay(): String = when (this) {
+        is Duration -> best.display
+        is Volume -> best.short()
+        is Density -> best.short()
+        is Repetitions -> best.short()
+        is Intensity -> best.short()
+    }
 
     @Immutable
     public data class Volume(

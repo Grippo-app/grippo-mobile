@@ -293,12 +293,6 @@ public data object AppDp {
         val iconBackground: Dp = 40.dp
         val icon: Dp = AppDp.icon.medium
         val textSpacing: Dp = padding.tiny
-        val trailing: Trailing = Trailing
-
-        public data object Trailing {
-            val horizontalPadding: Dp = padding.small
-            val verticalPadding: Dp = padding.extraSmall
-        }
     }
 
     public data object FocusFrame {

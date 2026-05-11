@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -55,7 +54,7 @@ public fun BannerCard(
     icon: ImageVector,
     title: String,
     description: String? = null,
-    trailing: String? = null,
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     val tokens = resolveBannerCardTokens(style)
     val dp = AppTokens.dp.bannerCard
@@ -103,19 +102,7 @@ public fun BannerCard(
         }
 
         if (trailing != null) {
-            Text(
-                modifier = Modifier
-                    .background(color = tokens.surface, shape = CircleShape)
-                    .padding(
-                        horizontal = dp.trailing.horizontalPadding,
-                        vertical = dp.trailing.verticalPadding,
-                    ),
-                text = trailing,
-                style = tokens.trailingStyle,
-                color = tokens.accent,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            trailing.invoke()
         }
     }
 }
@@ -130,7 +117,15 @@ private fun BannerCardPreview() {
             icon = AppTokens.icons.Sparkle,
             title = "Suggested preset",
             description = "A balanced session generated for you.",
-            trailing = "4 exercises",
+            trailing = {
+                Text(
+                    text = "4 exercises",
+                    style = AppTokens.typography.b11Semi(),
+                    color = AppTokens.colors.semantic.notice,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
         )
 
         BannerCard(
@@ -139,7 +134,15 @@ private fun BannerCardPreview() {
             icon = AppTokens.icons.Timer,
             title = "Recent workout",
             description = "Yesterday, 18:42",
-            trailing = "12 exercises",
+            trailing = {
+                Text(
+                    text = "12 exercises",
+                    style = AppTokens.typography.b11Semi(),
+                    color = AppTokens.colors.semantic.info,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
         )
 
         BannerCard(

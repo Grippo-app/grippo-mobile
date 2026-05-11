@@ -878,8 +878,7 @@
     <string name="goal_setup_suggestion_secondary_btn">Skip</string>
 
     <!-- Home unlock banner -->
-    <string name="home_unlock_banner_header">Unlock your dashboard</string>
-    <string name="home_unlock_progress_format">%1$d of %2$d trainings</string>
+    <string name="home_unlock_banner_header">Unlock more</string>
     <string name="home_unlock_duration_trend_title">Workout duration trend</string>
     <string name="home_unlock_duration_trend_description">See how the length of your sessions changes over time</string>
     <string name="home_unlock_performance_trends_title">Performance trends</string>

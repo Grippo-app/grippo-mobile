@@ -15,7 +15,6 @@ internal data class BannerCardTokens(
     val surface: Color,
     val titleStyle: TextStyle,
     val descriptionStyle: TextStyle,
-    val trailingStyle: TextStyle,
 )
 
 @Composable
@@ -38,6 +37,5 @@ internal fun resolveBannerCardTokens(style: BannerCardStyle): BannerCardTokens {
         surface = accent.copy(alpha = 0.14f),
         titleStyle = AppTokens.typography.b14Semi(),
         descriptionStyle = AppTokens.typography.b12Med(),
-        trailingStyle = AppTokens.typography.b11Semi(),
     )
 }

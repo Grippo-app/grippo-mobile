@@ -866,8 +866,7 @@
     <string name="goal_setup_suggestion_secondary_btn">Пропустить</string>
 
     <!-- Home unlock banner -->
-    <string name="home_unlock_banner_header">Открой свой дашборд</string>
-    <string name="home_unlock_progress_format">%1$d из %2$d тренировок</string>
+    <string name="home_unlock_banner_header">Разблокировать больше</string>
     <string name="home_unlock_duration_trend_title">Тренд длительности тренировки</string>
     <string name="home_unlock_duration_trend_description">Узнавай как меняется длительность твоих сессий со временем</string>
     <string name="home_unlock_performance_trends_title">Тренды производительности</string>
