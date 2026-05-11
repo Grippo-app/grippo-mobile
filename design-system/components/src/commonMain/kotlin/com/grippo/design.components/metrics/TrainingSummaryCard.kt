@@ -81,14 +81,14 @@ private fun SummaryHero(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
         Text(
             modifier = Modifier.weight(weight = 1f, fill = false),
             text = AppTokens.strings.res(Res.string.tonnage),
-            style = AppTokens.typography.h4(),
+            style = AppTokens.typography.h6(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -97,7 +97,7 @@ private fun SummaryHero(
         Text(
             modifier = Modifier.weight(weight = 1f, fill = false),
             text = training.total.volume.short(),
-            style = AppTokens.typography.h4(),
+            style = AppTokens.typography.h5(),
             color = AppTokens.colors.semantic.notice,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

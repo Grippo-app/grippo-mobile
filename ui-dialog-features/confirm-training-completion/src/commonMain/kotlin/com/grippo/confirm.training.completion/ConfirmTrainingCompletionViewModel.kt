@@ -4,6 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import kotlin.time.Duration.Companion.minutes
 
 public class ConfirmTrainingCompletionViewModel(
     initial: DurationFormatState,
@@ -11,6 +12,8 @@ public class ConfirmTrainingCompletionViewModel(
 ) : BaseViewModel<ConfirmTrainingCompletionState, ConfirmTrainingCompletionDirection, ConfirmTrainingCompletionLoader>(
     ConfirmTrainingCompletionState(
         duration = initial
+            .takeIf { (it.value ?: 0.minutes) > 1.minutes }
+            ?: DurationFormatState.of("1m")
     )
 ), ConfirmTrainingCompletionContract {
 
