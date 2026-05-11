@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,13 +55,14 @@ public fun BannerCard(
     icon: ImageVector,
     title: String,
     description: String? = null,
+    enabled: Boolean = true,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val tokens = resolveBannerCardTokens(style)
     val dp = AppTokens.dp.bannerCard
 
     Row(
-        modifier = modifier,
+        modifier = modifier.alpha(if (enabled) 1f else 0.5f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dp.space),
     ) {
@@ -101,9 +103,7 @@ public fun BannerCard(
             }
         }
 
-        if (trailing != null) {
-            trailing.invoke()
-        }
+        trailing?.invoke()
     }
 }
 
@@ -174,6 +174,15 @@ private fun BannerCardPreview() {
             icon = AppTokens.icons.Sparkle,
             title = "My test message with title",
             description = "Super long description. Super long description. Super long description. Super long description. Super long description.",
+        )
+
+        BannerCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = BannerCardStyle.Notice,
+            icon = AppTokens.icons.Trophy,
+            title = "Disabled banner",
+            description = "Shown dimmed when the feature is not yet available.",
+            enabled = false,
         )
     }
 }

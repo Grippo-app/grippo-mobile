@@ -38,6 +38,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
 import com.grippo.design.resources.provider.icons.LineUp
+import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.icons.Medal
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Stack
@@ -248,15 +249,18 @@ private fun WelcomeBody(
                     description = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
                 )
 
-                if (hasGoal) {
-                    BannerCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
-                        icon = AppTokens.icons.Medal,
-                        title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
-                        description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),
-                    )
-                }
+                BannerCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    style = if (hasGoal) {
+                        BannerCardStyle.Custom(AppTokens.colors.brand.color6)
+                    } else {
+                        BannerCardStyle.Custom(AppTokens.colors.text.tertiary)
+                    },
+                    icon = if (hasGoal) AppTokens.icons.Medal else AppTokens.icons.Lock,
+                    title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
+                    description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),
+                    enabled = hasGoal,
+                )
             }
         }
     }
