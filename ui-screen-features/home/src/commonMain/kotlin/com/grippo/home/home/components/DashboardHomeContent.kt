@@ -29,7 +29,6 @@ import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNeedsAtten
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightProgressWin
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
-import com.grippo.core.state.metrics.profile.stubTrainingLoadProfile
 import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -42,7 +41,6 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.performance.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
-import com.grippo.design.components.metrics.profile.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.utils.AnchorScrollBehavior
@@ -158,17 +156,6 @@ internal fun DashboardHomeContent(
                                 )
                             }
                         }
-                    }
-                }
-
-                if (state.profile != null) {
-                    item(key = "training_load_profile", span = { GridItemSpan(2) }) {
-                        TrainingLoadProfileCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenTrainingProfile),
-                            value = state.profile,
-                        )
                     }
                 }
 
@@ -301,7 +288,6 @@ private fun DashboardHomeContentPreview() {
                 muscleLoad = stubMuscleLoadSummary(),
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
-                profile = stubTrainingLoadProfile(),
                 goalProgress = stubGoalProgressList().random(),
                 hasDraftTraining = true,
                 user = stubUser()

@@ -34,7 +34,6 @@ internal class HomeComponent(
             performanceTrendUseCase = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             stringProvider = getKoin().get(),
-            trainingLoadProfileUseCase = getKoin().get(),
             permissionManager = getKoin().get(),
             notificationManager = getKoin().get(),
             goalFollowingUseCase = getKoin().get(),

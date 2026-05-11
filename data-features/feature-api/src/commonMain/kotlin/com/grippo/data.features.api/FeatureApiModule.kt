@@ -14,7 +14,6 @@ import com.grippo.data.features.api.metrics.performance.EstimatedOneRepMaxUseCas
 import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
-import com.grippo.data.features.api.metrics.profile.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.volume.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.DeleteTrainingUseCase
@@ -166,12 +165,6 @@ public class FeatureApiModule {
 
         single {
             TrainingTimelineUseCase()
-        }
-
-        single {
-            TrainingLoadProfileUseCase(
-                exerciseExampleFeature = get()
-            )
         }
 
         single {

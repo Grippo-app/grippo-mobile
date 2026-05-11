@@ -40,7 +40,6 @@ import com.grippo.secondary.goal.picker.SecondaryGoalPickerComponent
 import com.grippo.start.training.StartTrainingComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.training.goal.details.TrainingGoalDetailsComponent
-import com.grippo.training.profile.details.TrainingProfileDetailsComponent
 import com.grippo.training.streak.details.TrainingStreakDetailsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -155,14 +154,6 @@ internal class DialogContentComponent(
 
             is DialogConfig.TrainingStreakDetails -> Child.TrainingStreakDetails(
                 TrainingStreakDetailsComponent(
-                    componentContext = context,
-                    range = router.range,
-                    back = { viewModel.onBack(null) }
-                )
-            )
-
-            is DialogConfig.TrainingProfileDetails -> Child.TrainingProfileDetails(
-                TrainingProfileDetailsComponent(
                     componentContext = context,
                     range = router.range,
                     back = { viewModel.onBack(null) }
@@ -411,9 +402,6 @@ internal class DialogContentComponent(
             Child(component)
 
         data class TrainingStreakDetails(override val component: TrainingStreakDetailsComponent) :
-            Child(component)
-
-        data class TrainingProfileDetails(override val component: TrainingProfileDetailsComponent) :
             Child(component)
 
         data class PerformanceTrendDetails(override val component: PerformanceTrendDetailsComponent) :

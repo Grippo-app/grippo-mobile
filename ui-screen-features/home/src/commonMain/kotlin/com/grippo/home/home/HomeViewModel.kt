@@ -18,7 +18,6 @@ import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
-import com.grippo.data.features.api.metrics.profile.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Training
@@ -66,7 +65,6 @@ internal class HomeViewModel(
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
     private val stringProvider: StringProvider,
     private val permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
@@ -209,10 +207,6 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
-        val profile = trainingLoadProfileUseCase
-            .fromTrainings(list)
-            .toState()
-
         val goalProgress = goalFollowingUseCase
             .fromTrainingsByPrimary(list)
             ?.toState()
@@ -226,7 +220,6 @@ internal class HomeViewModel(
                 performance = performance,
                 lastTraining = last,
                 goalProgress = goalProgress,
-                profile = profile
             )
         }
     }
@@ -309,16 +302,6 @@ internal class HomeViewModel(
         }
     }
 
-    override fun onOpenTrainingProfile() {
-        val range = state.value.range.value ?: return
-
-        val dialog = DialogConfig.TrainingProfileDetails(
-            range = range
-        )
-
-        dialogController.show(dialog)
-    }
-
     override fun onOpenExample(id: String) {
         val dialog = DialogConfig.ExerciseExample(
             id = id
@@ -374,7 +357,6 @@ internal class HomeViewModel(
                 streak = null,
                 performance = persistentListOf(),
                 lastTraining = null,
-                profile = null,
                 goalProgress = null,
             )
         }

@@ -90,7 +90,6 @@ kotlin {
         implementation(projects.uiDialogFeatures.statistics)
         implementation(projects.uiDialogFeatures.muscleLoadingDetails)
         implementation(projects.uiDialogFeatures.trainingStreakDetails)
-        implementation(projects.uiDialogFeatures.trainingProfileDetails)
         implementation(projects.uiDialogFeatures.performanceTrendDetails)
         implementation(projects.uiDialogFeatures.trainingGoalDetails)
         implementation(projects.uiDialogFeatures.periodPicker)

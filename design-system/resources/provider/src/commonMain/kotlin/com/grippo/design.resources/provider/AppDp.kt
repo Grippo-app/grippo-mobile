@@ -204,32 +204,7 @@ public data object AppDp {
         }
 
         public data object Profile {
-            val trainingProfile: TrainingProfile = TrainingProfile
             val goal: Goal = Goal
-
-            public data object TrainingProfile {
-                val radar: Radar = Radar
-                val details: Details = Details
-
-                public data object Details {
-                    val radius: Dp = AppDp.radius.medium
-                    val horizontalPadding: Dp = padding.medium
-                    val verticalPadding: Dp = padding.medium
-                }
-
-                public data object Radar {
-                    val small: Small = Small
-                    val large: Large = Large
-
-                    public data object Small {
-                        val size: Dp = Size.large
-                    }
-
-                    public data object Large {
-                        val size: Dp = Size.xxLarge
-                    }
-                }
-            }
 
             public data object Goal {
                 val chart: Dp = 100.dp

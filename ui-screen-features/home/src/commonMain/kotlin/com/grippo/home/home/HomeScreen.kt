@@ -16,7 +16,6 @@ import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNeedsAtten
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightProgressWin
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
-import com.grippo.core.state.metrics.profile.stubTrainingLoadProfile
 import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -123,7 +122,6 @@ private fun HomeScreenPreview() {
                 muscleLoad = stubMuscleLoadSummary(),
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
-                profile = stubTrainingLoadProfile(),
                 goalProgress = stubGoalProgressList().random(),
                 hasDraftTraining = true,
                 user = stubUser()
