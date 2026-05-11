@@ -16,6 +16,7 @@ internal interface HomeContract {
     fun onOpenPeriodPicker()
     fun onPerformanceMetricClick(type: PerformanceMetricTypeState)
     fun onAddGoal()
+    fun onWelcomeConfettiShown()
     fun onBack()
 
     @Immutable
@@ -31,6 +32,7 @@ internal interface HomeContract {
         override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {}
         override fun onOpenExample(id: String) {}
         override fun onAddGoal() {}
+        override fun onWelcomeConfettiShown() {}
         override fun onBack() {}
     }
 }

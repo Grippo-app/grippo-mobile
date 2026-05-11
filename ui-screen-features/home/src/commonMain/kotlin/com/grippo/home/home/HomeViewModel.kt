@@ -356,6 +356,10 @@ internal class HomeViewModel(
         navigateTo(HomeDirection.Goal)
     }
 
+    override fun onWelcomeConfettiShown() {
+        update { it.copy(showWelcomeConfetti = false) }
+    }
+
     override fun onBack() {
         navigateTo(HomeDirection.Back)
     }

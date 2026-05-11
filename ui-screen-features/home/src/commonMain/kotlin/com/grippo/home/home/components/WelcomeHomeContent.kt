@@ -73,6 +73,7 @@ internal fun WelcomeHomeContent(
     showWelcomeConfetti: Boolean,
     onStartTraining: () -> Unit,
     onResumeTraining: () -> Unit,
+    onWelcomeConfettiShown: () -> Unit,
 ) {
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
@@ -126,9 +127,10 @@ internal fun WelcomeHomeContent(
             }
         )
 
-        if (showWelcomeConfetti) {
-            KonfettiParade()
-        }
+        KonfettiParade(
+            show = showWelcomeConfetti,
+            onShown = onWelcomeConfettiShown,
+        )
     }
 }
 
@@ -305,6 +307,7 @@ private fun WelcomeHomeContentPreview() {
             showWelcomeConfetti = false,
             onStartTraining = {},
             onResumeTraining = {},
+            onWelcomeConfettiShown = {},
         )
     }
 }
@@ -324,6 +327,7 @@ private fun WelcomeHomeContentDraftPreview() {
             showWelcomeConfetti = false,
             onStartTraining = {},
             onResumeTraining = {},
+            onWelcomeConfettiShown = {},
         )
     }
 }
@@ -343,6 +347,7 @@ private fun WelcomeHomeContentCelebrationPreview() {
             showWelcomeConfetti = true,
             onStartTraining = {},
             onResumeTraining = {},
+            onWelcomeConfettiShown = {},
         )
     }
 }

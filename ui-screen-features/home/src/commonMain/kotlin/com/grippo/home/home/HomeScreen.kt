@@ -92,6 +92,7 @@ internal fun HomeScreen(
             showWelcomeConfetti = state.showWelcomeConfetti,
             onStartTraining = contract::onStartTraining,
             onResumeTraining = contract::onResumeTraining,
+            onWelcomeConfettiShown = contract::onWelcomeConfettiShown,
         )
         return@BaseComposeScreen
     }

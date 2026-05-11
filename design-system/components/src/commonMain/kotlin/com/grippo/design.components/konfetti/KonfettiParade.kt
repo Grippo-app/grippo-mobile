@@ -3,7 +3,11 @@ package com.grippo.design.components.konfetti
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -12,7 +16,21 @@ import com.grippo.konfetti.compose.Konfetti
 import com.grippo.konfetti.presets.parade
 
 @Composable
-public fun KonfettiParade() {
+public fun KonfettiParade(
+    show: Boolean,
+    onShown: () -> Unit,
+) {
+    var active by remember { mutableStateOf(false) }
+
+    LaunchedEffect(show) {
+        if (show) {
+            active = true
+            onShown()
+        }
+    }
+
+    if (!active) return
+
     val konfettiColors = with(AppTokens.colors.konfetti) {
         listOf(
             confettiColor1,
@@ -28,7 +46,9 @@ public fun KonfettiParade() {
         )
     }
 
-    val konfetti = remember(konfettiColors) { parade(konfettiColors) }
+    val konfetti = remember(konfettiColors) {
+        parade(konfettiColors)
+    }
 
     Konfetti(
         modifier = Modifier
@@ -42,6 +62,6 @@ public fun KonfettiParade() {
 @Composable
 private fun KonfettiParadePreview() {
     PreviewContainer {
-        KonfettiParade()
+        KonfettiParade(show = true, onShown = {})
     }
 }
