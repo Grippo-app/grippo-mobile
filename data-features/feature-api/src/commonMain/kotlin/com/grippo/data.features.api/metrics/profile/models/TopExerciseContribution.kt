@@ -2,7 +2,7 @@ package com.grippo.data.features.api.metrics.profile.models
 
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 
-public data class TopExerciseContribution(
+internal data class TopExerciseContribution(
     val exampleId: String,
     val name: String,
     val totalSets: Int,

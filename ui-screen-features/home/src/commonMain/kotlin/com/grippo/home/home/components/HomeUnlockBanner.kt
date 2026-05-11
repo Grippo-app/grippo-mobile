@@ -47,6 +47,8 @@ internal fun HomeUnlockBanner(
     modifier: Modifier = Modifier,
 ) {
     val lifetimeCount = stats.trainingsCount
+    if (!HomeUnlock.shouldShowBanner(lifetimeCount = lifetimeCount, hasGoal = hasGoal)) return
+
     val isNewUser = lifetimeCount < HomeUnlock.NEW_USER_THRESHOLD
     val showGoalSection = !hasGoal
 
@@ -197,9 +199,6 @@ private fun previewStats(
     totalRepetitions = RepetitionsFormatState.of(0),
 )
 
-// Zero trainings, no goal — extreme new-user state.
-// Shows header, all-zero stats row (duration "—" fallback), both milestones
-// locked at 0/N, and the Set Goal CTA.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerZeroTrainingsPreview() {
@@ -216,7 +215,6 @@ private fun HomeUnlockBannerZeroTrainingsPreview() {
     }
 }
 
-// One training, no goal — both milestones still locked + Goal CTA.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerNewUserPreview() {
@@ -233,9 +231,8 @@ private fun HomeUnlockBannerNewUserPreview() {
     }
 }
 
-// Two trainings, no goal — Duration unlocked, only Performance milestone
-// remains locked. Verifies that `filterNot { isUnlocked }` correctly hides
-// the unlocked milestone.
+// Verifies `filterNot { isUnlocked }` hides DurationTrend once it's unlocked,
+// keeping only the still-locked PerformanceTrends milestone.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerDurationUnlockedPreview() {
@@ -252,7 +249,6 @@ private fun HomeUnlockBannerDurationUnlockedPreview() {
     }
 }
 
-// Brand-new user with a goal already set — milestones only, no Goal CTA.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerZeroTrainingsHasGoalPreview() {
@@ -269,7 +265,6 @@ private fun HomeUnlockBannerZeroTrainingsHasGoalPreview() {
     }
 }
 
-// Two trainings, goal already set — single milestone, no Goal CTA.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerNewUserHasGoalPreview() {
@@ -286,8 +281,8 @@ private fun HomeUnlockBannerNewUserHasGoalPreview() {
     }
 }
 
-// New-user range with high totals — layout stress test for big numbers
-// (formatter compaction `short()`, multi-hour duration display, ellipsis).
+// Layout stress test: large numbers exercise `short()` compaction,
+// multi-hour duration display, and ellipsis.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerHighVolumePreview() {
@@ -304,7 +299,6 @@ private fun HomeUnlockBannerHighVolumePreview() {
     }
 }
 
-// Experienced user past every count milestone, no goal — only Goal CTA renders.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerGoalOnlyPreview() {
@@ -321,8 +315,6 @@ private fun HomeUnlockBannerGoalOnlyPreview() {
     }
 }
 
-// Past every milestone but with massive numbers — verifies layout when the
-// banner is only the Goal CTA section without the stats row.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerVeteranNoGoalPreview() {

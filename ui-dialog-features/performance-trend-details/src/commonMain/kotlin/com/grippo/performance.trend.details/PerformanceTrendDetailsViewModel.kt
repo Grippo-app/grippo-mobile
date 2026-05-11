@@ -69,8 +69,7 @@ public class PerformanceTrendDetailsViewModel(
             val metric = performanceTrendUseCase
                 .fromTrainings(trainings = slice, experience = experience)
                 .toState()
-                .firstOrNull { it.type == state.value.metricType }
-                ?: continue
+                .first { it.type == state.value.metricType }
 
             val endAt = slice.last().createdAt
             history.add(

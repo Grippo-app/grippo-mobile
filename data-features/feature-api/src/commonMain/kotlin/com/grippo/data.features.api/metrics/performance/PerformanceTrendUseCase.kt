@@ -269,20 +269,28 @@ public class PerformanceTrendUseCase(
         latest: Training?,
     ): PerformanceMetric.DurationMetric {
         val latestValue = latest?.duration?.inWholeMinutes?.toDouble() ?: 0.0
+        if (latestValue <= 0.0) {
+            return PerformanceMetric.DurationMetric(
+                deltaPercentage = 0,
+                currentVsAveragePercentage = 0,
+                current = 0.minutes,
+                average = 0.minutes,
+                best = 0.minutes,
+                status = PerformanceTrendStatus.Empty,
+            )
+        }
+
+        // `latest` is guaranteed to be in `trainings` (callers pass sorted.lastOrNull()),
+        // and `latestValue > 0`, so `values` always contains at least one element and
+        // `dropLast(1)` consistently drops `latest`'s contribution from the baseline.
         val values = trainings.map { it.duration.inWholeMinutes.toDouble() }.filter { it > 0.0 }
         val baselineValues = values.dropLast(1)
         val baselineMean = if (baselineValues.isNotEmpty()) baselineValues.average() else 0.0
-        val best = values.maxOrNull() ?: latestValue
+        val best = values.max()
 
         val currentVsAverage = if (baselineMean > 0.0) {
             currentVsAveragePercent(latestValue, baselineMean) ?: 0
         } else 0
-
-        val status = if (latestValue <= 0.0) {
-            PerformanceTrendStatus.Empty
-        } else {
-            PerformanceTrendStatus.Stable
-        }
 
         return PerformanceMetric.DurationMetric(
             deltaPercentage = 0,
@@ -290,7 +298,7 @@ public class PerformanceTrendUseCase(
             current = latestValue.minutes,
             average = baselineMean.minutes,
             best = best.minutes,
-            status = status,
+            status = PerformanceTrendStatus.Stable,
         )
     }
 

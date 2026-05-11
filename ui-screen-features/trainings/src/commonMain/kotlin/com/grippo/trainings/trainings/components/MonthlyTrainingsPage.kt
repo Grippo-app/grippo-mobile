@@ -163,11 +163,11 @@ private fun MonthCalendarDayCell(
 
     FocusFrame(
         modifier = cellModifier,
-        accent = if (isHighlighted) {
-            AppTokens.colors.brand.color6
-        } else {
-            AppTokens.colors.background.card
-        }
+        accent = when {
+            isHighlighted -> AppTokens.colors.brand.color6
+            hasTrainings -> AppTokens.colors.border.default
+            else -> AppTokens.colors.background.card
+        },
     ) {
         MonthCalendarDayCellContent(day, textColor, hasTrainings)
     }
