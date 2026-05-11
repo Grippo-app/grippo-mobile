@@ -32,6 +32,21 @@ public sealed interface PerformanceMetricState {
         is Repetitions -> (average.value ?: 0) > 0
     }
 
+    /**
+     * Returns a single Float suitable for plotting on a chart, or null when
+     * this metric has no value to plot (Empty status or non-positive current).
+     */
+    public fun chartValue(): Float? {
+        if (isEmpty()) return null
+        return when (this) {
+            is Duration -> current.value?.inWholeSeconds?.toFloat()?.div(60f)?.takeIf { it > 0f }
+            is Volume -> current.value?.takeIf { it > 0f }
+            is Density -> current.value?.takeIf { it > 0f }
+            is Repetitions -> current.value?.toFloat()?.takeIf { it > 0f }
+            is Intensity -> current.value?.takeIf { it > 0f }
+        }
+    }
+
     @Composable
     public fun currentDisplay(): String = when (this) {
         is Duration -> current.display

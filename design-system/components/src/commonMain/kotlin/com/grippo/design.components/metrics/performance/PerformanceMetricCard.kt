@@ -166,7 +166,6 @@ private fun performanceAverageDeltaColor(metric: PerformanceMetricState): Color 
 @Composable
 private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
     val label = when (status) {
-        PerformanceTrendStatusState.Empty -> return
         PerformanceTrendStatusState.Record ->
             AppTokens.strings.res(Res.string.highlight_status_record)
 
@@ -178,6 +177,8 @@ private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
 
         PerformanceTrendStatusState.Declined ->
             AppTokens.strings.res(Res.string.highlight_status_declined)
+
+        PerformanceTrendStatusState.Empty -> return
     }
 
     val color = performanceStatusColor(status)

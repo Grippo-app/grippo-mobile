@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="w">Н</string>
-    <string name="ex">Упр.</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
-    <string name="filters">Фильтры</string>
     <string name="repetitions">Повторения</string>
     <string name="error_save_training_description">Мы сохранили твою тренировку. Можешь завершить и сохранить её в любой момент с главной.</string>
     <string name="search_placeholder">Поиск…</string>
@@ -22,15 +19,12 @@
     <string name="spotlight_near_best_title">Рядом с лучшим</string>
     <string name="repetitions_input_hint">1–99 повторений</string>
     <string name="exercise_details_btn">Детали упражнения</string>
-    <string name="and">И</string>
     <string name="push_token">Пуш-токен</string>
     <string name="resume_training_btn">Продолжить тренировку</string>
     <string name="start_new">Начать новое</string>
     <string name="weight">Вес</string>
-    <string name="height">Рост</string>
     <string name="choose_your_experience_level">Выбери свой уровень — мы порекомендуем упражнения, которые подойдут лучше всего.</string>
     <string name="weight_input_hint">1–999 кг</string>
-    <string name="advice">Совет</string>
     <string name="spotlight_progress_win_metric">+%1$s% к последним %2$d сессиям</string>
     <string name="spotlight_progress_win_context">Сейчас %1$s кг против обычных %2$s кг</string>
     <string name="spotlight_progress_win_action">Повтори этот вес ещё раз, потом повышай.</string>
@@ -44,7 +38,6 @@
     <string name="spotlight_near_best_context">Сейчас %1$s кг против лучшего %2$s кг</string>
     <string name="spotlight_near_best_action">Повтори тот же сетап и попробуй добрать.</string>
     <string name="dashboard">Главная</string>
-    <string name="highlights">Хайлайты</string>
     <string name="highlight_vs_average">ср.</string>
     <string name="highlight_best_value">Лучшее %1$s</string>
     <string name="highlight_status_record">Рекорд</string>
@@ -73,7 +66,6 @@
     <string name="performance_trend_desc_intensity">Средний рабочий вес на повторение с весом. Выше — в тренировке в среднем были более тяжёлые рабочие веса.</string>
     <string name="sets_value">Подходы (%1$s)</string>
     <string name="percent">%</string>
-    <string name="complete">Завершить</string>
     <string name="selected">Выбрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Применить</string>
@@ -90,7 +82,6 @@
     <string name="yearly">Ежегодно</string>
     <string name="custom">Свой</string>
     <string name="danger_zone">Опасная зона</string>
-    <string name="digest">Дайджест</string>
     <string name="of_body_weight">от массы тела</string>
     <string name="weekly">Еженедельно</string>
     <string name="monthly">Ежемесячно</string>
@@ -114,7 +105,6 @@
     <string name="per_group">По группам</string>
     <string name="per_muscle">По мышцам</string>
     <string name="add_set_btn">Добавить подход</string>
-    <string name="or">ИЛИ</string>
     <string name="create_account_btn">Создать аккаунт</string>
     <string name="email_placeholder">Введи email</string>
     <string name="password_placeholder_default">Введи пароль</string>
@@ -160,7 +150,6 @@
     <string name="welcome_title">Время первой тренировки</string>
     <string name="welcome_subtitle">Начни отслеживать прогресс с первой тренировки.</string>
 
-    <string name="welcome_progress_complete">Профиль готов</string>
 
     <string name="welcome_check_profile">Профиль создан</string>
     <string name="welcome_check_experience">Уровень выбран</string>
@@ -216,7 +205,6 @@
     <string name="trainings_period_monthly">Месяц</string>
     <string name="training">Тренировка</string>
     <string name="duration">Длительность</string>
-    <string name="density">Плотность</string>
     <string name="sets">Подходы</string>
     <string name="statistics">Статистика</string>
     <string name="community">Сообщество</string>
@@ -235,8 +223,6 @@
     <string name="muscle_load_balance_status_balanced">ровное распределение</string>
     <string name="muscle_load_balance_status_moderate">умеренный перекос</string>
     <string name="muscle_load_balance_status_strong">сильный перекос</string>
-    <string name="muscle_load_balance_description_1">Показывает, насколько равномерно были натренированы твои мышцы.</string>
-    <string name="muscle_load_balance_description_2">100 = идеальный баланс, 0 = перекос в одну группу.</string>
     <string name="muscle_load_bias">Перекос: %1$s +%2$d%</string>
     <string name="muscle_load_gap">Пробел: %1$s %2$s</string>
     <string name="muscle_load_trainings_count">%1$d тренировок</string>
@@ -259,8 +245,6 @@
     <string name="debug">Отладка</string>
     <string name="clear_logs">Очистить логи</string>
     <string name="settings">Настройки</string>
-    <string name="activity">Активность</string>
-    <string name="overview">Обзор</string>
     <string name="no_internet_connection">Нет подключения к интернету</string>
     <string name="last_7_days">7 дней</string>
     <string name="last_14_days">14 дней</string>
@@ -276,7 +260,6 @@
     <string name="select_month">Выбери месяц</string>
     <string name="x">x</string>
     <string name="tonnage">Тоннаж</string>
-    <string name="insights">Инсайты</string>
     <string name="progress">Прогресс</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Интенсивность</string>
@@ -284,7 +267,6 @@
     <string name="performance_metric_intensity">Ср. вес</string>
     <string name="repetitions_chip">Повторения</string>
     <string name="volume">Объём</string>
-    <string name="sets_label">Подходы:</string>
     <string name="training_progress_lost_title">Выйти из тренировки</string>
     <string name="training_progress_lost_description">Если закроешь сейчас, весь прогресс этой сессии будет потерян.</string>
     <string name="planned_sets_unfinished_title">Незакрытые подходы</string>
@@ -301,7 +283,6 @@
     <string name="draft_training_alert_title_edit">Продолжить редактирование тренировки</string>
     <string name="draft_training_alert_description_edit">Вы редактировали сохранённую тренировку и оставили незавершённые изменения. Продолжить редактирование?</string>
     <string name="start_training_title">Начать тренировку</string>
-    <string name="start_training_description">Начните с чистого листа или выберите шаблон.</string>
     <string name="start_training_option_empty_title">Пустая тренировка</string>
     <string name="start_training_option_empty_description">Добавляй упражнения по ходу.</string>
     <string name="start_training_option_preset_title">Подобрали для тебя</string>
@@ -320,7 +301,6 @@
 
     <string name="last_used_label">Последнее использование:</string>
 
-    <string name="edit_training_title">Редактировать тренировку</string>
 
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Тяга</string>
@@ -526,8 +506,6 @@
     <string name="personalizations_equipment_preferences_section">Оборудование</string>
     <string name="personalizations_training_phase_section">Фаза цикла</string>
     <string name="goal_intro">К чему ты сейчас идёшь? Подстроим тренировки под это.</string>
-    <string name="goal_in_8_12_weeks">Через 8–12 недель</string>
-    <string name="goal_in_6_months">Через 6 месяцев</string>
     <string name="goal_menu">Цель тренировок</string>
 
     <!-- Primary goals -->
@@ -574,8 +552,6 @@
     <string name="goal_card_progress_days_left">Осталось %1$d дн.</string>
     <string name="goal_card_progress_overdue">Просрочено на %1$d дн.</string>
     <string name="goal_card_progress_due_today">Срок сегодня</string>
-    <string name="goal_card_description_1">Показывает, насколько твои последние тренировки соответствуют цели.</string>
-    <string name="goal_card_description_2">100 — полное соответствие.</string>
     <string name="goal_card_update_btn">Обновить</string>
 
     <!-- Training goal details dialog -->

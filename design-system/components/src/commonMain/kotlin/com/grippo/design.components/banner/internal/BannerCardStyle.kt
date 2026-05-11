@@ -10,8 +10,6 @@ import com.grippo.design.core.AppTokens
 @Stable
 internal data class BannerCardTokens(
     val accent: Color,
-    val background: Color,
-    val border: Color,
     val surface: Color,
     val titleStyle: TextStyle,
     val descriptionStyle: TextStyle,
@@ -32,8 +30,6 @@ internal fun resolveBannerCardTokens(style: BannerCardStyle): BannerCardTokens {
 
     return BannerCardTokens(
         accent = accent,
-        background = accent.copy(alpha = 0.12f),
-        border = accent.copy(alpha = 0.28f),
         surface = accent.copy(alpha = 0.14f),
         titleStyle = AppTokens.typography.b14Semi(),
         descriptionStyle = AppTokens.typography.b12Med(),

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
+import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightGoodFrequency
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNearBest
@@ -69,21 +71,12 @@ internal fun DashboardHomeContent(
 
     val lifetimeTrainingCount: Int = state.user?.stats?.trainingsCount ?: 0
 
-    val densityMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Density }
-    }
-    val volumeMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Volume }
-    }
-    val repetitionsMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Repetitions }
-    }
-    val intensityMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Intensity }
-    }
-    val durationMetric = remember(state.performance) {
-        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Duration }
-    }
+    val metricsByType = remember(state.performance) { state.performance.associateBy { it.type } }
+    val durationMetric = metricsByType[PerformanceMetricTypeState.Duration]
+    val densityMetric = metricsByType[PerformanceMetricTypeState.Density]
+    val volumeMetric = metricsByType[PerformanceMetricTypeState.Volume]
+    val repetitionsMetric = metricsByType[PerformanceMetricTypeState.Repetitions]
+    val intensityMetric = metricsByType[PerformanceMetricTypeState.Intensity]
 
     val gridState = rememberAnchoredLazyGridState(
         behavior = AnchorScrollBehavior.Animated,
@@ -174,102 +167,51 @@ internal fun DashboardHomeContent(
                     }
                 }
 
-                if (HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount) && durationMetric != null) {
-                    item(
+                if (HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount)) {
+                    performanceMetricItem(
                         key = "performance_duration",
-                        span = { GridItemSpan(2) },
-                    ) {
-                        val onClick = remember(contract, durationMetric.type) {
-                            { contract.onPerformanceMetricClick(durationMetric.type) }
-                        }
-                        PerformanceMetricCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .scalableClick(onClick = onClick),
-                            metric = durationMetric,
-                        )
-                    }
+                        metric = durationMetric,
+                        span = 2,
+                        contract = contract,
+                    )
                 }
 
                 if (HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
-                    if (densityMetric != null) {
-                        item(
-                            key = "performance_density",
-                            span = { GridItemSpan(if (volumeMetric == null) 2 else 1) }
-                        ) {
-                            val onClick = remember(contract, densityMetric.type) {
-                                { contract.onPerformanceMetricClick(densityMetric.type) }
-                            }
-                            PerformanceMetricCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onClick),
-                                metric = densityMetric,
-                            )
-                        }
-                    }
-
-                    if (volumeMetric != null) {
-                        item(
-                            key = "performance_volume",
-                            span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
-                        ) {
-                            val onClick = remember(contract, volumeMetric.type) {
-                                { contract.onPerformanceMetricClick(volumeMetric.type) }
-                            }
-                            PerformanceMetricCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onClick),
-                                metric = volumeMetric,
-                            )
-                        }
-                    }
-
-                    if (repetitionsMetric != null) {
-                        item(
-                            key = "performance_repetitions",
-                            span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
-                        ) {
-                            val onClick = remember(contract, repetitionsMetric.type) {
-                                { contract.onPerformanceMetricClick(repetitionsMetric.type) }
-                            }
-                            PerformanceMetricCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onClick),
-                                metric = repetitionsMetric,
-                            )
-                        }
-                    }
-
-                    if (intensityMetric != null) {
-                        item(
-                            key = "performance_intensity",
-                            span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
-                        ) {
-                            val onClick = remember(contract, intensityMetric.type) {
-                                { contract.onPerformanceMetricClick(intensityMetric.type) }
-                            }
-                            PerformanceMetricCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onClick),
-                                metric = intensityMetric,
-                            )
-                        }
-                    }
+                    performanceMetricItem(
+                        key = "performance_density",
+                        metric = densityMetric,
+                        span = if (volumeMetric == null) 2 else 1,
+                        contract = contract,
+                    )
+                    performanceMetricItem(
+                        key = "performance_volume",
+                        metric = volumeMetric,
+                        span = if (densityMetric == null) 2 else 1,
+                        contract = contract,
+                    )
+                    performanceMetricItem(
+                        key = "performance_repetitions",
+                        metric = repetitionsMetric,
+                        span = if (intensityMetric == null) 2 else 1,
+                        contract = contract,
+                    )
+                    performanceMetricItem(
+                        key = "performance_intensity",
+                        metric = intensityMetric,
+                        span = if (repetitionsMetric == null) 2 else 1,
+                        contract = contract,
+                    )
                 }
-                if (state.user?.stats != null && HomeUnlock.shouldShowBanner(
-                        lifetimeTrainingCount,
-                        state.hasGoal
+
+                if (state.user != null && HomeUnlock.shouldShowBanner(
+                        lifetimeCount = lifetimeTrainingCount,
+                        hasGoal = state.hasGoal,
                     )
                 ) {
+                    item(key = "home_unlock_banner_header", span = { GridItemSpan(2) }) {
+
+                    }
+
                     item(key = "home_unlock_banner", span = { GridItemSpan(2) }) {
                         HomeUnlockBanner(
                             stats = state.user.stats,
@@ -313,6 +255,27 @@ internal fun DashboardHomeContent(
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     )
+}
+
+private fun LazyGridScope.performanceMetricItem(
+    key: String,
+    metric: PerformanceMetricState?,
+    span: Int,
+    contract: HomeContract,
+) {
+    if (metric == null) return
+    item(key = key, span = { GridItemSpan(span) }) {
+        val onClick = remember(contract, metric.type) {
+            { contract.onPerformanceMetricClick(metric.type) }
+        }
+        PerformanceMetricCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .scalableClick(onClick = onClick),
+            metric = metric,
+        )
+    }
 }
 
 @AppPreview

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="w">Т</string>
-    <string name="ex">Впр.</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
-    <string name="filters">Фільтри</string>
     <string name="repetitions">Повторення</string>
     <string name="error_save_training_description">Ми зберегли твоє тренування. Завершити та зберегти його можна будь-коли з головної.</string>
     <string name="search_placeholder">Пошук…</string>
@@ -22,15 +19,12 @@
     <string name="spotlight_near_best_title">Поруч з найкращим</string>
     <string name="repetitions_input_hint">1–99 повторень</string>
     <string name="exercise_details_btn">Деталі вправи</string>
-    <string name="and">І</string>
     <string name="push_token">Пуш-токен</string>
     <string name="resume_training_btn">Продовжити тренування</string>
     <string name="start_new">Почати нове</string>
     <string name="weight">Вага</string>
-    <string name="height">Зріст</string>
     <string name="choose_your_experience_level">Обери свій рівень — ми порекомендуємо вправи, які підійдуть найкраще.</string>
     <string name="weight_input_hint">1–999 кг</string>
-    <string name="advice">Порада</string>
     <string name="spotlight_progress_win_metric">+%1$s% до останніх %2$d сесій</string>
     <string name="spotlight_progress_win_context">Зараз %1$s кг проти звичних %2$s кг</string>
     <string name="spotlight_progress_win_action">Повтори цю вагу ще раз, потім підвищуй.</string>
@@ -44,7 +38,6 @@
     <string name="spotlight_near_best_context">Зараз %1$s кг проти найкращого %2$s кг</string>
     <string name="spotlight_near_best_action">Повтори той самий сетап і спробуй добрати.</string>
     <string name="dashboard">Головна</string>
-    <string name="highlights">Хайлайти</string>
     <string name="highlight_vs_average">сер.</string>
     <string name="highlight_best_value">Найкраще %1$s</string>
     <string name="highlight_status_record">Рекорд</string>
@@ -73,7 +66,6 @@
     <string name="performance_trend_desc_intensity">Середня робоча вага на повторення з вагою. Вище — у тренуванні в середньому були важчі робочі ваги.</string>
     <string name="sets_value">Підходи (%1$s)</string>
     <string name="percent">%</string>
-    <string name="complete">Завершити</string>
     <string name="selected">Обрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Застосувати</string>
@@ -90,7 +82,6 @@
     <string name="yearly">Щороку</string>
     <string name="custom">Власний</string>
     <string name="danger_zone">Небезпечна зона</string>
-    <string name="digest">Дайджест</string>
     <string name="of_body_weight">від маси тіла</string>
     <string name="weekly">Щотижня</string>
     <string name="monthly">Щомісяця</string>
@@ -114,7 +105,6 @@
     <string name="per_group">По групам</string>
     <string name="per_muscle">По м’язах</string>
     <string name="add_set_btn">Додати підхід</string>
-    <string name="or">АБО</string>
     <string name="create_account_btn">Створити акаунт</string>
     <string name="email_placeholder">Введи електронну адресу</string>
     <string name="password_placeholder_default">Введи пароль</string>
@@ -160,7 +150,6 @@
     <string name="welcome_title">Час до першого тренування</string>
     <string name="welcome_subtitle">Почни стежити за прогресом з першого тренування.</string>
 
-    <string name="welcome_progress_complete">Профіль готовий</string>
 
     <string name="welcome_check_profile">Профіль створено</string>
     <string name="welcome_check_experience">Рівень досвіду обрано</string>
@@ -215,7 +204,6 @@
     <string name="trainings_period_monthly">Місяць</string>
     <string name="training">Тренування</string>
     <string name="duration">Тривалість</string>
-    <string name="density">Щільність</string>
     <string name="sets">Підходи</string>
     <string name="statistics">Статистика</string>
     <string name="community">Спільнота</string>
@@ -234,8 +222,6 @@
     <string name="muscle_load_balance_status_balanced">рівномірно</string>
     <string name="muscle_load_balance_status_moderate">помірний перекіс</string>
     <string name="muscle_load_balance_status_strong">сильний перекіс</string>
-    <string name="muscle_load_balance_description_1">Показує, наскільки рівномірно були натреновані твої м’язи.</string>
-    <string name="muscle_load_balance_description_2">100 = ідеальний баланс, 0 = перекіс в одну групу.</string>
     <string name="muscle_load_bias">Перекіс: %1$s +%2$d%</string>
     <string name="muscle_load_gap">Прогалина: %1$s %2$s</string>
     <string name="muscle_load_trainings_count">%1$d тренувань</string>
@@ -258,8 +244,6 @@
     <string name="debug">Налагодження</string>
     <string name="clear_logs">Очистити логи</string>
     <string name="settings">Налаштування</string>
-    <string name="activity">Активність</string>
-    <string name="overview">Огляд</string>
     <string name="no_internet_connection">Немає підключення до інтернету</string>
     <string name="last_7_days">7 днів</string>
     <string name="last_14_days">14 днів</string>
@@ -275,7 +259,6 @@
     <string name="select_month">Обери місяць</string>
     <string name="x">x</string>
     <string name="tonnage">Тоннаж</string>
-    <string name="insights">Інсайти</string>
     <string name="progress">Прогрес</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Інтенсивність</string>
@@ -283,7 +266,6 @@
     <string name="performance_metric_intensity">Сер. вага</string>
     <string name="repetitions_chip">Повторення</string>
     <string name="volume">Обсяг</string>
-    <string name="sets_label">Підходи:</string>
     <string name="training_progress_lost_title">Вийти з тренування</string>
     <string name="training_progress_lost_description">Якщо закриєш зараз, увесь прогрес цієї сесії буде втрачено.</string>
     <string name="planned_sets_unfinished_title">Незакриті підходи</string>
@@ -300,7 +282,6 @@
     <string name="draft_training_alert_title_edit">Продовжити редагування тренування</string>
     <string name="draft_training_alert_description_edit">Ви редагували збережене тренування і залишили незавершені зміни. Продовжити редагування?</string>
     <string name="start_training_title">Почати тренування</string>
-    <string name="start_training_description">Почніть з чистого аркуша або оберіть шаблон.</string>
     <string name="start_training_option_empty_title">Пусте тренування</string>
     <string name="start_training_option_empty_description">Додавай вправи по ходу.</string>
     <string name="start_training_option_preset_title">Підібрали для тебе</string>
@@ -319,7 +300,6 @@
 
     <string name="last_used_label">Останнє використання:</string>
 
-    <string name="edit_training_title">Редагувати тренування</string>
 
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Тяга</string>
@@ -525,8 +505,6 @@
     <string name="personalizations_equipment_preferences_section">Обладнання</string>
     <string name="personalizations_training_phase_section">Фаза циклу</string>
     <string name="goal_intro">До чого ти зараз ідеш? Підлаштуємо тренування під це.</string>
-    <string name="goal_in_8_12_weeks">Через 8–12 тижнів</string>
-    <string name="goal_in_6_months">Через 6 місяців</string>
     <string name="goal_menu">Ціль тренувань</string>
 
     <!-- Primary goals -->
@@ -573,8 +551,6 @@
     <string name="goal_card_progress_days_left">Залишилось %1$d дн.</string>
     <string name="goal_card_progress_overdue">Прострочено на %1$d дн.</string>
     <string name="goal_card_progress_due_today">Термін сьогодні</string>
-    <string name="goal_card_description_1">Показує, наскільки твої останні тренування відповідають цілі.</string>
-    <string name="goal_card_description_2">100 — повна відповідність.</string>
     <string name="goal_card_update_btn">Оновити</string>
 
     <!-- Training goal details dialog -->

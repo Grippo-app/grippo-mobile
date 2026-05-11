@@ -176,15 +176,30 @@ internal class HomeViewModel(
     }
 
     private suspend fun provideTrainings(list: List<Training>) {
+        // Always run the performance use case — it returns 5 metrics regardless
+        // of input size (Empty status when sparse), so the dashboard preserves a
+        // stable card layout when the user is past the unlock thresholds.
+        val performance = performanceTrendUseCase
+            .fromTrainings(list)
+            .toState()
+
         if (list.isEmpty()) {
-            clearHome()
+            update {
+                it.copy(
+                    totalDuration = null,
+                    spotlights = persistentListOf(),
+                    muscleLoad = null,
+                    streak = null,
+                    performance = performance,
+                    lastTraining = null,
+                    goalProgress = null,
+                )
+            }
             return
         }
 
         val sortedTrainingsDesc = list.sortedByDescending { it.createdAt }
-
         val trainings = sortedTrainingsDesc.toState()
-
         val last = trainings.firstOrNull() ?: return
 
         val totalDuration = list.fold(ZERO) { acc: Duration, item ->
@@ -197,10 +212,6 @@ internal class HomeViewModel(
 
         val spotlights = exerciseSpotlightUseCase
             .buildSpotlights(list)
-            .toState()
-
-        val performance = performanceTrendUseCase
-            .fromTrainings(list)
             .toState()
 
         val muscleLoadSummary = muscleLoadingSummaryUseCase
@@ -346,19 +357,5 @@ internal class HomeViewModel(
 
     override fun onBack() {
         navigateTo(HomeDirection.Back)
-    }
-
-    private fun clearHome() {
-        update {
-            it.copy(
-                totalDuration = null,
-                spotlights = persistentListOf(),
-                muscleLoad = null,
-                streak = null,
-                performance = persistentListOf(),
-                lastTraining = null,
-                goalProgress = null,
-            )
-        }
     }
 }

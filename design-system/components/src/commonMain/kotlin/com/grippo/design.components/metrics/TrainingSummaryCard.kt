@@ -18,6 +18,7 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
 import com.grippo.design.components.metrics.internal.MetricBreakdownRow
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -36,7 +37,7 @@ public fun TrainingSummaryCard(
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.scalableClick(onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         SummaryHero(

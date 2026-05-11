@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
-import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.chart.internal.Sparkline
@@ -41,31 +40,6 @@ public fun PerformanceTrendHistoryCard(
             .aspectRatio(2.2f),
         data = data,
     )
-}
-
-private fun PerformanceMetricState.chartValue(): Float? {
-    return when (this) {
-        is PerformanceMetricState.Duration -> {
-            val minutes = current.value?.inWholeSeconds?.toFloat()?.div(60f)
-            minutes?.takeIf { it > 0f }
-        }
-
-        is PerformanceMetricState.Volume -> {
-            current.value?.takeIf { it > 0f }
-        }
-
-        is PerformanceMetricState.Density -> {
-            current.value?.takeIf { it > 0f }
-        }
-
-        is PerformanceMetricState.Repetitions -> {
-            current.value?.toFloat()?.takeIf { it > 0f }
-        }
-
-        is PerformanceMetricState.Intensity -> {
-            current.value?.takeIf { it > 0f }
-        }
-    }
 }
 
 @AppPreview

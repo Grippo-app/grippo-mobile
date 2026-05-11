@@ -21,6 +21,7 @@ public class PerformanceTrendDetailsComponent(
             range = range,
             metricType = metricType,
             trainingFeature = getKoin().get(),
+            userFeature = getKoin().get(),
             performanceTrendUseCase = getKoin().get()
         )
     }

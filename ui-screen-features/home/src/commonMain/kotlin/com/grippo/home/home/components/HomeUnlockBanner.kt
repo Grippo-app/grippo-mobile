@@ -2,7 +2,6 @@ package com.grippo.home.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.DurationFormatState
@@ -48,83 +48,91 @@ internal fun HomeUnlockBanner(
     modifier: Modifier = Modifier,
 ) {
     val lifetimeCount = stats.trainingsCount
-
-    if (!HomeUnlock.shouldShowBanner(lifetimeCount, hasGoal)) return
-
     val isNewUser = lifetimeCount < HomeUnlock.NEW_USER_THRESHOLD
     val showGoalSection = !hasGoal
 
-    Box(
-        modifier = modifier,
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            if (isNewUser) {
-                Text(
-                    text = AppTokens.strings.res(Res.string.home_unlock_banner_header),
-                    style = AppTokens.typography.h5(),
-                    color = AppTokens.colors.text.primary,
-                )
+        if (isNewUser) {
+            Text(
+                text = AppTokens.strings.res(Res.string.home_unlock_banner_header),
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+            )
 
-                LifetimeStatsRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    stats = stats,
-                )
+            LifetimeStatsRow(
+                modifier = Modifier.fillMaxWidth(),
+                stats = stats,
+            )
 
-                HomeUnlock.entries
-                    .filterNot { it.isUnlocked(lifetimeCount) }
-                    .forEach { milestone ->
-                        BannerCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
-                            icon = AppTokens.icons.Lock,
-                            title = AppTokens.strings.res(milestone.titleRes),
-                            description = AppTokens.strings.res(milestone.descriptionRes),
-                            trailing = {
-                                Text(
-                                    modifier = Modifier
-                                        .background(
-                                            AppTokens.colors.text.tertiary.copy(alpha = 0.14f),
-                                            CircleShape,
-                                        )
-                                        .padding(
-                                            horizontal = AppTokens.dp.contentPadding.subContent,
-                                            vertical = AppTokens.dp.contentPadding.text,
-                                        ),
-                                    text = "${lifetimeCount.coerceAtMost(milestone.requiredLifetimeCount)} / ${milestone.requiredLifetimeCount}",
-                                    style = AppTokens.typography.b11Semi(),
-                                    color = AppTokens.colors.text.tertiary,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            },
-                        )
-                    }
-            }
+            HomeUnlock.entries
+                .filterNot { it.isUnlocked(lifetimeCount) }
+                .forEach { milestone ->
+                    MilestoneCard(
+                        title = AppTokens.strings.res(milestone.titleRes),
+                        description = AppTokens.strings.res(milestone.descriptionRes),
+                        progressLabel = "$lifetimeCount / ${milestone.requiredLifetimeCount}",
+                    )
+                }
+        }
 
-            if (showGoalSection) {
-                BannerCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Notice,
-                    icon = AppTokens.icons.Trophy,
-                    title = AppTokens.strings.res(Res.string.home_unlock_set_goal_title),
-                    description = AppTokens.strings.res(Res.string.home_unlock_set_goal_description),
-                    trailing = {
-                        Button(
-                            onClick = onAddGoal,
-                            style = ButtonStyle.Secondary,
-                            size = ButtonSize.Small,
-                            content = ButtonContent.Text(
-                                text = AppTokens.strings.res(Res.string.home_unlock_set_goal_cta),
-                            ),
-                        )
-                    },
-                )
-            }
+        if (showGoalSection) {
+            BannerCard(
+                modifier = Modifier.fillMaxWidth(),
+                style = BannerCardStyle.Notice,
+                icon = AppTokens.icons.Trophy,
+                title = AppTokens.strings.res(Res.string.home_unlock_set_goal_title),
+                description = AppTokens.strings.res(Res.string.home_unlock_set_goal_description),
+                trailing = {
+                    Button(
+                        onClick = onAddGoal,
+                        style = ButtonStyle.Secondary,
+                        size = ButtonSize.Small,
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.home_unlock_set_goal_cta),
+                        ),
+                    )
+                },
+            )
         }
     }
+}
+
+@Composable
+private fun MilestoneCard(
+    title: String,
+    description: String,
+    progressLabel: String,
+    modifier: Modifier = Modifier,
+    icon: ImageVector = AppTokens.icons.Lock,
+) {
+    BannerCard(
+        modifier = modifier.fillMaxWidth(),
+        style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
+        icon = icon,
+        title = title,
+        description = description,
+        trailing = {
+            Text(
+                modifier = Modifier
+                    .background(
+                        AppTokens.colors.text.tertiary.copy(alpha = 0.14f),
+                        CircleShape,
+                    )
+                    .padding(
+                        horizontal = AppTokens.dp.contentPadding.subContent,
+                        vertical = AppTokens.dp.contentPadding.text,
+                    ),
+                text = progressLabel,
+                style = AppTokens.typography.b11Semi(),
+                color = AppTokens.colors.text.tertiary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+    )
 }
 
 @Composable
@@ -196,6 +204,26 @@ private fun previewStats(
     totalRepetitions = RepetitionsFormatState.of(0),
 )
 
+// Zero trainings, no goal — extreme new-user state.
+// Shows header, all-zero stats row (duration "—" fallback), both milestones
+// locked at 0/N, and the Set Goal CTA.
+@AppPreview
+@Composable
+private fun HomeUnlockBannerZeroTrainingsPreview() {
+    PreviewContainer {
+        HomeUnlockBanner(
+            stats = previewStats(
+                trainingsCount = 0,
+                totalVolumeKg = 0f,
+                totalDurationMinutes = 0,
+            ),
+            hasGoal = false,
+            onAddGoal = {},
+        )
+    }
+}
+
+// One training, no goal — both milestones still locked + Goal CTA.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerNewUserPreview() {
@@ -212,6 +240,43 @@ private fun HomeUnlockBannerNewUserPreview() {
     }
 }
 
+// Two trainings, no goal — Duration unlocked, only Performance milestone
+// remains locked. Verifies that `filterNot { isUnlocked }` correctly hides
+// the unlocked milestone.
+@AppPreview
+@Composable
+private fun HomeUnlockBannerDurationUnlockedPreview() {
+    PreviewContainer {
+        HomeUnlockBanner(
+            stats = previewStats(
+                trainingsCount = 2,
+                totalVolumeKg = 6_800f,
+                totalDurationMinutes = 95,
+            ),
+            hasGoal = false,
+            onAddGoal = {},
+        )
+    }
+}
+
+// Brand-new user with a goal already set — milestones only, no Goal CTA.
+@AppPreview
+@Composable
+private fun HomeUnlockBannerZeroTrainingsHasGoalPreview() {
+    PreviewContainer {
+        HomeUnlockBanner(
+            stats = previewStats(
+                trainingsCount = 0,
+                totalVolumeKg = 0f,
+                totalDurationMinutes = 0,
+            ),
+            hasGoal = true,
+            onAddGoal = {},
+        )
+    }
+}
+
+// Two trainings, goal already set — single milestone, no Goal CTA.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerNewUserHasGoalPreview() {
@@ -228,6 +293,25 @@ private fun HomeUnlockBannerNewUserHasGoalPreview() {
     }
 }
 
+// New-user range with high totals — layout stress test for big numbers
+// (formatter compaction `short()`, multi-hour duration display, ellipsis).
+@AppPreview
+@Composable
+private fun HomeUnlockBannerHighVolumePreview() {
+    PreviewContainer {
+        HomeUnlockBanner(
+            stats = previewStats(
+                trainingsCount = 2,
+                totalVolumeKg = 1_250_000f,
+                totalDurationMinutes = 9_600,
+            ),
+            hasGoal = false,
+            onAddGoal = {},
+        )
+    }
+}
+
+// Experienced user past every count milestone, no goal — only Goal CTA renders.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerGoalOnlyPreview() {
@@ -237,6 +321,24 @@ private fun HomeUnlockBannerGoalOnlyPreview() {
                 trainingsCount = 10,
                 totalVolumeKg = 32_400f,
                 totalDurationMinutes = 480,
+            ),
+            hasGoal = false,
+            onAddGoal = {},
+        )
+    }
+}
+
+// Past every milestone but with massive numbers — verifies layout when the
+// banner is only the Goal CTA section without the stats row.
+@AppPreview
+@Composable
+private fun HomeUnlockBannerVeteranNoGoalPreview() {
+    PreviewContainer {
+        HomeUnlockBanner(
+            stats = previewStats(
+                trainingsCount = 487,
+                totalVolumeKg = 5_400_000f,
+                totalDurationMinutes = 86_400,
             ),
             hasGoal = false,
             onAddGoal = {},

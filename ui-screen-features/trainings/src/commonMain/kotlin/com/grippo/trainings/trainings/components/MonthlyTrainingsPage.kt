@@ -1,8 +1,6 @@
 package com.grippo.trainings.trainings.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,17 +13,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.metrics.engagement.digest.DigestCard
@@ -152,7 +147,7 @@ private fun MonthCalendarDayCell(
 ) {
     val hasTrainings = day.trainingCount > 0
     val isHighlighted = day.isCurrentMonth && day.isToday
-    val shape = RoundedCornerShape(AppTokens.dp.contentPadding.subContent)
+
     val textColor = when {
         !day.isCurrentMonth -> AppTokens.colors.text.disabled
         isHighlighted || hasTrainings -> AppTokens.colors.text.primary
@@ -166,27 +161,15 @@ private fun MonthCalendarDayCell(
 
     val cellModifier = modifier.then(clickableModifier)
 
-    if (isHighlighted) {
-        FocusFrame(
-            modifier = cellModifier,
-            accent = AppTokens.colors.brand.color6,
-        ) {
-            MonthCalendarDayCellContent(day, textColor, hasTrainings)
-        }
-    } else {
-        val borderColor = if (hasTrainings) {
-            AppTokens.colors.border.default
+    FocusFrame(
+        modifier = cellModifier,
+        accent = if (isHighlighted) {
+            AppTokens.colors.brand.color6
         } else {
-            AppTokens.colors.border.default.copy(alpha = 0.3f)
+            AppTokens.colors.background.card
         }
-        Box(
-            modifier = cellModifier
-                .clip(shape)
-                .border(width = 1.dp, color = borderColor, shape = shape)
-                .padding(AppTokens.dp.contentPadding.subContent),
-        ) {
-            MonthCalendarDayCellContent(day, textColor, hasTrainings)
-        }
+    ) {
+        MonthCalendarDayCellContent(day, textColor, hasTrainings)
     }
 }
 

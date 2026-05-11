@@ -19,6 +19,13 @@ public class PerformanceTrendUseCase(
 
     public suspend fun fromTrainings(trainings: List<Training>): List<PerformanceMetric> {
         val experience = resolveExperience() ?: ExperienceEnum.BEGINNER
+        return fromTrainings(trainings = trainings, experience = experience)
+    }
+
+    public fun fromTrainings(
+        trainings: List<Training>,
+        experience: ExperienceEnum,
+    ): List<PerformanceMetric> {
         val sorted = trainings.sortedBy { it.createdAt }
         val latestTraining = sorted.lastOrNull()
         val minTrendThresholdPercent = experience.minTrendThresholdPercent()
@@ -32,7 +39,7 @@ public class PerformanceTrendUseCase(
         )
     }
 
-    private data class MetricStats(
+    private class MetricStats(
         val current: Double,
         val average: Double,
         val best: Double,
@@ -127,31 +134,33 @@ public class PerformanceTrendUseCase(
         val latestValue = valueOf(latest)
         if (latestValue <= 0.0) return MetricStats.ZERO
 
+        // `latest` is guaranteed to be in `trainings` (callers pass sorted.lastOrNull()),
+        // and `valueOf(latest) > 0`, so `values` always contains at least one element.
         val values = trainings.map(valueOf).filter { it > 0.0 }
-        if (values.isEmpty()) return MetricStats.ZERO
-
         val baselineValues = values.dropLast(1)
-        val baselineMean = if (baselineValues.isNotEmpty()) baselineValues.average() else 0.0
+        val best = values.max()
+
+        if (baselineValues.isEmpty()) {
+            // Only one valid training in the window — no baseline to compare against.
+            return MetricStats(
+                current = latestValue,
+                average = 0.0,
+                best = best,
+                trendPercent = 0,
+                currentVsAveragePercent = 0,
+                status = PerformanceTrendStatus.Stable,
+            )
+        }
+
+        val baselineMean = baselineValues.average()
         val baselineStd = if (baselineValues.size >= 2) stddev(baselineValues) else 0.0
-        val best = values.maxOrNull() ?: latestValue
-
-        val trend = if (baselineMean > 0.0 && values.size >= 2) {
-            trendPercent(baselineMean, values) ?: 0
-        } else 0
-
-        val currentVsAverage = if (baselineMean > 0.0) {
-            currentVsAveragePercent(latestValue, baselineMean) ?: 0
-        } else 0
-
+        val trend = trendPercent(baselineMean, values) ?: 0
+        val currentVsAverage = currentVsAveragePercent(latestValue, baselineMean) ?: 0
         val threshold = dynamicThresholdPercent(
             mean = baselineMean,
             stddev = baselineStd,
             minThresholdPercent = minTrendThresholdPercent,
         ) ?: minTrendThresholdPercent
-
-        val status = if (baselineMean > 0.0) {
-            statusFromTrend(latestValue, best, trend, threshold)
-        } else PerformanceTrendStatus.Stable
 
         return MetricStats(
             current = latestValue,
@@ -159,7 +168,7 @@ public class PerformanceTrendUseCase(
             best = best,
             trendPercent = trend,
             currentVsAveragePercent = currentVsAverage,
-            status = status,
+            status = statusFromTrend(latestValue, best, trend, threshold),
         )
     }
 
