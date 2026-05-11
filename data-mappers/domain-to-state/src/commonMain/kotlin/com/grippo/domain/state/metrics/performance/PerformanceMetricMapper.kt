@@ -67,6 +67,7 @@ private fun PerformanceMetric.toState(): PerformanceMetricState {
 
 private fun PerformanceTrendStatus.toState(): PerformanceTrendStatusState {
     return when (this) {
+        PerformanceTrendStatus.Empty -> PerformanceTrendStatusState.Empty
         PerformanceTrendStatus.Record -> PerformanceTrendStatusState.Record
         PerformanceTrendStatus.Improved -> PerformanceTrendStatusState.Improved
         PerformanceTrendStatus.Stable -> PerformanceTrendStatusState.Stable

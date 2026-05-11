@@ -181,3 +181,13 @@ public fun stubPerformanceMetrics(): ImmutableList<PerformanceMetricState> {
         )
     )
 }
+
+public fun stubEmptyPerformanceMetric(): PerformanceMetricState =
+    PerformanceMetricState.Volume(
+        deltaPercentage = 0,
+        currentVsAveragePercentage = 0,
+        current = VolumeFormatState.of(0f),
+        average = VolumeFormatState.of(0f),
+        best = VolumeFormatState.of(0f),
+        status = PerformanceTrendStatusState.Empty,
+    )
