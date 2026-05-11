@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,6 +51,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.home_unlock_banner_header
 import com.grippo.design.resources.provider.resume_training_btn
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.HomeContract
@@ -209,7 +211,12 @@ internal fun DashboardHomeContent(
                     )
                 ) {
                     item(key = "home_unlock_banner_header", span = { GridItemSpan(2) }) {
-
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = AppTokens.strings.res(Res.string.home_unlock_banner_header),
+                            style = AppTokens.typography.h4(),
+                            color = AppTokens.colors.text.primary,
+                        )
                     }
 
                     item(key = "home_unlock_banner", span = { GridItemSpan(2) }) {

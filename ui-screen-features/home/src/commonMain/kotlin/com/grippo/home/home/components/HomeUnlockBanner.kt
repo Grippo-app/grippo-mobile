@@ -29,7 +29,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
-import com.grippo.design.resources.provider.home_unlock_banner_header
 import com.grippo.design.resources.provider.home_unlock_set_goal_cta
 import com.grippo.design.resources.provider.home_unlock_set_goal_description
 import com.grippo.design.resources.provider.home_unlock_set_goal_title
@@ -56,12 +55,6 @@ internal fun HomeUnlockBanner(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         if (isNewUser) {
-            Text(
-                text = AppTokens.strings.res(Res.string.home_unlock_banner_header),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
-            )
-
             LifetimeStatsRow(
                 modifier = Modifier.fillMaxWidth(),
                 stats = stats,
