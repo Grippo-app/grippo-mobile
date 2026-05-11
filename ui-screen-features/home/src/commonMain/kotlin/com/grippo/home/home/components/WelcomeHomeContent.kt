@@ -251,11 +251,7 @@ private fun WelcomeBody(
 
                 BannerCard(
                     modifier = Modifier.fillMaxWidth(),
-                    style = if (hasGoal) {
-                        BannerCardStyle.Custom(AppTokens.colors.brand.color6)
-                    } else {
-                        BannerCardStyle.Custom(AppTokens.colors.text.tertiary)
-                    },
+                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
                     icon = if (hasGoal) AppTokens.icons.Medal else AppTokens.icons.Lock,
                     title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
                     description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),

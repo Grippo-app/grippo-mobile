@@ -11,14 +11,34 @@ import com.grippo.design.core.AppTokens
 internal data class BannerCardTokens(
     val accent: Color,
     val surface: Color,
+    val titleColor: Color,
+    val descriptionColor: Color,
     val titleStyle: TextStyle,
     val descriptionStyle: TextStyle,
 )
 
 @Composable
-internal fun resolveBannerCardTokens(style: BannerCardStyle): BannerCardTokens {
-    val semantic = AppTokens.colors.semantic
+internal fun resolveBannerCardTokens(
+    style: BannerCardStyle,
+    enabled: Boolean,
+): BannerCardTokens {
+    val titleStyle = AppTokens.typography.b14Semi()
+    val descriptionStyle = AppTokens.typography.b12Med()
 
+    if (!enabled) {
+        val disabledIcon = AppTokens.colors.icon.disabled
+        val disabledText = AppTokens.colors.text.disabled
+        return BannerCardTokens(
+            accent = disabledIcon,
+            surface = disabledIcon.copy(alpha = 0.14f),
+            titleColor = disabledText,
+            descriptionColor = disabledText,
+            titleStyle = titleStyle,
+            descriptionStyle = descriptionStyle,
+        )
+    }
+
+    val semantic = AppTokens.colors.semantic
     val accent = when (style) {
         BannerCardStyle.Notice -> semantic.notice
         BannerCardStyle.Info -> semantic.info
@@ -31,7 +51,9 @@ internal fun resolveBannerCardTokens(style: BannerCardStyle): BannerCardTokens {
     return BannerCardTokens(
         accent = accent,
         surface = accent.copy(alpha = 0.14f),
-        titleStyle = AppTokens.typography.b14Semi(),
-        descriptionStyle = AppTokens.typography.b12Med(),
+        titleColor = AppTokens.colors.text.primary,
+        descriptionColor = AppTokens.colors.text.secondary,
+        titleStyle = titleStyle,
+        descriptionStyle = descriptionStyle,
     )
 }

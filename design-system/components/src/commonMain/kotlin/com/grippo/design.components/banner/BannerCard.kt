@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,11 +57,11 @@ public fun BannerCard(
     enabled: Boolean = true,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    val tokens = resolveBannerCardTokens(style)
+    val tokens = resolveBannerCardTokens(style, enabled)
     val dp = AppTokens.dp.bannerCard
 
     Row(
-        modifier = modifier.alpha(if (enabled) 1f else 0.5f),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dp.space),
     ) {
@@ -87,7 +86,7 @@ public fun BannerCard(
             Text(
                 text = title,
                 style = tokens.titleStyle,
-                color = AppTokens.colors.text.primary,
+                color = tokens.titleColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -96,7 +95,7 @@ public fun BannerCard(
                 Text(
                     text = description,
                     style = tokens.descriptionStyle,
-                    color = AppTokens.colors.text.secondary,
+                    color = tokens.descriptionColor,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -181,7 +180,7 @@ private fun BannerCardPreview() {
             style = BannerCardStyle.Notice,
             icon = AppTokens.icons.Trophy,
             title = "Disabled banner",
-            description = "Shown dimmed when the feature is not yet available.",
+            description = "Uses disabled tokens for icon, text, and surface — style is ignored.",
             enabled = false,
         )
     }
