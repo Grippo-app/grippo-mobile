@@ -153,10 +153,11 @@ internal class HomeViewModel(
 
         safeLaunch {
             val status = localSettingsFeature.observeHomeWelcomeStatus().first()
-            if (status == HomeWelcomeStatus.PendingCelebration) {
-                update { it.copy(showWelcomeConfetti = true) }
-                localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.Celebrated)
-            }
+            if (status != HomeWelcomeStatus.PendingCelebration) return@safeLaunch
+
+            update { it.copy(showWelcomeConfetti = true) }
+
+            localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.Celebrated)
         }
     }
 
