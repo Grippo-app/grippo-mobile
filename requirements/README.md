@@ -1,0 +1,74 @@
+# System Requirements — KMP Mobile Project
+
+This folder contains the system requirements for a new Kotlin Multiplatform (KMP) mobile project. The requirements are derived from the architecture of the `grippo-mobile` reference project and are intended to be **technology- and product-agnostic**: package names, product strings, and domain types from the reference project must be replaced when applied to a new project.
+
+## How to read this
+
+- Each top-level folder is a **chapter**. Folders are numbered for reading order; files inside each folder are also numbered.
+- Files are written as normative requirements: "module X **MUST** depend on Y", "every screen **MUST** consist of seven files", etc. Where a rule has a stated trade-off, the trade-off is named.
+- All Kotlin code in the documents is a **reference implementation**, not a literal copy-paste target. Replace `com.grippo.*` package roots, `Grippo` class prefixes, and domain types (Training, Exercise, etc.) with the new project's names.
+- Where the reference repo has an **intentional inconsistency** (e.g. dotted directory names in some legacy modules), the document calls it out — new code should follow the modern convention.
+
+## Index
+
+### Foundations
+
+- `00-overview/` — vision, glossary, architecture map.
+- `01-tech-stack/` — Kotlin/Compose/Decompose/Koin/Ktor/Room versions and the version catalog.
+- `12-gradle-build/` — convention plugins, settings.gradle, sample module builds, iOS XCFramework setup.
+
+### Structure
+
+- `02-module-structure/` — module graph, dependency rules, what each module group contains.
+- `08-dependency-injection/` — Koin composition root, annotation usage.
+
+### Patterns
+
+- `03-architecture-patterns/` — MVI, Decompose navigation, dialog navigation, cross-component results, data flow, repository pattern, error pipeline, process-death restoration.
+- `04-base-classes/` — `BaseViewModel`, `BaseComponent`, `BaseScreen`, `OperationManager`, `ResultManager`, platform helpers.
+
+### UI
+
+- `05-design-system/` — `AppTokens`, color/dp/typography tokens, theme, preview.
+- `11-state-and-formatters/` — `UiText`, `*FormatState` (email/password/weight/height/duration/volume/date/date-range).
+
+### Data
+
+- `06-data-layer/` — Ktor `BackendClient`, `TokenProvider` (mutex + retry), `GrippoApi` (single-file flat API), DTOs (all-nullable convention), Room database, entities + `*Pack` (`@Embedded`+`@Relation`), migrations, DataStore.
+- `07-mappers/` — seven directional mapper modules, null-friendly mapping pattern.
+
+### Utilities
+
+- `10-toolkit/` — context, http-client, serialization, logger, date-utils, connectivity, notification/permission managers, link-opener, theme/localization, image-loader.
+
+### Style and discipline
+
+- `09-conventions/` — Kotlin style, naming, packages, Compose-specific rules.
+- `13-anti-patterns/` — forbidden patterns; when to stop and ask.
+- `14-cookbook/` — step-by-step recipes for the most common tasks.
+
+### Iteration
+
+- `invalidate.md` — instructions for a self-improvement pass over these requirements against the reference repo (or against an in-progress new project).
+- `launch.md` — the iterative prompt used to bootstrap a new project from scratch using these requirements.
+
+## Reference project
+
+The reference implementation lives at `/Users/maxvoitenko/Projects/Pet/grippo-mobile`. When in doubt, **read the reference code** — it is the ground truth. These documents are a high-fidelity summary, not a replacement.
+
+## Replacement checklist (before applying to a new project)
+
+When forking these requirements for a new project, replace these tokens consistently across every document:
+
+| Token | Reference value | New value |
+|---|---|---|
+| Root package | `com.grippo.*` | `com.<org>.<product>.*` |
+| API class prefix | `Grippo` (e.g. `GrippoApi`) | `<Product>` |
+| Root project name | `grippo-mobile` | `<product>-mobile` |
+| iOS XCFramework name | `shared` | (keep or rename) |
+| Backend host | `grippo-app.com` | `<product-domain>.com` |
+| Android `namespace` root | `com.grippo` | `com.<org>.<product>` |
+| Application ID | `com.grippo.android` | `com.<org>.<product>.android` |
+| Domain types | `Training`, `Exercise`, ... | new-project domain |
+
+Do **not** rename: `BaseViewModel`, `BaseComponent`, `BaseScreen`, `AppTokens`, `AppTheme`, `UiText`, `*FormatState`, `OperationManager`, `ResultManager`, `DialogConfig`, `DialogController`, `NativeContext`, `AppLogger`, `DateTimeUtils`. These are infrastructure names; keeping them stable across projects makes the pattern recognizable.
