@@ -301,6 +301,19 @@ At the project root, create `CLAUDE.md` describing:
 
 This file becomes the high-level guide for future agent/contributor work. The detailed `requirements/` set is the source of truth.
 
+## Step 14 — install sub-agents
+
+After the foundation builds green and the first end-to-end "hello world" feature is in place, install the sub-agent toolkit so ongoing work can be automated:
+
+See `requirements/README.md` section "Sub-agents — install before first use" for the symlink/copy commands. Then verify:
+
+```bash
+ls .claude/agents/   # should list orchestrator.md, builders, validators, helpers
+bash requirements/sub-agents/lint.sh   # if Prompt 1 from SUBAGENTS_TODO_PROMPTS.md ran
+```
+
+Optionally also fill in `requirements/00-overview/03-project-config.md` with the answers gathered in Step 0. From here on, drop new tasks at `requirements/tasks/TASK_<N>_<title>.md` and ask the parent Claude session to "run task TASK_N_<title>.md". The orchestrator drives the rest.
+
 ## Constraints
 
 - **Build green at every step.** If a step's verification fails, fix the issue before moving on. Don't accumulate broken modules.

@@ -73,6 +73,8 @@ When forking these requirements for a new project, replace these tokens consiste
 
 Do **not** rename: `BaseViewModel`, `BaseComponent`, `BaseScreen`, `AppTokens`, `AppTheme`, `UiText`, `*FormatState`, `OperationManager`, `ResultManager`, `DialogConfig`, `DialogController`, `NativeContext`, `AppLogger`, `DateTimeUtils`. These are infrastructure names; keeping them stable across projects makes the pattern recognizable.
 
+Per-project values (productName, locales, prelaunch flag, etc.) live in `requirements/00-overview/03-project-config.md`. Sub-agents read this file at start of every task. Edit it before bootstrapping a new project.
+
 ## Sub-agents — install before first use
 
 The `sub-agents/` folder ships specialized Claude Code sub-agents (orchestrator, builders, validators, helpers) that automate task execution against this architecture. They are **not** auto-discovered by Claude Code — they must be installed into the new project's `.claude/agents/` directory before they become callable as `subagent_type` values. Without this step, `Agent(subagent_type: "orchestrator", ...)` and every related call fail with an "unknown agent type" error.

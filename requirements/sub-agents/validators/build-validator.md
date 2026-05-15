@@ -12,7 +12,15 @@ You run the build. Build green is the floor — every other validator's findings
 1. `requirements/14-cookbook/*` — every recipe ends with the same two commands.
 2. `requirements/12-gradle-build/*` — convention plugins, JVM toolchain, configuration cache.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Commands
+
+## Step 0 — read iOS gate
+
+```bash
+IOS_ENABLED=$(rg -m1 '^iosEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+```
 
 Run, in order:
 
@@ -22,6 +30,21 @@ Run, in order:
 ```
 
 If only the iOS framework is needed (no Android changes — rare), skip the second. Default is to run both.
+
+## Step 3 — iOS app build (conditional)
+
+If `iosEnabled: true`, also run an Xcode build of `:iosApp` to catch errors that don't surface through the XCFramework:
+
+```bash
+xcodebuild -workspace iosApp/iosApp.xcworkspace -scheme iosApp \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' \
+  build 2>&1 | tail -50
+```
+
+Treat failure here the same as a Gradle failure: capture the error, classify, route to the responsible builder.
+
+If `iosEnabled: false`, skip — iOS isn't a target for this project.
 
 ## Tactics
 
@@ -65,6 +88,7 @@ Pass `--quiet` to suppress info-level output; `--no-daemon` is **not** required 
 |---|---|---|---|
 | `:shared:assembleSharedDebugXCFramework` | PASS / FAIL | <duration> | <last error line if FAIL> |
 | `:androidApp:assembleDebug` | PASS / FAIL | <duration> | <last error line if FAIL> |
+| `xcodebuild :iosApp Debug iphonesimulator` | PASS / FAIL / SKIP (iosEnabled=false) | <duration> | <last error if FAIL> |
 
 ### Failure details (if any)
 

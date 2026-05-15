@@ -11,8 +11,10 @@ You add a new endpoint method and its DTOs.
 
 1. `requirements/14-cookbook/06-add-endpoint.md` — the recipe.
 2. `requirements/06-data-layer/03-grippo-api-and-dtos.md` — DTO rules (all nullable + default `= null`, `@SerialName` on every field).
-3. `requirements/06-data-layer/02-backend-client-and-tokens.md` — `BackendClient` / `TokenProvider` contract.
+3. `requirements/06-data-layer/01-backend-client.md` + `requirements/06-data-layer/02-token-provider.md` — `BackendClient` / `TokenProvider` contract.
 4. `requirements/13-anti-patterns/01-forbidden-patterns.md` — data-layer forbidden patterns.
+
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Inputs the orchestrator passes you
 

@@ -12,24 +12,24 @@ You map keywords to authoritative requirement chapters. Builders and validators 
 | Keyword | Chapter / file |
 |---|---|
 | MVI, seven-file, State, Direction, Loader, Contract | `03-architecture-patterns/01-mvi-contract.md` |
-| BaseViewModel, safeLaunch, withLoader, Processing | `04-base-classes/01-base-view-model.md` |
+| BaseViewModel, safeLaunch, withLoader, Processing | `04-base-classes/01-base-viewmodel.md` |
 | BaseComponent, retainedInstance, eventListener | `04-base-classes/02-base-component.md` |
 | BaseScreen, BaseComposeScreen, ScreenBackground | `04-base-classes/03-base-screen.md` |
 | OperationManager, CoroutineExceptionHandler | `04-base-classes/05-operation-manager.md` |
 | ResultManager, ResultEmitter, sendResult, observeResult | `04-base-classes/04-base-models.md` + `03-architecture-patterns/04-cross-component-results.md` |
 | Decompose, ChildStack, StackNavigation, SlotNavigation | `03-architecture-patterns/02-decompose-navigation.md` |
 | Dialog, DialogConfig, DialogController, BottomSheet | `03-architecture-patterns/03-dialog-navigation.md` + `14-cookbook/02-add-dialog.md` |
-| BackendClient, TokenProvider, Auth | `06-data-layer/02-backend-client-and-tokens.md` |
-| GrippoApi, DTO, @SerialName, all-nullable | `06-data-layer/03-grippo-api-and-dtos.md` |
+| BackendClient, TokenProvider, Auth | `06-data-layer/01-backend-client.md` + `06-data-layer/02-token-provider.md` |
+| `<Product>Api` (flat API class), DTO, @SerialName, all-nullable | `06-data-layer/03-grippo-api-and-dtos.md` |
 | Database, @Database, exportSchema | `06-data-layer/04-database.md` |
-| @Entity, @Dao, @Pack, @Embedded, @Relation | `06-data-layer/04-database.md` + `06-data-layer/05-daos.md` |
+| @Entity, @Dao, @Pack, @Embedded, @Relation | `06-data-layer/04-database.md` + `06-data-layer/05-room-entities-and-packs.md` |
 | Room migration, schema bump, fallbackToDestructiveMigration | `06-data-layer/06-room-migrations.md` + `14-cookbook/05-add-room-migration.md` |
 | DataStore | `06-data-layer/07-datastore.md` |
 | Mappers, direction, AppLogger.Mapping, toEntityOrNull | `07-mappers/*` |
 | Koin, @Single, @Factory, @Module, @ComponentScan | `08-dependency-injection/*` |
 | AppTokens, AppColor, AppDp, AppTypography, AppIcon | `05-design-system/01-app-tokens.md` (and surrounding) |
-| AppTheme, dark mode, locale switching | `05-design-system/06-theme.md` + `10-toolkit/11-theme-and-localization.md` |
-| StringProvider, Compose Resources, Res.string | `05-design-system/03-resources.md` + `14-cookbook/07-add-resource.md` |
+| AppTheme, dark mode, locale switching | `05-design-system/06-app-theme.md` + `10-toolkit/11-theme-and-localization.md` |
+| StringProvider, Compose Resources, Res.string | `05-design-system/09-resources.md` + `14-cookbook/07-add-resource.md` |
 | UiText, *FormatState | `11-state-and-formatters/*` |
 | AppLogger, file sink | `10-toolkit/05-logger.md` |
 | DateTimeUtils, DateRange, DateFormat, DateFormatting | `10-toolkit/06-date-utils.md` |

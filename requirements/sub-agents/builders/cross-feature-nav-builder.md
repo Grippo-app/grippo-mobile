@@ -13,6 +13,8 @@ You wire cross-feature navigation. Direct feature-to-feature imports are forbidd
 2. `requirements/03-architecture-patterns/02-decompose-navigation.md` — navigation layers.
 3. `requirements/13-anti-patterns/01-forbidden-patterns.md` — navigation forbidden patterns.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Inputs the orchestrator passes you
 
 - **Task file path**.

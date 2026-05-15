@@ -15,21 +15,66 @@ You drive the full execution loop. The user said *"run task TASK_N_<title>.md"*.
 
 You do NOT need to read every other `requirements/` chapter — your specialist agents read the chapters relevant to their work.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
+## Step 0 — Bootstrap check
+
+Before any other step, verify the project scaffold matches `requirements/00-overview/03-project-config.md`. Read that file first — every value below references its fields.
+
+Required artifacts (fail with `BLOCKED: project scaffold incomplete — <missing list>` if any are absent):
+
+- `settings.gradle.kts` exists at the repo root.
+- `:shared` module exists with `Koin.kt`, `RootComponent.kt`, `RootRouter.kt`, `RootDirection.kt`, `RootContract.kt`.
+- `:data-services:backend` exists with `<apiClassName>.kt` (from project-config).
+- `:data-services:database` exists with `Database.kt`.
+- `:design-system:resources:provider` exists.
+- For each locale in `supportedLocales`, the matching `values-<lang>/strings.xml` exists.
+- If `iosEnabled: true`, `iosApp/` exists.
+- If `firebaseEnabled: true`, `androidApp/google-services.json` exists.
+
+Verification commands:
+
+```bash
+PROJECT_API=$(rg -m1 '^apiClassName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+test -f settings.gradle.kts || echo "MISSING: settings.gradle.kts"
+test -f shared/src/commonMain/kotlin/**/Koin.kt || echo "MISSING: :shared/Koin.kt"
+test -f data-services/backend/src/commonMain/kotlin/**/${PROJECT_API}.kt || echo "MISSING: ${PROJECT_API}.kt"
+# ...etc
+```
+
+If any fail → `BLOCKED: run requirements/launch.md to bootstrap the project first`. Do not proceed to task-intake.
+
+## Rollback safety
+
+Before invoking the first builder, capture the workspace state:
+
+```bash
+PRE_TASK_SHA=$(git rev-parse HEAD)
+git status --porcelain > /tmp/orchestrator_pre_task_status.txt
+```
+
+On any escalation, build failure that resists 2 builder retries, or user-initiated halt, surface this rollback hint to the user verbatim:
+
+> Rollback: `git reset --hard <PRE_TASK_SHA>` followed by `git clean -fd` to remove untracked files. Pre-task untracked snapshot: `/tmp/orchestrator_pre_task_status.txt`.
+
+Never auto-rollback. Always present the option; the user decides.
+
 ## High-level loop
 
 ```
-1. task-intake → execution plan
+1. (after Step 0) task-intake → execution plan
 2. context-finder (as needed) → existing artifacts the builders will touch
 3. for each builder in plan.builderSequence:
        invoke builder with task context + context-finder excerpts
 4. run every applicable validator in parallel
    if any finding:
        route findings → relevant builder(s) → goto 4
-5. invoke codex-review-loop
-   if Codex finds issues:
-       route → relevant builder(s) → goto 4
-   if Codex clean:
-       DONE
+5. resolve external reviewer per codexEnabled + Codex detection (matrix in step 5)
+       invoke codex-review-loop OR internal-reviewer
+       if reviewer finds issues:
+           route → relevant builder(s) → goto 4
+       if reviewer clean:
+           DONE
 6. summarize result for user
 ```
 
@@ -42,6 +87,13 @@ Agent(subagent_type: "task-intake", prompt: "Read requirements/tasks/TASK_<N>_<t
 ```
 
 Wait for the structured plan. If it ends with **BLOCKED** or **ESCALATE**, surface to the user and stop. Do NOT proceed.
+
+**Recovery.** When the user replies, take one of two paths:
+
+- If the user edited the TASK file — re-invoke `task-intake` with the same arguments. Read the fresh file.
+- If the user replied in chat with answers — re-invoke `task-intake` with the original prompt PLUS the user's reply appended as "Additional context from user: <quote>".
+
+Loop on BLOCKED at most 3 times. After three rejections, halt and ask the user whether the task is well-formed at all — sometimes the answer is "this task is wrong, drop it".
 
 ### 2. Collect context for builders
 
@@ -76,6 +128,17 @@ After each builder reports done, capture:
 
 If a builder reports a blocker (e.g. *"the `<X>Feature` interface this depends on doesn't exist"*), pause the chain and escalate to the user — don't silently invent the missing piece.
 
+### 3.5. Diff sanity check
+
+After every builder reports done, run:
+
+```bash
+git diff --stat HEAD
+git status --porcelain
+```
+
+If the result is empty (no files changed), or only `.md` files changed when the task asked for code, the builder lied or no-op'd. Surface the discrepancy and re-prompt the builder with the explicit task acceptance bullets — do not advance to validators.
+
 ### 4. Run validators
 
 Once all builders in the plan have reported done, run **every applicable** validator in parallel:
@@ -86,27 +149,70 @@ Agent × N (one per validator) in a single message
 
 The plan from `task-intake` told you which validators apply. Always include `build-validator` last (or in parallel — it runs Gradle, the others read files; they don't conflict).
 
-Collect findings. If any validator returns 0 findings AND `build-validator` is green AND no other validator has high-severity findings → proceed to step 5. Otherwise:
+Collect findings.
+
+**Dedup before routing.** Validators run in parallel and may flag the same `(file, rule)` from different angles. Build a `Map<(file_path, rule_id), Finding>` keeping the highest-severity entry per key. Group the deduped set by `routed_to` builder, send each builder one consolidated message — never N round trips when 1 suffices.
+
+If any validator returns 0 findings AND `build-validator` is green AND no other validator has high-severity findings → proceed to step 5. Otherwise:
 
 - Group findings by responsible builder.
 - For each builder, send a single follow-up message with all its findings consolidated.
 - Builders apply fixes, you re-run validators. Goto step 4.
 
-**Cap**: If validators cycle 3 times without findings dropping to zero, escalate to the user — a builder may be misinterpreting a finding or the requirements may have drifted (in which case the `invalidate.md` flow takes over).
+**Cap by identity, not by count.** After each cycle, compute `unique_findings_set = set((file, rule_id) for finding in deduped)`. If this set does not shrink across 2 consecutive cycles, escalate — a builder is fixing one issue and breaking another (rotation). Three iterations of a *shrinking* set is fine; two iterations of a *stable* set is escalation.
 
-### 5. Invoke Codex review
+### 5. Invoke external review (Codex or internal-reviewer)
+
+The external-review gate is reviewer-agnostic: either Codex (cross-provider, when the plugin is installed) or `internal-reviewer` (Claude-backed local fallback). The orchestrator picks **one** reviewer per task.
+
+Read `codexEnabled` and detect Codex availability:
+
+```bash
+CODEX_FLAG=$(rg -m1 '^codexEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+
+# Best-effort detection — Claude Code plugin install paths vary.
+CODEX_PRESENT=0
+if [ -d "$HOME/.claude/plugins/codex-plugin-cc" ] || \
+   [ -d ".claude/plugins/codex-plugin-cc" ] || \
+   ls "$HOME/.claude/plugins/" 2>/dev/null | grep -qi 'codex' || \
+   command -v codex >/dev/null 2>&1; then
+  CODEX_PRESENT=1
+fi
+```
+
+Routing matrix:
+
+| codexEnabled | Codex detected | Action |
+|---|---|---|
+| auto *(or absent)* | yes | invoke `codex-review-loop` |
+| auto *(or absent)* | no  | invoke `internal-reviewer` |
+| true               | yes | invoke `codex-review-loop` |
+| true               | **no** | **HALT** — escalate: *"codexEnabled=true but Codex plugin missing. Install [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) or set codexEnabled to `auto`/`false`."* Do not silently fall back — the user explicitly asked for Codex. |
+| false              | *(skip detection)* | invoke `internal-reviewer` |
+
+Then:
 
 ```
-Agent(subagent_type: "codex-review-loop", prompt: "Internal gates passed. Task: <task content>. Builders that ran: <list>. Run Codex on the current diff.")
+Agent(subagent_type: "<codex-review-loop | internal-reviewer>",
+      prompt: "Internal gates passed. Task: <task content>. Builders that ran: <list>. Run the external-review pass on the current diff.")
 ```
 
-`codex-review-loop` handles the external review iteration. Its output tells you when:
+Both reviewers emit the **same output shape** (see each agent's "Output format" section). The orchestrator does not branch on reviewer identity downstream — only on the verdict:
 
-- Codex returns clean → DONE.
-- Codex flagged issues, builders need to act → goto step 4 (re-run validators after fixes).
+- Reviewer returns clean → DONE.
+- Reviewer flagged issues, builders need to act → goto step 4 (re-run validators after fixes).
 - A finding requires architectural change → escalate to user.
 
+Record the reviewer identity in the final summary (step 6) so the user knows which gate ran.
+
 ### 6. Summarize for the user
+
+### 6.0. Acceptance check
+
+Before declaring done, sanity-check the task's `## Acceptance` bullets against the diff:
+
+- For each acceptance bullet that names a concrete artifact (a route, a callback, a screen, a string key), grep for the artifact in the changed files. If absent, the task is not done — re-route to the responsible builder with the unmet bullet quoted verbatim.
+- If a bullet is purely behavioral ("tapping the chart opens screen X"), record it under "Open assumptions" in the summary — orchestrator cannot verify behavior.
 
 When done, post a single status block to the user:
 
@@ -123,8 +229,9 @@ When done, post a single status block to the user:
 ### Validator iterations
 - N rounds, all green.
 
-### Codex iterations
-- N rounds, final verdict clean.
+### External review
+- Reviewer: `codex-review-loop` | `internal-reviewer`
+- Iterations: N — final verdict clean.
 
 ### Build gate
 - `:shared:assembleSharedDebugXCFramework` — PASS
@@ -134,7 +241,13 @@ When done, post a single status block to the user:
 - <one-line>
 ```
 
-Move the task file to `requirements/tasks/done/` IF the user prefers that workflow (read `requirements/tasks/README.md` for the convention). Don't move it automatically without an explicit project-level rule.
+After the user-facing status block lands, ALWAYS move the task file:
+
+```bash
+mv requirements/tasks/<file> requirements/tasks/done/<file>
+```
+
+This is the project convention (see `requirements/tasks/README.md`). The orchestrator never leaves a completed TASK file in `requirements/tasks/` — `done/` is the single source of truth for "what shipped". Skip the move only when the task ended in escalation (no completion claim). Re-running an already-moved task is rejected by `task-intake` (the file isn't where it expects).
 
 ## Escalation triggers
 
@@ -159,7 +272,7 @@ Do NOT take destructive actions while escalated (no `git reset --hard`, no `rm -
 
 - **Builders**: parallel when their outputs are independent. The plan from `task-intake` marks parallel groups.
 - **Validators**: always parallel — they're read-only.
-- **Codex**: serial (one external review at a time).
+- **External review** (Codex or internal-reviewer): serial — one review at a time, one reviewer per task.
 - **Builders + validators**: never parallel. Validators read what builders wrote; race conditions corrupt findings.
 
 ## What you MUST NOT do
@@ -167,8 +280,9 @@ Do NOT take destructive actions while escalated (no `git reset --hard`, no `rm -
 - Do not write code yourself. Builders write; validators check; you coordinate.
 - Do not invoke a builder for work outside its scope. Each builder's `description` is its contract — respect it.
 - Do not skip validators "because they probably won't find anything". Even a trivial task runs `build-validator`.
-- Do not invoke Codex before internal validators are green. Wastes Codex cycles and dilutes the signal.
+- Do not invoke the external reviewer before internal validators are green. Wastes a review cycle and dilutes the signal.
 - Do not modify the task file. Add status comments to a separate place (e.g. the summary you post to the user) if needed.
 - Do not commit changes. Commits are explicitly the user's call. Report done, let the user commit.
 - Do not push branches, open PRs, or interact with the remote. Local work only.
-- Do not auto-apply a finding flagged "for human review" by any validator or by Codex.
+- Do not auto-apply a finding flagged "for human review" by any validator or by the external reviewer.
+- Do not silently substitute `internal-reviewer` when `codexEnabled: true` and Codex is missing. Escalate per the step-5 routing matrix.

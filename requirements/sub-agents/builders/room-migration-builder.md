@@ -13,13 +13,30 @@ You add a Room migration. Migrations on shipped data are **deliberate, separate 
 2. `requirements/06-data-layer/06-room-migrations.md` — full migration rules.
 3. `requirements/13-anti-patterns/02-when-to-stop-and-ask.md` — migrations are a stop-and-ask item.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Inputs the orchestrator passes you
 
 - **Task file path**.
-- **Explicit migration authorization** in the task (e.g. *"Add a Room migration for the new `notification` table"*). If the task is vague (*"add notifications"*), refuse and ask the orchestrator to escalate to the user. Pre-launch projects can skip migrations and rely on `fallbackToDestructiveMigration(dropAllTables = true)` — confirm whether this project is pre-launch or shipping.
+- **Migration mode** is determined by `prelaunch` in `requirements/00-overview/03-project-config.md` (see Step 0). The task may still ESCALATE for shipping projects where the schema change is risky — see `requirements/13-anti-patterns/02-when-to-stop-and-ask.md`.
 - **Schema delta** — exact entity changes (new column with default, dropped column, renamed column, new table, new index, …).
 
 ## Steps you MUST perform
+
+### Step 0 — read project state
+
+Open `requirements/00-overview/03-project-config.md` and parse the `prelaunch` field from its YAML frontmatter:
+
+```bash
+PRELAUNCH=$(rg -m1 '^prelaunch:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+```
+
+Behavior:
+
+- `prelaunch: true` → **skip migration**. Just bump `@Database(version = N+1)` if the entity changed; rely on `fallbackToDestructiveMigration(dropAllTables = true)` to drop and recreate. Report this decision to the orchestrator. Do not write a `Migration<N>To<N+1>.kt`.
+- `prelaunch: false` → **proceed with migration** per the rest of this document. Write the migration; users will lose data otherwise.
+
+If the field is absent or malformed, stop and report `BLOCKED: project-config.md missing or invalid prelaunch field`.
 
 ### 1. Update the entity / database
 
@@ -40,7 +57,7 @@ public abstract class Database : RoomDatabase() {
 }
 ```
 
-If the entity is new, also add the `@Entity` class under `services/database/entity/` and the `<X>Dao` under `services/database/dao/` (see `requirements/06-data-layer/04-database.md` / `05-daos.md`).
+If the entity is new, also add the `@Entity` class under `services/database/entity/` and the `<X>Dao` under `services/database/dao/` (see `requirements/06-data-layer/04-database.md` / `requirements/06-data-layer/05-room-entities-and-packs.md`).
 
 ### 2. Regenerate the schema JSON
 

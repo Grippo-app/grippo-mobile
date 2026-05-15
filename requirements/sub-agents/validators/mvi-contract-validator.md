@@ -10,9 +10,11 @@ You verify the MVI seven-file pattern and the `Base*` contract.
 ## Authoritative reading
 
 1. `requirements/03-architecture-patterns/01-mvi-contract.md` — the contract.
-2. `requirements/04-base-classes/01-base-view-model.md` — `BaseViewModel` API (`safeLaunch`, `Flow.safeLaunch`, `withLoader`, `update`, `navigateTo`, `Processing`).
+2. `requirements/04-base-classes/01-base-viewmodel.md` — `BaseViewModel` API (`safeLaunch`, `Flow.safeLaunch`, `withLoader`, `update`, `navigateTo`, `Processing`).
 3. `requirements/04-base-classes/02-base-component.md` — `BaseComponent` (retainedInstance, lifecycle, eventListener, observeResult/sendResult).
 4. `requirements/09-conventions/02-naming.md` — Class naming for the seven files.
+
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Scope
 
@@ -22,16 +24,33 @@ Newly added packages under `:ui-screen-features:*` or `:ui-dialog-features:*` (a
 
 ### 1. Enumerate candidate packages
 
+Build the candidate set in two passes:
+
 ```bash
-git diff --name-only HEAD -- 'ui-screen-features/**' 'ui-dialog-features/**' | xargs -n1 dirname 2>/dev/null | sort -u
-git ls-files --others --exclude-standard ui-screen-features/ ui-dialog-features/ | xargs -n1 dirname 2>/dev/null | sort -u
+# Pass A: any package directory that gained or modified a Kotlin file
+git diff --name-only HEAD -- 'ui-screen-features/**/*.kt' 'ui-dialog-features/**/*.kt' \
+  | xargs -n1 dirname 2>/dev/null | sort -u > /tmp/mvi_candidates_diff.txt
+
+# Pass B: any new untracked Kotlin file's directory
+git ls-files --others --exclude-standard 'ui-screen-features/' 'ui-dialog-features/' \
+  | xargs -n1 dirname 2>/dev/null | sort -u >> /tmp/mvi_candidates_diff.txt
+
+sort -u /tmp/mvi_candidates_diff.txt > /tmp/mvi_candidates.txt
 ```
 
-For each unique package directory, verify the seven files are present.
+For each candidate directory, list the actual `.kt` files present:
+
+```bash
+while IFS= read -r dir; do
+  ls "$dir"/*.kt 2>/dev/null
+done < /tmp/mvi_candidates.txt
+```
+
+The seven-file check (Step 2 below) compares this listing — not the git diff — against the required pattern. **A missing file is detected because the listing lacks it, not because git noticed it.**
 
 ### 2. The seven-file checklist
 
-For a screen/dialog feature `<F><S>`, the package MUST contain exactly:
+For each candidate directory from Step 1, verify the listing contains all seven files matching the pattern below. For a screen/dialog feature `<F><S>`, the package MUST contain exactly:
 
 | File | Class shape |
 |---|---|

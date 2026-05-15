@@ -14,6 +14,8 @@ You verify Compose stability — the property that lets the recomposition runtim
 3. `requirements/11-state-and-formatters/*` — `UiText`, `*FormatState` for state fields.
 4. `requirements/13-anti-patterns/01-forbidden-patterns.md` (Compose + Collections-in-state sections).
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Scope
 
 Files changed in the current task. Focus on `*State.kt`, `*Screen.kt`, `*Component.kt`, and any new `:design-system:components/*` widgets.

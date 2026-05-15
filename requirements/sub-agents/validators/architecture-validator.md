@@ -12,6 +12,8 @@ You verify that the module dependency graph remains directional and that no forb
 1. `requirements/02-module-structure/02-dependency-rules.md` — the canonical edge list and the documented exceptions.
 2. `requirements/13-anti-patterns/01-forbidden-patterns.md` — the "Architecture-shape" section.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Scope
 
 Only modules touched by the current task. The orchestrator passes you a list of changed paths; if not, default to `git diff --name-only HEAD` ∪ untracked files.

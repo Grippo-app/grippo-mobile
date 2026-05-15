@@ -13,11 +13,13 @@ Before writing any code, read in order:
 
 1. `requirements/14-cookbook/01-add-screen.md` — the recipe.
 2. `requirements/03-architecture-patterns/01-mvi-contract.md` — the seven-file MVI contract.
-3. `requirements/04-base-classes/01-base-view-model.md` and `02-base-component.md` — base classes API.
+3. `requirements/04-base-classes/01-base-viewmodel.md` and `requirements/04-base-classes/02-base-component.md` — base classes API.
 4. `requirements/09-conventions/02-naming.md` — naming for State/Direction/Loader/Contract/Component/Screen.
 5. `requirements/13-anti-patterns/01-forbidden-patterns.md` — what to refuse to write.
 
 If the host feature has internal patterns the cookbook doesn't show (specific design-system widgets, an existing range picker pattern, etc.), open one existing sub-screen in the same feature module and mirror it.
+
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Inputs the orchestrator passes you
 
@@ -33,7 +35,7 @@ If any of those are missing, **stop and ask the orchestrator** rather than guess
 
 ### 1. Locate the feature root
 
-Find the feature root component (bare-name pattern: `<Feature>Component.kt`, e.g. `ProfileComponent.kt`; only `:home` and `:trainings` use `<Feature>RootComponent.kt`). Find the feature's `*Router.kt` in `:ui-screen-features:screen-api`. Identify the `createChild` / inner `sealed class Child` shape so the new screen can be wired correctly.
+Find the feature root component (bare-name pattern: `<Feature>Component.kt`). The exception is when the feature contains a sub-screen with the same name as the feature (which would collide with the bare name) — in that case the root file is `<Feature>RootComponent.kt`. The list of exception features lives in `featuresWithRootComponentSuffix` in `requirements/00-overview/03-project-config.md`. (Reference repo example: `:home` and `:trainings`.) Find the feature's `*Router.kt` in `:ui-screen-features:screen-api`. Identify the `createChild` / inner `sealed class Child` shape so the new screen can be wired correctly.
 
 ### 2. Create the package
 

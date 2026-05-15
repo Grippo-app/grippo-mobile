@@ -27,14 +27,14 @@ Each call is a single question. Return tight answers.
 
 ## Output format
 
-A short structured response, no prose padding:
+A short structured response, no prose padding. (Sample below uses reference-repo paths to illustrate the format — substitute the new project's package roots and feature names.)
 
 ```
 ## <Question echo>
 
 | Symbol / File | Path | Line | Note |
 |---|---|---|---|
-| `ProfileComponent` | `ui-screen-features/profile/src/commonMain/kotlin/com/grippo/profile/ProfileComponent.kt` | 24 | bare-name root, owns `StackNavigation<ProfileRouter>` |
+| `ProfileComponent` | `ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/ProfileComponent.kt` | 24 | bare-name root, owns `StackNavigation<ProfileRouter>` |
 | `ProfileComponent.createChild` | same | 88–124 | when-branch on `ProfileRouter` |
 | `Child` sealed | same | 130–148 | matching subtypes |
 
@@ -63,7 +63,7 @@ fd '(<Feature>Component|<Feature>RootComponent)\.kt' ui-screen-features/ 2>/dev/
   || find ui-screen-features/ -name '<Feature>Component.kt' -o -name '<Feature>RootComponent.kt'
 ```
 
-Reference repo: bare `<Feature>Component` is the default (`AuthComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`). `<Feature>RootComponent` is reserved for `:home` and `:trainings` to avoid colliding with same-named first sub-screens.
+Bare `<Feature>Component` is the default. `<Feature>RootComponent` is reserved for features that contain a sub-screen with the same name as the feature (the names would collide). The authoritative list of suffixed features is `featuresWithRootComponentSuffix` in `requirements/00-overview/03-project-config.md`. (Reference repo: bare default — `AuthComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`; suffixed — `:home`, `:trainings`.)
 
 ### "List existing screen/dialog feature modules"
 
@@ -120,10 +120,10 @@ Pick the closest in shape (single input + single result is the usual case):
 rg -nl "data class .* : DialogConfig" ui-dialog-features/dialog-api/
 ```
 
-Pick one (e.g. `WeightPicker`), then:
+Pick one (reference repo example: `WeightPicker` in `:ui-dialog-features:weight-picker` — substitute any existing dialog in this project), then:
 
 ```bash
-fd '(WeightPickerComponent|WeightPickerViewModel|WeightPickerScreen)\.kt' ui-dialog-features/weight-picker/
+fd '(<Picker>Component|<Picker>ViewModel|<Picker>Screen)\.kt' ui-dialog-features/<picker-kebab>/
 ```
 
 Return the file paths for the builder to mirror.

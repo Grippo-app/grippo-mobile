@@ -1,12 +1,20 @@
 # Sub-Agents — Task Execution Toolkit
 
+## Prerequisite
+
+This pipeline assumes the project has already been bootstrapped per `requirements/launch.md`. The orchestrator's bootstrap-check step (Step 0) verifies the scaffold and refuses to proceed if it's incomplete. If you arrived here on an empty repo, run `launch.md` first.
+
+Sub-agents must be installed into `.claude/agents/` before they can be invoked. See `requirements/README.md` section "Sub-agents — install before first use" for installation commands.
+
+Sub-agents read `requirements/00-overview/03-project-config.md` before each task. Make sure that file exists and reflects current project state.
+
 Specialized Claude Code sub-agents that implement and verify changes against the architecture defined in `requirements/`. The set is split into three roles:
 
 | Role | Purpose | Folder |
 |---|---|---|
 | **Builders** | Implement a specific kind of change (screen, dialog, data feature, mapper, endpoint, migration, resource, cross-feature nav). | `builders/` |
 | **Validators** | Self-check the result against the architecture (dependency rules, MVI pattern, anti-patterns, naming, DI wiring, Compose stability, data-layer boundaries, build green). They are **gates**: the orchestrator does not declare a task done until every relevant validator passes. | `validators/` |
-| **Helpers** | Task intake, orchestration, codebase lookup, Codex review loop. | `helpers/` |
+| **Helpers** | Task intake, orchestration, codebase lookup, external review loop (Codex or internal). | `helpers/` |
 
 ## Execution flow
 
@@ -18,13 +26,38 @@ requirements/tasks/TASK_N_TITLE.md
 [helpers/orchestrator] — runs the loop:
         ├── builders/* (one or more, in dependency order)
         ├── validators/* (every applicable one — all MUST pass)
-        ├── (optional) codex-plugin-cc review
-        └── [helpers/codex-review-loop] — digests codex feedback, re-runs builders
+        └── external review — exactly one reviewer per task, resolved per codexEnabled:
+              ├── [helpers/codex-review-loop] (Codex plugin installed)
+              └── [helpers/internal-reviewer]  (Claude-backed local fallback)
         ↓
-Task done (under-key) when every validator passes AND codex has no further findings.
+Task done when every validator passes AND the external reviewer returns clean.
 ```
 
-Helpers and validators run **on every task** (validators are always-on invalidators of premature "done"). Builders run only when their kind of change is requested.
+```mermaid
+flowchart TD
+    Task[TASK_N_*.md] --> Orchestrator
+    Orchestrator --> Intake[task-intake]
+    Intake -->|plan| Orchestrator
+    Orchestrator --> Context[context-finder × N]
+    Context -->|excerpts| Orchestrator
+    Orchestrator --> Builders[builders sequential/parallel]
+    Builders --> Diff{Diff sanity check}
+    Diff -->|empty diff| Builders
+    Diff -->|OK| Validators[8 validators parallel]
+    Validators -->|findings| Dedup{Dedup + route}
+    Dedup -->|fix needed| Builders
+    Dedup -->|all green| Acceptance{Acceptance check}
+    Acceptance -->|miss| Builders
+    Acceptance -->|met| Route{codexEnabled + Codex detected?}
+    Route -->|Codex available| Codex[codex-review-loop]
+    Route -->|Codex missing / disabled| Internal[internal-reviewer]
+    Codex -->|findings| Builders
+    Internal -->|findings| Builders
+    Codex -->|clean| Done[Summary to user]
+    Internal -->|clean| Done
+```
+
+Helpers and validators run **on every task** (validators are always-on invalidators of premature "done"). Builders run only when their kind of change is requested. The **external-review gate also runs on every task**; only the reviewer identity (Codex vs. internal-reviewer) varies — see *External review* below.
 
 ## How tasks are written
 
@@ -58,11 +91,31 @@ The task file is the **only** thing the user has to write. The agents pull archi
 
 The user does not invoke individual builders or validators by hand. They can, though, for one-off touch-ups (e.g. *"run validators/anti-pattern-scanner on the current branch"*).
 
-## Codex plugin integration
+## External review (Codex or internal-reviewer)
 
-The Codex plugin (`https://github.com/openai/codex-plugin-cc`) provides an external reviewer. The orchestrator hands off to it **after** every internal validator passes — the plugin's review becomes the second gate. If Codex flags issues, `helpers/codex-review-loop` digests the report, re-routes to the right builder, and re-runs validators. The cycle repeats until Codex returns clean.
+The orchestrator always runs an external-review pass after every internal validator is green. **Which reviewer runs is governed by `codexEnabled` in `requirements/00-overview/03-project-config.md`** plus runtime detection of the Codex plugin:
 
-The plugin must be installed in the parent Claude Code session. See the plugin's README for installation.
+| codexEnabled | Codex plugin installed | Reviewer |
+|---|---|---|
+| auto *(default)* | yes | `codex-review-loop` |
+| auto *(default)* | no  | `internal-reviewer` |
+| true | yes | `codex-review-loop` |
+| true | **no** | **escalation** — orchestrator refuses to silently downgrade |
+| false | *(skip detection)* | `internal-reviewer` |
+
+Both reviewers emit the **same output shape**, so the rest of the loop (route findings to builders → re-run validators → re-review) is reviewer-agnostic.
+
+### Codex plugin (preferred when available)
+
+[openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) is the official OpenAI plugin for Claude Code. Cross-provider review (a different model checks the writer model's work) significantly reduces sycophancy bias. Install per the plugin's README — typically requires Node.js 18.18+, the Codex CLI, and a ChatGPT subscription or OpenAI API key.
+
+After install, `codexEnabled: auto` picks it up automatically. To force Codex (fail-loud when the plugin is missing), set `codexEnabled: true`.
+
+### Internal reviewer (default fallback)
+
+`helpers/internal-reviewer` runs a Claude-backed senior-reviewer pass: reads the diff, cross-references `requirements/13-anti-patterns/`, classifies findings, and routes them to the right builder using the same routing table as `codex-review-loop`. No third-party install needed.
+
+Caveat: it's the same model family as the rest of the pipeline, so it does **not** provide cross-provider independence. It catches obvious bugs and scope leaks but is weaker at challenging design decisions the writer model already endorsed. Prefer Codex when available; use internal-reviewer as the safe default when it isn't.
 
 ## Installing the agent definitions
 
@@ -90,6 +143,8 @@ Option B is recommended for an active project — every edit under `requirements
 
 | Agent | What it builds | Recipe |
 |---|---|---|
+| `data-service-scaffold-builder` | Initial `:data-services:backend` (empty `<Product>Api`, `BackendClient`, `TokenProvider`, `ClientLogger`, `BackendModule`, auth-bootstrap stubs) and `:data-services:database` (empty `Database` at `version = 1`, `DatabaseBuilder` expect/actual, `DatabaseModule`, token DAOs/entities). One-shot, runs before any `endpoint-builder` / `room-migration-builder` on a freshly-bootstrapped project. | `02-module-structure/09-data-service-modules.md`, `06-data-layer/01-backend-client.md`, `06-data-layer/02-token-provider.md`, `06-data-layer/04-database.md` |
+| `feature-module-scaffold-builder` | A brand-new empty `:ui-screen-features:<name>` module (root MVI files + empty `<Feature>Router` + `RootRouter`/`RootComponent` wiring). Runs before `screen-builder` for the first screen of a new top-level feature. | `02-module-structure/07-ui-feature-modules.md` |
 | `screen-builder` | A sub-screen inside an existing `:ui-screen-features:*` feature. | `14-cookbook/01-add-screen.md` |
 | `dialog-builder` | A `:ui-dialog-features:*` bottom sheet feature. | `14-cookbook/02-add-dialog.md` |
 | `data-feature-builder` | A `:data-features:*` module + feature-api contract. | `14-cookbook/03-add-data-feature.md` |
@@ -117,10 +172,11 @@ Option B is recommended for an active project — every edit under `requirements
 | Agent | What it does |
 |---|---|
 | `task-intake` | Reads `requirements/tasks/TASK_*.md`, classifies the change (screen / dialog / data-feature / …), enumerates the builders and validators that apply, and returns a structured execution plan to the orchestrator. |
-| `orchestrator` | Drives the full execution loop: builders → validators → codex review → fixes → repeat. The single agent the parent session invokes per task. |
+| `orchestrator` | Drives the full execution loop: builders → validators → external review (Codex or internal) → fixes → repeat. The single agent the parent session invokes per task. |
 | `context-finder` | Locates the existing modules/files relevant to a task (e.g. find `ProfileComponent.kt`, `ProfileRouter.kt`, the existing `ProfileBodyState.kt` shape) so a builder doesn't have to re-grep. |
 | `requirements-lookup` | Given a short keyword from a task or a builder's question, returns the exact `requirements/*.md` chapter and line range to read. |
-| `codex-review-loop` | Wraps the Codex plugin's review output, classifies findings (architecture / style / bug / scope), and routes each to the right builder for the next iteration. |
+| `codex-review-loop` | Wraps the Codex plugin's review output, classifies findings (architecture / style / bug / scope), and routes each to the right builder for the next iteration. Requires the Codex plugin; refuses to run when `codexEnabled: false` or the plugin is missing. |
+| `internal-reviewer` | Local fallback for `codex-review-loop` — runs a Claude-backed senior-reviewer pass over the current diff when the Codex plugin is unavailable (or `codexEnabled: false`). Emits the same output shape so orchestrator wiring is reviewer-agnostic. |
 
 ## Tool budgets
 
@@ -128,7 +184,7 @@ Each agent declares a minimal tool set in its frontmatter:
 
 - **Builders**: `Read, Edit, Write, Bash, Grep, Glob` — they need to read existing code, write new files, and run targeted gradle assembles.
 - **Validators**: `Read, Bash, Grep, Glob` (no `Edit`/`Write`) — they report findings, they don't auto-fix. Auto-fixing belongs to the builder responsible for the violated rule.
-- **Helpers**: vary. `orchestrator` gets `Agent` (to spawn the others); `task-intake` and `context-finder` get read-only tools; `codex-review-loop` gets `Bash` + `Agent`.
+- **Helpers**: vary. `orchestrator` gets `Agent` (to spawn the others); `task-intake` and `context-finder` get read-only tools; `codex-review-loop` and `internal-reviewer` get `Read, Bash, Grep, Glob, Agent`.
 
 ## What sub-agents do NOT do
 
@@ -138,6 +194,74 @@ Each agent declares a minimal tool set in its frontmatter:
 - **No backend changes.** Mobile-side only. Endpoint shape comes from the backend contract — the `endpoint-builder` verifies the DTO shape but does not invent endpoints.
 - **No tests.** This project explicitly opts out of tests by default. Tests are a separate task on explicit request.
 
-## Self-improvement
+## Worked example end-to-end
 
-The sub-agents drift the same way the requirements do — as the codebase evolves, an agent's prompt may reference a renamed class, an outdated rule, or a chapter that moved. See **`invalidate.md` → "Sub-agent auto-calibration"** for the iterative pass that audits each agent against the live requirements and code.
+Suppose you drop the following file:
+
+`requirements/tasks/TASK_1_workout_history_screen.md`:
+
+````markdown
+# TASK 1 — Add "Workout history" screen
+
+## Goal
+Add a sub-screen to `:ui-screen-features:profile` showing the user's workout
+history for a configurable date range.
+
+## Inputs
+- Source: `WorkoutHistoryFeature.observeHistory(start, end)` (assume exists).
+- Entry point: a card on `ProfileBodyScreen` already triggers `onWorkoutHistoryClick`.
+
+## Acceptance
+- New route `ProfileRouter.WorkoutHistory(initialRange: DateRange)`.
+- Seven MVI files following the cookbook recipe.
+- Build green on Android + iOS XCFramework.
+
+## Out of scope
+- Filtering, search, pagination — separate task.
+````
+
+You ask the parent Claude session: *"Run task TASK_1_workout_history_screen.md."*
+
+What happens (abbreviated):
+
+1. **orchestrator** spawns **task-intake**. Plan returns:
+   - Builders: `screen-builder`.
+   - Validators: all 8.
+   - No blockers.
+2. **orchestrator** spawns **context-finder** with: "where is `ProfileComponent`? where is `ProfileRouter`? does `WorkoutHistoryFeature` exist?". Returns 4 file paths + signatures.
+3. **orchestrator** spawns **screen-builder** with task content + context excerpts. Builder writes 7 files in `ui-screen-features/profile/.../workouthistory/`, edits `ProfileRouter.kt`, edits `ProfileComponent.kt`. Reports done.
+4. **orchestrator** runs Diff sanity check — 9 files changed, all under `ui-screen-features/profile/`. OK.
+5. **orchestrator** spawns 8 validators in parallel. `mvi-contract-validator` flags 1 finding: `ProfileWorkoutHistoryContract.Empty` is missing the `onRangeChange` no-op. `naming-convention-validator` flags the same finding (dup).
+6. **orchestrator** dedupes → routes 1 finding to `screen-builder`. Builder fixes. Validators re-run, all green. `build-validator`: 2/2 PASS.
+7. **orchestrator** runs Acceptance check — grep `ProfileRouter.WorkoutHistory` in changed files: hit. Acceptance bullet 1 met.
+8. **orchestrator** resolves the external reviewer per `codexEnabled` + Codex detection, invokes **codex-review-loop** or **internal-reviewer**. Returns clean.
+9. **orchestrator** posts the summary, the user reviews, commits.
+
+End-to-end: roughly 4-6 minutes of agent time, ~$0.5-1.5 in API cost.
+
+## When NOT to use this pipeline
+
+The orchestrator + 8-validator + Codex flow is overhead. Skip it for:
+
+- **One-line bug fixes** — e.g. `s/foo/bar/` in a string. Edit and verify with `./gradlew :androidApp:assembleDebug` directly.
+- **Hotfixes on a release branch** — bypass the pipeline, fix surgically, the post-mortem retroactively writes the TASK file if useful.
+- **Experimental spike branches** — exploring whether a pattern works at all. Pipeline assumes architectural conformance; spikes are pre-conformance.
+- **Read-only tasks** — code review, design proposal, "what would it look like if…" questions. Use `Plan` agent or just chat.
+
+For these, skip `orchestrator`. Either work in a regular chat or invoke a single agent directly:
+
+```
+Agent(subagent_type: "anti-pattern-scanner", prompt: "Scan the current diff and report findings.")
+```
+
+Use the full pipeline when the task touches the architecture (new feature, new data, schema change, cross-feature wiring).
+
+## Self-calibration
+
+Sub-agent prompts drift the same way requirements do — a renamed class, a moved chapter, a deprecated rule. The `requirements/invalidate.md` file at section "Sub-agent auto-calibration" (line ~285) defines an iterative audit: it picks the lowest-audit-count agent, compares its prompt against the live `requirements/` and codebase, applies fixes, and increments the audit log. Run this monthly or after any large requirements refactor:
+
+```
+Feed the prompt under "Sub-agent auto-calibration" in requirements/invalidate.md to a fresh Claude session at the project root.
+```
+
+This is separate from `lint.sh` (which only catches mechanical drift like dead links, missing frontmatter, and README inventory mismatches).

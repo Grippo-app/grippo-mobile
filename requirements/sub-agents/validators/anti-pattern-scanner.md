@@ -12,20 +12,53 @@ You scan the changeset for forbidden patterns. The list is exhaustive — go thr
 1. `requirements/13-anti-patterns/01-forbidden-patterns.md` — the full forbidden list.
 2. `requirements/13-anti-patterns/02-when-to-stop-and-ask.md` — what should have been escalated.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Scope
 
 Files changed in the current task (added + modified). Use `git diff --name-only HEAD` ∪ untracked Kotlin files. Skip generated files (`build/`, `schemas/`, `compose-metrics/`, `compose-reports/`, `.kotlin/`).
 
-## Steps
+## Step 1 — run Detekt with project-specific rules
+
+Detekt is wired into the root build with a custom ruleset registered in `:tooling:detekt-rules` (RuleSet id `grippo`). The covered rules:
+
+- `DtoFieldsMustBeNullable` — every `@Serializable` val under `data-services/backend/dto/**` must be `?` typed AND default `= null`.
+- `ImmutableStateMustUseImmutableCollections` — `@Immutable` classes must use `ImmutableList`/`ImmutableSet`/`ImmutableMap`/`PersistentList` from `kotlinx.collections.immutable`, never `kotlin.collections.List/Set/Map` or any `Mutable*` variant.
+- `ForbiddenCoroutineApis` — flags `viewModelScope.launch`, `lifecycleScope.launch`, `runBlocking`, `GlobalScope.launch`, `CoroutineScope(...).launch`, plus `.async` on the same receivers.
+- `LaunchedEffectUnitForNavigation` — flags `LaunchedEffect(Unit) { … }` whose body contains `navigate`/`navigateTo`/`push`/`pop`/`replaceAll`/`replaceCurrent`.
+- `MaterialThemeInFeatureCode` — flags `MaterialTheme.colorScheme/typography/shapes` and direct `androidx.compose.material3.{Button,TextField,Card,Surface,…}` imports inside `:ui-screen-features:**` and `:ui-dialog-features:**`.
+
+Run:
+
+```bash
+./gradlew detekt --quiet || true
+```
+
+The task may exit non-zero if any rule fires — that is expected. The SARIF report is still written to `build/reports/detekt/sarif.json`. Parse with:
+
+```bash
+jq '.runs[].results[] | {file: .locations[0].physicalLocation.artifactLocation.uri, line: .locations[0].physicalLocation.region.startLine, rule: .ruleId, message: .message.text}' build/reports/detekt/sarif.json
+```
+
+Each entry becomes one finding. Filter to files in the diff (`git diff --name-only HEAD`) — Detekt scans the whole tree, so unrelated pre-existing issues must be discarded.
+
+Routing per-rule mapping (use the same `Routed to` labels as the grep findings):
+
+| Rule | Routed to |
+|---|---|
+| `DtoFieldsMustBeNullable` | `endpoint-builder` |
+| `ImmutableStateMustUseImmutableCollections` | `screen-builder` or `dialog-builder` (whoever owns the state) |
+| `ForbiddenCoroutineApis` | `screen-builder` or `dialog-builder` |
+| `LaunchedEffectUnitForNavigation` | `screen-builder` or `dialog-builder` |
+| `MaterialThemeInFeatureCode` | `screen-builder` or `dialog-builder` |
+
+## Step 2 — fall back to grep for the rules Detekt does not yet cover
 
 For each group below, run the grep. Each hit becomes a finding. Use ripgrep (`rg`) for speed when available; otherwise `grep -rn`.
 
-### Coroutines
+### Coroutines (extras not yet in Detekt)
 
 ```bash
-# inside changed Kotlin files
-rg -n 'viewModelScope\.launch|lifecycleScope\.launch|GlobalScope\.launch|CoroutineScope\([^)]*\)\.launch' <changed-files>
-rg -n 'runBlocking\b' <changed-files>
 rg -n 'CoroutineExceptionHandler' <changed-files>      # inside VMs only
 rg -n 'try\s*\{[^}]*\}\s*catch\s*\([^)]*Throwable[^)]*\)' <changed-files>
 rg -n 'async\s*\{[^}]*\}\s*\.await\(\)' <changed-files>
@@ -33,26 +66,14 @@ rg -n 'async\s*\{[^}]*\}\s*\.await\(\)' <changed-files>
 
 Exception: `Result.onSuccess { … }` / `runCatching { … }` at a domain boundary is allowed. `TimeoutCancellationException` catches in `TokenProvider` are intentional.
 
-### Collections in state
+### Compose (extras not yet in Detekt)
 
 ```bash
-rg -n '@Immutable[^(]*\([^)]*\)' --multiline <changed-files>   # find @Immutable classes
-# For each, ensure no List<>, Set<>, Map<>, MutableList<>, mutableStateListOf
-```
-
-Manual read: open every new `*State.kt` and confirm collections are `ImmutableList`, `ImmutableSet`, or `PersistentList` from `kotlinx.collections.immutable`. Kotlin defaults (`List`/`Set`/`Map`) and any `mutable*` variants are findings.
-
-### Compose
-
-```bash
-rg -n 'LaunchedEffect\(Unit\)' <changed-files>          # then verify the body — navigation = finding
 rg -n 'mutableStateOf' <changed-files>                  # logical state = finding; local animation = pass
 rg -n 'androidx\.compose\.ui\.res\.(stringResource|painterResource)' <changed-files>
 rg -n 'Color\(0x[A-Fa-f0-9]{6,8}\)' <changed-files>     # outside :design-system/* = finding
 rg -n '\b[0-9]+\.dp\b|\b[0-9]+\.sp\b' <changed-files>   # outside :design-system/* = finding
 rg -n 'TextStyle\([^)]*fontSize' <changed-files>        # outside :design-system/* = finding
-rg -n 'MaterialTheme\.colorScheme' <changed-files>
-rg -n 'androidx\.compose\.material3\.Button\(' <changed-files>
 ```
 
 ### Data layer
@@ -60,8 +81,6 @@ rg -n 'androidx\.compose\.material3\.Button\(' <changed-files>
 ```bash
 rg -n 'Flow<Result<' <changed-files>
 rg -n '!!\.' <changed-files>                            # blanket — review each hit; DTO field !! is a finding
-rg -n '@Serializable[^(]*data class[^{]*\{[^}]*val [^:]+:[^?][^=,}]+[,}]' --multiline <changed-files>
-# ⇡ DTO with non-nullable field — verify it's actually a DTO and a finding
 rg -n '@PrimaryKey\(autoGenerate = true\)' <changed-files>
 rg -n 'HttpClient\(\)\.request|client\.request\(' <changed-files>   # bypassing BackendClient
 rg -n 'import (android\.content\.Context|androidx\.compose\.ui\.platform\.LocalContext)' --include='**/commonMain/**' <changed-files>
@@ -134,7 +153,7 @@ For new `strings.xml` keys: verify every locale (`values-uk/`, `values-ru/`, …
 
 ### Architecture-shape (depth check on imports)
 
-For every changed file, list its imports. Cross-feature imports between `:ui-screen-features:*` modules (e.g. `:home` importing from `:profile`) = finding. Use `:screen-api` only.
+For every changed file, list its imports. Cross-feature imports between `:ui-screen-features:*` modules (e.g. `:<feature-a>` importing from `:<feature-b>` — reference-repo example: `:home` importing from `:profile`) = finding. Use `:screen-api` only.
 
 ## Output format
 

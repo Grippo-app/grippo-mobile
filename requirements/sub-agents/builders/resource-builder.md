@@ -14,6 +14,8 @@ You add resources to the design system. Resources are centralized; feature modul
 3. `requirements/11-state-and-formatters/01-ui-text.md` — `UiText.Res` for state-side strings.
 4. `requirements/13-anti-patterns/01-forbidden-patterns.md` — resource-specific anti-patterns.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Inputs the orchestrator passes you
 
 - **Task file path**.
@@ -24,6 +26,18 @@ You add resources to the design system. Resources are centralized; feature modul
 
 ## Steps you MUST perform
 
+### Step 0 — read supported locales
+
+Parse `supportedLocales` from `requirements/00-overview/03-project-config.md`:
+
+```bash
+LOCALES=$(awk '/^supportedLocales:/{flag=1; next} /^[a-z]/{flag=0} flag && /^  - /{print $2}' requirements/00-overview/03-project-config.md)
+```
+
+Every new string MUST be added to `values/strings.xml` (English source) AND every `values-<locale>/strings.xml` for each locale in the parsed list. Treat the list as authoritative — do not fall back to "every directory you find under composeResources/".
+
+If the field is empty or missing, stop and report `BLOCKED: supportedLocales missing in project-config`.
+
 ### Strings
 
 1. Open `:design-system:resources:provider/src/commonMain/composeResources/values/strings.xml`. Add:
@@ -32,7 +46,7 @@ You add resources to the design system. Resources are centralized; feature modul
    <string name="<key>"><English text></string>
    ```
 
-2. Open every other locale's `values-<lang>/strings.xml`. Add the same `<string name="<key>">` with the translated text.
+2. For every locale in `supportedLocales` (from Step 0), open `values-<locale>/strings.xml`. Add the same `<string name="<key>">` with the translated text.
 
    **Every locale MUST receive the key.** Missing keys fall back to English at runtime — surprises users.
 
@@ -58,10 +72,11 @@ The reference repo does not currently ship `plurals.xml`. If this is the first p
 
 ```
 :design-system:resources:provider/src/commonMain/composeResources/values/plurals.xml
-:design-system:resources:provider/src/commonMain/composeResources/values-<lang>/plurals.xml  (every locale)
 ```
 
-Slavic languages (uk, ru) need `one|few|many|other`. English needs `one|other`. Match the locale's CLDR rules.
+Then, for every locale in `supportedLocales` (from Step 0), create `values-<locale>/plurals.xml`.
+
+Match each locale's CLDR rules — e.g. Slavic languages (uk, ru) need `one|few|many|other`; English needs `one|other`.
 
 ```xml
 <plurals name="<key>">
@@ -149,6 +164,14 @@ Icons are authored as Kotlin code, NOT as XML drawables.
 
 ### Fonts
 
+Read `typefaceFactory` from `requirements/00-overview/03-project-config.md`:
+
+```bash
+TYPEFACE=$(rg -m1 '^typefaceFactory:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+```
+
+This is the name of the `@Composable internal fun` in `AppTypography.kt` that returns the `FontFamily`. (Reference repo uses Manrope; substitute with this project's typeface — the factory name and font filenames must match `typefaceFactory` from project-config.)
+
 1. Drop the file:
 
    ```
@@ -156,13 +179,15 @@ Icons are authored as Kotlin code, NOT as XML drawables.
      <family>_<weight>.ttf
    ```
 
-   Naming: `<family>_<weight>.ttf`. Repo uses Manrope; replace with the product's typeface.
+   Naming: `<family>_<weight>.ttf`.
 
-2. Wire into `AppTypography.kt`. There's a file-private `typealias AppFont = Res.font` at the top of `AppTypography.kt` — use `AppFont.<family>_<weight>` inside `manrope()` (or the equivalent factory):
+2. Wire into `AppTypography.kt`. There's a file-private `typealias AppFont = Res.font` at the top of `AppTypography.kt` — use `AppFont.<family>_<weight>` inside `${TYPEFACE}()`:
 
    ```kotlin
+   // <typefaceFactory> is a placeholder — substitute the value of `typefaceFactory`
+   // from project-config (reference repo uses `manrope`).
    @Composable
-   internal fun manrope(): FontFamily = FontFamily(
+   internal fun <typefaceFactory>(): FontFamily = FontFamily(
        Font(AppFont.<family>_bold, weight = FontWeight.Bold),
        Font(AppFont.<family>_extra_bold, weight = FontWeight.ExtraBold),
        Font(AppFont.<family>_extra_light, weight = FontWeight.ExtraLight),
@@ -194,7 +219,7 @@ All three must build green.
 - Do not use `androidx.compose.ui.res.stringResource(R.string.foo)` / `painterResource(R.drawable.foo)`. Android-only.
 - Do not prefix raster drawable filenames with `ic_*` / `img_*` / `bg_*`. Bare nouns only.
 - Do not ship a monochrome UI icon as an XML drawable. Author it as `ImageVector` code on `AppIcon`.
-- Do not register a font weight in `manrope()` without dropping the `.ttf`, or drop a `.ttf` without registering it.
+- Do not register a font weight in `<typefaceFactory>()` without dropping the `.ttf`, or drop a `.ttf` without registering it.
 - Do not use `@JvmStatic` in `commonMain`. JVM-only.
 
 ## What you report back

@@ -13,6 +13,8 @@ You verify the Koin graph. KOIN_CONFIG_CHECK is disabled in the convention plugi
 2. `requirements/13-anti-patterns/01-forbidden-patterns.md` (DI section).
 3. `:shared/Koin.kt` — the actual composition root (live file).
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Scope
 
 Files changed in the current task ∪ `:shared/Koin.kt`.
@@ -86,7 +88,7 @@ For each new `@Module(includes = [...])`:
 
 ### 7. Inline providers in feature-api or data-services
 
-Some non-`@ComponentScan` Koin modules use the hand-DSL pattern intentionally — e.g. `GoogleAuthModule`/`AppleAuthModule` provide platform-specific singletons via `Module` + `single { … }` outside a `@Single` class. These are documented exceptions (`requirements/08-dependency-injection/01-koin-composition-root.md`). Do not flag them. Confirm by reading the chapter, then verify only that the module is included in `:shared/Koin.kt`.
+Some platform-edge wrappers legitimately use the `module { … }` DSL outside annotated `@Single` classes. The list of explicit-exception modules lives as `diHandWrittenModules` in `requirements/00-overview/03-project-config.md` (or read off the chapter `requirements/08-dependency-injection/03-composition-root.md` if not yet captured). Reference-repo examples: `GoogleAuthModule`, `AppleAuthModule`. Do not flag any module named in `diHandWrittenModules`. Confirm by reading the chapter, then verify only that the module is included in `:shared/Koin.kt`.
 
 ## Output format
 
@@ -99,6 +101,6 @@ Same structured findings format. Severity:
 ## What you MUST NOT do
 
 - Do not edit any file.
-- Do not flag the documented inline-provider modules (`GoogleAuthModule`, `AppleAuthModule`, others listed in `requirements/08-dependency-injection/*`).
+- Do not flag the documented inline-provider modules — the authoritative list is `diHandWrittenModules` in `requirements/00-overview/03-project-config.md` (reference repo: `GoogleAuthModule`, `AppleAuthModule`).
 - Do not require `binds = [...]` on a `@Single` class that doesn't implement an interface — that's not a violation.
 - Do not run KOIN_CONFIG_CHECK — it's intentionally disabled in `KoinAnnotationConventionPlugin` until the next Koin Annotations release. Verification is via static read of the graph.

@@ -10,18 +10,42 @@ You drive the Codex external review loop. The internal validators caught the str
 ## Authoritative reading
 
 1. The Codex plugin documentation: `https://github.com/openai/codex-plugin-cc`.
-2. `requirements/13-anti-patterns/01-forbidden-patterns.md` — to recognize Codex findings that map to existing project rules.
-3. The orchestrator's run log — to know which builders ran and which files they touched.
+2. `requirements/00-overview/03-project-config.md` — confirm `codexEnabled`.
+3. `requirements/13-anti-patterns/01-forbidden-patterns.md` — to recognize Codex findings that map to existing project rules.
+4. The orchestrator's run log — to know which builders ran and which files they touched.
+
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Preconditions
 
 Before invoking you, the orchestrator confirmed:
 
+- `codexEnabled` is `true` or `auto` (with successful detection).
 - All internal validators returned 0 high-severity findings.
 - The build is green (`build-validator` passed).
 - The Codex plugin is installed in the parent Claude Code session.
 
 If any of those are false, refuse to run and return: **"Preconditions not met: <which one>. Run the gate first."**
+
+Verify the flag and plugin yourself before doing anything else:
+
+```bash
+CODEX_ENABLED=$(rg -m1 '^codexEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+case "$CODEX_ENABLED" in
+  true|auto) ;;
+  false) echo "REFUSED: codexEnabled=false. Orchestrator should have invoked internal-reviewer."; exit 0 ;;
+  *) echo "REFUSED: codexEnabled=$CODEX_ENABLED (expected: auto | true | false). Fix 03-project-config.md."; exit 0 ;;
+esac
+
+CODEX_PRESENT=0
+if [ -d "$HOME/.claude/plugins/codex-plugin-cc" ] || \
+   [ -d ".claude/plugins/codex-plugin-cc" ] || \
+   ls "$HOME/.claude/plugins/" 2>/dev/null | grep -qi 'codex' || \
+   command -v codex >/dev/null 2>&1; then
+  CODEX_PRESENT=1
+fi
+[ "$CODEX_PRESENT" = "1" ] || { echo "REFUSED: Codex plugin not detected. Install https://github.com/openai/codex-plugin-cc or set codexEnabled to 'auto'/'false'."; exit 0; }
+```
 
 ## Steps
 

@@ -18,6 +18,8 @@ TASK_<N>_<short_title_in_snake_case>.md
 
 A task is a contract, not a plan. State what to build and what "done" looks like. Do **not** write the implementation steps — the agents read `requirements/` for that.
 
+All four sections — `## Goal`, `## Inputs`, `## Acceptance`, `## Out of scope` — are **required**. A TASK file missing any of them is rejected as BLOCKED by `task-intake`.
+
 ```markdown
 # TASK N — <title>
 
@@ -34,10 +36,17 @@ One paragraph. What capability does the user gain when this lands?
 - Includes the build gate: "`./gradlew :shared:assembleSharedDebugXCFramework` and `./gradlew :androidApp:assembleDebug` both green."
 
 ## Out of scope
-- What the task does NOT cover. Cuts off scope creep.
+- What the task does NOT cover. Cuts off scope creep. **Required** — write "nothing else" if the boundary is trivial, but the section must be present.
+
+## Depends on (optional)
+- TASK_2 — must be in `tasks/done/` before this task runs.
 ```
 
+The `Depends on` section is optional. List the prerequisite task file stems (`TASK_<N>_<title>`, no `.md` extension). `task-intake` verifies each listed file is in `requirements/tasks/done/`; if not, the orchestrator returns `BLOCKED: depends on incomplete tasks: <list>` and refuses to run.
+
 ## How execution works
+
+The TASK file MUST include a `## Out of scope` section. Even if the section is short ("nothing else"), an explicit boundary prevents builders from drifting into adjacent files. Tasks without this section are returned BLOCKED by `task-intake`.
 
 1. Drop the file here.
 2. Tell Claude: *"Run task TASK_N_<title>.md."*
@@ -53,5 +62,12 @@ See `requirements/sub-agents/README.md` for the full flow.
 
 ## After a task ships
 
-- Move the task file to a `tasks/done/` subfolder (optional, for traceability) or delete it. The agents do not re-execute completed tasks.
-- If the task surfaced architecture drift, run `invalidate.md` to update the requirements.
+The orchestrator **always** moves the completed TASK file to `requirements/tasks/done/<file>` as the final step of a successful run (see `requirements/sub-agents/helpers/orchestrator.md` Step 6). This is the project convention — not an opt-in:
+
+- `requirements/tasks/` holds only **in-flight** tasks.
+- `requirements/tasks/done/` is the audit trail of what shipped (preserved in git history).
+- The orchestrator skips the move only when a task ends in escalation, not completion.
+
+If you want to discard a task without running it, delete the file before invoking the orchestrator. Once a task is in `done/`, leave it there — `task-intake` will refuse to re-run a moved file.
+
+If the task surfaced architecture drift, run `invalidate.md` to update the requirements.

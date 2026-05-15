@@ -14,6 +14,8 @@ You verify the data-layer boundaries — the perimeter from `<Product>Api` throu
 3. `requirements/03-architecture-patterns/06-repository-pattern.md` — Repository shape.
 4. `requirements/13-anti-patterns/01-forbidden-patterns.md` (Data layer + Logging sections).
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Scope
 
 Files changed in the current task under: `:data-services:backend/dto/**`, `:data-services:database/entity/**`, `:data-services:database/dao/**`, `:data-features:**`, `:data-mappers:**`.

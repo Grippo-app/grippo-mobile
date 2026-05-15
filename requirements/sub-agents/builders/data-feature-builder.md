@@ -15,6 +15,8 @@ You add a new data feature module. The UI layer sees only the `<X>Feature` inter
 4. `requirements/08-dependency-injection/*` — `@Module(includes = [...])`, `@ComponentScan`, `@Single(binds = [Interface::class])`.
 5. `requirements/13-anti-patterns/01-forbidden-patterns.md`.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Inputs the orchestrator passes you
 
 - **Task file path**.

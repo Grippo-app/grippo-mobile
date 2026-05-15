@@ -14,6 +14,8 @@ You add a new mapper file. Each mapper module is a single direction; never impor
 3. `requirements/09-conventions/02-naming.md` — `<Source>.to<Target>()` / `to<Target>OrNull()` / `List<…>.to<Target>s()`.
 4. `requirements/13-anti-patterns/01-forbidden-patterns.md` — forbidden patterns specific to data layer.
 
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+
 ## Inputs the orchestrator passes you
 
 - **Task file path**.
