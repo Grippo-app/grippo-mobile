@@ -26,7 +26,7 @@ One file = one top-level declaration, unless tightly-coupled.
 | Feature impl | `<X>FeatureImpl` | `TrainingFeatureImpl` |
 | Repository interface | `<X>Repository` | `TrainingRepository` |
 | Repository impl | `<X>RepositoryImpl` | `TrainingRepositoryImpl` |
-| Use case | `<Verb><Noun>UseCase` | `RecalculateGoalProgressUseCase` |
+| Use case | `<Verb><Noun>UseCase` (or `<Noun>UseCase` when a single verb fits poorly — see Functions row below) | `DeleteTrainingUseCase`, `UpdateWeightUseCase`, `CreateProfileUseCase` (verb-noun); `TrainingDigestUseCase`, `MuscleLoadingSummaryUseCase` (noun-only) |
 | Koin module | `<X>FeatureModule` / `<X>Module` | `TrainingFeatureModule`, `BackendModule` |
 | DTO response | `<X>Response` | `TrainingResponse` |
 | DTO body | `<X>Body` | `TrainingBody`, `EmailAuthBody` |

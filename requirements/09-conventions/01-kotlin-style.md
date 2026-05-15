@@ -23,7 +23,7 @@ fun foo() { ... }
 | `:data-features:feature-api` types | `public` |
 | `:data-features:<feature>` impls | `internal` (only `<X>FeatureModule` is `public`) |
 | `:data-services:*` types | `internal` (only entry-points like `GrippoApi`, `Database` are `public`) |
-| `:ui-screen-features:*`, `:ui-dialog-features:*` | `internal` for sub-screens (`Component`, `Screen`, `State`, `ViewModel`, `Loader`, `Direction`, `Contract`); `public` for the feature-root counterparts and for Routers in `:screen-api` / `:dialog-api` (the root is consumed from `:shared`) |
+| `:ui-screen-features:*`, `:ui-dialog-features:*` | `internal` for sub-screens (`Component`, `Screen`, `State`, `ViewModel`, `Loader`, `Direction`, `Contract`); `public` for the feature-root counterparts (consumed from `:shared`), for `*Router` sealed classes + `Deeplink` in `:screen-api`, and for `DialogConfig`/`DialogController`/`DialogModule` in `:dialog-api` (dialogs use a single `DialogConfig` sealed class — there are no per-feature dialog routers) |
 | `:design-system:*` | `public` (consumed everywhere) |
 | `:toolkit:*` | `public` for the interface; `internal` for impl |
 | `:data-mappers:*` | `public` top-level functions |
@@ -60,7 +60,7 @@ State classes use **default constructor values** for the initial state; the View
 
 - **No wildcard imports.** `import com.foo.bar.*` is forbidden. Use specific imports.
 - **No unused imports.** IDE auto-clean keeps these out.
-- **Order**: Kotlin/Java stdlib → third-party (alphabetical) → first-party (`com.<org>.<product>.*`).
+- **Order**: single alphabetical group (IntelliJ Kotlin default — no stdlib-first grouping). Mixed packages sort lexicographically: `androidx.*` → `com.<org>.<product>.*` → `kotlinx.*` → `kotlin.*`. Don't manually insert blank lines between sections.
 
 ## Coroutines
 

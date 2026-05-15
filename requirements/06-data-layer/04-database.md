@@ -200,4 +200,4 @@ public class DatabaseModule {
 - **`fallbackToDestructiveMigration(dropAllTables = false)` (the default)** — drops only the migration target table; can leave foreign-key references dangling.
 - **Forgetting `it.openHelper.writableDatabase` on Android** — first-query latency.
 - **Using `androidx.sqlite-bundled`** on Android — Room uses the system SQLite on Android; `bundled` is for iOS.
-- **Storing access tokens in DataStore instead of Room.** Tokens go in `TokenEntity` so the foreign-key relationship to `UserEntity` is enforced.
+- **Storing access tokens in DataStore instead of Room.** Tokens go in `TokenEntity` so deletion is the trigger for the auto-logout cascade. Both `UserEntity` and `UserActiveEntity` declare `ForeignKey(entity = TokenEntity::class, parentColumns = ["id"], childColumns = ["id" | "userId"], onDelete = CASCADE)` — when `TokenProvider.handleRefreshFailure` calls `tokenDao.delete(userId)`, the user row and the active-user marker are dropped automatically, and `RootViewModel`'s token observer sees `null` and navigates to Login.

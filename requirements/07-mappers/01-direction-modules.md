@@ -122,7 +122,7 @@ kotlin {
 }
 ```
 
-The dependency set per direction (`:toolkit:logger` is in every row — `AppLogger.Mapping.log` is used by every mapper module, including entity-sourced and state-sourced ones, because relation rows or empty `*FormatState` values can require null-and-drop):
+The dependency set per direction (`:toolkit:logger` is wired into every row's build deps as a convention; **actual call-site usage** is limited to the four directions whose **source** carries nullable values — `:dto-to-entity`, `:dto-to-domain`, `:entity-to-domain` (`@Relation` rows + enum-string parses), and `:state-to-domain` (`*FormatState.value`). The three `:domain-to-*` directions take non-null domain inputs and therefore have **no `AppLogger.Mapping.log` call sites** — the dep is unused but kept for symmetry with the other directions):
 
 | Direction | Source dep | Target dep | Other |
 |---|---|---|---|

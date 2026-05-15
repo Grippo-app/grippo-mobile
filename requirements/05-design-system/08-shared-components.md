@@ -66,7 +66,7 @@ public fun BottomSheetToolbar(
 )
 ```
 
-Used in dialog `<X>Screen.kt` files instead of `Toolbar`. Shows a back arrow (if `allowBack`) and a close button. Background is the bottom-sheet background.
+Rendered **once** by the shared dialog host (`:shared/.../dialog/DialogScreen.kt`) at the top of every `ModalBottomSheet`. Individual `:ui-dialog-features:*` `<X>Screen.kt` files do **not** include their own `BottomSheetToolbar` — they only contribute the body content (title `Text` + form + buttons) inside a `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))`. Shows an animated back arrow (when `allowBack`, driven by the internal dialog stack depth) and a close button.
 
 ## `BottomOverlayContainer`
 
@@ -229,7 +229,21 @@ public sealed interface BannerCardStyle {
 
 ## `LineIndicator`
 
-Slim progress bar / segmented indicator for charts and onboarding. Configurable orientation and segments.
+```kotlin
+@Composable
+public fun LineIndicator(
+    modifier: Modifier = Modifier,
+    progress: Float,
+    colors: AppColor.Charts.IndicatorColors.IndicatorColors = AppTokens.colors.charts.indicator.primary,
+    barHeight: Dp = 6.dp,
+    labelSpacing: Dp = 6.dp,
+    startLabel: (@Composable () -> Unit)? = null,
+    endLabel: (@Composable () -> Unit)? = null,
+    marker: (@Composable () -> Unit)? = null,
+)
+```
+
+Slim horizontal progress bar reading colors from `AppTokens.colors.charts.indicator.*` (sub-palettes for `primary`, `success`, `info`, `warning`, `error`, `muted`). Optional `startLabel` / `endLabel` slots render captions on either end of the bar (e.g. min/max values, percentages); `marker` is a free-form composable positioned at `progress` for callouts like dots or arrows. Used for metric breakdowns and onboarding progress — there is no built-in orientation flag or segment array; multi-segment displays are composed by stacking multiple `LineIndicator`s.
 
 ## `Chip`
 

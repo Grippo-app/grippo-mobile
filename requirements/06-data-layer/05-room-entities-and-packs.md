@@ -32,7 +32,7 @@ public data class TrainingEntity(
 1. **`@Entity public data class <X>Entity`** — always `data class`, always with the `Entity` suffix.
 2. **`tableName = "snake_case_lower"`** — table names in snake_case for SQL friendliness.
 3. **`@PrimaryKey val id: String`** — typically `String` (server-side UUID). Avoid auto-generated `Long` keys; the backend assigns IDs.
-4. **All fields non-null.** Entities are derived from DTOs **after** null-checking (via `:data-mappers:dto-to-entity`); the entity layer is the place where data has been validated.
+4. **Required fields are non-null; genuinely-optional fields stay nullable.** The DTO→Entity mapper validates required fields via `AppLogger.Mapping.log(value) { ... } ?: return null` (see `07-mappers/03-null-safety.md`) so the entity layer rejects partially-populated server rows. Fields that may be legitimately absent are declared `T?` — examples in the reference repo: `IterationEntity.externalWeight` / `assistWeight` / `extraWeight` / `bodyWeight` / `bodyMultiplier` (only one weight-type field is populated per iteration depending on the exercise variant), `GoalEntity.secondaryGoal` / `lastConfirmedAt`, `ExerciseExampleEntity.imageUrl` / `lastUsed`, `DraftTrainingEntity.trainingId` (`null` on new draft, non-null on edit-existing), `TokenEntity.access` / `refresh` (partial snapshots during refresh). Nullable entity fields do **not** carry a `= null` default — the mapper is required to make the choice explicitly; `TokenEntity` is the lone exception because its rows are written from inside `TokenProvider` rather than a DTO mapper.
 5. **`@Index` for every column queried** (foreign keys, search columns, range columns). Skip indices only on columns never used in `WHERE` / `ORDER BY` / `JOIN`.
 6. **`@ForeignKey` for parent-child relations** with `onDelete = ForeignKey.CASCADE` — when the parent is deleted, children are dropped. Prevents orphans.
 7. **Timestamps are ISO-8601 UTC strings.** Stored as `String`, not `Long` (epoch ms). The string form is human-debuggable and trivially comparable lexicographically.
@@ -256,7 +256,7 @@ But keep `StringListConverter` for simple pipe-delimited cases — it's smaller 
 
 ## Anti-patterns
 
-- **Nullable fields in entities** (except optional one-to-one parents). Entities are derived after validation; nullability belongs in DTOs.
+- **Nullable types on required domain attributes.** If a field must be populated for the entity to be valid, declare it non-null and let the DTO→Entity mapper reject invalid rows via `AppLogger.Mapping.log(value) ?: return null`. Reserve nullability for genuinely-optional fields and optional one-to-one parents (see rule 4).
 - **`@PrimaryKey(autoGenerate = true) val id: Long`** — IDs come from the server.
 - **Missing `@Index` on foreign-key columns** — slow joins.
 - **Missing `@Transaction` on `@Query` returning a `*Pack`** — race conditions between parent + child reads.

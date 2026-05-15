@@ -11,12 +11,14 @@ Every state class is `@Immutable`:
 ```kotlin
 @Immutable
 internal data class ProfileBodyState(
-    val weight: WeightFormatState,
-    val height: HeightFormatState,
-    val history: ImmutableList<WeightPoint>,
-    val user: User?,
+    val user: UserState? = null,
+    val weight: WeightFormatState = WeightFormatState.Empty(),
+    val height: HeightFormatState = HeightFormatState.Empty(),
+    val history: ImmutableList<WeightHistoryState> = persistentListOf(),
 )
 ```
+
+(Fields use default constructor values so the ViewModel can build the initial state with `ProfileBodyState()` — see `09-conventions/02-naming.md` § "State defaults". `User` / `WeightPoint` are domain types; the UI state holds their `*State` counterparts from `:ui-core:state`.)
 
 - `@Immutable` tells Compose: instances are deeply immutable. Recomposition skips on identity.
 - `@Stable` is weaker — equal-by-equals but not deeply immutable. Use when fields may change but `equals` reflects the change.
@@ -53,22 +55,25 @@ sealed interface MyState {
 
 ```kotlin
 @Composable
-internal fun Button(
-    onClick: () -> Unit,
-    text: String,
+public fun Button(
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+    content: ButtonContent,
     style: ButtonStyle = ButtonStyle.Primary,
+    state: ButtonState = ButtonState.Enabled,
+    size: ButtonSize = ButtonSize.Medium,
+    onClick: () -> Unit,
+    textStyle: TextStyle = AppTokens.typography.b14Bold(),
 )
 ```
 
 Conventions:
 
 - **`PascalCase`** function name.
-- **`modifier: Modifier = Modifier`** parameter, after the primary content/state inputs.
-- **Callbacks (`on<X>`)** are typically after `modifier`.
-- **Defaults at the end** of the parameter list.
+- **`modifier: Modifier = Modifier`** is the **first** parameter (mirrors the design-system `Button`, `Toolbar`, `BannerCard`, `BottomSheetToolbar`, ...). The exception is `Toggle`, where `modifier` trails `onCheckedChange` — a known outlier, not a pattern to copy.
+- **Required callbacks (`on<X>`)** come after the styling parameters and before any trailing defaults.
+- **Defaults at the end** of the parameter list (after the required callback).
 - **`@Composable`** annotation explicit.
+- **`public`** for design-system components, **`internal`** for feature screens/sub-screens.
 
 ### Screen function signature
 
@@ -207,13 +212,15 @@ Use for conditional modifiers. Don't build modifier lists via `mutableListOf`.
 ### Extension modifiers
 
 ```kotlin
-private fun Modifier.cardElevation(elevation: Dp): Modifier =
+private fun Modifier.bannerCardSurface(elevation: Dp): Modifier =
     this
-        .shadow(elevation = elevation, shape = RoundedCornerShape(AppTokens.dp.radius.medium))
+        .shadow(elevation = elevation, shape = RoundedCornerShape(AppTokens.dp.bannerCard.radius))
         .background(AppTokens.colors.background.card)
 ```
 
 For frequently-repeated patterns, extract a `Modifier` extension. Live in the same file (private) or in `:design-system:components` if shared.
+
+Note: there is no general-purpose `AppTokens.dp.radius.*` slot — the internal `AppDp.radius` scale is `private`. Read radii from the component-scoped group that matches the surface you're styling (`AppTokens.dp.bannerCard.radius`, `AppTokens.dp.wheelPicker.radius`, `AppTokens.dp.tooltip.radius`, ...).
 
 ## Lists
 

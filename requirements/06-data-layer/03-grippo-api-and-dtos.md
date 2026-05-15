@@ -259,7 +259,7 @@ internal class ClientLogger : Logger {
 }
 ```
 
-Routes Ktor's `Logging` plugin output to `AppLogger.Network` with color emojis (🟩 success, 🟥 error, 🟨 request). The colors aid visual scanning in the rolling log buffer.
+Routes Ktor's `Logging` plugin output to `AppLogger.Network` with color emojis (🟩 success, 🟥 error, 🟨 request). The colors aid visual scanning in the single append-only `app.log` file under `${user.home}/<product>/logs/` (no rotation; cleared via `AppLogger.clearLogFile()`).
 
 ## Anti-patterns
 

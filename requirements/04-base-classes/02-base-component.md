@@ -65,20 +65,21 @@ The Component holds its own `CoroutineScope(SupervisorJob() + Dispatchers.Main.i
 protected abstract suspend fun eventListener(direction: DIRECTION)
 ```
 
-The conventional shape:
+The conventional shape (real example — `LoginComponent` in `:ui-screen-features:authorization`):
 
 ```kotlin
-override suspend fun eventListener(direction: ProfileBodyDirection) {
+override suspend fun eventListener(direction: LoginDirection) {
     when (direction) {
-        ProfileBodyDirection.Back -> back()
-        ProfileBodyDirection.OpenSettings -> toSettings()
-        is ProfileBodyDirection.OpenWorkoutHistory -> toWorkoutHistory(direction.initialRange)
+        is LoginDirection.Registration -> toRegistration(direction.email)
+        LoginDirection.Home -> toHome()
+        LoginDirection.CreateProfile -> toCreateProfile()
+        LoginDirection.Back -> back()
     }
 }
 ```
 
 - `when (direction) { ... }` over every `Direction` subtype — the compiler enforces exhaustiveness because `sealed interface`.
-- Each branch maps to a constructor-injected lambda (`back`, `toSettings`, `toWorkoutHistory`) **or** to a nav operation on this Component's own `StackNavigation` (if it's a root-of-feature component owning a stack).
+- Each branch maps to a constructor-injected lambda (`back`, `toRegistration`, `toHome`, `toCreateProfile`) **or** to a nav operation on this Component's own `StackNavigation` (if it's a stack-owning feature root like `TrainingComponent`, where `eventListener` calls `navigation.push(...)` / `navigation.replaceAll(...)` / `navigation.pop()`).
 - `eventListener` is `suspend` — you can call `dialogController.show(...)` or any suspend function inside, though most cases just call a lambda.
 
 ## `Render`
@@ -102,30 +103,35 @@ override fun Render() {
 - Use `collectAsStateMultiplatform()` (not `collectAsState`): on Android it uses `collectAsStateWithLifecycle` (lifecycle-aware); on iOS it falls back to `collectAsState`. Defined in `:ui-core:foundation/platform`.
 - The Screen function receives `state.value`, `loaders.value`, and `viewModel` (since the VM implements the Contract).
 
-For Components that own a `ChildStack`/`ChildSlot` (e.g. `RootComponent`, `*RootComponent`), `Render()` also collects the stack/slot and renders children:
+For Components that own a `ChildStack`/`ChildSlot` (e.g. `RootComponent`, the bare-name feature roots `ProfileComponent`/`AuthComponent`/`TrainingComponent`, and the `Root`-suffixed `HomeRootComponent`/`TrainingsRootComponent`), `Render()` also collects the stack/slot and delegates rendering to its feature-root Screen. The Screen receives `this` (the component) so it can read `component.childStack` and pass it to `ChildStack(...)`:
 
 ```kotlin
 @Composable
 override fun Render() {
     val state = viewModel.state.collectAsStateMultiplatform()
-    ProfileRootScreen(state.value, stack = childStack, /* ... */)
+    val loaders = viewModel.loaders.collectAsStateMultiplatform()
+    ProfileScreen(this, state.value, loaders.value, viewModel)
 }
 ```
 
 ## ViewModel creation
 
 ```kotlin
-override val viewModel: ProfileBodyViewModel = componentContext.retainedInstance {
+override val viewModel = componentContext.retainedInstance {
     ProfileBodyViewModel(
-        userFeature = getKoin().get(),
-        weightHistoryFeature = getKoin().get(),
         dialogController = getKoin().get(),
+        weightHistoryFeature = getKoin().get(),
+        userFeature = getKoin().get(),
+        updateWeightUseCase = getKoin().get(),
+        stringProvider = getKoin().get(),
+        notificationManager = getKoin().get(),
     )
 }
 ```
 
 - `componentContext.retainedInstance { ... }` is a Decompose helper that creates the VM the first time and keeps it across configuration changes (rotation/etc.) until the Component is destroyed.
-- Dependencies are pulled via `getKoin().get()` — **not** threaded through the Component constructor. The Component's constructor takes only `componentContext` + navigation lambdas (`back`, `toX`).
+- Dependencies are pulled via `getKoin().get()` — **not** threaded through the Component constructor. The Component's constructor takes only `componentContext` + navigation lambdas (`back`, `toX`) + initial route params.
+- The `override val viewModel` declaration usually omits the type annotation; the type is inferred from `retainedInstance { ... }`. `BaseComponent.viewModel` is `protected abstract val viewModel: BaseViewModel<*, DIRECTION, *>`, and the inferred subtype refines it.
 - This is the **idiomatic** DI pattern for the project. Constructor-injecting Features into the Component would require every parent to know every grandchild's deps, which is unwieldy at the root-component scale.
 
 ## Constructor parameters
@@ -157,15 +163,15 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(...) {
 Usage:
 
 ```kotlin
-internal class TrainingRootComponent(...) : BaseComponent<TrainingDirection>(...) {
+internal class TrainingRecordingComponent(...) : BaseComponent<TrainingRecordingDirection>(...) {
 
     init {
         observeResult<Result<TrainingRouter.Exercise.Action>>(
             key = ResultKeys.create("exercise"),
-            onResult = { result ->
-                when (val action = result.data) {
+            onResult = {
+                when (val action = it.data) {
                     is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
-                    is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
+                    is TrainingRouter.Exercise.Action.Remove -> viewModel.onDeleteExercise(action.id)
                 }
             }
         )
@@ -229,7 +235,7 @@ internal class FooComponent(
 
 ## Root components with their own stack
 
-A feature's stack-owning Component (named `<Feature>Component` in this repo, e.g. `ProfileComponent`, `AuthComponent`, `HomeRootComponent`, `TrainingsRootComponent`) also owns a private `StackNavigation`. Such Components are **`public class`** (they're constructed from `:shared`, across module boundaries):
+A feature's stack-owning Component owns a private `StackNavigation` and a `Value<ChildStack<<X>Router, Child>>`. Naming follows the bare-feature-name convention by default — `AuthComponent` (`:authorization`), `ProfileComponent` (`:profile`), `TrainingComponent` (`:training`). The `<Feature>RootComponent` suffix is reserved for the two features whose first sub-screen would collide with the feature name — `HomeRootComponent` (`:home`, first sub-screen is `HomeComponent`) and `TrainingsRootComponent` (`:trainings`, first sub-screen is `TrainingsComponent`). The single-screen `DebugComponent` (`:debug`) has no inner stack at all. Stack-owning feature-root Components are **`public class`** (they're constructed from `:shared`, across module boundaries):
 
 ```kotlin
 public class ProfileComponent(

@@ -9,7 +9,8 @@ Every mapper module follows the same shape. This document describes the function
 | `Source.toEntity()` / `Source.toEntityOrNull()` (DTO source) | one source → one entity | `List<Source>.toEntities()` |
 | `Source.toEntity(parentId: String)` (Domain source, drafts) | one draft → one Pack or leaf Entity | no plural — caller does `.map { it.toEntity(parentId) }` |
 | `Source.toDomain()` / `Source.toDomainOrNull()` | one source → one domain | `List<Source>.toDomain()` |
-| `Source.toState()` | one source → one state | `List<Source>.toState()` |
+| `Source.toDraftDomain()` / `Source.toSetDomain()` (`:entity-to-domain`, draft round-trip) | one draft entity/pack → one draft (or Set) domain — suffix disambiguates when the same source has two distinct domain targets (`DraftTrainingPack → DraftTraining`, `DraftIterationEntity → SetIteration`) | `List<Source>.toDraftDomain()` / `List<Source>.toSetDomain()` |
+| `Source.toState()` | one source → one state | `List<Source>.toState()` (returns `PersistentList<XState>` in `:domain-to-state`) |
 | `Source.toBody()` | one source → one request body | `List<Source>.toBody()` (same name, overloaded on receiver) |
 
 Top-level extension functions. **No classes. No `@Single`. No DI.** Stateless.
@@ -67,7 +68,7 @@ public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
 
 Rules:
 
-1. **Every required field uses `AppLogger.Mapping.log(value) { msg } ?: return null`.** If the field is null, log it (so the team can diagnose backend regressions from the rolling log) and skip the row.
+1. **Every required field uses `AppLogger.Mapping.log(value) { msg } ?: return null`.** If the field is null, log it (so the team can diagnose backend regressions from the append-only `[MAPPING]` log) and skip the row.
 2. **The default stance is "required".** If an entity column is non-null, the mapper requires it — drop the row when missing rather than fabricating a value. Use an Elvis fallback **only** when the entity field itself is nullable (e.g. iteration weight columns) or when the server emits a deprecated alias that must be coalesced (`profileId ?: userId`).
 3. **No business logic.** Just field translation.
 4. **One `return <X>Entity(...)`** at the bottom. No intermediate `var entity = <X>Entity(...)`.
@@ -116,8 +117,8 @@ public fun List<ExercisePack>.toDomain(): List<Exercise> = mapNotNull { it.toDom
 
 Rules:
 
-1. **Scalar columns: no null checks.** Entities have non-null scalar columns by design — read them directly.
-2. **Embedded relations: nullable.** When the per-row mapper consumes a `@Relation` field, return `T?` and use `AppLogger.Mapping.log` to drop unusable rows.
+1. **Scalar columns: no null checks.** Read scalar columns directly — Room enforces the column's declared nullability at insert time, so a non-null column is guaranteed non-null and a nullable column (e.g. `IterationEntity.externalWeight: Float?`, `GoalEntity.secondaryGoal: String?`) passes straight through to a matching nullable domain field. Don't `AppLogger.Mapping.log` a scalar — if a non-null column somehow surfaces as null at runtime, that's a bug; let it crash with a clear `NullPointerException`.
+2. **Embedded relations and enum-string parses: nullable.** When the per-row mapper consumes a `@Relation` field (e.g. `ExercisePack.example`) or a string column that decodes into an enum (e.g. `EquipmentEnum.of(type)`, `MuscleEnum.of(type)`, `GoalPrimaryGoalEnum.of(primaryGoal)`), return `T?` and use `AppLogger.Mapping.log` to drop unusable rows. The relation may be absent because the related row was deleted; an enum string may not parse if the DB pre-dates a renamed case.
 3. **Type translation happens here.** `Long` (minutes — see TrainingEntity) → `Duration`; `String` (ISO-8601) → `LocalDateTime`.
 4. **Nested Packs → nested domain.** `ExercisePack.toDomain()` is called from `TrainingPack.toDomain()`.
 
@@ -272,7 +273,7 @@ public object AppLogger {
 }
 ```
 
-Returns the input value verbatim. Side effect: when null, invokes `msg()` (lazy), appends caller `(file:line)`, and writes one `[MAPPING]` line to the rolling file log. Pair it with `?: return null` at every call site — never `!!`.
+Returns the input value verbatim. Side effect: when null, invokes `msg()` (lazy), appends caller `(file:line)`, and writes one `[MAPPING]` line to the append-only log file (no rotation; cleared via `AppLogger.clearLogFile()` from the debug screen). Pair it with `?: return null` at every call site — never `!!`.
 
 ## File and module layout
 

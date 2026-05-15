@@ -97,6 +97,11 @@ public fun Sparkline(
         )
     }
 
+    val linePath = remember { Path() }
+    val areaPath = remember { Path() }
+    val midlinePath = remember { Path() }
+    val guidePath = remember { Path() }
+
     val peek = style.peek
 
     val pointerModifier = if (peek is SparklineStyle.Peek.Visible) {
@@ -169,13 +174,12 @@ public fun Sparkline(
                     val dash = mid.dash.toPx().coerceAtLeast(1f)
                     val gap = mid.gap.toPx().coerceAtLeast(1f)
 
-                    val p = Path().apply {
-                        moveTo(chart.left, y)
-                        lineTo(chart.right, y)
-                    }
+                    midlinePath.reset()
+                    midlinePath.moveTo(chart.left, y)
+                    midlinePath.lineTo(chart.right, y)
 
                     drawPath(
-                        path = p,
+                        path = midlinePath,
                         color = mid.color,
                         style = Stroke(
                             width = mid.width.toPx(),
@@ -213,6 +217,7 @@ public fun Sparkline(
 
                 if (peek is SparklineStyle.Peek.Visible && selectedIndex == 0) {
                     drawPeekOverlay(
+                        guidePath = guidePath,
                         point = c,
                         focusColor = peek.focusColor ?: style.line.color,
                         guideColor = peek.guideColor,
@@ -229,7 +234,8 @@ public fun Sparkline(
                 return@Canvas
             }
 
-            val currentPath = buildLinePath(
+            buildLinePath(
+                path = linePath,
                 points = animatedOffsets,
                 curved = style.line.curved,
                 smoothness = style.line.curveSmoothness,
@@ -237,26 +243,25 @@ public fun Sparkline(
             )
 
             style.fill?.provider?.let { provider ->
-                val area = Path().apply {
-                    addPath(currentPath)
-                    lineTo(animatedOffsets.last().x, chart.bottom)
-                    lineTo(animatedOffsets.first().x, chart.bottom)
-                    close()
-                }
-                drawPath(area, brush = provider(chart), alpha = revealAlpha)
+                areaPath.reset()
+                areaPath.addPath(linePath)
+                areaPath.lineTo(animatedOffsets.last().x, chart.bottom)
+                areaPath.lineTo(animatedOffsets.first().x, chart.bottom)
+                areaPath.close()
+                drawPath(areaPath, brush = provider(chart), alpha = revealAlpha)
             }
 
             val sw = style.line.stroke.toPx()
             style.line.brush?.let { provider ->
                 drawPath(
-                    path = currentPath,
+                    path = linePath,
                     brush = provider(chart),
                     alpha = revealAlpha,
                     style = Stroke(width = sw, cap = StrokeCap.Round)
                 )
             } ?: run {
                 drawPath(
-                    path = currentPath,
+                    path = linePath,
                     color = style.line.color.copy(alpha = revealAlpha),
                     style = Stroke(width = sw, cap = StrokeCap.Round)
                 )
@@ -312,6 +317,7 @@ public fun Sparkline(
                 if (idx != null && idx in current.indices) {
                     val p = animatedOffsets[idx]
                     drawPeekOverlay(
+                        guidePath = guidePath,
                         point = p,
                         focusColor = peek.focusColor ?: style.line.color,
                         guideColor = peek.guideColor,
@@ -451,18 +457,19 @@ private fun buildLayout(
 }
 
 private fun buildLinePath(
+    path: Path,
     points: List<Offset>,
     curved: Boolean,
     smoothness: Float,
     clampOvershoot: Boolean,
-): Path {
-    val path = Path()
-    if (points.isEmpty()) return path
+) {
+    path.reset()
+    if (points.isEmpty()) return
 
     if (!curved || points.size < 3) {
         path.moveTo(points.first().x, points.first().y)
         for (i in 1 until points.size) path.lineTo(points[i].x, points[i].y)
-        return path
+        return
     }
 
     val s = smoothness.coerceIn(0f, 0.5f)
@@ -497,11 +504,10 @@ private fun buildLinePath(
 
         path.cubicTo(c1.x, c1.y, c2.x, c2.y, p2.x, p2.y)
     }
-
-    return path
 }
 
 private fun DrawScope.drawPeekOverlay(
+    guidePath: Path,
     point: Offset,
     focusColor: androidx.compose.ui.graphics.Color,
     guideColor: androidx.compose.ui.graphics.Color,
@@ -513,13 +519,12 @@ private fun DrawScope.drawPeekOverlay(
     focusHaloRadiusPx: Float,
     chart: Rect,
 ) {
-    val guide = Path().apply {
-        moveTo(point.x, chart.top)
-        lineTo(point.x, chart.bottom)
-    }
+    guidePath.reset()
+    guidePath.moveTo(point.x, chart.top)
+    guidePath.lineTo(point.x, chart.bottom)
 
     drawPath(
-        path = guide,
+        path = guidePath,
         color = guideColor,
         style = Stroke(
             width = guideWidthPx.coerceAtLeast(1f),

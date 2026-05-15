@@ -51,12 +51,14 @@ The reference repo has some modules where the **directory** name contains dots:
 
 ```
 :data-features/trainings/src/commonMain/kotlin/com/grippo/data.features.trainings/
-:data-mappers/dto-to-entity/src/commonMain/kotlin/com/grippo/dto.entity.training/
+:data-features/user/src/commonMain/kotlin/com/grippo/data.features.user/
 :ui-dialog-features/dialog-api/src/commonMain/kotlin/com/grippo/dialog.api/
 :ui-dialog-features/weight-picker/src/commonMain/kotlin/com/grippo/weight.picker/
 ```
 
 Inside, the `package` declaration is regular: `package com.grippo.data.features.trainings`. The dotted directory is **not** standard Kotlin layout — it's a packaging convention.
+
+The convention is applied **inconsistently**: most `:data-features:*` modules and roughly half the `:ui-dialog-features:*` modules use dotted directories; `:data-mappers:*`, `:toolkit:*`, `:data-services:*`, `:design-system:*`, and `:ui-screen-features:*` use regular slash-separated paths (`com/grippo/dto/entity/training/`, `com/grippo/toolkit/date/utils/`, etc.). Don't introduce dotted directories in new module groups.
 
 **Rules:**
 

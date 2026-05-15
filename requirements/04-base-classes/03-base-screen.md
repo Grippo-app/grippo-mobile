@@ -79,9 +79,9 @@ The `content` lambda receives a `ColumnScope` — child Composables can use `Mod
 
 ## Rules
 
-- **Every top-level Screen is wrapped in `BaseComposeScreen`.** No exceptions. (Dialogs use `ModalBottomSheet` content, not `BaseComposeScreen` — but the **screen** files always wrap.)
-- **Background color comes from `AppTokens`** — `AppTokens.colors.background.screen` (or per-screen variants if the design system defines them).
-- **`BaseComposeScreen` is not used inside dialogs.** Dialog content is laid out by `BottomSheetToolbar` + a `Column` directly — see `03-architecture-patterns/03-dialog-navigation.md`.
+- **Every top-level Screen is wrapped in `BaseComposeScreen`.** No exceptions — both stack screens and dialog screens.
+- **Background color comes from `AppTokens`** — `AppTokens.colors.background.screen` for stack screens; `AppTokens.colors.background.dialog` for dialog screens.
+- **Dialog screens reuse `BaseComposeScreen`.** `DialogContentComponent` hosts each dialog inside a `ModalBottomSheet`; its content lambda calls the dialog's `<X>Screen`, which itself is a `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) { ... }`. Dialogs lay out their `Column` content as: `Spacer(AppTokens.dp.dialog.top)` → centered title `Text` → body → `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding comes from `AppTokens.dp.dialog.horizontalPadding`. No dialog uses `BottomSheetToolbar`.
 
 ## What `BaseComposeScreen` does **not** do
 

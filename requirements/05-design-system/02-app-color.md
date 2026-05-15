@@ -151,7 +151,7 @@ The reference repo has `muscle`, `profile`, `konfetti`, `charts` — these are p
 
 Two reasons:
 
-1. **Per-theme implementations** can compute or share values across groups (e.g. `border.divider` might equal `divider.standard`). A `data class` constructor would require duplicating values; an interface lets the impl chose.
+1. **Per-theme implementations** can compute or share values across groups (e.g. `border.default` might reuse `divider.default`, or `icon.disabled` can be derived from `text.disabled`). A `data class` constructor would require duplicating values; an interface lets the impl chose.
 2. **Test/preview overrides** are easier — pass an alternative `AppColor` implementation to a `PreviewContainer` variant.
 
 ## Reading colors at the call site
@@ -159,8 +159,8 @@ Two reasons:
 ```kotlin
 Surface(
     color = AppTokens.colors.background.card,
-    shape = RoundedCornerShape(AppTokens.dp.radius.medium),
-    border = BorderStroke(width = 1.dp, color = AppTokens.colors.border.divider),
+    shape = RoundedCornerShape(AppTokens.dp.input.radius),
+    border = BorderStroke(width = 1.dp, color = AppTokens.colors.border.default),
 ) {
     Text(
         text = AppTokens.strings.res(Res.string.label),
@@ -169,5 +169,7 @@ Surface(
     )
 }
 ```
+
+The `dp` example pulls a radius from a component-scoped group (`input.radius`); there is no public `AppTokens.dp.radius.*` path (the `Radius` scale is private inside `AppDp`). Pick the closest semantic group (`bottomSheet.radius`, `bannerCard.radius`, ...) or add one if none fits — see `03-app-dp.md`.
 
 Stylistically: prefer one token lookup per parameter line. Don't chain lookups into pseudo-functions.

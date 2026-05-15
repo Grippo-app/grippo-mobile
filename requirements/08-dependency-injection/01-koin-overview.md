@@ -5,7 +5,7 @@ Dependency injection is **Koin Annotations + KSP**. The project does **not** use
 ## Why Koin Annotations
 
 - **Multiplatform.** Hilt is Android-only.
-- **Annotation-driven scaling.** Hand-written DSL doesn't scale to 70+ modules with 200+ singletons.
+- **Annotation-driven scaling.** Hand-written DSL doesn't scale to ~85 modules and ~85 singletons (verified: `grep -c '^include' settings.gradle.kts` returns 86; `grep -r '@Single\b' --include='*.kt'` returns ~60 plus 25 inline `single { … }` blocks inside `FeatureApiModule`).
 - **Compile-time KSP.** No runtime reflection.
 - **Cohesive API.** `@Module`, `@ComponentScan`, `@Single`, `@Factory`, `@Scoped`, `@InjectedParam`.
 

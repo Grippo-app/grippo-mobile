@@ -72,3 +72,27 @@ When forking these requirements for a new project, replace these tokens consiste
 | Domain types | `Training`, `Exercise`, ... | new-project domain |
 
 Do **not** rename: `BaseViewModel`, `BaseComponent`, `BaseScreen`, `AppTokens`, `AppTheme`, `UiText`, `*FormatState`, `OperationManager`, `ResultManager`, `DialogConfig`, `DialogController`, `NativeContext`, `AppLogger`, `DateTimeUtils`. These are infrastructure names; keeping them stable across projects makes the pattern recognizable.
+
+## Sub-agents — install before first use
+
+The `sub-agents/` folder ships specialized Claude Code sub-agents (orchestrator, builders, validators, helpers) that automate task execution against this architecture. They are **not** auto-discovered by Claude Code — they must be installed into the new project's `.claude/agents/` directory before they become callable as `subagent_type` values. Without this step, `Agent(subagent_type: "orchestrator", ...)` and every related call fail with an "unknown agent type" error.
+
+Recommended (symlink — edits in `requirements/sub-agents/` propagate immediately):
+
+```bash
+mkdir -p .claude/agents
+ln -sf "$(pwd)/requirements/sub-agents/builders/"*.md   .claude/agents/
+ln -sf "$(pwd)/requirements/sub-agents/validators/"*.md .claude/agents/
+ln -sf "$(pwd)/requirements/sub-agents/helpers/"*.md    .claude/agents/
+```
+
+Alternative (copy — snapshot, no propagation):
+
+```bash
+mkdir -p .claude/agents
+cp requirements/sub-agents/builders/*.md   .claude/agents/
+cp requirements/sub-agents/validators/*.md .claude/agents/
+cp requirements/sub-agents/helpers/*.md    .claude/agents/
+```
+
+After installation, drop a task spec at `requirements/tasks/TASK_<N>_<title>.md` and ask Claude to *"run task TASK_N_<title>.md"*. The parent session invokes `orchestrator`, which drives the rest. See `sub-agents/README.md` for the full agent inventory, execution flow, and Codex-plugin integration.
