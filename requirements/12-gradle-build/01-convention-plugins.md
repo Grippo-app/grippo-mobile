@@ -350,4 +350,4 @@ kotlin {
 - **Skipping `applySafely`** in a new convention plugin. Double-apply errors on rebuilds.
 - **Adding global `optIn` opt-ins per-feature** instead of in `KotlinMultiplatformConventionPlugin`. Inconsistent — some files have it, some don't.
 - **Using `apply(plugin = ...)` instead of `pluginManager.applySafely(...)`** in convention plugins.
-- **Reading `libs.find...()` outside the helper.** Inside convention plugins, use the `Libs.kt` helper.
+- **Reading the version catalog by hand inside a convention plugin** (e.g. building a `VersionCatalogsExtension` lookup inline). Use the `Project.libs` getter from `com/<org>/ProjectExtensions.kt` and call `libs.findLibrary("…").get()` through it.

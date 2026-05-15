@@ -118,6 +118,10 @@ The choice between Res and Str is **discrete**, not a parameter. Sealed interfac
 
 Compose uses these equality checks during recomposition; equal `UiText` instances skip re-resolution.
 
+## Serialization
+
+`UiText` is `@Stable` **only** — it is **not** `@Serializable` (it wraps a non-serializable `StringResource` from Compose Multiplatform Resources). It is therefore safe inside in-memory `*State` data classes, but **must not** appear inside a `*Router` payload or a `DialogConfig` field — those subgraphs serialize through `StateKeeper` / `Decompose` and will reject the type. For copy that needs to cross a serialized boundary, carry the `StringResource` (or a plain `String` for verbatim values) and wrap to `UiText` at render time.
+
 ## Anti-patterns
 
 - **`String` in state** for localizable values.
@@ -126,3 +130,4 @@ Compose uses these equality checks during recomposition; equal `UiText` instance
 - **`uiText.text(stringProvider)` from a `@Composable`** — use the `@Composable` `text()` instead.
 - **`UiText.Str` for a localized string from `strings.xml`.** Use `UiText.Res` so the value updates on locale change.
 - **Wrapping a `String?` as `UiText.Str(it)`** — if the description is optional, use `UiText?` and check for null at render.
+- **`UiText` inside a `*Router` config or `DialogConfig` field.** `UiText` is not `@Serializable`; carry the `StringResource` instead and wrap at render.

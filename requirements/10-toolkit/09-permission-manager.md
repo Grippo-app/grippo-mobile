@@ -72,14 +72,14 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.toolkit.permission" }
+    android { namespace = "com.<org>.<product>.toolkit.permission.manager" }
 
     sourceSets {
         commonMain.dependencies {
             implementation(projects.toolkit.context)
         }
         androidMain.dependencies {
-            // androidx.activity.compose for permission contracts
+            implementation(libs.androidx.activity.compose)   // ActivityResultContracts.RequestMultiplePermissions
         }
     }
 }

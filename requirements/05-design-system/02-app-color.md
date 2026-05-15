@@ -118,7 +118,7 @@ public object DarkColor : AppColor {
 }
 ```
 
-Concrete colors are stored in `AppPalette` (internal — `NeutralDark.N100..N800`, `Common.White/Black`, `Blue.P300..P900`, `Unique.Red/Orange/Coral/...`) and the per-theme object only routes palette entries into the semantic slots. Each implementation exposes the **same** `AppColor` interface; only the values differ. Composables don't know which theme is active — they just read `AppTokens.colors.text.primary` and get the right color.
+Concrete colors are stored in `AppPalette` (internal — `NeutralDark.N050..N800` with intermediate halves like `N150`/`N250`/`N450`/`N550`, `Common.White/Black`, `Blue.P300..P900`, `Unique.Red/Orange/Coral/...`, plus a `Gradient` bucket of `List<Color>` palettes) and the per-theme object only routes palette entries into the semantic slots. Each implementation exposes the **same** `AppColor` interface; only the values differ. Composables don't know which theme is active — they just read `AppTokens.colors.text.primary` and get the right color.
 
 > The reference repo currently ships only `DarkColor`. The `AppTheme(darkTheme = ...)` parameter is reserved for adding a `LightColor` peer later; until then the `darkTheme` flag is accepted but not yet consumed by `ProvideResources`.
 

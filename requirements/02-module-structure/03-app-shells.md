@@ -27,7 +27,7 @@ androidApp/
 ### `App.kt`
 
 ```kotlin
-public class App : Application() {
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Koin.init {
@@ -43,10 +43,12 @@ public class App : Application() {
 }
 ```
 
+`App` and `MainActivity` are not marked `public` or `internal` because `:androidApp` is a single-target Android module — `explicitApi()` is only enforced inside KMP modules.
+
 ### `MainActivity.kt` (essentials)
 
 ```kotlin
-internal class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     private val root: RootComponent by lazy {
         retainedComponent {
@@ -147,9 +149,9 @@ Notes:
 
 ### Manifest essentials
 
-- Single `MainActivity` with `android:exported="true"`, deeplink intent filters.
-- `WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED` if notifications are scheduled with WorkManager.
-- `POST_NOTIFICATIONS` permission (Android 13+).
+- Single `MainActivity` with `android:exported="true"`, `android:launchMode="singleTop"`, the `MAIN` / `LAUNCHER` intent filter, and a custom theme (`Theme.<Product>.Splash`) for `installSplashScreen()`.
+- The reference repo's manifest declares **no** `<uses-permission>` entries — `POST_NOTIFICATIONS` is requested at runtime via `:toolkit:permission-manager`. Add `WAKE_LOCK` / `RECEIVE_BOOT_COMPLETED` only if a future feature schedules notifications with WorkManager/AlarmManager that need them.
+- Add deeplink intent filters here only if/when the product exposes external deeplinks; the cold-start path currently reads the deeplink key out of an in-process `Intent` extra (`LocalNotificationExtras.DEEPLINK`).
 
 ## `:iosApp`
 
@@ -233,5 +235,5 @@ Update the Xcode reference to `../shared/build/XCFrameworks/release/shared.xcfra
 - Define Composables (except the entry-point wrapping).
 - Hold state classes or business logic.
 - Import data-feature modules directly. They import `:shared`, which imports them.
-- Configure Koin modules. The only Koin call here is `Koin.init { androidContext(this); androidLogger() }` (Android) or `KoinKt.doInit { _ in }` (iOS).
+- Configure Koin modules. The only Koin call here is `Koin.init { androidContext(this); androidLogger() }` (Android) or `Koin().doInit(appDeclaration: { _ in })` (iOS — the generated Swift name is `Koin`, not `KoinKt`, because `Koin` is a Kotlin `object`).
 - Format dates, render strings, or know about resources.

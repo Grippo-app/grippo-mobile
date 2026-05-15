@@ -107,14 +107,14 @@ public object AppTokens {
 ### `LaunchedEffect`
 
 ```kotlin
-LaunchedEffect(state.range) {
-    DateFormatting.install(state.localeTag)
+LaunchedEffect(systemLocaleTag) {
+    DateFormatting.install(systemLocaleTag)
 }
 ```
 
-- **Key the effect** on whatever should re-trigger it (e.g. `state.range`, `systemLocaleTag`).
+- **Key the effect** on whatever should re-trigger it (e.g. `systemLocaleTag`, `state.range`).
 - **`LaunchedEffect(Unit)` is forbidden for navigation.** Navigation goes via `Direction` + `eventListener`.
-- **`LaunchedEffect(Unit)` is acceptable** only for one-time side effects that genuinely depend on no input (e.g. collecting a `snapshotFlow` for the lifetime of the composable). If the effect depends on any value — even an implicit one like the system locale — key on that value: e.g. `LaunchedEffect(systemLocaleTag) { DateFormatting.install(systemLocaleTag) }` in `RootComponent.Render`.
+- **`LaunchedEffect(Unit)` is acceptable** only for one-time side effects that genuinely depend on no input (e.g. collecting a `snapshotFlow` for the lifetime of the composable). If the effect depends on any value — even an implicit one like the system locale — key on that value. The snippet above is the actual `RootComponent.Render` call site.
 
 ### `DisposableEffect`
 

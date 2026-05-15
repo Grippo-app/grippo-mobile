@@ -10,17 +10,19 @@ RootComponent
   └── dialog: SlotNavigation<DialogConfig>       // bottom sheets (one at a time)
 ```
 
-Rendered together in `RootScreen`:
+Both are rendered as siblings inside `RootComponent.Render()` (not nested inside `RootScreen`):
 
 ```kotlin
 @Composable
-internal fun RootScreen(...) {
-    Box {
-        ChildStack(stack, ...) { child -> child.instance.component.Render() }
-        dialog.Render()       // overlays on top
+override fun Render() {
+    AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
+        RootScreen(this, state.value, loaders.value, viewModel)
+        dialogComponent.Render()       // overlays on top of the screen stack
     }
 }
 ```
+
+`RootScreen` itself only renders the `ChildStack`. The dialog overlay lives one composable layer up so it stays unaffected by screen transitions.
 
 A **slot** navigator shows **at most one** child at a time. Multi-step bottom sheets manage their own internal stack inside their `State` (push/pop without dismissing the sheet).
 
@@ -76,7 +78,7 @@ Rules:
 
 - **`@Serializable` on the sealed class and every subtype.** Decompose's `SlotNavigation` serializes the active config on process death.
 - **`@Transient` on every callback** (`onResult`, `onConfirm`, `onCancel`, `onDismiss`). Lambdas cannot serialize — they're rehydrated to no-ops on process death. This is **intentional**: if the user backgrounds while a picker is open, the picker should still close on dismiss; the result simply won't fire (UI is expected to handle this by, e.g. not relying on a callback to re-fetch).
-- **`key: String`** uniquely identifies the dialog instance. Decompose uses it to de-dup. `buildKey(...)` is length-prefixed (`"4:Foo|5:hello"`) to avoid `|` collisions. It is a `protected` member of `DialogConfig`, so subtypes can call it from their own `key` getter.
+- **`key: String`** uniquely identifies the dialog instance. Decompose uses it to de-dup. `buildKey(...)` is length-prefixed (`"3:Foo|5:hello"` for parts `"Foo"`, `"hello"`) to avoid `|` collisions. `null` parts are written as `<null>` (length 6). It is a `protected` member of `DialogConfig`, so subtypes can call it from their own `key` getter.
 - **No `@Transient` on data fields.** Inputs like `initial: Float?`, `title: String` are serialized so the picker can restart after process death with the same starting values.
 - **`onDismiss` and `dismissBySwipe` are `open val`** in the base class, so subtypes can override them via super-class arguments (e.g. `ErrorDisplay` wires `onDismiss = onClose`; `StartTraining` sets `dismissBySwipe = false`).
 
@@ -224,21 +226,17 @@ Used when the caller and the responder are in **different lifecycle scopes** (e.
 
 ## Dismissal behavior
 
-```kotlin
-public sealed class DialogConfig(
-    @Transient public val onDismiss: (() -> Unit)? = null,
-    public val dismissBySwipe: Boolean = true,
-)
-```
+`onDismiss` and `dismissBySwipe` are the two knobs every `DialogConfig` subtype can override (their base declarations as `open val` were quoted at the top of this file).
 
-- `onDismiss` — invoked when the sheet is dismissed via swipe or system back. Use to capture analytics or cleanup. **Not** invoked on `dialogController.dismiss()` (programmatic close from inside the picker after a successful action). If the user swipes away without selecting, only `onDismiss` fires; `onResult` does not.
-- `dismissBySwipe` — set `false` for confirmation-style dialogs where dismissal must be explicit.
+- `onDismiss` — invoked from `DialogViewModel.onRelease(config)` once the bottom sheet finishes its hide animation, regardless of *how* it closed (system back, swipe, or a confirmed action that triggered `viewModel.onBack(pendingResult = ...)`). Use it for analytics or cleanup that must run exactly once per dialog session. The successful-action callback (`onResult`, `onConfirm`, …) runs **before** `onDismiss` on the same release tick — so if the user picks a value, both fire in that order; if the user swipes away, only `onDismiss` fires.
+- `dismissBySwipe` — set `false` for confirmation-style dialogs where dismissal must be explicit. It controls both the swipe-to-dismiss gesture and the back-press capture inside the sheet's `ModalBottomSheetProperties`.
 
 ## Rules summary
 
 - **One `DialogConfig` per dialog flow.** Don't multiplex configs for similar flows.
 - **All inputs serializable, all callbacks `@Transient`.**
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
-- **In-sheet multi-step lives in `State`, not Decompose nav.**
+- **Cross-dialog flows use `DialogContentComponent`'s inner Decompose `StackNavigation<DialogConfig>`.** Re-issuing `dialogController.show(<NextConfig>)` from within an active sheet pushes onto that inner stack — the sheet stays mounted and the next dialog feature's `Component`/`ViewModel`/`Screen` swaps in.
+- **Single-dialog multi-mode** (radio-button-like swaps inside one feature, no nested navigation) lives in the dialog's own `State` as a `sealed interface` — that's an in-feature concern, not cross-dialog.
 - **Dialogs do not invoke `:data-features:feature-api` for the data they collect.** They build a value and hand it back to the caller via `onResult`. The caller persists it through its Feature.
 - **Exception: confirmation dialogs that need to invoke a side effect themselves** (e.g. delete confirmation that calls `feature.delete()` before dismissing) — these depend on `:data-features:feature-api`. Document the exception in the dialog's package-level comment.

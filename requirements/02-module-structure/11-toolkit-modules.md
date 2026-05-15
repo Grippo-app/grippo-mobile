@@ -15,8 +15,8 @@ The platform-aware utility layer. Toolkit modules are the **bottom** of the depe
 | `:toolkit:localization` | System locale | `AppLocale.current` (`@Composable` expect) |
 | `:toolkit:connectivity` | Online/offline `SharedFlow` | `Connectivity`, `Connectivity.Status`, `ConnectivityOptions` |
 | `:toolkit:notification-manager` | Local notifications | `NotificationManager`, `AppNotification`, `NotificationKey` |
-| `:toolkit:permission-manager` | System permission requests | `PermissionManager`, `Permission` |
-| `:toolkit:link-opener` | Open URLs in system browser | `LinkOpener.open(url: String)` |
+| `:toolkit:permission-manager` | System permission requests | `PermissionManager`, `AppPermission`, `PermissionStatus` |
+| `:toolkit:link-opener` | Open URLs in system browser | `LinkOpener.open(url: String): LinkOpenResult` |
 | `:toolkit:image-loader` | Coil setup | `ImageLoaderModule` (Coil 3 + Ktor) |
 
 Each module exposes a Koin `<X>Module` (or is included transitively) so its services are wired into the composition.
@@ -59,26 +59,25 @@ Note: `ContextModule` is itself `expect/actual` because Android needs to pull th
 
 ## `:toolkit:http-client`
 
-Provides a base Ktor `HttpClient` (the platform-specific engine), with the `responseValidator` configured to convert HTTP errors into `AppError`. The full client (with Auth, Logging, ContentNegotiation) is built in `:data-services:backend`/`BackendClient` by adding to this base via `client.config { ... }`.
+Provides a base Ktor `HttpClient` whose engine and `responseValidator` are pre-installed, leaving Auth / Logging / ContentNegotiation to `:data-services:backend`'s `BackendClient` (it calls `httpClient.config { ... }` on the injected instance).
 
 ```kotlin
-@Module
+@Module(includes = [ContextModule::class, SerializationModule::class])
 @ComponentScan
 public class HttpModule {
+
     @Single
-    internal fun provideClient(): HttpClient = HttpClient(<Engine>) {
-        expectSuccess = false
-        HttpResponseValidator {
-            validateResponse { response ->
-                if (response.status.isSuccess()) return@validateResponse
-                throw ApiErrorParser.parse(response)
-            }
-        }
+    internal fun HttpClient(
+        context: NativeContext,
+        apiErrorParser: ApiErrorParser,
+    ): HttpClient = context.driver().config {
+        responseValidator(apiErrorParser)
     }
 }
 ```
 
-Platform engine: `Android` on `androidMain` (`io.ktor:ktor-client-android`), `Darwin` on `iosMain` (`io.ktor:ktor-client-darwin`).
+- `NativeContext.driver(): HttpClient` is an `internal expect/actual` factory that constructs the platform engine — `Android` on `androidMain` (`io.ktor:ktor-client-android`), `Darwin` on `iosMain` (`io.ktor:ktor-client-darwin`).
+- `responseValidator(apiErrorParser)` (in `internal/ResponseValidator.kt`) wires `ApiErrorParser` into Ktor's `HttpResponseValidator { validateResponse / handleResponseExceptionWithRequest }`, mapping HTTP 4xx/5xx and transport faults to `AppError` subtypes from `:ui-core:error:error-provider` (`AppError.Network.Expected`, `Unexpected`, `Timeout`, `NoInternet`). See `03-architecture-patterns/07-error-pipeline.md`.
 
 ## `:toolkit:serialization`
 
@@ -88,15 +87,18 @@ Platform engine: `Android` on `androidMain` (`io.ktor:ktor-client-android`), `Da
 public class SerializationModule {
     @Single
     internal fun provideJson(): Json = Json {
-        isLenient = true
+        useAlternativeNames = false
         ignoreUnknownKeys = true
-        explicitNulls = false
-        encodeDefaults = true
+        isLenient = true
+        prettyPrint = true
     }
 }
 ```
 
-`ignoreUnknownKeys = true` is important — it lets the app survive backend adding new fields without a coordinated release.
+- `ignoreUnknownKeys = true` — survive backend adding new fields without a coordinated release.
+- `isLenient = true` — accept relaxed JSON (unquoted keys, trailing commas, etc.) so a stray server quirk doesn't crash the parser.
+- `useAlternativeNames = false` — skip building the alternative-name index. The codebase always declares the exact wire name with `@SerialName("…")` and never relies on `@JsonNames`, so the index is wasted work.
+- `prettyPrint = true` — printed JSON (logs, debug screen) is human-readable. It does not affect on-the-wire payload size (Ktor's `ContentNegotiation` re-serializes via the same `Json` instance, but request bodies are still compact for the network path).
 
 ## `:toolkit:logger`
 
@@ -116,11 +118,9 @@ public object AppLogger {
 }
 ```
 
-File sink:
-- Android: `<filesDir>/grippo/logs/app.log` (or similar — implementation-specific).
-- iOS: `NSTemporaryDirectory()/grippo/logs/`.
+File sink: a single append-only `app.log` written to a product-scoped directory under the user's home (`${user.home}/<product>/logs/app.log` on Android; falls back to `java.io.tmpdir` / `/tmp` if `user.home` is unset) and the iOS equivalent inside `NSTemporaryDirectory()`. There is no rotation — callers reset the file via `AppLogger.clearLogFile()`.
 
-`AppLogger.logFileContentsByCategory()` is used by the debug screen to display the rolling log.
+`AppLogger.logFileContentsByCategory()` is used by the debug screen to read the file back, parsing each line into its category prefix.
 
 ## `:toolkit:date-utils`
 
@@ -193,6 +193,8 @@ public interface NotificationManager {
 
 Android: WorkManager / AlarmManager wrapper. iOS: `UNUserNotificationCenter`.
 
+The Android module also enables `androidLibrary { androidResources.enable = true }` in its `build.gradle.kts` so it can ship the launcher / status-bar icon drawable used by the notification builder. Mirror that opt-in if your product adds notification-only resources.
+
 Replace the product-specific `NotificationKey` subtypes per product.
 
 ## `:toolkit:permission-manager`
@@ -201,20 +203,30 @@ Wraps system permission requests behind a multiplatform interface.
 
 ```kotlin
 public interface PermissionManager {
-    public suspend fun request(permission: Permission): PermissionResult
-    public suspend fun isGranted(permission: Permission): Boolean
+    public suspend fun check(permission: AppPermission): PermissionStatus
+    public suspend fun request(permission: AppPermission): PermissionStatus
 }
 
-public enum class Permission { Notifications, Camera, /* ... */ }
+public enum class AppPermission { Notifications }
+
+public sealed class PermissionStatus {
+    public data object Granted : PermissionStatus()
+    public data object Denied : PermissionStatus()
+    public data object DeniedPermanently : PermissionStatus()
+}
 ```
+
+`check` returns the current status without showing a system dialog; `request` shows the dialog (when applicable) and resolves to the same `PermissionStatus`. Add new entries to `AppPermission` as features need them — the reference repo currently only ships `Notifications`.
 
 ## `:toolkit:link-opener`
 
 ```kotlin
 public interface LinkOpener {
-    public fun open(url: String)
+    public fun open(url: String): LinkOpenResult
 }
 ```
+
+`LinkOpenResult` is a sealed result type (success / no-handler / failure) so callers can react to "no app can handle this URL" without try/catch.
 
 Android: `Intent(Intent.ACTION_VIEW, Uri.parse(url))`. iOS: `UIApplication.sharedApplication.openURL(url)`.
 

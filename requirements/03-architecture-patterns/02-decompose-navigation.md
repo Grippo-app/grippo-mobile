@@ -4,8 +4,8 @@ Navigation is built on Decompose (`com.arkivanov.decompose`). Each `Component` i
 
 ## Three layers of navigation
 
-1. **`RootComponent`** in `:shared` — owns the **primary** `StackNavigation<RootRouter>`. Routes between top-level features (`Authorization`, `Home`, `Profile`, `Training`).
-2. **`<Feature>RootComponent`** in each `:ui-screen-features:<feature>` — owns its own private `StackNavigation<<Feature>Router>`. Routes between sub-screens of one feature.
+1. **`RootComponent`** in `:shared` — owns the **primary** `StackNavigation<RootRouter>`. Routes between top-level features (`Auth`, `Home`, `Trainings`, `Profile`, `Training`, `Debug`).
+2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming exception below) in each `:ui-screen-features:<feature>` that has more than one screen — owns its own private `StackNavigation<<Feature>Router>`. Routes between sub-screens of one feature. Single-screen features (e.g. `:debug`) skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns a **slot** navigator (`SlotNavigation<DialogConfig>`) parallel to the screen stack. See `03-architecture-patterns/03-dialog-navigation.md`.
 
 There is **no** other navigation mechanism. No global event bus for navigation, no Compose Navigation, no Voyager.
@@ -17,8 +17,9 @@ All routes are declared as `@Serializable sealed class` in `:ui-screen-features:
 ```kotlin
 @Serializable
 public sealed class RootRouter : BaseRouter {
-    @Serializable public data object Authorization : RootRouter()
+    @Serializable public data class Auth(val value: AuthRouter) : RootRouter()
     @Serializable public data object Home : RootRouter()
+    @Serializable public data object Trainings : RootRouter()
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
     @Serializable public data class Training(val stage: StageState) : RootRouter()
     @Serializable public data object Debug : RootRouter()
@@ -33,8 +34,7 @@ public sealed class ProfileRouter : BaseRouter {
 
 @Serializable
 public sealed class HomeRouter : BaseRouter {
-    @Serializable public data object Overview : HomeRouter()
-    @Serializable public data object Stats : HomeRouter()
+    @Serializable public data object Home : HomeRouter()
 }
 ```
 
@@ -52,10 +52,11 @@ Inside `RootComponent`:
 ```kotlin
 private val navigation = StackNavigation<RootRouter>()
 
-private val stack: Value<ChildStack<RootRouter, Child>> = childStack(
+internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
     source = navigation,
     serializer = RootRouter.serializer(),
-    initialConfiguration = RootRouter.Home,
+    initialConfiguration = RootRouter.Auth(AuthRouter.Splash),
+    handleBackButton = true,
     key = "RootComponent",
     childFactory = ::createChild,
 )
@@ -64,50 +65,81 @@ private val stack: Value<ChildStack<RootRouter, Child>> = childStack(
 Key points:
 
 - `serializer = RootRouter.serializer()` — Decompose uses this to write/read the router state from `StateKeeper`.
-- `initialConfiguration` — the route shown when the stack is empty. Required.
+- `initialConfiguration` — the route shown when the stack is empty. Required. The shell typically opens on the auth/splash entrypoint and switches to `Home` once the token check completes.
+- `handleBackButton = true` — wires system back into Decompose's stack pop. Combined with the explicit `BackCallback` (see "Back handling"), this is what makes hardware back navigate correctly.
 - `key = "RootComponent"` — unique within the parent context. Used as the state-keeper key.
 - `childFactory = ::createChild` — function that builds a `Child` (sealed wrapper around `<X>Component`) for each `<X>Router` config.
 
 `createChild`:
 
 ```kotlin
-private fun createChild(config: RootRouter, ctx: ComponentContext): Child = when (config) {
-    is RootRouter.Authorization ->
-        Child.Authorization(AuthorizationRootComponent(ctx, back = viewModel::onBack))
+private fun createChild(router: RootRouter, context: ComponentContext): Child = when (router) {
+    is RootRouter.Auth -> Child.Authorization(
+        AuthComponent(
+            componentContext = context,
+            initial = router.value,
+            toHome = viewModel::toHome,
+            close = viewModel::onClose,
+        )
+    )
 
-    is RootRouter.Home ->
-        Child.Home(HomeRootComponent(
-            componentContext = ctx,
-            toProfile = { viewModel.toProfile() },
-            toTraining = { stage -> viewModel.toTraining(stage) },
-        ))
+    RootRouter.Home -> Child.Home(
+        HomeRootComponent(
+            componentContext = context,
+            initial = HomeRouter.Home,
+            toBody = viewModel::toWeightHistory,
+            toTraining = viewModel::toTraining,
+            toTrainings = viewModel::toTrainings,
+            // ... one callback per cross-feature destination
+            close = viewModel::onClose,
+        )
+    )
 
-    is RootRouter.Profile ->
-        Child.Profile(ProfileRootComponent(
-            componentContext = ctx,
-            initialRoute = config.value,
-            back = viewModel::onBack,
-        ))
+    RootRouter.Trainings -> Child.Trainings(
+        TrainingsRootComponent(
+            componentContext = context,
+            initial = TrainingsRouter.Trainings,
+            toTraining = viewModel::toTraining,
+            close = viewModel::onBack,
+        )
+    )
 
-    is RootRouter.Training ->
-        Child.Training(TrainingRootComponent(ctx, config.stage, back = viewModel::onBack))
+    is RootRouter.Profile -> Child.Profile(
+        ProfileComponent(
+            componentContext = context,
+            initial = router.value,
+            close = viewModel::onBack,
+        )
+    )
 
-    is RootRouter.Debug ->
-        Child.Debug(DebugRootComponent(ctx, back = viewModel::onBack))
+    is RootRouter.Training -> Child.Training(
+        TrainingComponent(
+            componentContext = context,
+            initial = TrainingRouter.Recording(router.stage),
+            close = viewModel::onBack,
+        )
+    )
+
+    is RootRouter.Debug -> Child.Debug(
+        DebugComponent(componentContext = context, close = viewModel::onBack)
+    )
 }
 ```
 
 The `Child` wrapper:
 
 ```kotlin
-sealed class Child(open val component: BaseComponent<*>) {
-    data class Authorization(override val component: AuthorizationRootComponent) : Child(component)
-    data class Home(override val component: HomeRootComponent) : Child(component)
-    data class Profile(override val component: ProfileRootComponent) : Child(component)
-    data class Training(override val component: TrainingRootComponent) : Child(component)
-    data class Debug(override val component: DebugRootComponent) : Child(component)
+public sealed class Child(public open val component: BaseComponent<*>) {
+    public data class Authorization(override val component: AuthComponent) : Child(component)
+    public data class Home(override val component: HomeRootComponent) : Child(component)
+    public data class Trainings(override val component: TrainingsRootComponent) : Child(component)
+    public data class Profile(override val component: ProfileComponent) : Child(component)
+    public data class Training(override val component: TrainingComponent) : Child(component)
+    public data class Debug(override val component: DebugComponent) : Child(component)
 }
 ```
+
+Note the naming convention: the **default** feature-root name is the bare `<X>Component` (e.g. `AuthComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`). The `<X>RootComponent` form (`HomeRootComponent`, `TrainingsRootComponent`) is reserved for features whose first sub-screen reuses the feature name — `:home` has a `Home` sub-screen, `:trainings` has a `Trainings` sub-screen, so the parent gets a `Root` suffix to avoid the collision. Owning a private `StackNavigation<<X>Router>` is **orthogonal** to this naming choice: `AuthComponent`, `ProfileComponent`, `TrainingComponent` all own internal stacks despite the bare name; `DebugComponent` is the rare single-screen feature with no inner stack. All are `BaseComponent<DIRECTION>`.
 
 A `sealed class Child(component: BaseComponent<*>)` is the canonical pattern — it lets `RootScreen` pattern-match for animation selection while keeping `component.Render()` callable polymorphically.
 
@@ -126,7 +158,7 @@ The `StackNavigation<T>` interface provides:
 | `bringToFront(config)` | Move existing instance to top, or push |
 
 `RootComponent` typically uses:
-- `navigation.replaceAll(RootRouter.Login)` on logout.
+- `navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))` on logout (there is no `RootRouter.Login` — the auth flow nests under `RootRouter.Auth`).
 - `navigation.replaceAll(RootRouter.Home)` after successful login.
 - `navigation.push(RootRouter.Profile(...))` for forward nav.
 - `navigation.pop()` for back.
@@ -139,14 +171,23 @@ ViewModels never call `navigation.push(...)` directly. They emit `Direction`s; t
 // inside RootComponent
 override suspend fun eventListener(direction: RootDirection) {
     when (direction) {
-        RootDirection.Login -> navigation.replaceAll(RootRouter.Authorization)
+        RootDirection.Login -> if (childStack.value.active.instance !is Child.Authorization) {
+            navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
+        }
         RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
-        is RootDirection.Profile -> navigation.push(RootRouter.Profile(direction.value))
+        RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
+        RootDirection.Settings -> navigation.push(RootRouter.Profile(ProfileRouter.Settings))
         is RootDirection.Training -> navigation.push(RootRouter.Training(direction.stage))
         RootDirection.Back -> navigation.pop()
+        RootDirection.Close -> close.invoke()
     }
 }
 ```
+
+Two patterns to notice:
+
+- **Guarded `replaceAll`**: `RootDirection.Login` only replaces the stack if the current top isn't already an `Authorization` child. The token observer in `RootViewModel` emits `Login` on every token-null transition, including the initial one when the shell already started on `Auth(AuthRouter.Splash)` — without the guard the user would be bounced back to `AuthProcess` mid-splash.
+- **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination (`Settings`, `Profile`, `Goal`, …) and the Component picks the concrete sub-route to push (e.g. `ProfileRouter.Body`). `Training` is the exception — it carries a `StageState` payload because the same destination can resume different stages.
 
 For sub-feature components, `eventListener` typically handles two kinds of directions:
 
@@ -172,23 +213,42 @@ Per-child stack animations in the screen:
 
 ```kotlin
 @Composable
-internal fun RootScreen(...) {
+internal fun RootScreen(
+    component: RootComponent,
+    state: RootState,
+    loaders: ImmutableSet<RootLoader>,
+    contract: RootContract,
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     ChildStack(
-        stack = stack,
-        animation = stackAnimation(selector = { child, _, _, _ -> child.instance.animator() })
-    ) { child ->
-        child.instance.component.Render()
-    }
+        modifier = Modifier.fillMaxSize(),
+        stack = component.childStack,
+        animation = stackAnimation(
+            selector = { child, _, _, _ -> child.instance.animator() }
+        ),
+        content = { child -> child.instance.component.Render() },
+    )
 }
 
 private fun RootComponent.Child.animator(): StackAnimator = when (this) {
-    is Child.Authorization -> fade()
-    is Child.Home -> fade()
-    is Child.Profile -> platformStackAnimator()        // iOS-like slide on iOS; fade+slide on Android
-    is Child.Training -> platformStackAnimator()
-    is Child.Debug -> platformStackAnimator()
+    is RootComponent.Child.Authorization -> fade()
+    is RootComponent.Child.Home -> fade()
+    is RootComponent.Child.Debug -> platformStackAnimator()
+    is RootComponent.Child.Profile -> platformStackAnimator()
+    is RootComponent.Child.Training -> platformStackAnimator()
+    is RootComponent.Child.Trainings -> platformStackAnimator()
 }
 ```
+
+The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`:
+
+```kotlin
+AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
+    RootScreen(this, state.value, loaders.value, viewModel)
+    dialogComponent.Render()
+}
+```
+
+This keeps the screen stack purely about screens; the dialog slot lives one layer up in the composable hierarchy.
 
 `platformStackAnimator()` is `expect/actual` in `:ui-core:foundation`:
 

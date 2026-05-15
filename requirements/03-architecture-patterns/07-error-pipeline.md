@@ -34,24 +34,54 @@ safeLaunch(loader = MyLoader.Fetch) {
 
 ### Network: `BackendClient` → `ApiErrorParser` → `AppError`
 
-The Ktor `HttpClient` is configured with a `HttpResponseValidator`:
+The Ktor `HttpClient` is configured via the `responseValidator(apiErrorParser)` extension in `:toolkit:http-client`. It installs Ktor's `HttpResponseValidator` with two blocks — one for HTTP status codes, one for transport-level exceptions:
 
 ```kotlin
-// :toolkit:http-client
-HttpResponseValidator {
+// :toolkit:http-client/internal/ResponseValidator.kt
+internal fun HttpClientConfig<*>.responseValidator(
+    apiErrorParser: ApiErrorParser,
+) = HttpResponseValidator {
     validateResponse { response ->
-        if (response.status.isSuccess()) return@validateResponse
-        throw ApiErrorParser.parse(response)
+        val statusCode = response.status.value
+        if (statusCode in 200..299) return@validateResponse
+
+        val rawBody = runCatching { response.bodyAsText() }.getOrNull()
+        when (statusCode) {
+            in 400..499 -> {
+                val parsed = apiErrorParser.parseDetailedMessage(rawBody, statusCode)
+                throw AppError.Network.Expected(
+                    keys = apiErrorParser.parseKeys(rawBody),
+                    title = parsed.title,
+                    description = parsed.description,
+                )
+            }
+            in 500..599 -> throw AppError.Network.Unexpected(
+                message = apiErrorParser.getDefaultServerErrorMessage(statusCode),
+            )
+            else -> throw AppError.Network.Unexpected(message = "Unexpected HTTP code: $statusCode")
+        }
+    }
+
+    handleResponseExceptionWithRequest { cause, _ ->
+        when (cause) {
+            is AppError.Network.Expected -> throw cause
+            is TimeoutCancellationException,
+            is HttpRequestTimeoutException -> throw AppError.Network.Timeout(message = "Request timed out. Try again.", cause = cause)
+            is JsonConvertException -> throw AppError.Network.Unexpected(message = "Invalid server response format.", cause = cause)
+            is IOException -> throw AppError.Network.NoInternet(message = "Connection lost or unavailable.", cause = cause)
+            else -> AppError.Network.Unexpected(message = cause.message ?: "Unexpected network error", cause = cause)
+        }
     }
 }
 ```
 
-`ApiErrorParser.parse(response)` returns an `AppError` subtype:
+The mapping the validator produces:
 
-- `HttpStatusCode.RequestTimeout` (408) → `AppError.Network.Timeout`
-- No internet (transport-level) → `AppError.Network.NoInternet`
-- 4xx with a parseable body → `AppError.Network.Expected(keys, title, description)`
-- 4xx/5xx without a useful body → `AppError.Network.Unexpected(statusCode, message)`
+- `IOException` (transport-level no internet) → `AppError.Network.NoInternet`
+- `TimeoutCancellationException` / `HttpRequestTimeoutException` → `AppError.Network.Timeout`
+- 4xx response with a parseable body → `AppError.Network.Expected(keys, title, description)`
+- 5xx response → `AppError.Network.Unexpected(message)`
+- `JsonConvertException` or any other unmatched cause → `AppError.Network.Unexpected(message)`
 
 ### Domain: explicit `throw AppError.Expected(...)`
 
@@ -234,22 +264,35 @@ override suspend fun saveTraining(training: Training): Result<String> {
 
 ### Inside a UseCase
 
+A composing `UseCase` chains multiple Features through `getOrThrow()` so the first failure short-circuits and propagates as a `Result.Failure`:
+
 ```kotlin
-@Factory
-public class RecalculateGoalProgressUseCase(
+public class LoginUseCase(
+    private val authorizationFeature: AuthorizationFeature,
+    private val userFeature: UserFeature,
+    private val excludedMusclesFeature: ExcludedMusclesFeature,
+    private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val weightHistoryFeature: WeightHistoryFeature,
     private val goalFeature: GoalFeature,
-    private val trainingsFeature: TrainingsFeature,
 ) {
-    public suspend fun execute(goalId: String): Result<Unit> = runCatching {
-        val goal = goalFeature.getGoal(goalId).getOrThrow()
-        val trainings = trainingsFeature.getTrainingsForRange(goal.range).getOrThrow()
-        val progress = computeProgress(goal, trainings)
-        goalFeature.updateProgress(goalId, progress).getOrThrow()
+    public suspend fun executeEmail(email: String, password: String): Boolean {
+        authorizationFeature.login(email, password).getOrThrow()
+        val hasProfile = userFeature.getUser().getOrThrow()
+        if (hasProfile) {
+            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            weightHistoryFeature.getWeightHistory().getOrThrow()
+            goalFeature.getGoal().getOrThrow()
+        }
+        return hasProfile
     }
 }
 ```
 
-`getOrThrow()` inside `runCatching { ... }` is the idiomatic pattern: the `Result.Failure` is unwrapped, then re-wrapped by the outer `runCatching` — no double-handling.
+Two patterns coexist in this codebase:
+
+- **No outer `runCatching`** (as above): the call site (a ViewModel inside `safeLaunch`) wraps the call. Any `getOrThrow()` failure becomes a thrown exception and flows through the standard error pipeline.
+- **Outer `runCatching`** when the use case is itself a Feature method that must return `Result<T>` to its caller: `runCatching { fooFeature.x().getOrThrow(); barFeature.y().getOrThrow() }`. The first `getOrThrow()` failure is unwrapped, then re-wrapped by the outer `runCatching` — no double-handling.
 
 ## Only emits, not retries
 

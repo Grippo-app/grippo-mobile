@@ -74,12 +74,12 @@ Including `BackendModule` transitively pulls in everything `BackendModule` provi
 @Single
 public class GrippoApi internal constructor(private val client: BackendClient) { ... }
 
-@Single(binds = [TrainingsRepository::class])
-internal class TrainingsRepositoryImpl(...) : TrainingsRepository { ... }
+@Single(binds = [TrainingRepository::class])
+internal class TrainingRepositoryImpl(...) : TrainingRepository { ... }
 ```
 
 - Without `binds`: registered under its concrete type. `inject<GrippoApi>()` works.
-- With `binds = [Interface::class]`: registered under the **interface** type. `inject<TrainingsRepository>()` works; `inject<TrainingsRepositoryImpl>()` does **not** (the impl is internal anyway).
+- With `binds = [Interface::class]`: registered under the **interface** type. `inject<TrainingRepository>()` works; `inject<TrainingRepositoryImpl>()` does **not** (the impl is internal anyway).
 
 **Multiple interfaces:**
 
@@ -180,7 +180,7 @@ public object Koin {
 
 ## Anti-patterns
 
-- **Hand-written `module { single<TrainingsFeature> { TrainingsFeatureImpl(get(), get()) } }`** for new code. Use annotations.
+- **Hand-written `module { single<TrainingFeature> { TrainingFeatureImpl(get(), get()) } }`** for new code. Use annotations.
 - **Forgetting `binds = [Interface::class]`** on an impl class. The interface won't be wired; consumers can't `inject<Interface>()`.
 - **Two annotated impls binding the same interface** without disambiguation. Conflicts at startup. Use `named("...")` qualifier if you really need two.
 - **`@Single` on a class that holds per-call state** (e.g. a per-request HTTP context). Use `@Factory`.

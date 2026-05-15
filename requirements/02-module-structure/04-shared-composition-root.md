@@ -110,6 +110,12 @@ public class RootComponent(
         childFactory = ::createChild,
     )
 
+    private val backCallback = BackCallback(onBack = viewModel::onClose)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     public fun handleDeeplink(deeplink: String) {
         if (childStack.value.active.configuration is RootRouter.Home) viewModel.applyDeeplink(deeplink)
         else viewModel.enqueueDeeplink(deeplink)
@@ -130,9 +136,12 @@ public class RootComponent(
 
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
-            RootDirection.Login -> navigation.replaceAll(Auth(AuthRouter.AuthProcess))
+            RootDirection.Login -> if (childStack.value.active.instance !is Child.Authorization) {
+                navigation.replaceAll(Auth(AuthRouter.AuthProcess))
+            }
             RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
-            is RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
+            RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
+            is RootDirection.Training -> navigation.push(RootRouter.Training(direction.stage))
             RootDirection.Back -> navigation.pop()
             RootDirection.Close -> close()
             // ...
@@ -144,9 +153,12 @@ public class RootComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
 
-        LaunchedEffect(AppLocale.current) { DateFormatting.install(AppLocale.current) }
+        val systemIsDark = AppTheme.current
+        val systemLocaleTag = AppLocale.current
 
-        AppTheme(darkTheme = AppTheme.current, localeTag = AppLocale.current) {
+        LaunchedEffect(systemLocaleTag) { DateFormatting.install(systemLocaleTag) }
+
+        AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
             RootScreen(this, state.value, loaders.value, viewModel)
             dialogComponent.Render()
         }
@@ -157,9 +169,10 @@ public class RootComponent(
 Notes:
 - `RootComponent` is **public** because the iOS shell (Swift `AppDelegate`) instantiates it directly. The Android shell does the same via `retainedComponent { ... }`. This is the only `Base*Component` in the project that is not `internal`.
 - `RootComponent` is the **only** component that owns a `StackNavigation`. Inner features have their own private `StackNavigation` instances, but `RootComponent`'s is the entry point.
+- `RootComponent` also registers an Essenty `BackCallback(onBack = viewModel::onClose)` against the inherited `backHandler` so the system back gesture at the top of the stack maps to `RootDirection.Close`. The `Login` branch in `eventListener` is guarded against re-replacing the Auth stack when the user is already on `Authorization` (e.g. the token observer firing again).
 - The `key = "RootComponent"` argument is important for state restoration.
-- The dialog slot navigator is a **sibling** of the stack — both render simultaneously, with the slot drawn on top. `LaunchedEffect(AppLocale.current)` lives on `RootComponent.Render()` (above the screen + dialog) so the locale install runs once for the whole tree.
-- Inner feature components are mostly named `<Feature>Component` (e.g. `ProfileComponent`, `TrainingComponent`, `AuthComponent`); only the multi-screen feature roots `HomeRootComponent` / `TrainingsRootComponent` carry the `Root` suffix.
+- The dialog slot navigator is a **sibling** of the stack — both render simultaneously, with the slot drawn on top. `LaunchedEffect(systemLocaleTag)` lives on `RootComponent.Render()` (above the screen + dialog) so the locale install runs once for the whole tree. The `systemIsDark` / `systemLocaleTag` locals are read once via `AppTheme.current` / `AppLocale.current` and passed both to `LaunchedEffect` and `AppTheme(...)`, so the `@Composable` getters fire a single time per recomposition (don't reach for `AppLocale.current` inside the `LaunchedEffect` body — that would re-enter the `@Composable` snapshot reader from a non-Composable scope).
+- Inner feature components are mostly named `<Feature>Component` (e.g. `ProfileComponent`, `TrainingComponent`, `AuthComponent`) regardless of how many sub-screens they own. The `<Feature>RootComponent` suffix is reserved for features whose first sub-screen reuses the feature name — `:home` has a `home/HomeComponent` sub-screen, so the root is `HomeRootComponent` to avoid a class-name collision; same for `:trainings` (`TrainingsRootComponent` vs `trainings/TrainingsComponent`). It is not a multi-screen-vs-single-screen distinction.
 
 ## `RootViewModel` essentials
 

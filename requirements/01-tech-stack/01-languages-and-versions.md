@@ -13,7 +13,7 @@
 | Koin | **4.2.1** | + Koin Annotations **2.3.1** |
 | Ktor | **3.4.3** | Android engine + Darwin engine |
 | kotlinx-serialization | **1.11.0** | JSON only |
-| kotlinx-datetime | **0.8.0** | for `LocalDateTime`/`LocalDate`/`Instant`/`Duration` |
+| kotlinx-datetime | **0.8.0** | for `LocalDateTime`/`LocalDate`/`DatePeriod`/`DateTimePeriod`/`TimeZone`/`Month`/`DayOfWeek` (`Instant`/`Clock`/`Duration` come from stdlib `kotlin.time`) |
 | kotlinx-coroutines | **1.11.0** | `core` + `play-services` (Android) |
 | kotlinx-collections-immutable | **0.4.0** | mandatory in all `@Immutable` state |
 | Room | **2.8.4** multiplatform | + `androidx.sqlite-bundled` **2.6.2** |

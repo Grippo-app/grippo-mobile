@@ -11,7 +11,7 @@ Conversions between DTOs / Entities / Domain models / UI states / Bodies live in
 | `:data-mappers:dto-to-domain` | DTO `<X>Response` | Domain `<X>` | Repository skips caching for one-shot reads |
 | `:data-mappers:domain-to-state` | Domain `<X>` | UI State (`*State`, `*FormatState`) | ViewModel maps domain into screen state before `update {}` |
 | `:data-mappers:state-to-domain` | UI State `*State` | Domain `Set<X>` (submit form) | ViewModel collects form input and builds a domain object to send |
-| `:data-mappers:domain-to-entity` | Domain `Draft<X>` | Entity `Draft<X>Entity` / `Draft<X>Pack` | ViewModel persists a draft to Room without the API |
+| `:data-mappers:domain-to-entity` | Domain `Draft<X>` (parents) / `Set<X>` (leaf rows) | `Draft<X>Pack` for parents (Training, Exercise), bare `Draft<X>Entity` for leaf rows (Iteration) | ViewModel persists a draft to Room without the API. Ids are client-generated (`Uuid.random()`); each child takes its parent FK as a parameter. |
 | `:data-mappers:domain-to-dto` | Domain `Set<X>` | Body `<X>Body` | Repository builds a POST/PUT body |
 
 ## Package naming

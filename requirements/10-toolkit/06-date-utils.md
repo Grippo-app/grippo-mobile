@@ -1,6 +1,6 @@
 # `:toolkit:date-utils` — Date and Time
 
-Every date and time interaction goes through this module: parsing, formatting, range arithmetic, range presets. Uses `kotlinx-datetime` types (`LocalDateTime`, `LocalDate`, `Instant`, `Duration`).
+Every date and time interaction goes through this module: parsing, formatting, range arithmetic, range presets. Uses `kotlinx-datetime` types (`LocalDateTime`, `LocalDate`, `LocalTime`, `DatePeriod`, `Month`, `DayOfWeek`, `TimeZone`) plus `Instant`, `Duration`, and `Clock.System` from the `kotlin.time` stdlib (kotlinx-datetime no longer re-exports `Instant`/`Duration`/`Clock`).
 
 ## `DateTimeUtils`
 

@@ -114,7 +114,7 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 
 ## Architecture-shape
 
-- **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`.
+- **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`. Narrow exceptions tolerated for SDK-style services that have no `:data-features:*` wrapper: `:data-services:firebase` (a UI VM may call `FirebaseProvider.logEvent(...)` for analytics), `:data-services:google-auth` and `:data-services:apple-auth` (consumed directly by `:ui-screen-features:authorization` to fetch ID tokens). Anything domain-shaped still goes through `:data-features:feature-api`.
 - **`:data-features:feature-api` imports `:data-services:*`.** Pure contracts.
 - **`:toolkit:*` imports `:design-system:*`.** Toolkit is below. Sole exception: `:toolkit:date-utils` reads locale-aware format tokens from `:design-system:resources:provider` and `:design-system:core` — see `02-module-structure/02-dependency-rules.md` for the canonical list of tolerated exceptions.
 - **`:design-system:*` imports `:data-features:*`.** Design is pure UI.

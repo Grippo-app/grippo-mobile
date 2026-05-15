@@ -107,16 +107,23 @@ If the state appears inside a `*Router` payload or `DialogConfig`, it **must be 
 ```kotlin
 @Immutable
 @Serializable
-internal data class StageState(
+public data class StageState(
     val step: Step,
-    val collected: ImmutableMap<String, String>,
+    @Serializable(with = ImmutableListSerializer::class)
+    val collected: ImmutableList<String>,
 ) {
     @Serializable
-    enum class Step { Welcome, Profile, Goals, Done }
+    public enum class Step { Welcome, Profile, Goals, Done }
 }
 ```
 
-All fields inside must also be `@Serializable` — `ImmutableMap` is, primitives are, `LocalDateTime`/`DateRange`/`UiText`/`*FormatState` are.
+Every field inside must also be serializable:
+
+- **Primitives, `String`, `enum`** — natively `@Serializable`.
+- **`LocalDateTime` / `LocalDate` / `Duration`** — covered by `kotlinx-serialization` + `kotlinx-datetime`.
+- **`DateRange` / `*FormatState`** — declared `@Serializable` in `:toolkit:date-utils` / `:ui-core:state`.
+- **`ImmutableList<T>`** — uses the project's custom `ImmutableListSerializer` (in `:ui-core:state`), opted in per field with `@Serializable(with = ImmutableListSerializer::class)`. No `ImmutableMap` serializer ships with the project; if you need a map, model it as a list of `(key, value)` records or use a regular `Map` field.
+- **`UiText`** — `@Stable` only, **not** `@Serializable` (it wraps a non-serializable `StringResource`). Do not put `UiText` in a router/dialog payload. For copy that must survive process death, store the `StringResource` directly and wrap to `UiText` at render time, or carry a plain `String` for verbatim values.
 
 If the state doesn't cross a router/dialog boundary (it lives entirely in the VM and is reconstructed from data sources on restart), `@Serializable` is **not required** — but it's harmless to add.
 

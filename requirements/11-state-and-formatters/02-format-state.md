@@ -59,9 +59,9 @@ public sealed class WeightFormatState : FormatState<Float> {
 }
 ```
 
-- **`Valid`**: parsed cleanly + passes domain limits (e.g. weight in `[20f, 500f]`).
-- **`Invalid`**: input is malformed (not a number) **or** out of range (e.g. weight = 1000kg).
-- **`Empty`**: no input yet — distinct from `Invalid("")` because the UI may want to differentiate "field hasn't been touched" from "user cleared it".
+- **`Valid`**: parsed cleanly + passes domain limits (e.g. weight in `30f..150f`).
+- **`Invalid`**: input is malformed (not a number) **or** out of range (e.g. weight = 200kg).
+- **`Empty`**: blank input — distinct from `Invalid("")`. Numeric formatters also collapse the literal `0` value to `Empty` (a `Valid(0)` would mean nothing in domain terms), so `Empty` covers both "untouched" and "explicitly zeroed".
 
 ## Factories
 
@@ -130,7 +130,7 @@ public sealed class WeightFormatState : FormatState<Float> {
 }
 ```
 
-`WeightLimitation` is the static range used for the `Invalid` check (e.g. `20f..500f`).
+`WeightLimitation` is the static range used for the `Invalid` check (e.g. `30f..150f`). Reference implementation also normalizes to 1 decimal place via a private `display1dp(...)` formatter — values like `72.567f` round to `72.6f` before the range check.
 
 ### `HeightFormatState`
 
@@ -144,7 +144,7 @@ public sealed class HeightFormatState : FormatState<Int> {
 }
 ```
 
-`Int` not `Float` — height in centimeters / inches.
+`Int` not `Float` — height in centimeters (the reference repo uses `100..250` cm; unit selection is product-level, not a property of the type).
 
 ### `DurationFormatState`
 
@@ -158,7 +158,7 @@ public sealed class DurationFormatState : FormatState<Duration> {
 }
 ```
 
-`Duration` from `kotlin.time`. Display is `"1h 23m"` style.
+`Duration` from `kotlin.time`. `display` is produced by `DateTimeUtils.format(duration)` (locale-aware abbreviated style, e.g. `"1h 23m"`); the parser accepts ISO-8601 (`Duration.parse`). Normalized to whole-minute precision.
 
 ### `VolumeFormatState`
 

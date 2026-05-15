@@ -154,33 +154,38 @@ internal fun RatingPickerScreen(
     state: RatingPickerState,
     loaders: ImmutableSet<RatingPickerLoader>,
     contract: RatingPickerContract,
-) {
-    Column(
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-    ) {
-        BottomSheetToolbar(
-            allowBack = false,
-            onBack = { /* unused */ },
-            onClose = contract::onCloseClick,
-        )
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.rating_picker_title),
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center,
+    )
 
-        Text(
-            text = AppTokens.strings.res(Res.string.rating_picker_title),
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary,
-        )
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        // Pick a real input control from :design-system:components or :compose-libs.
-        // The reference repo uses custom *WheelPicker widgets, not Material3 Slider.
+    // Pick a real input control from :design-system:components or :compose-libs.
+    // The reference repo uses custom *WheelPicker widgets, not Material3 Slider.
 
-        Button(
-            content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.apply)),
-            onClick = contract::onApplyClick,
-        )
-    }
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.apply)),
+        style = ButtonStyle.Primary,
+        onClick = contract::onApplyClick,
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview
@@ -302,5 +307,5 @@ Run, trigger the dialog, confirm result callback fires.
 - **`initial` not declared as a regular field.** Inputs are serialized so the picker resumes with the same starting value.
 - **`buildKey` collisions.** Two configs with the same key are treated as the same dialog. Include enough discriminator data (e.g. `buildKey("RatingPicker", initial, screenId)`).
 - **Forgetting to wire in `DialogContentComponent.createChild`.** Showing the config crashes at runtime.
-- **Using `Toolbar` instead of `BottomSheetToolbar`.** The dialog feels like a full screen.
+- **Wrapping in `Column { ... }` or using `Toolbar` / `BottomSheetToolbar`.** No existing dialog ships a toolbar — the reference convention is `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))` with a `Spacer(AppTokens.dp.dialog.top)`, a centered title `Text`, the body, then `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding is `AppTokens.dp.dialog.horizontalPadding`, not `contentPadding.content`.
 - **Inventing a `DialogController.dismiss()` call from inside the picker.** `DialogController` only exposes `show(config)`. Closing the sheet is the host's job — emit `Direction.BackWithResult(value)` (or plain `Direction.Back`); the wiring in `DialogContentComponent.createChild` translates that into `viewModel.onBack { router.onResult.invoke(value) }`, which dismisses the sheet and then fires the host callback.

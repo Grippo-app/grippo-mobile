@@ -85,7 +85,7 @@ protected fun update(updateFunc: (STATE) -> STATE)
 ```
 
 - `state` is read-only outside the VM.
-- `update { it.copy(...) }` is the **only** way to mutate. The implementation does `(state as MutableStateFlow).update(updateFunc)`.
+- `update { it.copy(...) }` is the **only** way to mutate. Internally the VM keeps a private `_state: MutableStateFlow<STATE>` and `state` is just `_state.asStateFlow()`; `update { ... }` delegates to `_state.update(updateFunc)`.
 - `update { }` is **thread-safe** (atomic compare-and-swap inside `MutableStateFlow.update`). Multiple coroutines may call it concurrently.
 - **Never** capture `state.value` before a slow operation and then `update { it.copy(... = capturedValue + ...) }` — a concurrent update will be lost. Inside `update { ... }` the lambda receives the **current** value.
 
@@ -223,7 +223,7 @@ Called by Decompose when the host Component is destroyed. Closes the navigator c
 ```kotlin
 internal class FooViewModel(
     private val barFeature: BarFeature,
-) : BaseViewModel<FooState, FooDirection, FooLoader>(FooState.Empty), FooContract {
+) : BaseViewModel<FooState, FooDirection, FooLoader>(FooState()), FooContract {
 
     init {
         barFeature.observeBars()

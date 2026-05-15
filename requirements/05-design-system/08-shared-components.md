@@ -42,9 +42,12 @@ Toolbar(
     title = AppTokens.strings.res(Res.string.profile_body_title),
     leading = Leading.Back(onClick = contract::onBack),
     trailing = {
-        IconButton(onClick = contract::onSettingsClick) {
-            Icon(painter = AppTokens.drawables.res(Res.drawable.ic_settings), ...)
-        }
+        Button(
+            content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.MoreVertical)),
+            style = ButtonStyle.Tertiary,
+            size = ButtonSize.Small,
+            onClick = contract::onMenuClick,
+        )
     },
 )
 ```
@@ -230,16 +233,20 @@ Slim progress bar / segmented indicator for charts and onboarding. Configurable 
 
 ## `Chip`
 
-Small tag — typically used in filter rows. The reference repo's `Chip` is more configurable than a simple `label + selected + onClick`; it carries a sealed `ChipLabel` / `ChipTrailing` / `ChipStyle` family so a single component can render text, icon-only, or custom-trailing chips with or without a click handler:
+Small tag — typically used in filter rows. The reference repo's `Chip` is more configurable than a simple `label + selected + onClick`; it carries a sealed `ChipLabel` / `ChipTrailing` / `ChipStype` family so a single component can render text, icon-only, or custom-trailing chips with or without a click handler. The base `Chip` is fully parameter-driven (no defaults beyond `modifier`) — colors and brush are passed in by the domain-specific wrapper:
 
 ```kotlin
 @Composable
 public fun Chip(
     modifier: Modifier = Modifier,
     label: ChipLabel,
-    size: ChipSize = ChipSize.Medium,
-    trailing: ChipTrailing = ChipTrailing.Empty,
-    style: ChipStype = ChipStype.Default,
+    value: String,
+    stype: ChipStype,
+    trailing: ChipTrailing,
+    size: ChipSize,
+    textColor: Color,
+    iconColor: Color,
+    brush: Brush,
 )
 
 @Stable public sealed interface ChipLabel {
@@ -247,12 +254,24 @@ public fun Chip(
     @Stable public data object Empty : ChipLabel
 }
 
-@Stable public sealed interface ChipSize { Small; Medium }
-@Stable public sealed interface ChipTrailing { Empty; Icon(icon); Content(lambda) }
-@Stable public sealed interface ChipStype { Default; Clickable(onClick) }
+@Stable public sealed interface ChipSize {
+    @Stable public data object Small : ChipSize
+    @Stable public data object Medium : ChipSize
+}
+
+@Stable public sealed interface ChipTrailing {
+    @Stable public data object Empty : ChipTrailing
+    @Stable public data class Icon(val icon: ImageVector) : ChipTrailing
+    @Stable public data class Content(val lambda: @Composable () -> Unit) : ChipTrailing
+}
+
+@Stable public sealed interface ChipStype {   // sic — this is the typo'd name in the reference repo
+    @Stable public data object Default : ChipStype
+    @Stable public data class Clickable(val onClick: () -> Unit) : ChipStype
+}
 ```
 
-Pass `style = ChipStype.Clickable { ... }` to make a chip interactive; otherwise it renders as a static tag. Domain-specific variants (`VolumeChip`, `IntensityChip`, `RepetitionsChip`, `CategoryChip`, `WeightTypeChip`, `ForceTypeChip`) live next to `Chip.kt` and compose it.
+Pass `stype = ChipStype.Clickable { ... }` to make a chip interactive; otherwise it renders as a static tag. Domain-specific variants (`VolumeChip`, `IntensityChip`, `RepetitionsChip`, `CategoryChip`, `WeightTypeChip`, `ForceTypeChip`) live next to `Chip.kt`, pick `textColor`/`iconColor`/`brush` from `AppTokens.colors.*`, and call the base `Chip(...)`.
 
 ## Selectable cards
 

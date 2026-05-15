@@ -177,6 +177,7 @@ public data class ExerciseResponse(
     @SerialName("volume")             val volume: Float? = null,
     @SerialName("trainingId")         val trainingId: String? = null,
     @SerialName("exerciseExampleId")  val exerciseExampleId: String? = null,
+    @SerialName("exerciseExample")    val exerciseExample: ExerciseExampleResponse? = null,
     @SerialName("updatedAt")          val updatedAt: String? = null,
 )
 ```

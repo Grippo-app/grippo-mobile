@@ -123,17 +123,9 @@ plugins {
 kotlin {
     android { namespace = "com.<org>.<product>.toolkit.connectivity" }
 
-    sourceSets {
-        commonMain.dependencies {
-            implementation(projects.toolkit.context)
-            implementation(libs.kotlinx.coroutines.core)
-        }
-        androidMain.dependencies {
-            // Android ConnectivityManager APIs
-        }
-        iosMain.dependencies {
-            // SCNetworkReachability / NWPathMonitor APIs
-        }
+    sourceSets.commonMain.dependencies {
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(projects.toolkit.context)
     }
 }
 ```

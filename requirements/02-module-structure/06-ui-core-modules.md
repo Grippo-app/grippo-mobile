@@ -89,7 +89,7 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.core.state" }
+    android { namespace = "com.<org>.<product>.ui.core.state" }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.core)

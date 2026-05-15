@@ -230,7 +230,7 @@ override suspend fun eventListener(direction: ProfileBodyDirection) {
 }
 ```
 
-`toWorkoutHistory: (DateRange) -> Unit` is passed via the Component constructor from `ProfileRootComponent.createChild` (see step 4).
+`toWorkoutHistory: (DateRange) -> Unit` is passed via the Component constructor from `ProfileComponent.createChild` (see step 4). The reference repo's profile feature root is `ProfileComponent` (bare feature name), not `ProfileRootComponent` — only features with name collisions between the root and a sub-screen (e.g. `:home`, `:trainings`) use the `*RootComponent` suffix.
 
 ### 6. Verify
 
@@ -251,7 +251,7 @@ Both should build green. Visually verify the new screen in a debug run.
 ## Common mistakes
 
 - **Forgetting `@Serializable` on the new `Router` subtype.** Crashes on process death.
-- **Forgetting `key = "ProfileRootComponent"` on `childStack`.** Already in place (from the existing feature), but a new feature module sometimes omits it.
+- **Forgetting `key = "ProfileComponent"` on `childStack`.** Already in place (from the existing feature), but a new feature module sometimes omits it.
 - **Including the new screen as a top-level RootRouter entry.** Sub-screens belong inside `<Feature>Router`, not at the root.
 - **Threading `WorkoutHistoryFeature` through Component constructors.** Inject via `getKoin().get()` inside `retainedInstance`.
 - **Passing a `() -> Unit` callback in `*Router`** instead of via Component constructor. Routes are `@Serializable` data; callbacks aren't.

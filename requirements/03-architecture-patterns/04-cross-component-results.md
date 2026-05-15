@@ -112,19 +112,21 @@ Result protocol types live nested inside the **producer screen's** `*Router.<Scr
 public sealed class TrainingRouter : BaseRouter {
 
     @Serializable
-    public data class Exercise(val id: String) : TrainingRouter() {
+    public data class Exercise(val exercise: ExerciseState) : TrainingRouter() {
 
-        public sealed interface Action : BaseResult {
-            public data class Sync(val exercise: Exercise) : Action
+        public sealed interface Action {
+            public data class Sync(val exercise: ExerciseState) : Action
             public data class Remove(val id: String) : Action
         }
     }
 
-    @Serializable public data object Summary : TrainingRouter()
+    @Serializable public data class Completed(/* ... */) : TrainingRouter()
 }
 ```
 
 The `Action` type is co-located with the route that produces it. Both producer and consumer reference `TrainingRouter.Exercise.Action.Sync(...)` / `Action.Remove(...)` — the contract is in one place.
+
+Note: `Action` is **not** a `BaseResult`. `sendResult<T : Any>(key, data: T)` wraps the payload in `Result<T>` (which is itself the `BaseResult`), so the consumer subscribes to `Result<TrainingRouter.Exercise.Action>` — see `observeResult` example below. Keeping `Action` as a plain sealed interface lets `sendResult` infer `T` directly.
 
 ## Subscribing
 

@@ -64,26 +64,30 @@ In the current reference repo the `darkTheme` and `localeTag` parameters are acc
 
 ### Once at app root
 
+`AppTheme` is wrapped inside `RootComponent.Render()`, **not** inside `RootScreen`. The screen composable itself only renders the navigation stack; the theme + locale + dialog overlay live one level up so previews of `RootScreen` do not need to install the theme themselves.
+
 ```kotlin
+// shared/.../root/RootComponent.kt
 @Composable
-internal fun RootScreen(...) {
-    val systemDarkTheme = AppTheme.current
+override fun Render() {
+    val state = viewModel.state.collectAsStateMultiplatform()
+    val loaders = viewModel.loaders.collectAsStateMultiplatform()
+
+    val systemIsDark = AppTheme.current
     val systemLocaleTag = AppLocale.current
 
     LaunchedEffect(systemLocaleTag) {
         DateFormatting.install(systemLocaleTag)
     }
 
-    AppTheme(darkTheme = systemDarkTheme, localeTag = systemLocaleTag) {
-        Box {
-            ChildStack(stack = stack, ...) { ... }
-            dialog.Render()
-        }
+    AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
+        RootScreen(this, state.value, loaders.value, viewModel)
+        dialogComponent.Render()
     }
 }
 ```
 
-The `LaunchedEffect(systemLocaleTag)` ensures `DateTimeUtils.format(...)` uses the right locale.
+The `LaunchedEffect(systemLocaleTag)` ensures `DateTimeUtils.format(...)` uses the right locale. The two `AppTheme.current` / `AppLocale.current` reads come from `:toolkit:theme` / `:toolkit:localization` (`expect object` with a `@Composable val current`); their non-Composable `.current()` siblings are used by `BackendClient.defaultRequest` for the `Accept-Language` header.
 
 ### Once in `PreviewContainer`
 

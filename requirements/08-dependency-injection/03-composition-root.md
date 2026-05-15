@@ -164,7 +164,7 @@ fun setUp() {
         modules(
             ContextModule().module,
             // ... all real modules except the one being faked
-            module { single<TrainingsFeature> { FakeTrainingsFeature() } },
+            module { single<TrainingFeature> { FakeTrainingFeature() } },
         )
     }
 }

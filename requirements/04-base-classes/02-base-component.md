@@ -229,58 +229,66 @@ internal class FooComponent(
 
 ## Root components with their own stack
 
-A `*RootComponent` for a feature also owns a private `StackNavigation`:
+A feature's stack-owning Component (named `<Feature>Component` in this repo, e.g. `ProfileComponent`, `AuthComponent`, `HomeRootComponent`, `TrainingsRootComponent`) also owns a private `StackNavigation`. Such Components are **`public class`** (they're constructed from `:shared`, across module boundaries):
 
 ```kotlin
-internal class ProfileRootComponent(
+public class ProfileComponent(
+    initial: ProfileRouter,
     componentContext: ComponentContext,
-    initialRoute: ProfileRouter,
-    private val back: () -> Unit,
-) : BaseComponent<ProfileRootDirection>(componentContext) {
+    private val close: () -> Unit,
+) : BaseComponent<ProfileDirection>(componentContext) {
+
+    override val viewModel: ProfileViewModel = componentContext.retainedInstance { ProfileViewModel() }
+
+    private val backCallback = BackCallback(onBack = viewModel::onBack)
+
+    init { backHandler.register(backCallback) }
+
+    override suspend fun eventListener(direction: ProfileDirection) {
+        when (direction) {
+            ProfileDirection.Back -> close.invoke()
+        }
+    }
 
     private val navigation = StackNavigation<ProfileRouter>()
 
-    private val stack: Value<ChildStack<ProfileRouter, Child>> = childStack(
+    internal val childStack: Value<ChildStack<ProfileRouter, Child>> = childStack(
         source = navigation,
         serializer = ProfileRouter.serializer(),
-        initialConfiguration = initialRoute,
-        key = "ProfileRootComponent",
+        initialStack = { listOf(initial) },
+        key = "ProfileComponent",
+        handleBackButton = true,
         childFactory = ::createChild,
     )
 
-    override val viewModel = componentContext.retainedInstance { ProfileRootViewModel() }
-
-    private fun createChild(config: ProfileRouter, ctx: ComponentContext): Child = when (config) {
-        ProfileRouter.Body -> Child.Body(
-            ProfileBodyComponent(ctx, back = { navigation.pop() }, toSettings = { navigation.push(ProfileRouter.Settings) })
+    private fun createChild(router: ProfileRouter, context: ComponentContext): Child = when (router) {
+        ProfileRouter.Body -> Child.ProfileBody(
+            ProfileBodyComponent(componentContext = context, back = viewModel::onBack)
         )
-        ProfileRouter.Settings -> Child.Settings(ProfileSettingsComponent(ctx, back = { navigation.pop() }))
-        is ProfileRouter.WorkoutHistory -> Child.WorkoutHistory(
-            WorkoutHistoryComponent(ctx, initialRange = config.initialRange, back = { navigation.pop() })
+        ProfileRouter.Settings -> Child.Settings(
+            ProfileSettingsComponent(componentContext = context, back = viewModel::onBack)
         )
-    }
-
-    sealed class Child(open val component: BaseComponent<*>) {
-        data class Body(override val component: ProfileBodyComponent) : Child(component)
-        data class Settings(override val component: ProfileSettingsComponent) : Child(component)
-        data class WorkoutHistory(override val component: WorkoutHistoryComponent) : Child(component)
-    }
-
-    override suspend fun eventListener(direction: ProfileRootDirection) {
-        when (direction) {
-            ProfileRootDirection.Back -> {
-                if (!navigation.popOrNull()) back()
-            }
-        }
+        // ... other routes
     }
 
     @Composable
     override fun Render() {
-        ChildStack(stack = stack, animation = stackAnimation(platformStackAnimator())) { child ->
-            child.instance.component.Render()
-        }
+        val state = viewModel.state.collectAsStateMultiplatform()
+        val loaders = viewModel.loaders.collectAsStateMultiplatform()
+        ProfileScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class ProfileBody(override val component: ProfileBodyComponent) : Child(component)
+        data class Settings(override val component: ProfileSettingsComponent) : Child(component)
+        // ... one entry per route
     }
 }
 ```
 
-The `*RootComponent` is the only component in a feature that has a stack; sub-components do not.
+Notes:
+
+- The Component is `public class` because it is instantiated from `:shared`.
+- Pop / back is wired through `BackCallback(onBack = viewModel::onBack)` + `backHandler.register(...)`, not by inspecting `navigation.popOrNull()` inside `eventListener`. The VM owns the back semantics.
+- `Render()` typically delegates to a `<Feature>Screen(this, state, loaders, contract)` that calls `ChildStack(stack = component.childStack, ...)` — the stack rendering lives in the Screen, not in `Render()` directly.
+- This stack-owning Component is the only component in a feature that has a stack; sub-components do not.

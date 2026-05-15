@@ -32,6 +32,7 @@ public actual object AppTheme {
 ### iOS
 
 ```kotlin
+@OptIn(InternalComposeUiApi::class)
 public actual object AppTheme {
     public actual val current: Boolean
         @Composable get() = LocalSystemTheme.current == SystemTheme.Dark
@@ -42,6 +43,8 @@ public actual object AppTheme {
     }
 }
 ```
+
+The class-level `@OptIn(InternalComposeUiApi::class)` is mandatory — `LocalSystemTheme` / `SystemTheme` live in `androidx.compose.ui` under `InternalComposeUiApi`, which is **not** in the global opt-in list (only `ExperimentalComposeUiApi` is). Omitting the annotation fails compilation.
 
 `true` = dark, `false` = light.
 
@@ -89,7 +92,7 @@ public actual object AppLocale {
 }
 ```
 
-The Composable accessor prefers `AppCompatDelegate.getApplicationLocales()` (the user's per-app language preference, supported on Android 13+). Falls back to the configuration locale, then the system default.
+The Composable accessor prefers `AppCompatDelegate.getApplicationLocales()` — AppCompat exposes the user's per-app language preference uniformly across API levels (it backports the storage on pre-Android 13 and reads the platform per-app locale on Android 13+). Falls back to the current `LocalConfiguration` locales, then `Locale.getDefault()`.
 
 ### iOS
 

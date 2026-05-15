@@ -71,11 +71,12 @@ This document treats the **non-dotted** style as the recommended default for new
 When a module has both public API and internal helpers:
 
 ```
-com.<org>.<product>.toolkit.http/
+com.<org>.<product>.toolkit.http.client/
   HttpModule.kt                    // public
+  PlatformDriver.kt                // public (expect/actual)
   internal/
     ApiErrorParser.kt              // internal
-    DefaultResponseValidator.kt    // internal
+    ResponseValidator.kt           // internal
 ```
 
 The `internal/` sub-package is **convention only** — it doesn't add code-level enforcement (Kotlin doesn't have package-private). But it signals to readers "don't import from here outside this module".
@@ -86,8 +87,13 @@ Every screen's seven files live in their own package:
 
 ```
 :ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/
-  ProfileRootComponent.kt
-  ProfileRootScreen.kt
+  ProfileComponent.kt               // feature root — owns the inner stack
+  ProfileScreen.kt
+  ProfileState.kt
+  ProfileContract.kt
+  ProfileDirection.kt
+  ProfileLoader.kt
+  ProfileViewModel.kt
   body/                             // sub-screen package
     ProfileBodyComponent.kt
     ProfileBodyContract.kt
@@ -101,7 +107,7 @@ Every screen's seven files live in their own package:
     // ... seven files
 ```
 
-The package matches the sub-screen folder name (lowercase).
+The package matches the sub-screen folder name (lowercase). Naming for the feature-root files varies: most features use the bare feature name (`ProfileComponent`, `TrainingComponent`, `AuthComponent`); a few use the `<Feature>Root*` prefix when the bare name would clash with a sub-screen of the same name (`HomeRootComponent` coexisting with `home/HomeComponent`, `TrainingsRootComponent` with `trainings/TrainingsComponent`). Pick one style per feature and stick to it.
 
 ## DTO / Entity / Mapper area sub-packages
 

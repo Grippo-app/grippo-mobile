@@ -99,7 +99,7 @@ Rules:
    - `DROP TABLE <table>` + `ALTER TABLE <table>_new RENAME TO <table>` — swap.
    - Recreate indices explicitly.
 4. **Indices are recreated** after the rename — Room expects them with the exact names it generates (e.g. `index_<table>_<col>`).
-5. **Comments delimit each table** (`// ─── <table> ─────`).
+5. **Comments delimit each table** (`// ─── <table> ─────`) for multi-table recreate-table migrations (e.g. `Migration4To5`). Single-table or add-only migrations don't need them; a short prose comment is enough when context helps.
 6. **Raw SQL only.** No DSL.
 
 ## Adding a migration

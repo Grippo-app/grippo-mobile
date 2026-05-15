@@ -49,7 +49,7 @@ One file = one top-level declaration, unless tightly-coupled.
 | Mapper | `<Source>.to<Target>()` / `to<Target>OrNull()` | `TrainingResponse.toEntityOrNull()`, `Training.toBody()` |
 | Plural mapper | `List<Source>.to<Target>s()` | `List<TrainingResponse>.toEntities()` |
 | ViewModel verb | `<verb>` | `loadTrainings()`, `submitForm()` |
-| Use case action | `execute(...)` | `RecalculateGoalProgressUseCase.execute(goalId)` |
+| Use case action | `execute(...)` (default; domain-named variants when a single verb fits poorly) | `DeleteTrainingUseCase.execute(id)`, `UpdateWeightUseCase.execute(value)`, `LoginUseCase.executeEmail/executeGoogle/executeApple` |
 
 ## Parameters
 
@@ -59,7 +59,7 @@ One file = one top-level declaration, unless tightly-coupled.
 | Composable callback | `on<X>: () -> Unit` | `onClick: () -> Unit` |
 | ViewModel constructor | `<name>Feature: <X>Feature` | `userFeature: UserFeature` |
 | Component constructor | `<name>: <Type>` | `back: () -> Unit`, `initialRange: DateRange` |
-| Repository constructor | `<name>: <X>Service` | `api: GrippoApi`, `trainingDao: TrainingDao` |
+| Repository constructor | `<name>: <X>Api`/`<X>Dao`/`<X>DataStore` | `api: <Product>Api`, `trainingDao: TrainingDao`, `dataStore: DataStore<Preferences>` |
 
 ## Packages
 

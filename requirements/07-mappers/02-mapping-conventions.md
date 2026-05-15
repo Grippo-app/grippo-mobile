@@ -6,7 +6,8 @@ Every mapper module follows the same shape. This document describes the function
 
 | Direction | Function form | Plural form |
 |---|---|---|
-| `Source.toEntity()` / `Source.toEntityOrNull()` | one source → one entity | `List<Source>.toEntities()` |
+| `Source.toEntity()` / `Source.toEntityOrNull()` (DTO source) | one source → one entity | `List<Source>.toEntities()` |
+| `Source.toEntity(parentId: String)` (Domain source, drafts) | one draft → one Pack or leaf Entity | no plural — caller does `.map { it.toEntity(parentId) }` |
 | `Source.toDomain()` / `Source.toDomainOrNull()` | one source → one domain | `List<Source>.toDomain()` |
 | `Source.toState()` | one source → one state | `List<Source>.toState()` |
 | `Source.toBody()` | one source → one request body | `List<Source>.toBody()` (same name, overloaded on receiver) |
@@ -223,6 +224,38 @@ Rules:
 3. **Optional `*FormatState.value` passes through as nullable** if the domain field is nullable (e.g. iteration weights).
 4. **No `name.trim().ifBlank { return null }`-style validation** — the `*FormatState` types already encode validity; if a field is invalid, its `.value` is null and the standard `AppLogger.Mapping.log ?: return null` step drops the record.
 5. **Pure field translation only.** Volume/intensity aggregation is computed when constructing the State (e.g. in the ViewModel from iteration values), not inside the State → Domain mapper.
+
+## Domain → Entity (drafts)
+
+```kotlin
+public fun DraftTraining.toEntity(profileId: String): DraftTrainingPack {
+    val id = Uuid.random().toString()
+
+    val training = DraftTrainingEntity(
+        id = id,
+        profileId = profileId,
+        trainingId = trainingId,
+        duration = duration.inWholeMinutes,
+    )
+
+    return DraftTrainingPack(
+        training = training,
+        exercises = exercises.map { it.toEntity(id) },
+    )
+}
+
+public fun DraftExercise.toEntity(trainingId: String): DraftExercisePack { /* ... */ }
+public fun SetIteration.toEntity(exerciseId: String): DraftIterationEntity { /* ... */ }
+```
+
+Rules:
+
+1. **Ids are client-generated** with `Uuid.random().toString()`. Drafts never originate from the server.
+2. **Parent FK is a parameter**, not a field on the source. The root caller passes `profileId`; each level passes its freshly-minted `id` down to its children.
+3. **No `AppLogger.Mapping.log`.** Domain models have non-null fields, so there is no null to drop.
+4. **Parent mappers return a `Pack`** (`DraftTrainingPack`, `DraftExercisePack`); leaf mappers return a bare entity (`DraftIterationEntity`).
+5. **No plural variant** — drafts are submitted singly. The parent mapper does `.map { it.toEntity(parentId) }` inline.
+6. **Source types are heterogeneous**: parents use `Draft<X>`, but iteration reuses `SetIteration` (no `DraftIteration` domain class).
 
 ## `AppLogger.Mapping` helper
 

@@ -2,7 +2,7 @@
 
 ## Architecture terms
 
-- **App shell** — the platform-specific entry point (`:androidApp`, `:iosApp`). Holds no business logic; only sets up DI, launches the root `Component`, and (Android only) wires Firebase + deeplinks + splash.
+- **App shell** — the platform-specific entry point (`:androidApp`, `:iosApp`). Holds no business logic; only sets up DI, launches the root `Component`, and wires Firebase (Android: in `Application.onCreate`; iOS: in `AppDelegate.application(_:didFinishLaunchingWithOptions:)`). Deeplinks from the launch intent and the splash screen are wired Android-only.
 - **Composition root** — `:shared`. The only module that depends on every other module. Hosts `Koin.init()`, `RootComponent`, `DialogComponent`.
 - **Component** — a Decompose `BaseComponent<DIRECTION>` subclass. Owns its `ViewModel` (via `retainedInstance`), subscribes to `navigator`, handles `Direction` events. Created by the parent component, which threads `componentContext` and callback lambdas through the constructor.
 - **ViewModel** — a `BaseViewModel<STATE, DIRECTION, LOADER>` subclass. Implements the `Contract`. The only place that mutates state (`update { ... }`) and emits `Direction`s (`navigateTo(...)`).
@@ -31,12 +31,12 @@
 
 ## Cross-cutting types
 
-- **`AppLogger`** — singleton with `General`, `Navigation`, `Network`, `Mapping` log categories; writes to a file sink (`~/grippo/logs/app.log` on Android, `NSTemporaryDirectory()/grippo/logs/` on iOS).
+- **`AppLogger`** — singleton with `General`, `Navigation`, `Network`, `Mapping` log categories; writes to a single append-only file sink. Path resolution: Android — `${user.home}/<product>/logs/app.log` (falls back to `java.io.tmpdir`, then `/tmp`); iOS — `NSTemporaryDirectory()/<product>/logs/app.log`. No rotation; cleared via `AppLogger.clearLogFile()`.
 - **`AppTokens`** — facade `@Stable public object AppTokens` exposing `colors`, `icons`, `typography`, `strings`, `drawables`, `dp` as `@Composable @ReadOnlyComposable` properties backed by `CompositionLocal`.
-- **`AppTheme`** — `@Composable public fun AppTheme(darkTheme, localeTag, content)` providing every `Local*` `CompositionLocal` from `:design-system:resources:provider`.
+- **`AppTheme`** — `@Composable public fun AppTheme(darkTheme, localeTag, content)` providing every `Local*` `CompositionLocal`. The `Local*` definitions are `internal` to `:design-system:core`; the types they expose (`AppColor`, `AppDp`, ...) live in `:design-system:resources:provider`.
 - **`StringProvider`** — interface with `suspend fun get(StringResource, vararg Any): String`. Used in ViewModels (non-Composable) where `AppTokens.strings` is unavailable.
 - **`UiText`** — `sealed interface UiText { Res(StringResource, formatArgs), Str(String) }` with both `@Composable fun text()` and `suspend fun text(StringProvider)`.
-- **`*FormatState`** — sealed classes `Empty`/`Invalid`/`Valid` for form-field state (`EmailFormatState`, `PasswordFormatState`, `WeightFormatState`, `HeightFormatState`, `DurationFormatState`, `VolumeFormatState`, `DateFormatState`, `DateRangeFormatState`).
+- **`*FormatState`** — sealed classes `Empty`/`Invalid`/`Valid` for form-field state. Form-style validators: `EmailFormatState`, `PasswordFormatState`, `NameFormatState`. Numeric units: `WeightFormatState`, `HeightFormatState`, `DurationFormatState`, `VolumeFormatState`, `PercentageFormatState`, `IntensityFormatState`, `DensityFormatState`, `MultiplierFormatState`, `RepetitionsFormatState`. Date/time: `DateFormatState`, `DateTimeFormatState`, `DateRangeFormatState`. See `11-state-and-formatters/`.
 - **`AppError`** — sealed hierarchy in `:ui-core:error:error-provider`. Subtypes: `Network.{NoInternet, Timeout, Expected, Unexpected}`, `Expected`, `Unknown`. Mapped by `ErrorProviderImpl` to `AppErrorState`, then surfaced as `DialogConfig.ErrorDisplay`.
 - **`DateTimeUtils`** / **`DateRange`** / **`DateRangeKind`** / **`DateRangePresets`** / **`DateFormat`** / **`DateFormatting`** — toolkit for dates. `DateFormatting.install(localeTag)` switches every formatter to a new locale.
 - **`Connectivity`** — `SharedFlow<Status>` of online/offline status. Status is `Connected(metered: Boolean) | Disconnected`.
@@ -50,7 +50,7 @@ These names are infrastructure-stable. **Do not rename** when applying these req
 |---|---|
 | Base classes | `BaseViewModel`, `BaseComponent`, `BaseScreen`, `BaseComposeScreen`, `BaseDirection`, `BaseLoader`, `BaseRouter`, `BaseResult`, `ComponentIdentifier` |
 | Infrastructure | `OperationManager`, `ResultManager`, `ResultEmitter`, `ResultKey`, `ResultKeys`, `Processing` enum |
-| Design tokens | `AppTokens`, `AppTheme`, `AppColor`, `AppDp`, `AppTypography`, `AppString`, `AppDrawable`, `AppIcon`, `AppPreview`, `PreviewContainer`, `AppFont`, `AppLocale` |
+| Design tokens | `AppTokens`, `AppTheme`, `AppColor`, `AppDp`, `AppTypography`, `AppString`, `AppDrawable`, `AppIcon`, `AppPreview`, `PreviewContainer`, `AppLocale` |
 | Resources | `StringProvider`, `UiText`, `Format*State` |
 | Errors | `AppError`, `ErrorProvider`, `AppErrorState` |
 | Dialogs | `DialogConfig`, `DialogController`, `DialogComponent`, `DialogProvider` |

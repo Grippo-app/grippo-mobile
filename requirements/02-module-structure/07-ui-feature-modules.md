@@ -53,9 +53,13 @@ One module per top-level feature flow (`home`, `profile`, `authorization`, `trai
 
 Each feature module owns:
 
-- An `<Feature>RootComponent` — has its own `StackNavigation<<Feature>Router>` and routes among its sub-screens.
+- A **feature-root component** — has its own `StackNavigation<<Feature>Router>` and routes among its sub-screens. Naming:
+  - **Bare-name** (`<Feature>Component` / `<Feature>Screen` / `<Feature>ViewModel` / ...) — the default for features whose first sub-screen does **not** reuse the feature name. Reference repo: `:profile` (`ProfileComponent`), `:training` (`TrainingComponent`), `:debug` (`DebugComponent`), `:authorization` (`AuthComponent`).
+  - **`<Feature>Root*`** (`<Feature>RootComponent` / `<Feature>RootScreen` / `<Feature>RootViewModel` / ...) — reserved for features whose first sub-screen reuses the feature name, to avoid a class-name collision. Reference repo: `:home` (root is `HomeRootComponent`; sub-screen package is `home/HomeComponent`), `:trainings` (root `TrainingsRootComponent` vs sub-screen `trainings/TrainingsComponent`).
+
+  See `02-module-structure/04-shared-composition-root.md` for the same convention restated next to `RootComponent.createChild`. The root component is `public` (consumed from `:shared`); all sub-screen components are `internal`.
 - One package per sub-screen (`com.<org>.<product>.<feature>.<subscreen>`) containing the **seven MVI files** (`Component`, `Contract`, `State`, `Direction`, `Loader`, `ViewModel`, `Screen`).
-- An optional `<Feature>RootScreen` if the feature is the only renderer; otherwise the root component's `Render()` delegates to per-sub-screen `Render()` via `ChildStack`.
+- A feature-root `Screen` composable (e.g. `ProfileScreen`, `HomeRootScreen`) that delegates to per-sub-screen `Render()` via `ChildStack`. Single-screen features still ship one — the `ChildStack` keeps the door open for adding sub-screens later without renaming.
 
 #### Build (typical)
 
@@ -68,7 +72,7 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.ui.screen.<feature>" }
+    android { namespace = "com.<org>.<product>.ui.screen.features.<feature>" }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
@@ -76,7 +80,7 @@ kotlin {
         implementation(projects.dataMappers.domainToState)
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiScreenFeatures.screenApi)
-        implementation(projects.dataFeatures.featureApi)        // ONLY data-layer dep
+        implementation(projects.dataFeatures.featureApi)        // typical: the only data-layer dep
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)
@@ -94,6 +98,8 @@ kotlin {
 Mandatory deps for any screen feature: `:ui-core:foundation`, `:ui-screen-features:screen-api`, `:design-system:core/components/resources/preview`, `:data-features:feature-api`, `:ui-dialog-features:dialog-api`.
 
 Note: `compose-libs:*` modules (e.g. `:compose-libs:chart`) are imported only by features that actually use them.
+
+The single screen feature with a wider data-layer surface is `:ui-screen-features:authorization`, which adds `:data-services:google-auth`, `:data-services:apple-auth`, and `:data-services:firebase` to drive the platform credential flow before a domain user exists. These are the documented carve-outs to hard rule 1 in `02-dependency-rules.md`; do not copy this pattern into other features.
 
 ## `:ui-dialog-features:*`
 
@@ -160,7 +166,7 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.ui.dialog.<feature>" }
+    android { namespace = "com.<org>.<product>.ui.dialog.features.<feature>" }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
@@ -182,15 +188,20 @@ Note: dialog features do **not** depend on `:data-features:feature-api` unless t
 
 ## File layout for a feature
 
-### Screen feature
+### Screen feature (bare-name root — most features)
 
 ```
 ui-screen-features/profile/
   build.gradle.kts
   src/commonMain/kotlin/com/<org>/<product>/profile/
-    ProfileRootComponent.kt
-    ProfileRootScreen.kt
-    body/                         // sub-screen "body"
+    ProfileComponent.kt           // public class — feature root, owns StackNavigation<ProfileRouter>
+    ProfileContract.kt
+    ProfileState.kt
+    ProfileDirection.kt
+    ProfileLoader.kt
+    ProfileViewModel.kt
+    ProfileScreen.kt              // renders ChildStack of sub-screens
+    body/                         // sub-screen "body" — internal
       ProfileBodyComponent.kt
       ProfileBodyContract.kt
       ProfileBodyState.kt
@@ -200,9 +211,24 @@ ui-screen-features/profile/
       ProfileBodyScreen.kt
     settings/
       ProfileSettingsComponent.kt
-      ProfileSettingsContract.kt
       // ... seven files
-    workouthistory/
+```
+
+### Screen feature (`*Root*` root — only when a sub-screen shares the feature name)
+
+```
+ui-screen-features/home/
+  src/commonMain/kotlin/com/<org>/<product>/home/
+    HomeRootComponent.kt          // public class — feature root, owns StackNavigation<HomeRouter>
+    HomeRootContract.kt
+    HomeRootState.kt
+    HomeRootDirection.kt
+    HomeRootLoader.kt
+    HomeRootViewModel.kt
+    HomeRootScreen.kt
+    home/                         // sub-screen "home" — clashes with the feature name, hence *Root* on the parent
+      HomeComponent.kt
+      HomeContract.kt
       // ... seven files
 ```
 
@@ -225,7 +251,7 @@ ui-dialog-features/weight-picker/
 
 - One module per feature. **Do not** put two unrelated features in the same module.
 - One package per sub-screen / sub-dialog. Each package has exactly the seven files.
-- Sub-screens are `internal` to the feature module. Only the root component is `internal` and only `:shared` (composition root) consumes it.
+- Sub-screens are `internal` to the feature module. The feature-root component (`<Feature>Component` or `<Feature>RootComponent`) is `public` so `:shared`'s `RootComponent.createChild` can instantiate it; everything else inside the feature stays `internal`.
 - A screen feature exposes its public routes via `:ui-screen-features:screen-api`. Direct symbol imports between feature modules are forbidden.
 - A dialog feature exposes its config via `:ui-dialog-features:dialog-api`. Same rule.
 - A feature module may depend on `:compose-libs:*` for specialized widgets (charts, konfetti, wheel-picker, segment-control). It must **not** depend on another feature module.

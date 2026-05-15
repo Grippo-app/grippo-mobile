@@ -25,7 +25,7 @@
   - `koin-annotations` for `io.insert-koin:koin-annotations`.
 - **Vendor prefix** (`androidx-`, `kotlinx-`, `google-`, `android-` for Firebase) — disambiguates similar names.
 
-Gradle generates **type-safe accessors** from these keys by camelCasing the dotted form:
+Gradle generates **type-safe accessors** from these keys by converting each hyphen in a catalog alias into a `.` (so the dashed alias becomes a dot-separated path under `libs`):
 
 | Catalog key | Gradle accessor |
 |---|---|

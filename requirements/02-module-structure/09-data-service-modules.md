@@ -166,7 +166,7 @@ This module is `api`-exposed from `:shared` because the iOS XCFramework re-expor
 
 Optional, per-product. Wrap the platform Auth SDKs and expose a single `suspend fun getIdToken(): String?` method. Implementations live in `androidMain` (`androidx.credentials` + `googleid` library for Google; native Apple sign-in for Apple) and `iosMain` (`ASAuthorization` for Apple; Google handled differently or skipped).
 
-These modules are pulled in from `:data-features:authorization` (the feature that calls `auth.login(googleBody)` or `auth.login(appleBody)`).
+These modules are consumed by `:ui-screen-features:authorization` directly — not by `:data-features:authorization`. The login screen drives the platform credential flow (no domain user exists yet), then hands the resulting ID token to `AuthorizationFeature.login(...)`. This is one of the documented carve-outs to the "UI MUST NOT depend on `:data-services:*`" rule (see `02-dependency-rules.md`).
 
 ## `:data-services:*` rules
 

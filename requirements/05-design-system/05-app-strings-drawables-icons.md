@@ -48,14 +48,13 @@ public object AppDrawable {
 }
 ```
 
-Usage:
+Usage (drawables in the reference repo are raster product imagery, not icons — see `AppIcon` below for `ImageVector` icons):
 
 ```kotlin
-Icon(
-    painter = AppTokens.drawables.res(Res.drawable.ic_settings),
+Image(
+    painter = AppTokens.drawables.res(Res.drawable.barbell),
     contentDescription = null,
-    tint = AppTokens.colors.icon.primary,
-    modifier = Modifier.size(AppTokens.dp.icon.medium),
+    modifier = Modifier.size(AppTokens.dp.equipmentCard.icon),
 )
 ```
 

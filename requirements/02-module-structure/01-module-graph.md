@@ -109,7 +109,7 @@ include(":data-mappers:state-to-domain")
 
 ## Module count and shape (reference)
 
-The reference repo contains ~70 modules. For a new project:
+The reference repo contains ~85 modules (`grep -c '^include' settings.gradle.kts` to confirm; the count grows as `:ui-dialog-features:*` proliferate — currently 25 dialog modules carry most of the weight). For a new project:
 
 - Start with the **infrastructure modules** (everything except the feature folders). All convention plugins, `:shared`, `:design-system:*`, `:ui-core:*`, `:data-services:*` except product-specific ones, `:toolkit:*`, `:data-mappers:*` (empty initially) — these are the foundation.
 - Add `:ui-screen-features:screen-api`, `:ui-dialog-features:dialog-api`, `:data-features:feature-api` as empty contract modules.
@@ -179,9 +179,9 @@ It is OK for `:ui-screen-features:*` and `:data-features:*` to start with fewer 
 
 Every module's `build.gradle.kts` contains **only**:
 
-1. `plugins { id("...convention") }` lines.
+1. `plugins { id("...convention") }` lines (plus rare `alias(libs.plugins.kotlin.serialization)` when `@Serializable` types are declared).
 2. A `kotlin { ... }` block with `android { namespace = "..." }` and `sourceSets.commonMain.dependencies { ... }`.
 
-No `android { compileSdk = ... }`, no `kotlin { jvmToolchain(...) }`, no manual `apply(plugin = ...)`. Everything is in the convention plugins.
+No `android { compileSdk = ... }`, no `kotlin { jvmToolchain(...) }`, no manual `apply(plugin = ...)`. Everything is in the convention plugins. A handful of modules also need a top-level `compose.resources { ... }` block (`:design-system:resources:provider`) or an `androidLibrary { androidResources.enable = true }` block inside `kotlin { ... }` (`:design-system:resources:provider`, `:toolkit:notification-manager`) — these are module-specific and stay at the call site rather than in a convention plugin.
 
 See `12-gradle-build/01-convention-plugins.md` for the convention plugin matrix.

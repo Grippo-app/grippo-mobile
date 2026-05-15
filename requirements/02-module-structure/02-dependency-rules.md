@@ -30,10 +30,14 @@ The dependency graph is strictly directional. Violations are architecture bugs �
 
 ## Hard rules
 
-1. **UI modules (`:ui-screen-features:*`, `:ui-dialog-features:*`) MUST NOT depend on `:data-services:*` directly.** The only path from UI to data is via `:data-features:feature-api`.
+1. **UI modules (`:ui-screen-features:*`, `:ui-dialog-features:*`) MUST NOT depend on `:data-services:*` directly.** The only path from UI to data is via `:data-features:feature-api`. Three narrow carve-outs exist in the reference repo:
+   - `:ui-screen-features:authorization` imports `:data-services:google-auth` and `:data-services:apple-auth` so the login screen can drive the platform credential flow before a domain user exists. These services don't have a domain mirror by design — the ID token they return is fed straight into `AuthorizationFeature.login(...)`.
+   - Any UI feature may import `:data-services:firebase` to emit analytics events directly (`FirebaseProvider.logEvent(...)`); the provider is a stateless `object` and bypassing a domain layer for telemetry is intentional.
+
+   Do not extend this list. Anything that looks like a new exception is a `:data-features:feature-api` UseCase in disguise.
 2. **`:data-features:feature-api` MUST NOT depend on `:data-services:*`.** It is pure interfaces + domain models. No DTOs, no entities, no DAOs.
 3. **`:data-features:<feature>` (the implementation modules) MUST depend on `:data-features:feature-api` and the relevant `:data-services:*` and `:data-mappers:*` modules.** They are `internal` to the data layer; UI cannot import their classes.
-4. **`:data-mappers:*` MUST depend on the two adjacent layers** (e.g. `:dto-to-entity` → `:data-services:backend` + `:data-services:database`) and **MUST NOT depend on UI** or on other mapper modules.
+4. **`:data-mappers:*` MUST depend on the two adjacent layers** (e.g. `:dto-to-entity` → `:data-services:backend` + `:data-services:database`) and **MUST NOT depend on UI feature/dialog modules** or on other mapper modules. The narrow exception: `:data-mappers:domain-to-state` and `:data-mappers:state-to-domain` import `:ui-core:state` because that is precisely their target / source — `:ui-core:state` is a pure-type module (`UiText`, `*FormatState`, `@Immutable` UI data classes) with no rendering logic, so it fits the same "pure-type back-edge" exemption used by hard rule 5 (`:toolkit:http-client` → `:ui-core:error:error-provider`) and `:design-system:components` → `:ui-core:state`.
 5. **`:toolkit:*` MUST NOT depend on `:data-features:*`, `:data-services:*` (except `:data-services:firebase` for crash logging), `:ui-screen-features:*`, or `:ui-dialog-features:*`.** Toolkit is the bottom of the dependency stack. Two narrow exceptions are tolerated because the dependencies are on pure-type modules:
    - `:toolkit:http-client` imports `:ui-core:error:error-provider` so the response validator can throw `AppError` subtypes directly.
    - `:toolkit:date-utils` imports `:design-system:resources:provider` and `:design-system:core` to resolve locale-aware month/weekday `Res.string.*` formats and to read theme-derived format tokens.

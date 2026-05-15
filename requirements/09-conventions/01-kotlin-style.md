@@ -23,7 +23,7 @@ fun foo() { ... }
 | `:data-features:feature-api` types | `public` |
 | `:data-features:<feature>` impls | `internal` (only `<X>FeatureModule` is `public`) |
 | `:data-services:*` types | `internal` (only entry-points like `GrippoApi`, `Database` are `public`) |
-| `:ui-screen-features:*`, `:ui-dialog-features:*` | `internal` (only public Routers in `:screen-api` / `:dialog-api`) |
+| `:ui-screen-features:*`, `:ui-dialog-features:*` | `internal` for sub-screens (`Component`, `Screen`, `State`, `ViewModel`, `Loader`, `Direction`, `Contract`); `public` for the feature-root counterparts and for Routers in `:screen-api` / `:dialog-api` (the root is consumed from `:shared`) |
 | `:design-system:*` | `public` (consumed everywhere) |
 | `:toolkit:*` | `public` for the interface; `internal` for impl |
 | `:data-mappers:*` | `public` top-level functions |
@@ -68,7 +68,7 @@ State classes use **default constructor values** for the initial state; the View
 - **`Dispatchers.Main.immediate`** is the default. Use `Dispatchers.IO` only when explicitly needed (Heavy IO inside the VM; usually IO already runs in `BackendClient`).
 - **`Dispatchers.Default`** for CPU-bound work (sorting large lists, complex computation).
 - **`withContext(Dispatchers.IO)`** in services that touch I/O (e.g. `BackendClient.invoke`).
-- **`runCatching` for Repository methods**. `runBlocking { ... }` for tests only (never production).
+- **`runCatching` for Repository methods that don't already produce `Result<T>`** — e.g. DataStore writes (`override suspend fun setX(...): Result<Unit> = runCatching { dataStore.edit { ... } }`). When the underlying call already returns `Result<T>` (e.g. `<Product>Api.<x>(...): Result<T>`), the Repository just forwards / chains the result and does **not** wrap again. `runBlocking { ... }` is for tests only (never production).
 
 ## Flows
 

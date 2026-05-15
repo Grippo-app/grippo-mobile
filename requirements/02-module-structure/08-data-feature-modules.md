@@ -19,7 +19,7 @@ The single point of contact between UI and data. Holds:
 
 - `<X>Feature` interfaces — `public interface TrainingFeature { fun observeTrainings(...): Flow<List<Training>>; suspend fun getTrainings(...): Result<Unit> }`.
 - Domain models — `public data class Training(val id: String, val createdAt: LocalDateTime, ...)`.
-- `<X>UseCase` classes — for use cases that combine multiple features (e.g. `RecalculateGoalProgressUseCase` depends on `TrainingFeature` + `GoalFeature` + `UserFeature`).
+- `<X>UseCase` classes — for use cases that combine multiple features (reference repo: `TrainingDigestUseCase` and `MuscleLoadingSummaryUseCase` compose `TrainingFeature` + `ExerciseExamplesFeature` + `MuscleFeature`; `LoginUseCase.executeEmail/executeGoogle/executeApple` composes `AuthorizationFeature` + `UserFeature`).
 - `FeatureApiModule` — `@Module @ComponentScan public class FeatureApiModule` declaring `<X>UseCase` as `@Factory` (use cases are stateless and instantiated per call).
 
 ### Rules
@@ -39,17 +39,17 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.data.features.api" }
+    android { namespace = "com.<org>.<product>.data.features.feature.api" }
 
     sourceSets.commonMain.dependencies {
-        implementation(libs.datetime)
-        implementation(libs.immutable.collections)
+        implementation(projects.toolkit.dateUtils)
         implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.datetime)
     }
 }
 ```
 
-No design-system, no toolkit (except indirectly via Koin annotations).
+No design-system, no UI core, no other toolkit module besides `:toolkit:date-utils` (which is needed because several domain models carry `LocalDateTime`/`DateRange` values).
 
 ## `:data-features:<feature>` (implementation)
 

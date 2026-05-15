@@ -187,7 +187,7 @@ Drafts never round-trip through the server. They live in a `draft_*` table with 
 | `<X>Feature` | `public interface` | UI-facing contract; pure types |
 | `<X>FeatureImpl` | `internal class` | Composition (sometimes) of multiple repositories |
 
-For simple features, `FeatureImpl` delegates to `Repository` one-to-one. For complex features (e.g. `RecalculateGoalProgressUseCase` that touches `TrainingsRepository` + `GoalRepository` + `UserRepository`), the layer is necessary.
+For simple features, `FeatureImpl` delegates to `Repository` one-to-one. For composing features, the layer is necessary — examples in this codebase: `TrainingDigestUseCase` and `MuscleLoadingSummaryUseCase` (compose `TrainingsRepository` + `MuscleRepository` to derive aggregate metrics) and `LoginUseCase.executeEmail/executeGoogle/executeApple` (compose `AuthorizationRepository` + `UserRepository` to swap tokens and refresh the active profile in one call).
 
 Both layers cost minimally (each is a thin class) and keep the seven-file convention consistent across the codebase.
 

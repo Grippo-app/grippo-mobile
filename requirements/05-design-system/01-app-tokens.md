@@ -56,10 +56,16 @@ Text(
     modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
 )
 
+Image(
+    painter = AppTokens.drawables.res(Res.drawable.barbell),
+    contentDescription = null,
+    modifier = Modifier.size(AppTokens.dp.equipmentCard.icon),
+)
+
 Icon(
-    painter = AppTokens.drawables.res(Res.drawable.ic_settings),
+    imageVector = AppTokens.icons.Search,
     tint = AppTokens.colors.icon.primary,
-    modifier = Modifier.size(AppTokens.dp.icon.medium),
+    contentDescription = null,
 )
 ```
 

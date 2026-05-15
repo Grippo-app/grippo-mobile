@@ -52,11 +52,13 @@ kotlin {
         implementation(projects.dataMappers.dtoToEntity)
         implementation(projects.dataMappers.entityToDomain)
         implementation(projects.toolkit.dateUtils)
-        implementation(projects.toolkit.logger)
 
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.datetime)
     }
+
+    // Note: `:toolkit:logger` is consumed by mapper modules (for `AppLogger.Mapping`),
+    // not by data-feature modules. No existing `:data-features:*` module declares it.
 }
 ```
 

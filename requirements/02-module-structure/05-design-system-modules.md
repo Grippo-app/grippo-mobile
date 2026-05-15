@@ -83,19 +83,32 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.design.components" }
+    android { namespace = "com.<org>.<product>.design.system.components" }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
-        implementation(projects.designSystem.preview)   // for @AppPreview in tests/previews
-        implementation(projects.composeLibs.chart)      // if a component uses the chart lib
+        implementation(projects.designSystem.preview)
+        implementation(projects.composeLibs.segmentControl)
+        implementation(projects.composeLibs.konfetti)
+        implementation(projects.composeLibs.chart)
+        implementation(projects.uiScreenFeatures.screenApi)   // for shared route payload types referenced by component params
+        implementation(projects.uiCore.state)                  // for State/UiText types passed into composables
+        implementation(projects.toolkit.dateUtils)             // for date axis/chart helpers
+
         implementation(compose.foundation)
+        implementation(compose.runtime)
         implementation(compose.material3)
+
         implementation(libs.immutable.collections)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.network.ktor)
+        implementation(libs.datetime)
     }
 }
 ```
+
+Note: `:design-system:components` deliberately depends on `:ui-screen-features:screen-api` and `:ui-core:state` — both are pure-type modules with no UI logic of their own, so they fit the "pure-type back-edge" exemption described in `02-module-structure/02-dependency-rules.md`. Do not extend that exemption to feature implementation modules.
 
 ## `:design-system:preview`
 

@@ -1,6 +1,6 @@
 # Libraries (Version Catalog)
 
-This is the canonical `gradle/libs.versions.toml`. Do **not** add libraries or bump versions silently — both are deliberate, separate tasks. The catalog uses dotted names (e.g. `kotlinx.coroutines.core`) and is consumed via Gradle's type-safe accessors.
+This is the canonical `gradle/libs.versions.toml`. Do **not** add libraries or bump versions silently — both are deliberate, separate tasks. The catalog uses dashed (kebab-case) aliases (e.g. `kotlinx-coroutines-core`); Gradle's type-safe accessors translate each `-` into a `.` (so the alias becomes `libs.kotlinx.coroutines.core`).
 
 ## `gradle/libs.versions.toml`
 

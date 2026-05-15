@@ -51,7 +51,7 @@ public data class WorkoutHistory(
 ) : ProfileRouter()
 ```
 
-`DateRange`, `StageState`, all `*FormatState`, `DateFormat`, `DateRangeKind`, `UiText` — all **are** `@Serializable` in this project. If you introduce a new type as a route payload, mark it `@Serializable` or convert at the boundary.
+`DateRange`, `StageState`, all `*FormatState`, `DateFormat`, `DateRangeKind` — all **are** `@Serializable` in this project. `UiText` is **not** (`@Stable` only — it wraps a non-serializable `StringResource` plus `ImmutableList<Any>` args), so don't put a `UiText` in a route payload. Resolve it to a `String`/`Res` key before navigating, or keep it inside `State` (which is rebuilt in `init { }` after process death, not restored from the StateKeeper).
 
 ### 3. No lambdas in route configs
 

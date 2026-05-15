@@ -45,16 +45,18 @@ Dependency injection is **Koin Annotations + KSP**. The project does **not** use
 ### Interface implementation
 
 ```kotlin
-internal interface TrainingsRepository { ... }
+internal interface TrainingRepository { ... }
 
-@Single(binds = [TrainingsRepository::class])
-internal class TrainingsRepositoryImpl(
+@Single(binds = [TrainingRepository::class])
+internal class TrainingRepositoryImpl(
     private val api: GrippoApi,
     private val trainingDao: TrainingDao,
-) : TrainingsRepository { ... }
+) : TrainingRepository { ... }
 ```
 
-Consumers inject the interface: `private val repository: TrainingsRepository by inject()` — or, more idiomatically in this project, via constructor.
+Note the singular/plural convention: the module is `TrainingsFeatureModule` (plural, named after the `:data-features:trainings` directory), but the interface/impl/feature classes are singular (`TrainingRepository`, `TrainingFeature`). Same pattern across other features: `ExerciseExampleRepository` in `:data-features:exercise-examples`, etc.
+
+Consumers inject the interface: `private val repository: TrainingRepository by inject()` — or, more idiomatically in this project, via constructor.
 
 ### Concrete service (no interface)
 
@@ -90,12 +92,12 @@ public class TrainingsFeatureModule
 
 ```
 :data-features:trainings/src/commonMain/kotlin/com/<org>/<product>/data.features.trainings/
-  TrainingsFeatureModule.kt
+  TrainingsFeatureModule.kt            // public class, plural to match the module folder
   data/
-    TrainingsRepositoryImpl.kt        // @Single(binds = [TrainingsRepository::class])
+    TrainingRepositoryImpl.kt          // @Single(binds = [TrainingRepository::class])
   domain/
-    TrainingsRepository.kt             // internal interface
-    TrainingsFeatureImpl.kt            // @Single(binds = [TrainingsFeature::class])
+    TrainingRepository.kt              // internal interface
+    TrainingFeatureImpl.kt             // @Single(binds = [TrainingFeature::class])
 ```
 
 `TrainingsFeatureModule.kt`:
@@ -130,21 +132,28 @@ public class DatabaseModule {
 
 The methods are `@Single` so Koin treats them as providers. Inside the method body, the actual instantiation logic runs.
 
-The same shape is used by the toolkit/service modules that adapt `NativeContext` factory methods (`DataStoreModule`, `ConnectivityModule`, `LinkOpenerModule`, `NotificationManagerModule`, `PermissionManagerModule`), the HTTP/JSON/image-loader stack (`HttpModule`, `SerializationModule`, `ImageLoaderModule`), and the platform auth modules (`GoogleAuthModule`, `AppleAuthModule`). Each declares its providers inline with `@Single internal fun ...` and lets `@ComponentScan` pick up any companion `@Single`-annotated classes in the package.
+The same shape is used by the toolkit/service modules that adapt `NativeContext` factory methods (`DataStoreModule`, `ConnectivityModule`, `LinkOpenerModule`, `NotificationManagerModule`, `PermissionManagerModule`) and the HTTP/JSON/image-loader stack (`HttpModule`, `SerializationModule`, `ImageLoaderModule`). Each declares its providers inline with `@Single internal fun ...` and lets `@ComponentScan` pick up any companion `@Single`-annotated classes in the package.
+
+The platform auth modules (`GoogleAuthModule`, `AppleAuthModule`) follow the same inline-provider shape but **omit `@ComponentScan`** — they have no separate annotated classes in their package, only the single provider method. The `@Module(includes = [...])` declaration alone is enough; KSP picks up the inline `@Single` method directly. See `02-koin-annotations.md` for the "providers-only" carve-out.
 
 ## How `RootViewModel`, `RootComponent` consume Koin
 
 Components fetch their VM's dependencies via `getKoin().get()`:
 
 ```kotlin
-override val viewModel: ProfileBodyViewModel = componentContext.retainedInstance {
+override val viewModel = componentContext.retainedInstance {
     ProfileBodyViewModel(
-        userFeature = getKoin().get(),
-        weightHistoryFeature = getKoin().get(),
         dialogController = getKoin().get(),
+        weightHistoryFeature = getKoin().get(),
+        userFeature = getKoin().get(),
+        updateWeightUseCase = getKoin().get(),
+        stringProvider = getKoin().get(),
+        notificationManager = getKoin().get(),
     )
 }
 ```
+
+Note `viewModel` has no explicit type annotation — `BaseComponent.viewModel` is `abstract val`, and the property type is inferred from the `retainedInstance { ... }` factory result.
 
 ViewModels declare their constructor parameters explicitly; Koin resolves them via the `get()` calls inside `retainedInstance`. **Not** via direct injection annotations on the VM — VMs are not Koin-managed objects (they're managed by Decompose's `InstanceKeeper`).
 

@@ -13,19 +13,22 @@ In `:ui-screen-features:screen-api/RootRouter.kt`:
 ```kotlin
 @Serializable
 public sealed class RootRouter : BaseRouter {
-    @Serializable public data object Authorization : RootRouter()
+    @Serializable public data class Auth(val value: AuthRouter) : RootRouter()
+    @Serializable public data object Trainings : RootRouter()
     @Serializable public data object Home : RootRouter()
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
+    @Serializable public data object Debug : RootRouter()
     @Serializable public data class Training(val stage: StageState) : RootRouter()
 }
 
 @Serializable
 public sealed class ProfileRouter : BaseRouter {
-    @Serializable public data object Body : ProfileRouter()
-    @Serializable public data object Settings : ProfileRouter()
+    // ... existing entries: Equipments, Muscles, Body, Experience, Settings, Social, Goal
     @Serializable public data class WorkoutHistory(val initialRange: DateRange) : ProfileRouter()
 }
 ```
+
+`Auth` and `Profile` wrap nested routers (`AuthRouter` / `ProfileRouter`); leaf root entries (`Home`, `Trainings`, `Debug`) are `data object`. `Training` is a `data class` because it carries a `StageState` payload.
 
 If the destination route doesn't exist, add it here first.
 
@@ -86,18 +89,21 @@ internal class RootViewModel(...) : BaseViewModel<...>(...), RootContract {
 ```kotlin
 override suspend fun eventListener(direction: RootDirection) {
     when (direction) {
-        RootDirection.Login -> navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
+        RootDirection.Login -> if (childStack.value.active.instance !is Child.Authorization) {
+            navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
+        }
         RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
         RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
         is RootDirection.OpenProfileWorkoutHistory -> navigation.push(
             RootRouter.Profile(ProfileRouter.WorkoutHistory(direction.initialRange))
         )
-        // ... existing branches
+        // ... existing branches (Trainings, Debug, Training(stage), Settings, Social, Goal,
+        //     WeightHistory, MissingEquipment, ExcludedMuscles, Experience, Back, Close, ...)
     }
 }
 ```
 
-The real `RootRouter.Auth` wraps an `AuthRouter` value; `RootRouter.Profile(ProfileRouter.<Sub>)` is the way every profile sub-screen is opened.
+The `Login` branch is guarded against re-pushing the auth flow when the user is already on it (token observer fires on every logout transition, including ones initiated from inside `Auth`). `RootRouter.Profile(ProfileRouter.<Sub>)` is the way every profile sub-screen is opened.
 
 ### 5. Thread the callback through `:ui-screen-features:home`
 

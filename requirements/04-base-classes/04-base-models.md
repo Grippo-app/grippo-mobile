@@ -68,30 +68,42 @@ public interface BaseResult
 public data class Result<T : Any>(public val data: T) : BaseResult
 ```
 
-Marker for cross-component result types. `Result<T>` wraps a value carried through `ResultManager`. Use case:
+Marker for cross-component result types. `Result<T>` wraps every payload carried through `ResultManager` — `sendResult<T : Any>(key, data: T)` channels `Result(data)` (which is itself the `BaseResult`). The producer passes the raw payload; the consumer subscribes to `Result<T>` and unwraps `.data`.
+
+Action-protocol types live nested inside the producer's `*Router.<Screen>`, as a plain sealed interface (no `BaseResult` extension):
 
 ```kotlin
 @Serializable
 public sealed class TrainingRouter : BaseRouter {
-    @Serializable public data class Exercise(val id: String) : TrainingRouter() {
+    @Serializable public data class Exercise(val exercise: ExerciseState) : TrainingRouter() {
 
-        public sealed interface Action : BaseResult {
-            public data class Sync(val exercise: Exercise) : Action
+        public sealed interface Action {
+            public data class Sync(val exercise: ExerciseState) : Action
             public data class Remove(val id: String) : Action
         }
     }
 }
 ```
 
-`Action` extends `BaseResult` directly (it is `BaseResult`-shaped without needing the `Result<T>` wrapper). Other consumers wrap their primitive payloads in `Result<T>`:
+Producer and consumer:
+
+```kotlin
+sendResult(key = ResultKeys.create("exercise"), data = TrainingRouter.Exercise.Action.Sync(exercise))
+// → channels Result(action): a BaseResult
+
+observeResult<Result<TrainingRouter.Exercise.Action>>(key) { result ->
+    when (val action = result.data) { /* ... */ }
+}
+```
+
+Primitive payloads use the same shape:
 
 ```kotlin
 sendResult(key = ResultKeys.create("rating"), data = 5)
-// → channels Result(5): a BaseResult
 observeResult<Result<Int>>(key) { result -> println(result.data) }
 ```
 
-Use the wrapper for **simple values** (Int, String, your own data classes). Use a sealed `BaseResult` subtype for **action protocols** (Sync vs Remove vs Update).
+There is **one** pattern: `Result<T>` wraps everything. Keep `Action` as a plain sealed interface so `sendResult` can infer `T` directly.
 
 ## `ResultKey<T : BaseResult>`
 
@@ -151,5 +163,5 @@ The markers are intentionally **empty** — they exist for type discipline, not 
 - **Don't extend `BaseDirection` with state** — Directions are transient. Persisted intent belongs in the route, not the direction.
 - **Don't extend `BaseLoader` with state** — Loaders are tags. If you need to communicate progress, add a field to State and update via `update { ... }`.
 - **Don't extend `BaseRouter` outside `:ui-screen-features:screen-api`** — routers are public API.
-- **Don't extend `BaseResult` outside `:ui-screen-features:screen-api`** — action protocols live with their producing routes.
+- **Don't extend `BaseResult` yourself.** The only intended implementer is `Result<T>` (in `:ui-core:foundation`). Action protocols are plain sealed interfaces nested inside the producer's `*Router.<Screen>` in `:ui-screen-features:screen-api`; `sendResult` wraps them in `Result<T>` automatically.
 - **One `ResultKey` per protocol, not per subtype.** A `TrainingRouter.Exercise.Action` sealed interface uses one `ResultKey<Result<TrainingRouter.Exercise.Action>>`, not one per subtype.

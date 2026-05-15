@@ -10,12 +10,6 @@ The single Room database lives in `:data-services:database`. It holds **all** lo
         TokenEntity::class,
         UserActiveEntity::class,
 
-        UserEntity::class,
-        UserStatsEntity::class,
-        UserExcludedMuscleEntity::class,
-        UserExcludedEquipmentEntity::class,
-        WeightHistoryEntity::class,
-
         EquipmentEntity::class,
         EquipmentGroupEntity::class,
 
@@ -35,6 +29,12 @@ The single Room database lives in `:data-services:database`. It holds **all** lo
         DraftTrainingEntity::class,
         DraftExerciseEntity::class,
         DraftIterationEntity::class,
+
+        UserEntity::class,
+        UserStatsEntity::class,
+        UserExcludedMuscleEntity::class,
+        UserExcludedEquipmentEntity::class,
+        WeightHistoryEntity::class,
 
         GoalEntity::class,
     ],

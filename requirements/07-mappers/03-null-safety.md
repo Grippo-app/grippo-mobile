@@ -102,6 +102,21 @@ trainingDao.insertOrReplace(training, exercises, iterations)
 
 The Repository flat-maps children out of the parent DTO and feeds them to leaf `toEntities()` calls. Each child carries its own parent FK (`trainingId`, `exerciseId`) from the wire payload, so it logs and drops on its own without taking a `parentId` parameter.
 
+**Exception — `:data-mappers:domain-to-entity` (drafts).** Drafts have no wire payload; ids are generated locally via `Uuid.random().toString()`. The parent therefore must hand its freshly-minted id down to the child mapper as a parameter:
+
+```kotlin
+public fun DraftTraining.toEntity(profileId: String): DraftTrainingPack {
+    val id = Uuid.random().toString()
+    val training = DraftTrainingEntity(id = id, profileId = profileId, /* ... */)
+    return DraftTrainingPack(training = training, exercises = exercises.map { it.toEntity(id) })
+}
+
+public fun DraftExercise.toEntity(trainingId: String): DraftExercisePack { /* ... */ }
+public fun SetIteration.toEntity(exerciseId: String): DraftIterationEntity { /* ... */ }
+```
+
+Domain models have non-null fields, so there is **no `AppLogger.Mapping.log`** in this direction — null-and-drop has nothing to do.
+
 ## What `AppLogger.Mapping` produces
 
 A file log entry like:
@@ -110,7 +125,7 @@ A file log entry like:
 [MAPPING] TrainingResponse.id is null (TrainingMapper.kt:12)
 ```
 
-The file log is written through `:toolkit:logger`'s `LogDispatcher` to a rolling file (Android: app cache dir; iOS: `NSTemporaryDirectory()`). Surfaced in the debug screen via `AppLogger.logFileContentsByCategory()` (returns `Map<String, List<String>>` keyed by category — `MAPPING`, `NETWORK`, `NAVIGATION`, `ERROR`, `WARNING`).
+The file log is written through `:toolkit:logger`'s `LogDispatcher` to a single append-only file (Android JVM: `${user.home}/<product>/logs/app.log`, with `${java.io.tmpdir}` and `/tmp` as fallbacks; iOS: `${NSTemporaryDirectory()}/<product>/logs/app.log`). No rotation — the file grows until `AppLogger.clearLogFile()` is called from the debug screen. Surfaced via `AppLogger.logFileContentsByCategory(): Map<String, List<String>>` keyed by category name (`MAPPING`, `NETWORK`, `NAVIGATION`, `ERROR`, `WARNING`).
 
 When the team sees an unexpected drop ("user's trainings list is shorter than expected"), the log entries pinpoint the missing field. Often the cause is a backend regression — a field that used to be always set is sometimes null now.
 

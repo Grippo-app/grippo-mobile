@@ -85,16 +85,18 @@ public fun b14Med(): TextStyle = TextStyle(
 
 ## Naming convention
 
-- **`hN()`** — headings (H1–H6). Sizes step down: 30/26/22/20/18/16 sp (or your scale).
+- **`hN()`** — headings (H1–H6). Sizes step down: 30/25/22/18/16/15 sp (reference repo) — pick your own scale per product.
 - **`bNNWeight()`** — body text, e.g. `b14Med` = "body 14sp, Medium weight".
 - Weights abbreviated: `Reg` (Regular/Normal), `Med` (Medium 500), `Semi` (SemiBold 600), `Bold` (Bold 700).
 - Sizes that appear in the API: 15, 14, 13, 12, 11, 10 — fine-grained because UIs blend in 1-sp steps.
 
 ## Font family
 
-A single typeface is used app-wide (e.g. Manrope):
+A single typeface is used app-wide (e.g. Manrope). The reference repo registers all seven Manrope weights in a top-level internal helper inside `AppTypography.kt`:
 
 ```kotlin
+private typealias AppFont = Res.font   // file-private alias for terseness
+
 @Composable
 internal fun manrope(): FontFamily = FontFamily(
     Font(AppFont.manrope_bold, weight = FontWeight.Bold),
@@ -107,7 +109,7 @@ internal fun manrope(): FontFamily = FontFamily(
 )
 ```
 
-`AppFont` (`Res.font.manrope_bold`, etc.) is in `:design-system:resources:provider`. Font files live in `commonMain/composeResources/font/`.
+`AppFont` is **not** a public type — it is a file-private `typealias` for `Res.font` (the Compose Resources generated `Res` object). Font files live in `:design-system:resources:provider/src/commonMain/composeResources/font/` (e.g. `manrope_bold.ttf`).
 
 Multiple typefaces are rare — usually one font with multiple weights covers a product. If a second typeface is needed (display vs body), add a parallel `oswald()` helper and route specific token methods through it.
 
