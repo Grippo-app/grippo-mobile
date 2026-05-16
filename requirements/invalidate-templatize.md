@@ -167,14 +167,14 @@ Lowest count wins. Ties → table order. After each pass, the agent increments c
 
 | Row | Count | Last audited | Leakage remaining |
 |---|---|---|---|
-| 00-overview | 2 | 2026-05-16 | 0 |
+| 00-overview | 2 | 2026-05-16 | 40 |
 | 01-tech-stack | 2 | 2026-05-16 | 0 |
 | 02-module-structure | 2 | 2026-05-16 | 0 |
 | 03-architecture-patterns | 2 | 2026-05-16 | 0 |
 | 04-base-classes | 2 | 2026-05-16 | 0 |
 | 05-design-system | 2 | 2026-05-16 | 0 |
 | 06-data-layer | 2 | 2026-05-16 | 0 |
-| 07-mappers | 1 | 2026-05-16 | 0 |
+| 07-mappers | 2 | 2026-05-16 | 0 |
 | 08-dependency-injection | 1 | 2026-05-16 | 0 |
 | 09-conventions | 2 | 2026-05-16 | 0 |
 | 10-toolkit | 1 | 2026-05-16 | 0 |

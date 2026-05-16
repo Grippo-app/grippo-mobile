@@ -1,6 +1,6 @@
 ---
 name: screen-builder
-description: Adds a new sub-screen inside an existing :ui-screen-features:* feature module. Use when the task asks for "a new screen", "a sub-screen", "a tab inside <Feature>", or names a navigation target that does not yet exist under an existing feature router. Does NOT create new feature modules — for that, the orchestrator escalates to data-feature-builder + a new screen-feature scaffold (a wider task).
+description: Adds a new sub-screen inside an existing :ui-screen-features:* feature module. Use when the task asks for "a new screen", "a sub-screen", "a tab inside <Feature>", or names a navigation target that does not yet exist under an existing feature router. Does NOT create the feature module itself — `feature-module-scaffold-builder` handles that; `task-intake` chains the two when the target feature does not yet exist. When adding the first sub-screen to a freshly-scaffolded (single-screen, Debug-style) feature root, this builder also converts the root to multi-screen shape — see Step 4a in the body.
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 ---
@@ -82,7 +82,80 @@ is <Feature>Router.<Subscreen> -> Child.<Subscreen>(
 
 And the matching `data class <Subscreen>(override val component: …) : Child(component)` on the `internal sealed class Child`.
 
+### 4a. (If the feature root is single-screen) — convert to multi-screen first
+
+Before applying Step 4's route wiring, check the shape of the feature root component. If `feature-module-scaffold-builder` produced it in **single-screen (Debug-style)** form, the root has none of: an internal `StackNavigation<<Feature>Router>`, a `childStack(...)` declaration, an inner `sealed class Child`. In that case, before writing the new sub-screen's route, perform the conversion below. If the root already owns a `StackNavigation` (i.e. the feature already hosts at least one sub-screen via the stack), skip 4a and proceed to Step 5.
+
+Detect single-screen shape (run from repo root):
+
+```bash
+rg -l 'StackNavigation' ui-screen-features/<name>/src/commonMain/kotlin/ 2>/dev/null
+```
+
+If empty output, the root is single-screen. Convert as follows:
+
+**4a.1. Replace `RootRouter.<Feature>` payload shape.** In `:ui-screen-features:screen-api/RootRouter.kt`, find the entry created by `feature-module-scaffold-builder`:
+
+```kotlin
+@Serializable public data object <Feature> : RootRouter()
+```
+
+Replace with:
+
+```kotlin
+@Serializable public data class <Feature>(val value: <Feature>Router = <Feature>Router.<FirstSubscreen>) : RootRouter()
+```
+
+(`<FirstSubscreen>` is the route subtype you create in Step 4 — pick the obvious default; `<Feature>Router.<FirstSubscreen>` must be a `data object` or have a sensible default-constructed `data class`.)
+
+**4a.2. Update `RootComponent.createChild`.** In `:shared/RootComponent.kt`, find the existing branch:
+
+```kotlin
+is RootRouter.<Feature> -> Child.<Feature>(
+    <Prefix>Component(
+        componentContext = context,
+        close = viewModel::onBack,
+    )
+)
+```
+
+Replace with:
+
+```kotlin
+is RootRouter.<Feature> -> Child.<Feature>(
+    <Prefix>Component(
+        componentContext = context,
+        initial = router.value,
+        close = viewModel::onBack,
+    )
+)
+```
+
+**4a.3. Convert the feature root's `<Prefix>Component` to multi-screen.** Currently it extends `BaseComponent<<Prefix>Direction>` with no internal stack. Rewrite per the standard multi-screen pattern (see `requirements/03-architecture-patterns/02-decompose-navigation.md` and any existing multi-screen `*RootComponent` for reference):
+
+- Add `initial: <Feature>Router` to the constructor.
+- Add `private val navigation = StackNavigation<<Feature>Router>()`.
+- Add `val stack: Value<ChildStack<<Feature>Router, Child>> = childStack(source = navigation, serializer = <Feature>Router.serializer(), initialConfiguration = initial, key = "<Prefix>Component", childFactory = ::createChild)`.
+- Add `private fun createChild(router: <Feature>Router, context: ComponentContext): Child = when (router) { ... }`.
+- Introduce an inner `internal sealed class Child(...)` mirroring `RootComponent.Child` shape.
+
+Mirror the closest existing multi-screen feature root in the repo for the exact import set and `childStack` signature.
+
+**4a.4. Update the placeholder `<Prefix>Screen`.** Replace its empty body with a `ChildStack`-driven render (again mirror an existing multi-screen `*RootScreen`).
+
+After 4a is complete, proceed with Step 4's route wiring — now the route slots into the new `StackNavigation<<Feature>Router>` you just introduced.
+
+Verify after 4a, before continuing:
+
+```bash
+./gradlew :ui-screen-features:<name>:assemble
+```
+
+This should build green. If it fails, you have a partial conversion — fix before proceeding.
+
 ### 5. Update the calling screen (if applicable)
+
+If Step 4a fired, Steps 5 and 6 apply to the post-conversion shape.
 
 If the task names an entry point (e.g. *"tapping the summary card opens this screen"*), update the calling screen's Contract method and its Component's `eventListener` to invoke the new `to<Subscreen>: (…) -> Unit` callback. The callback is threaded **down** from the feature root, never **up** via global state.
 

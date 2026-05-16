@@ -36,7 +36,29 @@ Ask the user (via clarifying questions) the following:
 7. **Auth methods** (any combination of: email/password, Google Sign-In, Apple Sign-In, or skip for now).
 8. **Firebase** — enabled or skipped? (If enabled, the agent will scaffold the placeholders but leave actual `google-services.json` for the user.)
 
-Save the answers as a reference; reuse them through every step.
+### Field mapping
+
+| Step 0 question                | 03-project-config.md field        |
+|---|---|
+| Product name                   | productName, productPackage (lowercased), apiClassName (productName + "Api") |
+| Organization name              | productPackage (com.<org>.<product>) |
+| Backend host                   | backendHost |
+| Application ID                 | applicationId |
+| First product domain           | (informational — agents do not read this; used in Step 8) |
+| Locales to support             | supportedLocales (YAML list) |
+| Auth methods                   | diHandWrittenModules (append GoogleAuthModule / AppleAuthModule per choice) |
+| Firebase                       | firebaseEnabled |
+
+Defaults for fields the user is not asked about but MUST be set:
+
+- `iosEnabled` — default `true`; false only if the project intentionally drops iOS.
+- `codexEnabled` — default `auto`.
+- `prelaunch` — default `true` for a fresh project (room-migration-builder allows destructive fallback). Flip to `false` when the app ships.
+- `iosFrameworkName` — default `shared`.
+- `typefaceFactory` — name the project picks for its typeface factory function (e.g. `inter`, `roboto`). Default placeholder `<typeface>` until decided.
+- `featuresWithRootComponentSuffix` — start as `[]`; the orchestrator updates it when a feature is forced into the suffixed form.
+
+Save the answers AND copy them into 03-project-config.md per the field-mapping table above in Step 1.5. The answers are not just a reference — they become the runtime configuration every sub-agent reads.
 
 ## Step 1 — read the requirements
 
@@ -59,6 +81,17 @@ Read in order:
 - `requirements/14-cookbook/*`
 
 Don't skim. The architectural rules are interconnected.
+
+## Step 1.5 — populate 03-project-config.md
+
+Open `requirements/00-overview/03-project-config.md`. Replace every value in the YAML frontmatter with the project-specific value from Step 0, per the field-mapping table. For fields the user did not specify, use the defaults noted in Step 0's mapping table.
+
+Verify:
+- No value in the frontmatter still reads `<Product>`, `<product>`, `<org>`, `<product-domain>`, or any other placeholder.
+- `featuresWithRootComponentSuffix` and `diHandWrittenModules` are empty `[]` or contain only modules the project actually intends to ship.
+- `prelaunch: true` for an unreleased project; `firebaseEnabled` matches the Step 0 answer.
+
+Do NOT proceed to Step 2 until 03-project-config.md is fully populated. Every sub-agent invoked later reads this file.
 
 ## Step 2 — initialize the build system
 
@@ -291,6 +324,14 @@ If both succeed, the foundation is complete.
 
 ## Step 13 — write `CLAUDE.md`
 
+**Precondition.** If you copied `requirements/` from a reference KMP repo (e.g. grippo-mobile), check the new project's root for an existing `CLAUDE.md`. If one is present, delete it — the file you write in this step REPLACES it. Two CLAUDE.md files at the same scope create contradictory rules; Claude Code loads both and applies them in arbitrary order.
+
+```bash
+[ -f CLAUDE.md ] && rm CLAUDE.md
+```
+
+If the existing CLAUDE.md was authored for your new project (i.e. you didn't import it from a reference repo), STOP and ask the user before deleting — it may contain real project context.
+
 At the project root, create `CLAUDE.md` describing:
 
 - The product purpose (one paragraph).
@@ -312,7 +353,7 @@ ls .claude/agents/   # should list orchestrator.md, builders, validators, helper
 bash requirements/sub-agents/lint.sh   # if Prompt 1 from SUBAGENTS_TODO_PROMPTS.md ran
 ```
 
-Optionally also fill in `requirements/00-overview/03-project-config.md` with the answers gathered in Step 0. From here on, drop new tasks at `requirements/tasks/TASK_<N>_<title>.md` and ask the parent Claude session to "run task TASK_N_<title>.md". The orchestrator drives the rest.
+Verify `requirements/00-overview/03-project-config.md` was populated in Step 1.5. If you skipped Step 1.5 for any reason, do it now before invoking any sub-agent — they will all fail with BLOCKED otherwise. From here on, drop new tasks at `requirements/tasks/TASK_<N>_<title>.md` and ask the parent Claude session to "run task TASK_N_<title>.md". The orchestrator drives the rest.
 
 ## Constraints
 

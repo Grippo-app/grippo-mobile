@@ -1,26 +1,22 @@
 ---
-productName: Grippo
-productPackage: com.grippo
-apiClassName: GrippoApi
-backendHost: grippo-app.com
-applicationId: com.grippo.android
+productName: <Product>
+productPackage: com.<org>.<product>
+apiClassName: <Product>Api
+backendHost: <product-domain>.com
+applicationId: com.<org>.<product>.android
 iosFrameworkName: shared
 iosEnabled: true
-firebaseEnabled: true
+firebaseEnabled: false
 codexEnabled: auto
-prelaunch: false
+prelaunch: true
 supportedLocales:
   - en
-  - uk
-  - ru
-typefaceFactory: manrope
-featuresWithRootComponentSuffix:
-  - home
-  - trainings
-diHandWrittenModules:
-  - GoogleAuthModule
-  - AppleAuthModule
+typefaceFactory: <typeface>
+featuresWithRootComponentSuffix: []
+diHandWrittenModules: []
 ---
+
+> **Fresh-project state.** Every value in the frontmatter above is a placeholder or a neutral default. Before invoking any sub-agent (`orchestrator`, builders, validators), replace every `<placeholder>` with project-specific values per `requirements/launch.md` Step 1.5. Empty arrays (`featuresWithRootComponentSuffix: []`, `diHandWrittenModules: []`) stay empty until the project actually needs them — sub-agents update them on demand.
 
 # Project config — single source of truth
 
@@ -43,8 +39,8 @@ Sub-agents under `requirements/sub-agents/` read this file before acting. When y
 - `prelaunch` — if true, room-migration-builder allows destructive fallback without a migration.
 - `supportedLocales` — resource-builder requires every locale to receive each new key.
 - `typefaceFactory` — resource-builder uses this factory function name when registering fonts.
-- `featuresWithRootComponentSuffix` — features that use `*RootComponent.kt` instead of bare `*Component.kt` (because they have a sub-screen with the same name as the feature).
-- `diHandWrittenModules` — Koin modules that legitimately use the hand-written `module { … }` DSL outside annotated `@Single` classes (platform-edge wrappers, etc.). `di-validator` reads this list before flagging hand-DSL hits.
+- `featuresWithRootComponentSuffix` — features that use `*RootComponent.kt` instead of bare `*Component.kt` (because they have a sub-screen with the same name as the feature). Start empty (`[]`) on a fresh project; the orchestrator appends a feature name only when its first sub-screen collides with the feature root.
+- `diHandWrittenModules` — Koin modules that legitimately use the hand-written `module { … }` DSL outside annotated `@Single` classes (platform-edge wrappers, etc.). `di-validator` reads this list before flagging hand-DSL hits. Start empty (`[]`) on a fresh project; append a module name only when a hand-written `module { … }` block is deliberately introduced (typically platform-edge wrappers like Google/Apple auth).
 
 ## Updating
 

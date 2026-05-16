@@ -38,20 +38,24 @@ case "$CODEX_ENABLED" in
 esac
 
 CODEX_PRESENT=0
-if [ -d "$HOME/.claude/plugins/codex-plugin-cc" ] || \
-   [ -d ".claude/plugins/codex-plugin-cc" ] || \
+# Best-effort detection — Claude Code plugin install paths vary.
+# Plugin id "codex" from marketplace "openai-codex"
+# (installed via `/plugin install codex@openai-codex`).
+if [ -d "$HOME/.claude/plugins/openai-codex" ] || \
+   [ -d "$HOME/.claude/plugins/codex" ] || \
+   [ -d ".claude/plugins/openai-codex" ] || \
    ls "$HOME/.claude/plugins/" 2>/dev/null | grep -qi 'codex' || \
    command -v codex >/dev/null 2>&1; then
   CODEX_PRESENT=1
 fi
-[ "$CODEX_PRESENT" = "1" ] || { echo "REFUSED: Codex plugin not detected. Install https://github.com/openai/codex-plugin-cc or set codexEnabled to 'auto'/'false'."; exit 0; }
+[ "$CODEX_PRESENT" = "1" ] || { echo "REFUSED: Codex plugin not detected. Install https://github.com/openai/codex-plugin-cc (\`/plugin marketplace add openai/codex-plugin-cc\` then \`/plugin install codex@openai-codex\`) or set codexEnabled to 'auto'/'false'."; exit 0; }
 ```
 
 ## Steps
 
 ### 1. Invoke Codex review
 
-The Codex plugin exposes a command (typically `/codex review` or similar — confirm with the plugin's current README). Invoke it on the current branch / current diff.
+The Codex plugin exposes the `/codex:review` slash command. Invoke it on the current branch / current diff. (The plugin also offers `/codex:adversarial-review`, `/codex:rescue`, `/codex:status`, `/codex:result`, `/codex:cancel` — use `/codex:review` for the standard read-only external-review pass.)
 
 If the plugin requires explicit context (files to review, base branch), pass:
 

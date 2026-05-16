@@ -44,6 +44,10 @@ One paragraph. What capability does the user gain when this lands?
 
 The `Depends on` section is optional. List the prerequisite task file stems (`TASK_<N>_<title>`, no `.md` extension). `task-intake` verifies each listed file is in `requirements/tasks/done/`; if not, the orchestrator returns `BLOCKED: depends on incomplete tasks: <list>` and refuses to run.
 
+## Example
+
+A complete reference task ships at `requirements/tasks/TASK_0_example_note_archive.md.example`. Copy it (drop the `.example` suffix), rename per the next available `<N>`, and edit to fit your task.
+
 ## How execution works
 
 The TASK file MUST include a `## Out of scope` section. Even if the section is short ("nothing else"), an explicit boundary prevents builders from drifting into adjacent files. Tasks without this section are returned BLOCKED by `task-intake`.

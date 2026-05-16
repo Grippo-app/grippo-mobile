@@ -24,7 +24,8 @@ Before any other step, verify the project scaffold matches `requirements/00-over
 Required artifacts (fail with `BLOCKED: project scaffold incomplete — <missing list>` if any are absent):
 
 - `settings.gradle.kts` exists at the repo root.
-- `:shared` module exists with `Koin.kt`, `RootComponent.kt`, `RootRouter.kt`, `RootDirection.kt`, `RootContract.kt`.
+- `:shared` module exists with `Koin.kt`, `RootComponent.kt`, `RootDirection.kt`, `RootContract.kt`.
+- `:ui-screen-features:screen-api` module exists with `RootRouter.kt`.
 - `:data-services:backend` exists with `<apiClassName>.kt` (from project-config).
 - `:data-services:database` exists with `Database.kt`.
 - `:design-system:resources:provider` exists.
@@ -36,10 +37,37 @@ Verification commands:
 
 ```bash
 PROJECT_API=$(rg -m1 '^apiClassName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_ENABLED=$(rg -m1 '^iosEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+FIREBASE_ENABLED=$(rg -m1 '^firebaseEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+
+check_exists() {
+  local root="$1" name="$2" label="$3"
+  find "$root" -name "$name" -print -quit 2>/dev/null | grep -q . \
+    || echo "MISSING: $label"
+}
+
 test -f settings.gradle.kts || echo "MISSING: settings.gradle.kts"
-test -f shared/src/commonMain/kotlin/**/Koin.kt || echo "MISSING: :shared/Koin.kt"
-test -f data-services/backend/src/commonMain/kotlin/**/${PROJECT_API}.kt || echo "MISSING: ${PROJECT_API}.kt"
-# ...etc
+check_exists shared/src/commonMain/kotlin Koin.kt ":shared/Koin.kt"
+check_exists shared/src/commonMain/kotlin RootComponent.kt ":shared/RootComponent.kt"
+check_exists ui-screen-features/screen-api/src/commonMain/kotlin RootRouter.kt ":ui-screen-features:screen-api/RootRouter.kt"
+check_exists data-services/backend/src/commonMain/kotlin "${PROJECT_API}.kt" "${PROJECT_API}.kt"
+check_exists data-services/database/src/commonMain/kotlin Database.kt ":data-services:database/Database.kt"
+check_exists design-system/resources/provider/src/commonMain/kotlin StringProvider.kt ":design-system:resources:provider/StringProvider.kt"
+
+# Locale check — each supportedLocales entry needs a values-<lang>/strings.xml.
+LOCALES=$(awk '/^supportedLocales:/{flag=1; next} /^[a-z]/{flag=0} flag && /^  - /{print $2}' requirements/00-overview/03-project-config.md)
+for lang in $LOCALES; do
+  case "$lang" in
+    en) dir="values" ;;
+    *)  dir="values-$lang" ;;
+  esac
+  find design-system/resources/provider/src/commonMain/composeResources/$dir -name strings.xml -print -quit 2>/dev/null | grep -q . \
+    || echo "MISSING: composeResources/$dir/strings.xml (locale '$lang')"
+done
+
+# Optional gates per project-config flags.
+[ "$IOS_ENABLED" = "true" ] && { [ -d iosApp ] || echo "MISSING: iosApp/ (iosEnabled=true)"; }
+[ "$FIREBASE_ENABLED" = "true" ] && { [ -f androidApp/google-services.json ] || echo "MISSING: androidApp/google-services.json (firebaseEnabled=true)"; }
 ```
 
 If any fail → `BLOCKED: run requirements/launch.md to bootstrap the project first`. Do not proceed to task-intake.
@@ -171,9 +199,12 @@ Read `codexEnabled` and detect Codex availability:
 CODEX_FLAG=$(rg -m1 '^codexEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
 
 # Best-effort detection — Claude Code plugin install paths vary.
+# Plugin id "codex" from marketplace "openai-codex"
+# (installed via `/plugin install codex@openai-codex`).
 CODEX_PRESENT=0
-if [ -d "$HOME/.claude/plugins/codex-plugin-cc" ] || \
-   [ -d ".claude/plugins/codex-plugin-cc" ] || \
+if [ -d "$HOME/.claude/plugins/openai-codex" ] || \
+   [ -d "$HOME/.claude/plugins/codex" ] || \
+   [ -d ".claude/plugins/openai-codex" ] || \
    ls "$HOME/.claude/plugins/" 2>/dev/null | grep -qi 'codex' || \
    command -v codex >/dev/null 2>&1; then
   CODEX_PRESENT=1
@@ -187,7 +218,7 @@ Routing matrix:
 | auto *(or absent)* | yes | invoke `codex-review-loop` |
 | auto *(or absent)* | no  | invoke `internal-reviewer` |
 | true               | yes | invoke `codex-review-loop` |
-| true               | **no** | **HALT** — escalate: *"codexEnabled=true but Codex plugin missing. Install [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) or set codexEnabled to `auto`/`false`."* Do not silently fall back — the user explicitly asked for Codex. |
+| true               | **no** | **HALT** — escalate: *"codexEnabled=true but Codex plugin missing. Install [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) (`/plugin marketplace add openai/codex-plugin-cc` then `/plugin install codex@openai-codex`) or set codexEnabled to `auto`/`false`."* Do not silently fall back — the user explicitly asked for Codex. |
 | false              | *(skip detection)* | invoke `internal-reviewer` |
 
 Then:
