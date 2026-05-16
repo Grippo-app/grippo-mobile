@@ -125,7 +125,7 @@ public class RootComponent(
         is Auth -> Child.Authorization(AuthComponent(ctx, initial = router.value, toHome = ..., close = ...))
         RootRouter.Home -> Child.Home(HomeRootComponent(ctx, ...))
         is RootRouter.Profile -> Child.Profile(ProfileComponent(ctx, initial = router.value, close = ...))
-        is RootRouter.Training -> Child.Training(TrainingComponent(ctx, initial = TrainingRouter.Recording(router.stage), close = ...))
+        is RootRouter.Notes -> Child.Notes(NotesComponent(ctx, initial = NotesRouter.Detail(router.id), close = ...))
         // ...
     }
 
@@ -141,7 +141,7 @@ public class RootComponent(
             }
             RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
             RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
-            is RootDirection.Training -> navigation.push(RootRouter.Training(direction.stage))
+            is RootDirection.Notes -> navigation.push(RootRouter.Notes(direction.id))
             RootDirection.Back -> navigation.pop()
             RootDirection.Close -> close()
             // ...
@@ -172,7 +172,7 @@ Notes:
 - `RootComponent` also registers an Essenty `BackCallback(onBack = viewModel::onClose)` against the inherited `backHandler` so the system back gesture at the top of the stack maps to `RootDirection.Close`. The `Login` branch in `eventListener` is guarded against re-replacing the Auth stack when the user is already on `Authorization` (e.g. the token observer firing again).
 - The `key = "RootComponent"` argument is important for state restoration.
 - The dialog slot navigator is a **sibling** of the stack — both render simultaneously, with the slot drawn on top. `LaunchedEffect(systemLocaleTag)` lives on `RootComponent.Render()` (above the screen + dialog) so the locale install runs once for the whole tree. The `systemIsDark` / `systemLocaleTag` locals are read once via `AppTheme.current` / `AppLocale.current` and passed both to `LaunchedEffect` and `AppTheme(...)`, so the `@Composable` getters fire a single time per recomposition (don't reach for `AppLocale.current` inside the `LaunchedEffect` body — that would re-enter the `@Composable` snapshot reader from a non-Composable scope).
-- Inner feature components are mostly named `<Feature>Component` (e.g. `ProfileComponent`, `TrainingComponent`, `AuthComponent`) regardless of how many sub-screens they own. The `<Feature>RootComponent` suffix is reserved for features whose first sub-screen reuses the feature name — `:home` has a `home/HomeComponent` sub-screen, so the root is `HomeRootComponent` to avoid a class-name collision; same for `:trainings` (`TrainingsRootComponent` vs `trainings/TrainingsComponent`). It is not a multi-screen-vs-single-screen distinction.
+- Inner feature components are mostly named `<Feature>Component` (e.g. `ProfileComponent`, `NotesComponent`, `AuthComponent`) regardless of how many sub-screens they own. The `<Feature>RootComponent` suffix is reserved for features whose first sub-screen reuses the feature name — `:home` has a `home/HomeComponent` sub-screen, so the root is `HomeRootComponent` to avoid a class-name collision. It is not a multi-screen-vs-single-screen distinction.
 
 ## `RootViewModel` essentials
 
@@ -197,8 +197,8 @@ public class RootViewModel(
     internal fun enqueueDeeplink(deeplink: String) { update { it.copy(deeplink = deeplink) } }
     internal fun applyDeeplink(deeplink: String) { parseDeeplink(deeplink)?.let { navigateTo(it) } }
     private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(raw)) {
-        Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft)
-        Deeplink.WeightHistory -> RootDirection.WeightHistory
+        Deeplink.NoteEditor -> RootDirection.Notes(NotesRouter.Editor)
+        Deeplink.NoteArchive -> RootDirection.NoteArchive
         null -> null
     }
 
@@ -304,7 +304,7 @@ kotlin {
 
         // every ui-dialog-features module
         implementation(projects.uiDialogFeatures.dialogApi)
-        implementation(projects.uiDialogFeatures.weightPicker)
+        implementation(projects.uiDialogFeatures.confirmation)
         // ... all ui-dialog-features:*
 
         implementation(libs.datetime)

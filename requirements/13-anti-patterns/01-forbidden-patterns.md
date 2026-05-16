@@ -41,9 +41,9 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **Catching exceptions in a Repository** silently. `runCatching { ... }` returns `Result`; let the caller handle.
 - **Writing to a DAO before `Result.onSuccess { ... }`**. Speculative writes leave the cache inconsistent on failure.
 - **Skipping range reconciliation** (`deleteByCreatedAtRangeExceptIds`). "Deleted on another device" rows linger.
-- **Bypassing `BackendClient`** with a raw `HttpClient.request { ... }`. All HTTP goes through `GrippoApi → BackendClient`.
+- **Bypassing `BackendClient`** with a raw `HttpClient.request { ... }`. All HTTP goes through `<Product>Api → BackendClient`.
 - **Direct `Context` import in `commonMain`**. Use `NativeContext` from `:toolkit:context`.
-- **Subgrouping `GrippoApi`** into `AuthApi`, `TrainingsApi`, etc. Flat is intentional.
+- **Subgrouping `<Product>Api`** into `AuthApi`, `NotesApi`, etc. Flat is intentional.
 
 ## Dependency Injection
 

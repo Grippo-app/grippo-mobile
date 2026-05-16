@@ -1,44 +1,23 @@
 # Database — Room Multiplatform
 
-The single Room database lives in `:data-services:database`. It holds **all** local persistence: tokens, user profile, weight history, drafts, cached server data. There is **one** `@Database` class per app.
+The single Room database lives in `:data-services:database`. It holds **all** local persistence: tokens, user profile, domain caches, drafts. There is **one** `@Database` class per app.
 
 ## `Database` shape
 
 ```kotlin
 @Database(
     entities = [
+        // Auth / identity (every project)
         TokenEntity::class,
+        UserEntity::class,
         UserActiveEntity::class,
 
-        EquipmentEntity::class,
-        EquipmentGroupEntity::class,
-
-        MuscleEntity::class,
-        MuscleGroupEntity::class,
-
-        ExerciseExampleEntity::class,
-        ExerciseExampleBundleEntity::class,
-        ExerciseExampleComponentsEntity::class,
-        ExerciseExampleEquipmentEntity::class,
-        ExerciseExampleSearchPrefixEntity::class,
-
-        TrainingEntity::class,
-        ExerciseEntity::class,
-        IterationEntity::class,
-
-        DraftTrainingEntity::class,
-        DraftExerciseEntity::class,
-        DraftIterationEntity::class,
-
-        UserEntity::class,
-        UserStatsEntity::class,
-        UserExcludedMuscleEntity::class,
-        UserExcludedEquipmentEntity::class,
-        WeightHistoryEntity::class,
-
-        GoalEntity::class,
+        // Per-product domain entities — replace with your own
+        <Entity>Entity::class,
+        <RelatedEntity>Entity::class,
+        // ...
     ],
-    version = 5,
+    version = <N>,
     exportSchema = true,
 )
 @TypeConverters(StringListConverter::class)
@@ -48,13 +27,11 @@ public abstract class Database : RoomDatabase() {
     public abstract fun userActiveDao(): UserActiveDao
     public abstract fun tokenDao(): TokenDao
     public abstract fun userDao(): UserDao
-    public abstract fun weightHistoryDao(): WeightHistoryDao
-    public abstract fun equipmentDao(): EquipmentDao
-    public abstract fun trainingDao(): TrainingDao
-    public abstract fun draftTrainingDao(): DraftTrainingDao
-    public abstract fun exerciseExampleDao(): ExerciseExampleDao
-    public abstract fun muscleDao(): MuscleDao
-    public abstract fun goalDao(): GoalDao
+
+    // Per-product DAO accessors — one per domain DAO
+    public abstract fun <entity>Dao(): <Entity>Dao
+    public abstract fun <relatedEntity>Dao(): <RelatedEntity>Dao
+    // ...
 }
 ```
 
@@ -177,14 +154,12 @@ public class DatabaseModule {
 
     @Single internal fun provideTokenDao(db: Database): TokenDao = db.tokenDao()
     @Single internal fun provideUserDao(db: Database): UserDao = db.userDao()
-    @Single internal fun provideWeightHistoryDao(db: Database): WeightHistoryDao = db.weightHistoryDao()
     @Single internal fun provideUserActiveDao(db: Database): UserActiveDao = db.userActiveDao()
-    @Single internal fun provideGoalDao(db: Database): GoalDao = db.goalDao()
-    @Single internal fun provideEquipmentDao(db: Database): EquipmentDao = db.equipmentDao()
-    @Single internal fun provideExerciseExampleDao(db: Database): ExerciseExampleDao = db.exerciseExampleDao()
-    @Single internal fun provideMuscleDao(db: Database): MuscleDao = db.muscleDao()
-    @Single internal fun provideTrainingDao(db: Database): TrainingDao = db.trainingDao()
-    @Single internal fun provideDraftTrainingDao(db: Database): DraftTrainingDao = db.draftTrainingDao()
+
+    // Per-product DAO providers — one `@Single` per DAO
+    @Single internal fun provide<Entity>Dao(db: Database): <Entity>Dao = db.<entity>Dao()
+    @Single internal fun provide<RelatedEntity>Dao(db: Database): <RelatedEntity>Dao = db.<relatedEntity>Dao()
+    // ...
 }
 ```
 

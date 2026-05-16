@@ -17,14 +17,14 @@ Before writing any code, read in order:
 4. `requirements/09-conventions/02-naming.md` — naming for dialog components.
 5. `requirements/13-anti-patterns/01-forbidden-patterns.md` — forbidden patterns.
 
-Also open one existing dialog (reference example: `:ui-dialog-features:weight-picker` in the reference repo — substitute with any existing `:ui-dialog-features:*` module in this project) and mirror its `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))` + `Spacer(AppTokens.dp.dialog.top)` + centered title + body + `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())` shell. No existing dialog ships a `Toolbar` / `BottomSheetToolbar`.
+Also open one existing dialog in this project (any `:ui-dialog-features:*` module) and mirror its `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))` + `Spacer(AppTokens.dp.dialog.top)` + centered title + body + `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())` shell. No existing dialog ships a `Toolbar` / `BottomSheetToolbar`.
 
 Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Inputs the orchestrator passes you
 
 - **Task file path**.
-- **Dialog name** in `kebab-case` (module folder) and `PascalCase` (class/`DialogConfig` subtype). E.g. `rating-picker` / `RatingPicker`.
+- **Dialog name** in `kebab-case` (module folder) and `PascalCase` (class/`DialogConfig` subtype). E.g. `<name>-picker` / `<Name>Picker`.
 - **Input payload** — what the dialog opens with (e.g. `initial: Int`).
 - **Output type** — what the caller receives via `onResult` (e.g. `Int`).
 - **Whether `dismissBySwipe` should be `false`** (blocking sheets only; default is `true`).

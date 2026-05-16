@@ -1,6 +1,6 @@
 # `BackendClient` — Ktor HTTP wrapper
 
-`BackendClient` is the **single** Ktor `HttpClient` configured for the product backend. Lives in `:data-services:backend`. `GrippoApi` is its only public consumer.
+`BackendClient` is the **single** Ktor `HttpClient` configured for the product backend. Lives in `:data-services:backend`. `<Product>Api` is its only public consumer.
 
 ## Class shape
 
@@ -36,7 +36,7 @@ internal class BackendClient(
         }
 
         defaultRequest {
-            host = "<your-product-domain>.com"
+            host = "<product-domain>"
             url { protocol = URLProtocol.HTTPS }
             contentType(ContentType.Application.Json)
             header(HttpHeaders.AcceptLanguage, AppLocale.current())
@@ -109,7 +109,7 @@ install(Logging) {
 }
 ```
 
-`LogLevel.ALL` includes URL, method, headers, body. `clientLogger` (`ClientLogger`) routes the log line to `AppLogger.Network.log(...)` with color emojis for fast visual scanning (🟩 success, 🟥 error, 🟨 request). See `06-data-layer/03-grippo-api-and-dtos.md` for `ClientLogger`.
+`LogLevel.ALL` includes URL, method, headers, body. `clientLogger` (`ClientLogger`) routes the log line to `AppLogger.Network.log(...)` with color emojis for fast visual scanning (🟩 success, 🟥 error, 🟨 request). See `06-data-layer/03-product-api-and-dtos.md` for `ClientLogger`.
 
 In release builds, consider scaling down to `LogLevel.HEADERS` to avoid logging request/response bodies. Log truncation handling is the responsibility of the file writer in `:toolkit:logger`.
 
@@ -156,7 +156,7 @@ public class SerializationModule {
 
 ```kotlin
 defaultRequest {
-    host = "<your-product-domain>.com"
+    host = "<product-domain>"
     url { protocol = URLProtocol.HTTPS }
     contentType(ContentType.Application.Json)
     header(HttpHeaders.AcceptLanguage, AppLocale.current())
@@ -192,13 +192,13 @@ suspend fun invoke(
 
 - **Returns raw `HttpResponse`.** Callers do `.body()` to deserialize.
 - **Wrapped in `Dispatchers.IO`** so callers can call `invoke` on `Main` safely.
-- **Single method.** Every HTTP verb goes through here. `GrippoApi` constructs `HttpMethod.Get`, `Post`, `Put`, `Delete` as needed.
+- **Single method.** Every HTTP verb goes through here. `<Product>Api` constructs `HttpMethod.Get`, `Post`, `Put`, `Delete` as needed.
 
-## How `GrippoApi` uses it
+## How `<Product>Api` uses it
 
 ```kotlin
 @Single
-public class GrippoApi internal constructor(private val client: BackendClient) {
+public class <Product>Api internal constructor(private val client: BackendClient) {
 
     private suspend inline fun <reified T> request(
         method: HttpMethod,
@@ -209,10 +209,10 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         client.invoke(method, path, body, queryParams).body()
     }
 
-    public suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>> =
+    public suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>> =
         request(
             method = HttpMethod.Get,
-            path = "/trainings",
+            path = "/notes",
             queryParams = mapOf("start" to start, "end" to end),
         )
 

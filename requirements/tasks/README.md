@@ -10,9 +10,9 @@ TASK_<N>_<short_title_in_snake_case>.md
 
 `<N>` is the next available integer (zero-padded if you prefer). Examples:
 
-- `TASK_1_workout_history_screen.md`
+- `TASK_1_note_archive_screen.md`
 - `TASK_2_notifications_data_feature.md`
-- `TASK_3_rating_picker_dialog.md`
+- `TASK_3_tag_picker_dialog.md`
 
 ## File shape
 

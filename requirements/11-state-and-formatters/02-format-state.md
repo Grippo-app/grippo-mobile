@@ -1,6 +1,6 @@
 # `*FormatState` — Form-Field State
 
-Form fields (email, password, weight, height, duration, date, ...) are represented in state as **sealed `*FormatState` classes** with `Empty` / `Invalid` / `Valid` subtypes. The UI reads the state to determine display and button enablement; the ViewModel constructs the right subtype on every input change.
+Form fields (email, password, amount, date, ...) are represented in state as **sealed `*FormatState` classes** with `Empty` / `Invalid` / `Valid` subtypes. The UI reads the state to determine display and button enablement; the ViewModel constructs the right subtype on every input change.
 
 All `*FormatState` types are `@Immutable @Serializable` so they survive process death inside `*Router` payloads or `DialogConfig` configs.
 
@@ -19,7 +19,7 @@ public sealed interface FormatState<T> {
 ```
 
 - `display: String` — the **raw text** as the user typed it. Always present.
-- `value: T?` — the **parsed value** (`Float`, `Int`, `Duration`, `LocalDate`, ...). Present only when valid.
+- `value: T?` — the **parsed value** (`Double`, `String`, `LocalDate`, ...). Present only when valid.
 
 ## Standard subtypes
 
@@ -28,54 +28,59 @@ Each concrete `*FormatState` has three subtypes:
 ```kotlin
 @Immutable
 @Serializable
-public sealed class WeightFormatState : FormatState<Float> {
+public sealed class AmountFormatState : FormatState<Double> {
+
+    public abstract val unit: String?
 
     @Immutable
     @Serializable
     public data class Valid(
         override val display: String,
-        override val value: Float,
-    ) : WeightFormatState(), FormatState.Valid<Float>
+        override val value: Double,
+        override val unit: String?,
+    ) : AmountFormatState(), FormatState.Valid<Double>
 
     @Immutable
     @Serializable
     public data class Invalid(
         override val display: String,
-        override val value: Float?,
-    ) : WeightFormatState(), FormatState.Invalid<Float>
+        override val value: Double?,
+        override val unit: String?,
+    ) : AmountFormatState(), FormatState.Invalid<Double>
 
     @Immutable
     @Serializable
     public data class Empty(
         override val display: String = "",
-        override val value: Float? = null,
-    ) : WeightFormatState(), FormatState.Empty<Float>
+        override val value: Double? = null,
+        override val unit: String? = null,
+    ) : AmountFormatState(), FormatState.Empty<Double>
 
     public companion object {
-        public val WeightLimitation: ClosedFloatingPointRange<Float>
-        public fun of(display: String): WeightFormatState
-        public fun of(value: Float?): WeightFormatState
+        public val AmountLimitation: ClosedFloatingPointRange<Double>
+        public fun of(display: String, unit: String? = null): AmountFormatState
+        public fun of(value: Double?, unit: String? = null): AmountFormatState
     }
 }
 ```
 
-- **`Valid`**: parsed cleanly + passes domain limits (e.g. weight in `30f..150f`).
-- **`Invalid`**: input is malformed (not a number) **or** out of range (e.g. weight = 200kg).
+- **`Valid`**: parsed cleanly + passes domain limits (e.g. value in `AmountLimitation`).
+- **`Invalid`**: input is malformed (not a number) **or** out of range.
 - **`Empty`**: blank input — distinct from `Invalid("")`. Numeric formatters also collapse the literal `0` value to `Empty` (a `Valid(0)` would mean nothing in domain terms), so `Empty` covers both "untouched" and "explicitly zeroed".
 
 ## Factories
 
 ```kotlin
 public companion object {
-    public fun of(display: String): WeightFormatState
-    public fun of(value: Float?): WeightFormatState
+    public fun of(display: String, unit: String? = null): AmountFormatState
+    public fun of(value: Double?, unit: String? = null): AmountFormatState
 }
 ```
 
-- `of(display: String)` — used by the UI's `onValueChange`. Parses the string; returns `Empty` if blank, `Valid` if parseable + in range, `Invalid` otherwise.
-- `of(value: Float?)` — used when initializing state from a domain value. Always produces `Valid` (or `Empty` if null), with a sensible default `display` format.
+- `of(display: String, …)` — used by the UI's `onValueChange`. Parses the string; returns `Empty` if blank, `Valid` if parseable + in range, `Invalid` otherwise.
+- `of(value: Double?, …)` — used when initializing state from a domain value. Always produces `Valid` (or `Empty` if null), with a sensible default `display` format.
 
-Factories vary per type — not every formatter exposes both overloads. Date types take a `range`/`format` parameter; some numeric types only accept `Float?`; `EmailFormatState` only accepts `value`. See each type below for its exact factory set.
+Factories vary per type — not every formatter exposes both overloads. Date types take a `range`/`format` parameter; some numeric types only accept `Double?`; `EmailFormatState` only accepts `value`. See each type below for its exact factory set.
 
 ## Standard `*FormatState` types
 
@@ -117,65 +122,6 @@ public sealed class PasswordFormatState : FormatState<String> {
 ```
 
 `hint()` returns the localized hint that matches the active validation rule (e.g. `"At least 6 characters"`). Composable because it reads strings.
-
-### `WeightFormatState`
-
-```kotlin
-public sealed class WeightFormatState : FormatState<Float> {
-    public companion object {
-        public val WeightLimitation: ClosedFloatingPointRange<Float>
-        public fun of(display: String): WeightFormatState
-        public fun of(value: Float?): WeightFormatState
-    }
-}
-```
-
-`WeightLimitation` is the static range used for the `Invalid` check (e.g. `30f..150f`). Reference implementation also normalizes to 1 decimal place via a private `display1dp(...)` formatter — values like `72.567f` round to `72.6f` before the range check.
-
-### `HeightFormatState`
-
-```kotlin
-public sealed class HeightFormatState : FormatState<Int> {
-    public companion object {
-        public val HeightLimitation: IntRange
-        public fun of(display: String): HeightFormatState
-        public fun of(value: Int): HeightFormatState
-    }
-}
-```
-
-`Int` not `Float` — height in centimeters (the reference repo uses `100..250` cm; unit selection is product-level, not a property of the type).
-
-### `DurationFormatState`
-
-```kotlin
-public sealed class DurationFormatState : FormatState<Duration> {
-    public companion object {
-        public val DurationLimitation: ClosedRange<Duration>
-        public fun of(display: String): DurationFormatState
-        public fun of(value: Duration?): DurationFormatState
-    }
-}
-```
-
-`Duration` from `kotlin.time`. `display` is produced by `DateTimeUtils.format(duration)` (locale-aware abbreviated style, e.g. `"1h 23m"`); the parser accepts ISO-8601 (`Duration.parse`). Normalized to whole-minute precision.
-
-### `VolumeFormatState`
-
-```kotlin
-public sealed class VolumeFormatState : FormatState<Float> {
-    public companion object {
-        public fun of(display: String): VolumeFormatState
-        public fun of(value: Float?): VolumeFormatState
-    }
-
-    @Composable public fun short(): String
-    @Composable public fun shortAnnotated(): AnnotatedString
-    @Composable public fun hint(): String
-}
-```
-
-Display formatters: `short()` returns a grouped-thousands string with the unit suffix (e.g. `"1 250,5kg"`); `shortAnnotated()` builds the same string as an `AnnotatedString`, greying out the `"-"` placeholder when `value` is null.
 
 ### `DateFormatState`
 
@@ -248,97 +194,16 @@ public sealed class NameFormatState : FormatState<String> {
 
 Length-bounded free-form name field.
 
-### `PercentageFormatState`
-
-```kotlin
-public sealed class PercentageFormatState : FormatState<Int> {
-    public companion object {
-        public fun of(display: String): PercentageFormatState
-        public fun of(value: Int): PercentageFormatState
-    }
-
-    @Composable public fun short(): String                  // e.g. "42%"
-    @Composable public fun shortAnnotated(): AnnotatedString
-}
-```
-
-Integer percentage (no range validator — any non-zero integer is Valid).
-
-### `IntensityFormatState`
-
-```kotlin
-public sealed class IntensityFormatState : FormatState<Float> {
-    public companion object {
-        public fun of(value: Float): IntensityFormatState
-    }
-
-    @Composable public fun short(): String
-    @Composable public fun shortAnnotated(): AnnotatedString
-
-    public enum class Average { LOW, MEDIUM, LARGE }
-    public fun average(): Average?
-}
-```
-
-`average()` returns a coarse `LOW`/`MEDIUM`/`LARGE` bucket from the parsed value — used by UI for badges / colour cues.
-
-### `DensityFormatState`
-
-```kotlin
-public sealed class DensityFormatState : FormatState<Float> {
-    public companion object {
-        public fun of(value: Float?): DensityFormatState
-    }
-
-    @Composable public fun short(): String                  // "<v>kg/min"
-    @Composable public fun shortAnnotated(): AnnotatedString
-}
-```
-
-Training-density (kg per minute). `short()` formats as `"<value>kg/<minutes-short>"`.
-
-### `MultiplierFormatState`
-
-```kotlin
-public sealed class MultiplierFormatState : FormatState<Float> {
-    public companion object {
-        public fun of(value: Float?): MultiplierFormatState
-    }
-
-    @Composable public fun short(): String                  // "<value*100>%"
-    @Composable public fun shortAnnotated(): AnnotatedString
-}
-```
-
-Scale factor in `0.05f..2.0f`. UI renders as a percentage (`1.25f → "125%"`).
-
-### `RepetitionsFormatState`
-
-```kotlin
-public sealed class RepetitionsFormatState : FormatState<Int> {
-    public companion object {
-        public fun of(display: String): RepetitionsFormatState
-        public fun of(value: Int): RepetitionsFormatState
-    }
-
-    @Composable public fun hint(): String
-    @Composable public fun short(): String                  // "x<value>"
-    @Composable public fun shortAnnotated(): AnnotatedString
-}
-```
-
-Integer reps in `1..100`. `short()` returns `"x12"`-style.
-
 ## Usage in state
 
 ```kotlin
 @Immutable
 @Serializable
-internal data class ProfileBodyState(
+internal data class NoteEditorState(
     val email: EmailFormatState = EmailFormatState.Empty(),
-    val weight: WeightFormatState = WeightFormatState.Empty(),
-    val height: HeightFormatState = HeightFormatState.Empty(),
-    val birthday: DateFormatState = DateFormatState.Empty(
+    val title: NameFormatState = NameFormatState.Empty(),
+    val amount: AmountFormatState = AmountFormatState.Empty(),
+    val due: DateFormatState = DateFormatState.Empty(
         format = DateFormat.DateOnly.DateMmmDdYyyy,
     ),
 )
@@ -347,14 +212,14 @@ internal data class ProfileBodyState(
 ## Usage in ViewModel
 
 ```kotlin
-override fun onWeightChange(raw: String) {
-    update { it.copy(weight = WeightFormatState.of(raw)) }
+override fun onAmountChange(raw: String) {
+    update { it.copy(amount = AmountFormatState.of(raw)) }
 }
 
 override fun onApplyClick() {
-    val weight = (state.value.weight as? WeightFormatState.Valid)?.value ?: return
+    val amount = (state.value.amount as? AmountFormatState.Valid)?.value ?: return
     safeLaunch(loader = FooLoader.Saving) {
-        userFeature.updateWeight(weight).getOrThrow()
+        noteFeature.updateAmount(amount).getOrThrow()
     }
 }
 ```
@@ -365,14 +230,14 @@ The `as? Valid` cast is the canonical way to read the parsed value. If the user 
 
 ```kotlin
 InputNumeric(
-    value = state.weight,
-    onValueChange = contract::onWeightChange,
-    label = AppTokens.strings.res(Res.string.weight),
+    value = state.amount,
+    onValueChange = contract::onAmountChange,
+    label = AppTokens.strings.res(Res.string.amount),
 )
 
 val isApplyEnabled = remember(state) {
-    state.weight is WeightFormatState.Valid &&
-        state.height is HeightFormatState.Valid
+    state.amount is AmountFormatState.Valid &&
+        state.title is NameFormatState.Valid
 }
 
 Button(
@@ -382,7 +247,7 @@ Button(
 )
 ```
 
-The button reads `state.weight is Valid` to know whether to enable.
+The button reads `state.amount is Valid` to know whether to enable.
 
 ## Why `display` + `value` separately
 
@@ -391,7 +256,7 @@ The button reads `state.weight is Valid` to know whether to enable.
 
 ## Why `@Serializable`
 
-`*FormatState` types appear inside screen `State` classes that may live across process death, inside `*Router` payloads (e.g. `TrainingsRouter.MonthlyCalendar(date: DateFormatState)`), and occasionally inside `DialogConfig`. Compose state restoration needs to deserialize them.
+`*FormatState` types are embedded in `@Immutable @Serializable` state classes in `:ui-core:state` — see `NoteState`, `TagState`, `NoteEditorState` — so they round-trip through `kotlinx.serialization`. The `@Serializable` annotation also keeps them safe to drop into a `*Router` payload or a `DialogConfig` field if a feature ever needs to carry a parsed form value across the Decompose `StateKeeper` boundary.
 
 ## Rules
 
@@ -403,8 +268,8 @@ The button reads `state.weight is Valid` to know whether to enable.
 
 ## Anti-patterns
 
-- **`String` for an email/password/weight field in state.** Use the typed `*FormatState`.
-- **`Float?` for a weight** in state — loses the user's raw display, can't validate.
+- **`String` for an email/password/amount field in state.** Use the typed `*FormatState`.
+- **`Double?` for an amount** in state — loses the user's raw display, can't validate.
 - **Validating on submit only.** UI loses real-time feedback.
 - **Computing button enablement from raw input fields.** Use `state.field is Valid`.
 - **Side effects inside `of(...)`.** Factories are pure.

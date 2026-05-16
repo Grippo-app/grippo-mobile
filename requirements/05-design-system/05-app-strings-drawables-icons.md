@@ -16,10 +16,10 @@ public object AppString {
 Usage:
 
 ```kotlin
-Text(text = AppTokens.strings.res(Res.string.profile_body_title))
+Text(text = AppTokens.strings.res(Res.string.note_title))
 
 // with format args
-Text(text = AppTokens.strings.res(Res.string.weight_value, weight.value))   // "%.1f kg"
+Text(text = AppTokens.strings.res(Res.string.amount_value, amount.value))   // "%.1f kg"
 ```
 
 The function delegates to `org.jetbrains.compose.resources.stringResource`. Use this **everywhere** in Composables — never import `stringResource` directly.
@@ -52,9 +52,9 @@ Usage (drawables in the reference repo are raster product imagery, not icons —
 
 ```kotlin
 Image(
-    painter = AppTokens.drawables.res(Res.drawable.barbell),
+    painter = AppTokens.drawables.res(Res.drawable.note_thumbnail),
     contentDescription = null,
-    modifier = Modifier.size(AppTokens.dp.equipmentCard.icon),
+    modifier = Modifier.size(AppTokens.dp.noteCard.icon),
 )
 ```
 
@@ -97,7 +97,7 @@ Adding a new icon = drop a new `<Name>.kt` file into `icons/` exporting `public 
 
 ### String resource conventions
 
-- **All keys `snake_case`** — `profile_body_title`, `weight_picker_apply`, `error_no_internet_description`.
+- **All keys `snake_case`** — `note_title`, `note_archive_apply`, `error_no_internet_description`.
 - **Descriptive, not numbered.** `title1`/`title2`/`title3` is forbidden; pick semantic names.
 - **One file per locale.** `values/strings.xml`, `values-uk/strings.xml`, etc.
 - **Plurals in `plurals.xml`** with `quantity="one|few|many|other"` (locale-dependent: English has `one|other`; Slavic has `one|few|many|other`).
@@ -105,7 +105,7 @@ Adding a new icon = drop a new `<Name>.kt` file into `icons/` exporting `public 
 
 ### Drawable resource conventions
 
-- **All names `snake_case`** (`barbell`, `bench_incline`, `muscles`). The reference repo currently uses bare nouns without `ic_*` / `img_*` / `bg_*` prefixes — drawables here are raster illustrations and product imagery, not icons (icons are `ImageVector`s under `icons/`). Add a prefix only when a single product really mixes domains and the suffix-less name would collide.
+- **All names `snake_case`** (`note_thumbnail`, `tag_badge`, `empty_state`). The reference repo currently uses bare nouns without `ic_*` / `img_*` / `bg_*` prefixes — drawables here are raster illustrations and product imagery, not icons (icons are `ImageVector`s under `icons/`). Add a prefix only when a single product really mixes domains and the suffix-less name would collide.
 - **`.webp`** is the default format in the reference repo (small, fast). Use SVG / `.xml` vector when the asset is line-art that needs to scale crisply; PNG only for legacy photos.
 - **One file per resource.** No texture atlases or sprite sheets.
 

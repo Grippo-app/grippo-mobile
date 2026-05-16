@@ -2,7 +2,7 @@
 
 Each business area in `:data-features:<x>` has **one** Repository: an `internal interface <X>Repository` + an `internal class <X>RepositoryImpl` annotated `@Single(binds = [<X>Repository::class])`.
 
-The Repository is the **only** place that combines the network and the database. Above it (Feature / UseCase / ViewModel) only the contract is visible; below it (`GrippoApi`, `<X>Dao`) the implementation depends.
+The Repository is the **only** place that combines the network and the database. Above it (Feature / UseCase / ViewModel) only the contract is visible; below it (`<Product>Api`, `<X>Dao`) the implementation depends.
 
 ## Anatomy
 
@@ -20,11 +20,11 @@ The Repository is the **only** place that combines the network and the database.
 ## The interface
 
 ```kotlin
-internal interface TrainingsRepository {
-    fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>>
-    suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
-    suspend fun saveTraining(training: Training): Result<String>
-    suspend fun deleteTraining(id: String): Result<Unit>
+internal interface NotesRepository {
+    fun observeNotes(start: LocalDateTime, end: LocalDateTime): Flow<List<Note>>
+    suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit>
+    suspend fun saveNote(note: Note): Result<String>
+    suspend fun deleteNote(id: String): Result<Unit>
 }
 ```
 
@@ -39,52 +39,52 @@ Rules:
 ## The implementation
 
 ```kotlin
-@Single(binds = [TrainingsRepository::class])
-internal class TrainingsRepositoryImpl(
-    private val api: GrippoApi,
-    private val trainingDao: TrainingDao,
-) : TrainingsRepository {
+@Single(binds = [NotesRepository::class])
+internal class NotesRepositoryImpl(
+    private val api: <Product>Api,
+    private val noteDao: NoteDao,
+) : NotesRepository {
 
-    override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> {
+    override fun observeNotes(start: LocalDateTime, end: LocalDateTime): Flow<List<Note>> {
         val startUtc = DateTimeUtils.toUtcIso(start)
         val endUtc = DateTimeUtils.toUtcIso(end)
-        return trainingDao.observe(startUtc, endUtc)
+        return noteDao.observe(startUtc, endUtc)
             .map { packs -> packs.toDomain() }
     }
 
-    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
+    override suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
         val startUtc = DateTimeUtils.toUtcIso(start)
         val endUtc = DateTimeUtils.toUtcIso(end)
-        val response = api.getTrainings(startUtc, endUtc)
+        val response = api.getNotes(startUtc, endUtc)
         response.onSuccess { dtos ->
             val entities = dtos.toEntities()
             val ids = entities.map { it.id }
             if (entities.isEmpty()) {
-                trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
+                noteDao.deleteByCreatedAtRange(startUtc, endUtc)
             } else {
-                trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, ids)
-                trainingDao.insertAll(entities)
+                noteDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, ids)
+                noteDao.insertAll(entities)
             }
         }
         return response.map { }
     }
 
-    override suspend fun saveTraining(training: Training): Result<String> {
-        val body = training.toBody()
-        val response = api.setTraining(body)
+    override suspend fun saveNote(note: Note): Result<String> {
+        val body = note.toBody()
+        val response = api.setNote(body)
         return response.mapCatching { dto ->
-            val id = dto.id ?: error("training id missing")
+            val id = dto.id ?: error("note id missing")
             // refresh local
-            api.getTraining(id).onSuccess { full ->
-                full.toEntityOrNull()?.let { trainingDao.insert(it) }
+            api.getNote(id).onSuccess { full ->
+                full.toEntityOrNull()?.let { noteDao.insert(it) }
             }
             id
         }
     }
 
-    override suspend fun deleteTraining(id: String): Result<Unit> {
-        val response = api.deleteTraining(id)
-        response.onSuccess { trainingDao.delete(id) }
+    override suspend fun deleteNote(id: String): Result<Unit> {
+        val response = api.deleteNote(id)
+        response.onSuccess { noteDao.delete(id) }
         return response.map { }
     }
 }
@@ -124,16 +124,16 @@ override suspend fun getUser(): Result<Unit> {
 ### List get-and-reconcile (the canonical pattern)
 
 ```kotlin
-override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
-    val response = api.getTrainings(...)
+override suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
+    val response = api.getNotes(...)
     response.onSuccess { dtos ->
         val entities = dtos.toEntities()
         val ids = entities.map { it.id }
         if (entities.isEmpty()) {
-            trainingDao.deleteByCreatedAtRange(...)
+            noteDao.deleteByCreatedAtRange(...)
         } else {
-            trainingDao.deleteByCreatedAtRangeExceptIds(..., ids)
-            trainingDao.insertAll(entities)
+            noteDao.deleteByCreatedAtRangeExceptIds(..., ids)
+            noteDao.insertAll(entities)
         }
     }
     return response.map { }
@@ -145,34 +145,34 @@ The "delete except IDs returned" step is critical. Without it, deletes on anothe
 ### Create-or-update
 
 ```kotlin
-override suspend fun saveTraining(training: Training): Result<String> {
-    val body = training.toBody()
-    val response = if (training.id == null) api.createTraining(body) else api.updateTraining(training.id, body)
+override suspend fun saveNote(note: Note): Result<String> {
+    val body = note.toBody()
+    val response = if (note.id == null) api.createNote(body) else api.updateNote(note.id, body)
     return response.mapCatching { idResponse ->
         val id = idResponse.id ?: error("missing id")
-        api.getTraining(id).onSuccess { full ->
-            full.toEntityOrNull()?.let { trainingDao.insert(it) }
+        api.getNote(id).onSuccess { full ->
+            full.toEntityOrNull()?.let { noteDao.insert(it) }
         }
         id
     }
 }
 ```
 
-The follow-up `getTraining(id)` refreshes the local cache with **server-canonical** data (timestamps set by backend, computed fields like volume/intensity). Without it, the local copy would lag.
+The follow-up `getNote(id)` refreshes the local cache with **server-canonical** data (timestamps set by backend, computed fields). Without it, the local copy would lag.
 
 ### Drafts (local-only)
 
 ```kotlin
-override fun observeDraft(id: String): Flow<DraftTraining?> =
-    draftTrainingDao.observe(id).map { it?.toDomain() }
+override fun observeDraft(id: String): Flow<DraftNote?> =
+    draftNoteDao.observe(id).map { it?.toDomain() }
 
-override suspend fun saveDraft(draft: DraftTraining): Result<Unit> = runCatching {
+override suspend fun saveDraft(draft: DraftNote): Result<Unit> = runCatching {
     val entity = draft.toEntity()    // domain-to-entity mapper
-    draftTrainingDao.insertOrUpdate(entity)
+    draftNoteDao.insertOrUpdate(entity)
 }
 
 override suspend fun deleteDraft(id: String): Result<Unit> = runCatching {
-    draftTrainingDao.delete(id)
+    draftNoteDao.delete(id)
 }
 ```
 
@@ -187,20 +187,20 @@ Drafts never round-trip through the server. They live in a `draft_*` table with 
 | `<X>Feature` | `public interface` | UI-facing contract; pure types |
 | `<X>FeatureImpl` | `internal class` | Composition (sometimes) of multiple repositories |
 
-For simple features, `FeatureImpl` delegates to `Repository` one-to-one. For composing features, the layer is necessary — examples in this codebase: `TrainingDigestUseCase` and `MuscleLoadingSummaryUseCase` (compose `TrainingsRepository` + `MuscleRepository` to derive aggregate metrics) and `LoginUseCase.executeEmail/executeGoogle/executeApple` (compose `AuthorizationRepository` + `UserRepository` to swap tokens and refresh the active profile in one call).
+For simple features, `FeatureImpl` delegates to `Repository` one-to-one. For composing features, the layer is necessary — examples: a `NoteDigestUseCase` (composes `NotesRepository` + `TagRepository` to derive aggregate metrics) or a `LoginUseCase.executeEmail/executeGoogle/executeApple` (composes `AuthorizationRepository` + `UserRepository` to swap tokens and refresh the active profile in one call).
 
 Both layers cost minimally (each is a thin class) and keep the seven-file convention consistent across the codebase.
 
 ## Module DI
 
 ```kotlin
-// :data-features:trainings/TrainingsFeatureModule.kt
+// :data-features:notes/NotesFeatureModule.kt
 @Module(includes = [BackendModule::class, DatabaseModule::class])
 @ComponentScan
-public class TrainingsFeatureModule
+public class NotesFeatureModule
 ```
 
-`@ComponentScan` discovers `TrainingsRepositoryImpl` and `TrainingsFeatureImpl` via their annotations. `includes = [BackendModule, DatabaseModule]` makes `GrippoApi` and DAOs available via transitive imports.
+`@ComponentScan` discovers `NotesRepositoryImpl` and `NotesFeatureImpl` via their annotations. `includes = [BackendModule, DatabaseModule]` makes `<Product>Api` and DAOs available via transitive imports.
 
 ## Anti-patterns
 
@@ -208,7 +208,7 @@ public class TrainingsFeatureModule
 - **`@Single` without `binds = [<X>Repository::class]`.** Koin won't resolve the interface.
 - **`getKoin().get()` inside the Repository.** Constructor-inject everything.
 - **Writing to DAO before `api.onSuccess { ... }`.** Speculative writes leave the cache inconsistent on failure.
-- **Inline mappers (`val entity = TrainingEntity(id = dto.id ?: ..., ...)`)** — use `:data-mappers:*`.
+- **Inline mappers (`val entity = NoteEntity(id = dto.id ?: ..., ...)`)** — use `:data-mappers:*`.
 - **Returning `Flow<DTO>`.** DTOs never escape this layer.
 - **`suspend fun observeX()`** — observe is hot; if you need to block on first emission, use `observeX().first()` at the call site.
 - **Catching exceptions inside the Repository.** Let them propagate via `runCatching`/`Result`. The Repository's job is to translate API + DAO; error handling is the ViewModel's job (via `ErrorProvider`).

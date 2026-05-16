@@ -107,44 +107,44 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(...) {
 Result protocol types live nested inside the **producer screen's** `*Router.<Screen>.Action`:
 
 ```kotlin
-// :ui-screen-features:screen-api/TrainingRouter.kt
+// :ui-screen-features:screen-api/NotesRouter.kt
 @Serializable
-public sealed class TrainingRouter : BaseRouter {
+public sealed class NotesRouter : BaseRouter {
 
     @Serializable
-    public data class Exercise(val exercise: ExerciseState) : TrainingRouter() {
+    public data class Note(val note: NoteState) : NotesRouter() {
 
         public sealed interface Action {
-            public data class Sync(val exercise: ExerciseState) : Action
+            public data class Sync(val note: NoteState) : Action
             public data class Remove(val id: String) : Action
         }
     }
 
-    @Serializable public data class Completed(/* ... */) : TrainingRouter()
+    @Serializable public data class Completed(/* ... */) : NotesRouter()
 }
 ```
 
-The `Action` type is co-located with the route that produces it. Both producer and consumer reference `TrainingRouter.Exercise.Action.Sync(...)` / `Action.Remove(...)` — the contract is in one place.
+The `Action` type is co-located with the route that produces it. Both producer and consumer reference `NotesRouter.Note.Action.Sync(...)` / `Action.Remove(...)` — the contract is in one place.
 
-Note: `Action` is **not** a `BaseResult`. `sendResult<T : Any>(key, data: T)` wraps the payload in `Result<T>` (which is itself the `BaseResult`), so the consumer subscribes to `Result<TrainingRouter.Exercise.Action>` — see `observeResult` example below. Keeping `Action` as a plain sealed interface lets `sendResult` infer `T` directly.
+Note: `Action` is **not** a `BaseResult`. `sendResult<T : Any>(key, data: T)` wraps the payload in `Result<T>` (which is itself the `BaseResult`), so the consumer subscribes to `Result<NotesRouter.Note.Action>` — see `observeResult` example below. Keeping `Action` as a plain sealed interface lets `sendResult` infer `T` directly.
 
 ## Subscribing
 
 **One `observeResult` per Component per domain.** Because the channel is single-consumer, two subscriptions to different keys inside one component are fine; two subscriptions to the **same** key inside one component compete.
 
 ```kotlin
-internal class TrainingRootComponent(
+internal class NotesRootComponent(
     componentContext: ComponentContext,
     ...
-) : BaseComponent<TrainingDirection>(componentContext) {
+) : BaseComponent<NotesDirection>(componentContext) {
 
     init {
-        observeResult<Result<TrainingRouter.Exercise.Action>>(
-            key = ResultKeys.create("exercise"),
+        observeResult<Result<NotesRouter.Note.Action>>(
+            key = ResultKeys.create("note"),
             onResult = { result ->
                 when (val action = result.data) {
-                    is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
-                    is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
+                    is NotesRouter.Note.Action.Sync -> viewModel.updateNote(action.note)
+                    is NotesRouter.Note.Action.Remove -> viewModel.removeNote(action.id)
                 }
             }
         )
@@ -158,17 +158,17 @@ A single subscription with `when` dispatch on the sealed subtypes is the idiomat
 ## Producing
 
 ```kotlin
-internal class TrainingExerciseViewModel(...) : BaseViewModel<...>(...), ... {
+internal class NoteEditorViewModel(...) : BaseViewModel<...>(...), ... {
 
     private val resultManager: ResultManager by inject { parametersOf(coroutineScope) }
 
     fun onSaveClick() {
-        val exercise = buildExercise()
+        val note = buildNote()
         resultManager.sendResult(
-            key = ResultKeys.create("exercise"),
-            data = TrainingRouter.Exercise.Action.Sync(exercise),
+            key = ResultKeys.create("note"),
+            data = NotesRouter.Note.Action.Sync(note),
         )
-        navigateTo(TrainingExerciseDirection.Back)
+        navigateTo(NoteEditorDirection.Back)
     }
 }
 ```
@@ -182,9 +182,9 @@ internal class TrainingExerciseViewModel(...) : BaseViewModel<...>(...), ... {
 | Situation | Use |
 |---|---|
 | Dialog returns a value to the screen that opened it | **Callback in `DialogConfig`** |
-| Picker (weight, height, date, ...) | **Callback in `DialogConfig`** |
+| Picker (amount, date, ...) | **Callback in `DialogConfig`** |
 | Confirmation modal returning yes/no | **Callback in `DialogConfig`** |
-| Screen A in `:ui-screen-features:training` produces a value for Screen B in `:ui-screen-features:trainings` (different modules, no shared call site) | **`ResultManager`** |
+| Screen A in `:ui-screen-features:note-detail` produces a value for Screen B in `:ui-screen-features:notes` (different modules, no shared call site) | **`ResultManager`** |
 | Multi-step flow: A opens dialog X, X opens dialog Y, Y produces value for A | **`ResultManager`** with key namespaced by the initiator |
 | A screen is destroyed and recreated before the result arrives | **`ResultManager`** (callback would be GC'd) |
 

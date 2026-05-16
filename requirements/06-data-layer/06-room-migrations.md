@@ -34,14 +34,14 @@ internal object Migration4To5 : Migration(4, 5) {
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL("PRAGMA defer_foreign_keys = ON")
 
-        // ─── draft_training ──────────────────────────────────────────────────
+        // ─── draft_note ──────────────────────────────────────────────────────
         connection.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS `draft_training_new` (
+            CREATE TABLE IF NOT EXISTS `draft_note_new` (
                 `id` TEXT NOT NULL,
-                `trainingId` TEXT,
+                `noteId` TEXT,
                 `profileId` TEXT NOT NULL,
-                `duration` INTEGER NOT NULL,
+                `title` TEXT NOT NULL,
                 PRIMARY KEY(`id`),
                 FOREIGN KEY(`profileId`) REFERENCES `user`(`profileId`) ON UPDATE NO ACTION ON DELETE CASCADE
             )
@@ -49,40 +49,40 @@ internal object Migration4To5 : Migration(4, 5) {
         )
         connection.execSQL(
             """
-            INSERT INTO `draft_training_new` (`id`, `trainingId`, `profileId`, `duration`)
-            SELECT `id`, `trainingId`, `profileId`, `duration` FROM `draft_training`
+            INSERT INTO `draft_note_new` (`id`, `noteId`, `profileId`, `title`)
+            SELECT `id`, `noteId`, `profileId`, `title` FROM `draft_note`
             """.trimIndent()
         )
-        connection.execSQL("DROP TABLE `draft_training`")
-        connection.execSQL("ALTER TABLE `draft_training_new` RENAME TO `draft_training`")
+        connection.execSQL("DROP TABLE `draft_note`")
+        connection.execSQL("ALTER TABLE `draft_note_new` RENAME TO `draft_note`")
 
-        // ─── draft_exercise ──────────────────────────────────────────────────
+        // ─── draft_tag ───────────────────────────────────────────────────────
         connection.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS `draft_exercise_new` (
+            CREATE TABLE IF NOT EXISTS `draft_tag_new` (
                 `id` TEXT NOT NULL,
-                `trainingId` TEXT NOT NULL,
-                `exerciseExampleId` TEXT NOT NULL,
+                `noteId` TEXT NOT NULL,
+                `categoryId` TEXT NOT NULL,
                 `createdAt` TEXT NOT NULL,
                 PRIMARY KEY(`id`),
-                FOREIGN KEY(`trainingId`) REFERENCES `draft_training`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                FOREIGN KEY(`noteId`) REFERENCES `draft_note`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
             )
             """.trimIndent()
         )
         connection.execSQL(
             """
-            INSERT INTO `draft_exercise_new` (`id`, `trainingId`, `exerciseExampleId`, `createdAt`)
-            SELECT `id`, `trainingId`, `exerciseExampleId`, `createdAt` FROM `draft_exercise`
+            INSERT INTO `draft_tag_new` (`id`, `noteId`, `categoryId`, `createdAt`)
+            SELECT `id`, `noteId`, `categoryId`, `createdAt` FROM `draft_tag`
             """.trimIndent()
         )
-        connection.execSQL("DROP TABLE `draft_exercise`")
-        connection.execSQL("ALTER TABLE `draft_exercise_new` RENAME TO `draft_exercise`")
+        connection.execSQL("DROP TABLE `draft_tag`")
+        connection.execSQL("ALTER TABLE `draft_tag_new` RENAME TO `draft_tag`")
 
         connection.execSQL(
-            "CREATE INDEX IF NOT EXISTS `index_draft_exercise_trainingId` ON `draft_exercise` (`trainingId`)"
+            "CREATE INDEX IF NOT EXISTS `index_draft_tag_noteId` ON `draft_tag` (`noteId`)"
         )
         connection.execSQL(
-            "CREATE INDEX IF NOT EXISTS `index_draft_exercise_exerciseExampleId` ON `draft_exercise` (`exerciseExampleId`)"
+            "CREATE INDEX IF NOT EXISTS `index_draft_tag_categoryId` ON `draft_tag` (`categoryId`)"
         )
     }
 }
@@ -145,7 +145,7 @@ Room ships `MigrationTestHelper` for instrumentation tests, but this project doe
 Manual verification is the convention:
 
 1. Install the previous version of the app on a device or emulator.
-2. Use the app to create a few records (training, draft, etc.).
+2. Use the app to create a few records (a parent entity, a draft, etc.).
 3. Install the new version (over the previous).
 4. Open the app; verify nothing crashed, data is preserved, new fields are populated.
 

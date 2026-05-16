@@ -6,7 +6,7 @@ The low-level I/O layer. Only `:data-features:<feature>` (and `:shared` for comp
 
 | Module | Purpose | Convention plugins |
 |---|---|---|
-| `:data-services:backend` | `GrippoApi`, `BackendClient`, `TokenProvider`, `ClientLogger`, all DTOs | KMP + Koin + serialization |
+| `:data-services:backend` | `<Product>Api`, `BackendClient`, `TokenProvider`, `ClientLogger`, all DTOs | KMP + Koin + serialization |
 | `:data-services:database` | Room `@Database`, entities, DAOs, `*Pack` models, migrations, `DatabaseBuilder` | KMP + Koin + Room |
 | `:data-services:datastore` | AndroidX DataStore (preferences-core) wrapper | KMP + Koin |
 | `:data-services:firebase` | `FirebaseProvider` interface + Android impl (Analytics, Crashlytics, Messaging) | KMP + Koin |
@@ -17,7 +17,7 @@ The low-level I/O layer. Only `:data-features:<feature>` (and `:shared` for comp
 
 Houses:
 
-- `GrippoApi` — flat `@Single public class` with **one method per endpoint**, grouped by section comments (`/* * * Auth service * * */`, `/* * * Trainings service * * */`, ...). All methods return `Result<T>` and use a single private inline `request<T>(...)` helper.
+- `<Product>Api` — flat `@Single public class` with **one method per endpoint**, grouped by section comments (`/* * * Auth service * * */`, `/* * * Notes service * * */`, ...). All methods return `Result<T>` and use a single private inline `request<T>(...)` helper.
 - `BackendClient` — `@Single internal class` wrapping the Ktor `HttpClient`. Configures `defaultRequest` (host, HTTPS, JSON, `Accept-Language`), `HttpTimeout` (10s), `Logging` (via `ClientLogger`), `Auth` (via `TokenProvider`), `ContentNegotiation` (JSON via `kotlinx-serialization`).
 - `TokenProvider` — `@Single internal class : AuthProvider`. Adds `Authorization: Bearer <token>` headers; refreshes with `Mutex` + `withTimeout` + `retryWithBackoff`; uses `AuthCircuitBreaker` attribute on the refresh call; deletes tokens on `RefreshUnauthorizedException`.
 - `ClientLogger` — `@Single internal class : Logger` (Ktor `Logger`). Routes HTTP logs to `AppLogger.Network`.

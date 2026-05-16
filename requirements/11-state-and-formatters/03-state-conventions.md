@@ -67,23 +67,23 @@ For screens with discrete modes (Loading, Loaded, Empty, Error):
 
 ```kotlin
 @Immutable
-internal sealed interface ProfileBodyState {
+internal sealed interface NoteState {
 
     @Immutable
-    data object Loading : ProfileBodyState
+    data object Loading : NoteState
 
     @Immutable
     data class Loaded(
-        val weight: WeightFormatState,
-        val height: HeightFormatState,
-        val history: ImmutableList<WeightPoint>,
-    ) : ProfileBodyState
+        val title: NameFormatState,
+        val amount: AmountFormatState,
+        val tags: ImmutableList<TagState>,
+    ) : NoteState
 
     @Immutable
-    data class Error(val message: UiText) : ProfileBodyState
+    data class Error(val message: UiText) : NoteState
 
     @Immutable
-    data object Empty : ProfileBodyState
+    data object Empty : NoteState
 }
 ```
 
@@ -91,10 +91,10 @@ The Composable pattern-matches:
 
 ```kotlin
 when (state) {
-    is ProfileBodyState.Loading -> LoadingScreen()
-    is ProfileBodyState.Loaded -> ContentScreen(state, contract)
-    is ProfileBodyState.Error -> ErrorScreen(state.message, onRetry = contract::onRetryClick)
-    is ProfileBodyState.Empty -> EmptyScreen(onAction = contract::onPrimaryAction)
+    is NoteState.Loading -> LoadingScreen()
+    is NoteState.Loaded -> ContentScreen(state, contract)
+    is NoteState.Error -> ErrorScreen(state.message, onRetry = contract::onRetryClick)
+    is NoteState.Empty -> EmptyScreen(onAction = contract::onPrimaryAction)
 }
 ```
 
@@ -133,9 +133,9 @@ For nested data, factor a sub-state class:
 
 ```kotlin
 @Immutable
-internal data class TrainingsListState(
+internal data class NotesListState(
     val header: HeaderState,
-    val items: ImmutableList<TrainingRowState>,
+    val items: ImmutableList<NoteRowState>,
     val isOnline: Boolean,
 )
 
@@ -147,18 +147,18 @@ internal data class HeaderState(
 )
 
 @Immutable
-internal data class TrainingRowState(
+internal data class NoteRowState(
     val id: String,
     val title: String,
-    val volumeLabel: UiText,
-    val durationLabel: String,
+    val summaryLabel: UiText,
+    val createdAtLabel: String,
 )
 ```
 
 Sub-states:
 
 - Are passed to sub-Composables (`HeaderComposable(state = state.header, ...)`).
-- Compose stability inference works per-field — recomposition of a `TrainingRowState` change skips the unrelated `HeaderState` rendering.
+- Compose stability inference works per-field — recomposition of a `NoteRowState` change skips the unrelated `HeaderState` rendering.
 
 ## Top-level `stub*` functions
 
@@ -166,22 +166,22 @@ Realistic preview data lives in `:ui-core:state` as **public top-level functions
 
 ```kotlin
 @Immutable
-public data class TrainingState(
+public data class NoteState(
     val id: String,
     val title: String,
-    val volumeLabel: UiText,
+    val summaryLabel: UiText,
 )
 
-public fun stubTraining(): TrainingState = TrainingState(
+public fun stubNote(): NoteState = NoteState(
     id = "preview-1",
-    title = "Push day",
-    volumeLabel = UiText.Str("12.5 kg"),
+    title = "Grocery list",
+    summaryLabel = UiText.Str("3 items"),
 )
 
-public fun stubTrainings(): ImmutableList<TrainingState> = persistentListOf(
-    stubTraining(),
-    stubTraining().copy(id = "preview-2", title = "Pull day"),
-    stubTraining().copy(id = "preview-3", title = "Legs"),
+public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
+    stubNote(),
+    stubNote().copy(id = "preview-2", title = "Reading list"),
+    stubNote().copy(id = "preview-3", title = "Trip plan"),
 )
 ```
 

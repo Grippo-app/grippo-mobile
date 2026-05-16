@@ -55,11 +55,11 @@ public data object AppDp {
     val wheelPicker: WheelPicker = WheelPicker
     val tooltip: Tooltip = Tooltip
     // ... ~30 named groups, plus product-specific cards
-    //   (achievementCard, exerciseCard, weightHistoryCard, userCard, training, metrics, ...)
+    //   (noteCard, tagCard, noteHistoryCard, userCard, noteDetail, metrics, ...)
 }
 ```
 
-There are no public `radius`, `icon`, `card`, or `toolbar` top-level groups — radius/icon scales are private, and each card / toolbar variant lives inside the component group that uses it (`Screen.Toolbar`, `BottomSheet.Toolbar`, `AchievementCard.radius`, `ExerciseExampleImage.Medium.radius`, etc.).
+There are no public `radius`, `icon`, `card`, or `toolbar` top-level groups — radius/icon scales are private, and each card / toolbar variant lives inside the component group that uses it (`Screen.Toolbar`, `BottomSheet.Toolbar`, `NoteCard.radius`, `TagImage.Medium.radius`, etc.).
 
 ### Naming
 
@@ -126,7 +126,7 @@ public data object ContentPadding {
 }
 ```
 
-`Button` is split into `Button.small` / `Button.medium` sub-groups (no `Large` variant) and does not expose its own `cornerRadius` — the canonical button uses `CircleShape`. Card sizing (corner radius, padding) lives on each specific card group (`AchievementCard`, `WeightHistoryCard`, `UserCard.Compact`, ...) rather than a single `Card` group.
+`Button` is split into `Button.small` / `Button.medium` sub-groups (no `Large` variant) and does not expose its own `cornerRadius` — the canonical button uses `CircleShape`. Card sizing (corner radius, padding) lives on each specific card group (`NoteCard`, `NoteHistoryCard`, `UserCard.Compact`, ...) rather than a single `Card` group.
 
 ## Why expose `contentPadding` semantically
 
@@ -151,7 +151,7 @@ Surface(
 )
 ```
 
-Sizes / radii are reached through whichever semantic group owns them — `input.icon`, `bottomSheet.radius`, `achievementCard.icon`, `welcome.checkmark.size`. There is no shared `AppTokens.dp.icon.*` or `AppTokens.dp.radius.*` public path.
+Sizes / radii are reached through whichever semantic group owns them — `input.icon`, `bottomSheet.radius`, `noteCard.icon`, `welcome.checkmark.size`. There is no shared `AppTokens.dp.icon.*` or `AppTokens.dp.radius.*` public path.
 
 ## Why no theme switch on `AppDp`
 

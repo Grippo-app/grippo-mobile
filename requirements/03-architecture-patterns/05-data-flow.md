@@ -10,7 +10,7 @@ ViewModel
     → <X>FeatureImpl (in :data-features:<x>, @Single(binds=[Feature::class]))
       → <X>Repository (internal interface)
         → <X>RepositoryImpl (@Single(binds=[Repository::class]))
-          → GrippoApi.<method>(body): Result<DTO>     // HTTP via :data-services:backend
+          → <Product>Api.<method>(body): Result<DTO>     // HTTP via :data-services:backend
           → <X>Dao.<query>(): Flow<Pack>              // Room via :data-services:database
 ```
 
@@ -19,13 +19,13 @@ Each arrow is **one** module boundary; each box is **one** class with **one** re
 ## ViewModel layer
 
 ```kotlin
-internal class TrainingsListViewModel(
-    private val trainingsFeature: TrainingsFeature,
-) : BaseViewModel<...>(...), TrainingsListContract {
+internal class NotesListViewModel(
+    private val notesFeature: NotesFeature,
+) : BaseViewModel<...>(...), NotesListContract {
 
     init {
         // Observe — Flow of domain, never blocks
-        trainingsFeature.observeTrainings(state.value.range.from, state.value.range.to)
+        notesFeature.observeNotes(state.value.range.from, state.value.range.to)
             .map { it.toState() }                        // domain-to-state mapper
             .onEach { listState ->
                 update { it.copy(items = listState) }
@@ -33,8 +33,8 @@ internal class TrainingsListViewModel(
             .safeLaunch()
 
         // Initial fetch — Result, triggers a loader
-        safeLaunch(loader = TrainingsListLoader.LoadingTrainings) {
-            trainingsFeature.getTrainings(
+        safeLaunch(loader = NotesListLoader.LoadingNotes) {
+            notesFeature.getNotes(
                 start = state.value.range.from,
                 end = state.value.range.to,
             ).getOrThrow()
@@ -43,8 +43,8 @@ internal class TrainingsListViewModel(
 
     override fun onRangeChange(range: DateRange) {
         update { it.copy(range = range) }
-        safeLaunch(loader = TrainingsListLoader.LoadingTrainings) {
-            trainingsFeature.getTrainings(start = range.from, end = range.to).getOrThrow()
+        safeLaunch(loader = NotesListLoader.LoadingNotes) {
+            notesFeature.getNotes(start = range.from, end = range.to).getOrThrow()
         }
     }
 }
@@ -52,7 +52,7 @@ internal class TrainingsListViewModel(
 
 Rules at this layer:
 
-- The ViewModel **never** touches `GrippoApi`, `Database`, `Dao`, `Repository`. Only `<X>Feature` (interface).
+- The ViewModel **never** touches `<Product>Api`, `Database`, `Dao`, `Repository`. Only `<X>Feature` (interface).
 - `observe...()` returns `Flow<Domain>` — collect it inside `init { }` with `.safeLaunch()`.
 - `get...()` returns `Result<T>` — call it inside `safeLaunch(loader = ...) { ... }` with `.getOrThrow()` so errors flow through `ErrorProvider`.
 - Map domain to state via `:data-mappers:domain-to-state` (e.g. `it.toState()`).
@@ -61,11 +61,11 @@ Rules at this layer:
 
 ```kotlin
 // :data-features:feature-api
-public interface TrainingsFeature {
-    public fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>>
-    public suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
-    public suspend fun saveTraining(training: Training): Result<String>
-    public suspend fun deleteTraining(id: String): Result<Unit>
+public interface NotesFeature {
+    public fun observeNotes(start: LocalDateTime, end: LocalDateTime): Flow<List<Note>>
+    public suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit>
+    public suspend fun saveNote(note: Note): Result<String>
+    public suspend fun deleteNote(id: String): Result<Unit>
 }
 ```
 
@@ -80,23 +80,23 @@ Rules:
 ## Feature implementation
 
 ```kotlin
-// :data-features:trainings
-@Single(binds = [TrainingsFeature::class])
-internal class TrainingsFeatureImpl(
-    private val repository: TrainingsRepository,
-) : TrainingsFeature {
+// :data-features:notes
+@Single(binds = [NotesFeature::class])
+internal class NotesFeatureImpl(
+    private val repository: NotesRepository,
+) : NotesFeature {
 
-    override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> =
-        repository.observeTrainings(start, end)
+    override fun observeNotes(start: LocalDateTime, end: LocalDateTime): Flow<List<Note>> =
+        repository.observeNotes(start, end)
 
-    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> =
-        repository.getTrainings(start, end)
+    override suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit> =
+        repository.getNotes(start, end)
 
-    override suspend fun saveTraining(training: Training): Result<String> =
-        repository.saveTraining(training)
+    override suspend fun saveNote(note: Note): Result<String> =
+        repository.saveNote(note)
 
-    override suspend fun deleteTraining(id: String): Result<Unit> =
-        repository.deleteTraining(id)
+    override suspend fun deleteNote(id: String): Result<Unit> =
+        repository.deleteNote(id)
 }
 ```
 
@@ -111,63 +111,63 @@ When the Feature does nothing beyond delegation, that's fine — the layer is co
 ## Repository
 
 ```kotlin
-// :data-features:trainings
-internal interface TrainingsRepository {
-    fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>>
-    suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
-    suspend fun saveTraining(training: Training): Result<String>
-    suspend fun deleteTraining(id: String): Result<Unit>
+// :data-features:notes
+internal interface NotesRepository {
+    fun observeNotes(start: LocalDateTime, end: LocalDateTime): Flow<List<Note>>
+    suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit>
+    suspend fun saveNote(note: Note): Result<String>
+    suspend fun deleteNote(id: String): Result<Unit>
 }
 
-@Single(binds = [TrainingsRepository::class])
-internal class TrainingsRepositoryImpl(
-    private val api: GrippoApi,
-    private val trainingDao: TrainingDao,
-    private val draftTrainingDao: DraftTrainingDao,
-) : TrainingsRepository {
+@Single(binds = [NotesRepository::class])
+internal class NotesRepositoryImpl(
+    private val api: <Product>Api,
+    private val noteDao: NoteDao,
+    private val draftNoteDao: DraftNoteDao,
+) : NotesRepository {
 
-    override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> {
+    override fun observeNotes(start: LocalDateTime, end: LocalDateTime): Flow<List<Note>> {
         val startUtc = DateTimeUtils.toUtcIso(start)
         val endUtc = DateTimeUtils.toUtcIso(end)
-        return trainingDao.observe(from = startUtc, to = endUtc)
+        return noteDao.observe(from = startUtc, to = endUtc)
             .map { packs -> packs.toDomain() }      // entity-to-domain mapper
     }
 
-    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
+    override suspend fun getNotes(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
         val startUtc = DateTimeUtils.toUtcIso(start)
         val endUtc = DateTimeUtils.toUtcIso(end)
-        val response = api.getTrainings(start = startUtc, end = endUtc)
+        val response = api.getNotes(start = startUtc, end = endUtc)
         response.onSuccess { dtos ->
             val entities = dtos.toEntities()        // dto-to-entity mapper
             val actualIds = entities.map { it.id }
 
             // Range reconciliation — delete stale, keep what server returned
             if (entities.isEmpty()) {
-                trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
+                noteDao.deleteByCreatedAtRange(startUtc, endUtc)
             } else {
-                trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
-                trainingDao.insertAll(entities)
+                noteDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
+                noteDao.insertAll(entities)
             }
         }
         return response.map { }
     }
 
-    override suspend fun saveTraining(training: Training): Result<String> {
-        val body = training.toBody()                // domain-to-dto mapper
-        val response = api.setTraining(body)
+    override suspend fun saveNote(note: Note): Result<String> {
+        val body = note.toBody()                // domain-to-dto mapper
+        val response = api.setNote(body)
         return response.mapCatching { dto ->
-            val id = dto.id ?: error("training id missing from response")
+            val id = dto.id ?: error("note id missing from response")
             // Re-fetch to refresh local cache
-            api.getTraining(id).onSuccess { full ->
-                full.toEntityOrNull()?.let { trainingDao.insert(it) }
+            api.getNote(id).onSuccess { full ->
+                full.toEntityOrNull()?.let { noteDao.insert(it) }
             }
             id
         }
     }
 
-    override suspend fun deleteTraining(id: String): Result<Unit> {
-        val response = api.deleteTraining(id)
-        response.onSuccess { trainingDao.delete(id) }
+    override suspend fun deleteNote(id: String): Result<Unit> {
+        val response = api.deleteNote(id)
+        response.onSuccess { noteDao.delete(id) }
         return response.map { }
     }
 }
@@ -180,21 +180,21 @@ Rules:
 - **Constructor injection only.** No `getKoin().get()`, no service locator.
 - **Range reconciliation pattern** for collection observers — delete-except-ids after a fetch. Removes drift.
 - **All DAO mutations are inside `response.onSuccess { ... }`.** Never assume the server succeeded; never write speculative changes.
-- **Mappers, never inline conversion.** `dtos.toEntities()`, `packs.toDomain()`, `training.toBody()`.
+- **Mappers, never inline conversion.** `dtos.toEntities()`, `packs.toDomain()`, `note.toBody()`.
 - **Date normalization at the boundary.** Convert `LocalDateTime` to `toUtcIso` before storing or querying — see `10-toolkit/06-date-utils.md`.
 
 ## Service layer
 
-`:data-services:backend`'s `GrippoApi`:
+`:data-services:backend`'s `<Product>Api`:
 
 ```kotlin
 @Single
-public class GrippoApi internal constructor(private val client: BackendClient) {
+public class <Product>Api internal constructor(private val client: BackendClient) {
 
-    public suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>> =
+    public suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>> =
         request(
             method = HttpMethod.Get,
-            path = "/trainings",
+            path = "/notes",
             queryParams = mapOf("start" to start, "end" to end),
         )
 
@@ -211,28 +211,28 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
 
 See `06-data-layer/03-grippo-api-and-dtos.md` for the full pattern.
 
-`:data-services:database`'s `TrainingDao`:
+`:data-services:database`'s `NoteDao`:
 
 ```kotlin
 @Dao
-public interface TrainingDao {
+public interface NoteDao {
     @Transaction
-    @Query("SELECT * FROM training WHERE createdAt BETWEEN :from AND :to ORDER BY createdAt DESC")
-    public fun observe(from: String, to: String): Flow<List<TrainingPack>>
+    @Query("SELECT * FROM note WHERE createdAt BETWEEN :from AND :to ORDER BY createdAt DESC")
+    public fun observe(from: String, to: String): Flow<List<NotePack>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insert(entity: TrainingEntity)
+    public suspend fun insert(entity: NoteEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertAll(entities: List<TrainingEntity>)
+    public suspend fun insertAll(entities: List<NoteEntity>)
 
-    @Query("DELETE FROM training WHERE id = :id")
+    @Query("DELETE FROM note WHERE id = :id")
     public suspend fun delete(id: String)
 
-    @Query("DELETE FROM training WHERE createdAt BETWEEN :from AND :to")
+    @Query("DELETE FROM note WHERE createdAt BETWEEN :from AND :to")
     public suspend fun deleteByCreatedAtRange(from: String, to: String)
 
-    @Query("DELETE FROM training WHERE createdAt BETWEEN :from AND :to AND id NOT IN (:keepIds)")
+    @Query("DELETE FROM note WHERE createdAt BETWEEN :from AND :to AND id NOT IN (:keepIds)")
     public suspend fun deleteByCreatedAtRangeExceptIds(from: String, to: String, keepIds: List<String>)
 }
 ```
@@ -243,15 +243,14 @@ Each conversion direction is one module. The Repository pulls mappers from `:dat
 
 ```kotlin
 // :data-mappers:entity-to-domain
-public fun TrainingPack.toDomain(): Training = Training(
-    id = training.id,
-    profileId = training.profileId,
-    duration = training.duration.milliseconds,
-    createdAt = DateTimeUtils.toLocalDateTime(training.createdAt),
-    exercises = exercises.toDomain(),
+public fun NotePack.toDomain(): Note = Note(
+    id = note.id,
+    profileId = note.profileId,
+    createdAt = DateTimeUtils.toLocalDateTime(note.createdAt),
+    tags = tags.toDomain(),
 )
 
-public fun List<TrainingPack>.toDomain(): List<Training> = map { it.toDomain() }
+public fun List<NotePack>.toDomain(): List<Note> = map { it.toDomain() }
 ```
 
 See `07-mappers/` for full conventions.

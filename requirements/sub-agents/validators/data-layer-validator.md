@@ -9,7 +9,7 @@ You verify the data-layer boundaries — the perimeter from `<Product>Api` throu
 
 ## Authoritative reading
 
-1. `requirements/06-data-layer/*` — BackendClient, TokenProvider, GrippoApi, DTOs, Database, DAOs.
+1. `requirements/06-data-layer/*` — BackendClient, TokenProvider, `<Product>Api`, DTOs, Database, DAOs.
 2. `requirements/07-mappers/*` — directions, null-safety, function-name table.
 3. `requirements/03-architecture-patterns/06-repository-pattern.md` — Repository shape.
 4. `requirements/13-anti-patterns/01-forbidden-patterns.md` (Data layer + Logging sections).

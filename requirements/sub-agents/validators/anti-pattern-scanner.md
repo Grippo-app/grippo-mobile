@@ -20,7 +20,7 @@ Files changed in the current task (added + modified). Use `git diff --name-only 
 
 ## Step 1 — run Detekt with project-specific rules
 
-Detekt is wired into the root build with a custom ruleset registered in `:tooling:detekt-rules` (RuleSet id `grippo`). The covered rules:
+Detekt is wired into the root build with a custom ruleset registered in `:tooling:detekt-rules` (RuleSet id `<product>`). The covered rules:
 
 - `DtoFieldsMustBeNullable` — every `@Serializable` val under `data-services/backend/dto/**` must be `?` typed AND default `= null`.
 - `ImmutableStateMustUseImmutableCollections` — `@Immutable` classes must use `ImmutableList`/`ImmutableSet`/`ImmutableMap`/`PersistentList` from `kotlinx.collections.immutable`, never `kotlin.collections.List/Set/Map` or any `Mutable*` variant.

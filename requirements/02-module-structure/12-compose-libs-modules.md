@@ -59,7 +59,7 @@ Extract when:
 Don't extract:
 
 - One-off styled wrappers around Material3 primitives — those go in `:design-system:components`.
-- Widgets tightly coupled to product domain (e.g. a `WeightHistoryChart` that knows about kg/lbs and weight goals) — those go in `:design-system:components` because they need `AppTokens` and product types.
+- Widgets tightly coupled to product domain (e.g. a `<Entity>HistoryChart` that knows about product-specific units and domain types) — those go in `:design-system:components` because they need `AppTokens` and product types.
 
 ## How widgets are styled by callers
 

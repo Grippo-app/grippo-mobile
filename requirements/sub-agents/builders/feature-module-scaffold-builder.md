@@ -26,7 +26,7 @@ Before starting, verify each file in the list above exists (`[ -f <path> ]`). If
 ## Inputs the orchestrator passes you
 
 - **Task file path** (`requirements/tasks/TASK_*.md`).
-- **Feature name** in `kebab-case` (module folder, e.g. `workout-history`) and `PascalCase` (class prefix, e.g. `WorkoutHistory`). Convert one from the other if only one is supplied.
+- **Feature name** in `kebab-case` (module folder, e.g. `note-archive`) and `PascalCase` (class prefix, e.g. `NoteArchive`). Convert one from the other if only one is supplied.
 - **Optional: animator hint** — which `StackAnimator` the feature should use in `RootScreen` (`fade()`, `platformStackAnimator()`, …). Default to `platformStackAnimator()` if not specified.
 
 If the feature name collides with an existing `:ui-screen-features:*` module, **stop and report** `BLOCKED: feature module :ui-screen-features:<name> already exists`. Scaffolding over an existing module is out of scope — the orchestrator should route to `screen-builder` instead.
@@ -280,7 +280,7 @@ In `sourceSets.commonMain.dependencies { … }`, append:
 implementation(projects.uiScreenFeatures.<nameCamelCase>)
 ```
 
-The `<nameCamelCase>` form follows Gradle's type-safe project accessor convention (`workout-history` → `workoutHistory`).
+The `<nameCamelCase>` form follows Gradle's type-safe project accessor convention (`note-archive` → `noteArchive`).
 
 ### 10. Verify
 

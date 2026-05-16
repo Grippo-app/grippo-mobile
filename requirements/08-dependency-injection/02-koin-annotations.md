@@ -49,10 +49,10 @@ The platform-specific KSP tasks (`kspAndroid`, `kspIosArm64`, ...) wait for the 
 ```kotlin
 @Module
 @ComponentScan
-public class TrainingsFeatureModule
+public class NotesFeatureModule
 ```
 
-- `@Module` marks the class. The KSP processor finds it and generates an extension property `TrainingsFeatureModule.module: org.koin.core.module.Module`.
+- `@Module` marks the class. The KSP processor finds it and generates an extension property `NotesFeatureModule.module: org.koin.core.module.Module`.
 - `@ComponentScan` (no args) scans the module class's package and sub-packages for `@Single` / `@Factory` / `@Scoped` annotations.
 - `@ComponentScan("package.name")` to scan a specific package — rare; default is the module's own package.
 
@@ -61,10 +61,10 @@ To compose modules:
 ```kotlin
 @Module(includes = [BackendModule::class, DatabaseModule::class])
 @ComponentScan
-public class TrainingsFeatureModule
+public class NotesFeatureModule
 ```
 
-Including `BackendModule` transitively pulls in everything `BackendModule` provides. When `:shared/Koin.kt` registers `TrainingsFeatureModule().module`, both this and its includes are wired.
+Including `BackendModule` transitively pulls in everything `BackendModule` provides. When `:shared/Koin.kt` registers `NotesFeatureModule().module`, both this and its includes are wired.
 
 **Include propagation:** if A includes B and B includes C, registering A pulls in B and C. You don't need to add B and C separately.
 
@@ -72,14 +72,14 @@ Including `BackendModule` transitively pulls in everything `BackendModule` provi
 
 ```kotlin
 @Single
-public class GrippoApi internal constructor(private val client: BackendClient) { ... }
+public class <Product>Api internal constructor(private val client: BackendClient) { ... }
 
-@Single(binds = [TrainingRepository::class])
-internal class TrainingRepositoryImpl(...) : TrainingRepository { ... }
+@Single(binds = [NoteRepository::class])
+internal class NoteRepositoryImpl(...) : NoteRepository { ... }
 ```
 
-- Without `binds`: registered under its concrete type. `inject<GrippoApi>()` works.
-- With `binds = [Interface::class]`: registered under the **interface** type. `inject<TrainingRepository>()` works; `inject<TrainingRepositoryImpl>()` does **not** (the impl is internal anyway).
+- Without `binds`: registered under its concrete type. `inject<<Product>Api>()` works.
+- With `binds = [Interface::class]`: registered under the **interface** type. `inject<NoteRepository>()` works; `inject<NoteRepositoryImpl>()` does **not** (the impl is internal anyway).
 
 **Multiple interfaces:**
 
@@ -180,7 +180,7 @@ public object Koin {
 
 ## Anti-patterns
 
-- **Hand-written `module { single<TrainingFeature> { TrainingFeatureImpl(get(), get()) } }`** for new code. Use annotations.
+- **Hand-written `module { single<NoteFeature> { NoteFeatureImpl(get(), get()) } }`** for new code. Use annotations.
 - **Forgetting `binds = [Interface::class]`** on an impl class. The interface won't be wired; consumers can't `inject<Interface>()`.
 - **Two annotated impls binding the same interface** without disambiguation. Conflicts at startup. Use `named("...")` qualifier if you really need two.
 - **`@Single` on a class that holds per-call state** (e.g. a per-request HTTP context). Use `@Factory`.

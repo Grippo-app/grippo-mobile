@@ -25,9 +25,9 @@ Before starting, verify each file in the list above exists (`[ -f <path> ]`). If
 
 - **Task file path** (`requirements/tasks/TASK_*.md`).
 - **Target feature module** (e.g. `:ui-screen-features:profile`).
-- **Sub-screen name** in PascalCase (e.g. `WorkoutHistory`).
+- **Sub-screen name** in PascalCase (e.g. `NoteArchive`).
 - **Route payload** if any (e.g. `initialRange: DateRange`).
-- **The `*Feature` interface** the screen reads from (e.g. `WorkoutHistoryFeature`) — must already exist in `:data-features:feature-api`.
+- **The `*Feature` interface** the screen reads from (e.g. `NoteFeature`) — must already exist in `:data-features:feature-api`.
 
 If any of those are missing, **stop and ask the orchestrator** rather than guessing.
 
@@ -35,7 +35,7 @@ If any of those are missing, **stop and ask the orchestrator** rather than guess
 
 ### 1. Locate the feature root
 
-Find the feature root component (bare-name pattern: `<Feature>Component.kt`). The exception is when the feature contains a sub-screen with the same name as the feature (which would collide with the bare name) — in that case the root file is `<Feature>RootComponent.kt`. The list of exception features lives in `featuresWithRootComponentSuffix` in `requirements/00-overview/03-project-config.md`. (Reference repo example: `:home` and `:trainings`.) Find the feature's `*Router.kt` in `:ui-screen-features:screen-api`. Identify the `createChild` / inner `sealed class Child` shape so the new screen can be wired correctly.
+Find the feature root component (bare-name pattern: `<Feature>Component.kt`). The exception is when the feature contains a sub-screen with the same name as the feature (which would collide with the bare name) — in that case the root file is `<Feature>RootComponent.kt`. The list of exception features lives in `featuresWithRootComponentSuffix` in `requirements/00-overview/03-project-config.md`. Find the feature's `*Router.kt` in `:ui-screen-features:screen-api`. Identify the `createChild` / inner `sealed class Child` shape so the new screen can be wired correctly.
 
 ### 2. Create the package
 
@@ -84,7 +84,7 @@ And the matching `data class <Subscreen>(override val component: …) : Child(co
 
 ### 5. Update the calling screen (if applicable)
 
-If the task names an entry point (e.g. *"tapping the workouts card opens this screen"*), update the calling screen's Contract method and its Component's `eventListener` to invoke the new `to<Subscreen>: (…) -> Unit` callback. The callback is threaded **down** from the feature root, never **up** via global state.
+If the task names an entry point (e.g. *"tapping the summary card opens this screen"*), update the calling screen's Contract method and its Component's `eventListener` to invoke the new `to<Subscreen>: (…) -> Unit` callback. The callback is threaded **down** from the feature root, never **up** via global state.
 
 ### 6. Verify
 

@@ -1,125 +1,125 @@
 # Add a Screen
 
-How to add a new sub-screen inside an existing feature module — e.g. a "Workout history" screen in `:ui-screen-features:profile`.
+How to add a new sub-screen inside an existing feature module — e.g. a "Note archive" screen in `:ui-screen-features:profile`.
 
 ## Steps
 
 ### 1. Create the package
 
 ```
-ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/workouthistory/
+ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/notearchive/
 ```
 
 ### 2. Create the seven files
 
-`ProfileWorkoutHistoryState.kt`:
+`ProfileNoteArchiveState.kt`:
 
 ```kotlin
-package com.<org>.<product>.profile.workouthistory
+package com.<org>.<product>.profile.notearchive
 
 @Immutable
-internal data class ProfileWorkoutHistoryState(
+internal data class ProfileNoteArchiveState(
     val range: DateRangeFormatState = DateRangeFormatState.of(DateRangePresets.last30Days()),
-    val items: ImmutableList<WorkoutHistoryRowState> = persistentListOf(),
+    val items: ImmutableList<NoteRowState> = persistentListOf(),
 )
 ```
 
-State is not `@Serializable` — the Decompose `StateKeeper` serializes Routers, not feature state. Provide defaults directly in the constructor (`BaseViewModel(ProfileWorkoutHistoryState())`); do not declare a `companion object Empty` on State (Empty belongs on `Contract`, not `State`).
+State is not `@Serializable` — the Decompose `StateKeeper` serializes Routers, not feature state. Provide defaults directly in the constructor (`BaseViewModel(ProfileNoteArchiveState())`); do not declare a `companion object Empty` on State (Empty belongs on `Contract`, not `State`).
 
-`ProfileWorkoutHistoryDirection.kt`:
+`ProfileNoteArchiveDirection.kt`:
 
 ```kotlin
-internal sealed interface ProfileWorkoutHistoryDirection : BaseDirection {
-    data object Back : ProfileWorkoutHistoryDirection
-    data class OpenWorkout(val id: String) : ProfileWorkoutHistoryDirection
+internal sealed interface ProfileNoteArchiveDirection : BaseDirection {
+    data object Back : ProfileNoteArchiveDirection
+    data class OpenNote(val id: String) : ProfileNoteArchiveDirection
 }
 ```
 
-`ProfileWorkoutHistoryLoader.kt`:
+`ProfileNoteArchiveLoader.kt`:
 
 ```kotlin
 @Immutable
-internal sealed interface ProfileWorkoutHistoryLoader : BaseLoader {
-    @Immutable data object LoadHistory : ProfileWorkoutHistoryLoader
+internal sealed interface ProfileNoteArchiveLoader : BaseLoader {
+    @Immutable data object LoadHistory : ProfileNoteArchiveLoader
 }
 ```
 
-`ProfileWorkoutHistoryContract.kt`:
+`ProfileNoteArchiveContract.kt`:
 
 ```kotlin
 @Immutable
-internal interface ProfileWorkoutHistoryContract {
+internal interface ProfileNoteArchiveContract {
     fun onBack()
     fun onRangeChange(range: DateRange)
-    fun onWorkoutClick(id: String)
+    fun onNoteClick(id: String)
 
-    companion object Empty : ProfileWorkoutHistoryContract {
+    companion object Empty : ProfileNoteArchiveContract {
         override fun onBack() = Unit
         override fun onRangeChange(range: DateRange) = Unit
-        override fun onWorkoutClick(id: String) = Unit
+        override fun onNoteClick(id: String) = Unit
     }
 }
 ```
 
-`ProfileWorkoutHistoryViewModel.kt`:
+`ProfileNoteArchiveViewModel.kt`:
 
 ```kotlin
-internal class ProfileWorkoutHistoryViewModel(
+internal class ProfileNoteArchiveViewModel(
     initialRange: DateRange,
-    private val workoutHistoryFeature: WorkoutHistoryFeature,
-) : BaseViewModel<ProfileWorkoutHistoryState, ProfileWorkoutHistoryDirection, ProfileWorkoutHistoryLoader>(
-    ProfileWorkoutHistoryState(range = DateRangeFormatState.of(initialRange)),
-), ProfileWorkoutHistoryContract {
+    private val noteFeature: NoteFeature,
+) : BaseViewModel<ProfileNoteArchiveState, ProfileNoteArchiveDirection, ProfileNoteArchiveLoader>(
+    ProfileNoteArchiveState(range = DateRangeFormatState.of(initialRange)),
+), ProfileNoteArchiveContract {
 
     init {
-        workoutHistoryFeature.observeWorkoutHistory(initialRange.from, initialRange.to)
+        noteFeature.observeNotes(initialRange.from, initialRange.to)
             .map { it.toState() }
             .onEach { items -> update { it.copy(items = items) } }
             .safeLaunch()
 
-        safeLaunch(loader = ProfileWorkoutHistoryLoader.LoadHistory) {
-            workoutHistoryFeature.getWorkoutHistory(initialRange.from, initialRange.to).getOrThrow()
+        safeLaunch(loader = ProfileNoteArchiveLoader.LoadHistory) {
+            noteFeature.getNotes(initialRange.from, initialRange.to).getOrThrow()
         }
     }
 
     override fun onBack() {
-        navigateTo(ProfileWorkoutHistoryDirection.Back)
+        navigateTo(ProfileNoteArchiveDirection.Back)
     }
 
     override fun onRangeChange(range: DateRange) {
         update { it.copy(range = DateRangeFormatState.of(range)) }
-        safeLaunch(loader = ProfileWorkoutHistoryLoader.LoadHistory) {
-            workoutHistoryFeature.getWorkoutHistory(range.from, range.to).getOrThrow()
+        safeLaunch(loader = ProfileNoteArchiveLoader.LoadHistory) {
+            noteFeature.getNotes(range.from, range.to).getOrThrow()
         }
     }
 
-    override fun onWorkoutClick(id: String) {
-        navigateTo(ProfileWorkoutHistoryDirection.OpenWorkout(id))
+    override fun onNoteClick(id: String) {
+        navigateTo(ProfileNoteArchiveDirection.OpenNote(id))
     }
 }
 ```
 
-`ProfileWorkoutHistoryComponent.kt`:
+`ProfileNoteArchiveComponent.kt`:
 
 ```kotlin
-internal class ProfileWorkoutHistoryComponent(
+internal class ProfileNoteArchiveComponent(
     componentContext: ComponentContext,
     initialRange: DateRange,
     private val back: () -> Unit,
-    private val toWorkout: (String) -> Unit,
-) : BaseComponent<ProfileWorkoutHistoryDirection>(componentContext) {
+    private val toNote: (String) -> Unit,
+) : BaseComponent<ProfileNoteArchiveDirection>(componentContext) {
 
-    override val viewModel: ProfileWorkoutHistoryViewModel = componentContext.retainedInstance {
-        ProfileWorkoutHistoryViewModel(
+    override val viewModel: ProfileNoteArchiveViewModel = componentContext.retainedInstance {
+        ProfileNoteArchiveViewModel(
             initialRange = initialRange,
-            workoutHistoryFeature = getKoin().get(),
+            noteFeature = getKoin().get(),
         )
     }
 
-    override suspend fun eventListener(direction: ProfileWorkoutHistoryDirection) {
+    override suspend fun eventListener(direction: ProfileNoteArchiveDirection) {
         when (direction) {
-            ProfileWorkoutHistoryDirection.Back -> back()
-            is ProfileWorkoutHistoryDirection.OpenWorkout -> toWorkout(direction.id)
+            ProfileNoteArchiveDirection.Back -> back()
+            is ProfileNoteArchiveDirection.OpenNote -> toNote(direction.id)
         }
     }
 
@@ -127,23 +127,23 @@ internal class ProfileWorkoutHistoryComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileWorkoutHistoryScreen(state.value, loaders.value, viewModel)
+        ProfileNoteArchiveScreen(state.value, loaders.value, viewModel)
     }
 }
 ```
 
-`ProfileWorkoutHistoryScreen.kt`:
+`ProfileNoteArchiveScreen.kt`:
 
 ```kotlin
 @Composable
-internal fun ProfileWorkoutHistoryScreen(
-    state: ProfileWorkoutHistoryState,
-    loaders: ImmutableSet<ProfileWorkoutHistoryLoader>,
-    contract: ProfileWorkoutHistoryContract,
+internal fun ProfileNoteArchiveScreen(
+    state: ProfileNoteArchiveState,
+    loaders: ImmutableSet<ProfileNoteArchiveLoader>,
+    contract: ProfileNoteArchiveContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.profile_workout_history_title),
+        title = AppTokens.strings.res(Res.string.profile_note_archive_title),
         leading = Leading.Back(onClick = contract::onBack),
     )
 
@@ -152,12 +152,12 @@ internal fun ProfileWorkoutHistoryScreen(
 
 @AppPreview
 @Composable
-private fun ProfileWorkoutHistoryScreenPreview() {
+private fun ProfileNoteArchiveScreenPreview() {
     PreviewContainer {
-        ProfileWorkoutHistoryScreen(
-            state = ProfileWorkoutHistoryState(items = stubWorkoutHistoryRowList()),
+        ProfileNoteArchiveScreen(
+            state = ProfileNoteArchiveState(items = stubNoteList()),
             loaders = persistentSetOf(),
-            contract = ProfileWorkoutHistoryContract.Empty,
+            contract = ProfileNoteArchiveContract.Empty,
         )
     }
 }
@@ -172,7 +172,7 @@ In `ProfileRouter.kt`:
 public sealed class ProfileRouter : BaseRouter {
     @Serializable public data object Body : ProfileRouter()
     @Serializable public data object Settings : ProfileRouter()
-    @Serializable public data class WorkoutHistory(val initialRange: DateRange) : ProfileRouter()
+    @Serializable public data class NoteArchive(val initialRange: DateRange) : ProfileRouter()
 }
 ```
 
@@ -182,27 +182,27 @@ public sealed class ProfileRouter : BaseRouter {
 
 ```kotlin
 private fun createChild(router: ProfileRouter, context: ComponentContext): Child = when (router) {
-    ProfileRouter.Body -> Child.ProfileBody(
-        ProfileBodyComponent(componentContext = context, back = viewModel::onBack)
+    ProfileRouter.Overview -> Child.ProfileOverview(
+        ProfileOverviewComponent(componentContext = context, back = viewModel::onBack)
     )
     ProfileRouter.Settings -> Child.Settings(
         ProfileSettingsComponent(componentContext = context, back = viewModel::onBack)
     )
-    is ProfileRouter.WorkoutHistory -> Child.WorkoutHistory(
-        ProfileWorkoutHistoryComponent(
+    is ProfileRouter.NoteArchive -> Child.NoteArchive(
+        ProfileNoteArchiveComponent(
             componentContext = context,
             initialRange = router.initialRange,
             back = viewModel::onBack,
-            toWorkout = { id -> /* navigate to workout details */ },
+            toNote = { id -> /* navigate to note details */ },
         )
     )
     // ... other existing branches
 }
 
 internal sealed class Child(open val component: BaseComponent<*>) {
-    data class ProfileBody(override val component: ProfileBodyComponent) : Child(component)
+    data class ProfileOverview(override val component: ProfileOverviewComponent) : Child(component)
     data class Settings(override val component: ProfileSettingsComponent) : Child(component)
-    data class WorkoutHistory(override val component: ProfileWorkoutHistoryComponent) : Child(component)
+    data class NoteArchive(override val component: ProfileNoteArchiveComponent) : Child(component)
     // ... other existing subtypes
 }
 ```
@@ -211,26 +211,26 @@ internal sealed class Child(open val component: BaseComponent<*>) {
 
 ### 5. Update the calling screen to trigger navigation
 
-In `ProfileBodyViewModel`:
+In `ProfileOverviewViewModel`:
 
 ```kotlin
-override fun onWorkoutHistoryClick() {
-    navigateTo(ProfileBodyDirection.OpenWorkoutHistory(state.value.defaultRange))
+override fun onNoteArchiveClick() {
+    navigateTo(ProfileOverviewDirection.OpenNoteArchive(state.value.defaultRange))
 }
 ```
 
-In `ProfileBodyComponent`:
+In `ProfileOverviewComponent`:
 
 ```kotlin
-override suspend fun eventListener(direction: ProfileBodyDirection) {
+override suspend fun eventListener(direction: ProfileOverviewDirection) {
     when (direction) {
-        is ProfileBodyDirection.OpenWorkoutHistory -> toWorkoutHistory(direction.initialRange)
+        is ProfileOverviewDirection.OpenNoteArchive -> toNoteArchive(direction.initialRange)
         // ...
     }
 }
 ```
 
-`toWorkoutHistory: (DateRange) -> Unit` is passed via the Component constructor from `ProfileComponent.createChild` (see step 4). The reference repo's profile feature root is `ProfileComponent` (bare feature name), not `ProfileRootComponent` — only features with name collisions between the root and a sub-screen (e.g. `:home`, `:trainings`) use the `*RootComponent` suffix.
+`toNoteArchive: (DateRange) -> Unit` is passed via the Component constructor from `ProfileComponent.createChild` (see step 4). The reference repo's profile feature root is `ProfileComponent` (bare feature name), not `ProfileRootComponent` — only features whose root and primary sub-screen share a name use the `*RootComponent` suffix.
 
 ### 6. Verify
 
@@ -243,8 +243,8 @@ Both should build green. Visually verify the new screen in a debug run.
 
 ## What you did NOT have to do
 
-- **No new Koin module.** `WorkoutHistoryFeature` is already provided by an existing data feature module.
-- **No new mapper module.** `.toState()` extension goes in `:data-mappers:domain-to-state/workouthistory/`.
+- **No new Koin module.** `NoteFeature` is already provided by an existing data feature module.
+- **No new mapper module.** `.toState()` extension goes in `:data-mappers:domain-to-state/notearchive/`.
 - **No changes to `:shared/Koin.kt`.** No new module to register.
 - **No changes to `RootRouter`.** New route is in `ProfileRouter`, not at the root level.
 
@@ -253,5 +253,5 @@ Both should build green. Visually verify the new screen in a debug run.
 - **Forgetting `@Serializable` on the new `Router` subtype.** Crashes on process death.
 - **Forgetting `key = "ProfileComponent"` on `childStack`.** Already in place (from the existing feature), but a new feature module sometimes omits it.
 - **Including the new screen as a top-level RootRouter entry.** Sub-screens belong inside `<Feature>Router`, not at the root.
-- **Threading `WorkoutHistoryFeature` through Component constructors.** Inject via `getKoin().get()` inside `retainedInstance`.
+- **Threading `NoteFeature` through Component constructors.** Inject via `getKoin().get()` inside `retainedInstance`.
 - **Passing a `() -> Unit` callback in `*Router`** instead of via Component constructor. Routes are `@Serializable` data; callbacks aren't.

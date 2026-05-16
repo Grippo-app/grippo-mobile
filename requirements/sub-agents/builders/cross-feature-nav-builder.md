@@ -1,6 +1,6 @@
 ---
 name: cross-feature-nav-builder
-description: Wires a navigation jump from one `:ui-screen-features:*` feature into another (e.g. tap a chart on Home → open a WorkoutHistory screen in Profile). Adds the `RootDirection` entry, the `RootContract` method, the `RootViewModel` mapping, the `RootComponent.eventListener` translation, and threads the callback through the calling feature's root component down to the originating screen. Does NOT create the destination screen itself — that's `screen-builder`'s job.
+description: Wires a navigation jump from one `:ui-screen-features:*` feature into another (e.g. tap a card on Home → open a `<Destination>` screen in Profile). Adds the `RootDirection` entry, the `RootContract` method, the `RootViewModel` mapping, the `RootComponent.eventListener` translation, and threads the callback through the calling feature's root component down to the originating screen. Does NOT create the destination screen itself — that's `screen-builder`'s job.
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 ---
@@ -19,7 +19,7 @@ Before starting, verify each file in the list above exists (`[ -f <path> ]`). If
 
 - **Task file path**.
 - **Source** — `(feature module, screen, callback name)` the user interacts with (e.g. `(home, HomeOverviewScreen, onChartClick)`).
-- **Destination** — `(feature module, RootRouter target)` (e.g. `(profile, ProfileRouter.WorkoutHistory(initialRange))`).
+- **Destination** — `(feature module, RootRouter target)` (e.g. `(profile, ProfileRouter.<Destination>(initialRange))`).
 - **Payload** — what data crosses the boundary (e.g. `DateRange`).
 
 The destination screen MUST already exist (run `screen-builder` first if it doesn't).
@@ -43,7 +43,7 @@ public sealed interface RootDirection : BaseDirection {
 }
 ```
 
-Prefer **explicit-direction style** (one entry per cross-feature jump). The reference repo uses this style consistently; most entries are `data object` for payload-free jumps (`WeightHistory`, `Settings`) with `data class` reserved for entries that carry data (`Training(stage: StageState)`).
+Prefer **explicit-direction style** (one entry per cross-feature jump). Use `data object` for payload-free jumps (e.g. `Settings`) and `data class` for entries that carry data (e.g. `Note(stage: StageState)`).
 
 ### 3. Expose the callback on `RootContract`
 

@@ -25,7 +25,7 @@ data-mappers/dto-to-entity/src/commonMain/kotlin/com/<org>/<product>/dto/entity/
   NotificationMapper.kt
 ```
 
-Mapper module directories use slashes (`com/<org>/<product>/dto/entity/<area>/`), matching the `package` declaration `package com.<org>.<product>.dto.entity.<area>`. This is the opposite convention of `:data-features:*` modules (which intentionally use dotted directories like `com/grippo/data.features.trainings/`). Match the `<area>` subpackage to the data domain (`notifications`, `training`, `goal`, ...).
+Mapper module directories use slashes (`com/<org>/<product>/dto/entity/<area>/`), matching the `package` declaration `package com.<org>.<product>.dto.entity.<area>`. This is the opposite convention of `:data-features:*` modules (which intentionally use dotted directories like `com/<org>/<product>/data.features.<feature>/`). Match the `<area>` subpackage to the data domain.
 
 ### 3. Write the mapper
 
@@ -73,7 +73,7 @@ Existing mapper modules already have these — usually no edit needed.
 ```kotlin
 @Single(binds = [NotificationsRepository::class])
 internal class NotificationsRepositoryImpl(
-    private val api: GrippoApi,
+    private val api: <Product>Api,
     private val notificationDao: NotificationDao,
     private val userActiveDao: UserActiveDao,
     private val userDao: UserDao,
@@ -94,7 +94,7 @@ internal class NotificationsRepositoryImpl(
 }
 ```
 
-`UserActiveDao.get()` returns the active **`userId`** (a `Flow<String?>`), not the profile id. Translate to `profileId` via `userDao.getById(userId).firstOrNull()?.profileId` — the reference repo uses this two-step lookup in `TrainingRepositoryImpl.setDraftTraining`, `ExcludedMusclesRepositoryImpl`, and `ExcludedEquipmentsRepositoryImpl`. Skip the translation only when the foreign key is `userId` itself.
+`UserActiveDao.get()` returns the active **`userId`** (a `Flow<String?>`), not the profile id. Translate to `profileId` via `userDao.getById(userId).firstOrNull()?.profileId` — every repository whose entity has a `profileId` foreign key follows this two-step lookup. Skip the translation only when the foreign key is `userId` itself.
 
 ## Patterns by direction
 

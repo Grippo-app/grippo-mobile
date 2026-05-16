@@ -43,9 +43,9 @@
 | **Design system** | Tokens + atomic components | `:design-system:{core, components, preview, resources:*}` |
 | **UI core** | Base classes + reusable state | `:ui-core:{foundation, state, error:*}` |
 | **UI screen features** | Full-screen flows | `:ui-screen-features:{authorization, home, profile, ...}` |
-| **UI dialog features** | Bottom-sheet flows | `:ui-dialog-features:{weight-picker, confirmation, ...}` |
+| **UI dialog features** | Bottom-sheet flows | `:ui-dialog-features:{note-picker, confirmation, ...}` |
 | **Data services** | Low-level I/O (HTTP, DB, DataStore, auth) | `:data-services:{backend, database, datastore, ...}` |
-| **Data features** | Domain layer (interface + impl) | `:data-features:{feature-api, trainings, user, ...}` |
+| **Data features** | Domain layer (interface + impl) | `:data-features:{feature-api, notes, user, ...}` |
 | **Data mappers** | One module per direction | `:data-mappers:{dto-to-entity, entity-to-domain, ...}` |
 | **Toolkit** | Platform-aware utilities | `:toolkit:{context, http-client, logger, ...}` |
 | **Compose libs** | Reusable Compose widgets outside design system | `:compose-libs:{chart, konfetti, wheel-picker, ...}` |
@@ -90,7 +90,7 @@ ViewModel
     → <X>FeatureImpl (in :data-features:<x>, @Single(binds=[Feature::class]))
       → <X>Repository (internal interface)
         → <X>RepositoryImpl (@Single(binds=[Repository::class]))
-          → GrippoApi.<method>(body): Result<DTO>   // HTTP via :data-services:backend
+          → <Product>Api.<method>(body): Result<DTO>   // HTTP via :data-services:backend
           → <X>Dao.<query>(): Flow<Pack>            // Room via :data-services:database
 ```
 

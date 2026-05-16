@@ -74,7 +74,6 @@ include(":ui-screen-features:home")
 // ... one per top-level screen flow
 
 include(":ui-dialog-features:dialog-api")
-include(":ui-dialog-features:weight-picker")
 include(":ui-dialog-features:confirmation")
 include(":ui-dialog-features:error-display")
 // ... one per bottom-sheet flow
@@ -171,8 +170,8 @@ include(":<group>:<name>")
 ```
 
 - **`:<group>:<name>`** — colon-separated path. Each segment is a directory.
-- **`<group>`** is one of: `androidApp` (no subgroup), `shared`, `design-system`, `data-services`, `data-features`, `data-mappers`, `ui-core`, `ui-screen-features`, `ui-dialog-features`, `toolkit`, `compose-libs`.
-- **`<name>`** is kebab-case (`feature-api`, `dialog-api`, `weight-picker`).
+- **`<group>`** is one of: `androidApp` (no subgroup), `shared`, `design-system`, `data-services`, `data-features`, `data-mappers`, `ui-core`, `ui-screen-features`, `ui-dialog-features`, `toolkit`, `compose-libs`, `tooling`.
+- **`<name>`** is kebab-case (`feature-api`, `dialog-api`, `note-picker`).
 
 ## Order
 
@@ -188,6 +187,7 @@ Modules are listed grouped:
 8. Toolkit.
 9. Compose libs.
 10. Data mappers.
+11. Tooling (e.g. `:tooling:detekt-rules` — JVM-only Gradle helpers, not part of the KMP build graph).
 
 Within a group, order alphabetically or by topological dependency (`:feature-api` before specific features).
 

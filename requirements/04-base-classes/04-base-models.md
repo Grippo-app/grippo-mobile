@@ -74,11 +74,11 @@ Action-protocol types live nested inside the producer's `*Router.<Screen>`, as a
 
 ```kotlin
 @Serializable
-public sealed class TrainingRouter : BaseRouter {
-    @Serializable public data class Exercise(val exercise: ExerciseState) : TrainingRouter() {
+public sealed class NotesRouter : BaseRouter {
+    @Serializable public data class Tag(val tag: TagState) : NotesRouter() {
 
         public sealed interface Action {
-            public data class Sync(val exercise: ExerciseState) : Action
+            public data class Sync(val tag: TagState) : Action
             public data class Remove(val id: String) : Action
         }
     }
@@ -88,10 +88,10 @@ public sealed class TrainingRouter : BaseRouter {
 Producer and consumer:
 
 ```kotlin
-sendResult(key = ResultKeys.create("exercise"), data = TrainingRouter.Exercise.Action.Sync(exercise))
+sendResult(key = ResultKeys.create("tag"), data = NotesRouter.Tag.Action.Sync(tag))
 // → channels Result(action): a BaseResult
 
-observeResult<Result<TrainingRouter.Exercise.Action>>(key) { result ->
+observeResult<Result<NotesRouter.Tag.Action>>(key) { result ->
     when (val action = result.data) { /* ... */ }
 }
 ```
@@ -118,13 +118,13 @@ public object ResultKeys {
 ```
 
 - The generic `T` makes `sendResult` / `observeResult` type-safe; mismatched types fail at compile time.
-- The string `key` is the channel identifier — choose distinct keys per protocol (`"exercise"`, `"training-result"`, `"rating"`).
+- The string `key` is the channel identifier — choose distinct keys per protocol (`"tag"`, `"note-result"`, `"rating"`).
 - Two `ResultKey<T>(key = "x")` instances are equal if their strings match — `data class` equality.
 
 Idiomatic factory:
 
 ```kotlin
-val Exercise: ResultKey<Result<TrainingRouter.Exercise.Action>> = ResultKeys.create("exercise")
+val Tag: ResultKey<Result<NotesRouter.Tag.Action>> = ResultKeys.create("tag")
 ```
 
 ## `ComponentIdentifier`
@@ -140,8 +140,8 @@ Marker for distinguishing component instances. Rarely set in practice; the defau
 If a feature needs identifiers, declare a sealed subtype:
 
 ```kotlin
-public sealed interface TrainingIdentifier : ComponentIdentifier {
-    public data class ForExercise(val id: String) : TrainingIdentifier
+public sealed interface NotesIdentifier : ComponentIdentifier {
+    public data class ForTag(val id: String) : NotesIdentifier
 }
 ```
 
@@ -164,4 +164,4 @@ The markers are intentionally **empty** — they exist for type discipline, not 
 - **Don't extend `BaseLoader` with state** — Loaders are tags. If you need to communicate progress, add a field to State and update via `update { ... }`.
 - **Don't extend `BaseRouter` outside `:ui-screen-features:screen-api`** — routers are public API.
 - **Don't extend `BaseResult` yourself.** The only intended implementer is `Result<T>` (in `:ui-core:foundation`). Action protocols are plain sealed interfaces nested inside the producer's `*Router.<Screen>` in `:ui-screen-features:screen-api`; `sendResult` wraps them in `Result<T>` automatically.
-- **One `ResultKey` per protocol, not per subtype.** A `TrainingRouter.Exercise.Action` sealed interface uses one `ResultKey<Result<TrainingRouter.Exercise.Action>>`, not one per subtype.
+- **One `ResultKey` per protocol, not per subtype.** A `NotesRouter.Tag.Action` sealed interface uses one `ResultKey<Result<NotesRouter.Tag.Action>>`, not one per subtype.

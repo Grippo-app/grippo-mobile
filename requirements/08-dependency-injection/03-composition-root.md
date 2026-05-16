@@ -22,14 +22,7 @@ public object Koin {
             AuthorizationFeatureModule().module,
             ErrorModule().module,
             UserFeatureModule().module,
-            WeightHistoryFeatureModule().module,
-            GoalFeatureModule().module,
-            MusclesFeatureModule().module,
-            EquipmentFeatureModule().module,
-            ExerciseExamplesFeatureModule().module,
-            ExcludedMusclesFeatureModule().module,
-            TrainingsFeatureModule().module,
-            ExcludedEquipmentFeatureModule().module,
+            // ... every feature module (one per :data-features:<feature>)
             FeatureApiModule().module,
             ConnectivityModule().module,
             LinkOpenerModule().module,
@@ -37,8 +30,6 @@ public object Koin {
             PermissionManagerModule().module,
             ResourcesProviderModule().module,
             SerializationModule().module,
-            ExerciseMetricsFeatureModule().module,
-            LocalSettingsFeatureModule().module,
             HttpModule().module,
             ImageLoaderModule().module,
         )
@@ -164,7 +155,7 @@ fun setUp() {
         modules(
             ContextModule().module,
             // ... all real modules except the one being faked
-            module { single<TrainingFeature> { FakeTrainingFeature() } },
+            module { single<NoteFeature> { FakeNoteFeature() } },
         )
     }
 }

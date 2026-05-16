@@ -36,7 +36,7 @@ public sealed class RootRouter : BaseRouter {
 @Serializable
 public sealed class ProfileRouter : BaseRouter {
     @Serializable public data object Body : ProfileRouter()
-    @Serializable public data class WorkoutHistory(val initialRange: DateRange) : ProfileRouter()
+    @Serializable public data class NoteArchive(val initialRange: DateRange) : ProfileRouter()
 }
 ```
 
@@ -46,7 +46,7 @@ Forgetting `@Serializable` on a subtype crashes at runtime when `kotlinx-seriali
 
 ```kotlin
 @Serializable
-public data class WorkoutHistory(
+public data class NoteArchive(
     val initialRange: DateRange,         // DateRange is @Serializable in :toolkit:date-utils
 ) : ProfileRouter()
 ```
@@ -67,11 +67,11 @@ Lambdas don't serialize. If a route needs a result-back path, use **`ResultManag
 
 ```kotlin
 @Serializable
-public data class WeightPicker(
+public data class AmountPicker(
     val initial: Float?,
     @Transient public val onResult: (Float) -> Unit = { },
 ) : DialogConfig() {
-    override val key: String get() = buildKey("WeightPicker", initial)
+    override val key: String get() = buildKey("AmountPicker", initial)
 }
 ```
 
@@ -82,16 +82,16 @@ After process death, the dialog is restored with the saved `initial` value but t
 `BaseViewModel` does not use `SavedStateHandle`. State is rebuilt in `init { }` via re-subscription to `Flow`s from the data layer:
 
 ```kotlin
-internal class TrainingsListViewModel(...) : BaseViewModel<...>(...) {
+internal class NotesListViewModel(...) : BaseViewModel<...>(...) {
 
     init {
-        trainingsFeature.observeTrainings(state.value.range.from, state.value.range.to)
+        notesFeature.observeNotes(state.value.range.from, state.value.range.to)
             .map { it.toState() }
             .onEach { items -> update { it.copy(items = items) } }
             .safeLaunch()
 
-        safeLaunch(loader = TrainingsListLoader.LoadingTrainings) {
-            trainingsFeature.getTrainings(state.value.range.from, state.value.range.to).getOrThrow()
+        safeLaunch(loader = NotesListLoader.LoadingNotes) {
+            notesFeature.getNotes(state.value.range.from, state.value.range.to).getOrThrow()
         }
     }
 }
@@ -107,7 +107,7 @@ If a screen has a date range filter and the user backgrounds with "Last 30 days"
 
 ```kotlin
 @Serializable
-public data class WorkoutHistory(
+public data class NoteArchive(
     val initialRange: DateRange,
 ) : ProfileRouter()
 ```
@@ -115,24 +115,24 @@ public data class WorkoutHistory(
 The component pulls it from the config and threads it into the ViewModel:
 
 ```kotlin
-internal class WorkoutHistoryComponent(
+internal class NoteArchiveComponent(
     componentContext: ComponentContext,
     initialRange: DateRange,
     private val back: () -> Unit,
-) : BaseComponent<WorkoutHistoryDirection>(componentContext) {
+) : BaseComponent<NoteArchiveDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        WorkoutHistoryViewModel(initialRange, getKoin().get())
+        NoteArchiveViewModel(initialRange, getKoin().get())
     }
     // ...
 }
 ```
 
-`WorkoutHistoryViewModel(initialRange, ...)` stores `initialRange` in its initial state.
+`NoteArchiveViewModel(initialRange, ...)` stores `initialRange` in its initial state.
 
 **When the user changes the range**, the ViewModel updates `state` — but does **not** push a new route. The change is invisible to the stack. On process death + restart, the screen restores to `initialRange`, not the last-selected range.
 
-If the last-selected range must be restored, the screen calls `navigation.replaceCurrent(ProfileRouter.WorkoutHistory(initialRange = newRange))` on every change. This makes the stack the source of truth. **Use sparingly** — frequent `replaceCurrent` calls flood the StateKeeper.
+If the last-selected range must be restored, the screen calls `navigation.replaceCurrent(ProfileRouter.NoteArchive(initialRange = newRange))` on every change. This makes the stack the source of truth. **Use sparingly** — frequent `replaceCurrent` calls flood the StateKeeper.
 
 ### 7. Ephemeral selection state can be lost
 
@@ -160,7 +160,7 @@ The exact mechanism depends on the `iosMain/RootViewController.kt` glue.
 
 Enable "Don't Keep Activities" in Android Developer Options. Then:
 
-1. Navigate to a deep screen (e.g. Profile → WorkoutHistory).
+1. Navigate to a deep screen (e.g. Profile → NoteArchive).
 2. Press Home.
 3. Wait a few seconds.
 4. Re-open the app.

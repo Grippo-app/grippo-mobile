@@ -20,7 +20,7 @@ Before starting, verify each file in the list above exists (`[ -f <path> ]`). If
 
 - **Task file path**.
 - **Endpoint** — HTTP method, path, query params, body shape, response shape. The backend contract URL (Swagger at `/docs` or similar).
-- **Area** — `auth`, `user`, `training`, `notifications`, etc. Maps to the DTO subpackage and the `GrippoApi` section comment.
+- **Area** — `auth`, `user`, `notes`, `notifications`, etc. Maps to the DTO subpackage and the `<Product>Api` section comment.
 - **DTO names** — `<X>Response` / `<X>Body` / `<X>Request`.
 
 If the backend contract is unverified ("we will implement this on the backend later"), stop and ask the orchestrator. Inventing an endpoint risks contract drift.
@@ -79,7 +79,7 @@ DTO rules — non-negotiable:
 
 ### 3. Add the method to `<Product>Api`
 
-Locate `<Product>Api.kt` (e.g. `GrippoApi.kt` in the reference repo) in `:data-services:backend`. Find or add the section comment:
+Locate `<Product>Api.kt` in `:data-services:backend`. Find or add the section comment:
 
 ```kotlin
 /* * * * * * * * * * * * * * * * *
@@ -137,7 +137,7 @@ Both must build green.
 - Do not invent an endpoint. Backend contract first; if it doesn't exist there, stop.
 - Do not make DTO fields non-nullable. Even `id` is `String? = null` — defensive against backend evolution.
 - Do not omit `@SerialName` (the JSON serializer falls back to the Kotlin field name, but explicit `@SerialName` survives renames).
-- Do not subgroup the API class (`AuthApi`, `TrainingsApi`, …). The flat single-file `<Product>Api` is intentional.
+- Do not subgroup the API class (`AuthApi`, `NotesApi`, …). The flat single-file `<Product>Api` is intentional.
 - Do not inline `runCatching { client.invoke(…).body() }` outside the `request<T>` helper. The helper standardises error handling. Multipart bodies are the only exception.
 - Do not call `<Product>Api` from a ViewModel. ViewModels see only `<X>Feature` from `:data-features:feature-api`.
 - Do not add a method outside any section comment block — even a one-liner gets a section.

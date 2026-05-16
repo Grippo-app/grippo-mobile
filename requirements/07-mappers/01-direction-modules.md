@@ -11,7 +11,7 @@ Conversions between DTOs / Entities / Domain models / UI states / Bodies live in
 | `:data-mappers:dto-to-domain` | DTO `<X>Response` | Domain `<X>` | Repository skips caching for one-shot reads |
 | `:data-mappers:domain-to-state` | Domain `<X>` | UI State (`*State`, `*FormatState`) | ViewModel maps domain into screen state before `update {}` |
 | `:data-mappers:state-to-domain` | UI State `*State` | Domain `Set<X>` (submit form) | ViewModel collects form input and builds a domain object to send |
-| `:data-mappers:domain-to-entity` | Domain `Draft<X>` (parents) / `Set<X>` (leaf rows) | `Draft<X>Pack` for parents (Training, Exercise), bare `Draft<X>Entity` for leaf rows (Iteration) | ViewModel persists a draft to Room without the API. Ids are client-generated (`Uuid.random()`); each child takes its parent FK as a parameter. |
+| `:data-mappers:domain-to-entity` | Domain `Draft<X>` (parents) / `Set<X>` (leaf rows) | `Draft<X>Pack` for parents (Note, Tag), bare `Draft<X>Entity` for leaf rows (Item) | ViewModel persists a draft to Room without the API. Ids are client-generated (`Uuid.random()`); each child takes its parent FK as a parameter. |
 | `:data-mappers:domain-to-dto` | Domain `Set<X>` | Body `<X>Body` | Repository builds a POST/PUT body |
 
 ## Package naming
@@ -19,19 +19,19 @@ Conversions between DTOs / Entities / Domain models / UI states / Bodies live in
 `com.<org>.<product>.<from>.<to>.<area>`. The mapper modules use **standard slash-separated directories** (unlike `:data-features:*` which use dotted directories):
 
 ```
-data-mappers/dto-to-entity/src/commonMain/kotlin/com/<org>/<product>/dto/entity/training/
-  TrainingMapper.kt
-  ExerciseMapper.kt
-  IterationMapper.kt
-data-mappers/entity-to-domain/src/commonMain/kotlin/com/<org>/<product>/entity/domain/training/
-  TrainingPackMapper.kt
-  ExerciseMapper.kt
-  IterationMapper.kt
-data-mappers/domain-to-state/src/commonMain/kotlin/com/<org>/<product>/domain/state/training/
-  TrainingMapper.kt
+data-mappers/dto-to-entity/src/commonMain/kotlin/com/<org>/<product>/dto/entity/note/
+  NoteMapper.kt
+  TagMapper.kt
+  ItemMapper.kt
+data-mappers/entity-to-domain/src/commonMain/kotlin/com/<org>/<product>/entity/domain/note/
+  NotePackMapper.kt
+  TagMapper.kt
+  ItemMapper.kt
+data-mappers/domain-to-state/src/commonMain/kotlin/com/<org>/<product>/domain/state/note/
+  NoteMapper.kt
 ```
 
-Package declaration mirrors the directory: `package com.<org>.<product>.dto.entity.training`. Same dot count.
+Package declaration mirrors the directory: `package com.<org>.<product>.dto.entity.note`. Same dot count.
 
 ## What lives in each module
 
@@ -46,47 +46,40 @@ That's it. No classes. No singletons. No DI annotations.
 
 ```
 data-mappers/dto-to-entity/src/commonMain/kotlin/com/<org>/<product>/dto/entity/
-  training/
-    TrainingMapper.kt
-    ExerciseMapper.kt
-    IterationMapper.kt
+  note/
+    NoteMapper.kt
+    TagMapper.kt
+    ItemMapper.kt
   user/
     UserMapper.kt
-    GoalMapper.kt
-    WeightHistoryMapper.kt
-  equipment/
-    EquipmentMapper.kt
-    EquipmentGroupMapper.kt
   ...
 ```
 
-### Example file: `TrainingMapper.kt` in `:dto-to-entity`
+### Example file: `NoteMapper.kt` in `:dto-to-entity`
 
 ```kotlin
-package com.<org>.<product>.dto.entity.training
+package com.<org>.<product>.dto.entity.note
 
-public fun List<TrainingResponse>.toEntities(): List<TrainingEntity> =
+public fun List<NoteResponse>.toEntities(): List<NoteEntity> =
     mapNotNull { it.toEntityOrNull() }
 
-public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
-    val entityId = AppLogger.Mapping.log(id) { "TrainingResponse.id is null" } ?: return null
-    val entityDuration = AppLogger.Mapping.log(duration) { "TrainingResponse.duration is null" } ?: return null
-    val entityCreatedAt = AppLogger.Mapping.log(createdAt) { "TrainingResponse.createdAt is null" } ?: return null
-    val entityVolume = AppLogger.Mapping.log(volume) { "TrainingResponse.volume is null" } ?: return null
-    val entityRepetitions = AppLogger.Mapping.log(repetitions) { "TrainingResponse.repetitions is null" } ?: return null
-    val entityIntensity = AppLogger.Mapping.log(intensity) { "TrainingResponse.intensity is null" } ?: return null
-    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) { "TrainingResponse.updatedAt is null" } ?: return null
+public fun NoteResponse.toEntityOrNull(): NoteEntity? {
+    val entityId = AppLogger.Mapping.log(id) { "NoteResponse.id is null" } ?: return null
+    val entityTitle = AppLogger.Mapping.log(title) { "NoteResponse.title is null" } ?: return null
+    val entityAmount = AppLogger.Mapping.log(amount) { "NoteResponse.amount is null" } ?: return null
+    val entityDuration = AppLogger.Mapping.log(duration) { "NoteResponse.duration is null" } ?: return null
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) { "NoteResponse.createdAt is null" } ?: return null
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) { "NoteResponse.updatedAt is null" } ?: return null
     // Server emits either profileId or the legacy userId; either is acceptable.
-    val entityProfileId = AppLogger.Mapping.log(profileId ?: userId) { "TrainingResponse.profileId is null" } ?: return null
+    val entityProfileId = AppLogger.Mapping.log(profileId ?: userId) { "NoteResponse.profileId is null" } ?: return null
 
-    return TrainingEntity(
+    return NoteEntity(
         id = entityId,
         profileId = entityProfileId,
+        title = entityTitle,
+        amount = entityAmount,
         duration = entityDuration,
         createdAt = entityCreatedAt,
-        volume = entityVolume,
-        repetitions = entityRepetitions,
-        intensity = entityIntensity,
         updatedAt = entityUpdatedAt,
     )
 }
@@ -136,9 +129,9 @@ The dependency set per direction (`:toolkit:logger` is wired into every row's bu
 
 ## Why seven modules
 
-- **Isolation.** A change to `TrainingResponse` (DTO) cannot accidentally break the entity-to-domain mapper. They're in different modules.
+- **Isolation.** A change to `NoteResponse` (DTO) cannot accidentally break the entity-to-domain mapper. They're in different modules.
 - **Compile parallelism.** Each module compiles in parallel.
-- **Discoverability.** "Where does `TrainingResponse → TrainingEntity` live?" → look in `:dto-to-entity`. The module name is the answer.
+- **Discoverability.** "Where does `NoteResponse → NoteEntity` live?" → look in `:dto-to-entity`. The module name is the answer.
 - **Direction-specific rules.** Each direction has slightly different conventions (DTO-sourced directions log every required field; entity-sourced directions log only `@Relation` and enum-string parses; state-sourced directions log each `*FormatState.value`).
 
 ## Anti-patterns
@@ -149,4 +142,4 @@ The dependency set per direction (`:toolkit:logger` is wired into every row's bu
 - **Cross-mapper imports.** `:dto-to-entity` imports `:entity-to-domain`. Forbidden. If you need a `DTO → Domain` conversion, use `:dto-to-domain` or compose at the call site (`dto.toEntityOrNull()?.toDomain()`).
 - **Business logic in a mapper.** Mappers translate fields. Validation, derivation, side effects belong in `<X>UseCase` or the Repository.
 - **Inline mappers in Repository / ViewModel.** Always live in a dedicated module.
-- **One big mapper file per module** with everything. Split by `<area>` (training, user, goal, ...) for navigability.
+- **One big mapper file per module** with everything. Split by `<area>` (note, user, ...) for navigability.

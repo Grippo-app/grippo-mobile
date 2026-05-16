@@ -70,10 +70,10 @@ What it provides:
 
 ```kotlin
 @Composable
-internal fun ProfileBodyScreen(
-    state: ProfileBodyState,
-    loaders: ImmutableSet<ProfileBodyLoader>,
-    contract: ProfileBodyContract,
+internal fun NoteDetailScreen(
+    state: NoteDetailState,
+    loaders: ImmutableSet<NoteDetailLoader>,
+    contract: NoteDetailContract,
 ) {
     BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.screen)) {
         // ... real content
@@ -82,17 +82,16 @@ internal fun ProfileBodyScreen(
 
 @AppPreview
 @Composable
-private fun ProfileBodyScreenPreview() {
+private fun NoteDetailScreenPreview() {
     PreviewContainer {
-        ProfileBodyScreen(
-            state = ProfileBodyState(
-                weight = WeightFormatState.of(72f),
-                height = HeightFormatState.of(180),
-                history = stubWeightHistoryList(),
+        NoteDetailScreen(
+            state = NoteDetailState(
+                amount = AmountFormatState(value = 72.0, unit = "kg"),
+                history = stubNotes(),
                 user = stubUser(),
             ),
             loaders = persistentSetOf(),
-            contract = ProfileBodyContract.Empty,
+            contract = NoteDetailContract.Empty,
         )
     }
 }
@@ -102,7 +101,7 @@ Rules:
 
 - **Preview function is `private`**, named `<ScreenName>Preview` (matches the screen).
 - **Lives in the same file** as the screen.
-- **Uses stub data** from `:ui-core:state` (`stubWeightHistoryList()`, `stubUser()`, ...).
+- **Uses stub data** from `:ui-core:state` (`stubNotes()`, `stubUser()`, ...).
 - **Uses `Contract.Empty`** for the contract argument.
 - **One preview per Composable**. Multiple variants get multiple `*Preview` functions (`...EmptyStatePreview()`, `...LoadingPreview()`).
 
@@ -111,11 +110,11 @@ Rules:
 Stubs live in `:ui-core:state` next to the corresponding State class:
 
 ```kotlin
-// :ui-core:state/.../WeightHistoryState.kt
-public fun stubWeightHistoryList(): ImmutableList<WeightPoint> = persistentListOf(
-    WeightPoint(date = LocalDate(2026, 1, 1), value = 72.5f),
-    WeightPoint(date = LocalDate(2026, 1, 8), value = 72.1f),
-    WeightPoint(date = LocalDate(2026, 1, 15), value = 71.8f),
+// :ui-core:state/.../NoteState.kt
+public fun stubNotes(): ImmutableList<Note> = persistentListOf(
+    Note(id = "n1", date = LocalDate(2026, 1, 1), title = "First note"),
+    Note(id = "n2", date = LocalDate(2026, 1, 8), title = "Second note"),
+    Note(id = "n3", date = LocalDate(2026, 1, 15), title = "Third note"),
 )
 
 // stubUser() lives next to User-related state
@@ -123,8 +122,7 @@ public fun stubUser(): User = User(
     id = "preview-user",
     name = "Alex",
     email = "alex@example.com",
-    weight = 72.5f,
-    height = 180,
+    avatarUrl = null,
 )
 ```
 

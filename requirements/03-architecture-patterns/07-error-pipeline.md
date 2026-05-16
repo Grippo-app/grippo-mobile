@@ -85,12 +85,12 @@ The mapping the validator produces:
 
 ### Domain: explicit `throw AppError.Expected(...)`
 
-A use case may decide that a domain rule failed (e.g. "cannot delete the last training of an active goal") and throw:
+A use case may decide that a domain rule failed (e.g. "cannot delete the last note pinned to an active tag") and throw:
 
 ```kotlin
 throw AppError.Expected(
-    message = "Cannot delete this training",
-    description = "Your active goal would lose its anchor.",
+    message = "Cannot delete this note",
+    description = "An active tag would lose its anchor.",
 )
 ```
 
@@ -239,23 +239,23 @@ The **only** legitimate `try/catch` inside a ViewModel is when you genuinely wan
 
 ```kotlin
 // Good — runCatching converts to Result
-override suspend fun saveTraining(training: Training): Result<String> = runCatching {
-    val body = training.toBody()
-    val response = api.setTraining(body).getOrThrow()
+override suspend fun saveNote(note: Note): Result<String> = runCatching {
+    val body = note.toBody()
+    val response = api.setNote(body).getOrThrow()
     val id = response.id ?: error("missing id")
-    trainingDao.insert(training.toEntity(id))
+    noteDao.insert(note.toEntity(id))
     id
 }
 ```
 
 ```kotlin
 // Also good — explicit Result map/onSuccess chain (when partial success matters)
-override suspend fun saveTraining(training: Training): Result<String> {
-    val response = api.setTraining(training.toBody())
+override suspend fun saveNote(note: Note): Result<String> {
+    val response = api.setNote(note.toBody())
     return response.mapCatching { dto ->
         val id = dto.id ?: error("missing id")
-        api.getTraining(id).onSuccess { full ->
-            full.toEntityOrNull()?.let { trainingDao.insert(it) }
+        api.getNote(id).onSuccess { full ->
+            full.toEntityOrNull()?.let { noteDao.insert(it) }
         }
         id
     }
@@ -270,19 +270,15 @@ A composing `UseCase` chains multiple Features through `getOrThrow()` so the fir
 public class LoginUseCase(
     private val authorizationFeature: AuthorizationFeature,
     private val userFeature: UserFeature,
-    private val excludedMusclesFeature: ExcludedMusclesFeature,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val weightHistoryFeature: WeightHistoryFeature,
-    private val goalFeature: GoalFeature,
+    private val noteFeature: NoteFeature,
+    private val tagFeature: TagFeature,
 ) {
     public suspend fun executeEmail(email: String, password: String): Boolean {
         authorizationFeature.login(email, password).getOrThrow()
         val hasProfile = userFeature.getUser().getOrThrow()
         if (hasProfile) {
-            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
-            exerciseExampleFeature.getExerciseExamples().getOrThrow()
-            weightHistoryFeature.getWeightHistory().getOrThrow()
-            goalFeature.getGoal().getOrThrow()
+            noteFeature.getNotes().getOrThrow()
+            tagFeature.getTags().getOrThrow()
         }
         return hasProfile
     }

@@ -19,35 +19,35 @@ public data class AppNotification(
 )
 
 public sealed class NotificationKey(public open val key: Int) {
-    public data object ChangeWeight : NotificationKey(1)
-    public data object FinishWorkout : NotificationKey(2)
+    public data object NoteReminder : NotificationKey(1)
+    public data object NoteArchived : NotificationKey(2)
     public data class Custom(override val key: Int) : NotificationKey(key)
 }
 ```
 
-Replace `ChangeWeight`/`FinishWorkout` with product-specific notification kinds. The `Custom(Int)` subtype is the escape hatch for dynamic IDs.
+Replace `NoteReminder`/`NoteArchived` with product-specific notification kinds. The `Custom(Int)` subtype is the escape hatch for dynamic IDs.
 
 ## Usage
 
 ```kotlin
-internal class WeightHistoryViewModel(
+internal class NoteViewModel(
     private val notificationManager: NotificationManager,
     private val stringProvider: StringProvider,
 ) : BaseViewModel<...>(...), ... {
 
-    override fun onSaveWeightClick() {
-        safeLaunch(loader = WeightHistoryLoader.SavingWeight) {
-            feature.saveWeight(...).getOrThrow()
+    override fun onSaveNoteClick() {
+        safeLaunch(loader = NoteLoader.SavingNote) {
+            feature.saveNote(...).getOrThrow()
             scheduleReminder()
         }
     }
 
     private suspend fun scheduleReminder() {
         val notification = AppNotification(
-            id = NotificationKey.ChangeWeight,
-            title = stringProvider.get(Res.string.notification_weight_title),
-            body = stringProvider.get(Res.string.notification_weight_description),
-            deeplink = Deeplink.WeightHistory.key,
+            id = NotificationKey.NoteReminder,
+            title = stringProvider.get(Res.string.notification_note_title),
+            body = stringProvider.get(Res.string.notification_note_description),
+            deeplink = Deeplink.Notes.key,
         )
         notificationManager.show(notification, 7.days)
     }
@@ -69,21 +69,21 @@ See `02-module-structure/03-app-shells.md` for the wiring.
 
 ```kotlin
 public sealed class NotificationKey(public open val key: Int) {
-    public data object ChangeWeight : NotificationKey(1)
-    public data object FinishWorkout : NotificationKey(2)
+    public data object NoteReminder : NotificationKey(1)
+    public data object NoteArchived : NotificationKey(2)
     public data class Custom(override val key: Int) : NotificationKey(key)
 }
 ```
 
 - **`Int key`** — Android `NotificationManager.notify(id, ...)` and iOS `UNNotificationRequest`'s identifier both use integers (iOS uses strings; the wrapper converts).
 - **`sealed class` with data objects** for known kinds — type-safe + auto-deduplicated.
-- **`Custom(Int)`** for dynamic IDs (e.g. one notification per training reminder).
+- **`Custom(Int)`** for dynamic IDs (e.g. one notification per note reminder).
 
 Showing twice with the same key **replaces** the prior notification:
 
 ```kotlin
-notificationManager.show(AppNotification(id = NotificationKey.ChangeWeight, ...), 1.days)
-notificationManager.show(AppNotification(id = NotificationKey.ChangeWeight, ...), 3.days)
+notificationManager.show(AppNotification(id = NotificationKey.NoteReminder, ...), 1.days)
+notificationManager.show(AppNotification(id = NotificationKey.NoteReminder, ...), 3.days)
 // Only the second is pending; the first is overwritten.
 ```
 
@@ -116,7 +116,7 @@ Android implementation uses `AlarmManager` with a `BroadcastReceiver` (`Schedule
 - **Android 13+**: `POST_NOTIFICATIONS` runtime permission. Request via `:toolkit:permission-manager`.
 - **iOS**: `UNUserNotificationCenter.requestAuthorization(options:)`.
 
-Request permission at a **user-intent moment** (when the user toggles "Remind me to log weight"), not on app start. The `PermissionManager` interface handles this.
+Request permission at a **user-intent moment** (when the user toggles "Remind me to revisit this note"), not on app start. The `PermissionManager` interface handles this.
 
 ## Rules
 

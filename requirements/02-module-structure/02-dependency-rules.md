@@ -67,7 +67,7 @@ kotlin {
         implementation(projects.designSystem.components)
         implementation(projects.designSystem.preview)
         // ❌ projects.dataServices.backend — forbidden
-        // ❌ projects.dataFeatures.trainings — forbidden (use featureApi)
+        // ❌ projects.dataFeatures.notes — forbidden (use featureApi)
     }
 }
 ```

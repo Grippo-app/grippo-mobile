@@ -179,7 +179,7 @@ After install, every `DateTimeUtils.format(...)` call uses the new locale. Witho
 ```kotlin
 @Immutable
 @Serializable
-internal data class TrainingsListState(
+internal data class NotesListState(
     val range: DateRange = DateRangePresets.last30Days(),
     val rangeKind: DateRangeKind = DateRangeKind.Last30Days,
     // ...
@@ -197,7 +197,7 @@ val prev = DateTimeUtils.shift(state.range, period = DatePeriod(months = -1))
 
 ```kotlin
 val label = DateTimeUtils.format(
-    training.createdAt,
+    note.createdAt,
     DateFormat.DateOnly.DateMmmDdYyyy,
 )  // "Jan 5, 2026"
 
@@ -209,7 +209,7 @@ val durationLabel = DateTimeUtils.format(duration)  // "1h 23m"
 ```kotlin
 val startUtc = DateTimeUtils.toUtcIso(range.from)        // "2026-01-05T00:00:00Z"
 val endUtc = DateTimeUtils.toUtcIso(range.to)
-api.getTrainings(startUtc, endUtc)
+api.getNotes(startUtc, endUtc)
 ```
 
 ### Parsing from backend

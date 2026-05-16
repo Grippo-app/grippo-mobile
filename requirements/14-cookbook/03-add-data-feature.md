@@ -100,7 +100,7 @@ internal interface NotificationsRepository {
 ```kotlin
 @Single(binds = [NotificationsRepository::class])
 internal class NotificationsRepositoryImpl(
-    private val api: GrippoApi,
+    private val api: <Product>Api,
     private val notificationDao: NotificationDao,
 ) : NotificationsRepository {
 
@@ -289,7 +289,7 @@ public data class UserNotificationResponse(
 )
 ```
 
-Add to `GrippoApi`:
+Add to `<Product>Api`:
 
 ```kotlin
 /* * * * * * * * * * * * * * * * *

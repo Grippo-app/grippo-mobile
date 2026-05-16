@@ -12,7 +12,7 @@ You return surgical context for a builder. Builders ask "where is X?" — you an
 - *"Where is the `ProfileComponent` root + its `createChild`?"*
 - *"List every `:data-features:*` module that already exists."*
 - *"What's the current `<Product>Api` section structure?"*
-- *"Does `WorkoutHistoryFeature` exist?"*
+- *"Does `<Feature>Feature` exist?"* (e.g. `NoteFeature`)
 - *"What's the schema version in `@Database(...)`?"*
 - *"Find the existing dialog that's most similar to a `rating-picker`."*
 
@@ -63,7 +63,7 @@ fd '(<Feature>Component|<Feature>RootComponent)\.kt' ui-screen-features/ 2>/dev/
   || find ui-screen-features/ -name '<Feature>Component.kt' -o -name '<Feature>RootComponent.kt'
 ```
 
-Bare `<Feature>Component` is the default. `<Feature>RootComponent` is reserved for features that contain a sub-screen with the same name as the feature (the names would collide). The authoritative list of suffixed features is `featuresWithRootComponentSuffix` in `requirements/00-overview/03-project-config.md`. (Reference repo: bare default — `AuthComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`; suffixed — `:home`, `:trainings`.)
+Bare `<Feature>Component` is the default. `<Feature>RootComponent` is reserved for features that contain a sub-screen with the same name as the feature (the names would collide). The authoritative list of suffixed features is `featuresWithRootComponentSuffix` in `requirements/00-overview/03-project-config.md`.
 
 ### "List existing screen/dialog feature modules"
 
@@ -81,7 +81,7 @@ rg -nE "^\s*/\*\s*\*.*service" <api-file>
 
 Report:
 
-- The class name (e.g. `GrippoApi` in the reference repo).
+- The class name (e.g. `<Product>Api`).
 - Section comments (one per area).
 - Each method's signature with line numbers.
 
@@ -120,7 +120,7 @@ Pick the closest in shape (single input + single result is the usual case):
 rg -nl "data class .* : DialogConfig" ui-dialog-features/dialog-api/
 ```
 
-Pick one (reference repo example: `WeightPicker` in `:ui-dialog-features:weight-picker` — substitute any existing dialog in this project), then:
+Pick one existing dialog in this project (e.g. `<Picker>` in `:ui-dialog-features:<picker-kebab>`), then:
 
 ```bash
 fd '(<Picker>Component|<Picker>ViewModel|<Picker>Screen)\.kt' ui-dialog-features/<picker-kebab>/

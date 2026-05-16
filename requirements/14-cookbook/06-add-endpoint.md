@@ -1,6 +1,6 @@
 # Add an API Endpoint
 
-How to add a new endpoint to `GrippoApi` (rename to `<Product>Api` per project).
+How to add a new endpoint to `<Product>Api`.
 
 ## Steps
 
@@ -12,7 +12,7 @@ The backend owns the contract. Mobile doesn't invent endpoints.
 
 ### 2. Define the DTO(s)
 
-Identify the area: `auth`, `user`, `training`, `notifications`, etc.
+Identify the area: `auth`, `user`, `notifications`, etc.
 
 ```
 :data-services:backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/dto/<area>/
@@ -51,7 +51,7 @@ public data class NotificationReadBody(
 
 Rules: see `06-data-layer/03-grippo-api-and-dtos.md`.
 
-### 3. Add the method to `GrippoApi`
+### 3. Add the method to `<Product>Api`
 
 In the right section comment (or add a new section):
 
@@ -218,6 +218,6 @@ Wrapping a custom multipart in `runCatching` directly (not via the `request<T>` 
 - **`Boolean` response field without a default.** If the backend omits it, deserialization fails. Always nullable + default `= null`.
 - **Inline `runCatching` instead of the `request<T>` helper.** Diverges from the convention.
 - **Adding the method outside any section comment.** File grows past 200 endpoints; section comments are mandatory.
-- **Calling `GrippoApi` from a ViewModel.** The VM only sees `<X>Feature` from `:data-features:feature-api`.
+- **Calling `<Product>Api` from a ViewModel.** The VM only sees `<X>Feature` from `:data-features:feature-api`.
 - **Skipping the DAO update** after a successful mutation. The local cache lags.
 - **Skipping the mapper.** Inline DTO → Entity conversion in Repository is forbidden.

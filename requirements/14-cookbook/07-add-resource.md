@@ -9,8 +9,8 @@ How to add new entries in `:design-system:resources:provider`.
 In `:design-system:resources:provider/src/commonMain/composeResources/values/strings.xml`:
 
 ```xml
-<string name="profile_workout_history_title">Workout history</string>
-<string name="profile_workout_history_subtitle">Last %1$d days</string>
+<string name="profile_note_archive_title">Note archive</string>
+<string name="profile_note_archive_subtitle">Last %1$d days</string>
 ```
 
 ### 2. Add translations
@@ -18,15 +18,15 @@ In `:design-system:resources:provider/src/commonMain/composeResources/values/str
 In `values-uk/strings.xml`:
 
 ```xml
-<string name="profile_workout_history_title">Історія тренувань</string>
-<string name="profile_workout_history_subtitle">Останні %1$d днів</string>
+<string name="profile_note_archive_title">Архів нотаток</string>
+<string name="profile_note_archive_subtitle">Останні %1$d днів</string>
 ```
 
 In `values-ru/strings.xml` (or your other locales):
 
 ```xml
-<string name="profile_workout_history_title">История тренировок</string>
-<string name="profile_workout_history_subtitle">Последние %1$d дней</string>
+<string name="profile_note_archive_title">Архив заметок</string>
+<string name="profile_note_archive_subtitle">Последние %1$d дней</string>
 ```
 
 ### 3. Compose Resources regenerates `Res.string.<key>`
@@ -37,27 +37,27 @@ Build the module:
 ./gradlew :design-system:resources:provider:assemble
 ```
 
-The generated `Res.string.profile_workout_history_title` is now available.
+The generated `Res.string.profile_note_archive_title` is now available.
 
 ### 4. Use in Composables
 
 ```kotlin
 Text(
-    text = AppTokens.strings.res(Res.string.profile_workout_history_title),
+    text = AppTokens.strings.res(Res.string.profile_note_archive_title),
     style = AppTokens.typography.h2(),
 )
 
 // with format args
 Text(
-    text = AppTokens.strings.res(Res.string.profile_workout_history_subtitle, days),
+    text = AppTokens.strings.res(Res.string.profile_note_archive_subtitle, days),
 )
 ```
 
 ### 5. Use in ViewModels
 
 ```kotlin
-val title = stringProvider.get(Res.string.profile_workout_history_title)
-val subtitle = stringProvider.get(Res.string.profile_workout_history_subtitle, days)
+val title = stringProvider.get(Res.string.profile_note_archive_title)
+val subtitle = stringProvider.get(Res.string.profile_note_archive_subtitle, days)
 ```
 
 ### 6. Use in State
@@ -65,9 +65,9 @@ val subtitle = stringProvider.get(Res.string.profile_workout_history_subtitle, d
 ```kotlin
 @Immutable
 internal data class State(
-    val title: UiText = UiText.Res(Res.string.profile_workout_history_title),
+    val title: UiText = UiText.Res(Res.string.profile_note_archive_title),
     val subtitle: UiText = UiText.Res(
-        Res.string.profile_workout_history_subtitle,
+        Res.string.profile_note_archive_subtitle,
         formatArgs = persistentListOf(30),
     ),
 )
@@ -82,20 +82,20 @@ The reference repo does not ship a `plurals.xml` today (no `composeResources/val
 Add `values/plurals.xml` (+ a copy in each locale folder, e.g. `values-uk/plurals.xml`):
 
 ```xml
-<plurals name="trainings_count">
-    <item quantity="one">%d training</item>
-    <item quantity="other">%d trainings</item>
+<plurals name="notes_count">
+    <item quantity="one">%d note</item>
+    <item quantity="other">%d notes</item>
 </plurals>
 ```
 
 In `values-uk/plurals.xml`:
 
 ```xml
-<plurals name="trainings_count">
-    <item quantity="one">%d тренування</item>
-    <item quantity="few">%d тренування</item>
-    <item quantity="many">%d тренувань</item>
-    <item quantity="other">%d тренування</item>
+<plurals name="notes_count">
+    <item quantity="one">%d нотатка</item>
+    <item quantity="few">%d нотатки</item>
+    <item quantity="many">%d нотаток</item>
+    <item quantity="other">%d нотатки</item>
 </plurals>
 ```
 
@@ -105,10 +105,10 @@ Slavic languages use `one|few|many|other` — make sure all four are present.
 
 ```kotlin
 // Composable
-val text = pluralStringResource(Res.plurals.trainings_count, count, count)
+val text = pluralStringResource(Res.plurals.notes_count, count, count)
 
 // VM
-val text = stringProvider.plural(Res.plurals.trainings_count, count, count)
+val text = stringProvider.plural(Res.plurals.notes_count, count, count)
 ```
 
 `StringProvider.plural` is already declared on the interface in `:design-system:resources:provider`; the impl in `:design-system:resources:provider-impl` calls `getPluralString(...)` from Compose Resources.
@@ -127,7 +127,7 @@ Use this for raster artwork (illustrations, photos, hero images). For monochrome
 
 ### 2. Naming
 
-- `snake_case` lowercase, **bare noun** describing the asset (`dumbbell`, `muscles`, `barbell`, `weight`, ...). The reference repo does NOT use `ic_*` / `img_*` / `bg_*` prefixes.
+- `snake_case` lowercase, **bare noun** describing the asset (e.g. `note`, `tag`, `empty_inbox`, ...). The reference repo does NOT use `ic_*` / `img_*` / `bg_*` prefixes.
 - Prefer `.webp` (the format actually used in `composeResources/drawable/`). PNG only when truly needed; the repo currently ships no vector drawables in this folder.
 
 ### 3. Compose Resources regenerates `Res.drawable.<key>`
@@ -241,7 +241,7 @@ public fun h1(): TextStyle = TextStyle(
 
 ## Rules
 
-- **All string keys `snake_case`** with semantic prefixes (`error_*`, `profile_*`, `weight_*`).
+- **All string keys `snake_case`** with semantic prefixes (`error_*`, `profile_*`, `<feature>_*`).
 - **Every string key has a value in every locale.** Missing values cause unexpected English in non-English UI.
 - **Positional placeholders** (`%1$s`, `%2$d`). Never positional indices implicit.
 - **Format types** match between locales — if `%1$s` is a string in `values/`, it must be `%1$s` in `values-uk/`. Don't swap to `%1$d`.
@@ -255,5 +255,5 @@ public fun h1(): TextStyle = TextStyle(
 - **Resource keys in feature modules.** Centralize in `:design-system:resources:provider`.
 - **`stringResource(R.string.foo)`** from `androidx.compose.ui.res`. Android-only.
 - **Adding monochrome icons as drawables** (`ic_*.xml` / `ic_*.svg`). Author them as `ImageVector` extensions on `AppIcon` so tint, sizing, and previews stay consistent.
-- **`ic_*` / `img_*` / `bg_*` prefixes** on raster files. The reference repo uses bare nouns (`dumbbell.webp`, `muscles.webp`, …).
+- **`ic_*` / `img_*` / `bg_*` prefixes** on raster files. The reference repo uses bare nouns (`note.webp`, `tag.webp`, …).
 - **Font weight not registered in `manrope()`** — calls to that weight render the default (often "Regular").

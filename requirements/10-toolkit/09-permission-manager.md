@@ -29,7 +29,7 @@ public sealed class PermissionStatus {
 ## Usage
 
 ```kotlin
-internal class WeightHistoryViewModel(
+internal class NoteViewModel(
     private val permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
 ) : BaseViewModel<...>(...) {

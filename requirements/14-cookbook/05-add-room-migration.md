@@ -118,7 +118,7 @@ Room Multiplatform uses the same migration code on iOS — but the iOS `BundledS
 ### Add column
 
 ```sql
-ALTER TABLE training ADD COLUMN intensity REAL NOT NULL DEFAULT 0
+ALTER TABLE note ADD COLUMN priority INTEGER NOT NULL DEFAULT 0
 ```
 
 The simplest case. Choose a sensible non-null default.
@@ -130,13 +130,13 @@ connection.execSQL("PRAGMA defer_foreign_keys = ON")
 
 // 1. Create the new table with the new schema
 connection.execSQL("""
-    CREATE TABLE IF NOT EXISTS `training_new` (
+    CREATE TABLE IF NOT EXISTS `note_new` (
         `id` TEXT NOT NULL,
         `profileId` TEXT NOT NULL,
-        `duration` INTEGER NOT NULL,
+        `title` TEXT NOT NULL,
         `createdAt` TEXT NOT NULL,
-        `volume` REAL NOT NULL,
-        `intensity` REAL NOT NULL,
+        `body` TEXT NOT NULL,
+        `priority` INTEGER NOT NULL,
         PRIMARY KEY(`id`),
         FOREIGN KEY(`profileId`) REFERENCES `user`(`profileId`) ON UPDATE NO ACTION ON DELETE CASCADE
     )
@@ -144,26 +144,26 @@ connection.execSQL("""
 
 // 2. Copy data (apply transformations here)
 connection.execSQL("""
-    INSERT INTO `training_new` (id, profileId, duration, createdAt, volume, intensity)
-    SELECT id, profileId, duration, createdAt, volume, intensity FROM `training`
+    INSERT INTO `note_new` (id, profileId, title, createdAt, body, priority)
+    SELECT id, profileId, title, createdAt, body, priority FROM `note`
 """.trimIndent())
 
 // 3. Drop the old table
-connection.execSQL("DROP TABLE `training`")
+connection.execSQL("DROP TABLE `note`")
 
 // 4. Rename
-connection.execSQL("ALTER TABLE `training_new` RENAME TO `training`")
+connection.execSQL("ALTER TABLE `note_new` RENAME TO `note`")
 
 // 5. Recreate indices with Room's expected names
-connection.execSQL("CREATE INDEX IF NOT EXISTS `index_training_profileId` ON `training` (`profileId`)")
+connection.execSQL("CREATE INDEX IF NOT EXISTS `index_note_profileId` ON `note` (`profileId`)")
 ```
 
-`PRAGMA defer_foreign_keys = ON` disables FK enforcement during the migration so the temporary `training_new` table doesn't trigger constraint errors.
+`PRAGMA defer_foreign_keys = ON` disables FK enforcement during the migration so the temporary `note_new` table doesn't trigger constraint errors.
 
 ### Add index
 
 ```kotlin
-connection.execSQL("CREATE INDEX IF NOT EXISTS `index_training_createdAt` ON `training` (`createdAt`)")
+connection.execSQL("CREATE INDEX IF NOT EXISTS `index_note_createdAt` ON `note` (`createdAt`)")
 ```
 
 Room expects index names of the form `index_<table>_<col>`. Match exactly or Room considers it missing.

@@ -4,7 +4,9 @@ Recurring auto-audit that keeps `requirements/sub-agents/` and `requirements/tas
 
 **Scope** — `requirements/sub-agents/{builders,validators,helpers}/*.md`, `requirements/sub-agents/lint.sh`, `requirements/tasks/README.md`, the `requirements/tasks/done/` layout.
 
-**Not scope** — chapter-level doc drift → `invalidate.md`. Code-side issues (a class an agent expects doesn't exist; a recipe step that no longer works) → flag in the report, never patch here.
+**Not scope** — chapter-level doc drift → `invalidate.md`. Code-side issues (a class an agent expects doesn't exist; a recipe step that no longer works) → flag in the report, never patch here. Templatization findings (concrete reference-repo names where the agent/task spec should use placeholders) → owned by `invalidate-templatize.md`; flag and route, never patch here.
+
+**Mode** — Template mode is in force. `requirements/` is a project-agnostic template; see `00-overview/05-template-conventions.md` for the substitution table. Slot placeholders (`<Product>Api`, `com.<org>.<product>`, `<product-domain>.com`) and canonical example types (`Note`, `Tag`, `AmountFormatState`) are intentional — NOT drift against the reference repo's literal names.
 
 ---
 
@@ -154,7 +156,16 @@ Print:
 - No full-file rewrites — targeted paragraph-level edits only.
 - Preserve normative voice (MUST / MUST NOT / do NOT).
 - Don't audit `requirements/<chapter>/*` here — that's `invalidate.md`. If a chapter has drifted from code, **flag** that the chapter audit is owed; do not patch.
-- **Placeholders are not drift.** `com.<org>.<product>`, `<Product>Api`, `<your-product-domain>.com` are bootstrap-time placeholders — never flag against any reference repo's literals.
+- **Template mode** — `requirements/` is a project-agnostic template. Authority: `00-overview/05-template-conventions.md`.
+
+  - Slot placeholders (`<Product>`, `<product>`, `<org>`, `<product-domain>`, `com.<org>.<product>`, `<Product>Api`) are NOT drift against reference-repo literals.
+  - Canonical example types (`Note`, `Tag`, `Item` and their fan-out) are NOT drift when live code has `Training`/`Exercise` instead.
+  - Generic numeric format-state (`AmountFormatState`) is NOT drift against product-specific `WeightFormatState`/`HeightFormatState`/etc.
+  - Reserved names (Base*, AppTokens, UiText, DialogConfig, etc. — see `04-glossary.md` "Reserved names" / `05-template-conventions.md` §7) must match live code verbatim.
+
+  When an agent file cites a chapter's code block (Path A item 2/3): treat placeholders and canonical types as authoritative; verify surrounding signature/structure, not the slot identifier itself.
+
+  If a sub-agent file or task spec contains a concrete reference-repo name (e.g. `GrippoApi`, `TrainingFeature`, `WeightFormatState`, `ProfileBodyState`, `com.grippo.*`, "Workout history" worked example) — that is a `PRODUCT_LEAKAGE` finding owned by `invalidate-templatize.md`. Flag in the report; do NOT patch here.
 ````
 
 ---
@@ -166,8 +177,8 @@ Lowest count wins. Ties → table order. After each pass, the agent increments c
 | Item | Count | Last audited |
 |---|---|---|
 | `tasks/README.md` | 1 | 2026-05-16 |
-| `sub-agents/lint.sh` | 0 | — |
-| `sub-agents/builders/cross-feature-nav-builder.md` | 0 | — |
+| `sub-agents/lint.sh` | 1 | 2026-05-16 |
+| `sub-agents/builders/cross-feature-nav-builder.md` | 1 | 2026-05-16 |
 | `sub-agents/builders/data-feature-builder.md` | 0 | — |
 | `sub-agents/builders/data-service-scaffold-builder.md` | 0 | — |
 | `sub-agents/builders/dialog-builder.md` | 0 | — |

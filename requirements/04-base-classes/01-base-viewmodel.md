@@ -146,7 +146,7 @@ protected fun <T> Flow<T>.safeLaunch(
 
 - Subscribes to the flow on the VM's scope.
 - Default `processing = WhileActive`: the upstream flow is **paused for 1 second** after the host leaves RESUMED state, then unsubscribed if still inactive. Re-subscribed when RESUMED again. This avoids waste while the screen is off-screen but still responds to short backgrounding without a full re-subscribe.
-- `Processing.Infinity`: the flow keeps emitting even when the screen is off — useful for streams that must run while a workout is in progress, etc.
+- `Processing.Infinity`: the flow keeps emitting even when the screen is off — useful for streams that must run while a background sync is in progress, etc.
 
 ## Processing modes
 

@@ -49,13 +49,13 @@ Notes:
 
 ### `:ui-screen-features:<feature>`
 
-One module per top-level feature flow (`home`, `profile`, `authorization`, `training`, `trainings`, `debug`, etc.).
+One module per top-level feature flow (examples: `home`, `profile`, `authorization`, `debug`, plus product-specific features named per product).
 
 Each feature module owns:
 
 - A **feature-root component** — has its own `StackNavigation<<Feature>Router>` and routes among its sub-screens. Naming:
-  - **Bare-name** (`<Feature>Component` / `<Feature>Screen` / `<Feature>ViewModel` / ...) — the default for features whose first sub-screen does **not** reuse the feature name. Reference repo: `:profile` (`ProfileComponent`), `:training` (`TrainingComponent`), `:debug` (`DebugComponent`), `:authorization` (`AuthComponent`).
-  - **`<Feature>Root*`** (`<Feature>RootComponent` / `<Feature>RootScreen` / `<Feature>RootViewModel` / ...) — reserved for features whose first sub-screen reuses the feature name, to avoid a class-name collision. Reference repo: `:home` (root is `HomeRootComponent`; sub-screen package is `home/HomeComponent`), `:trainings` (root `TrainingsRootComponent` vs sub-screen `trainings/TrainingsComponent`).
+  - **Bare-name** (`<Feature>Component` / `<Feature>Screen` / `<Feature>ViewModel` / ...) — the default for features whose first sub-screen does **not** reuse the feature name. Examples: `:profile` (`ProfileComponent`), `:debug` (`DebugComponent`), `:authorization` (`AuthComponent`).
+  - **`<Feature>Root*`** (`<Feature>RootComponent` / `<Feature>RootScreen` / `<Feature>RootViewModel` / ...) — reserved for features whose first sub-screen reuses the feature name, to avoid a class-name collision. Example: `:home` (root is `HomeRootComponent`; sub-screen package is `home/HomeComponent`).
 
   See `02-module-structure/04-shared-composition-root.md` for the same convention restated next to `RootComponent.createChild`. The root component is `public` (consumed from `:shared`); all sub-screen components are `internal`.
 - One package per sub-screen (`com.<org>.<product>.<feature>.<subscreen>`) containing the **seven MVI files** (`Component`, `Contract`, `State`, `Direction`, `Loader`, `ViewModel`, `Screen`).
@@ -109,7 +109,7 @@ The contract module for bottom sheets.
 
 Houses:
 
-- `DialogConfig` — `@Serializable sealed class DialogConfig(val onDismiss: (() -> Unit)? = null, val dismissBySwipe: Boolean = true) { abstract val key: String }`. Each concrete config (`WeightPicker`, `Confirmation`, `ErrorDisplay`, ...) is a subclass with a typed `onResult: (T) -> Unit` parameter marked `@Transient`.
+- `DialogConfig` — `@Serializable sealed class DialogConfig(val onDismiss: (() -> Unit)? = null, val dismissBySwipe: Boolean = true) { abstract val key: String }`. Each concrete config (`AmountPicker`, `Confirmation`, `ErrorDisplay`, ...) is a subclass with a typed `onResult: (T) -> Unit` parameter marked `@Transient`.
 - `DialogController` — `interface { fun show(config: DialogConfig); fun dismiss() }`. Injected into ViewModels via Koin.
 - `DialogProvider` — interface implemented by `DialogComponent` to observe the slot.
 - `DialogModule` — `@Module @ComponentScan public class DialogModule` (provides `DialogController` implementation, normally living in `:shared` and bound via Koin).
@@ -146,7 +146,7 @@ kotlin {
 
 ### `:ui-dialog-features:<dialog>`
 
-One module per bottom-sheet flow (`weight-picker`, `confirmation`, `error-display`, `iteration-picker`, `month-picker`, `period-picker`, etc.).
+One module per bottom-sheet flow (`amount-picker`, `date-picker`, `confirmation`, `error-display`, `month-picker`, `period-picker`, etc.).
 
 Each module looks **identical** to a screen feature except:
 
@@ -201,14 +201,14 @@ ui-screen-features/profile/
     ProfileLoader.kt
     ProfileViewModel.kt
     ProfileScreen.kt              // renders ChildStack of sub-screens
-    body/                         // sub-screen "body" — internal
-      ProfileBodyComponent.kt
-      ProfileBodyContract.kt
-      ProfileBodyState.kt
-      ProfileBodyDirection.kt
-      ProfileBodyLoader.kt
-      ProfileBodyViewModel.kt
-      ProfileBodyScreen.kt
+    summary/                      // sub-screen "summary" — internal
+      ProfileSummaryComponent.kt
+      ProfileSummaryContract.kt
+      ProfileSummaryState.kt
+      ProfileSummaryDirection.kt
+      ProfileSummaryLoader.kt
+      ProfileSummaryViewModel.kt
+      ProfileSummaryScreen.kt
     settings/
       ProfileSettingsComponent.kt
       // ... seven files
@@ -235,16 +235,16 @@ ui-screen-features/home/
 ### Dialog feature
 
 ```
-ui-dialog-features/weight-picker/
+ui-dialog-features/amount-picker/
   build.gradle.kts
-  src/commonMain/kotlin/com/<org>/<product>/weight/picker/
-    WeightPickerComponent.kt
-    WeightPickerContract.kt
-    WeightPickerState.kt
-    WeightPickerDirection.kt      // Back, Close only — no nav
-    WeightPickerLoader.kt         // usually empty
-    WeightPickerViewModel.kt
-    WeightPickerScreen.kt
+  src/commonMain/kotlin/com/<org>/<product>/amount/picker/
+    AmountPickerComponent.kt
+    AmountPickerContract.kt
+    AmountPickerState.kt
+    AmountPickerDirection.kt      // Back, Close only — no nav
+    AmountPickerLoader.kt         // usually empty
+    AmountPickerViewModel.kt
+    AmountPickerScreen.kt
 ```
 
 ## Rules summary

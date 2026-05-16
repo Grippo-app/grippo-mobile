@@ -39,7 +39,7 @@ Usage:
 
 ```kotlin
 Toolbar(
-    title = AppTokens.strings.res(Res.string.profile_body_title),
+    title = AppTokens.strings.res(Res.string.note_title),
     leading = Leading.Back(onClick = contract::onBack),
     trailing = {
         Button(
@@ -149,10 +149,10 @@ public sealed interface ButtonContent {
 `state = ButtonState.Loading` shows a spinner inside the button and blocks interaction; `state = ButtonState.Disabled` greys it out without a spinner. Derive the state from active loaders + form validity:
 
 ```kotlin
-val isSaving = remember(loaders) { ProfileBodyLoader.SavingWeight in loaders }
+val isSaving = remember(loaders) { NoteDetailLoader.SavingAmount in loaders }
 val buttonState = when {
     isSaving -> ButtonState.Loading
-    state.weight !is WeightFormatState.Valid -> ButtonState.Disabled
+    state.amount !is AmountFormatState.Valid -> ButtonState.Disabled
     else -> ButtonState.Enabled
 }
 Button(
@@ -166,7 +166,7 @@ Use `ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.Cancel))` for square ico
 
 ## `Input` family
 
-The reference repo specializes the family per domain rather than offering a generic `InputText` — `InputEmail`, `InputPassword`, `InputName`, `InputDate`, `InputDuration`, `InputWeight`, `InputHeight`, `InputVolume`, `InputRepetitions`, `InputSearch`, `InputToken`, `InputPrimaryGoal`, `InputSecondaryGoal`. Each:
+The reference repo specializes the family per domain rather than offering a generic `InputText` — required infrastructure variants (`InputEmail`, `InputPassword`, `InputName`, `InputDate`) plus product-specific ones (`InputAmount`, `InputSearch`, `InputToken`, and any `<Domain>` extras the product needs). Each:
 
 - Takes a `*FormatState` instead of a raw `String`.
 - Calls back with a raw `String` (`onValueChange: (String) -> Unit`).
@@ -196,7 +196,7 @@ public fun EmptyState(
 )
 ```
 
-The standard zero-state — a centred illustration on top, a single line of caption text underneath. Pick `value` from `AppTokens.icons.*` (`EmptyExercise`, `EmptyExerciseExample`, ...) and source `text` via `AppTokens.strings.res(...)`. If a CTA is needed, render an explicit `Button` next to the `EmptyState` in the parent layout rather than threading it through this component.
+The standard zero-state — a centred illustration on top, a single line of caption text underneath. Pick `value` from `AppTokens.icons.*` (`EmptyNote`, `EmptyTag`, ...) and source `text` via `AppTokens.strings.res(...)`. If a CTA is needed, render an explicit `Button` next to the `EmptyState` in the parent layout rather than threading it through this component.
 
 ## `BannerCard`
 
@@ -285,7 +285,7 @@ public fun Chip(
 }
 ```
 
-Pass `stype = ChipStype.Clickable { ... }` to make a chip interactive; otherwise it renders as a static tag. Domain-specific variants (`VolumeChip`, `IntensityChip`, `RepetitionsChip`, `CategoryChip`, `WeightTypeChip`, `ForceTypeChip`) live next to `Chip.kt`, pick `textColor`/`iconColor`/`brush` from `AppTokens.colors.*`, and call the base `Chip(...)`.
+Pass `stype = ChipStype.Clickable { ... }` to make a chip interactive; otherwise it renders as a static tag. Domain-specific variants (`NoteChip`, `TagChip`, `CategoryChip`, ...) live next to `Chip.kt`, pick `textColor`/`iconColor`/`brush` from `AppTokens.colors.*`, and call the base `Chip(...)`.
 
 ## Selectable cards
 
@@ -316,7 +316,7 @@ Custom toggle / switch primitive (`Toggle.kt`), themed via `AppTokens.colors.tog
 | Test | Result |
 |---|---|
 | Uses `AppTokens` internally | `:design-system:components` |
-| Uses product types (e.g. `Training`, `WeightPoint`) | `:design-system:components` |
+| Uses product types (e.g. `Note`, `Tag`) | `:design-system:components` |
 | Pure widget, takes Compose primitives (Color, TextStyle, Dp) as parameters | `:compose-libs:*` |
 | Has its own gesture/animation logic > 100 LoC | `:compose-libs:*` |
 

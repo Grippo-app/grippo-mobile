@@ -4,10 +4,10 @@
 
 | Kind | Pattern | Example |
 |---|---|---|
-| Class | `<ClassName>.kt` (PascalCase) | `BaseViewModel.kt`, `TrainingsRepository.kt` |
-| Sealed type family in one file | `<RootName>.kt` | `DialogConfig.kt`, `TrainingRouter.kt` |
-| Top-level functions | `<Topic>.kt` | `DateFormatting.kt`, `TrainingMapper.kt` |
-| Composable function | `<Name>.kt` matching the function | `Toolbar.kt`, `Button.kt`, `ProfileBodyScreen.kt` |
+| Class | `<ClassName>.kt` (PascalCase) | `BaseViewModel.kt`, `NoteRepository.kt` |
+| Sealed type family in one file | `<RootName>.kt` | `DialogConfig.kt`, `NotesRouter.kt` |
+| Top-level functions | `<Topic>.kt` | `DateFormatting.kt`, `NoteMapper.kt` |
+| Composable function | `<Name>.kt` matching the function | `Toolbar.kt`, `Button.kt`, `NoteArchiveScreen.kt` |
 
 One file = one top-level declaration, unless tightly-coupled.
 
@@ -15,41 +15,41 @@ One file = one top-level declaration, unless tightly-coupled.
 
 | Kind | Pattern | Example |
 |---|---|---|
-| ViewModel | `<Name>ViewModel` | `ProfileBodyViewModel` |
-| Component | `<Name>Component` | `ProfileBodyComponent` |
-| Screen (Composable) | `<Name>Screen` | `ProfileBodyScreen` |
-| Contract | `<Name>Contract` | `ProfileBodyContract` |
-| State | `<Name>State` | `ProfileBodyState` |
-| Direction | `<Name>Direction` | `ProfileBodyDirection` |
-| Loader | `<Name>Loader` | `ProfileBodyLoader` |
-| Feature interface | `<X>Feature` | `TrainingFeature`, `UserFeature` |
-| Feature impl | `<X>FeatureImpl` | `TrainingFeatureImpl` |
-| Repository interface | `<X>Repository` | `TrainingRepository` |
-| Repository impl | `<X>RepositoryImpl` | `TrainingRepositoryImpl` |
-| Use case | `<Verb><Noun>UseCase` (or `<Noun>UseCase` when a single verb fits poorly — see Functions row below) | `DeleteTrainingUseCase`, `UpdateWeightUseCase`, `CreateProfileUseCase` (verb-noun); `TrainingDigestUseCase`, `MuscleLoadingSummaryUseCase` (noun-only) |
-| Koin module | `<X>FeatureModule` / `<X>Module` | `TrainingFeatureModule`, `BackendModule` |
-| DTO response | `<X>Response` | `TrainingResponse` |
-| DTO body | `<X>Body` | `TrainingBody`, `EmailAuthBody` |
-| Room entity | `<X>Entity` | `TrainingEntity` |
-| Room DAO | `<X>Dao` | `TrainingDao` |
-| Room pack | `<X>Pack` | `TrainingPack` |
-| Format state | `<X>FormatState` | `WeightFormatState`, `EmailFormatState` |
-| Router | `<Feature>Router` | `RootRouter`, `ProfileRouter` |
-| Dialog config | nested in `DialogConfig` | `DialogConfig.WeightPicker` |
+| ViewModel | `<Name>ViewModel` | `NoteArchiveViewModel` |
+| Component | `<Name>Component` | `NoteArchiveComponent` |
+| Screen (Composable) | `<Name>Screen` | `NoteArchiveScreen` |
+| Contract | `<Name>Contract` | `NoteArchiveContract` |
+| State | `<Name>State` | `NoteArchiveState` |
+| Direction | `<Name>Direction` | `NoteArchiveDirection` |
+| Loader | `<Name>Loader` | `NoteArchiveLoader` |
+| Feature interface | `<X>Feature` | `NoteFeature`, `UserFeature` |
+| Feature impl | `<X>FeatureImpl` | `NoteFeatureImpl` |
+| Repository interface | `<X>Repository` | `NoteRepository` |
+| Repository impl | `<X>RepositoryImpl` | `NoteRepositoryImpl` |
+| Use case | `<Verb><Noun>UseCase` (or `<Noun>UseCase` when a single verb fits poorly — see Functions row below) | `DeleteNoteUseCase`, `UpdateNoteUseCase`, `CreateProfileUseCase` (verb-noun); `NoteDigestUseCase`, `NoteSummaryUseCase` (noun-only) |
+| Koin module | `<X>FeatureModule` / `<X>Module` | `NoteFeatureModule`, `BackendModule` |
+| DTO response | `<X>Response` | `NoteResponse` |
+| DTO body | `<X>Body` | `NoteBody`, `EmailAuthBody` |
+| Room entity | `<X>Entity` | `NoteEntity` |
+| Room DAO | `<X>Dao` | `NoteDao` |
+| Room pack | `<X>Pack` | `NotePack` |
+| Format state | `<X>FormatState` | `AmountFormatState`, `EmailFormatState` |
+| Router | `<Feature>Router` | `RootRouter`, `NotesRouter` |
+| Dialog config | nested in `DialogConfig` | `DialogConfig.NotePicker` |
 
 ## Functions
 
 | Kind | Pattern | Example |
 |---|---|---|
-| Composable | PascalCase | `ProfileBodyScreen()`, `Button()` |
+| Composable | PascalCase | `NoteArchiveScreen()`, `Button()` |
 | UI callback (Contract) | `on<What><Action>()` | `onApplyClick()`, `onValueChange()`, `onBack()` |
-| Observable (Repository, Feature) | `observe<X>()` | `observeUser()`, `observeTrainings(start, end)` |
-| Get (one-shot fetch) | `get<X>()` | `getUser()`, `getTrainings(start, end)` |
-| Mutation | `<verb><X>()` | `saveTraining(t)`, `deleteUser()`, `updateExperience(b)` |
-| Mapper | `<Source>.to<Target>()` / `to<Target>OrNull()` | `TrainingResponse.toEntityOrNull()`, `Training.toBody()` |
-| Plural mapper | `List<Source>.to<Target>s()` | `List<TrainingResponse>.toEntities()` |
-| ViewModel verb | `<verb>` | `loadTrainings()`, `submitForm()` |
-| Use case action | `execute(...)` (default; domain-named variants when a single verb fits poorly) | `DeleteTrainingUseCase.execute(id)`, `UpdateWeightUseCase.execute(value)`, `LoginUseCase.executeEmail/executeGoogle/executeApple` |
+| Observable (Repository, Feature) | `observe<X>()` | `observeUser()`, `observeNotes(start, end)` |
+| Get (one-shot fetch) | `get<X>()` | `getUser()`, `getNotes(start, end)` |
+| Mutation | `<verb><X>()` | `saveNote(n)`, `deleteUser()`, `updateProfile(p)` |
+| Mapper | `<Source>.to<Target>()` / `to<Target>OrNull()` | `NoteResponse.toEntityOrNull()`, `Note.toBody()` |
+| Plural mapper | `List<Source>.to<Target>s()` | `List<NoteResponse>.toEntities()` |
+| ViewModel verb | `<verb>` | `loadNotes()`, `submitForm()` |
+| Use case action | `execute(...)` (default; domain-named variants when a single verb fits poorly) | `DeleteNoteUseCase.execute(id)`, `UpdateNoteUseCase.execute(value)`, `LoginUseCase.executeEmail/executeGoogle/executeApple` |
 
 ## Parameters
 
@@ -59,7 +59,7 @@ One file = one top-level declaration, unless tightly-coupled.
 | Composable callback | `on<X>: () -> Unit` | `onClick: () -> Unit` |
 | ViewModel constructor | `<name>Feature: <X>Feature` | `userFeature: UserFeature` |
 | Component constructor | `<name>: <Type>` | `back: () -> Unit`, `initialRange: DateRange` |
-| Repository constructor | `<name>: <X>Api`/`<X>Dao`/`<X>DataStore` | `api: <Product>Api`, `trainingDao: TrainingDao`, `dataStore: DataStore<Preferences>` |
+| Repository constructor | `<name>: <X>Api`/`<X>Dao`/`<X>DataStore` | `api: <Product>Api`, `noteDao: NoteDao`, `dataStore: DataStore<Preferences>` |
 
 ## Packages
 
@@ -68,19 +68,19 @@ com.<org>.<product>.<area>.<feature>.[<subscreen>]
 ```
 
 Examples:
-- `com.grippo.profile.body` (`:ui-screen-features:profile`'s body sub-screen)
-- `com.grippo.weight.picker` (`:ui-dialog-features:weight-picker`)
-- `com.grippo.data.features.trainings.data` (Repository impl)
-- `com.grippo.data.features.trainings.domain` (Feature interface)
-- `com.grippo.services.backend.dto.training` (DTOs)
-- `com.grippo.services.database.entity` (Entities)
-- `com.grippo.services.database.dao` (DAOs)
-- `com.grippo.services.database.models` (Packs)
-- `com.grippo.services.database.migrations` (Migration objects)
-- `com.grippo.dto.entity.training` (`:data-mappers:dto-to-entity`)
-- `com.grippo.entity.domain.training` (`:data-mappers:entity-to-domain`)
+- `com.<org>.<product>.notes.archive` (`:ui-screen-features:notes`' archive sub-screen)
+- `com.<org>.<product>.note.picker` (`:ui-dialog-features:note-picker`)
+- `com.<org>.<product>.data.features.notes.data` (Repository impl)
+- `com.<org>.<product>.data.features.notes.domain` (Feature interface)
+- `com.<org>.<product>.services.backend.dto.note` (DTOs)
+- `com.<org>.<product>.services.database.entity` (Entities)
+- `com.<org>.<product>.services.database.dao` (DAOs)
+- `com.<org>.<product>.services.database.models` (Packs)
+- `com.<org>.<product>.services.database.migrations` (Migration objects)
+- `com.<org>.<product>.dto.entity.note` (`:data-mappers:dto-to-entity`)
+- `com.<org>.<product>.entity.domain.note` (`:data-mappers:entity-to-domain`)
 
-The reference repo has some modules with **dotted directory names** (`data.features.trainings/`, `dialog.api/`) — legacy. Keep dots **inside Kotlin file paths** consistently for those modules; **new modules** can use dot-free directories (`com/grippo/datatrainings/`) if you prefer. Either is fine; pick one per module group and stick to it.
+Some legacy projects have modules with **dotted directory names** (`data.features.<feature>/`, `dialog.api/`). Keep dots **inside Kotlin file paths** consistently for those modules; **new modules** can use dot-free directories (`com/<org>/<product>/<feature>/`) if you prefer. Either is fine; pick one per module group and stick to it.
 
 ## Variables
 
@@ -128,9 +128,9 @@ internal interface FooContract {
 ```
 
 ```kotlin
-public fun stubWeightHistoryList(): ImmutableList<WeightPoint> = persistentListOf(...)
+public fun stubNotes(): ImmutableList<Note> = persistentListOf(...)
 public fun stubUser(): User = User(...)
-public fun stubTraining(): Training = Training(...)
+public fun stubNote(): Note = Note(...)
 ```
 
 `stub*()` functions return **realistic preview data** — used in `*Preview()` functions.
@@ -138,7 +138,7 @@ public fun stubTraining(): Training = Training(...)
 ## Anti-patterns
 
 - **Hungarian notation.** `m_foo`, `s_bar`, `g_baz` — forbidden. Kotlin's visibility modifiers + naming convention covers this.
-- **Type suffixes that aren't structural.** `WeightInteger`, `LocaleString` — type system already says it. Acceptable: `<X>List` (semantic, e.g. `WeightHistoryList`).
+- **Type suffixes that aren't structural.** `AmountInteger`, `LocaleString` — type system already says it. Acceptable: `<X>List` (semantic, e.g. `NoteList`).
 - **Acronyms in CamelCase.** Use `HttpClient`, not `HTTPClient`. The convention: only first letter uppercase, rest lowercase, for acronyms 3+ chars.
 - **`Util`-suffixed classes.** Use a top-level function file (`DateUtils.kt`) instead.
 - **`Helper`-suffixed classes.** Same — top-level functions or a meaningful name.

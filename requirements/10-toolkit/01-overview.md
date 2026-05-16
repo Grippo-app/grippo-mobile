@@ -98,7 +98,7 @@ The platform `actual` resolves the base directory inside a private `resolveBaseD
 
 ## Rules
 
-1. **No business logic.** Toolkit is utility-only. No domain types (`Training`, `User`).
+1. **No business logic.** Toolkit is utility-only. No domain types (`Note`, `Tag`).
 2. **No design-system dependency.** Toolkit doesn't read `AppTokens`.
 3. **No data-feature dependency.** Toolkit doesn't import `<X>Feature`.
 4. **No cross-feature toolkit imports.** `:toolkit:notification-manager` doesn't import `:toolkit:date-utils` unless it really needs to.

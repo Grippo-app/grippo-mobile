@@ -29,7 +29,7 @@ For each `.kt` file added:
 |---|---|---|
 | Class file | `<ClassName>.kt` (PascalCase) matching the single top-level class | One top-level class per file unless tightly coupled (e.g. `DialogConfig.kt` holds a sealed family). |
 | Top-level function file | `<Topic>.kt` (PascalCase, topical) | `DateFormatting.kt`, `<X>Mapper.kt`. |
-| Composable file | `<Name>.kt` matching the function | `Toolbar.kt`, `Button.kt`, `ProfileBodyScreen.kt`. |
+| Composable file | `<Name>.kt` matching the function | `Toolbar.kt`, `Button.kt`, `NoteArchiveScreen.kt`. |
 
 A file containing more than one top-level class without an explicit grouping rationale = finding.
 
@@ -38,7 +38,7 @@ A file containing more than one top-level class without an explicit grouping rat
 For each new class/interface/object, verify the suffix matches the kind:
 
 - `<X>ViewModel`, `<X>Component`, `<X>Screen`, `<X>Contract`, `<X>State`, `<X>Direction`, `<X>Loader` — MVI seven.
-- `<X>Feature` (interface) + `<X>FeatureImpl` (impl). A plural module name (reference repo example: `:trainings`) may coexist with a singular impl (`TrainingFeatureImpl`) — see `08-dependency-injection/01`.
+- `<X>Feature` (interface) + `<X>FeatureImpl` (impl). A plural module name (e.g. `:notes`) may coexist with a singular impl (`NoteFeatureImpl`) — see `08-dependency-injection/01`.
 - `<X>Repository` + `<X>RepositoryImpl`.
 - `<X>UseCase` with an `execute(...)` method (or domain-named variants when a single verb is awkward — `LoginUseCase.executeEmail/Google/Apple`).
 - `<X>FeatureModule` (plural module name keeps), `<X>Module` for non-feature DI modules (`BackendModule`, `DatabaseModule`).
@@ -47,7 +47,7 @@ For each new class/interface/object, verify the suffix matches the kind:
 - `<X>FormatState` for form formatters.
 - `<Feature>Router` extending `BaseRouter`.
 
-Mismatches = finding (e.g. `TrainingsRepositoryImpl` for a singular repository, `TrainingService` instead of `TrainingFeature`).
+Mismatches = finding (e.g. `NotesRepositoryImpl` for a singular repository, `NoteService` instead of `NoteFeature`).
 
 ### 3. Function naming
 
@@ -57,11 +57,11 @@ For each new function:
 - UI callback in a Contract: `on<What><Action>()` (`onApplyClick`, `onValueChange`, `onBack`).
 - Repository / Feature observe: `observe<X>()` returning `Flow<…>`.
 - One-shot fetch: `get<X>()` returning `Result<…>`.
-- Mutation: `<verb><X>()` returning `Result<…>` (`saveTraining`, `deleteUser`, `updateExperience`).
+- Mutation: `<verb><X>()` returning `Result<…>` (`saveNote`, `deleteUser`, `updateProfile`).
 - Mapper: top-level extension `<Source>.to<Target>()` or `to<Target>OrNull()`. Plural: `List<Source>.to<Target>s()` (`toEntities`, `toDomain`).
-- ViewModel verb method: imperative `<verb>(...)` (`loadTrainings`, `submitForm`).
+- ViewModel verb method: imperative `<verb>(...)` (`loadNotes`, `submitForm`).
 
-Find a Repository method named `fetchTrainings(...)` instead of `getTrainings(...)` = finding.
+Find a Repository method named `fetchNotes(...)` instead of `getNotes(...)` = finding.
 
 ### 4. Parameter ordering
 
@@ -75,7 +75,7 @@ Find a Repository method named `fetchTrainings(...)` instead of `getTrainings(..
 
 Each new file's `package com.<org>.<product>.<area>.<feature>.<subscreen>` MUST match its directory path. For modules using the **dotted** directory convention (legacy `:data-features:*`, `:data-mappers:*`, `:ui-dialog-features:dialog-api`, some `:ui-dialog-features:<picker>` modules), the package declaration is still dotted (example: `package com.<org>.<product>.data.features.<feature>`); only the directory differs. Mismatch between file path and package = finding.
 
-For **new** modules, dot-free directories are preferred (`com/<org>/<product>/datatrainings/`). Pick one per module group and stick to it — mixing within a single module = finding.
+For **new** modules, dot-free directories are preferred (`com/<org>/<product>/datanotes/`). Pick one per module group and stick to it — mixing within a single module = finding.
 
 ### 6. Sealed type shape
 
@@ -116,4 +116,4 @@ Same as the other validators: structured findings with severity + routed-to buil
 - Do not edit any file.
 - Do not duplicate findings already raised by `mvi-contract-validator` (Contract.Empty, State defaults).
 - Do not propose a rename without verifying call sites — escalate to the orchestrator instead.
-- Do not flag the legacy dotted-directory convention as a violation in existing modules (e.g. `com/<org>/<product>/data.features.<feature>/` — reference-repo path `com/grippo/data.features.trainings/` is intentional).
+- Do not flag the legacy dotted-directory convention as a violation in existing modules (e.g. `com/<org>/<product>/data.features.<feature>/` is intentional in pre-existing modules).

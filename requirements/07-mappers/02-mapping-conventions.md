@@ -9,25 +9,25 @@ Every mapper module follows the same shape. This document describes the function
 | `Source.toEntity()` / `Source.toEntityOrNull()` (DTO source) | one source → one entity | `List<Source>.toEntities()` |
 | `Source.toEntity(parentId: String)` (Domain source, drafts) | one draft → one Pack or leaf Entity | no plural — caller does `.map { it.toEntity(parentId) }` |
 | `Source.toDomain()` / `Source.toDomainOrNull()` | one source → one domain | `List<Source>.toDomain()` |
-| `Source.toDraftDomain()` / `Source.toSetDomain()` (`:entity-to-domain`, draft round-trip) | one draft entity/pack → one draft (or Set) domain — suffix disambiguates when the same source has two distinct domain targets (`DraftTrainingPack → DraftTraining`, `DraftIterationEntity → SetIteration`) | `List<Source>.toDraftDomain()` / `List<Source>.toSetDomain()` |
+| `Source.toDraftDomain()` / `Source.toSetDomain()` (`:entity-to-domain`, draft round-trip) | one draft entity/pack → one draft (or Set) domain — suffix disambiguates when the same source has two distinct domain targets (`DraftNotePack → DraftNote`, `DraftItemEntity → SetItem`) | `List<Source>.toDraftDomain()` / `List<Source>.toSetDomain()` |
 | `Source.toState()` | one source → one state | `List<Source>.toState()` (returns `PersistentList<XState>` in `:domain-to-state`) |
 | `Source.toBody()` | one source → one request body | `List<Source>.toBody()` (same name, overloaded on receiver) |
 
 Top-level extension functions. **No classes. No `@Single`. No DI.** Stateless.
 
 ```kotlin
-public fun TrainingResponse.toEntityOrNull(): TrainingEntity? { ... }
-public fun List<TrainingResponse>.toEntities(): List<TrainingEntity> = mapNotNull { it.toEntityOrNull() }
+public fun NoteResponse.toEntityOrNull(): NoteEntity? { ... }
+public fun List<NoteResponse>.toEntities(): List<NoteEntity> = mapNotNull { it.toEntityOrNull() }
 
-public fun TrainingPack.toDomain(): Training { ... }
-public fun List<TrainingPack>.toDomain(): List<Training> = map { it.toDomain() }
+public fun NotePack.toDomain(): Note { ... }
+public fun List<NotePack>.toDomain(): List<Note> = map { it.toDomain() }
 
-public fun Training.toState(): TrainingState { ... }
-public fun List<Training>.toState(): PersistentList<TrainingState> { ... }
+public fun Note.toState(): NoteState { ... }
+public fun List<Note>.toState(): PersistentList<NoteState> { ... }
 
 // Body mappers source from the "submit" domain variant (Set<X>, Draft<X>), not the read variant.
-public fun SetTraining.toBody(): TrainingBody { ... }
-public fun List<SetExercise>.toBody(): List<ExerciseBody> = map { it.toBody() }
+public fun SetNote.toBody(): NoteBody { ... }
+public fun List<SetTag>.toBody(): List<TagBody> = map { it.toBody() }
 ```
 
 ## Nullable vs non-null variants
@@ -38,29 +38,27 @@ public fun List<SetExercise>.toBody(): List<ExerciseBody> = map { it.toBody() }
 Plural variants:
 
 - `List<Source>.toEntities()` typically uses `mapNotNull { it.toEntityOrNull() }`.
-- `List<Source>.toDomain()` for Entity/Pack sources uses `map { it.toDomain() }` when the per-row mapper is non-null, or `mapNotNull { it.toDomain() }` when the per-row mapper returns nullable (e.g. `ExercisePack.toDomain(): Exercise?` because the embedded `example` relation may be absent).
+- `List<Source>.toDomain()` for Entity/Pack sources uses `map { it.toDomain() }` when the per-row mapper is non-null, or `mapNotNull { it.toDomain() }` when the per-row mapper returns nullable (e.g. `TagPack.toDomain(): Tag?` because the embedded `detail` relation may be absent).
 
 ## DTO → Entity canonical pattern
 
 ```kotlin
-public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
-    val entityId = AppLogger.Mapping.log(id) { "TrainingResponse.id is null" } ?: return null
-    val entityDuration = AppLogger.Mapping.log(duration) { "TrainingResponse.duration is null" } ?: return null
-    val entityCreatedAt = AppLogger.Mapping.log(createdAt) { "TrainingResponse.createdAt is null" } ?: return null
-    val entityVolume = AppLogger.Mapping.log(volume) { "TrainingResponse.volume is null" } ?: return null
-    val entityRepetitions = AppLogger.Mapping.log(repetitions) { "TrainingResponse.repetitions is null" } ?: return null
-    val entityIntensity = AppLogger.Mapping.log(intensity) { "TrainingResponse.intensity is null" } ?: return null
-    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) { "TrainingResponse.updatedAt is null" } ?: return null
-    val entityProfileId = AppLogger.Mapping.log(profileId ?: userId) { "TrainingResponse.profileId is null" } ?: return null
+public fun NoteResponse.toEntityOrNull(): NoteEntity? {
+    val entityId = AppLogger.Mapping.log(id) { "NoteResponse.id is null" } ?: return null
+    val entityTitle = AppLogger.Mapping.log(title) { "NoteResponse.title is null" } ?: return null
+    val entityAmount = AppLogger.Mapping.log(amount) { "NoteResponse.amount is null" } ?: return null
+    val entityDuration = AppLogger.Mapping.log(duration) { "NoteResponse.duration is null" } ?: return null
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) { "NoteResponse.createdAt is null" } ?: return null
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) { "NoteResponse.updatedAt is null" } ?: return null
+    val entityProfileId = AppLogger.Mapping.log(profileId ?: userId) { "NoteResponse.profileId is null" } ?: return null
 
-    return TrainingEntity(
+    return NoteEntity(
         id = entityId,
         profileId = entityProfileId,
+        title = entityTitle,
+        amount = entityAmount,
         duration = entityDuration,
         createdAt = entityCreatedAt,
-        volume = entityVolume,
-        repetitions = entityRepetitions,
-        intensity = entityIntensity,
         updatedAt = entityUpdatedAt,
     )
 }
@@ -69,100 +67,88 @@ public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
 Rules:
 
 1. **Every required field uses `AppLogger.Mapping.log(value) { msg } ?: return null`.** If the field is null, log it (so the team can diagnose backend regressions from the append-only `[MAPPING]` log) and skip the row.
-2. **The default stance is "required".** If an entity column is non-null, the mapper requires it — drop the row when missing rather than fabricating a value. Use an Elvis fallback **only** when the entity field itself is nullable (e.g. iteration weight columns) or when the server emits a deprecated alias that must be coalesced (`profileId ?: userId`).
+2. **The default stance is "required".** If an entity column is non-null, the mapper requires it — drop the row when missing rather than fabricating a value. Use an Elvis fallback **only** when the entity field itself is nullable (e.g. leaf-row numeric columns) or when the server emits a deprecated alias that must be coalesced (`profileId ?: userId`).
 3. **No business logic.** Just field translation.
 4. **One `return <X>Entity(...)`** at the bottom. No intermediate `var entity = <X>Entity(...)`.
-5. **Local variable names are prefixed** (`entityId`, `entityDuration`) to avoid shadowing same-named DTO fields inside the receiver scope.
+5. **Local variable names are prefixed** (`entityId`, `entityAmount`) to avoid shadowing same-named DTO fields inside the receiver scope.
 
 ## Entity → Domain canonical pattern
 
 Scalar entity columns are non-null by contract (the dto-to-entity step already validated). Two cases still call for `AppLogger.Mapping.log`:
 
-- An embedded `@Relation` is missing at read time (e.g. `ExercisePack.example` is null because the parent example row was deleted out from under the child) — the row is unusable, drop it.
+- An embedded `@Relation` is missing at read time (e.g. `TagPack.detail` is null because the parent detail row was deleted out from under the child) — the row is unusable, drop it.
 - A column stores a string-encoded enum and the value doesn't parse (DB pre-dates a renamed enum case).
 
 ```kotlin
-public fun TrainingPack.toDomain(): Training = Training(
-    id = training.id,
-    duration = training.duration.minutes,                          // Long (minutes) → Duration
-    createdAt = DateTimeUtils.toLocalDateTime(training.createdAt), // String → LocalDateTime
-    volume = training.volume,
-    repetitions = training.repetitions,
-    intensity = training.intensity,
-    exercises = exercises.toDomain(),                              // List<ExercisePack> → List<Exercise>
+public fun NotePack.toDomain(): Note = Note(
+    id = note.id,
+    duration = note.duration.minutes,                          // Long (minutes) → Duration
+    createdAt = DateTimeUtils.toLocalDateTime(note.createdAt), // String → LocalDateTime
+    amount = note.amount,
+    tags = tags.toDomain(),                                    // List<TagPack> → List<Tag>
 )
 
-public fun List<TrainingPack>.toDomain(): List<Training> = map { it.toDomain() }
+public fun List<NotePack>.toDomain(): List<Note> = map { it.toDomain() }
 
 // Relation may be missing — nullable result, plural variant uses mapNotNull.
-public fun ExercisePack.toDomain(): Exercise? {
-    val mappedExample = AppLogger.Mapping.log(example?.toDomain()) {
-        "ExercisePack exercise by ${exercise.exerciseExampleId} is null"
+public fun TagPack.toDomain(): Tag? {
+    val mappedDetail = AppLogger.Mapping.log(detail?.toDomain()) {
+        "TagPack detail by ${tag.detailId} is null"
     } ?: return null
 
-    return Exercise(
-        id = exercise.id,
-        name = exercise.name,
-        iterations = iterations.toDomain(),
-        volume = exercise.volume,
-        repetitions = exercise.repetitions,
-        intensity = exercise.intensity,
-        createdAt = DateTimeUtils.toLocalDateTime(exercise.createdAt),
-        exerciseExample = mappedExample,
+    return Tag(
+        id = tag.id,
+        name = tag.name,
+        items = items.toDomain(),
+        amount = tag.amount,
+        createdAt = DateTimeUtils.toLocalDateTime(tag.createdAt),
+        detail = mappedDetail,
     )
 }
 
-public fun List<ExercisePack>.toDomain(): List<Exercise> = mapNotNull { it.toDomain() }
+public fun List<TagPack>.toDomain(): List<Tag> = mapNotNull { it.toDomain() }
 ```
 
 Rules:
 
-1. **Scalar columns: no null checks.** Read scalar columns directly — Room enforces the column's declared nullability at insert time, so a non-null column is guaranteed non-null and a nullable column (e.g. `IterationEntity.externalWeight: Float?`, `GoalEntity.secondaryGoal: String?`) passes straight through to a matching nullable domain field. Don't `AppLogger.Mapping.log` a scalar — if a non-null column somehow surfaces as null at runtime, that's a bug; let it crash with a clear `NullPointerException`.
-2. **Embedded relations and enum-string parses: nullable.** When the per-row mapper consumes a `@Relation` field (e.g. `ExercisePack.example`) or a string column that decodes into an enum (e.g. `EquipmentEnum.of(type)`, `MuscleEnum.of(type)`, `GoalPrimaryGoalEnum.of(primaryGoal)`), return `T?` and use `AppLogger.Mapping.log` to drop unusable rows. The relation may be absent because the related row was deleted; an enum string may not parse if the DB pre-dates a renamed case.
-3. **Type translation happens here.** `Long` (minutes — see TrainingEntity) → `Duration`; `String` (ISO-8601) → `LocalDateTime`.
-4. **Nested Packs → nested domain.** `ExercisePack.toDomain()` is called from `TrainingPack.toDomain()`.
+1. **Scalar columns: no null checks.** Read scalar columns directly — Room enforces the column's declared nullability at insert time, so a non-null column is guaranteed non-null and a nullable column (e.g. `ItemEntity.optionalAmount: Float?`, `NoteEntity.subtitle: String?`) passes straight through to a matching nullable domain field. Don't `AppLogger.Mapping.log` a scalar — if a non-null column somehow surfaces as null at runtime, that's a bug; let it crash with a clear `NullPointerException`.
+2. **Embedded relations and enum-string parses: nullable.** When the per-row mapper consumes a `@Relation` field (e.g. `TagPack.detail`) or a string column that decodes into an enum (e.g. `<Some>Enum.of(type)`), return `T?` and use `AppLogger.Mapping.log` to drop unusable rows. The relation may be absent because the related row was deleted; an enum string may not parse if the DB pre-dates a renamed case.
+3. **Type translation happens here.** `Long` (minutes — see `NoteEntity.duration`) → `Duration`; `String` (ISO-8601) → `LocalDateTime`.
+4. **Nested Packs → nested domain.** `TagPack.toDomain()` is called from `NotePack.toDomain()`.
 
 ## Domain → DTO Body
 
 ```kotlin
-public fun SetTraining.toBody(): TrainingBody = TrainingBody(
-    repetitions = repetitions,
+public fun SetNote.toBody(): NoteBody = NoteBody(
+    title = title,
     duration = duration.inWholeMinutes,
-    intensity = intensity,
-    volume = volume,
-    exercises = exercises.toBody(),
+    amount = amount,
+    tags = tags.toBody(),
 )
 
-public fun List<SetExercise>.toBody(): List<ExerciseBody> = map { it.toBody() }
+public fun List<SetTag>.toBody(): List<TagBody> = map { it.toBody() }
 
-public fun SetExercise.toBody(): ExerciseBody = ExerciseBody(
-    repetitions = repetitions,
-    intensity = intensity,
-    volume = volume,
-    exerciseExampleId = exerciseExample.id,
-    iterations = iterations.toBody(),
+public fun SetTag.toBody(): TagBody = TagBody(
+    amount = amount,
+    detailId = detail.id,
+    items = items.toBody(),
     name = name,
 )
 ```
 
 Notes:
 
-- Source type is the **submit variant** (`SetTraining`, `SetExercise`, `SetIteration`), not the read variant — body mappers convert what the form has just produced.
+- Source type is the **submit variant** (`SetNote`, `SetTag`, `SetItem`), not the read variant — body mappers convert what the form has just produced.
 - The plural function name is `toBody()` (overloaded on receiver), not `toBodies()`.
-- Type translation reverses: `Duration` → `Long` (minutes, matching the entity unit); `LocalDateTime` → ISO-8601 UTC string for direction-specific bodies that carry timestamps. `TrainingBody` itself has no timestamp.
+- Type translation reverses: `Duration` → `Long` (minutes, matching the entity unit); `LocalDateTime` → ISO-8601 UTC string for direction-specific bodies that carry timestamps. `NoteBody` itself has no timestamp.
 
 ## Domain → State
 
 ```kotlin
-public fun Training.toState(): TrainingState = TrainingState(
+public fun Note.toState(): NoteState = NoteState(
     id = id,
-    exercises = exercises.toState(),
-    total = TrainingTotalState(
-        volume = VolumeFormatState.of(volume),
-        repetitions = RepetitionsFormatState.of(repetitions),
-        intensity = IntensityFormatState.of(intensity),
-    ),
-    duration = DurationFormatState.of(duration),
+    tags = tags.toState(),
+    amount = AmountFormatState.of(amount),
     createdAt = DateTimeFormatState.of(
         value = createdAt,
         range = DateRangePresets.infinity(),
@@ -170,83 +156,72 @@ public fun Training.toState(): TrainingState = TrainingState(
     ),
 )
 
-public fun List<Training>.toState(): PersistentList<TrainingState> =
+public fun List<Note>.toState(): PersistentList<NoteState> =
     map { it.toState() }.toPersistentList()
 ```
 
 Rules:
 
-1. **Numerics become `*FormatState`** (`VolumeFormatState.of(...)`, `RepetitionsFormatState.of(...)`, `IntensityFormatState.of(...)`, `WeightFormatState.of(...)`).
-2. **Durations become `DurationFormatState.of(...)`**, not raw formatted strings.
-3. **Dates become `DateTimeFormatState.of(value, range, format)`** — never raw `LocalDateTime` and never an eagerly-formatted `String`. The `range` + `format` carry enough context for the UI to re-render on locale change.
-4. **Collections become `PersistentList<XState>`** via `.toPersistentList()`. `PersistentList` is the concrete type used everywhere; consumers can still up-cast to `ImmutableList` where needed.
-5. **No `UiText` here.** Mappers don't construct localized strings — that happens in the ViewModel (`stringProvider.get(...)`) or the screen (`AppTokens.strings.res(...)`).
-6. **Per-row state** for list items lives in the same file: `Training.toState()` and `List<Training>.toState()`.
+1. **Numerics become `AmountFormatState`** (`AmountFormatState.of(value)`).
+2. **Dates become `DateTimeFormatState.of(value, range, format)`** — never raw `LocalDateTime` and never an eagerly-formatted `String`. The `range` + `format` carry enough context for the UI to re-render on locale change.
+3. **Collections become `PersistentList<XState>`** via `.toPersistentList()`. `PersistentList` is the concrete type used everywhere; consumers can still up-cast to `ImmutableList` where needed.
+4. **No `UiText` here.** Mappers don't construct localized strings — that happens in the ViewModel (`stringProvider.get(...)`) or the screen (`AppTokens.strings.res(...)`).
+5. **Per-row state** for list items lives in the same file: `Note.toState()` and `List<Note>.toState()`.
 
 ## State → Domain
 
 ```kotlin
-public fun ExerciseState.toDomain(): SetExercise? {
-    val mappedRepetitions = AppLogger.Mapping.log(total.repetitions.value) {
-        "ExerciseState total.repetitions value is null (id=$id)"
-    } ?: return null
-
-    val mappedVolume = AppLogger.Mapping.log(total.volume.value) {
-        "ExerciseState total.volume value is null (id=$id)"
-    } ?: return null
-
-    val mappedIntensity = AppLogger.Mapping.log(total.intensity.value) {
-        "ExerciseState total.intensity value is null (id=$id)"
+public fun TagState.toDomain(): SetTag? {
+    val mappedAmount = AppLogger.Mapping.log(amount.value) {
+        "TagState amount value is null (id=$id)"
     } ?: return null
 
     val mappedCreatedAt = AppLogger.Mapping.log(createdAt.value) {
-        "ExerciseState createdAt value is null (id=$id)"
+        "TagState createdAt value is null (id=$id)"
     } ?: return null
 
-    return SetExercise(
+    return SetTag(
         name = name,
-        iterations = iterations.toDomain(),
-        exerciseExample = exerciseExample.toDomain(),
-        repetitions = mappedRepetitions,
-        volume = mappedVolume,
-        intensity = mappedIntensity,
+        items = items.toDomain(),
+        detail = detail.toDomain(),
+        amount = mappedAmount,
         createdAt = mappedCreatedAt,
     )
 }
 
-public fun List<ExerciseState>.toDomain(): List<SetExercise> =
+public fun List<TagState>.toDomain(): List<SetTag> =
     mapNotNull { it.toDomain() }.toPersistentList()
 ```
 
 Rules:
 
-1. **Returns `Set<X>?`** — incomplete form returns null. The ViewModel decides whether to submit. The target type is the **submit variant** (`SetExercise`, `SetIteration`, …), parallel to the body mappers.
-2. **Use `AppLogger.Mapping.log(state.x.value) ?: return null`** for required values, same pattern as DTO-sourced mappers. `*FormatState.value` is the nullable underlying value (e.g. `WeightFormatState.Valid.value` vs `Empty.value = null`).
-3. **Optional `*FormatState.value` passes through as nullable** if the domain field is nullable (e.g. iteration weights).
+1. **Returns `Set<X>?`** — incomplete form returns null. The ViewModel decides whether to submit. The target type is the **submit variant** (`SetTag`, `SetItem`, …), parallel to the body mappers.
+2. **Use `AppLogger.Mapping.log(state.x.value) ?: return null`** for required values, same pattern as DTO-sourced mappers. `*FormatState.value` is the nullable underlying value (e.g. `AmountFormatState.Valid.value` vs `Empty.value = null`).
+3. **Optional `*FormatState.value` passes through as nullable** if the domain field is nullable (e.g. leaf-row optional numeric fields).
 4. **No `name.trim().ifBlank { return null }`-style validation** — the `*FormatState` types already encode validity; if a field is invalid, its `.value` is null and the standard `AppLogger.Mapping.log ?: return null` step drops the record.
-5. **Pure field translation only.** Volume/intensity aggregation is computed when constructing the State (e.g. in the ViewModel from iteration values), not inside the State → Domain mapper.
+5. **Pure field translation only.** Aggregation across child rows is computed when constructing the State (e.g. in the ViewModel from item values), not inside the State → Domain mapper.
 
 ## Domain → Entity (drafts)
 
 ```kotlin
-public fun DraftTraining.toEntity(profileId: String): DraftTrainingPack {
+public fun DraftNote.toEntity(profileId: String): DraftNotePack {
     val id = Uuid.random().toString()
 
-    val training = DraftTrainingEntity(
+    val note = DraftNoteEntity(
         id = id,
         profileId = profileId,
-        trainingId = trainingId,
+        noteId = noteId,
         duration = duration.inWholeMinutes,
     )
 
-    return DraftTrainingPack(
-        training = training,
-        exercises = exercises.map { it.toEntity(id) },
+    return DraftNotePack(
+        note = note,
+        tags = tags.map { it.toEntity(id) },
     )
 }
 
-public fun DraftExercise.toEntity(trainingId: String): DraftExercisePack { /* ... */ }
-public fun SetIteration.toEntity(exerciseId: String): DraftIterationEntity { /* ... */ }
+public fun DraftTag.toEntity(noteId: String): DraftTagPack { /* ... */ }
+public fun SetItem.toEntity(tagId: String): DraftItemEntity { /* ... */ }
 ```
 
 Rules:
@@ -254,9 +229,9 @@ Rules:
 1. **Ids are client-generated** with `Uuid.random().toString()`. Drafts never originate from the server.
 2. **Parent FK is a parameter**, not a field on the source. The root caller passes `profileId`; each level passes its freshly-minted `id` down to its children.
 3. **No `AppLogger.Mapping.log`.** Domain models have non-null fields, so there is no null to drop.
-4. **Parent mappers return a `Pack`** (`DraftTrainingPack`, `DraftExercisePack`); leaf mappers return a bare entity (`DraftIterationEntity`).
+4. **Parent mappers return a `Pack`** (`DraftNotePack`, `DraftTagPack`); leaf mappers return a bare entity (`DraftItemEntity`).
 5. **No plural variant** — drafts are submitted singly. The parent mapper does `.map { it.toEntity(parentId) }` inline.
-6. **Source types are heterogeneous**: parents use `Draft<X>`, but iteration reuses `SetIteration` (no `DraftIteration` domain class).
+6. **Source types are heterogeneous**: parents use `Draft<X>`, but the leaf reuses the submit variant `SetItem` (no `DraftItem` domain class).
 
 ## `AppLogger.Mapping` helper
 
@@ -279,20 +254,15 @@ Returns the input value verbatim. Side effect: when null, invokes `msg()` (lazy)
 
 ```
 data-mappers/dto-to-entity/src/commonMain/kotlin/com/<org>/<product>/dto/entity/
-  training/
-    TrainingMapper.kt           # TrainingResponse.toEntityOrNull() + List variant
-    ExerciseMapper.kt           # ExerciseResponse.toEntityOrNull() + List variant
-    IterationMapper.kt          # IterationResponse.toEntityOrNull() + List variant
+  note/
+    NoteMapper.kt           # NoteResponse.toEntityOrNull() + List variant
+    TagMapper.kt            # TagResponse.toEntityOrNull() + List variant
+    ItemMapper.kt           # ItemResponse.toEntityOrNull() + List variant
   user/
     UserMapper.kt
-    GoalMapper.kt
-    WeightHistoryMapper.kt
-  equipment/
-    EquipmentMapper.kt
-    EquipmentGroupMapper.kt
 ```
 
-One file per source DTO. The repository pulls fields out of the parent DTO and calls each leaf mapper independently (e.g. `dto.exercises.toEntities()`, `dto.exercises.flatMap { it.iterations }.toEntities()`), so each level lives in its own file.
+One file per source DTO. The repository pulls fields out of the parent DTO and calls each leaf mapper independently (e.g. `dto.tags.toEntities()`, `dto.tags.flatMap { it.items }.toEntities()`), so each level lives in its own file.
 
 ## Anti-patterns
 

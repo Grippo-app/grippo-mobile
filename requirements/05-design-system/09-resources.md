@@ -23,8 +23,8 @@ Standard Android-style XML, but processed by Compose Resources (so the file is m
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="profile_body_title">Profile</string>
-    <string name="weight_value_kg">%1$.1f kg</string>
+    <string name="note_title">Note</string>
+    <string name="amount_value_kg">%1$.1f kg</string>
     <string name="error_no_internet_title">No internet connection</string>
     <string name="error_no_internet_description">Check your connection and try again.</string>
     <string name="welcome_user">Welcome, %1$s</string>
@@ -37,15 +37,15 @@ Per-locale variants live in `values-XX/strings.xml`:
 <!-- values-uk/strings.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="profile_body_title">Профіль</string>
-    <string name="weight_value_kg">%1$.1f кг</string>
+    <string name="note_title">Нотатка</string>
+    <string name="amount_value_kg">%1$.1f кг</string>
     <!-- ... -->
 </resources>
 ```
 
 ### Conventions
 
-- **All keys `snake_case`** with a domain prefix when ambiguous: `profile_body_title` (domain `profile_body`), `error_no_internet_title` (domain `error`).
+- **All keys `snake_case`** with a domain prefix when ambiguous: `note_title` (domain `note`), `error_no_internet_title` (domain `error`).
 - **Descriptive, never numbered.** `title1`/`subtitle2` is forbidden.
 - **Format args use positional placeholders**: `%1$s`, `%2$d`, `%3$.1f`. Order is **locale-stable** — different languages can rearrange placeholders.
 - **No HTML or rich text** in `strings.xml`. If a string needs bold/italic spans, render it via `AnnotatedString` at the call site.
@@ -61,9 +61,9 @@ Not present in the reference repo yet. When a plural-aware string is needed, add
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="trainings_count">
-        <item quantity="one">%d training</item>
-        <item quantity="other">%d trainings</item>
+    <plurals name="notes_count">
+        <item quantity="one">%d note</item>
+        <item quantity="other">%d notes</item>
     </plurals>
 </resources>
 ```
@@ -77,10 +77,10 @@ Access (once a plural is defined):
 
 ```kotlin
 // VM
-val message = stringProvider.plural(Res.plurals.trainings_count, count, count)
+val message = stringProvider.plural(Res.plurals.notes_count, count, count)
 
 // Composable
-val message = pluralStringResource(Res.plurals.trainings_count, count, count)
+val message = pluralStringResource(Res.plurals.notes_count, count, count)
 ```
 
 `StringProvider.plural(...)` is already declared in `:design-system:resources:provider` (and implemented in `:design-system:resources:provider-impl`) so VM-side usage works as soon as the XML is added.
@@ -91,18 +91,16 @@ val message = pluralStringResource(Res.plurals.trainings_count, count, count)
 :design-system:resources:provider/
   src/commonMain/composeResources/
     drawable/
-      barbell.webp                # raster product imagery
-      bench_incline.webp
-      dumbbell.webp
-      muscles.webp
-      plate.webp
-      weight.webp
+      note_thumbnail.webp         # raster product imagery
+      tag_badge.webp
+      empty_state.webp
+      welcome_hero.webp
       // ... add vector / .xml drawables here if needed
 ```
 
 ### Conventions
 
-- **`snake_case` bare nouns** (`barbell`, `bench_incline`, `muscles`). The reference repo keeps drawables suffix-less because line-art **icons** live as `ImageVector` extension properties under `icons/` (see `05-app-strings-drawables-icons.md`), so the `drawable/` bucket is reserved for raster product imagery and decorative illustrations. Add an `img_*` / `bg_*` prefix only if a real naming collision appears.
+- **`snake_case` bare nouns** (`note_thumbnail`, `tag_badge`, `empty_state`). The reference repo keeps drawables suffix-less because line-art **icons** live as `ImageVector` extension properties under `icons/` (see `05-app-strings-drawables-icons.md`), so the `drawable/` bucket is reserved for raster product imagery and decorative illustrations. Add an `img_*` / `bg_*` prefix only if a real naming collision appears.
 - **`.webp` is the default** raster format in the reference repo — small payload, good quality. Use SVG / vector `.xml` when an asset needs to scale crisply; PNG only for legacy artwork.
 - **One file per resource.** No sprite sheets.
 
@@ -110,7 +108,7 @@ Access:
 
 ```kotlin
 Image(
-    painter = AppTokens.drawables.res(Res.drawable.barbell),
+    painter = AppTokens.drawables.res(Res.drawable.note_thumbnail),
     contentDescription = null,
 )
 

@@ -61,7 +61,7 @@ kotlin {
 
 ## `:design-system:components`
 
-Houses atomic UI components: `Button`, `Toolbar`, `BottomSheetToolbar`, `BottomOverlayContainer`, `Input*`, `Chip`, `EmptyState`, `BannerCard`, `LineIndicator`, `WeightHistoryChart`, `MuscleLoadHeatmap`, etc.
+Houses atomic UI components: `Button`, `Toolbar`, `BottomSheetToolbar`, `BottomOverlayContainer`, `Input*`, `Chip`, `EmptyState`, `BannerCard`, `LineIndicator`, plus product-specific composites built on these primitives (`<Entity>Chart`, `<Entity>HistoryCard`, `<Entity>Heatmap`, etc.).
 
 **Every** screen-side composable that is reused across features lives here. Material3 primitives are wrapped — UI code never imports `androidx.compose.material3.Button` directly (only design-system components import Material3).
 

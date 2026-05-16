@@ -23,18 +23,18 @@ Before writing any code, read in order:
 8. `requirements/06-data-layer/07-datastore.md` (if it exists in the reference repo, but **not required to scaffold** — DataStore is a separate module touched only when needed).
 9. `requirements/13-anti-patterns/01-forbidden-patterns.md` — data-layer forbidden patterns.
 
-If the reference repo (`grippo-mobile`) is accessible on disk, also open these reference-repo files (read-only) as the structural source of truth. Paths use the reference repo's `com/grippo/...` layout — they are **read-only references**, not prescriptions for the new project's package layout:
+If the reference repo (`<product>-mobile`) is accessible on disk, also open these reference-repo files (read-only) as the structural source of truth. Paths use the reference repo's `com/<org>/<product>/...` layout — they are **read-only references**, not prescriptions for the new project's package layout:
 
-- `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/GrippoApi.kt` — the **only** thing you copy structurally is the class shape, section-comment delimiters, and the `request<T>` helper. **Do NOT copy any endpoint methods or import any DTOs.** The new `<Product>Api` body is empty.
-- `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/client/BackendClient.kt`.
-- `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/client/TokenProvider.kt`.
-- `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/client/ClientLogger.kt`.
-- `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/BackendModule.kt`.
-- `data-services/database/src/commonMain/kotlin/com/grippo/services/database/Database.kt`.
-- `data-services/database/src/commonMain/kotlin/com/grippo/services/database/DatabaseBuilder.kt`.
-- `data-services/database/src/androidMain/kotlin/com/grippo/services/database/DatabaseBuilder.android.kt`.
-- `data-services/database/src/iosMain/kotlin/com/grippo/services/database/DatabaseBuilder.ios.kt`.
-- `data-services/database/src/commonMain/kotlin/com/grippo/services/database/DatabaseModule.kt`.
+- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/<Product>Api.kt` — the **only** thing you copy structurally is the class shape, section-comment delimiters, and the `request<T>` helper. **Do NOT copy any endpoint methods or import any DTOs.** The new `<Product>Api` body is empty.
+- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/client/BackendClient.kt`.
+- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/client/TokenProvider.kt`.
+- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/client/ClientLogger.kt`.
+- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/BackendModule.kt`.
+- `data-services/database/src/commonMain/kotlin/com/<org>/<product>/services/database/Database.kt`.
+- `data-services/database/src/commonMain/kotlin/com/<org>/<product>/services/database/DatabaseBuilder.kt`.
+- `data-services/database/src/androidMain/kotlin/com/<org>/<product>/services/database/DatabaseBuilder.android.kt`.
+- `data-services/database/src/iosMain/kotlin/com/<org>/<product>/services/database/DatabaseBuilder.ios.kt`.
+- `data-services/database/src/commonMain/kotlin/com/<org>/<product>/services/database/DatabaseModule.kt`.
 
 If the reference repo is not on disk, skip this block — the `requirements/06-data-layer/*` chapters above contain everything needed to scaffold.
 
@@ -74,9 +74,9 @@ If `iosEnabled: false` in `requirements/00-overview/03-project-config.md`, skip 
 
 From `requirements/00-overview/03-project-config.md` extract:
 
-- `apiClassName` — e.g. `GrippoApi` → used as the class name (do NOT change capitalization).
-- `productPackage` — e.g. `com.grippo` → the Kotlin package root. The convention plugins assume `productPackage = com.<org>.<product>`; the dotted form is used as-is.
-- `backendHost` — e.g. `grippo-app.com` → the `defaultRequest.host` literal.
+- `apiClassName` — e.g. `<Product>Api` → used as the class name (do NOT change capitalization).
+- `productPackage` — e.g. `com.<org>.<product>` → the Kotlin package root. The convention plugins assume `productPackage = com.<org>.<product>`; the dotted form is used as-is.
+- `backendHost` — e.g. `<product-domain>` → the `defaultRequest.host` literal.
 - `productName` — used only for cosmetic identifiers (e.g. the SQLite filename `<product>_database.db`). Convert to `lowercase()` for the filename.
 - `iosEnabled` — toggles iOS files + verification.
 
@@ -122,7 +122,7 @@ kotlin {
 }
 ```
 
-`<productPackage>` is the dotted form from project-config (e.g. `com.grippo`).
+`<productPackage>` is the dotted form from project-config (e.g. `com.<org>.<product>`).
 
 #### 2b. `data-services/database/build.gradle.kts`
 
@@ -155,7 +155,7 @@ If `:toolkit:context`, `:toolkit:logger`, `:toolkit:serialization`, `:toolkit:ht
 
 Path: `data-services/backend/src/commonMain/kotlin/<productPackage as path>/services/backend/<apiClassName>.kt`.
 
-Convert the dotted package to a path: `com.grippo` → `com/grippo`. The full directory is e.g. `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/`.
+Convert the dotted package to a path: `com.<org>.<product>` → `com/<org>/<product>`. The full directory is e.g. `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/`.
 
 Body:
 
@@ -291,7 +291,7 @@ internal class BackendClient(
 }
 ```
 
-Substitute `<backendHost>` from project-config (e.g. `grippo-app.com`). The string is hardcoded — multi-environment routing is a separate task (see `requirements/06-data-layer/01-backend-client.md` "Multi-environment").
+Substitute `<backendHost>` from project-config (e.g. `<product-domain>`). The string is hardcoded — multi-environment routing is a separate task (see `requirements/06-data-layer/01-backend-client.md` "Multi-environment").
 
 ### 5. Write `TokenProvider.kt`
 
@@ -494,7 +494,7 @@ internal actual fun NativeContext.getDatabaseBuilder(): Database {
 }
 ```
 
-`<productNameLowercase>` is `productName.lowercase()` — e.g. `Grippo` → `grippo` → `grippo_database.db`.
+`<productNameLowercase>` is `productName.lowercase()` — e.g. `<Product>` → `<product>` → `<product>_database.db`.
 
 Note the absence of `.addMigrations(...)`: at `version = 1` there are no migrations. `room-migration-builder` adds the `addMigrations(*DatabaseMigrations.all)` call together with the first `Migration1To2` object.
 
@@ -625,7 +625,7 @@ Build failures here are yours to fix before reporting done. The most common caus
 - **Do not add a `StringListConverter` or any `@TypeConverters` annotation.** Wait until an entity needs it.
 - **Do not modify `:data-services:firebase`, `:data-services:datastore`, `:data-services:google-auth`, `:data-services:apple-auth`.** They are independent scaffolds with their own builders/bootstrap concerns.
 - **Do not register `BackendModule` or `DatabaseModule` anywhere except `:shared/Koin.kt`.** The Koin annotations + `:shared` enumeration are the only DI wiring.
-- **Do not invent an alternate API class name.** Use `apiClassName` from project-config verbatim; if the project wants `BackendApi` instead of `GrippoApi`, project-config is the place to set that.
+- **Do not invent an alternate API class name.** Use `apiClassName` from project-config verbatim; if the project wants `BackendApi` instead of `<Product>Api`, project-config is the place to set that.
 - **Do not change the backend host without updating project-config first.** The `host = "<backendHost>"` literal mirrors `backendHost` exactly.
 - **Do not parameterize the host via build config** as part of the scaffold. Multi-environment is a separate task (see `requirements/06-data-layer/01-backend-client.md` "Multi-environment").
 - **Do not skip the `request<T>` helper.** Even with no endpoints, the helper must be in place so `endpoint-builder`'s first method has it.

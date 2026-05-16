@@ -22,7 +22,7 @@ fun foo() { ... }
 |---|---|
 | `:data-features:feature-api` types | `public` |
 | `:data-features:<feature>` impls | `internal` (only `<X>FeatureModule` is `public`) |
-| `:data-services:*` types | `internal` (only entry-points like `GrippoApi`, `Database` are `public`) |
+| `:data-services:*` types | `internal` (only entry-points like `<Product>Api`, `Database` are `public`) |
 | `:ui-screen-features:*`, `:ui-dialog-features:*` | `internal` for sub-screens (`Component`, `Screen`, `State`, `ViewModel`, `Loader`, `Direction`, `Contract`); `public` for the feature-root counterparts (consumed from `:shared`), for `*Router` sealed classes + `Deeplink` in `:screen-api`, and for `DialogConfig`/`DialogController`/`DialogModule` in `:dialog-api` (dialogs use a single `DialogConfig` sealed class — there are no per-feature dialog routers) |
 | `:design-system:*` | `public` (consumed everywhere) |
 | `:toolkit:*` | `public` for the interface; `internal` for impl |
@@ -30,31 +30,31 @@ fun foo() { ... }
 
 ## File and class naming
 
-- Files: **PascalCase** matching the primary class/interface (`TrainingRepository.kt`, `BaseViewModel.kt`).
-- Composables (functions): **PascalCase** (`ProfileBodyScreen`, `WeightPickerComponent`).
+- Files: **PascalCase** matching the primary class/interface (`NoteRepository.kt`, `BaseViewModel.kt`).
+- Composables (functions): **PascalCase** (`NoteArchiveScreen`, `NotePickerComponent`).
 - Other functions: **camelCase** (`getCurrentToken`, `toEntity`).
 - Properties: **camelCase** (`accessToken`, `isOnline`).
-- Classes/interfaces/objects: **PascalCase** (`TrainingsRepository`, `AppTokens`).
+- Classes/interfaces/objects: **PascalCase** (`NoteRepository`, `AppTokens`).
 - Constants: **SCREAMING_SNAKE_CASE** inside `companion object` (`const val MAX_RETRIES = 3`).
 - Sealed type subtypes: **PascalCase** (`AppError.Network.NoInternet`).
 
 ## File layout
 
-One file = one top-level class/interface/object. Exception: tightly-related sealed-type families (e.g. `TrainingResponse` + `ExerciseResponse` + `IterationResponse` in one file) — only when they're conceptually inseparable.
+One file = one top-level class/interface/object. Exception: tightly-related sealed-type families (e.g. `NoteResponse` + `TagResponse` + `ItemResponse` in one file) — only when they're conceptually inseparable.
 
 ```kotlin
-package com.<org>.<product>.trainings
+package com.<org>.<product>.notes
 
 import ...
 
 @Immutable
-internal data class TrainingsListState(
-    val items: ImmutableList<Training> = persistentListOf(),
-    val filter: TrainingFilter = TrainingFilter.All,
+internal data class NotesListState(
+    val items: ImmutableList<Note> = persistentListOf(),
+    val filter: NoteFilter = NoteFilter.All,
 )
 ```
 
-State classes use **default constructor values** for the initial state; the ViewModel constructs them with `TrainingsListState()`. A `companion object Empty` is the **Contract** convention (see `02-naming.md`), not the State convention.
+State classes use **default constructor values** for the initial state; the ViewModel constructs them with `NotesListState()`. A `companion object Empty` is the **Contract** convention (see `02-naming.md`), not the State convention.
 
 ## Imports
 
@@ -89,7 +89,7 @@ State classes use **default constructor values** for the initial state; the View
 ## Nullability
 
 - **Avoid `!!`.** Use `?: error("reason")` or `?: return null` or `requireNotNull(value) { "msg" }`.
-- **Use `?:` for fallbacks.** `volume ?: 0f`.
+- **Use `?:` for fallbacks.** `amount ?: 0f`.
 - **Use `?.let { ... }`** for null-safe transformations.
 - **`runCatching { ... }`** for Result types. `try/catch` only in narrow domain-recovery cases.
 
@@ -154,7 +154,7 @@ bar.combine(other) { a, b ->
 | `:ui-screen-features:<feature>` | `<Feature>RootComponent`, top-level routes | All sub-screens (`Component`, `Screen`, etc.) |
 | `:data-features:feature-api` | `<X>Feature`, domain models, `<X>UseCase` | (none) |
 | `:data-features:<feature>` | `<X>FeatureModule` | `<X>RepositoryImpl`, `<X>FeatureImpl` |
-| `:data-services:*` | Entry types (`GrippoApi`, `Database`, `DataStore`), Koin modules | All impls (`BackendClient`, `TokenProvider`, DAOs) |
+| `:data-services:*` | Entry types (`<Product>Api`, `Database`, `DataStore`), Koin modules | All impls (`BackendClient`, `TokenProvider`, DAOs) |
 | `:toolkit:*` | Interfaces and entry points | All impls |
 | `:data-mappers:*` | Top-level extension functions | (none) |
 

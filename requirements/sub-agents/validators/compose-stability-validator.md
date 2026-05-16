@@ -107,7 +107,7 @@ For LazyColumn/LazyRow with list mutations (insertions, reorders), each item Com
 
 ### 9. Stub data location
 
-`stub*()` functions for previews MUST live in `:ui-core:state` (e.g. `stubUser()`, `stubTraining()`, `stubWeightHistoryList()`). Inline stub data inside a `*Screen.kt` preview function is allowed for one-off shapes; if the same stub is repeated across multiple previews, flag for hoisting.
+`stub*()` functions for previews MUST live in `:ui-core:state` (e.g. `stubNote()`, `stubNotes()`, `stubUser()`). Inline stub data inside a `*Screen.kt` preview function is allowed for one-off shapes; if the same stub is repeated across multiple previews, flag for hoisting.
 
 ## Output format
 

@@ -13,7 +13,7 @@
 - **Loader** — `@Immutable internal sealed interface <Name>Loader : BaseLoader`. Tags for active async operations (button spinners, skeletons). Multiple loaders can be active concurrently (`loaders: StateFlow<ImmutableSet<LOADER>>`).
 - **Router** — a `@Serializable public sealed class <Feature>Router : BaseRouter` in `:ui-screen-features:screen-api`. Defines all screens **within** a feature plus inter-feature entry points.
 - **Feature** — `:data-features:<x>`'s `<X>Feature` interface (in `:feature-api`). The UI-visible facet of a domain area. Implementations are `internal`; consumers see only the interface + domain models.
-- **Repository** — `internal interface <X>Repository` inside `:data-features:<x>`. The Feature's data source: combines `GrippoApi` calls with DAO reads. Returns `Flow<Domain>` for observe, `Result<T>` for mutate.
+- **Repository** — `internal interface <X>Repository` inside `:data-features:<x>`. The Feature's data source: combines `<Product>Api` calls with DAO reads. Returns `Flow<Domain>` for observe, `Result<T>` for mutate.
 - **Pack** — a `data class <X>Pack` with `@Embedded` entity + one or more `@Relation` fields. Used as the read-side DAO return type for tree-shaped queries.
 - **DialogConfig** — a `@Serializable sealed class DialogConfig` subtype identifying a bottom sheet, its inputs, and its result callback (`@Transient`). Configs are shown via `DialogController.show(config)`.
 - **DialogController** — the singleton that bridges any ViewModel to the `DialogComponent`'s slot navigator.
@@ -36,7 +36,7 @@
 - **`AppTheme`** — `@Composable public fun AppTheme(darkTheme, localeTag, content)` providing every `Local*` `CompositionLocal`. The `Local*` definitions are `internal` to `:design-system:core`; the types they expose (`AppColor`, `AppDp`, ...) live in `:design-system:resources:provider`.
 - **`StringProvider`** — interface with `suspend fun get(StringResource, vararg Any): String`. Used in ViewModels (non-Composable) where `AppTokens.strings` is unavailable.
 - **`UiText`** — `sealed interface UiText { Res(StringResource, formatArgs), Str(String) }` with both `@Composable fun text()` and `suspend fun text(StringProvider)`.
-- **`*FormatState`** — sealed classes `Empty`/`Invalid`/`Valid` for form-field state. Form-style validators: `EmailFormatState`, `PasswordFormatState`, `NameFormatState`. Numeric units: `WeightFormatState`, `HeightFormatState`, `DurationFormatState`, `VolumeFormatState`, `PercentageFormatState`, `IntensityFormatState`, `DensityFormatState`, `MultiplierFormatState`, `RepetitionsFormatState`. Date/time: `DateFormatState`, `DateTimeFormatState`, `DateRangeFormatState`. See `11-state-and-formatters/`.
+- **`*FormatState`** — sealed classes `Empty`/`Invalid`/`Valid` for form-field state. Required infrastructure: `EmailFormatState`, `PasswordFormatState`, `NameFormatState`, `DateFormatState`, `DateTimeFormatState`, `DateRangeFormatState`. Generic numeric example: `AmountFormatState`. Product-specific `*FormatState` instances (the reference repo has nine — Weight, Height, Duration, etc.) are NOT infrastructure — chapters MUST illustrate the pattern with `AmountFormatState` and let each project add its own. See `11-state-and-formatters/` and `00-overview/05-template-conventions.md` §4.
 - **`AppError`** — sealed hierarchy in `:ui-core:error:error-provider`. Subtypes: `Network.{NoInternet, Timeout, Expected, Unexpected}`, `Expected`, `Unknown`. Mapped by `ErrorProviderImpl` to `AppErrorState`, then surfaced as `DialogConfig.ErrorDisplay`.
 - **`DateTimeUtils`** / **`DateRange`** / **`DateRangeKind`** / **`DateRangePresets`** / **`DateFormat`** / **`DateFormatting`** — toolkit for dates. `DateFormatting.install(localeTag)` switches every formatter to a new locale.
 - **`Connectivity`** — `SharedFlow<Status>` of online/offline status. Status is `Connected(metered: Boolean) | Disconnected`.
@@ -56,4 +56,4 @@ These names are infrastructure-stable. **Do not rename** when applying these req
 | Dialogs | `DialogConfig`, `DialogController`, `DialogComponent`, `DialogProvider` |
 | Toolkit | `AppLogger`, `DateTimeUtils`, `DateRange`, `DateRangeKind`, `DateRangePresets`, `DateFormat`, `DateFormatting`, `NativeContext`, `Connectivity`, `NotificationManager`, `PermissionManager`, `LinkOpener` |
 
-Product-specific names (e.g. `GrippoApi`, `RootComponent`, `Training*`) **should** be renamed.
+Product-specific names (e.g. `GrippoApi`, `Training*`, `WeightFormatState`, `ProfileBody*`) **should** be replaced — see `00-overview/05-template-conventions.md` for the substitution table.

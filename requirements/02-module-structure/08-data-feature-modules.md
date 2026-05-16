@@ -11,15 +11,15 @@ The domain layer. UI sees `:data-features:feature-api` (interfaces + domain mode
 | `:data-features:user` | User profile feature impl | KMP + Koin |
 | `:data-features:<area>` | One per business area | KMP + Koin |
 
-Reference areas (replace per product): `authorization`, `user`, `weight-history`, `goal`, `muscle`, `equipment`, `excluded-muscles`, `excluded-equipments`, `trainings`, `exercise-examples`, `exercise-metrics`, `local-settings`.
+Per-project. Each module is `:data-features:<feature>` and follows the pattern below.
 
 ## `:data-features:feature-api`
 
 The single point of contact between UI and data. Holds:
 
-- `<X>Feature` interfaces — `public interface TrainingFeature { fun observeTrainings(...): Flow<List<Training>>; suspend fun getTrainings(...): Result<Unit> }`.
-- Domain models — `public data class Training(val id: String, val createdAt: LocalDateTime, ...)`.
-- `<X>UseCase` classes — for use cases that combine multiple features (reference repo: `TrainingDigestUseCase` and `MuscleLoadingSummaryUseCase` compose `TrainingFeature` + `ExerciseExamplesFeature` + `MuscleFeature`; `LoginUseCase.executeEmail/executeGoogle/executeApple` composes `AuthorizationFeature` + `UserFeature`).
+- `<X>Feature` interfaces — `public interface NoteFeature { fun observeNotes(...): Flow<List<Note>>; suspend fun getNotes(...): Result<Unit> }`.
+- Domain models — `public data class Note(val id: String, val createdAt: LocalDateTime, ...)`.
+- `<X>UseCase` classes — for use cases that combine multiple features (e.g. `NoteSummaryUseCase` composing `NoteFeature` + `TagFeature`; `LoginUseCase.executeEmail/executeGoogle/executeApple` composes `AuthorizationFeature` + `UserFeature`).
 - `FeatureApiModule` — `@Module @ComponentScan public class FeatureApiModule` declaring `<X>UseCase` as `@Factory` (use cases are stateless and instantiated per call).
 
 ### Rules
@@ -55,7 +55,7 @@ No design-system, no UI core, no other toolkit module besides `:toolkit:date-uti
 
 Each implementation module holds:
 
-- `data/<X>RepositoryImpl.kt` — `internal class <X>RepositoryImpl(private val api: GrippoApi, private val dao: <X>Dao, ...) : <X>Repository`. Annotated `@Single(binds = [<X>Repository::class])`.
+- `data/<X>RepositoryImpl.kt` — `internal class <X>RepositoryImpl(private val api: <Product>Api, private val dao: <X>Dao, ...) : <X>Repository`. Annotated `@Single(binds = [<X>Repository::class])`.
 - `domain/<X>Repository.kt` — `internal interface <X>Repository { ... }`. **Internal** to this module.
 - `domain/<X>FeatureImpl.kt` — `internal class <X>FeatureImpl(private val repository: <X>Repository) : <X>Feature`. Annotated `@Single(binds = [<X>Feature::class])`.
 - `<X>FeatureModule.kt` — `@Module(includes = [BackendModule::class, DatabaseModule::class]) @ComponentScan public class <X>FeatureModule`. **Public** so `:shared/Koin.kt` can reference it.
@@ -63,10 +63,10 @@ Each implementation module holds:
 ### Why an extra `<X>Repository` layer between `<X>FeatureImpl` and the services?
 
 - `<X>Feature` is the **UI-visible** contract. It uses domain models only, returns `Result<T>` for mutations, exposes `Flow<Domain>` for observations.
-- `<X>Repository` is the **internal** contract that combines `<X>Dao` (Room) + `GrippoApi` (Ktor). Sometimes it adds caching policies, range reconciliation, draft handling, or `Mapper` calls.
+- `<X>Repository` is the **internal** contract that combines `<X>Dao` (Room) + `<Product>Api` (Ktor). Sometimes it adds caching policies, range reconciliation, draft handling, or `Mapper` calls.
 - `<X>FeatureImpl` is a **thin** wrapper that mostly delegates to `<X>Repository` but may compose multiple repositories or add lightweight transformations.
 
-Splitting them lets the Repository test against fakes for `<X>Dao` and `GrippoApi`, while the Feature stays a stable public surface.
+Splitting them lets the Repository test against fakes for `<X>Dao` and `<Product>Api`, while the Feature stays a stable public surface.
 
 For trivial features (no caching, no composition), `<X>FeatureImpl` may delegate one-to-one to `<X>Repository`. That is fine — the layer is consistent across the codebase regardless of complexity.
 
@@ -76,8 +76,8 @@ See `03-architecture-patterns/06-repository-pattern.md` for the full pattern. Hi
 
 - **Observe** returns `Flow<Domain>` from the DAO — never from the API.
 - **Get/Set/Update/Delete** returns `Result<Unit>` or `Result<T>`. Hits the API, then updates the DAO on `onSuccess`.
-- **Range reconciliation**: after `getTrainings(start, end)`, delete all rows in `[start, end]` except those returned by the server (`dao.deleteByCreatedAtRangeExceptIds(...)`). This removes "deleted on another device" drift.
-- **Drafts** live only in the DB (`draftTrainingDao`); they never round-trip through the server.
+- **Range reconciliation**: after `getNotes(start, end)`, delete all rows in `[start, end]` except those returned by the server (`dao.deleteByCreatedAtRangeExceptIds(...)`). This removes "deleted on another device" drift.
+- **Drafts** live only in the DB (`draftNoteDao`); they never round-trip through the server.
 
 ### Build
 

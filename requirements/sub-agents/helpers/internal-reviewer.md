@@ -68,7 +68,7 @@ Hand the diff + task scope + relevant chapter excerpts to a sub-agent. Use the `
 Agent(
   subagent_type: "general-purpose",
   prompt: """
-  You are reviewing a code change for the Grippo KMP mobile project.
+  You are reviewing a code change for the `<Product>` KMP mobile project.
 
   ## Task scope
   <verbatim ## Acceptance section from TASK file>

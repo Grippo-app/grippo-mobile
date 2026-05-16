@@ -135,7 +135,7 @@ If steps 2 and 4 swap (Producer sends before Consumer subscribes), the event is 
 `SharedFlow` supports multiple collectors and replay, but has different semantics:
 
 - **Replay can confuse**: a Consumer Component that's recreated after process death would replay the last event, even though the action was already handled.
-- **Multi-collector** is unwanted: two subscribers on the same key both seeing the same event would cause double-processing (e.g. "delete training" handled twice).
+- **Multi-collector** is unwanted: two subscribers on the same key both seeing the same event would cause double-processing (e.g. "delete note" handled twice).
 
 The single-consumer Channel is intentional. The cost is the discipline of "one subscription per key" — enforced by convention, not by the runtime.
 

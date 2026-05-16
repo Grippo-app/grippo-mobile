@@ -10,15 +10,14 @@ Every state class is `@Immutable`:
 
 ```kotlin
 @Immutable
-internal data class ProfileBodyState(
+internal data class NoteArchiveState(
     val user: UserState? = null,
-    val weight: WeightFormatState = WeightFormatState.Empty(),
-    val height: HeightFormatState = HeightFormatState.Empty(),
-    val history: ImmutableList<WeightHistoryState> = persistentListOf(),
+    val amount: AmountFormatState = AmountFormatState.Empty(),
+    val notes: ImmutableList<NoteState> = persistentListOf(),
 )
 ```
 
-(Fields use default constructor values so the ViewModel can build the initial state with `ProfileBodyState()` — see `09-conventions/02-naming.md` § "State defaults". `User` / `WeightPoint` are domain types; the UI state holds their `*State` counterparts from `:ui-core:state`.)
+(Fields use default constructor values so the ViewModel can build the initial state with `NoteArchiveState()` — see `09-conventions/02-naming.md` § "State defaults". `User` / `Note` are domain types; the UI state holds their `*State` counterparts from `:ui-core:state`.)
 
 - `@Immutable` tells Compose: instances are deeply immutable. Recomposition skips on identity.
 - `@Stable` is weaker — equal-by-equals but not deeply immutable. Use when fields may change but `equals` reflects the change.
@@ -138,8 +137,8 @@ DisposableEffect(state.isMonitoring) {
 For a value derived from a slow source:
 
 ```kotlin
-val rendered by produceState(initialValue = "", state.weight) {
-    value = computeRenderedWeight(state.weight)
+val rendered by produceState(initialValue = "", state.amount) {
+    value = computeRenderedAmount(state.amount)
 }
 ```
 
@@ -162,10 +161,10 @@ val isSubmitButtonEnabled by remember(state.email, state.password) {
 For computed values that are pure functions of inputs:
 
 ```kotlin
-val buttonState = remember(loaders, state.weight) {
+val buttonState = remember(loaders, state.amount) {
     when {
-        FooLoader.SavingWeight in loaders -> ButtonState.Loading
-        state.weight is WeightFormatState.Valid -> ButtonState.Enabled
+        FooLoader.SavingAmount in loaders -> ButtonState.Loading
+        state.amount is AmountFormatState.Valid -> ButtonState.Enabled
         else -> ButtonState.Disabled
     }
 }
@@ -231,14 +230,14 @@ LazyColumn(
     contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
 ) {
     items(
-        items = state.trainings,
+        items = state.notes,
         key = { it.id },
-        contentType = { "TrainingRow" },
-    ) { training ->
-        TrainingRow(
-            state = training,
+        contentType = { "NoteRow" },
+    ) { note ->
+        NoteRow(
+            state = note,
             modifier = Modifier.animateItem(),
-            onClick = { contract.onTrainingClick(training.id) },
+            onClick = { contract.onNoteClick(note.id) },
         )
     }
 }

@@ -59,14 +59,14 @@ Future-extensible (e.g. a `Gradient` subtype) without breaking the API.
 
 ```kotlin
 @Composable
-internal fun ProfileBodyScreen(
-    state: ProfileBodyState,
-    loaders: ImmutableSet<ProfileBodyLoader>,
-    contract: ProfileBodyContract,
+internal fun NoteDetailScreen(
+    state: NoteDetailState,
+    loaders: ImmutableSet<NoteDetailLoader>,
+    contract: NoteDetailContract,
 ) {
     BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.screen)) {
         Toolbar(
-            title = AppTokens.strings.res(Res.string.profile_body_title),
+            title = AppTokens.strings.res(Res.string.note_detail_title),
             leading = Leading.Back(onClick = contract::onBack),
         )
 

@@ -70,8 +70,15 @@ When forking these requirements for a new project, replace these tokens consiste
 | Android `namespace` root | `com.grippo` | `com.<org>.<product>` |
 | Application ID | `com.grippo.android` | `com.<org>.<product>.android` |
 | Domain types | `Training`, `Exercise`, ... | new-project domain |
+| Primary example type | `Training` (in pattern walkthroughs) | `Note` |
+| Secondary example type | `Muscle`, `Equipment` (in `@Relation` examples) | `Tag` |
+| Tertiary example type (if needed) | other domain | `Item` |
+| Numeric `*FormatState` | `WeightFormatState`, `HeightFormatState`, ... | `AmountFormatState` |
+| Worked example | "Workout history" | "Note archive" |
 
-Do **not** rename: `BaseViewModel`, `BaseComponent`, `BaseScreen`, `AppTokens`, `AppTheme`, `UiText`, `*FormatState`, `OperationManager`, `ResultManager`, `DialogConfig`, `DialogController`, `NativeContext`, `AppLogger`, `DateTimeUtils`. These are infrastructure names; keeping them stable across projects makes the pattern recognizable.
+Full conventions: see `00-overview/05-template-conventions.md`.
+
+Do **not** rename: `BaseViewModel`, `BaseComponent`, `BaseScreen`, `AppTokens`, `AppTheme`, `UiText`, `EmailFormatState`, `PasswordFormatState`, `NameFormatState`, `DateFormatState`, `DateTimeFormatState`, `DateRangeFormatState`, `AmountFormatState`, `OperationManager`, `ResultManager`, `DialogConfig`, `DialogController`, `NativeContext`, `AppLogger`, `DateTimeUtils`. These are infrastructure names; keeping them stable across projects makes the pattern recognizable.
 
 Per-project values (productName, locales, prelaunch flag, etc.) live in `requirements/00-overview/03-project-config.md`. Sub-agents read this file at start of every task. Edit it before bootstrapping a new project.
 

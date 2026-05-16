@@ -27,7 +27,7 @@ Some changes require a deliberate decision, not a confident merge. The architect
 ### Data layer
 
 - **Changing `BackendClient` / `TokenProvider`.** The mutex + retry + circuit-breaker logic is fragile; changes here can break auth-required calls.
-- **Changing `GrippoApi`'s `request<T>` helper.** Every endpoint method calls it.
+- **Changing `<Product>Api`'s `request<T>` helper.** Every endpoint method calls it.
 - **Adding a new Room migration.** Schema bumps require coordination with the destructive fallback policy. See `06-data-layer/06-room-migrations.md`.
 - **Changing `@Entity`'s `id` type** (e.g. from `String` to `Long`). Cascading impact on DAOs, Packs, mappers.
 - **Adding `fallbackToDestructiveMigration(dropAllTables = false)`** (changing the policy). The "drop everything" choice is deliberate.

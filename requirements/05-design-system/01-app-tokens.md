@@ -50,16 +50,16 @@ Lives in `:design-system:core`.
 
 ```kotlin
 Text(
-    text = AppTokens.strings.res(Res.string.weight_and_height),
+    text = AppTokens.strings.res(Res.string.note_title),
     style = AppTokens.typography.h2(),
     color = AppTokens.colors.text.primary,
     modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
 )
 
 Image(
-    painter = AppTokens.drawables.res(Res.drawable.barbell),
+    painter = AppTokens.drawables.res(Res.drawable.note_thumbnail),
     contentDescription = null,
-    modifier = Modifier.size(AppTokens.dp.equipmentCard.icon),
+    modifier = Modifier.size(AppTokens.dp.noteCard.icon),
 )
 
 Icon(

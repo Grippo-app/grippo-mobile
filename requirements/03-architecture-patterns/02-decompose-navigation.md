@@ -4,7 +4,7 @@ Navigation is built on Decompose (`com.arkivanov.decompose`). Each `Component` i
 
 ## Three layers of navigation
 
-1. **`RootComponent`** in `:shared` — owns the **primary** `StackNavigation<RootRouter>`. Routes between top-level features (`Auth`, `Home`, `Trainings`, `Profile`, `Training`, `Debug`).
+1. **`RootComponent`** in `:shared` — owns the **primary** `StackNavigation<RootRouter>`. Routes between top-level features (`Auth`, `Home`, `Notes`, `Profile`, `NoteDetail`, `Debug`).
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming exception below) in each `:ui-screen-features:<feature>` that has more than one screen — owns its own private `StackNavigation<<Feature>Router>`. Routes between sub-screens of one feature. Single-screen features (e.g. `:debug`) skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns a **slot** navigator (`SlotNavigation<DialogConfig>`) parallel to the screen stack. See `03-architecture-patterns/03-dialog-navigation.md`.
 
@@ -19,9 +19,9 @@ All routes are declared as `@Serializable sealed class` in `:ui-screen-features:
 public sealed class RootRouter : BaseRouter {
     @Serializable public data class Auth(val value: AuthRouter) : RootRouter()
     @Serializable public data object Home : RootRouter()
-    @Serializable public data object Trainings : RootRouter()
+    @Serializable public data object Notes : RootRouter()
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
-    @Serializable public data class Training(val stage: StageState) : RootRouter()
+    @Serializable public data class NoteDetail(val mode: NoteMode) : RootRouter()
     @Serializable public data object Debug : RootRouter()
 }
 
@@ -29,7 +29,7 @@ public sealed class RootRouter : BaseRouter {
 public sealed class ProfileRouter : BaseRouter {
     @Serializable public data object Body : ProfileRouter()
     @Serializable public data object Settings : ProfileRouter()
-    @Serializable public data class WorkoutHistory(val initialRange: DateRange) : ProfileRouter()
+    @Serializable public data class NoteArchive(val initialRange: DateRange) : ProfileRouter()
 }
 
 @Serializable
@@ -41,7 +41,7 @@ public sealed class HomeRouter : BaseRouter {
 Rules:
 
 - **`@Serializable` on every route class.** Decompose serializes the stack on process death; non-serializable routes will fail at runtime.
-- **All payloads must also be `@Serializable`.** `DateRange`, `StageState`, any product enum — all `@Serializable`.
+- **All payloads must also be `@Serializable`.** `DateRange`, `NoteMode`, any project enum — all `@Serializable`.
 - **No callbacks or non-serializable fields** in route parameters. Pass only data; pass behavior via constructor lambdas at component-creation time.
 - Sub-feature routers nest inside the parent: `RootRouter.Profile(value: ProfileRouter)`. This allows deeplinks like "open Profile → Settings" to be expressed as a single `RootRouter.Profile(ProfileRouter.Settings)` config.
 
@@ -87,19 +87,19 @@ private fun createChild(router: RootRouter, context: ComponentContext): Child = 
         HomeRootComponent(
             componentContext = context,
             initial = HomeRouter.Home,
-            toBody = viewModel::toWeightHistory,
-            toTraining = viewModel::toTraining,
-            toTrainings = viewModel::toTrainings,
+            toBody = viewModel::toNoteArchive,
+            toNoteDetail = viewModel::toNoteDetail,
+            toNotes = viewModel::toNotes,
             // ... one callback per cross-feature destination
             close = viewModel::onClose,
         )
     )
 
-    RootRouter.Trainings -> Child.Trainings(
-        TrainingsRootComponent(
+    RootRouter.Notes -> Child.Notes(
+        NotesRootComponent(
             componentContext = context,
-            initial = TrainingsRouter.Trainings,
-            toTraining = viewModel::toTraining,
+            initial = NotesRouter.Notes,
+            toNoteDetail = viewModel::toNoteDetail,
             close = viewModel::onBack,
         )
     )
@@ -112,10 +112,10 @@ private fun createChild(router: RootRouter, context: ComponentContext): Child = 
         )
     )
 
-    is RootRouter.Training -> Child.Training(
-        TrainingComponent(
+    is RootRouter.NoteDetail -> Child.NoteDetail(
+        NoteDetailComponent(
             componentContext = context,
-            initial = TrainingRouter.Recording(router.stage),
+            initial = NoteDetailRouter.Edit(router.mode),
             close = viewModel::onBack,
         )
     )
@@ -132,14 +132,14 @@ The `Child` wrapper:
 public sealed class Child(public open val component: BaseComponent<*>) {
     public data class Authorization(override val component: AuthComponent) : Child(component)
     public data class Home(override val component: HomeRootComponent) : Child(component)
-    public data class Trainings(override val component: TrainingsRootComponent) : Child(component)
+    public data class Notes(override val component: NotesRootComponent) : Child(component)
     public data class Profile(override val component: ProfileComponent) : Child(component)
-    public data class Training(override val component: TrainingComponent) : Child(component)
+    public data class NoteDetail(override val component: NoteDetailComponent) : Child(component)
     public data class Debug(override val component: DebugComponent) : Child(component)
 }
 ```
 
-Note the naming convention: the **default** feature-root name is the bare `<X>Component` (e.g. `AuthComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`). The `<X>RootComponent` form (`HomeRootComponent`, `TrainingsRootComponent`) is reserved for features whose first sub-screen reuses the feature name — `:home` has a `Home` sub-screen, `:trainings` has a `Trainings` sub-screen, so the parent gets a `Root` suffix to avoid the collision. Owning a private `StackNavigation<<X>Router>` is **orthogonal** to this naming choice: `AuthComponent`, `ProfileComponent`, `TrainingComponent` all own internal stacks despite the bare name; `DebugComponent` is the rare single-screen feature with no inner stack. All are `BaseComponent<DIRECTION>`.
+Note the naming convention: the **default** feature-root name is the bare `<X>Component` (e.g. `AuthComponent`, `ProfileComponent`, `NoteDetailComponent`, `DebugComponent`). The `<X>RootComponent` form (`HomeRootComponent`, `NotesRootComponent`) is reserved for features whose first sub-screen reuses the feature name — `:home` has a `Home` sub-screen, `:notes` has a `Notes` sub-screen, so the parent gets a `Root` suffix to avoid the collision. Owning a private `StackNavigation<<X>Router>` is **orthogonal** to this naming choice: `AuthComponent`, `ProfileComponent`, `NoteDetailComponent` all own internal stacks despite the bare name; `DebugComponent` is the rare single-screen feature with no inner stack. All are `BaseComponent<DIRECTION>`.
 
 A `sealed class Child(component: BaseComponent<*>)` is the canonical pattern — it lets `RootScreen` pattern-match for animation selection while keeping `component.Render()` callable polymorphically.
 
@@ -177,7 +177,7 @@ override suspend fun eventListener(direction: RootDirection) {
         RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
         RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
         RootDirection.Settings -> navigation.push(RootRouter.Profile(ProfileRouter.Settings))
-        is RootDirection.Training -> navigation.push(RootRouter.Training(direction.stage))
+        is RootDirection.NoteDetail -> navigation.push(RootRouter.NoteDetail(direction.stage))
         RootDirection.Back -> navigation.pop()
         RootDirection.Close -> close.invoke()
     }
@@ -187,7 +187,7 @@ override suspend fun eventListener(direction: RootDirection) {
 Two patterns to notice:
 
 - **Guarded `replaceAll`**: `RootDirection.Login` only replaces the stack if the current top isn't already an `Authorization` child. The token observer in `RootViewModel` emits `Login` on every token-null transition, including the initial one when the shell already started on `Auth(AuthRouter.Splash)` — without the guard the user would be bounced back to `AuthProcess` mid-splash.
-- **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination (`Settings`, `Profile`, `Goal`, …) and the Component picks the concrete sub-route to push (e.g. `ProfileRouter.Body`). `Training` is the exception — it carries a `StageState` payload because the same destination can resume different stages.
+- **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination (`Settings`, `Profile`, …) and the Component picks the concrete sub-route to push (e.g. `ProfileRouter.Body`). `NoteDetail` is the exception — it carries a `NoteMode` payload because the same destination can resume different modes.
 
 For sub-feature components, `eventListener` typically handles two kinds of directions:
 
@@ -198,11 +198,11 @@ For sub-feature components, `eventListener` typically handles two kinds of direc
 
 A `:ui-screen-features:home` module cannot directly navigate to a screen in `:ui-screen-features:profile`. The mechanism:
 
-1. Declare the route in `:ui-screen-features:screen-api` (`ProfileRouter.WorkoutHistory(initialRange)`).
-2. Add `RootDirection.OpenWorkoutHistory(range: DateRange)` (or compose: `RootDirection.Profile(ProfileRouter.WorkoutHistory(range))`).
-3. `RootViewModel` exposes a callback: `fun toWorkoutHistory(range: DateRange) { navigateTo(RootDirection.OpenWorkoutHistory(range)) }`.
-4. `RootComponent.createChild` for the Home child threads the callback through: `HomeRootComponent(..., toWorkoutHistory = viewModel::toWorkoutHistory)`.
-5. `HomeRootComponent` accepts it and threads to its sub-components: `HomeOverviewComponent(..., toWorkoutHistory = toWorkoutHistory)`.
+1. Declare the route in `:ui-screen-features:screen-api` (`ProfileRouter.NoteArchive(initialRange)`).
+2. Add `RootDirection.OpenNoteArchive(range: DateRange)` (or compose: `RootDirection.Profile(ProfileRouter.NoteArchive(range))`).
+3. `RootViewModel` exposes a callback: `fun toNoteArchive(range: DateRange) { navigateTo(RootDirection.OpenNoteArchive(range)) }`.
+4. `RootComponent.createChild` for the Home child threads the callback through: `HomeRootComponent(..., toNoteArchive = viewModel::toNoteArchive)`.
+5. `HomeRootComponent` accepts it and threads to its sub-components: `HomeOverviewComponent(..., toNoteArchive = toNoteArchive)`.
 6. `HomeOverviewViewModel.onChartClick(range)` calls the constructor lambda.
 
 This is verbose but **explicit**. The dependency graph between features is visible.
@@ -234,8 +234,8 @@ private fun RootComponent.Child.animator(): StackAnimator = when (this) {
     is RootComponent.Child.Home -> fade()
     is RootComponent.Child.Debug -> platformStackAnimator()
     is RootComponent.Child.Profile -> platformStackAnimator()
-    is RootComponent.Child.Training -> platformStackAnimator()
-    is RootComponent.Child.Trainings -> platformStackAnimator()
+    is RootComponent.Child.NoteDetail -> platformStackAnimator()
+    is RootComponent.Child.Notes -> platformStackAnimator()
 }
 ```
 
@@ -269,8 +269,8 @@ See `04-base-classes/07-platform-helpers.md`.
 
 ```kotlin
 public enum class Deeplink(public val key: String) {
-    TrainingDraft(key = "training_draft"),
-    WeightHistory(key = "weight_history");
+    NoteDraft(key = "note_draft"),
+    NoteArchive(key = "note_archive");
 
     public companion object {
         public fun fromKey(key: String): Deeplink? = entries.find { it.key == key }
@@ -328,8 +328,8 @@ internal fun applyDeeplink(deeplink: String) {
 }
 
 private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(raw)) {
-    Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft)
-    Deeplink.WeightHistory -> RootDirection.WeightHistory
+    Deeplink.NoteDraft -> RootDirection.NoteDetail(NoteMode.Draft)
+    Deeplink.NoteArchive -> RootDirection.NoteArchive
     null -> null
 }
 ```

@@ -45,24 +45,24 @@ Dependency injection is **Koin Annotations + KSP**. The project does **not** use
 ### Interface implementation
 
 ```kotlin
-internal interface TrainingRepository { ... }
+internal interface NoteRepository { ... }
 
-@Single(binds = [TrainingRepository::class])
-internal class TrainingRepositoryImpl(
-    private val api: GrippoApi,
-    private val trainingDao: TrainingDao,
-) : TrainingRepository { ... }
+@Single(binds = [NoteRepository::class])
+internal class NoteRepositoryImpl(
+    private val api: <Product>Api,
+    private val noteDao: NoteDao,
+) : NoteRepository { ... }
 ```
 
-Note the singular/plural convention: the module is `TrainingsFeatureModule` (plural, named after the `:data-features:trainings` directory), but the interface/impl/feature classes are singular (`TrainingRepository`, `TrainingFeature`). Same pattern across other features: `ExerciseExampleRepository` in `:data-features:exercise-examples`, etc.
+Note the singular/plural convention: the module is `NotesFeatureModule` (plural, named after the `:data-features:notes` directory), but the interface/impl/feature classes are singular (`NoteRepository`, `NoteFeature`). Same pattern across other features: `TagRepository` in `:data-features:tags`, etc.
 
-Consumers inject the interface: `private val repository: TrainingRepository by inject()` — or, more idiomatically in this project, via constructor.
+Consumers inject the interface: `private val repository: NoteRepository by inject()` — or, more idiomatically in this project, via constructor.
 
 ### Concrete service (no interface)
 
 ```kotlin
 @Single
-public class GrippoApi internal constructor(private val client: BackendClient) { ... }
+public class <Product>Api internal constructor(private val client: BackendClient) { ... }
 ```
 
 When the type is the only candidate, no interface needed.
@@ -83,29 +83,29 @@ internal class OperationManagerImpl(
 ```kotlin
 @Module(includes = [BackendModule::class, DatabaseModule::class])
 @ComponentScan
-public class TrainingsFeatureModule
+public class NotesFeatureModule
 ```
 
-`@Module` declares the module; `@ComponentScan` enables KSP scanning. `includes` brings in dependencies' modules so a single `TrainingsFeatureModule().module` registration in `Koin.init` is enough.
+`@Module` declares the module; `@ComponentScan` enables KSP scanning. `includes` brings in dependencies' modules so a single `NotesFeatureModule().module` registration in `Koin.init` is enough.
 
 ## How a feature module looks
 
 ```
-:data-features:trainings/src/commonMain/kotlin/com/<org>/<product>/data.features.trainings/
-  TrainingsFeatureModule.kt            // public class, plural to match the module folder
+:data-features:notes/src/commonMain/kotlin/com/<org>/<product>/data.features.notes/
+  NotesFeatureModule.kt            // public class, plural to match the module folder
   data/
-    TrainingRepositoryImpl.kt          // @Single(binds = [TrainingRepository::class])
+    NoteRepositoryImpl.kt          // @Single(binds = [NoteRepository::class])
   domain/
-    TrainingRepository.kt              // internal interface
-    TrainingFeatureImpl.kt             // @Single(binds = [TrainingFeature::class])
+    NoteRepository.kt              // internal interface
+    NoteFeatureImpl.kt             // @Single(binds = [NoteFeature::class])
 ```
 
-`TrainingsFeatureModule.kt`:
+`NotesFeatureModule.kt`:
 
 ```kotlin
 @Module(includes = [BackendModule::class, DatabaseModule::class])
 @ComponentScan
-public class TrainingsFeatureModule
+public class NotesFeatureModule
 ```
 
 That's it. The module is empty — KSP scans the package for `@Single`/`@Factory`/`@Scoped` annotations and registers everything.
@@ -125,7 +125,7 @@ public class DatabaseModule {
 
     @Single internal fun provideTokenDao(db: Database): TokenDao = db.tokenDao()
     @Single internal fun provideUserDao(db: Database): UserDao = db.userDao()
-    @Single internal fun provideTrainingDao(db: Database): TrainingDao = db.trainingDao()
+    @Single internal fun provideNoteDao(db: Database): NoteDao = db.noteDao()
     // ... one provider per DAO
 }
 ```
@@ -142,11 +142,11 @@ Components fetch their VM's dependencies via `getKoin().get()`:
 
 ```kotlin
 override val viewModel = componentContext.retainedInstance {
-    ProfileBodyViewModel(
+    NoteDetailViewModel(
         dialogController = getKoin().get(),
-        weightHistoryFeature = getKoin().get(),
+        noteFeature = getKoin().get(),
         userFeature = getKoin().get(),
-        updateWeightUseCase = getKoin().get(),
+        updateNoteUseCase = getKoin().get(),
         stringProvider = getKoin().get(),
         notificationManager = getKoin().get(),
     )

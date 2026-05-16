@@ -162,7 +162,7 @@ internal class <X>FeatureImpl(
 }
 ```
 
-If the feature composes multiple repositories (e.g. `TrainingDigestUseCase`), the impl orchestrates them; the UseCase class lives in `:data-features:feature-api` and is itself `@Single`.
+If the feature composes multiple repositories (e.g. `NoteDigestUseCase`), the impl orchestrates them; the UseCase class lives in `:data-features:feature-api` and is itself `@Single`.
 
 ### 5. Coordinate downstream builders
 

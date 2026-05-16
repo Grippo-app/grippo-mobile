@@ -1,14 +1,14 @@
-# `GrippoApi` and DTOs
+# `<Product>Api` and DTOs
 
-`GrippoApi` is a **flat, one-method-per-endpoint** class. No subgrouping, no sub-services, no resource-style classes. Just methods grouped by **comments** (`/* * * Auth service * * */`). This is intentional — it keeps the entire HTTP contract visible in one file.
+`<Product>Api` is a **flat, one-method-per-endpoint** class. No subgrouping, no sub-services, no resource-style classes. Just methods grouped by **comments** (`/* * * Auth service * * */`). This is intentional — it keeps the entire HTTP contract visible in one file.
 
-Rename to `<Product>Api` per product.
+The concrete class name is `<Product>Api` (PascalCase product slot from `00-overview/03-project-config.md`).
 
 ## Class shape
 
 ```kotlin
 @Single
-public class GrippoApi internal constructor(private val client: BackendClient) {
+public class <Product>Api internal constructor(private val client: BackendClient) {
 
     /* * * * * * * * * * * * * * * * *
      *  Auth service
@@ -53,29 +53,29 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         request(method = HttpMethod.Post, path = "/users", body = body)
 
     /* * * * * * * * * * * * * * * * *
-     *  Trainings service
+     *  Notes service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>> =
+    public suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>> =
         request(
             method = HttpMethod.Get,
-            path = "/trainings",
+            path = "/notes",
             queryParams = mapOf("start" to start, "end" to end),
         )
 
-    public suspend fun setTraining(body: TrainingBody): Result<IdResponse> =
-        request(method = HttpMethod.Post, path = "/trainings", body = body)
+    public suspend fun setNote(body: NoteBody): Result<IdResponse> =
+        request(method = HttpMethod.Post, path = "/notes", body = body)
 
-    public suspend fun updateTraining(id: String, body: TrainingBody): Result<Unit> =
+    public suspend fun updateNote(id: String, body: NoteBody): Result<Unit> =
         request(
             method = HttpMethod.Put,
-            path = "/trainings",
+            path = "/notes",
             body = body,
             queryParams = mapOf("id" to id),
         )
 
-    public suspend fun deleteTraining(id: String): Result<Unit> =
-        request(method = HttpMethod.Delete, path = "/trainings/$id")
+    public suspend fun deleteNote(id: String): Result<Unit> =
+        request(method = HttpMethod.Delete, path = "/notes/$id")
 
     /* * * * * * * * * * * * * * * * *
      *  Utilities
@@ -96,19 +96,19 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
 
 ### One method per endpoint
 
-`GET /trainings?start&end` → `suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>>`.
+`GET /notes?start&end` → `suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>>`.
 
-`POST /trainings` → `suspend fun setTraining(body: TrainingBody): Result<IdResponse>`.
+`POST /notes` → `suspend fun setNote(body: NoteBody): Result<IdResponse>`.
 
-Method name reflects the action verb (`get`, `set`, `update`, `delete`, `register`, `login`, `refresh`) — not the HTTP verb. `set` is used instead of `post` to read more naturally at the call site (`api.setTraining(...)`).
+Method name reflects the action verb (`get`, `set`, `update`, `delete`, `register`, `login`, `refresh`) — not the HTTP verb. `set` is used instead of `post` to read more naturally at the call site (`api.setNote(...)`).
 
 ### Section comments
 
-Endpoints are grouped by domain (`Auth`, `Push token`, `User`, `Trainings`, ...). The block-comment delimiter is consistent:
+Endpoints are grouped by domain (`Auth`, `Push token`, `User`, `Notes`, ...). The block-comment delimiter is consistent:
 
 ```kotlin
 /* * * * * * * * * * * * * * * * *
- *  Trainings service
+ *  Notes service
  * * * * * * * * * * * * * * * * */
 ```
 
@@ -134,7 +134,7 @@ private suspend inline fun <reified T> request(
 
 - `Result<T>` for **all** endpoints. `T` is `Unit`, a single DTO, or a `List<DTO>`.
 - **Never** `T` directly (errors are values, not exceptions to skip the type system).
-- **Never** `Flow<DTO>` — `GrippoApi` is request-response only. Observation is a DAO concern.
+- **Never** `Flow<DTO>` — `<Product>Api` is request-response only. Observation is a DAO concern.
 
 ## DTOs
 
@@ -147,38 +147,32 @@ private suspend inline fun <reified T> request(
     <Name>Body.kt               // client → server
 ```
 
-`<area>` matches the API section (`auth`, `training`, `user`, `goal`, `push-token`, ...).
+`<area>` matches the API section (`auth`, `note`, `user`, `tag`, `push-token`, ...).
 
 ### Shape
 
 ```kotlin
 @Serializable
-public data class TrainingResponse(
-    @SerialName("repetitions")     val repetitions: Int? = null,
-    @SerialName("createdAt")       val createdAt: String? = null,
-    @SerialName("duration")        val duration: Long? = null,
-    @SerialName("exercises")       val exercises: List<ExerciseResponse> = emptyList(),
+public data class NoteResponse(
     @SerialName("id")              val id: String? = null,
-    @SerialName("intensity")       val intensity: Float? = null,
-    @SerialName("volume")          val volume: Float? = null,
+    @SerialName("title")           val title: String? = null,
+    @SerialName("body")            val body: String? = null,
+    @SerialName("createdAt")       val createdAt: String? = null,
     @SerialName("updatedAt")       val updatedAt: String? = null,
     @SerialName("profileId")       val profileId: String? = null,
     @SerialName("userId")          val userId: String? = null,
+    @SerialName("tags")            val tags: List<TagResponse> = emptyList(),
 )
 
 @Serializable
-public data class ExerciseResponse(
-    @SerialName("repetitions")        val repetitions: Int? = null,
-    @SerialName("createdAt")          val createdAt: String? = null,
-    @SerialName("id")                 val id: String? = null,
-    @SerialName("intensity")          val intensity: Float? = null,
-    @SerialName("iterations")         val iterations: List<IterationResponse> = emptyList(),
-    @SerialName("name")               val name: String? = null,
-    @SerialName("volume")             val volume: Float? = null,
-    @SerialName("trainingId")         val trainingId: String? = null,
-    @SerialName("exerciseExampleId")  val exerciseExampleId: String? = null,
-    @SerialName("exerciseExample")    val exerciseExample: ExerciseExampleResponse? = null,
-    @SerialName("updatedAt")          val updatedAt: String? = null,
+public data class TagResponse(
+    @SerialName("id")        val id: String? = null,
+    @SerialName("noteId")    val noteId: String? = null,
+    @SerialName("name")      val name: String? = null,
+    @SerialName("color")     val color: String? = null,
+    @SerialName("createdAt") val createdAt: String? = null,
+    @SerialName("updatedAt") val updatedAt: String? = null,
+    @SerialName("items")     val items: List<ItemResponse> = emptyList(),
 )
 ```
 
@@ -190,7 +184,7 @@ public data class ExerciseResponse(
 4. **`@SerialName("...")` on every field.** Even when the Kotlin name matches — explicit serial names are unambiguous and survive Kotlin renames.
 5. **Names mirror backend** (camelCase). Don't transform `created_at` → `createdAt` via serial-name magic; if backend uses snake_case, use `@SerialName("created_at") val createdAt: String? = null`.
 6. **No business logic, no computed properties.** DTOs are pure transport.
-7. **One DTO per file** for top-level types. Tightly-related DTOs (e.g. `TrainingResponse` + `ExerciseResponse` + `IterationResponse` all returned by the same endpoint) can share a file.
+7. **One DTO per file** for top-level types. Tightly-related DTOs (e.g. `NoteResponse` + `TagResponse` + `ItemResponse` all returned by the same endpoint) can share a file.
 
 ### Why everything nullable
 
@@ -202,36 +196,28 @@ The downside: nullable fields propagate through mappers. The `:data-mappers:dto-
 
 ```kotlin
 @Serializable
-public data class TrainingBody(
-    @SerialName("duration")     val duration: Long,
-    @SerialName("exercises")    val exercises: List<ExerciseBody>,
-    @SerialName("intensity")    val intensity: Float,
-    @SerialName("volume")       val volume: Float,
-    @SerialName("repetitions")  val repetitions: Int,
+public data class NoteBody(
+    @SerialName("title")  val title: String,
+    @SerialName("body")   val body: String,
+    @SerialName("tags")   val tags: List<TagBody>,
 )
 
 @Serializable
-public data class ExerciseBody(
-    @SerialName("repetitions")        val repetitions: Int,
-    @SerialName("intensity")          val intensity: Float,
-    @SerialName("iterations")         val iterations: List<IterationBody>,
-    @SerialName("name")               val name: String,
-    @SerialName("volume")             val volume: Float,
-    @SerialName("exerciseExampleId")  val exerciseExampleId: String?,
+public data class TagBody(
+    @SerialName("name")   val name: String,
+    @SerialName("color")  val color: String?,
+    @SerialName("items")  val items: List<ItemBody>,
 )
 
 @Serializable
-public data class IterationBody(
-    @SerialName("repetitions")     val repetitions: Int,
-    @SerialName("extraWeight")     val extraWeight: Float?,
-    @SerialName("bodyWeight")      val bodyWeight: Float?,
-    @SerialName("bodyMultiplier")  val bodyMultiplier: Float?,
-    @SerialName("assistWeight")    val assistWeight: Float?,
-    @SerialName("externalWeight")  val externalWeight: Float?,
+public data class ItemBody(
+    @SerialName("label")     val label: String,
+    @SerialName("value")     val value: String?,
+    @SerialName("metadata")  val metadata: String?,
 )
 ```
 
-Bodies are usually **non-nullable** — the client knows what it's sending, and `null` would mean "unset" rather than "unknown". Exception: optional fields the user may have left blank (`externalWeight: Float?`, `exerciseExampleId: String?` when a draft exercise has no example yet). Bodies typically **omit** the `= null` default — the call site is required to make the decision explicitly.
+Bodies are usually **non-nullable** — the client knows what it's sending, and `null` would mean "unset" rather than "unknown". Exception: optional fields the user may have left blank (`value: String?`, `color: String?` when the user did not choose one). Bodies typically **omit** the `= null` default — the call site is required to make the decision explicitly.
 
 ## `ClientLogger`
 
@@ -263,7 +249,7 @@ Routes Ktor's `Logging` plugin output to `AppLogger.Network` with color emojis (
 
 ## Anti-patterns
 
-- **Subgrouping `GrippoApi`** into `AuthApi`, `TrainingsApi`, `UserApi`. Flatness is intentional — discovery is easier.
+- **Subgrouping `<Product>Api`** into `AuthApi`, `NotesApi`, `UserApi`. Flatness is intentional — discovery is easier.
 - **Non-nullable DTO scalar fields.** Breaks on backend schema drift.
 - **`@Serializable` on a `sealed class` DTO without `@SerialName`** — kotlinx-serialization needs discriminator names.
 - **Inline path strings duplicated across methods.** Two endpoints sharing `/users/X` is fine; if a third appears, consider a `companion object Paths { const val USERS = "/users" }` block.

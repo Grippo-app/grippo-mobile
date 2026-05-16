@@ -4,7 +4,9 @@ Recurring auto-audit that keeps `requirements/<chapter>/` aligned with the live 
 
 **Scope** — `requirements/00-overview/` through `requirements/14-cookbook/`.
 
-**Not scope** — `requirements/sub-agents/` and `requirements/tasks/` → owned by `invalidate-sub.md`. Code-side issues (a class an example references that no longer exists; a rule the code violates) → flag in the report, never patch here.
+**Not scope** — `requirements/sub-agents/` and `requirements/tasks/` → owned by `invalidate-sub.md`. Code-side issues (a class an example references that no longer exists; a rule the code violates) → flag in the report, never patch here. Templatization findings (concrete reference-repo names where the chapter should use placeholders) → owned by `invalidate-templatize.md`; flag and route, never patch here.
+
+**Mode** — Template mode is in force. `requirements/` is a project-agnostic template; see `00-overview/05-template-conventions.md` for the substitution table. Slot placeholders (`<Product>Api`, `com.<org>.<product>`, `<product-domain>.com`) and canonical example types (`Note`, `Tag`, `AmountFormatState`) are intentional — NOT drift against the reference repo's literal names.
 
 ---
 
@@ -108,7 +110,17 @@ Print:
 - No new prescriptive rules unless the live code already enforces them. Requirements describe what exists, not aspirations.
 - Cite line numbers for source, file paths for docs.
 - Don't delete content without strong reason — apparent redundancy may be intentional cross-referencing.
-- **Placeholders are not drift.** `com.<org>.<product>`, `<Product>Api`, `<your-product-domain>.com` are written for a new-project bootstrap and must not be flagged against any reference repo's literals.
+- **Template mode** — `requirements/` is a project-agnostic template. Authority: `00-overview/05-template-conventions.md`.
+
+  - Slot placeholders (`<Product>`, `<product>`, `<org>`, `<product-domain>`, `com.<org>.<product>`, `<Product>Api`) are NOT drift against reference-repo literals.
+  - Canonical example types (`Note`, `Tag`, `Item` and their fan-out: `NoteEntity`, `NoteRepository`, `NoteFeature`, `NotePack`, `NotesRouter`, etc.) are NOT drift when the live code has `Training`/`Exercise` instead — they teach the pattern, not the product.
+  - Generic numeric format-state (`AmountFormatState`) is NOT drift against product-specific `WeightFormatState`/`HeightFormatState`/etc. in live code.
+  - Reserved names (Base*, AppTokens, UiText, DialogConfig, etc. — see `04-glossary.md` "Reserved names" / `05-template-conventions.md` §7) must match live code verbatim. The template substitution does NOT touch them.
+
+  In Step 3.2 (verbatim code-block verification): a doc using a placeholder against live code using the concrete name is intentional substitution, NOT a single-character mismatch. Verify the surrounding signature, generics, modifiers, and structure against live code; ignore the slot/example-type identifier itself.
+
+  If a chapter contains a concrete reference-repo name (e.g. `GrippoApi`, `TrainingResponse`, `WeightFormatState`, `ProfileBodyState`, `com.grippo.*`) — that is a `PRODUCT_LEAKAGE` finding owned by `invalidate-templatize.md`. Flag in the report; do NOT patch here.
+
 - This pass does NOT audit `requirements/sub-agents/` or `requirements/tasks/`. Drift there → owned by `invalidate-sub.md`.
 ````
 
@@ -131,8 +143,8 @@ Lowest count wins. Ties → table order. After each pass, the agent increments c
 | 08-dependency-injection | 3 | 2026-05-15 |
 | 09-conventions | 3 | 2026-05-16 |
 | 10-toolkit | 3 | 2026-05-16 |
-| 11-state-and-formatters | 2 | 2026-05-15 |
-| 12-gradle-build | 2 | 2026-05-15 |
+| 11-state-and-formatters | 3 | 2026-05-16 |
+| 12-gradle-build | 3 | 2026-05-16 |
 | 13-anti-patterns | 2 | 2026-05-15 |
 | 14-cookbook | 2 | 2026-05-15 |
 

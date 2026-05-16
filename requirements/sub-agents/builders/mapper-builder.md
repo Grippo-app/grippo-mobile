@@ -31,9 +31,9 @@ Before starting, verify each file in the list above exists (`[ -f <path> ]`). If
   | Domain → Entity (drafts only) | `:data-mappers:domain-to-entity` |
   | Domain → DTO Body | `:data-mappers:domain-to-dto` |
 
-- **Area subpackage** — domain noun (`notifications`, `training`, `goal`, `weightHistory`, …).
+- **Area subpackage** — domain noun (e.g. `notifications`, `note`, `tag`, …).
 - **Source type and target type** — fully-qualified class names.
-- **Parent-id parameter** (if the entity has a foreign key whose value comes from the call site, e.g. `profileId` for user-scoped entities, or `trainingId` for child rows in drafts).
+- **Parent-id parameter** (if the entity has a foreign key whose value comes from the call site, e.g. `profileId` for user-scoped entities, or `<parent>Id` for child rows in drafts).
 
 ## Steps you MUST perform
 

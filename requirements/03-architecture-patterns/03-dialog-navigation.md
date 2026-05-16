@@ -47,11 +47,11 @@ public sealed class DialogConfig(
     }
 
     @Serializable
-    public data class WeightPicker(
+    public data class AmountPicker(
         val initial: Float?,
         @Transient val onResult: (value: Float) -> Unit = {},
     ) : DialogConfig(onDismiss = null, dismissBySwipe = true) {
-        override val key: String get() = buildKey("WeightPicker", initial)
+        override val key: String get() = buildKey("AmountPicker", initial)
     }
 
     @Serializable
@@ -80,7 +80,7 @@ Rules:
 - **`@Transient` on every callback** (`onResult`, `onConfirm`, `onCancel`, `onDismiss`). Lambdas cannot serialize — they're rehydrated to no-ops on process death. This is **intentional**: if the user backgrounds while a picker is open, the picker should still close on dismiss; the result simply won't fire (UI is expected to handle this by, e.g. not relying on a callback to re-fetch).
 - **`key: String`** uniquely identifies the dialog instance. Decompose uses it to de-dup. `buildKey(...)` is length-prefixed (`"3:Foo|5:hello"` for parts `"Foo"`, `"hello"`) to avoid `|` collisions. `null` parts are written as `<null>` (length 6). It is a `protected` member of `DialogConfig`, so subtypes can call it from their own `key` getter.
 - **No `@Transient` on data fields.** Inputs like `initial: Float?`, `title: String` are serialized so the picker can restart after process death with the same starting values.
-- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class, so subtypes can override them via super-class arguments (e.g. `ErrorDisplay` wires `onDismiss = onClose`; `StartTraining` sets `dismissBySwipe = false`).
+- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class, so subtypes can override them via super-class arguments (e.g. `ErrorDisplay` wires `onDismiss = onClose`; `Confirmation` sets `dismissBySwipe = false`).
 
 ## `DialogController` + `DialogProvider`
 
@@ -104,12 +104,12 @@ internal class FooViewModel(
     // ... other deps
 ) : BaseViewModel<...>(...) {
 
-    fun onChangeWeightClick() {
+    fun onChangeAmountClick() {
         dialogController.show(
-            DialogConfig.WeightPicker(
-                initial = (state.value.weight as? WeightFormatState.Valid)?.value,
+            DialogConfig.AmountPicker(
+                initial = (state.value.amount as? AmountFormatState.Valid)?.value,
                 onResult = { newValue ->
-                    update { it.copy(weight = WeightFormatState.of(newValue)) }
+                    update { it.copy(amount = AmountFormatState.of(newValue)) }
                 }
             )
         )
@@ -179,7 +179,7 @@ internal class DialogContentComponent(
     )
 
     private fun createChild(router: DialogConfig, context: ComponentContext): Child = when (router) {
-        is DialogConfig.WeightPicker -> /* WeightPickerComponent(..., onResult = { viewModel.onBack { router.onResult(it) } }) */
+        is DialogConfig.AmountPicker -> /* AmountPickerComponent(..., onResult = { viewModel.onBack { router.onResult(it) } }) */
         is DialogConfig.Confirmation -> /* ConfirmationComponent(..., onResult = { viewModel.onBack { router.onResult() } }) */
         // ... one branch per DialogConfig subtype
     }
@@ -192,7 +192,7 @@ Pending callbacks (`router.onResult(value)`) are captured into a `pendingResult`
 
 ## In-sheet navigation
 
-A dialog flow may "open another dialog" without closing the sheet (e.g. "pick exercise example → open its details"). This is implemented as a **Decompose `StackNavigation<DialogConfig>` inside `DialogContentComponent`**: the consumer ViewModel calls `dialogController.show(<NextConfig>)`, `DialogViewModel.innerConfigs` grows, and `DialogComponent.reconcile(...)` pushes onto `DialogContentComponent.navigation`.
+A dialog flow may "open another dialog" without closing the sheet (e.g. "pick a tag → open its details"). This is implemented as a **Decompose `StackNavigation<DialogConfig>` inside `DialogContentComponent`**: the consumer ViewModel calls `dialogController.show(<NextConfig>)`, `DialogViewModel.innerConfigs` grows, and `DialogComponent.reconcile(...)` pushes onto `DialogContentComponent.navigation`.
 
 Two consequences:
 
@@ -209,14 +209,14 @@ Two patterns; the picker uses both depending on context.
 
 ```kotlin
 dialogController.show(
-    DialogConfig.WeightPicker(
+    DialogConfig.AmountPicker(
         initial = 72f,
-        onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
+        onResult = { value -> update { it.copy(amount = AmountFormatState.of(value)) } }
     )
 )
 ```
 
-`WeightPickerViewModel.onApplyClick()` calls `onResult(value)` (the lambda from `DialogConfig`) and then `navigateTo(WeightPickerDirection.Close)`.
+`AmountPickerViewModel.onApplyClick()` calls `onResult(value)` (the lambda from `DialogConfig`) and then `navigateTo(AmountPickerDirection.Close)`.
 
 This is **the** default — local, explicit, scoped to one call site.
 

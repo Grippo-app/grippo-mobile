@@ -16,22 +16,22 @@ com.<org>.<product>.<area>.<feature>[.<subscreen>]
 
 | Module | Package |
 |---|---|
-| `:ui-screen-features:profile` (body sub-screen) | `com.<org>.<product>.profile.body` |
-| `:ui-screen-features:trainings` (list sub-screen) | `com.<org>.<product>.trainings.list` |
-| `:ui-dialog-features:weight-picker` | `com.<org>.<product>.weight.picker` |
+| `:ui-screen-features:notes` (archive sub-screen) | `com.<org>.<product>.notes.archive` |
+| `:ui-screen-features:profile` (settings sub-screen) | `com.<org>.<product>.profile.settings` |
+| `:ui-dialog-features:note-picker` | `com.<org>.<product>.note.picker` |
 | `:ui-core:foundation` | `com.<org>.<product>.core.foundation` |
 | `:ui-core:state` | `com.<org>.<product>.core.state` |
-| `:data-features:feature-api` (training types) | `com.<org>.<product>.data.features.api.training` |
-| `:data-features:trainings` (repo impl) | `com.<org>.<product>.data.features.trainings.data` |
-| `:data-features:trainings` (interfaces) | `com.<org>.<product>.data.features.trainings.domain` |
-| `:data-services:backend` (DTOs) | `com.<org>.<product>.services.backend.dto.training` |
+| `:data-features:feature-api` (note types) | `com.<org>.<product>.data.features.api.note` |
+| `:data-features:notes` (repo impl) | `com.<org>.<product>.data.features.notes.data` |
+| `:data-features:notes` (interfaces) | `com.<org>.<product>.data.features.notes.domain` |
+| `:data-services:backend` (DTOs) | `com.<org>.<product>.services.backend.dto.note` |
 | `:data-services:database` (Entities) | `com.<org>.<product>.services.database.entity` |
 | `:data-services:database` (DAOs) | `com.<org>.<product>.services.database.dao` |
 | `:data-services:database` (Packs) | `com.<org>.<product>.services.database.models` |
 | `:data-services:database` (Migrations) | `com.<org>.<product>.services.database.migrations` |
-| `:data-mappers:dto-to-entity` (training mappers) | `com.<org>.<product>.dto.entity.training` |
-| `:data-mappers:entity-to-domain` (training mappers) | `com.<org>.<product>.entity.domain.training` |
-| `:data-mappers:domain-to-state` (training mappers) | `com.<org>.<product>.domain.state.training` |
+| `:data-mappers:dto-to-entity` (note mappers) | `com.<org>.<product>.dto.entity.note` |
+| `:data-mappers:entity-to-domain` (note mappers) | `com.<org>.<product>.entity.domain.note` |
+| `:data-mappers:domain-to-state` (note mappers) | `com.<org>.<product>.domain.state.note` |
 | `:toolkit:logger` | `com.<org>.<product>.toolkit.logger` |
 | `:toolkit:date-utils` | `com.<org>.<product>.toolkit.date.utils` |
 | `:toolkit:notification-manager` | `com.<org>.<product>.toolkit.local.notification` |
@@ -47,24 +47,24 @@ com.<org>.<product>.<area>.<feature>[.<subscreen>]
 
 ## Dotted directory names — legacy
 
-The reference repo has some modules where the **directory** name contains dots:
+Some projects have modules where the **directory** name contains dots:
 
 ```
-:data-features/trainings/src/commonMain/kotlin/com/grippo/data.features.trainings/
-:data-features/user/src/commonMain/kotlin/com/grippo/data.features.user/
-:ui-dialog-features/dialog-api/src/commonMain/kotlin/com/grippo/dialog.api/
-:ui-dialog-features/weight-picker/src/commonMain/kotlin/com/grippo/weight.picker/
+:data-features/<feature>/src/commonMain/kotlin/com/<org>/<product>/data.features.<feature>/
+:data-features/user/src/commonMain/kotlin/com/<org>/<product>/data.features.user/
+:ui-dialog-features/dialog-api/src/commonMain/kotlin/com/<org>/<product>/dialog.api/
+:ui-dialog-features/<dialog-name>/src/commonMain/kotlin/com/<org>/<product>/<dialog-name>/
 ```
 
-Inside, the `package` declaration is regular: `package com.grippo.data.features.trainings`. The dotted directory is **not** standard Kotlin layout — it's a packaging convention.
+Inside, the `package` declaration is regular: `package com.<org>.<product>.data.features.<feature>`. The dotted directory is **not** standard Kotlin layout — it's a packaging convention.
 
-The convention is applied **inconsistently**: most `:data-features:*` modules and roughly half the `:ui-dialog-features:*` modules use dotted directories; `:data-mappers:*`, `:toolkit:*`, `:data-services:*`, `:design-system:*`, and `:ui-screen-features:*` use regular slash-separated paths (`com/grippo/dto/entity/training/`, `com/grippo/toolkit/date/utils/`, etc.). Don't introduce dotted directories in new module groups.
+When the convention is applied **inconsistently** across module groups (e.g. `:data-features:*` modules and some `:ui-dialog-features:*` use dotted directories; `:data-mappers:*`, `:toolkit:*`, `:data-services:*`, `:design-system:*`, and `:ui-screen-features:*` use regular slash-separated paths like `com/<org>/<product>/dto/entity/<area>/`, `com/<org>/<product>/toolkit/date/utils/`), don't introduce dotted directories in new module groups.
 
 **Rules:**
 
 - **Existing legacy modules**: keep the dotted directories. Don't refactor.
 - **New modules in the same group**: follow the same convention for consistency.
-- **New modules in a fresh project**: dot-free directories are fine (`com/grippo/datatrainings/`). Pick one style per module group.
+- **New modules in a fresh project**: dot-free directories are fine (`com/<org>/<product>/<feature>/`). Pick one style per module group.
 
 This document treats the **non-dotted** style as the recommended default for new projects.
 
@@ -88,28 +88,28 @@ The `internal/` sub-package is **convention only** — it doesn't add code-level
 Every screen's seven files live in their own package:
 
 ```
-:ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/
-  ProfileComponent.kt               // feature root — owns the inner stack
-  ProfileScreen.kt
-  ProfileState.kt
-  ProfileContract.kt
-  ProfileDirection.kt
-  ProfileLoader.kt
-  ProfileViewModel.kt
-  body/                             // sub-screen package
-    ProfileBodyComponent.kt
-    ProfileBodyContract.kt
-    ProfileBodyState.kt
-    ProfileBodyDirection.kt
-    ProfileBodyLoader.kt
-    ProfileBodyViewModel.kt
-    ProfileBodyScreen.kt
-  settings/
-    ProfileSettingsComponent.kt
+:ui-screen-features/notes/src/commonMain/kotlin/com/<org>/<product>/notes/
+  NotesComponent.kt                 // feature root — owns the inner stack
+  NotesScreen.kt
+  NotesState.kt
+  NotesContract.kt
+  NotesDirection.kt
+  NotesLoader.kt
+  NotesViewModel.kt
+  archive/                          // sub-screen package
+    NoteArchiveComponent.kt
+    NoteArchiveContract.kt
+    NoteArchiveState.kt
+    NoteArchiveDirection.kt
+    NoteArchiveLoader.kt
+    NoteArchiveViewModel.kt
+    NoteArchiveScreen.kt
+  editor/
+    NoteEditorComponent.kt
     // ... seven files
 ```
 
-The package matches the sub-screen folder name (lowercase). Naming for the feature-root files varies: most features use the bare feature name (`ProfileComponent`, `TrainingComponent`, `AuthComponent`); a few use the `<Feature>Root*` prefix when the bare name would clash with a sub-screen of the same name (`HomeRootComponent` coexisting with `home/HomeComponent`, `TrainingsRootComponent` with `trainings/TrainingsComponent`). Pick one style per feature and stick to it.
+The package matches the sub-screen folder name (lowercase). Naming for the feature-root files varies: most features use the bare feature name (`NotesComponent`, `ProfileComponent`, `AuthComponent`); a few use the `<Feature>Root*` prefix when the bare name would clash with a sub-screen of the same name (`HomeRootComponent` coexisting with `home/HomeComponent`, `NotesRootComponent` with `notes/NotesComponent`). Pick one style per feature and stick to it.
 
 ## DTO / Entity / Mapper area sub-packages
 
@@ -122,11 +122,11 @@ dto/
     EmailAuthBody.kt
     GoogleBody.kt
     AppleBody.kt
-  training/
-    TrainingResponse.kt
-    ExerciseResponse.kt
-    IterationResponse.kt
-    TrainingBody.kt
+  note/
+    NoteResponse.kt
+    TagResponse.kt
+    ItemResponse.kt
+    NoteBody.kt
   user/
     UserResponse.kt
     CreateProfileBody.kt
@@ -137,13 +137,13 @@ The same scheme applies to:
 - `services/database/dao/<area>/`
 - `services/database/models/<area>/`
 
-`:data-mappers/*` modules also have area sub-packages: `dto.entity.training/`, `entity.domain.training/`, `domain.state.training/`.
+`:data-mappers/*` modules also have area sub-packages: `dto.entity.note/`, `entity.domain.note/`, `domain.state.note/`.
 
 ## Naming the `<area>`
 
-Match the backend's API section if there is one (e.g. backend's `Auth service` → `auth/`). Otherwise, pick a noun that names the data domain (e.g. `training/`, `goal/`, `weight/`).
+Match the backend's API section if there is one (e.g. backend's `Auth service` → `auth/`). Otherwise, pick a noun that names the data domain (e.g. `note/`, `tag/`, `user/`).
 
-When data spans multiple areas (e.g. weight history connects User and Weight), pick the **primary** area (`weight/`) and reference others via foreign keys.
+When data spans multiple areas (e.g. a note connects User and Tag), pick the **primary** area (`note/`) and reference others via foreign keys.
 
 ## Anti-patterns
 

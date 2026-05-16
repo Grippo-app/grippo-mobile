@@ -7,7 +7,7 @@
 | Module | Purpose | Convention plugins |
 |---|---|---|
 | `:ui-core:foundation` | `BaseViewModel`, `BaseComponent`, `BaseScreen`, `OperationManager`, `ResultManager`, platform helpers | KMP + Compose + Koin |
-| `:ui-core:state` | `UiText`, `*FormatState`, `Digest*State`, `MuscleLoad*State`, `Stub*` factories, immutable UI data classes | KMP + Compose |
+| `:ui-core:state` | `UiText`, `*FormatState`, product-specific reusable `*State` classes (`<Entity>SummaryState`, etc.), `stub*` factories, immutable UI data classes | KMP + Compose |
 | `:ui-core:error:error-provider` | `AppError` sealed hierarchy + `ErrorProvider` interface + `AppErrorState` | KMP |
 | `:ui-core:error:error-provider-impl` | `ErrorProviderImpl` — maps `AppError` → `AppErrorState` → `DialogConfig.ErrorDisplay` | KMP + Koin |
 
@@ -67,8 +67,8 @@ Reusable UI state data classes that multiple features use, plus formatters.
 Examples (each `@Immutable`):
 
 - `UiText` — sealed (`Res`, `Str`) text type. See `11-state-and-formatters/01-ui-text.md`.
-- `*FormatState` — `EmailFormatState`, `PasswordFormatState`, `WeightFormatState`, `HeightFormatState`, `DurationFormatState`, `VolumeFormatState`, `DateFormatState`, `DateRangeFormatState`. Sealed `Empty`/`Invalid`/`Valid`. See `11-state-and-formatters/02-format-state.md`.
-- Product-specific reusable state: `MuscleLoadSummaryState`, `DigestState`, `TrainingStreakState`, etc. (rename / replace per product).
+- `*FormatState` — `EmailFormatState`, `PasswordFormatState`, `NameFormatState`, `DateFormatState`, `DateTimeFormatState`, `DateRangeFormatState`. Sealed `Empty`/`Invalid`/`Valid`. See `11-state-and-formatters/02-format-state.md`.
+- Product-specific reusable state: e.g. `<Entity>SummaryState`, `<Entity>HistoryState`, `<Entity>StreakState` — name per product.
 - Companion `stub*()` functions returning realistic preview data for each State.
 
 Rules:

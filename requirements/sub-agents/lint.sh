@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Verifies sub-agent files against four mechanical drift checks:
-#   1. Every `requirements/*.md` link points at a file that exists.
+#   1. Every chapter-style `requirements/<NN>-<area>/<NN>-<topic>.md` link
+#      points at a file that exists. Top-level refs (launch.md, README.md,
+#      invalidate.md, tasks/README.md) are NOT checked — extend the regex
+#      if their stability matters.
 #   2. Every agent file has frontmatter `name`, `description`, `tools`, `model`.
 #   3. Every agent file is listed in `requirements/sub-agents/README.md`.
 #   4. Every agent named in the README inventory tables exists as a file.

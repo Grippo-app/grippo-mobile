@@ -5,7 +5,7 @@
 It is **not** for:
 
 - Auth tokens — those live in Room (`TokenEntity`).
-- Domain data (trainings, exercises, ...) — Room.
+- Domain data (notes, tags, ...) — Room.
 - Sensitive data (PII, payment info) — Room with platform encryption.
 
 ## Module shape
@@ -80,8 +80,8 @@ internal class LocalSettingsRepositoryImpl(
 
     companion object {
         val RangeKey = stringPreferencesKey("range")
-        val LastGoalSuggestionShownAtKey = stringPreferencesKey("last_goal_suggestion_shown_at")
-        val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
+        val LastSuggestionShownAtKey = stringPreferencesKey("last_suggestion_shown_at")
+        val WelcomeStatusKey = stringPreferencesKey("welcome_status")
     }
 
     override fun observeRange(): Flow<Range?> =
@@ -136,13 +136,13 @@ Rules:
 | Setting | DataStore? |
 |---|---|
 | Last-used filter / range | ✅ — reference repo stores this as `range` |
-| One-shot "welcome" / "shown at" flags | ✅ — e.g. `home_welcome_status`, `last_goal_suggestion_shown_at` |
+| One-shot "welcome" / "shown at" flags | ✅ — e.g. `welcome_status`, `last_suggestion_shown_at` |
 | Onboarding-seen flag | ✅ |
 | Debug toggles | ✅ |
 | Theme / language override | ✅ (when a per-user override is needed; reference repo defers to system) |
 | Auth tokens | ❌ — Room (`TokenEntity`) |
 | User profile | ❌ — Room (`UserEntity`) |
-| Cached training list | ❌ — Room (`TrainingEntity`) |
+| Cached domain list | ❌ — Room (`<Entity>Entity`) |
 | Push token | ❌ — sent to server; not persisted client-side |
 
 ## Anti-patterns

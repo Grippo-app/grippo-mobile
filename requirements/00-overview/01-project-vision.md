@@ -4,7 +4,7 @@
 
 A Kotlin Multiplatform (KMP) mobile project that ships an Android app and an iOS app from a single Kotlin codebase. UI is written once in Compose Multiplatform; navigation and lifecycle are handled by Decompose; DI by Koin (annotation-driven via KSP); networking by Ktor; persistence by Room Multiplatform.
 
-The architecture is **analytics-first product agnostic**: the reference project is a fitness tracker, but every architectural choice here is independent of the product domain. Replace the domain (Training, Exercise, WeightHistory, ...) with the new project's domain — the layers and patterns stay.
+The architecture is **product agnostic**: every architectural choice here is independent of the product domain. Replace the example domain (`Note`, `Tag`, ...) with the new project's domain — the layers and patterns stay.
 
 ## Non-goals
 
@@ -19,7 +19,7 @@ The architecture is **analytics-first product agnostic**: the reference project 
 2. **Strictly directional dependency graph.** UI never reaches `:data-services:*` directly; the boundary is `:data-features:feature-api`. See `02-module-structure/02-dependency-rules.md`.
 3. **Multiplatform by default.** Anything Android-specific lives in `androidMain`; iOS-specific in `iosMain`; everything else in `commonMain`. Platform-specific behavior is exposed via `expect`/`actual`.
 4. **Explicit composition.** All Koin modules are listed by name in `:shared/Koin.kt` — no classpath scanning at runtime. The list is the public surface of the application's dependency graph.
-5. **State is immutable, derived locally.** `@Immutable` data classes, `kotlinx-collections-immutable`, `UiText` instead of raw strings in state, `*FormatState` for form fields. UI computes derived values via `remember`; state never duplicates data already present in a sub-state.
+5. **State is immutable, derived locally.** `@Immutable` data classes, `kotlinx-collections-immutable`, `UiText` instead of raw strings in state, `*FormatState` for form fields (see `00-overview/05-template-conventions.md` §4 for which are required infrastructure vs product examples). UI computes derived values via `remember`; state never duplicates data already present in a sub-state.
 
 ## Out-of-scope vs in-scope for the requirements
 

@@ -23,17 +23,17 @@ There are **seven** mapper modules, one per direction. Each is **isolated** — 
 Example:
 
 ```kotlin
-// data-mappers/dto-to-entity/.../trainings/TrainingMapper.kt
-public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
-    val entityId = AppLogger.Mapping.log(id) { "TrainingResponse.id is null" }
+// data-mappers/dto-to-entity/.../notes/NoteMapper.kt
+public fun NoteResponse.toEntityOrNull(): NoteEntity? {
+    val entityId = AppLogger.Mapping.log(id) { "NoteResponse.id is null" }
         ?: return null
-    val entityProfileId = AppLogger.Mapping.log(profileId) { "TrainingResponse.profileId is null" }
+    val entityTitle = AppLogger.Mapping.log(title) { "NoteResponse.title is null" }
         ?: return null
     // ...
-    return TrainingEntity(id = entityId, profileId = entityProfileId, /* ... */)
+    return NoteEntity(id = entityId, title = entityTitle, /* ... */)
 }
 
-public fun List<TrainingResponse>.toEntities(): List<TrainingEntity> =
+public fun List<NoteResponse>.toEntities(): List<NoteEntity> =
     mapNotNull { it.toEntityOrNull() }
 ```
 
@@ -47,7 +47,7 @@ See `07-mappers/02-mapping-conventions.md` for the canonical pattern and `07-map
 2. **No cross-mapper dependencies.** `:data-mappers:dto-to-entity` does not import `:data-mappers:entity-to-domain`. If a chain conversion is needed, the consumer composes two calls.
 3. **No business logic.** Mappers translate fields; they do not perform validation, derive values, or call into other services. Validation goes in `<X>UseCase`; derivation is in the ViewModel.
 4. **Stateless top-level functions.** No classes. No DI. Mapper modules have no Koin annotations.
-5. **One file per source type.** `TrainingResponse → TrainingEntity` lives in `TrainingMapper.kt`; `ExerciseResponse → ExerciseEntity` in `ExerciseMapper.kt`. **Not** all of `dto-to-entity` in a single mega-file.
+5. **One file per source type.** `NoteResponse → NoteEntity` lives in `NoteMapper.kt`; `TagResponse → TagEntity` in `TagMapper.kt`. **Not** all of `dto-to-entity` in a single mega-file.
 
 ## Build (typical)
 
@@ -73,9 +73,9 @@ A mapper module imports **only** the modules that define its source and target t
 
 ## Why seven modules?
 
-- **Isolation.** A change to `TrainingResponse` (a DTO) cannot accidentally affect the entity-to-domain mapper. They're in different modules.
+- **Isolation.** A change to `NoteResponse` (a DTO) cannot accidentally affect the entity-to-domain mapper. They're in different modules.
 - **Compile parallelism.** Mapper modules compile in parallel; one big mapper module would serialize.
-- **Discoverability.** "Where does TrainingResponse → TrainingEntity live?" → look in `:dto-to-entity`. The module name is the answer.
+- **Discoverability.** "Where does NoteResponse → NoteEntity live?" → look in `:dto-to-entity`. The module name is the answer.
 - **Direction-specific rules.** Each direction has slightly different conventions (e.g. only DTO→Entity uses nullable variants). Separate modules make the rules enforceable per module.
 
 ## When to add a new mapper

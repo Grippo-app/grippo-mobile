@@ -118,7 +118,7 @@ The error pipeline calls `AppLogger.General.error(...)` automatically; explicit 
 ### In a Mapper
 
 ```kotlin
-val id = AppLogger.Mapping.log(dto.id) { "TrainingResponse.id is null" } ?: return null
+val id = AppLogger.Mapping.log(dto.id) { "NoteResponse.id is null" } ?: return null
 ```
 
 ### In `ClientLogger` (Ktor's `Logger`)

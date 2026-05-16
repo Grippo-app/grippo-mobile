@@ -40,7 +40,7 @@ dependencyResolutionManagement.repositories {
     mavenCentral()
 }
 
-rootProject.name = "<your-project-name>"   // e.g. "grippo-mobile"
+rootProject.name = "<your-project-name>"   // e.g. "<product>-mobile"
 
 include(":androidApp")
 include(":shared")
@@ -73,7 +73,6 @@ include(":ui-screen-features:home")
 // ... one per top-level screen flow
 
 include(":ui-dialog-features:dialog-api")
-include(":ui-dialog-features:weight-picker")
 include(":ui-dialog-features:confirmation")
 include(":ui-dialog-features:error-display")
 // ... one per bottom-sheet flow
@@ -105,7 +104,7 @@ include(":data-mappers:domain-to-dto")
 include(":data-mappers:state-to-domain")
 ```
 
-**Type-safe project accessors** are enabled via `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`. This generates `projects.designSystem.core`, `projects.dataFeatures.trainings`, etc. — use these instead of `project(":...")` in module-level `build.gradle.kts`.
+**Type-safe project accessors** are enabled via `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`. This generates `projects.designSystem.core`, `projects.dataFeatures.notes`, etc. — use these instead of `project(":...")` in module-level `build.gradle.kts`.
 
 ## Module count and shape (reference)
 

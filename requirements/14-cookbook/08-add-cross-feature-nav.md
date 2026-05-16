@@ -14,21 +14,20 @@ In `:ui-screen-features:screen-api/RootRouter.kt`:
 @Serializable
 public sealed class RootRouter : BaseRouter {
     @Serializable public data class Auth(val value: AuthRouter) : RootRouter()
-    @Serializable public data object Trainings : RootRouter()
+    @Serializable public data object Notes : RootRouter()
     @Serializable public data object Home : RootRouter()
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
     @Serializable public data object Debug : RootRouter()
-    @Serializable public data class Training(val stage: StageState) : RootRouter()
 }
 
 @Serializable
 public sealed class ProfileRouter : BaseRouter {
-    // ... existing entries: Equipments, Muscles, Body, Experience, Settings, Social, Goal
-    @Serializable public data class WorkoutHistory(val initialRange: DateRange) : ProfileRouter()
+    // ... existing entries (project-specific)
+    @Serializable public data class NoteArchive(val initialRange: DateRange) : ProfileRouter()
 }
 ```
 
-`Auth` and `Profile` wrap nested routers (`AuthRouter` / `ProfileRouter`); leaf root entries (`Home`, `Trainings`, `Debug`) are `data object`. `Training` is a `data class` because it carries a `StageState` payload.
+`Auth` and `Profile` wrap nested routers (`AuthRouter` / `ProfileRouter`); leaf root entries (`Home`, `Notes`, `Debug`) are `data object`. `NoteArchive` (nested under `ProfileRouter`) is a `data class` because it carries an `initialRange` payload.
 
 If the destination route doesn't exist, add it here first.
 
@@ -41,9 +40,8 @@ public sealed interface RootDirection : BaseDirection {
     public data object Login : RootDirection
     public data object Home : RootDirection
     public data object Profile : RootDirection
-    // ... existing entries: WeightHistory, MissingEquipment, ExcludedMuscles,
-    //     Experience, Settings, Social, Goal, Debug, Trainings, Back, Close, ...
-    public data class OpenProfileWorkoutHistory(val initialRange: DateRange) : RootDirection
+    // ... existing entries (project-specific): Settings, Debug, Back, Close, ...
+    public data class OpenProfileNoteArchive(val initialRange: DateRange) : RootDirection
 }
 ```
 
@@ -53,7 +51,7 @@ Or, a more general route-based approach:
 public data class GoTo(val target: RootRouter) : RootDirection
 ```
 
-The reference repo uses the explicit-direction style — most existing entries are `data object` (e.g. `WeightHistory`, `Settings`) that map 1-to-1 to a profile sub-route, with `data class` reserved for entries that carry a payload (e.g. `Training(val stage: StageState)`).
+The reference repo uses the explicit-direction style — most existing entries are `data object` (e.g. `Settings`) that map 1-to-1 to a profile sub-route, with `data class` reserved for entries that carry a payload (e.g. `OpenProfileNoteArchive(val initialRange: DateRange)`).
 
 ### 3. Expose the callback on `RootContract` (or `RootViewModel`)
 
@@ -63,12 +61,12 @@ The reference repo uses the explicit-direction style — most existing entries a
 @Immutable
 public interface RootContract {
     // ... existing
-    public fun toProfileWorkoutHistory(range: DateRange)
+    public fun toProfileNoteArchive(range: DateRange)
 
     @Immutable
     public companion object Empty : RootContract {
         // ...
-        override fun toProfileWorkoutHistory(range: DateRange) = Unit
+        override fun toProfileNoteArchive(range: DateRange) = Unit
     }
 }
 ```
@@ -78,8 +76,8 @@ public interface RootContract {
 ```kotlin
 internal class RootViewModel(...) : BaseViewModel<...>(...), RootContract {
 
-    override fun toProfileWorkoutHistory(range: DateRange) {
-        navigateTo(RootDirection.OpenProfileWorkoutHistory(range))
+    override fun toProfileNoteArchive(range: DateRange) {
+        navigateTo(RootDirection.OpenProfileNoteArchive(range))
     }
 }
 ```
@@ -93,12 +91,11 @@ override suspend fun eventListener(direction: RootDirection) {
             navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
         }
         RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
-        RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
-        is RootDirection.OpenProfileWorkoutHistory -> navigation.push(
-            RootRouter.Profile(ProfileRouter.WorkoutHistory(direction.initialRange))
+        RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Overview))
+        is RootDirection.OpenProfileNoteArchive -> navigation.push(
+            RootRouter.Profile(ProfileRouter.NoteArchive(direction.initialRange))
         )
-        // ... existing branches (Trainings, Debug, Training(stage), Settings, Social, Goal,
-        //     WeightHistory, MissingEquipment, ExcludedMuscles, Experience, Back, Close, ...)
+        // ... existing branches (project-specific): Settings, Debug, Back, Close, ...
     }
 }
 ```
@@ -114,7 +111,7 @@ private fun createChild(config: RootRouter, ctx: ComponentContext): Child = when
     is RootRouter.Home -> Child.Home(
         HomeRootComponent(
             componentContext = ctx,
-            toProfileWorkoutHistory = viewModel::toProfileWorkoutHistory,
+            toProfileNoteArchive = viewModel::toProfileNoteArchive,
             toProfile = viewModel::toProfile,
             // ... other callbacks
         )
@@ -129,7 +126,7 @@ private fun createChild(config: RootRouter, ctx: ComponentContext): Child = when
 public class HomeRootComponent(
     initial: HomeRouter,
     componentContext: ComponentContext,
-    private val toProfileWorkoutHistory: (DateRange) -> Unit,
+    private val toProfileNoteArchive: (DateRange) -> Unit,
     // ... other constructor callbacks
 ) : BaseComponent<HomeRootDirection>(componentContext) {
 
@@ -148,7 +145,7 @@ public class HomeRootComponent(
         is HomeRouter.Home -> Child.Home(
             HomeComponent(
                 componentContext = context,
-                toProfileWorkoutHistory = toProfileWorkoutHistory,
+                toProfileNoteArchive = toProfileNoteArchive,
                 back = viewModel::onBack,
             )
         )
@@ -156,7 +153,7 @@ public class HomeRootComponent(
 }
 ```
 
-Each child component takes a `toProfileWorkoutHistory: (DateRange) -> Unit` lambda in its constructor. The `back` lambda emits `<Feature>RootDirection.Back`, which `eventListener` maps to `close.invoke()` (the lambda received from `RootComponent.createChild`).
+Each child component takes a `toProfileNoteArchive: (DateRange) -> Unit` lambda in its constructor. The `back` lambda emits `<Feature>RootDirection.Back`, which `eventListener` maps to `close.invoke()` (the lambda received from `RootComponent.createChild`).
 
 ### 6. Use the callback in the originating ViewModel
 
@@ -166,7 +163,7 @@ internal class HomeOverviewViewModel(
 ) : BaseViewModel<HomeOverviewState, HomeOverviewDirection, HomeOverviewLoader>(...), HomeOverviewContract {
 
     override fun onChartClick(range: DateRange) {
-        navigateTo(HomeOverviewDirection.OpenWorkoutHistory(range))
+        navigateTo(HomeOverviewDirection.OpenNoteArchive(range))
     }
 }
 ```
@@ -176,7 +173,7 @@ internal class HomeOverviewViewModel(
 ```kotlin
 internal class HomeOverviewComponent(
     componentContext: ComponentContext,
-    private val toProfileWorkoutHistory: (DateRange) -> Unit,
+    private val toProfileNoteArchive: (DateRange) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<HomeOverviewDirection>(componentContext) {
 
@@ -185,7 +182,7 @@ internal class HomeOverviewComponent(
     override suspend fun eventListener(direction: HomeOverviewDirection) {
         when (direction) {
             HomeOverviewDirection.Back -> back.invoke()
-            is HomeOverviewDirection.OpenWorkoutHistory -> toProfileWorkoutHistory(direction.range)
+            is HomeOverviewDirection.OpenNoteArchive -> toProfileNoteArchive(direction.range)
         }
     }
     // ...
@@ -196,12 +193,12 @@ internal class HomeOverviewComponent(
 
 ```
 HomeOverviewViewModel.onChartClick(range)
-  → navigateTo(HomeOverviewDirection.OpenWorkoutHistory(range))
-    → HomeOverviewComponent.eventListener(direction) → toProfileWorkoutHistory(range)
-      → (lambda) RootViewModel.toProfileWorkoutHistory(range)
-        → navigateTo(RootDirection.OpenProfileWorkoutHistory(range))
-          → RootComponent.eventListener(direction) → navigation.push(RootRouter.Profile(ProfileRouter.WorkoutHistory(range)))
-            → ProfileRootComponent.createChild — opens the WorkoutHistory screen
+  → navigateTo(HomeOverviewDirection.OpenNoteArchive(range))
+    → HomeOverviewComponent.eventListener(direction) → toProfileNoteArchive(range)
+      → (lambda) RootViewModel.toProfileNoteArchive(range)
+        → navigateTo(RootDirection.OpenProfileNoteArchive(range))
+          → RootComponent.eventListener(direction) → navigation.push(RootRouter.Profile(ProfileRouter.NoteArchive(range)))
+            → ProfileRootComponent.createChild — opens the NoteArchive screen
 ```
 
 Verbose? Yes. But every step is **explicit** — no shared global event bus, no service locator.

@@ -1,16 +1,16 @@
 # Add a Dialog (Bottom Sheet)
 
-How to add a new dialog feature — e.g. `:ui-dialog-features:rating-picker`.
+How to add a new dialog feature — e.g. `:ui-dialog-features:tag-picker`.
 
 ## Steps
 
 ### 1. Add the module to `settings.gradle.kts`
 
 ```kotlin
-include(":ui-dialog-features:rating-picker")
+include(":ui-dialog-features:tag-picker")
 ```
 
-### 2. Create `:ui-dialog-features:rating-picker/build.gradle.kts`
+### 2. Create `:ui-dialog-features:tag-picker/build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -21,7 +21,7 @@ plugins {
 }
 
 kotlin {
-    android { namespace = "com.<org>.<product>.rating.picker" }
+    android { namespace = "com.<org>.<product>.tag.picker" }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
@@ -40,86 +40,86 @@ kotlin {
 
 ### 3. Create the seven MVI files
 
-`src/commonMain/kotlin/com/<org>/<product>/rating/picker/RatingPickerState.kt`:
+`src/commonMain/kotlin/com/<org>/<product>/tag/picker/TagPickerState.kt`:
 
 ```kotlin
 @Immutable
-public data class RatingPickerState(
-    val current: Int = 3,
+public data class TagPickerState(
+    val current: String = "",
 )
 ```
 
 State takes default constructor values; do not declare a `companion object Empty` on State (Empty belongs on `Contract`).
 
-`RatingPickerDirection.kt`:
+`TagPickerDirection.kt`:
 
 ```kotlin
-public sealed interface RatingPickerDirection : BaseDirection {
-    public data class BackWithResult(val value: Int) : RatingPickerDirection
-    public data object Back : RatingPickerDirection
+public sealed interface TagPickerDirection : BaseDirection {
+    public data class BackWithResult(val value: String) : TagPickerDirection
+    public data object Back : TagPickerDirection
 }
 ```
 
-`RatingPickerLoader.kt`:
+`TagPickerLoader.kt`:
 
 ```kotlin
 @Immutable
-internal sealed interface RatingPickerLoader : BaseLoader
+internal sealed interface TagPickerLoader : BaseLoader
 ```
 
-`RatingPickerContract.kt`:
+`TagPickerContract.kt`:
 
 ```kotlin
 @Immutable
-internal interface RatingPickerContract {
-    fun onValueChange(value: Int)
+internal interface TagPickerContract {
+    fun onValueChange(value: String)
     fun onApplyClick()
     fun onCloseClick()
 
     @Immutable
-    companion object Empty : RatingPickerContract {
-        override fun onValueChange(value: Int) = Unit
+    companion object Empty : TagPickerContract {
+        override fun onValueChange(value: String) = Unit
         override fun onApplyClick() = Unit
         override fun onCloseClick() = Unit
     }
 }
 ```
 
-`RatingPickerViewModel.kt`:
+`TagPickerViewModel.kt`:
 
 ```kotlin
-internal class RatingPickerViewModel(
-    initial: Int,
-) : BaseViewModel<RatingPickerState, RatingPickerDirection, RatingPickerLoader>(
-    RatingPickerState(current = initial),
-), RatingPickerContract {
+internal class TagPickerViewModel(
+    initial: String,
+) : BaseViewModel<TagPickerState, TagPickerDirection, TagPickerLoader>(
+    TagPickerState(current = initial),
+), TagPickerContract {
 
-    override fun onValueChange(value: Int) {
+    override fun onValueChange(value: String) {
         update { it.copy(current = value) }
     }
 
     override fun onApplyClick() {
-        navigateTo(RatingPickerDirection.BackWithResult(state.value.current))
+        navigateTo(TagPickerDirection.BackWithResult(state.value.current))
     }
 
     override fun onCloseClick() {
-        navigateTo(RatingPickerDirection.Back)
+        navigateTo(TagPickerDirection.Back)
     }
 }
 ```
 
-`RatingPickerComponent.kt`:
+`TagPickerComponent.kt`:
 
 ```kotlin
-public class RatingPickerComponent(
+public class TagPickerComponent(
     componentContext: ComponentContext,
-    private val initial: Int,
-    private val onResult: (Int) -> Unit,
+    private val initial: String,
+    private val onResult: (String) -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<RatingPickerDirection>(componentContext) {
+) : BaseComponent<TagPickerDirection>(componentContext) {
 
-    override val viewModel: RatingPickerViewModel = componentContext.retainedInstance {
-        RatingPickerViewModel(initial = initial)
+    override val viewModel: TagPickerViewModel = componentContext.retainedInstance {
+        TagPickerViewModel(initial = initial)
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onCloseClick)
@@ -128,10 +128,10 @@ public class RatingPickerComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: RatingPickerDirection) {
+    override suspend fun eventListener(direction: TagPickerDirection) {
         when (direction) {
-            is RatingPickerDirection.BackWithResult -> onResult.invoke(direction.value)
-            RatingPickerDirection.Back -> back.invoke()
+            is TagPickerDirection.BackWithResult -> onResult.invoke(direction.value)
+            TagPickerDirection.Back -> back.invoke()
         }
     }
 
@@ -139,21 +139,21 @@ public class RatingPickerComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        RatingPickerScreen(state.value, loaders.value, viewModel)
+        TagPickerScreen(state.value, loaders.value, viewModel)
     }
 }
 ```
 
 The Component is `public class` (dialog Components are entry points the shared `DialogContentComponent` builds — they cross the module boundary). It declares a single `back: () -> Unit` and an `onResult: (T) -> Unit`; `Direction` carries the result via `BackWithResult(value)`, while plain `Back` covers user-initiated dismissals (close button, back gesture).
 
-`RatingPickerScreen.kt`:
+`TagPickerScreen.kt`:
 
 ```kotlin
 @Composable
-internal fun RatingPickerScreen(
-    state: RatingPickerState,
-    loaders: ImmutableSet<RatingPickerLoader>,
-    contract: RatingPickerContract,
+internal fun TagPickerScreen(
+    state: TagPickerState,
+    loaders: ImmutableSet<TagPickerLoader>,
+    contract: TagPickerContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
@@ -161,7 +161,7 @@ internal fun RatingPickerScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.rating_picker_title),
+        text = AppTokens.strings.res(Res.string.tag_picker_title),
         style = AppTokens.typography.h2(),
         color = AppTokens.colors.text.primary,
         textAlign = TextAlign.Center,
@@ -190,18 +190,18 @@ internal fun RatingPickerScreen(
 
 @AppPreview
 @Composable
-private fun RatingPickerScreenPreview() {
+private fun TagPickerScreenPreview() {
     PreviewContainer {
-        RatingPickerScreen(
-            state = RatingPickerState(current = 4),
+        TagPickerScreen(
+            state = TagPickerState(current = "tag-id-1"),
             loaders = persistentSetOf(),
-            contract = RatingPickerContract.Empty,
+            contract = TagPickerContract.Empty,
         )
     }
 }
 ```
 
-Module namespace follows the existing dialog convention: `com.<org>.<product>.ui.dialog.features.rating.picker` (reference repo prepends `ui.dialog.features.` to every dialog module).
+Module namespace follows the existing dialog convention: `com.<org>.<product>.ui.dialog.features.tag.picker` (reference repo prepends `ui.dialog.features.` to every dialog module).
 
 ### 4. Add the `DialogConfig` subtype in `:ui-dialog-features:dialog-api`
 
@@ -220,19 +220,19 @@ public sealed class DialogConfig(
     // ... other subtypes
 
     @Serializable
-    public data class RatingPicker(
-        val initial: Int,
-        @Transient val onResult: (Int) -> Unit = { },
+    public data class TagPicker(
+        val initial: String,
+        @Transient val onResult: (String) -> Unit = { },
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true,
     ) {
-        override val key: String get() = buildKey("RatingPicker", initial)
+        override val key: String get() = buildKey("TagPicker", initial)
     }
 }
 ```
 
-`onDismiss` and `dismissBySwipe` are `open` so subtypes can override them at construction (e.g. `dismissBySwipe = false` for blocking sheets like `StartTraining`). `buildKey` is `protected` — call it from subtype `get()` only.
+`onDismiss` and `dismissBySwipe` are `open` so subtypes can override them at construction (e.g. `dismissBySwipe = false` for blocking sheets that must complete a flow before dismissal). `buildKey` is `protected` — call it from subtype `get()` only.
 
 ### 5. Wire it in `DialogContentComponent.createChild` (in `:shared`)
 
@@ -241,8 +241,8 @@ public sealed class DialogConfig(
 ```kotlin
 private fun createChild(router: DialogConfig, context: ComponentContext): Child = when (router) {
     // ... other branches
-    is DialogConfig.RatingPicker -> Child.RatingPicker(
-        RatingPickerComponent(
+    is DialogConfig.TagPicker -> Child.TagPicker(
+        TagPickerComponent(
             componentContext = context,
             initial = router.initial,
             onResult = { value -> viewModel.onBack { router.onResult.invoke(value) } },
@@ -253,32 +253,32 @@ private fun createChild(router: DialogConfig, context: ComponentContext): Child 
 
 internal sealed class Child(open val component: BaseComponent<*>) {
     // ...
-    data class RatingPicker(override val component: RatingPickerComponent) : Child(component)
+    data class TagPicker(override val component: TagPickerComponent) : Child(component)
 }
 ```
 
-### 6. Add `:ui-dialog-features:rating-picker` to `:shared/build.gradle.kts`
+### 6. Add `:ui-dialog-features:tag-picker` to `:shared/build.gradle.kts`
 
 ```kotlin
 sourceSets.commonMain.dependencies {
     // ...
-    implementation(projects.uiDialogFeatures.ratingPicker)
+    implementation(projects.uiDialogFeatures.tagPicker)
 }
 ```
 
 ### 7. Use the dialog from any ViewModel
 
 ```kotlin
-internal class FeedbackViewModel(
+internal class NoteEditorViewModel(
     private val dialogController: DialogController,
-) : BaseViewModel<...>(...), FeedbackContract {
+) : BaseViewModel<...>(...), NoteEditorContract {
 
-    override fun onChangeRatingClick() {
+    override fun onPickTagClick() {
         dialogController.show(
-            DialogConfig.RatingPicker(
-                initial = state.value.rating,
-                onResult = { newRating ->
-                    update { it.copy(rating = newRating) }
+            DialogConfig.TagPicker(
+                initial = state.value.selectedTagId,
+                onResult = { newTagId ->
+                    update { it.copy(selectedTagId = newTagId) }
                 }
             )
         )
@@ -305,7 +305,7 @@ Run, trigger the dialog, confirm result callback fires.
 
 - **`onResult` not marked `@Transient`.** Lambdas can't serialize; build fails or process death drops the callback.
 - **`initial` not declared as a regular field.** Inputs are serialized so the picker resumes with the same starting value.
-- **`buildKey` collisions.** Two configs with the same key are treated as the same dialog. Include enough discriminator data (e.g. `buildKey("RatingPicker", initial, screenId)`).
+- **`buildKey` collisions.** Two configs with the same key are treated as the same dialog. Include enough discriminator data (e.g. `buildKey("TagPicker", initial, screenId)`).
 - **Forgetting to wire in `DialogContentComponent.createChild`.** Showing the config crashes at runtime.
 - **Wrapping in `Column { ... }` or using `Toolbar` / `BottomSheetToolbar`.** No existing dialog ships a toolbar — the reference convention is `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))` with a `Spacer(AppTokens.dp.dialog.top)`, a centered title `Text`, the body, then `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding is `AppTokens.dp.dialog.horizontalPadding`, not `contentPadding.content`.
 - **Inventing a `DialogController.dismiss()` call from inside the picker.** `DialogController` only exposes `show(config)`. Closing the sheet is the host's job — emit `Direction.BackWithResult(value)` (or plain `Direction.Back`); the wiring in `DialogContentComponent.createChild` translates that into `viewModel.onBack { router.onResult.invoke(value) }`, which dismisses the sheet and then fires the host callback.

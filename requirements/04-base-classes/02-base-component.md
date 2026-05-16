@@ -79,7 +79,7 @@ override suspend fun eventListener(direction: LoginDirection) {
 ```
 
 - `when (direction) { ... }` over every `Direction` subtype — the compiler enforces exhaustiveness because `sealed interface`.
-- Each branch maps to a constructor-injected lambda (`back`, `toRegistration`, `toHome`, `toCreateProfile`) **or** to a nav operation on this Component's own `StackNavigation` (if it's a stack-owning feature root like `TrainingComponent`, where `eventListener` calls `navigation.push(...)` / `navigation.replaceAll(...)` / `navigation.pop()`).
+- Each branch maps to a constructor-injected lambda (`back`, `toRegistration`, `toHome`, `toCreateProfile`) **or** to a nav operation on this Component's own `StackNavigation` (if it's a stack-owning feature root like `NotesComponent`, where `eventListener` calls `navigation.push(...)` / `navigation.replaceAll(...)` / `navigation.pop()`).
 - `eventListener` is `suspend` — you can call `dialogController.show(...)` or any suspend function inside, though most cases just call a lambda.
 
 ## `Render`
@@ -96,14 +96,14 @@ Idiomatic body:
 override fun Render() {
     val state = viewModel.state.collectAsStateMultiplatform()
     val loaders = viewModel.loaders.collectAsStateMultiplatform()
-    ProfileBodyScreen(state.value, loaders.value, viewModel)
+    NoteDetailScreen(state.value, loaders.value, viewModel)
 }
 ```
 
 - Use `collectAsStateMultiplatform()` (not `collectAsState`): on Android it uses `collectAsStateWithLifecycle` (lifecycle-aware); on iOS it falls back to `collectAsState`. Defined in `:ui-core:foundation/platform`.
 - The Screen function receives `state.value`, `loaders.value`, and `viewModel` (since the VM implements the Contract).
 
-For Components that own a `ChildStack`/`ChildSlot` (e.g. `RootComponent`, the bare-name feature roots `ProfileComponent`/`AuthComponent`/`TrainingComponent`, and the `Root`-suffixed `HomeRootComponent`/`TrainingsRootComponent`), `Render()` also collects the stack/slot and delegates rendering to its feature-root Screen. The Screen receives `this` (the component) so it can read `component.childStack` and pass it to `ChildStack(...)`:
+For Components that own a `ChildStack`/`ChildSlot` (e.g. `RootComponent`, a bare-name feature root like `ProfileComponent`, or a `Root`-suffixed root like `NotesRootComponent` when the first sub-screen would collide with the feature name), `Render()` also collects the stack/slot and delegates rendering to its feature-root Screen. The Screen receives `this` (the component) so it can read `component.childStack` and pass it to `ChildStack(...)`:
 
 ```kotlin
 @Composable
@@ -118,11 +118,11 @@ override fun Render() {
 
 ```kotlin
 override val viewModel = componentContext.retainedInstance {
-    ProfileBodyViewModel(
+    NoteDetailViewModel(
         dialogController = getKoin().get(),
-        weightHistoryFeature = getKoin().get(),
+        noteFeature = getKoin().get(),
         userFeature = getKoin().get(),
-        updateWeightUseCase = getKoin().get(),
+        updateNoteUseCase = getKoin().get(),
         stringProvider = getKoin().get(),
         notificationManager = getKoin().get(),
     )
@@ -163,15 +163,15 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(...) {
 Usage:
 
 ```kotlin
-internal class TrainingRecordingComponent(...) : BaseComponent<TrainingRecordingDirection>(...) {
+internal class NoteEditorComponent(...) : BaseComponent<NoteEditorDirection>(...) {
 
     init {
-        observeResult<Result<TrainingRouter.Exercise.Action>>(
-            key = ResultKeys.create("exercise"),
+        observeResult<Result<NotesRouter.Tag.Action>>(
+            key = ResultKeys.create("tag"),
             onResult = {
                 when (val action = it.data) {
-                    is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
-                    is TrainingRouter.Exercise.Action.Remove -> viewModel.onDeleteExercise(action.id)
+                    is NotesRouter.Tag.Action.Sync -> viewModel.updateTag(action.tag)
+                    is NotesRouter.Tag.Action.Remove -> viewModel.onDeleteTag(action.id)
                 }
             }
         )
@@ -235,7 +235,7 @@ internal class FooComponent(
 
 ## Root components with their own stack
 
-A feature's stack-owning Component owns a private `StackNavigation` and a `Value<ChildStack<<X>Router, Child>>`. Naming follows the bare-feature-name convention by default — `AuthComponent` (`:authorization`), `ProfileComponent` (`:profile`), `TrainingComponent` (`:training`). The `<Feature>RootComponent` suffix is reserved for the two features whose first sub-screen would collide with the feature name — `HomeRootComponent` (`:home`, first sub-screen is `HomeComponent`) and `TrainingsRootComponent` (`:trainings`, first sub-screen is `TrainingsComponent`). The single-screen `DebugComponent` (`:debug`) has no inner stack at all. Stack-owning feature-root Components are **`public class`** (they're constructed from `:shared`, across module boundaries):
+A feature's stack-owning Component owns a private `StackNavigation` and a `Value<ChildStack<<X>Router, Child>>`. Naming follows the bare-feature-name convention by default (e.g. `ProfileComponent` for `:profile`). The `<Feature>RootComponent` suffix is reserved for features whose first sub-screen would collide with the feature name — e.g. `NotesRootComponent` for `:notes`, whose first sub-screen is `NotesComponent`. A single-screen feature (no inner stack) has no Root suffix. Stack-owning feature-root Components are **`public class`** (they're constructed from `:shared`, across module boundaries):
 
 ```kotlin
 public class ProfileComponent(
@@ -268,8 +268,8 @@ public class ProfileComponent(
     )
 
     private fun createChild(router: ProfileRouter, context: ComponentContext): Child = when (router) {
-        ProfileRouter.Body -> Child.ProfileBody(
-            ProfileBodyComponent(componentContext = context, back = viewModel::onBack)
+        ProfileRouter.Overview -> Child.Overview(
+            ProfileOverviewComponent(componentContext = context, back = viewModel::onBack)
         )
         ProfileRouter.Settings -> Child.Settings(
             ProfileSettingsComponent(componentContext = context, back = viewModel::onBack)
@@ -285,7 +285,7 @@ public class ProfileComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class ProfileBody(override val component: ProfileBodyComponent) : Child(component)
+        data class Overview(override val component: ProfileOverviewComponent) : Child(component)
         data class Settings(override val component: ProfileSettingsComponent) : Child(component)
         // ... one entry per route
     }

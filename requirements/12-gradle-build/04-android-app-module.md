@@ -174,7 +174,7 @@ Firebase is **Android-only**. The BOM aligns library versions. `:data-services:f
 
 ## Other files in `:androidApp`
 
-- **`AndroidManifest.xml`** — single `<application>` themed via `@style/Theme.Grippo`, a single `MainActivity` with the default `MAIN`/`LAUNCHER` intent filter (`launchMode = singleTop`, `configChanges = keyboardHidden|orientation|screenSize`, `windowSoftInputMode = adjustPan`). The reference repo declares **no** deeplink intent filters, **no** `<uses-permission>` entries, and **no** `<meta-data>` (the `GOOGLE_SERVER_CLIENT_ID` `manifestPlaceholder` is reserved for a future Google Sign-In `<meta-data>` element but is currently unused inside the manifest).
+- **`AndroidManifest.xml`** — single `<application>` themed via `@style/Theme.<Product>`, a single `MainActivity` with the default `MAIN`/`LAUNCHER` intent filter (`launchMode = singleTop`, `configChanges = keyboardHidden|orientation|screenSize`, `windowSoftInputMode = adjustPan`). The reference repo declares **no** deeplink intent filters, **no** `<uses-permission>` entries, and **no** `<meta-data>` (the `GOOGLE_SERVER_CLIENT_ID` `manifestPlaceholder` is reserved for a future Google Sign-In `<meta-data>` element but is currently unused inside the manifest).
 - **`google-services.json`** — Firebase config. **Per-environment** (debug/release/staging); typically gitignored except for prod.
 - **`proguard-rules.pro`** — R8 rules. Common entries: keep Decompose's reflection, keep Koin's annotations, keep kotlinx-serialization generated classes.
 - **`src/main/java/com/<org>/<product>/android/`** — `App.kt`, `MainActivity.kt`.

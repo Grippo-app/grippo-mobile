@@ -15,7 +15,7 @@ Every screen and dialog in the project follows the same MVI template: **seven fi
   <Name>Screen.kt          // @Composable internal fun (state, loaders, contract)
 ```
 
-`<Name>` is the screen/dialog name (e.g. `ProfileBody`, `WeightPicker`). Files are siblings in the same package.
+`<Name>` is the screen/dialog name (e.g. `NoteEditor`, `AmountPicker`). Files are siblings in the same package.
 
 ## Flow of data
 
@@ -44,15 +44,14 @@ ViewModel.withLoader(MyLoader.LoadingData) { feature.fetch() }
 
 ```kotlin
 @Immutable
-internal data class ProfileBodyState(
-    val user: UserState? = null,
-    val weight: WeightFormatState = WeightFormatState.Empty(),
-    val height: HeightFormatState = HeightFormatState.Empty(),
-    val history: ImmutableList<WeightHistoryState> = persistentListOf(),
+internal data class NoteEditorState(
+    val tag: TagState? = null,
+    val amount: AmountFormatState = AmountFormatState.Empty(),
+    val history: ImmutableList<NoteState> = persistentListOf(),
 )
 ```
 
-Each property has a default value, so `ProfileBodyState()` is the initial state passed to `BaseViewModel(...)` and to previews. No separate `companion object Empty` is needed.
+Each property has a default value, so `NoteEditorState()` is the initial state passed to `BaseViewModel(...)` and to previews. No separate `companion object Empty` is needed.
 
 Or, for a static/empty-data screen:
 
@@ -85,10 +84,10 @@ Rules:
 ### `<Name>Direction.kt`
 
 ```kotlin
-internal sealed interface ProfileBodyDirection : BaseDirection {
-    data object Back : ProfileBodyDirection
-    data object OpenSettings : ProfileBodyDirection
-    data class OpenWorkoutHistory(val initialRange: DateRange) : ProfileBodyDirection
+internal sealed interface NoteEditorDirection : BaseDirection {
+    data object Back : NoteEditorDirection
+    data object OpenSettings : NoteEditorDirection
+    data class OpenNoteArchive(val initialRange: DateRange) : NoteEditorDirection
 }
 ```
 
@@ -103,9 +102,9 @@ Rules:
 
 ```kotlin
 @Immutable
-internal sealed interface ProfileBodyLoader : BaseLoader {
-    @Immutable data object LoadingHistory : ProfileBodyLoader
-    @Immutable data object SavingWeight : ProfileBodyLoader
+internal sealed interface NoteEditorLoader : BaseLoader {
+    @Immutable data object LoadingHistory : NoteEditorLoader
+    @Immutable data object SavingAmount : NoteEditorLoader
 }
 ```
 
@@ -119,15 +118,15 @@ Rules:
 
 ```kotlin
 @Immutable
-internal interface ProfileBodyContract {
+internal interface NoteEditorContract {
     fun onBack()
-    fun onWeightPickerClick()
+    fun onAmountPickerClick()
     fun onSettingsClick()
     fun onApplyClick()
 
-    companion object Empty : ProfileBodyContract {
+    companion object Empty : NoteEditorContract {
         override fun onBack() = Unit
-        override fun onWeightPickerClick() = Unit
+        override fun onAmountPickerClick() = Unit
         override fun onSettingsClick() = Unit
         override fun onApplyClick() = Unit
     }
@@ -145,52 +144,52 @@ Rules:
 ### `<Name>ViewModel.kt`
 
 ```kotlin
-internal class ProfileBodyViewModel(
-    private val userFeature: UserFeature,
-    private val weightHistoryFeature: WeightHistoryFeature,
+internal class NoteEditorViewModel(
+    private val tagFeature: TagFeature,
+    private val noteFeature: NoteFeature,
     private val dialogController: DialogController,
-) : BaseViewModel<ProfileBodyState, ProfileBodyDirection, ProfileBodyLoader>(
-    ProfileBodyState(),
-), ProfileBodyContract {
+) : BaseViewModel<NoteEditorState, NoteEditorDirection, NoteEditorLoader>(
+    NoteEditorState(),
+), NoteEditorContract {
 
     init {
-        userFeature.observeUser()
-            .onEach { user -> update { it.copy(user = user) } }
+        tagFeature.observeTag()
+            .onEach { tag -> update { it.copy(tag = tag) } }
             .safeLaunch()
 
-        weightHistoryFeature.observeWeightHistory()
+        noteFeature.observeNotes()
             .onEach { history -> update { it.copy(history = history.toState()) } }
             .safeLaunch()
 
-        safeLaunch(loader = ProfileBodyLoader.LoadingHistory) {
-            weightHistoryFeature.getWeightHistory().getOrThrow()
+        safeLaunch(loader = NoteEditorLoader.LoadingHistory) {
+            noteFeature.getNotes().getOrThrow()
         }
     }
 
     override fun onBack() {
-        navigateTo(ProfileBodyDirection.Back)
+        navigateTo(NoteEditorDirection.Back)
     }
 
-    override fun onWeightPickerClick() {
-        val current = (state.value.weight as? WeightFormatState.Valid)?.value
+    override fun onAmountPickerClick() {
+        val current = (state.value.amount as? AmountFormatState.Valid)?.value
         dialogController.show(
-            DialogConfig.WeightPicker(
+            DialogConfig.AmountPicker(
                 initial = current,
                 onResult = { newValue ->
-                    update { it.copy(weight = WeightFormatState.of(newValue)) }
+                    update { it.copy(amount = AmountFormatState.of(newValue)) }
                 }
             )
         )
     }
 
     override fun onSettingsClick() {
-        navigateTo(ProfileBodyDirection.OpenSettings)
+        navigateTo(NoteEditorDirection.OpenSettings)
     }
 
     override fun onApplyClick() {
-        val weight = (state.value.weight as? WeightFormatState.Valid)?.value ?: return
-        safeLaunch(loader = ProfileBodyLoader.SavingWeight) {
-            userFeature.updateWeight(weight).getOrThrow()
+        val amount = (state.value.amount as? AmountFormatState.Valid)?.value ?: return
+        safeLaunch(loader = NoteEditorLoader.SavingAmount) {
+            noteFeature.updateAmount(amount).getOrThrow()
         }
     }
 }
@@ -199,7 +198,7 @@ internal class ProfileBodyViewModel(
 Rules:
 
 - `internal class`, extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
-- Constructor takes only `Feature` / `UseCase` / `Controller` types — **no** raw services (`GrippoApi`, `Database`, ...).
+- Constructor takes only `Feature` / `UseCase` / `Controller` types — **no** raw services (`<Product>Api`, `Database`, ...).
 - Initial state in the `BaseViewModel` constructor.
 - `init { }` block: subscribe to `Flow`s using `.safeLaunch()` (extension); kick off any initial loads with `safeLaunch(loader = ...) { ... }`.
 - Mutate state via `update { it.copy(...) }`. Never assign to a `var`.
@@ -212,26 +211,26 @@ See `04-base-classes/01-base-viewmodel.md` for the full `BaseViewModel` API.
 ### `<Name>Component.kt`
 
 ```kotlin
-internal class ProfileBodyComponent(
+internal class NoteEditorComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
     private val toSettings: () -> Unit,
-    private val toWorkoutHistory: (DateRange) -> Unit,
-) : BaseComponent<ProfileBodyDirection>(componentContext) {
+    private val toNoteArchive: (DateRange) -> Unit,
+) : BaseComponent<NoteEditorDirection>(componentContext) {
 
-    override val viewModel: ProfileBodyViewModel = componentContext.retainedInstance {
-        ProfileBodyViewModel(
-            userFeature = getKoin().get(),
-            weightHistoryFeature = getKoin().get(),
+    override val viewModel: NoteEditorViewModel = componentContext.retainedInstance {
+        NoteEditorViewModel(
+            tagFeature = getKoin().get(),
+            noteFeature = getKoin().get(),
             dialogController = getKoin().get(),
         )
     }
 
-    override suspend fun eventListener(direction: ProfileBodyDirection) {
+    override suspend fun eventListener(direction: NoteEditorDirection) {
         when (direction) {
-            ProfileBodyDirection.Back -> back()
-            ProfileBodyDirection.OpenSettings -> toSettings()
-            is ProfileBodyDirection.OpenWorkoutHistory -> toWorkoutHistory(direction.initialRange)
+            NoteEditorDirection.Back -> back()
+            NoteEditorDirection.OpenSettings -> toSettings()
+            is NoteEditorDirection.OpenNoteArchive -> toNoteArchive(direction.initialRange)
         }
     }
 
@@ -239,7 +238,7 @@ internal class ProfileBodyComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileBodyScreen(state.value, loaders.value, viewModel)
+        NoteEditorScreen(state.value, loaders.value, viewModel)
     }
 }
 ```
@@ -256,14 +255,14 @@ Rules:
 
 ```kotlin
 @Composable
-internal fun ProfileBodyScreen(
-    state: ProfileBodyState,
-    loaders: ImmutableSet<ProfileBodyLoader>,
-    contract: ProfileBodyContract,
+internal fun NoteEditorScreen(
+    state: NoteEditorState,
+    loaders: ImmutableSet<NoteEditorLoader>,
+    contract: NoteEditorContract,
 ) {
     BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.screen)) {
         Toolbar(
-            title = AppTokens.strings.res(Res.string.profile_body_title),
+            title = AppTokens.strings.res(Res.string.<key>),
             leading = Leading.Back(onClick = contract::onBack),
         )
 
@@ -273,17 +272,16 @@ internal fun ProfileBodyScreen(
 
 @AppPreview
 @Composable
-private fun ProfileBodyScreenPreview() {
+private fun NoteEditorScreenPreview() {
     PreviewContainer {
-        ProfileBodyScreen(
-            state = ProfileBodyState(
-                weight = WeightFormatState.of(72f),
-                height = HeightFormatState.of(180),
-                history = stubWeightHistoryList(),
-                user = stubUser(),
+        NoteEditorScreen(
+            state = NoteEditorState(
+                amount = AmountFormatState.of(72.0),
+                history = stubNotes(),
+                tag = stubTag(),
             ),
             loaders = persistentSetOf(),
-            contract = ProfileBodyContract.Empty,
+            contract = NoteEditorContract.Empty,
         )
     }
 }

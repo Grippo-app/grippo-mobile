@@ -179,8 +179,8 @@ public data class AppNotification(
 )
 
 public sealed class NotificationKey(public open val key: Int) {
-    public data object ChangeWeight : NotificationKey(1)
-    public data object FinishWorkout : NotificationKey(2)
+    // Add product-specific subtypes here, e.g.:
+    //   public data object <SomeReminder> : NotificationKey(1)
     public data class Custom(override val key: Int) : NotificationKey(key)
 }
 
@@ -252,7 +252,7 @@ The Coil singleton is installed in `App.onCreate` on Android and in the iOS entr
 ## Rules
 
 - **Toolkit modules MUST NOT depend on each other gratuitously.** Each module declares only what it genuinely needs. `:toolkit:logger` is the most-imported toolkit module; most others depend on it.
-- **No business logic.** A toolkit module is utility-only. No "Training" types, no "User" types.
+- **No business logic.** A toolkit module is utility-only. No domain types (e.g. no `<Note>` types, no `User` types).
 - **`expect/actual` over interfaces+impls** for platform-specific behavior. Use interfaces only when the platform-specific impl is non-trivial (e.g. `Connectivity`'s platform implementations differ significantly).
 - **Allowed non-toolkit dependencies are narrow:**
   - `:data-services:firebase` — for the error pipeline (`FirebaseCrashlytics.recordException(...)`).
