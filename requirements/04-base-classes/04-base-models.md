@@ -151,8 +151,8 @@ Most components leave `identifier = NoneIdentifier` (the default).
 
 | Interface | Purpose |
 |---|---|
-| `BaseDirection` | Type constraint on `BaseViewModel<S, D, L>` and `BaseComponent<D>`'s `eventListener` |
-| `BaseLoader` | Type constraint on `BaseViewModel<S, D, L>`; ensures only @Immutable types in loaders |
+| `BaseDirection` | Type constraint on `BaseViewModel<STATE, DIRECTION, LOADER>` and `BaseComponent<DIRECTION>`'s `eventListener` |
+| `BaseLoader` | Type constraint on `BaseViewModel<STATE, DIRECTION, LOADER>`; ensures only @Immutable types in loaders |
 | `BaseRouter` | Documents that a sealed class is a navigation router; aids discovery in IDE |
 | `BaseResult` | Type constraint on `ResultKey<T>`; ensures only safe-to-channel types are sent |
 

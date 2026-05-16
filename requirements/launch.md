@@ -324,7 +324,7 @@ If both succeed, the foundation is complete.
 
 ## Step 13 — write `CLAUDE.md`
 
-**Precondition.** If you copied `requirements/` from a reference KMP repo (e.g. grippo-mobile), check the new project's root for an existing `CLAUDE.md`. If one is present, delete it — the file you write in this step REPLACES it. Two CLAUDE.md files at the same scope create contradictory rules; Claude Code loads both and applies them in arbitrary order.
+**Precondition.** If you copied `requirements/` from a reference KMP repo, check the new project's root for an existing `CLAUDE.md`. If one is present, delete it — the file you write in this step REPLACES it. Two CLAUDE.md files at the same scope create contradictory rules; Claude Code loads both and applies them in arbitrary order.
 
 ```bash
 [ -f CLAUDE.md ] && rm CLAUDE.md

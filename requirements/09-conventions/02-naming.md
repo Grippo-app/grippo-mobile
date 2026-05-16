@@ -26,7 +26,7 @@ One file = one top-level declaration, unless tightly-coupled.
 | Feature impl | `<X>FeatureImpl` | `NoteFeatureImpl` |
 | Repository interface | `<X>Repository` | `NoteRepository` |
 | Repository impl | `<X>RepositoryImpl` | `NoteRepositoryImpl` |
-| Use case | `<Verb><Noun>UseCase` (or `<Noun>UseCase` when a single verb fits poorly — see Functions row below) | `DeleteNoteUseCase`, `UpdateNoteUseCase`, `CreateProfileUseCase` (verb-noun); `NoteDigestUseCase`, `NoteSummaryUseCase` (noun-only) |
+| Use case | `<Verb><Noun>UseCase` (or `<Noun>UseCase` when a single verb fits poorly — see Functions row below) | `DeleteNoteUseCase`, `UpdateNoteUseCase`, `CreateUserUseCase` (verb-noun); `NoteDigestUseCase`, `NoteSummaryUseCase` (noun-only) |
 | Koin module | `<X>FeatureModule` / `<X>Module` | `NoteFeatureModule`, `BackendModule` |
 | DTO response | `<X>Response` | `NoteResponse` |
 | DTO body | `<X>Body` | `NoteBody`, `EmailAuthBody` |

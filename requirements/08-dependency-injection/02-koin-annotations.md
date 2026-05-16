@@ -6,11 +6,11 @@ In `KoinAnnotationConventionPlugin` (`:build-logic/convention`):
 
 ```kotlin
 extensions.getByType<KspExtension>().apply {
-    arg("KOIN_CONFIG_CHECK", "false")  // TODO wait until next version of Koin Annotations
+    arg("KOIN_CONFIG_CHECK", "false")
 }
 ```
 
-`KOIN_CONFIG_CHECK = false` disables a sanity check that doesn't yet handle some Koin Annotations 2.3.1 cases. This is a temporary workaround — re-enable when the upstream issue is fixed.
+`KOIN_CONFIG_CHECK = false` disables a sanity check that does not yet handle every Koin Annotations case the project relies on. Re-enable once the upstream issue you hit is fixed; if it never bites you, leave it off.
 
 KSP generated sources land at `build/generated/ksp/metadata/commonMain/kotlin`. The convention plugin adds this as a `commonMain` source root:
 

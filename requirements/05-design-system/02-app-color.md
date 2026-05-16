@@ -99,7 +99,7 @@ public interface ButtonColors {
 }
 ```
 
-The structure stays mostly **two levels deep** — `AppTokens.colors.button.backgroundPrimary1`, `AppTokens.colors.text.primary`. A handful of groups (`profile.experience.beginner`, `example.category.compound`, `charts.ring.success.indicator`) go three levels for sub-domains; don't go deeper than three — flatten when in doubt.
+The structure stays mostly **two levels deep** — `AppTokens.colors.button.backgroundPrimary1`, `AppTokens.colors.text.primary`. A handful of groups (e.g. `<feature>.<group>.<state>`, `charts.ring.success.indicator`) go three levels for sub-domains; don't go deeper than three — flatten when in doubt.
 
 ## Light vs dark theme
 

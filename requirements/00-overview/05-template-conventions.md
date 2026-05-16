@@ -65,7 +65,7 @@ Templatized form: **"Note archive"** — adds a `ProfileNoteArchiveScreen` to `:
 - Files: `ProfileNoteArchive{Component, ViewModel, Contract, State, Direction, Loader, Screen}.kt`
 - Cross-feature entry: from `:ui-screen-features:home` (`HomeRootComponent` exposes `toNoteArchive: () -> Unit`).
 
-The recipe steps are identical; only the names change. The four files that share this example MUST be rewritten in a single coordinated pass (cross-file consistency). The templatize loop flags this work but does NOT auto-patch it; finish it with one manual cleanup prompt at the end.
+The four files that share this example were rewritten in a single coordinated pass during the templatize-convergence cleanup; chapters now use the "Note archive" form consistently.
 
 ## 4. Format-state policy
 
@@ -179,8 +179,6 @@ The reference word `Grippo` is leakage in chapter files but legitimate in:
 
 The loop genericizes chapter content. It does NOT:
 
-- Rename `.md` files (e.g. `06-data-layer/03-grippo-api-and-dtos.md` → `03-product-api-and-dtos.md`). Flag; handle in the final cleanup prompt.
-- Rewrite the cross-file worked example (§3). Flag; handle in the final cleanup prompt.
 - Reorganize chapters or move content between files.
 - Touch `00-overview/03-project-config.md` frontmatter — those are the per-project values, not template content.
 - Touch live code under `:shared`, `:data-services`, etc. — that's the actual Grippo project.

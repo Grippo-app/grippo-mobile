@@ -247,7 +247,7 @@ Slim horizontal progress bar reading colors from `AppTokens.colors.charts.indica
 
 ## `Chip`
 
-Small tag — typically used in filter rows. The reference repo's `Chip` is more configurable than a simple `label + selected + onClick`; it carries a sealed `ChipLabel` / `ChipTrailing` / `ChipStype` family so a single component can render text, icon-only, or custom-trailing chips with or without a click handler. The base `Chip` is fully parameter-driven (no defaults beyond `modifier`) — colors and brush are passed in by the domain-specific wrapper:
+Small tag — typically used in filter rows. The reference repo's `Chip` is more configurable than a simple `label + selected + onClick`; it carries a sealed `ChipLabel` / `ChipTrailing` / `ChipStyle` family so a single component can render text, icon-only, or custom-trailing chips with or without a click handler. The base `Chip` is fully parameter-driven (no defaults beyond `modifier`) — colors and brush are passed in by the domain-specific wrapper:
 
 ```kotlin
 @Composable
@@ -255,7 +255,7 @@ public fun Chip(
     modifier: Modifier = Modifier,
     label: ChipLabel,
     value: String,
-    stype: ChipStype,
+    style: ChipStyle,
     trailing: ChipTrailing,
     size: ChipSize,
     textColor: Color,
@@ -279,13 +279,13 @@ public fun Chip(
     @Stable public data class Content(val lambda: @Composable () -> Unit) : ChipTrailing
 }
 
-@Stable public sealed interface ChipStype {   // sic — this is the typo'd name in the reference repo
-    @Stable public data object Default : ChipStype
-    @Stable public data class Clickable(val onClick: () -> Unit) : ChipStype
+@Stable public sealed interface ChipStyle {
+    @Stable public data object Default : ChipStyle
+    @Stable public data class Clickable(val onClick: () -> Unit) : ChipStyle
 }
 ```
 
-Pass `stype = ChipStype.Clickable { ... }` to make a chip interactive; otherwise it renders as a static tag. Domain-specific variants (`NoteChip`, `TagChip`, `CategoryChip`, ...) live next to `Chip.kt`, pick `textColor`/`iconColor`/`brush` from `AppTokens.colors.*`, and call the base `Chip(...)`.
+Pass `style = ChipStyle.Clickable { ... }` to make a chip interactive; otherwise it renders as a static tag. Domain-specific variants (`NoteChip`, `TagChip`, `CategoryChip`, ...) live next to `Chip.kt`, pick `textColor`/`iconColor`/`brush` from `AppTokens.colors.*`, and call the base `Chip(...)`.
 
 ## Selectable cards
 

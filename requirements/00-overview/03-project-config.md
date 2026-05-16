@@ -6,7 +6,7 @@ backendHost: <product-domain>.com
 applicationId: com.<org>.<product>.android
 iosFrameworkName: shared
 iosEnabled: true
-firebaseEnabled: false
+firebaseEnabled: true
 codexEnabled: auto
 prelaunch: true
 supportedLocales:
@@ -19,6 +19,8 @@ diHandWrittenModules: []
 > **Fresh-project state.** Every value in the frontmatter above is a placeholder or a neutral default. Before invoking any sub-agent (`orchestrator`, builders, validators), replace every `<placeholder>` with project-specific values per `requirements/launch.md` Step 1.5. Empty arrays (`featuresWithRootComponentSuffix: []`, `diHandWrittenModules: []`) stay empty until the project actually needs them — sub-agents update them on demand.
 
 # Project config — single source of truth
+
+Replace every value in the frontmatter above before the first bootstrap. Placeholders use the same syntax as `00-overview/05-template-conventions.md` §1.
 
 Sub-agents under `requirements/sub-agents/` read this file before acting. When you bootstrap a new project from these requirements, copy this file and update every value.
 

@@ -6,7 +6,7 @@ This folder contains the system requirements for a new Kotlin Multiplatform (KMP
 
 - Each top-level folder is a **chapter**. Folders are numbered for reading order; files inside each folder are also numbered.
 - Files are written as normative requirements: "module X **MUST** depend on Y", "every screen **MUST** consist of seven files", etc. Where a rule has a stated trade-off, the trade-off is named.
-- All Kotlin code in the documents is a **reference implementation**, not a literal copy-paste target. Replace `com.grippo.*` package roots, `Grippo` class prefixes, and domain types (Training, Exercise, etc.) with the new project's names.
+- All Kotlin code in the documents is a **reference implementation**, not a literal copy-paste target. Substitute the placeholders (`<Product>`, `<org>`, `<product>`, `<product-domain>`, `com.<org>.<product>`) with the new project's values per the Replacement checklist below and per `00-overview/05-template-conventions.md` §1.
 - Where the reference repo has an **intentional inconsistency** (e.g. dotted directory names in some legacy modules), the document calls it out — new code should follow the modern convention.
 
 ## Index

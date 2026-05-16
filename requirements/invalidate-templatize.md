@@ -78,8 +78,8 @@ For every remaining hit, classify per `05-template-conventions.md`:
 | Format infrastructure list | "must exist" list naming product FormatStates | Remove product entries; keep only §4.1 (§4.3) |
 | Module list | Concrete feature/entity enumerations (12-item areas table, 16-entity Database list) | `<feature>` / `<Entity>Entity` placeholders per §5 |
 | Component-name leakage | `WeightHistoryChart`, `MuscleLoadHeatmap` in design-system examples | `<Entity>Chart`, `<Entity>Heatmap` per §6 |
-| Worked-example leakage | `ProfileWorkoutHistory*`, "Workout history" prose | **FLAG, do not patch** (cross-file rewrite — §3 & §9 of conventions) |
-| File-rename hint | `03-grippo-api-and-dtos.md` filename refs | **FLAG, do not patch** (§9 of conventions) |
+| Worked-example leakage | `ProfileWorkoutHistory*`, "Workout history" prose | **Historical — completed in convergence pass; future passes treat as substitution if encountered** (cross-file rewrite — §3 & §9 of conventions) |
+| File-rename hint | `03-grippo-api-and-dtos.md` filename refs | **Historical — completed in convergence pass; future passes treat as substitution if encountered** (§9 of conventions) |
 | Resource-key leakage | `Res.string.weight_*`, `notification_weight_*`, `Deeplink.WeightHistory` | `Res.string.<key>`, `Deeplink.<Name>` placeholders |
 | Stub function | `stubTraining()`, `stubWeightHistoryList()` | `stubNote()`, `stubNotes()` |
 
@@ -191,6 +191,4 @@ Lowest count wins. Ties → table order. After each pass, the agent increments c
 
 ## Coordination with other invalidates
 
-- `invalidate.md` and `invalidate-sub.md` are PAUSED while this loop runs. Resume them only after every row here has converged.
-- When this loop reports a substitution that makes a chapter *structurally* wrong (rather than just stylistically generic), that's evidence the chapter's architectural content was also stale — flag it for the next chapter audit (`invalidate.md`) to handle after templatize finishes.
-- The final cleanup prompt (separate, manual one-shot) handles: the cross-file "Note archive" worked example rewrite (§3 of conventions) and the `06-data-layer/03-grippo-api-and-dtos.md` → `03-product-api-and-dtos.md` rename (§9 of conventions). Do NOT include those in this loop.
+Post-convergence: the pause on `invalidate.md` and `invalidate-sub.md` is lifted, and the final cleanup (Note-archive cross-file rewrite, `06-data-layer/03-grippo-api-and-dtos.md` → `03-product-api-and-dtos.md` rename, and `RatingPicker` → `TagPicker`) has been applied. Future passes of this loop only need to catch new leakage that drifts in.

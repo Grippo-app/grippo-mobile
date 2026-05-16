@@ -86,7 +86,7 @@ private fun NoteDetailScreenPreview() {
     PreviewContainer {
         NoteDetailScreen(
             state = NoteDetailState(
-                amount = AmountFormatState(value = 72.0, unit = "kg"),
+                amount = AmountFormatState(value = 72.0, unit = "unit"),
                 history = stubNotes(),
                 user = stubUser(),
             ),

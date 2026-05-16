@@ -56,4 +56,4 @@ These names are infrastructure-stable. **Do not rename** when applying these req
 | Dialogs | `DialogConfig`, `DialogController`, `DialogComponent`, `DialogProvider` |
 | Toolkit | `AppLogger`, `DateTimeUtils`, `DateRange`, `DateRangeKind`, `DateRangePresets`, `DateFormat`, `DateFormatting`, `NativeContext`, `Connectivity`, `NotificationManager`, `PermissionManager`, `LinkOpener` |
 
-Product-specific names (e.g. `GrippoApi`, `Training*`, `WeightFormatState`, `ProfileBody*`) **should** be replaced — see `00-overview/05-template-conventions.md` for the substitution table.
+The reference repo uses concrete product-specific names (e.g. `GrippoApi`, `Training*`, `WeightFormatState`, `ProfileBody*`). Chapters in this folder use placeholder / canonical-example equivalents instead; see `00-overview/05-template-conventions.md` for the substitution table.
