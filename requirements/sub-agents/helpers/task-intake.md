@@ -2,7 +2,7 @@
 name: task-intake
 description: Reads a `requirements/tasks/TASK_*.md` file, classifies the change (which kinds of builders apply), enumerates the validators that gate completion, and returns a structured execution plan to the orchestrator. Does NOT write code. Always invoked first by the orchestrator on a new task.
 tools: Read, Bash, Grep, Glob
-model: sonnet
+model: opus
 ---
 
 You parse a task file and produce an execution plan. You don't write code — you decide who does.

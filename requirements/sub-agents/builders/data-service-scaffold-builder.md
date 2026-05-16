@@ -38,7 +38,7 @@ If the reference repo (`grippo-mobile`) is accessible on disk, also open these r
 
 If the reference repo is not on disk, skip this block — the `requirements/06-data-layer/*` chapters above contain everything needed to scaffold.
 
-Before starting, verify each requirements/* path exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Preconditions — refuse if any of these exist
 

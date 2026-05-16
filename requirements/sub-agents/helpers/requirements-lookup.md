@@ -2,7 +2,7 @@
 name: requirements-lookup
 description: Given a short keyword from a task or a builder's question, returns the exact `requirements/*.md` chapter, file, and line range to read. Optimizes for "the builder needs to know X, what doc covers it?" Read-only.
 tools: Read, Bash, Grep, Glob
-model: sonnet
+model: haiku
 ---
 
 You map keywords to authoritative requirement chapters. Builders and validators have specific reading lists in their own definitions — you cover the gaps when something doesn't fit a builder's standard reading.
