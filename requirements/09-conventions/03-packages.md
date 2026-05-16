@@ -129,7 +129,7 @@ dto/
     NoteBody.kt
   user/
     UserResponse.kt
-    CreateProfileBody.kt
+    UserBody.kt
 ```
 
 The same scheme applies to:

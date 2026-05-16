@@ -18,13 +18,12 @@ public interface AppColor {
     public val brand: BrandColors
     public val icon: IconColors
     public val toggle: ToggleColors
-    public val muscle: MuscleColors        // product-specific (rename per product)
     public val segment: SegmentColors
     public val konfetti: Konfetti
     public val charts: Charts
     public val example: ExampleColors
-    public val profile: ProfileColors      // product-specific
     public val palette: PaletteColors
+    // ... product-specific groups go here (one nested interface per group)
     public val static: Static
     public val context: ContextColors
     public val selectableCardColors: SelectableCardColors
@@ -133,10 +132,10 @@ If a new slot doesn't fit any existing group, add a new group — but ask first 
 
 ## Product-specific groups
 
-The reference repo has `muscle`, `profile`, `konfetti`, `charts` — these are product-tied. When forking these requirements:
+The reference repo has product-tied groups (e.g. domain-specific palettes attached to feature pages and charts) alongside the structural groups. When forking these requirements:
 
 - Keep the **structural** groups (`button`, `input`, `background`, `dialog`, `text`, `divider`, `semantic`, `border`, `brand`, `icon`, `toggle`, `segment`, `palette`).
-- Drop or replace product-specific groups (`muscle`, `profile`).
+- Drop the reference repo's product-specific groups.
 - Add new product-specific groups as needed (`payment.success`, `tournament.banner`, ...).
 
 ## Rules

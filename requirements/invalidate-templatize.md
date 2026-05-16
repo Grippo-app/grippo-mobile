@@ -168,24 +168,24 @@ Lowest count wins. Ties → table order. After each pass, the agent increments c
 | Row | Count | Last audited | Leakage remaining |
 |---|---|---|---|
 | 00-overview | 2 | 2026-05-16 | 0 |
-| 01-tech-stack | 1 | 2026-05-16 | 0 |
-| 02-module-structure | 1 | 2026-05-16 | 1 |
-| 03-architecture-patterns | 1 | 2026-05-16 | 1 |
-| 04-base-classes | 1 | 2026-05-16 | 0 |
-| 05-design-system | 1 | 2026-05-16 | 0 |
-| 06-data-layer | 1 | 2026-05-16 | 1 |
+| 01-tech-stack | 2 | 2026-05-16 | 0 |
+| 02-module-structure | 2 | 2026-05-16 | 0 |
+| 03-architecture-patterns | 2 | 2026-05-16 | 0 |
+| 04-base-classes | 2 | 2026-05-16 | 0 |
+| 05-design-system | 2 | 2026-05-16 | 0 |
+| 06-data-layer | 2 | 2026-05-16 | 0 |
 | 07-mappers | 1 | 2026-05-16 | 0 |
 | 08-dependency-injection | 1 | 2026-05-16 | 0 |
-| 09-conventions | 1 | 2026-05-16 | 0 |
+| 09-conventions | 2 | 2026-05-16 | 0 |
 | 10-toolkit | 1 | 2026-05-16 | 0 |
 | 11-state-and-formatters | 1 | 2026-05-16 | 0 |
 | 12-gradle-build | 1 | 2026-05-16 | 0 |
 | 13-anti-patterns | 1 | 2026-05-16 | 0 |
-| 14-cookbook | 2 | 2026-05-16 | 116 |
-| sub-agents | 1 | 2026-05-16 | 23 |
-| tasks | 1 | 2026-05-16 | 1 |
+| 14-cookbook | 3 | 2026-05-16 | 0 |
+| sub-agents | 2 | 2026-05-16 | 0 |
+| tasks | 2 | 2026-05-16 | 0 |
 
-Round complete when every row's Leakage remaining is 0 AND every FLAGGED finding has been resolved (worked-example rewrite + file rename done in the final cleanup prompt).
+**Converged 2026-05-16.** All rows at Leakage remaining = 0. Final cleanup applied: "Workout history" worked example rewritten to "Note archive" across the four §3 files (plus `07-add-resource.md`, `tasks/README.md`, `sub-agents/README.md`); `06-data-layer/03-grippo-api-and-dtos.md` renamed to `03-product-api-and-dtos.md` with all references updated; `RatingPicker` rewritten to `TagPicker` in `14-cookbook/02-add-dialog.md`. Residual hits in `00-overview/03-project-config.md`, `00-overview/05-template-conventions.md`, `requirements/README.md`, and `00-overview/04-glossary.md` line 59 are documented substitution-table exceptions per §8 of conventions.
 
 ---
 

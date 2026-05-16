@@ -30,11 +30,11 @@ This folder contains the system requirements for a new Kotlin Multiplatform (KMP
 ### UI
 
 - `05-design-system/` — `AppTokens`, color/dp/typography tokens, theme, preview.
-- `11-state-and-formatters/` — `UiText`, `*FormatState` (email/password/weight/height/duration/volume/date/date-range).
+- `11-state-and-formatters/` — `UiText`, `*FormatState` (email/password/name/date/date-range/amount).
 
 ### Data
 
-- `06-data-layer/` — Ktor `BackendClient`, `TokenProvider` (mutex + retry), `GrippoApi` (single-file flat API), DTOs (all-nullable convention), Room database, entities + `*Pack` (`@Embedded`+`@Relation`), migrations, DataStore.
+- `06-data-layer/` — Ktor `BackendClient`, `TokenProvider` (mutex + retry), `<Product>Api` (single-file flat API), DTOs (all-nullable convention), Room database, entities + `*Pack` (`@Embedded`+`@Relation`), migrations, DataStore.
 - `07-mappers/` — seven directional mapper modules, null-friendly mapping pattern.
 
 ### Utilities
@@ -54,7 +54,7 @@ This folder contains the system requirements for a new Kotlin Multiplatform (KMP
 
 ## Reference project
 
-The reference implementation lives at `/Users/maxvoitenko/Projects/Pet/grippo-mobile`. When in doubt, **read the reference code** — it is the ground truth. These documents are a high-fidelity summary, not a replacement.
+These requirements were extracted from a working KMP project. When in doubt, **read working code from that reference** as the ground truth. These documents are a high-fidelity summary, not a replacement.
 
 ## Replacement checklist (before applying to a new project)
 

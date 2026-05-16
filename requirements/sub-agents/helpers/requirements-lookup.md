@@ -20,7 +20,7 @@ You map keywords to authoritative requirement chapters. Builders and validators 
 | Decompose, ChildStack, StackNavigation, SlotNavigation | `03-architecture-patterns/02-decompose-navigation.md` |
 | Dialog, DialogConfig, DialogController, BottomSheet | `03-architecture-patterns/03-dialog-navigation.md` + `14-cookbook/02-add-dialog.md` |
 | BackendClient, TokenProvider, Auth | `06-data-layer/01-backend-client.md` + `06-data-layer/02-token-provider.md` |
-| `<Product>Api` (flat API class), DTO, @SerialName, all-nullable | `06-data-layer/03-grippo-api-and-dtos.md` |
+| `<Product>Api` (flat API class), DTO, @SerialName, all-nullable | `06-data-layer/03-product-api-and-dtos.md` |
 | Database, @Database, exportSchema | `06-data-layer/04-database.md` |
 | @Entity, @Dao, @Pack, @Embedded, @Relation | `06-data-layer/04-database.md` + `06-data-layer/05-room-entities-and-packs.md` |
 | Room migration, schema bump, fallbackToDestructiveMigration | `06-data-layer/06-room-migrations.md` + `14-cookbook/05-add-room-migration.md` |

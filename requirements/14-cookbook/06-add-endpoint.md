@@ -49,7 +49,7 @@ public data class NotificationReadBody(
 )
 ```
 
-Rules: see `06-data-layer/03-grippo-api-and-dtos.md`.
+Rules: see `06-data-layer/03-product-api-and-dtos.md`.
 
 ### 3. Add the method to `<Product>Api`
 

@@ -18,7 +18,7 @@ Before writing any code, read in order:
 3. `requirements/02-module-structure/02-dependency-rules.md` — the strict directional graph (UI does NOT depend on `:data-services:*`; only `:data-features:*` and `:shared` do).
 4. `requirements/06-data-layer/01-backend-client.md` — full `BackendClient` shape: Ktor plugins, `defaultRequest`, `invoke(method, path, body, queryParams)`.
 5. `requirements/06-data-layer/02-token-provider.md` — full `TokenProvider` shape: `AuthProvider` impl, refresh mutex, `retryWithBackoff`, `AuthCircuitBreaker`, `RefreshUnauthorizedException`.
-6. `requirements/06-data-layer/03-grippo-api-and-dtos.md` — flat `<Product>Api` shape with section comments and the private `request<T>` helper.
+6. `requirements/06-data-layer/03-product-api-and-dtos.md` — flat `<Product>Api` shape with section comments and the private `request<T>` helper.
 7. `requirements/06-data-layer/04-database.md` — `Database` shape, `DatabaseConstructor`, `DatabaseBuilder` (expect/actual on Android + iOS), `fallbackToDestructiveMigration(dropAllTables = true)` policy.
 8. `requirements/06-data-layer/07-datastore.md` (if it exists in the reference repo, but **not required to scaffold** — DataStore is a separate module touched only when needed).
 9. `requirements/13-anti-patterns/01-forbidden-patterns.md` — data-layer forbidden patterns.
@@ -304,7 +304,7 @@ Body is verbatim from `requirements/06-data-layer/02-token-provider.md` with two
 
 **Important caveat — placeholder DTOs and DAOs:** `TokenProvider` references `RefreshBody`, `TokenResponse`, `TokenDao`, `UserActiveDao`, `TokenEntity`. These do not yet exist in a freshly-bootstrapped project. You have two options; pick (a):
 
-- **(a) Stub the auth DTOs + the token DAOs in this scaffold** so the file compiles. Write the minimum viable stubs in their canonical locations (`data-services/backend/.../dto/auth/RefreshBody.kt`, `TokenResponse.kt`; `data-services/database/.../entity/TokenEntity.kt`, `UserActiveEntity.kt`; `data-services/database/.../dao/TokenDao.kt`, `UserActiveDao.kt`). The DTOs follow `requirements/06-data-layer/03-grippo-api-and-dtos.md` rules (all-nullable + `@SerialName`). The entities follow `requirements/06-data-layer/05-room-entities-and-packs.md`. The DAOs follow `requirements/06-data-layer/04-database.md`. These six files are the **only** content you write that is not pure infrastructure — they are required because `TokenProvider` is load-bearing and cannot be installed without them. Mark each of the six in the "Files created" report with **"auth-bootstrap stub — extend or replace with `endpoint-builder` / `room-migration-builder` as the auth flow is implemented."**
+- **(a) Stub the auth DTOs + the token DAOs in this scaffold** so the file compiles. Write the minimum viable stubs in their canonical locations (`data-services/backend/.../dto/auth/RefreshBody.kt`, `TokenResponse.kt`; `data-services/database/.../entity/TokenEntity.kt`, `UserActiveEntity.kt`; `data-services/database/.../dao/TokenDao.kt`, `UserActiveDao.kt`). The DTOs follow `requirements/06-data-layer/03-product-api-and-dtos.md` rules (all-nullable + `@SerialName`). The entities follow `requirements/06-data-layer/05-room-entities-and-packs.md`. The DAOs follow `requirements/06-data-layer/04-database.md`. These six files are the **only** content you write that is not pure infrastructure — they are required because `TokenProvider` is load-bearing and cannot be installed without them. Mark each of the six in the "Files created" report with **"auth-bootstrap stub — extend or replace with `endpoint-builder` / `room-migration-builder` as the auth flow is implemented."**
 - **(b) Stop and ask** if option (a) is undesirable. The orchestrator may prefer to split scaffolding across two builders.
 
 Default: option (a). Do not invent additional auth shape (login, register, oauth bodies, etc.) — only the **two DTOs and four DB artifacts that `TokenProvider` directly references**.
@@ -410,7 +410,7 @@ public interface UserActiveDao {
 
 Add `TokenEntity::class` and `UserActiveEntity::class` to the `entities = [...]` list in step 6's `Database.kt`. Add abstract accessor methods `tokenDao()` and `userActiveDao()` to `Database`. Add `@Single` provider methods to `DatabaseModule` for both DAOs (step 8).
 
-`ClientLogger.kt` is verbatim from `requirements/06-data-layer/03-grippo-api-and-dtos.md` (the "ClientLogger" section), with the package adjusted to `<productPackage>.services.backend.client`.
+`ClientLogger.kt` is verbatim from `requirements/06-data-layer/03-product-api-and-dtos.md` (the "ClientLogger" section), with the package adjusted to `<productPackage>.services.backend.client`.
 
 ### 6. Write `Database.kt`
 

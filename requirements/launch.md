@@ -27,11 +27,11 @@ Goal: produce a project that builds green on both Android and iOS (XCFramework) 
 
 Ask the user (via clarifying questions) the following:
 
-1. **Product name** (e.g. `pulse`). This replaces `grippo` everywhere — package root, root project name, namespace prefix.
+1. **Product name** (e.g. `pulse`). Fills the `<product>` / `<Product>` placeholders everywhere — package root, root project name, namespace prefix.
 2. **Organization name** (e.g. `acme`). Used for the package root: `com.acme.pulse.*`. Skip if single-org (`com.pulse.*`).
 3. **Backend host** (e.g. `pulse-app.com`) for `BackendClient.defaultRequest.host`. If not yet known, use a placeholder and mark with a TODO.
 4. **Application ID** for Google Play (e.g. `com.acme.pulse.android`). Convention: `<package-root>.android`.
-5. **First product domain** to model — minimal end-to-end feature (e.g. "Trainings", "Tasks", "Notes"). One entity, one feature, one screen.
+5. **First product domain** to model — minimal end-to-end feature (e.g. "Notes", "Tasks", "Bookmarks"). One entity, one feature, one screen.
 6. **Locales to support** (e.g. `en`, `uk`). At least one (`en`).
 7. **Auth methods** (any combination of: email/password, Google Sign-In, Apple Sign-In, or skip for now).
 8. **Firebase** — enabled or skipped? (If enabled, the agent will scaffold the placeholders but leave actual `google-services.json` for the user.)
@@ -205,7 +205,7 @@ Implement `:design-system:preview`:
 
 `:data-services:backend`:
 
-- `BackendClient`, `TokenProvider`, `ClientLogger`, `GrippoApi` (rename to `<Product>Api`).
+- `BackendClient`, `TokenProvider`, `ClientLogger`, `<Product>Api`.
 - Minimal DTOs: `TokenResponse`, `RefreshBody`, plus the first product's response (e.g. `TaskResponse`).
 - `BackendModule`.
 
@@ -317,7 +317,7 @@ Optionally also fill in `requirements/00-overview/03-project-config.md` with the
 ## Constraints
 
 - **Build green at every step.** If a step's verification fails, fix the issue before moving on. Don't accumulate broken modules.
-- **Use the verbatim code from `requirements/`** as the starting point — rename `com.grippo` → `com.<org>.<product>` and `Grippo` → `<Product>` consistently. Don't invent new code.
+- **Use the verbatim code from `requirements/`** as the starting point — substitute the `<org>`, `<product>`, and `<Product>` placeholders consistently with the values gathered in Step 0. Don't invent new code.
 - **Follow the seven-file MVI pattern** for every screen and dialog. No shortcuts.
 - **One feature in step 8.** Don't try to scaffold multiple features in this bootstrap pass.
 - **No tests** — the requirements explicitly opt out by default. Add them as a separate task on user request.

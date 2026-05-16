@@ -64,18 +64,18 @@ Helpers and validators run **on every task** (validators are always-on invalidat
 Place task specs at `requirements/tasks/TASK_<N>_<TITLE>.md`. A task file states **what** to build, not **how** — the agents read `requirements/` for the architecture. Minimum task shape:
 
 ```markdown
-# TASK 1 — Add "Workout history" screen
+# TASK 1 — Add "Note archive" screen
 
 ## Goal
-Add a sub-screen to `:ui-screen-features:profile` showing the user's workout
-history for a configurable date range.
+Add a sub-screen to `:ui-screen-features:profile` showing an archive of the user's
+notes for a configurable date range.
 
 ## Inputs
-- Source data: `WorkoutHistoryFeature.observeWorkoutHistory(start, end)` (assume it exists).
-- Entry point: a card on `ProfileBodyScreen` already triggers `onWorkoutHistoryClick`.
+- Source data: `NoteFeature.observeNotes(start, end)` (assume it exists).
+- Entry point: a card on `ProfileOverviewScreen` already triggers `onNoteArchiveClick`.
 
 ## Acceptance
-- New route under `ProfileRouter.WorkoutHistory(initialRange: DateRange)`.
+- New route under `ProfileRouter.NoteArchive(initialRange: DateRange)`.
 - Seven MVI files following `requirements/14-cookbook/01-add-screen.md`.
 - iOS XCFramework + Android debug both build green.
 ```
@@ -85,7 +85,7 @@ The task file is the **only** thing the user has to write. The agents pull archi
 ## Triggering an execution
 
 1. Drop the task file in `requirements/tasks/`.
-2. Tell the parent Claude session: *"Run task `TASK_1_workout_history.md`."*
+2. Tell the parent Claude session: *"Run task `TASK_1_note_archive.md`."*
 3. Parent invokes `helpers/orchestrator`.
 4. Orchestrator drives the rest.
 
@@ -173,7 +173,7 @@ Option B is recommended for an active project — every edit under `requirements
 |---|---|
 | `task-intake` | Reads `requirements/tasks/TASK_*.md`, classifies the change (screen / dialog / data-feature / …), enumerates the builders and validators that apply, and returns a structured execution plan to the orchestrator. |
 | `orchestrator` | Drives the full execution loop: builders → validators → external review (Codex or internal) → fixes → repeat. The single agent the parent session invokes per task. |
-| `context-finder` | Locates the existing modules/files relevant to a task (e.g. find `ProfileComponent.kt`, `ProfileRouter.kt`, the existing `ProfileBodyState.kt` shape) so a builder doesn't have to re-grep. |
+| `context-finder` | Locates the existing modules/files relevant to a task (e.g. find `ProfileComponent.kt`, `ProfileRouter.kt`, the existing `ProfileOverviewState.kt` shape) so a builder doesn't have to re-grep. |
 | `requirements-lookup` | Given a short keyword from a task or a builder's question, returns the exact `requirements/*.md` chapter and line range to read. |
 | `codex-review-loop` | Wraps the Codex plugin's review output, classifies findings (architecture / style / bug / scope), and routes each to the right builder for the next iteration. Requires the Codex plugin; refuses to run when `codexEnabled: false` or the plugin is missing. |
 | `internal-reviewer` | Local fallback for `codex-review-loop` — runs a Claude-backed senior-reviewer pass over the current diff when the Codex plugin is unavailable (or `codexEnabled: false`). Emits the same output shape so orchestrator wiring is reviewer-agnostic. |
@@ -198,21 +198,21 @@ Each agent declares a minimal tool set in its frontmatter:
 
 Suppose you drop the following file:
 
-`requirements/tasks/TASK_1_workout_history_screen.md`:
+`requirements/tasks/TASK_1_note_archive_screen.md`:
 
 ````markdown
-# TASK 1 — Add "Workout history" screen
+# TASK 1 — Add "Note archive" screen
 
 ## Goal
-Add a sub-screen to `:ui-screen-features:profile` showing the user's workout
-history for a configurable date range.
+Add a sub-screen to `:ui-screen-features:profile` showing an archive of the user's
+notes for a configurable date range.
 
 ## Inputs
-- Source: `WorkoutHistoryFeature.observeHistory(start, end)` (assume exists).
-- Entry point: a card on `ProfileBodyScreen` already triggers `onWorkoutHistoryClick`.
+- Source: `NoteFeature.observeHistory(start, end)` (assume exists).
+- Entry point: a card on `ProfileOverviewScreen` already triggers `onNoteArchiveClick`.
 
 ## Acceptance
-- New route `ProfileRouter.WorkoutHistory(initialRange: DateRange)`.
+- New route `ProfileRouter.NoteArchive(initialRange: DateRange)`.
 - Seven MVI files following the cookbook recipe.
 - Build green on Android + iOS XCFramework.
 
@@ -220,7 +220,7 @@ history for a configurable date range.
 - Filtering, search, pagination — separate task.
 ````
 
-You ask the parent Claude session: *"Run task TASK_1_workout_history_screen.md."*
+You ask the parent Claude session: *"Run task TASK_1_note_archive_screen.md."*
 
 What happens (abbreviated):
 
@@ -228,12 +228,12 @@ What happens (abbreviated):
    - Builders: `screen-builder`.
    - Validators: all 8.
    - No blockers.
-2. **orchestrator** spawns **context-finder** with: "where is `ProfileComponent`? where is `ProfileRouter`? does `WorkoutHistoryFeature` exist?". Returns 4 file paths + signatures.
-3. **orchestrator** spawns **screen-builder** with task content + context excerpts. Builder writes 7 files in `ui-screen-features/profile/.../workouthistory/`, edits `ProfileRouter.kt`, edits `ProfileComponent.kt`. Reports done.
+2. **orchestrator** spawns **context-finder** with: "where is `ProfileComponent`? where is `ProfileRouter`? does `NoteFeature` exist?". Returns 4 file paths + signatures.
+3. **orchestrator** spawns **screen-builder** with task content + context excerpts. Builder writes 7 files in `ui-screen-features/profile/.../notearchive/`, edits `ProfileRouter.kt`, edits `ProfileComponent.kt`. Reports done.
 4. **orchestrator** runs Diff sanity check — 9 files changed, all under `ui-screen-features/profile/`. OK.
-5. **orchestrator** spawns 8 validators in parallel. `mvi-contract-validator` flags 1 finding: `ProfileWorkoutHistoryContract.Empty` is missing the `onRangeChange` no-op. `naming-convention-validator` flags the same finding (dup).
+5. **orchestrator** spawns 8 validators in parallel. `mvi-contract-validator` flags 1 finding: `ProfileNoteArchiveContract.Empty` is missing the `onRangeChange` no-op. `naming-convention-validator` flags the same finding (dup).
 6. **orchestrator** dedupes → routes 1 finding to `screen-builder`. Builder fixes. Validators re-run, all green. `build-validator`: 2/2 PASS.
-7. **orchestrator** runs Acceptance check — grep `ProfileRouter.WorkoutHistory` in changed files: hit. Acceptance bullet 1 met.
+7. **orchestrator** runs Acceptance check — grep `ProfileRouter.NoteArchive` in changed files: hit. Acceptance bullet 1 met.
 8. **orchestrator** resolves the external reviewer per `codexEnabled` + Codex detection, invokes **codex-review-loop** or **internal-reviewer**. Returns clean.
 9. **orchestrator** posts the summary, the user reviews, commits.
 

@@ -209,7 +209,7 @@ public class <Product>Api internal constructor(private val client: BackendClient
 }
 ```
 
-See `06-data-layer/03-grippo-api-and-dtos.md` for the full pattern.
+See `06-data-layer/03-product-api-and-dtos.md` for the full pattern.
 
 `:data-services:database`'s `NoteDao`:
 

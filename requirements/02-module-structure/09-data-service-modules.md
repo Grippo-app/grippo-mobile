@@ -24,7 +24,7 @@ Houses:
 - DTOs — `package com.<org>.<product>.services.backend.dto.<area>`. `@Serializable public data class <Name>Response` / `<Name>Body`. **All fields nullable + default `= null`** (defense against partial responses).
 - `BackendModule` — `@Module(includes = [HttpModule::class, DatabaseModule::class, SerializationModule::class]) @ComponentScan public class BackendModule`.
 
-See `06-data-layer/01-backend-client.md`, `06-data-layer/02-token-provider.md`, `06-data-layer/03-grippo-api-and-dtos.md` for full code.
+See `06-data-layer/01-backend-client.md`, `06-data-layer/02-token-provider.md`, `06-data-layer/03-product-api-and-dtos.md` for full code.
 
 ### Build
 

@@ -49,8 +49,8 @@ public class <Product>Api internal constructor(private val client: BackendClient
     public suspend fun deleteUser(): Result<Unit> =
         request(method = HttpMethod.Delete, path = "/users")
 
-    public suspend fun createProfile(body: CreateProfileBody): Result<UserResponse> =
-        request(method = HttpMethod.Post, path = "/users", body = body)
+    public suspend fun updateUser(body: UserBody): Result<UserResponse> =
+        request(method = HttpMethod.Put, path = "/users", body = body)
 
     /* * * * * * * * * * * * * * * * *
      *  Notes service
