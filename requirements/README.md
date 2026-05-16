@@ -49,7 +49,6 @@ This folder contains the system requirements for a new Kotlin Multiplatform (KMP
 
 ### Iteration
 
-- `invalidate.md` — instructions for a self-improvement pass over these requirements against the reference repo (or against an in-progress new project).
 - `launch.md` — the iterative prompt used to bootstrap a new project from scratch using these requirements.
 
 ## Reference project
@@ -82,18 +81,9 @@ Do **not** rename: `BaseViewModel`, `BaseComponent`, `BaseScreen`, `AppTokens`, 
 
 Per-project values (productName, locales, prelaunch flag, etc.) live in `requirements/00-overview/03-project-config.md`. Sub-agents read this file at start of every task. Edit it before bootstrapping a new project.
 
-## What ships to a new project (and what does not)
+## What ships to a new project
 
 `requirements/` is the portable package — copy this entire folder to a new KMP project's root and follow `launch.md`. Everything inside `requirements/` is project-agnostic (after applying `launch.md` Step 1.5 substitutions).
-
-The following files at the **reference repo's root** are local maintenance tooling for this repo, NOT part of the requirements package. Do **not** copy them to a new project unless you specifically want to fork the audit/templatize tooling:
-
-- `SETUP_TEMPLATIZE.md` — one-shot setup that initialised the templatize conventions in this repo; already applied, never re-run.
-- `SUBAGENTS_TODO_PROMPTS.md` — historical log of prompts applied to evolve `requirements/sub-agents/`.
-- `SUBAGENTS_HOURLY_AUDIT.md` — self-healing audit pipeline for this repo's sub-agents drift.
-- `LAUNCH_READINESS_FIXES.md` — pre-bootstrap fix prompts for this repo before forking.
-
-The companion `requirements/invalidate.md`, `requirements/invalidate-sub.md`, and `requirements/invalidate-templatize.md` ARE portable — they're audit prompts the new project can use to keep its own `requirements/` aligned with its evolving code.
 
 ## Sub-agents — install before first use
 

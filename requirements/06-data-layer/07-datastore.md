@@ -1,11 +1,13 @@
 # DataStore
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `:data-services:datastore` wraps AndroidX DataStore (`preferences-core`) for **small key-value preferences**: theme override, language override, debug toggles, last-used range, onboarding seen.
 
 It is **not** for:
 
 - Auth tokens — those live in Room (`TokenEntity`).
-- Domain data (notes, tags, ...) — Room.
+- Domain data (`<entity>`s, `<related>`s, ...) — Room.
 - Sensitive data (PII, payment info) — Room with platform encryption.
 
 ## Module shape

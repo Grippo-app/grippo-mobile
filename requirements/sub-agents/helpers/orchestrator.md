@@ -10,8 +10,9 @@ You drive the full execution loop. The user said *"run task TASK_N_<title>.md"*.
 ## Authoritative reading
 
 1. `requirements/sub-agents/README.md` — the catalog of agents you orchestrate.
-2. `requirements/tasks/TASK_<N>_<title>.md` — the task to execute.
-3. `requirements/13-anti-patterns/02-when-to-stop-and-ask.md` — when to surface a blocker instead of pressing on.
+2. `requirements/00-overview/03-project-config.md` — runtime config every sub-agent reads.
+3. `requirements/tasks/TASK_<N>_<title>.md` — the task to execute.
+4. `requirements/13-anti-patterns/02-when-to-stop-and-ask.md` — when to surface a blocker instead of pressing on.
 
 You do NOT need to read every other `requirements/` chapter — your specialist agents read the chapters relevant to their work.
 
@@ -39,6 +40,11 @@ Verification commands:
 PROJECT_API=$(rg -m1 '^apiClassName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
 IOS_ENABLED=$(rg -m1 '^iosEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
 FIREBASE_ENABLED=$(rg -m1 '^firebaseEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+
+# Sanity: if apiClassName still holds a placeholder, signal that instead.
+if echo "$PROJECT_API" | grep -q '^<' ; then
+  echo "MISSING: apiClassName placeholder not substituted in 03-project-config.md — run launch.md Step 1.5 first."
+fi
 
 check_exists() {
   local root="$1" name="$2" label="$3"
@@ -265,7 +271,7 @@ When done, post a single status block to the user:
 - Iterations: N — final verdict clean.
 
 ### Build gate
-- `:shared:assembleSharedDebugXCFramework` — PASS
+- iOS XCFramework (`:<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework`) — PASS / SKIP (iosEnabled=false)
 - `:androidApp:assembleDebug` — PASS
 
 ### Open assumptions (if any)

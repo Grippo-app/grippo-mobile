@@ -119,23 +119,7 @@ Caveat: it's the same model family as the rest of the pipeline, so it does **not
 
 ## Installing the agent definitions
 
-These markdown files are written in the standard Claude Code sub-agent format (YAML frontmatter + body). To make them discoverable as `subagent_type` values:
-
-```bash
-# Option A: copy into the project's local agents directory
-mkdir -p .claude/agents
-cp -R requirements/sub-agents/builders/*.md .claude/agents/
-cp -R requirements/sub-agents/validators/*.md .claude/agents/
-cp -R requirements/sub-agents/helpers/*.md .claude/agents/
-
-# Option B: symlink so edits stay in one place
-mkdir -p .claude/agents
-ln -sf "$(pwd)/requirements/sub-agents/builders/"*.md .claude/agents/
-ln -sf "$(pwd)/requirements/sub-agents/validators/"*.md .claude/agents/
-ln -sf "$(pwd)/requirements/sub-agents/helpers/"*.md .claude/agents/
-```
-
-Option B is recommended for an active project — every edit under `requirements/sub-agents/` propagates immediately.
+These markdown files are written in the standard Claude Code sub-agent format (YAML frontmatter + body). To make them discoverable as `subagent_type` values, follow the install instructions in `requirements/README.md` section "Sub-agents — install before first use". The symlink form is recommended for active projects — edits under `requirements/sub-agents/` propagate immediately.
 
 ## Agent inventory
 
@@ -165,7 +149,7 @@ Option B is recommended for an active project — every edit under `requirements
 | `di-validator` | `@Single(binds = [...])`, `@Module @ComponentScan`, module registered in `:shared/Koin.kt`. | `08-dependency-injection/*` |
 | `compose-stability-validator` | `@Immutable` on state, `ImmutableList`/`ImmutableSet`, no `mutableStateOf` for logical state, no inline `dp`/`sp`/colors outside design-system. | `09-conventions/04-compose-rules.md`, `13-anti-patterns/01-forbidden-patterns.md` |
 | `data-layer-validator` | DTO all-nullable + default `= null`, Repository returns domain (never DTO), mappers via `:data-mappers:*`, range reconciliation, `AppLogger.Mapping.log` in DTO→Entity. | `06-data-layer/*`, `07-mappers/*` |
-| `build-validator` | `./gradlew :shared:assembleSharedDebugXCFramework` and `./gradlew :androidApp:assembleDebug` both green. | n/a — runs Gradle directly. |
+| `build-validator` | iOS XCFramework assemble (task name derived from `iosFrameworkName`, gated by `iosEnabled`) and `./gradlew :androidApp:assembleDebug` both green. | n/a — runs Gradle directly. |
 
 ### Helpers
 
@@ -256,12 +240,12 @@ Agent(subagent_type: "anti-pattern-scanner", prompt: "Scan the current diff and 
 
 Use the full pipeline when the task touches the architecture (new feature, new data, schema change, cross-feature wiring).
 
-## Self-calibration
+## Mechanical lint
 
-Sub-agent prompts drift the same way requirements do — a renamed class, a moved chapter, a deprecated rule. `requirements/invalidate-sub.md` defines an iterative audit: it picks the lowest-audit-count row (agents + `lint.sh` + `tasks/README.md`), compares its claims against the live `requirements/` and codebase, applies fixes, and increments the audit log. Run hourly (or after any large requirements refactor):
+`requirements/sub-agents/lint.sh` catches mechanical drift in this folder: dead chapter-link refs, missing frontmatter fields, README inventory mismatches, orphan inventory entries, missing top-level docs. Run it after editing any sub-agent file:
 
+```bash
+bash requirements/sub-agents/lint.sh
 ```
-Feed the prompt in requirements/invalidate-sub.md to a fresh Claude session at the project root.
-```
 
-`invalidate-sub.md` is paired with `requirements/invalidate.md`, which owns the chapter audit (`requirements/00-overview/` … `14-cookbook/`). Run them independently; never concurrently. This is separate from `lint.sh` (which only catches mechanical drift like dead links, missing frontmatter, and README inventory mismatches).
+Anything beyond mechanical drift (semantic correctness, agent prompt quality, cross-agent consistency) is the user's call — review the diff like any code change.

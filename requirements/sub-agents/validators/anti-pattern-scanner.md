@@ -20,6 +20,8 @@ Files changed in the current task (added + modified). Use `git diff --name-only 
 
 ## Step 1 — run Detekt with project-specific rules
 
+> The detekt rule-set ID and package are project-specific. The reference template ships them under a generic `<product>` ID; rename to your project's value if you've forked. The anti-pattern scanner reads the SARIF output and treats any rule from the project's rule-set as a finding.
+
 Detekt is wired into the root build with a custom ruleset registered in `:tooling:detekt-rules` (RuleSet id `<product>`). The covered rules:
 
 - `DtoFieldsMustBeNullable` — every `@Serializable` val under `data-services/backend/dto/**` must be `?` typed AND default `= null`.
@@ -83,7 +85,7 @@ rg -n 'Flow<Result<' <changed-files>
 rg -n '!!\.' <changed-files>                            # blanket — review each hit; DTO field !! is a finding
 rg -n '@PrimaryKey\(autoGenerate = true\)' <changed-files>
 rg -n 'HttpClient\(\)\.request|client\.request\(' <changed-files>   # bypassing BackendClient
-rg -n 'import (android\.content\.Context|androidx\.compose\.ui\.platform\.LocalContext)' --include='**/commonMain/**' <changed-files>
+rg -n 'import (android\.content\.Context|androidx\.compose\.ui\.platform\.LocalContext)' -g '**/commonMain/**' <changed-files>
 ```
 
 For Repository files: open and verify each `override suspend fun … : Result<…>` writes to the DAO **only** inside `response.onSuccess { … }`. Speculative writes = finding.
@@ -93,7 +95,7 @@ For Repository files: open and verify each `override suspend fun … : Result<�
 ```bash
 rg -n 'module \{' <changed-files>                       # hand-DSL Koin — finding outside tests
 rg -n '@Single\b' <changed-files>                        # then check each: implements an interface? binds = [...] required
-rg -n 'getKoin\(\)\.get' --include='**/Screen.kt' <changed-files>
+rg -n 'getKoin\(\)\.get' -g '**/Screen.kt' <changed-files>
 ```
 
 For new `@Single` impls, confirm `@Single(binds = [<Interface>::class])` when implementing an interface. Bare `@Single` is fine for terminal classes that aren't interface-bound.
@@ -102,9 +104,9 @@ For new `@Single` impls, confirm `@Single(binds = [<Interface>::class])` when im
 
 ```bash
 rg -n '@Serializable' <changed-files>                   # then verify every *Router subtype has @Serializable
-rg -n 'navigation\.(push|pop|replaceAll)' --include='**/createChild*|**/Component.kt' <changed-files>
+rg -n 'navigation\.(push|pop|replaceAll)' -g '**/createChild*' -g '**/Component.kt' <changed-files>
 # ⇡ navigation calls inside createChild = finding; should be in eventListener
-rg -n 'import com\.<org>\.<product>\.<feature_a>\.' --include='ui-screen-features/<feature_b>/**' <changed-files>
+rg -n 'import com\.<org>\.<product>\.<feature_a>\.' -g 'ui-screen-features/<feature_b>/**' <changed-files>
 ```
 
 Open every changed `*Router.kt` and verify each subtype is `@Serializable` and either `data object` or `data class` (with serializable payload only — no lambdas).
@@ -129,10 +131,10 @@ For each new `*State.kt` file, verify:
 ### Build
 
 ```bash
-rg -n '"\d+\.\d+\.\d+"' --include='**/build.gradle.kts' <changed-files>   # inline version strings
-rg -n 'apply\(plugin\s*=' --include='**/build.gradle.kts' <changed-files>
-rg -n 'repositories\s*\{' --include='**/build.gradle.kts' <changed-files>  # FAIL_ON_PROJECT_REPOS
-rg -n 'compileSdk\s*=' --include='**/build.gradle.kts' <changed-files>     # already in convention
+rg -n '"\d+\.\d+\.\d+"' -g '**/build.gradle.kts' <changed-files>   # inline version strings
+rg -n 'apply\(plugin\s*=' -g '**/build.gradle.kts' <changed-files>
+rg -n 'repositories\s*\{' -g '**/build.gradle.kts' <changed-files>  # FAIL_ON_PROJECT_REPOS
+rg -n 'compileSdk\s*=' -g '**/build.gradle.kts' <changed-files>     # already in convention
 rg -n '@OptIn\([A-Za-z]+(Material3|Foundation|Coroutines|ForeignApi|Decompose)' <changed-files>
 rg -n 'mavenLocal\(\)' <changed-files>
 ```
@@ -141,7 +143,7 @@ rg -n 'mavenLocal\(\)' <changed-files>
 
 ```bash
 rg -n 'println\(' <changed-files>
-rg -n 'android\.util\.Log' --include='**/commonMain/**' <changed-files>
+rg -n 'android\.util\.Log' -g '**/commonMain/**' <changed-files>
 rg -n 'AppLogger\.General\.error.*BackendClient|TokenProvider' <changed-files>  # double logging
 ```
 
@@ -149,11 +151,22 @@ For new DTO→Entity / DTO→Domain mappers: verify each required field uses `Ap
 
 ### Resources
 
-For new `strings.xml` keys: verify every locale (`values-uk/`, `values-ru/`, …) has the same key. Missing locale entry = finding. Format placeholders must match across locales (same indices, same types).
+For new `strings.xml` keys: verify every locale listed in `supportedLocales` (from `requirements/00-overview/03-project-config.md`) has the same key. Missing locale entry = finding. Format placeholders must match across locales (same indices, same types).
+
+```bash
+LOCALES=$(awk '/^supportedLocales:/{flag=1; next} /^[a-z]/{flag=0} flag && /^  - /{print $2}' requirements/00-overview/03-project-config.md)
+for lang in $LOCALES; do
+  case "$lang" in
+    en) dir="values" ;;
+    *)  dir="values-$lang" ;;
+  esac
+  # check string key exists in $dir/strings.xml
+done
+```
 
 ### Architecture-shape (depth check on imports)
 
-For every changed file, list its imports. Cross-feature imports between `:ui-screen-features:*` modules (e.g. `:<feature-a>` importing from `:<feature-b>` — reference-repo example: `:home` importing from `:profile`) = finding. Use `:screen-api` only.
+For every changed file, list its imports. Cross-feature imports between `:ui-screen-features:*` modules (example: `:<feature-a>` importing from `:<feature-b>`) = finding. Use `:screen-api` only.
 
 ## Output format
 

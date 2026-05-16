@@ -5,7 +5,7 @@ tools: Read, Bash, Grep, Glob
 model: sonnet
 ---
 
-You verify the Koin graph. KOIN_CONFIG_CHECK is disabled in the convention plugin (TODO until next Koin Annotations release), so static verification is on us.
+You verify the Koin graph. KOIN_CONFIG_CHECK is disabled at the convention-plugin level; this validator catches the same class of issues by static scan.
 
 ## Authoritative reading
 
@@ -88,7 +88,7 @@ For each new `@Module(includes = [...])`:
 
 ### 7. Inline providers in feature-api or data-services
 
-Some platform-edge wrappers legitimately use the `module { … }` DSL outside annotated `@Single` classes. The list of explicit-exception modules lives as `diHandWrittenModules` in `requirements/00-overview/03-project-config.md` (or read off the chapter `requirements/08-dependency-injection/03-composition-root.md` if not yet captured). Reference-repo examples: `GoogleAuthModule`, `AppleAuthModule`. Do not flag any module named in `diHandWrittenModules`. Confirm by reading the chapter, then verify only that the module is included in `:shared/Koin.kt`.
+Some platform-edge wrappers legitimately use the `module { … }` DSL outside annotated `@Single` classes. The list of explicit-exception modules lives as `diHandWrittenModules` in `requirements/00-overview/03-project-config.md` (or read off the chapter `requirements/08-dependency-injection/03-composition-root.md` if not yet captured). Common examples in fresh projects: platform credential wrappers (e.g. `GoogleAuthModule`, `AppleAuthModule`) — these are legitimately allowed because they bind to platform-specific factories that Koin annotations can't express. Add the module name to `diHandWrittenModules` in `03-project-config.md` so this validator skips it. Confirm by reading the chapter, then verify only that the module is included in `:shared/Koin.kt`.
 
 ## Output format
 
@@ -101,6 +101,6 @@ Same structured findings format. Severity:
 ## What you MUST NOT do
 
 - Do not edit any file.
-- Do not flag the documented inline-provider modules — the authoritative list is `diHandWrittenModules` in `requirements/00-overview/03-project-config.md` (reference repo: `GoogleAuthModule`, `AppleAuthModule`).
+- Do not flag the documented inline-provider modules — the authoritative list is `diHandWrittenModules` in `requirements/00-overview/03-project-config.md` (common examples: `GoogleAuthModule`, `AppleAuthModule`).
 - Do not require `binds = [...]` on a `@Single` class that doesn't implement an interface — that's not a violation.
 - Do not run KOIN_CONFIG_CHECK — it's intentionally disabled in `KoinAnnotationConventionPlugin` until the next Koin Annotations release. Verification is via static read of the graph.

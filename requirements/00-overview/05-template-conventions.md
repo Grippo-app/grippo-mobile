@@ -1,8 +1,12 @@
 # Template Conventions
 
-`requirements/` is a project-agnostic template. Code blocks, example names, and module paths in chapters MUST use the placeholders defined here. Concrete reference-repo names (`GrippoApi`, `TrainingResponse`, `WeightFormatState`, ...) are template leakage and get rewritten by `invalidate-templatize.md`.
+`requirements/` is a project-agnostic template. Code blocks, example names, and module paths in chapters MUST use the placeholders defined here. Concrete reference-repo names (`GrippoApi`, `TrainingResponse`, `WeightFormatState`, ...) are template leakage and must be substituted with placeholders before forking.
 
-This file is the **single source of truth** for the templatize loop. The two regular audits (`invalidate.md`, `invalidate-sub.md`) read it to know which substitutions are intentional and must not be flagged as drift.
+This file is the **single source of truth** for placeholder names — every chapter uses these tokens.
+
+## Illustrative domain in examples
+
+Code blocks throughout these docs use `Note`, `Tag`, `User`, `NoteEntity`, `TagResponse`, `NoteDao`, `DraftNotePack`, etc. as an **illustrative `<Entity>` / `<RelatedEntity>` domain** — they are not part of the required architecture. Substitute identifiers from your own product domain. Only the abstract types (`<Feature>Component`, `<Feature>ViewModel`, `<Product>Api`, `<Entity>Entity`, etc.) are mandatory.
 
 ## 1. Slot placeholders
 

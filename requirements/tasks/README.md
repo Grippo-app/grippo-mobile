@@ -74,4 +74,4 @@ The orchestrator **always** moves the completed TASK file to `requirements/tasks
 
 If you want to discard a task without running it, delete the file before invoking the orchestrator. Once a task is in `done/`, leave it there — `task-intake` will refuse to re-run a moved file.
 
-If the task surfaced architecture drift, run `invalidate.md` to update the requirements.
+If the task surfaced architecture drift, update the relevant chapter under `requirements/<NN>-<area>/` manually.

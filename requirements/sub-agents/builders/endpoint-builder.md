@@ -36,6 +36,8 @@ Open the Swagger docs at `https://<host>/docs` (or the project-specific source o
 - Response field names, types, and **nullability** match.
 - Body field names, types, and **nullability** match.
 
+If the backend is not yet available, work from a written contract or stub the DTOs based on the task spec. The builder will not invent endpoints, but DTO shapes can be drafted ahead of backend availability.
+
 If anything diverges, stop and report — backend owns the contract.
 
 ### 2. Write the DTO(s)
@@ -126,8 +128,11 @@ You do not write mappers in this builder.
 ### 5. Verify
 
 ```bash
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 ./gradlew :data-services:backend:assemble
-./gradlew :shared:assembleSharedDebugXCFramework
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ```
 
 Both must build green.

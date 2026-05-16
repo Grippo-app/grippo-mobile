@@ -99,7 +99,7 @@ For **new** modules, dot-free directories are preferred (`com/<org>/<product>/da
 
 ```bash
 rg -n '\b(m_|s_|g_)[a-zA-Z_]' <changed-files>      # Hungarian
-rg -n '\b(WeightInteger|LocaleString)\b' <changed-files>
+rg -n '\b(AmountInteger|LocaleString)\b' <changed-files>   # nominal anti-patterns: <X>Integer, <X>String, <X>Boolean wrapping a primitive without semantic value
 rg -n '\b[A-Z]{3,}[A-Z][a-z]' <changed-files>      # acronyms in CamelCase (HTTPClient instead of HttpClient)
 rg -n '\bUtil\b|\bHelper\b' --include='**/*.kt' <changed-files>
 rg -n 'StringManager|<X>Service\b' <changed-files>

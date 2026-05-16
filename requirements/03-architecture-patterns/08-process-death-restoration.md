@@ -1,5 +1,7 @@
 # Process-Death Restoration
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 The app survives process death (Android: low-memory kill, Don't Keep Activities; iOS: backgrounded long enough to be reaped). The user returns to **the same screen, same router stack, same loaders/state where possible** — without the app reloading from scratch.
 
 This is **not** automatic. It requires the project to be careful about what it stores in routers, what is `@Serializable`, and what is held in transient memory.

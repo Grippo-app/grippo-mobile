@@ -68,7 +68,7 @@ If the field is empty or missing, stop and report `BLOCKED: supportedLocales mis
 
 ### Plurals
 
-The reference repo does not currently ship `plurals.xml`. If this is the first plural, create:
+If `plurals.xml` does not yet exist, create it:
 
 ```
 :design-system:resources:provider/src/commonMain/composeResources/values/plurals.xml
@@ -170,7 +170,7 @@ Read `typefaceFactory` from `requirements/00-overview/03-project-config.md`:
 TYPEFACE=$(rg -m1 '^typefaceFactory:' requirements/00-overview/03-project-config.md | awk '{print $2}')
 ```
 
-This is the name of the `@Composable internal fun` in `AppTypography.kt` that returns the `FontFamily`. (Reference repo uses Manrope; substitute with this project's typeface — the factory name and font filenames must match `typefaceFactory` from project-config.)
+This is the name of the `@Composable internal fun` in `AppTypography.kt` that returns the `FontFamily`. The template's default typeface example is Manrope. Use the project's typeface — the resource-builder reads `typefaceFactory` from `03-project-config.md`; the factory name and font filenames must match it.
 
 1. Drop the file:
 
@@ -185,7 +185,7 @@ This is the name of the `@Composable internal fun` in `AppTypography.kt` that re
 
    ```kotlin
    // <typefaceFactory> is a placeholder — substitute the value of `typefaceFactory`
-   // from project-config (reference repo uses `manrope`).
+   // from project-config (the template's default typeface example is `manrope`).
    @Composable
    internal fun <typefaceFactory>(): FontFamily = FontFamily(
        Font(AppFont.<family>_bold, weight = FontWeight.Bold),
@@ -203,8 +203,11 @@ This is the name of the `@Composable internal fun` in `AppTypography.kt` that re
 ## Verify
 
 ```bash
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 ./gradlew :design-system:resources:provider:assemble
-./gradlew :shared:assembleSharedDebugXCFramework
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 

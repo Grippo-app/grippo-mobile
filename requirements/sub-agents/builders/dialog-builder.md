@@ -50,11 +50,11 @@ plugins {
 }
 ```
 
-`namespace = "com.<org>.<product>.<name-with-dots>"`. `commonMain.dependencies` lists `projects.uiCore.foundation`, `projects.uiCore.state`, `projects.designSystem.{core,resources.provider,components,preview}`, `compose.foundation`, `compose.material3`, `libs.immutable.collections`.
+`namespace = "com.<org>.<product>.<name>"` (non-dotted package — e.g. `weightpicker` or `periodpicker`) is the default for new projects per `requirements/09-conventions/03-packages.md`. If the project's existing `:ui-dialog-features:*` modules already use the dotted convention (e.g. `weight.picker`, `period.picker`), keep consistency with them — pick one style per module group. `commonMain.dependencies` lists `projects.uiCore.foundation`, `projects.uiCore.state`, `projects.designSystem.{core,resources.provider,components,preview}`, `compose.foundation`, `compose.material3`, `libs.immutable.collections`.
 
 ### 3. Create the seven MVI files
 
-Inside `src/commonMain/kotlin/com/<org>/<product>/<name-with-dots>/`:
+Inside `src/commonMain/kotlin/com/<org>/<product>/<name>/` (non-dotted package directory is the default; mirror the legacy dotted form `<name-with-dots>` only if existing siblings already use it):
 
 - `<Name>State.kt` — `@Immutable public data class` (dialog state is `public` so the host `DialogContentComponent.createChild` can construct it indirectly via the Component). **Defaults in primary constructor**; no `Empty` on State.
 - `<Name>Direction.kt` — `public sealed interface … : BaseDirection`. MUST include both `BackWithResult(val value: <Output>) : <Name>Direction` and `Back : <Name>Direction`. `BackWithResult` carries the user's accepted value; `Back` covers close-button / back-gesture dismissals.
@@ -110,7 +110,10 @@ sourceSets.commonMain.dependencies {
 ### 7. Verify
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 

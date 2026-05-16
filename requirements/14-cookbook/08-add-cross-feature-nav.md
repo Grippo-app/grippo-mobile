@@ -1,5 +1,7 @@
 # Add Cross-Feature Navigation
 
+> **Concrete example.** The example task and identifiers below (`Note archive`, `tag-picker`, etc.) are illustrative; the recipe steps apply to any feature you build with this template.
+
 How to navigate from a screen in one `:ui-screen-features:*` module to a screen in another — e.g. open a profile screen from a home screen.
 
 Direct feature-to-feature imports are **forbidden**. The mechanism uses `:ui-screen-features:screen-api` for type-safe routes and constructor-injected callbacks for the actual navigation.

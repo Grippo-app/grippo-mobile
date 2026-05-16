@@ -1,5 +1,7 @@
 # Room Migrations
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 Migrations are first-class **infrastructure**. They live in `:data-services:database/migrations`, are collected in `DatabaseMigrations.all`, and are tested per platform (Android + iOS). Adding or modifying a migration is a deliberate, separate task — never bundled into a feature PR.
 
 ## File structure
@@ -34,12 +36,12 @@ internal object Migration4To5 : Migration(4, 5) {
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL("PRAGMA defer_foreign_keys = ON")
 
-        // ─── draft_note ──────────────────────────────────────────────────────
+        // ─── draft_<entity> ──────────────────────────────────────────────────
         connection.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS `draft_note_new` (
+            CREATE TABLE IF NOT EXISTS `draft_<entity>_new` (
                 `id` TEXT NOT NULL,
-                `noteId` TEXT,
+                `<entity>Id` TEXT,
                 `profileId` TEXT NOT NULL,
                 `title` TEXT NOT NULL,
                 PRIMARY KEY(`id`),
@@ -49,40 +51,40 @@ internal object Migration4To5 : Migration(4, 5) {
         )
         connection.execSQL(
             """
-            INSERT INTO `draft_note_new` (`id`, `noteId`, `profileId`, `title`)
-            SELECT `id`, `noteId`, `profileId`, `title` FROM `draft_note`
+            INSERT INTO `draft_<entity>_new` (`id`, `<entity>Id`, `profileId`, `title`)
+            SELECT `id`, `<entity>Id`, `profileId`, `title` FROM `draft_<entity>`
             """.trimIndent()
         )
-        connection.execSQL("DROP TABLE `draft_note`")
-        connection.execSQL("ALTER TABLE `draft_note_new` RENAME TO `draft_note`")
+        connection.execSQL("DROP TABLE `draft_<entity>`")
+        connection.execSQL("ALTER TABLE `draft_<entity>_new` RENAME TO `draft_<entity>`")
 
-        // ─── draft_tag ───────────────────────────────────────────────────────
+        // ─── draft_<related> ─────────────────────────────────────────────────
         connection.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS `draft_tag_new` (
+            CREATE TABLE IF NOT EXISTS `draft_<related>_new` (
                 `id` TEXT NOT NULL,
-                `noteId` TEXT NOT NULL,
+                `<entity>Id` TEXT NOT NULL,
                 `categoryId` TEXT NOT NULL,
                 `createdAt` TEXT NOT NULL,
                 PRIMARY KEY(`id`),
-                FOREIGN KEY(`noteId`) REFERENCES `draft_note`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                FOREIGN KEY(`<entity>Id`) REFERENCES `draft_<entity>`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
             )
             """.trimIndent()
         )
         connection.execSQL(
             """
-            INSERT INTO `draft_tag_new` (`id`, `noteId`, `categoryId`, `createdAt`)
-            SELECT `id`, `noteId`, `categoryId`, `createdAt` FROM `draft_tag`
+            INSERT INTO `draft_<related>_new` (`id`, `<entity>Id`, `categoryId`, `createdAt`)
+            SELECT `id`, `<entity>Id`, `categoryId`, `createdAt` FROM `draft_<related>`
             """.trimIndent()
         )
-        connection.execSQL("DROP TABLE `draft_tag`")
-        connection.execSQL("ALTER TABLE `draft_tag_new` RENAME TO `draft_tag`")
+        connection.execSQL("DROP TABLE `draft_<related>`")
+        connection.execSQL("ALTER TABLE `draft_<related>_new` RENAME TO `draft_<related>`")
 
         connection.execSQL(
-            "CREATE INDEX IF NOT EXISTS `index_draft_tag_noteId` ON `draft_tag` (`noteId`)"
+            "CREATE INDEX IF NOT EXISTS `index_draft_<related>_<entity>Id` ON `draft_<related>` (`<entity>Id`)"
         )
         connection.execSQL(
-            "CREATE INDEX IF NOT EXISTS `index_draft_tag_categoryId` ON `draft_tag` (`categoryId`)"
+            "CREATE INDEX IF NOT EXISTS `index_draft_<related>_categoryId` ON `draft_<related>` (`categoryId`)"
         )
     }
 }

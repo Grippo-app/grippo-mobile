@@ -1,5 +1,7 @@
 # Add a Screen
 
+> **Concrete example.** The example task and identifiers below (`Note archive`, `tag-picker`, etc.) are illustrative; the recipe steps apply to any feature you build with this template.
+
 How to add a new sub-screen inside an existing feature module — e.g. a "Note archive" screen in `:ui-screen-features:profile`.
 
 ## Steps

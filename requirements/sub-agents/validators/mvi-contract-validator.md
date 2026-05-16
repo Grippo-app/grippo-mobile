@@ -50,7 +50,20 @@ The seven-file check (Step 2 below) compares this listing — not the git diff �
 
 ### 2. The seven-file checklist
 
-For each candidate directory from Step 1, verify the listing contains all seven files matching the pattern below. For a screen/dialog feature `<F><S>`, the package MUST contain exactly:
+```bash
+# Read featuresWithRootComponentSuffix list from project config.
+SUFFIXED_FEATURES=$(awk '/^featuresWithRootComponentSuffix:/{
+  # Single-line array form: featuresWithRootComponentSuffix: [a, b, c]
+  if (match($0, /\[(.*)\]/, m)) {
+    gsub(/[ ,"]/, " ", m[1]); print m[1]; exit
+  }
+  flag=1; next
+} /^[a-z]/{flag=0} flag && /^  - /{print $2}' requirements/00-overview/03-project-config.md)
+```
+
+For features listed in `featuresWithRootComponentSuffix`, the feature-root file is named `<Feature>RootComponent.kt` (instead of `<Feature>Component.kt`) — and similarly `<Feature>RootScreen.kt`, `<Feature>RootViewModel.kt`, etc. Apply the seven-file pattern with the `Root` suffix for those features. The other six files keep their normal names.
+
+For each candidate directory from Step 1, verify the listing contains all seven files matching the pattern below. For a screen `<F><S>` (or `<F>Root<S>` if `<F>` is in `featuresWithRootComponentSuffix`), the package MUST contain exactly:
 
 | File | Class shape |
 |---|---|

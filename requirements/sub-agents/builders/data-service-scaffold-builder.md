@@ -20,25 +20,12 @@ Before writing any code, read in order:
 5. `requirements/06-data-layer/02-token-provider.md` — full `TokenProvider` shape: `AuthProvider` impl, refresh mutex, `retryWithBackoff`, `AuthCircuitBreaker`, `RefreshUnauthorizedException`.
 6. `requirements/06-data-layer/03-product-api-and-dtos.md` — flat `<Product>Api` shape with section comments and the private `request<T>` helper.
 7. `requirements/06-data-layer/04-database.md` — `Database` shape, `DatabaseConstructor`, `DatabaseBuilder` (expect/actual on Android + iOS), `fallbackToDestructiveMigration(dropAllTables = true)` policy.
-8. `requirements/06-data-layer/07-datastore.md` (if it exists in the reference repo, but **not required to scaffold** — DataStore is a separate module touched only when needed).
+8. `requirements/06-data-layer/07-datastore.md` (if it exists in the requirements set, but **not required to scaffold** — DataStore is a separate module touched only when needed).
 9. `requirements/13-anti-patterns/01-forbidden-patterns.md` — data-layer forbidden patterns.
 
-If the reference repo (`<product>-mobile`) is accessible on disk, also open these reference-repo files (read-only) as the structural source of truth. Paths use the reference repo's `com/<org>/<product>/...` layout — they are **read-only references**, not prescriptions for the new project's package layout:
+All structural patterns are described in the `requirements/06-data-layer/*` chapters listed above — read those for the canonical shapes.
 
-- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/<Product>Api.kt` — the **only** thing you copy structurally is the class shape, section-comment delimiters, and the `request<T>` helper. **Do NOT copy any endpoint methods or import any DTOs.** The new `<Product>Api` body is empty.
-- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/client/BackendClient.kt`.
-- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/client/TokenProvider.kt`.
-- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/client/ClientLogger.kt`.
-- `data-services/backend/src/commonMain/kotlin/com/<org>/<product>/services/backend/BackendModule.kt`.
-- `data-services/database/src/commonMain/kotlin/com/<org>/<product>/services/database/Database.kt`.
-- `data-services/database/src/commonMain/kotlin/com/<org>/<product>/services/database/DatabaseBuilder.kt`.
-- `data-services/database/src/androidMain/kotlin/com/<org>/<product>/services/database/DatabaseBuilder.android.kt`.
-- `data-services/database/src/iosMain/kotlin/com/<org>/<product>/services/database/DatabaseBuilder.ios.kt`.
-- `data-services/database/src/commonMain/kotlin/com/<org>/<product>/services/database/DatabaseModule.kt`.
-
-If the reference repo is not on disk, skip this block — the `requirements/06-data-layer/*` chapters above contain everything needed to scaffold.
-
-Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
+Before starting, verify each `requirements/*` chapter in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
 ## Preconditions — refuse if any of these exist
 
@@ -603,9 +590,12 @@ implementation(projects.dataServices.database)
 Run from the repo root:
 
 ```bash
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 ./gradlew :data-services:database:assemble
 ./gradlew :data-services:backend:assemble
-./gradlew :shared:assembleSharedDebugXCFramework   # skip if iosEnabled: false
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"   # skip if iosEnabled: false
 ./gradlew :androidApp:assembleDebug
 ```
 

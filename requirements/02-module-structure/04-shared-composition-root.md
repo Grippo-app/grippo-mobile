@@ -1,5 +1,7 @@
 # `:shared` — Composition Root
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `:shared` is the single module that imports **every** other module and wires them together. It is the only KMP module the app shells (`:androidApp`, `:iosApp`) need to reach.
 
 ## Responsibilities

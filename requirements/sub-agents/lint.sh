@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Verifies sub-agent files against four mechanical drift checks:
+# Verifies sub-agent files against five mechanical drift checks:
 #   1. Every chapter-style `requirements/<NN>-<area>/<NN>-<topic>.md` link
 #      points at a file that exists. Top-level refs (launch.md, README.md,
-#      invalidate.md, tasks/README.md) are NOT checked — extend the regex
-#      if their stability matters.
+#      tasks/README.md) are checked separately in Check 5.
 #   2. Every agent file has frontmatter `name`, `description`, `tools`, `model`.
 #   3. Every agent file is listed in `requirements/sub-agents/README.md`.
 #   4. Every agent named in the README inventory tables exists as a file.
+#   5. Every top-level doc referenced from sub-agent files exists at the
+#      requirements/ root (launch.md, README.md, tasks/README.md).
 set -uo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -87,8 +88,22 @@ if [ $orphan -gt 0 ]; then
   fail=$((fail + 1))
 fi
 
+# Check 5: top-level docs referenced from sub-agent files exist at requirements/ root.
+TOPLEVEL_DOCS="launch.md README.md tasks/README.md"
+toplevel_missing=0
+for doc in $TOPLEVEL_DOCS; do
+  if [ ! -f "requirements/$doc" ]; then
+    echo "MISSING TOP-LEVEL DOC: requirements/$doc"
+    toplevel_missing=$((toplevel_missing + 1))
+  fi
+done
+if [ $toplevel_missing -gt 0 ]; then
+  echo "FAIL: $toplevel_missing top-level doc(s) missing."
+  fail=$((fail + 1))
+fi
+
 if [ $fail -gt 0 ]; then
   echo "FAIL: $fail check(s) failed."
   exit 1
 fi
-echo "OK: all 4 lint checks passed (links, frontmatter, README inventory, file existence)."
+echo "OK: all 5 lint checks passed (links, frontmatter, README inventory, file existence, top-level docs)."

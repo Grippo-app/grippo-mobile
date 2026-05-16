@@ -1,5 +1,7 @@
 # Add a Data Feature
 
+> **Concrete example.** The example task and identifiers below (`Note archive`, `tag-picker`, etc.) are illustrative; the recipe steps apply to any feature you build with this template.
+
 How to add a new data feature module — e.g. `:data-features:notifications`.
 
 ## Steps

@@ -1,5 +1,7 @@
 # `BackendClient` — Ktor HTTP wrapper
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `BackendClient` is the **single** Ktor `HttpClient` configured for the product backend. Lives in `:data-services:backend`. `<Product>Api` is its only public consumer.
 
 ## Class shape
@@ -209,10 +211,10 @@ public class <Product>Api internal constructor(private val client: BackendClient
         client.invoke(method, path, body, queryParams).body()
     }
 
-    public suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>> =
+    public suspend fun get<Entities>(start: String, end: String): Result<List<<Entity>Response>> =
         request(
             method = HttpMethod.Get,
-            path = "/notes",
+            path = "/<entity_table>s",
             queryParams = mapOf("start" to start, "end" to end),
         )
 

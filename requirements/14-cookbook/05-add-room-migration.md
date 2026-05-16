@@ -1,5 +1,7 @@
 # Add a Room Migration
 
+> **Concrete example.** The example task and identifiers below (`Note archive`, `tag-picker`, etc.) are illustrative; the recipe steps apply to any feature you build with this template.
+
 Migrations are a **deliberate**, separate task. They are reviewed against the destructive fallback policy and require **both-platform** verification.
 
 ## When you need a migration

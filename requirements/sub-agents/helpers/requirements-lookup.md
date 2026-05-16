@@ -16,7 +16,7 @@ You map keywords to authoritative requirement chapters. Builders and validators 
 | BaseComponent, retainedInstance, eventListener | `04-base-classes/02-base-component.md` |
 | BaseScreen, BaseComposeScreen, ScreenBackground | `04-base-classes/03-base-screen.md` |
 | OperationManager, CoroutineExceptionHandler | `04-base-classes/05-operation-manager.md` |
-| ResultManager, ResultEmitter, sendResult, observeResult | `04-base-classes/04-base-models.md` + `03-architecture-patterns/04-cross-component-results.md` |
+| ResultManager, ResultEmitter, sendResult, observeResult | `04-base-classes/06-result-manager.md` + `04-base-classes/04-base-models.md` + `03-architecture-patterns/04-cross-component-results.md` |
 | Decompose, ChildStack, StackNavigation, SlotNavigation | `03-architecture-patterns/02-decompose-navigation.md` |
 | Dialog, DialogConfig, DialogController, BottomSheet | `03-architecture-patterns/03-dialog-navigation.md` + `14-cookbook/02-add-dialog.md` |
 | BackendClient, TokenProvider, Auth | `06-data-layer/01-backend-client.md` + `06-data-layer/02-token-provider.md` |
@@ -27,7 +27,7 @@ You map keywords to authoritative requirement chapters. Builders and validators 
 | DataStore | `06-data-layer/07-datastore.md` |
 | Mappers, direction, AppLogger.Mapping, toEntityOrNull | `07-mappers/*` |
 | Koin, @Single, @Factory, @Module, @ComponentScan | `08-dependency-injection/*` |
-| AppTokens, AppColor, AppDp, AppTypography, AppIcon | `05-design-system/01-app-tokens.md` (and surrounding) |
+| AppTokens, AppColor, AppDp, AppTypography, AppIcon | `05-design-system/01-app-tokens.md` + `05-design-system/02-app-color.md` + `05-design-system/03-app-dp.md` + `05-design-system/04-app-typography.md` + `05-design-system/05-app-strings-drawables-icons.md` |
 | AppTheme, dark mode, locale switching | `05-design-system/06-app-theme.md` + `10-toolkit/11-theme-and-localization.md` |
 | StringProvider, Compose Resources, Res.string | `05-design-system/09-resources.md` + `14-cookbook/07-add-resource.md` |
 | UiText, *FormatState | `11-state-and-formatters/*` |
@@ -35,12 +35,11 @@ You map keywords to authoritative requirement chapters. Builders and validators 
 | DateTimeUtils, DateRange, DateFormat, DateFormatting | `10-toolkit/06-date-utils.md` |
 | Connectivity, NetworkStatus | `10-toolkit/07-connectivity.md` |
 | Convention plugins, build-logic, libs.versions.toml | `12-gradle-build/*` |
-| XCFramework, iosApp, shared.xcframework | `12-gradle-build/01-convention-plugins.md` (sect. iOS) + `02-module-structure/01-module-graph.md` |
+| XCFramework, iosApp, shared.xcframework | `12-gradle-build/07-ios-swiftpackage.md` + `12-gradle-build/01-convention-plugins.md` (sect. iOS) + `02-module-structure/01-module-graph.md` |
 | Naming, snake_case, PascalCase | `09-conventions/02-naming.md` |
 | Package structure, dotted directories | `09-conventions/03-packages.md` |
 | Anti-pattern, forbidden, when-to-stop | `13-anti-patterns/*` |
 | Cookbook recipes | `14-cookbook/*` |
-| Iterative invalidate / audit | `invalidate.md` |
 | Bootstrap a new project | `launch.md` |
 
 ## How to answer a lookup

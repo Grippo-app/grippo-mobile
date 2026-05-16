@@ -78,11 +78,11 @@ plugins {
 
 `namespace = "com.<org>.<product>.data.features.<name>"`. Dependencies typically include `projects.dataFeatures.featureApi`, `projects.dataServices.backend`, `projects.dataServices.database`, the relevant `:data-mappers:*` directions, `projects.toolkit.dateUtils`.
 
-**Do NOT add `projects.toolkit.logger`.** Logger is a mapper dep, not a feature-module dep. The reference repo has zero `:data-features:*` modules depending on `:toolkit:logger`.
+**Do NOT add `projects.toolkit.logger`.** Logger is a mapper dep, not a feature-module dep — keep `:data-features:*` modules thin.
 
 ### 4. Write the module package
 
-Directory `src/commonMain/kotlin/com/<org>/<product>/data.features.<name>/` (mirrors existing dotted-directory convention for `:data-features:*` modules):
+Directory `src/commonMain/kotlin/com/<org>/<product>/data/features/<name>/` (non-dotted is the default for new projects per `requirements/09-conventions/03-packages.md`). If the project's existing `:data-features:*` modules already use the dotted convention (`data.features.<name>`), keep consistency with them — pick one style per module group.
 
 ```
   <Name>FeatureModule.kt
@@ -147,7 +147,7 @@ Patterns to enforce:
 - `get*` calls `api.…`, on `onSuccess` writes to DAO, returns `Result<Unit>`.
 - **Range reconciliation**: after `get*` for a range, delete entries in range except those the server returned (`deleteByCreatedAtRangeExceptIds`) — kills stale "deleted on another device" rows.
 - **Speculative DAO writes are forbidden** — only inside `response.onSuccess { … }`.
-- Active-user lookup uses `userActiveDao.get()` → `userDao.getById(userId).firstOrNull()?.profileId`. The DAO returns `userId`, not `profileId`.
+- Active-user lookup, if the project has a separate user/profile schema, follows the project's user DAO pattern. The data-service-scaffold-builder creates only `UserActiveDao` and `TokenDao`; project-specific user/profile DAOs are added by the project as needed.
 
 `domain/<X>FeatureImpl.kt`:
 
@@ -193,7 +193,10 @@ The order matches the existing alphabetical / topical grouping — append at the
 ### 7. Verify
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 

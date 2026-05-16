@@ -1,5 +1,7 @@
 # Cross-Component Results (`ResultManager`)
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 Use **callbacks in `DialogConfig`** for almost all dialog-driven results. Reach for `ResultManager` only when a callback cannot be threaded:
 
 - Two screens in different `:ui-screen-features:*` modules need to exchange data, and there's no obvious place to put the lambda.

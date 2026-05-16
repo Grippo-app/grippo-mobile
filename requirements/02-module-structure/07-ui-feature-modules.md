@@ -1,5 +1,7 @@
 # `:ui-screen-features:*` and `:ui-dialog-features:*`
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 These two module groups hold the actual product UI. Both follow the same MVI seven-file pattern; the difference is the **host**: screen features render inside `RootComponent`'s `ChildStack`; dialog features render inside `DialogComponent`'s `ChildSlot`.
 
 ## `:ui-screen-features:*`

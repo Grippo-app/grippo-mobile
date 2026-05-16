@@ -1,6 +1,6 @@
 ---
 name: screen-builder
-description: Adds a new sub-screen inside an existing :ui-screen-features:* feature module. Use when the task asks for "a new screen", "a sub-screen", "a tab inside <Feature>", or names a navigation target that does not yet exist under an existing feature router. Does NOT create the feature module itself — `feature-module-scaffold-builder` handles that; `task-intake` chains the two when the target feature does not yet exist. When adding the first sub-screen to a freshly-scaffolded (single-screen, Debug-style) feature root, this builder also converts the root to multi-screen shape — see Step 4a in the body.
+description: Adds a new sub-screen inside an existing :ui-screen-features:* feature module. Use when the task asks for "a new screen", "a sub-screen", "a tab inside <Feature>", or names a navigation target that does not yet exist under an existing feature router. Does NOT create the feature module itself — `feature-module-scaffold-builder` handles that; `task-intake` chains the two when the target feature does not yet exist. When adding the first sub-screen to a freshly-scaffolded (single-screen-style) feature root, this builder also converts the root to multi-screen shape — see Step 4a in the body.
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 ---
@@ -84,7 +84,7 @@ And the matching `data class <Subscreen>(override val component: …) : Child(co
 
 ### 4a. (If the feature root is single-screen) — convert to multi-screen first
 
-Before applying Step 4's route wiring, check the shape of the feature root component. If `feature-module-scaffold-builder` produced it in **single-screen (Debug-style)** form, the root has none of: an internal `StackNavigation<<Feature>Router>`, a `childStack(...)` declaration, an inner `sealed class Child`. In that case, before writing the new sub-screen's route, perform the conversion below. If the root already owns a `StackNavigation` (i.e. the feature already hosts at least one sub-screen via the stack), skip 4a and proceed to Step 5.
+Before applying Step 4's route wiring, check the shape of the feature root component. If `feature-module-scaffold-builder` produced it in **single-screen-style** form, the root has none of: an internal `StackNavigation<<Feature>Router>`, a `childStack(...)` declaration, an inner `sealed class Child`. In that case, before writing the new sub-screen's route, perform the conversion below. If the root already owns a `StackNavigation` (i.e. the feature already hosts at least one sub-screen via the stack), skip 4a and proceed to Step 5.
 
 Detect single-screen shape (run from repo root):
 
@@ -139,9 +139,9 @@ is RootRouter.<Feature> -> Child.<Feature>(
 - Add `private fun createChild(router: <Feature>Router, context: ComponentContext): Child = when (router) { ... }`.
 - Introduce an inner `internal sealed class Child(...)` mirroring `RootComponent.Child` shape.
 
-Mirror the closest existing multi-screen feature root in the repo for the exact import set and `childStack` signature.
+If the project has an existing multi-screen feature root, mirror its import set and `childStack` signature; otherwise follow the standard multi-screen pattern referenced above.
 
-**4a.4. Update the placeholder `<Prefix>Screen`.** Replace its empty body with a `ChildStack`-driven render (again mirror an existing multi-screen `*RootScreen`).
+**4a.4. Update the placeholder `<Prefix>Screen`.** Replace its empty body with a `ChildStack`-driven render (if the project has an existing multi-screen feature, mirror its `*RootScreen`; otherwise follow the template shape above).
 
 After 4a is complete, proceed with Step 4's route wiring — now the route slots into the new `StackNavigation<<Feature>Router>` you just introduced.
 
@@ -162,7 +162,10 @@ If the task names an entry point (e.g. *"tapping the summary card opens this scr
 ### 6. Verify
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 

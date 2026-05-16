@@ -1,5 +1,7 @@
 # `*FormatState` — Form-Field State
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 Form fields (email, password, amount, date, ...) are represented in state as **sealed `*FormatState` classes** with `Empty` / `Invalid` / `Valid` subtypes. The UI reads the state to determine display and button enablement; the ViewModel constructs the right subtype on every input change.
 
 All `*FormatState` types are `@Immutable @Serializable` so they survive process death inside `*Router` payloads or `DialogConfig` configs.

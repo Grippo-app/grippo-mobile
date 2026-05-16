@@ -84,7 +84,7 @@ override suspend fun eventListener(direction: RootDirection) {
 }
 ```
 
-Use `navigation.push(...)` for additive navigation. `navigation.replaceAll(...)` is reserved for top-level switches (Login flow, post-logout). Keep the existing `Login` re-push guard intact (`if (childStack.value.active.instance !is Child.Authorization) { navigation.replaceAll(…) }`) if you're editing near it.
+Use `navigation.push(...)` for additive navigation. `navigation.replaceAll(...)` is reserved for top-level switches (Login flow, post-logout). If your project has an Auth/Login re-push guard at the root level, follow its pattern when pushing into the authentication subgraph. Otherwise use `navigation.push(...)` directly.
 
 ### 6. Thread the callback through the source feature root
 
@@ -138,7 +138,10 @@ The `Direction` is the local intent; the constructor lambda is the bridge to `Ro
 ### 8. Verify
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 

@@ -7,6 +7,8 @@ model: sonnet
 
 You verify the data-layer boundaries — the perimeter from `<Product>Api` through Repository / Feature down to the DAO.
 
+> Where this validator references `<Product>Api`, it means the file matching `apiClassName` in `requirements/00-overview/03-project-config.md` (e.g. `MyappApi.kt`).
+
 ## Authoritative reading
 
 1. `requirements/06-data-layer/*` — BackendClient, TokenProvider, `<Product>Api`, DTOs, Database, DAOs.
@@ -40,7 +42,7 @@ For each new or modified entity:
 - `@Entity(tableName = "<snake_case>", indices = [Index(value = ["<col>"])], foreignKeys = […])`.
 - `@PrimaryKey` on the id field. **No `autoGenerate = true`** — server-issued ids are the rule.
 - Required entity fields are **non-null** (entities are post-validation; nullable belongs in DTOs).
-- `Index(value = […])` is the form used in the reference repo (spelled-out value param) — `Index(["…"])` shorthand is a finding for consistency.
+- Use the multi-arg `Index(value = [...])` form consistently across the project — `Index(["..."])` shorthand mixes styles, flag as a finding.
 - Foreign keys declare `parentColumns`, `childColumns`, `onDelete`. `ON DELETE CASCADE` is the common case for child rows under `user`.
 
 ### 3. DAO shape (`:data-services:database/dao/**`)
@@ -64,7 +66,7 @@ For each new Repository:
 - `observe*` methods return `Flow<<Domain>>` mapped from DAO; **never** from API.
 - `get*`/`update*`/`save*`/`delete*` return `Result<T>`, call `api.…()`, write to DAO **only inside `response.onSuccess { … }`**. Speculative writes outside `onSuccess` = finding.
 - **Range reconciliation**: for collection fetches over a range, after `onSuccess` delete entries in range except those the server returned (`deleteByCreatedAtRangeExceptIds(...)`). Missing reconciliation for a range-based fetch = finding.
-- **Active-user lookup**: `userActiveDao.get()` returns `userId` (a `Flow<String?>`); to get `profileId`, chain `userDao.getById(userId).firstOrNull()?.profileId`. Direct treatment of `userActiveDao.get()` as `profileId` = finding.
+- **Active-user lookup** follows the project's user DAO pattern. If the project has separate `UserActiveDao` and `UserDao`/`ProfileDao`, lookups chain through them (e.g. `userActiveDao.get()` → `userDao.getById(userId).firstOrNull()?.profileId`). The data-service-scaffold-builder only creates `UserActiveDao` + `TokenDao`; project-specific user/profile DAOs are added later as needed. Direct treatment of `userActiveDao.get()` as `profileId` = finding when the project has a separate profile DAO.
 - Repository imports a mapper from `:data-mappers:*` via `import com.<org>.<product>.<direction>.<area>.<func>` — **not** inline conversion. Inline `dto.id ?: ""` / `dto.title ?: ""` etc. inside Repository = finding.
 - Repository constructor params named `api: <Product>Api`, `<x>Dao: <X>Dao`, `<x>DataStore: <X>DataStore` (or `dataStore: DataStore<Preferences>` for raw DataStore). No `<x>Service` param names.
 
@@ -117,5 +119,5 @@ Same structured-findings format. Group by file.
 
 - Do not edit any file.
 - Do not flag a `String? = null` field in a domain class — domain models are non-null **only** for required fields; optional fields stay nullable (e.g. `User.email: String?`).
-- Do not flag `@PrimaryKey(autoGenerate = true)` if the entity in question has documented client-side id generation (none in the reference repo, but a project may legitimately need it for drafts — confirm with the orchestrator before flagging).
+- Do not flag `@PrimaryKey(autoGenerate = true)` if the entity in question has documented client-side id generation (a project may legitimately need it for drafts — confirm with the orchestrator before flagging).
 - Do not run a full-repo scan — scope to changed files.

@@ -106,6 +106,8 @@ Agent(
 
 Wait for the agent. Do not parallelize multiple reviewer passes — one reasoning agent per iteration. Parallel reviews waste tokens without improving signal.
 
+> If `general-purpose` is not available in the runtime (some Claude Code distributions disable it), fall back to doing the reasoning pass inline within this prompt — read the diff yourself with `Read`/`Grep`, then emit findings in the same output shape. The orchestrator only cares about the output shape, not the delegation path.
+
 ### 4. Parse and classify findings
 
 Use the same routing table as `codex-review-loop` (this is the contract — orchestrator's routing logic must work identically for both reviewers):

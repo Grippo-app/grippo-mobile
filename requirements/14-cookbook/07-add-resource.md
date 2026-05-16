@@ -1,5 +1,7 @@
 # Add a Resource (String, Drawable, Font)
 
+> **Concrete example.** The example task and identifiers below (`Note archive`, `tag-picker`, etc.) are illustrative; the recipe steps apply to any feature you build with this template.
+
 How to add new entries in `:design-system:resources:provider`.
 
 ## Add a string

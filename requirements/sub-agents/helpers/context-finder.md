@@ -27,7 +27,7 @@ Each call is a single question. Return tight answers.
 
 ## Output format
 
-A short structured response, no prose padding. (Sample below uses reference-repo paths to illustrate the format — substitute the new project's package roots and feature names.)
+A short structured response, no prose padding. (Sample paths below are illustrative — substitute the project's actual package roots and feature names.)
 
 ```
 ## <Question echo>

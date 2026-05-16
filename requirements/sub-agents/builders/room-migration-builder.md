@@ -119,15 +119,14 @@ In `DatabaseMigrations.kt`:
 ```kotlin
 internal object DatabaseMigrations {
     val all: Array<Migration> = arrayOf(
-        Migration2To3,
-        Migration3To4,
-        Migration4To5,
-        Migration<N>To<N+1>,
+        Migration1To2,
+        // Append further migrations (Migration2To3, Migration3To4, …) at the end
+        // of the list in version order as they're added.
     )
 }
 ```
 
-Append at the end — order matters (Room walks them in sequence). Do not reorder existing entries.
+Append further migrations (`Migration2To3`, `Migration3To4`, …) at the end of the list in version order as they're added — order matters (Room walks them in sequence). Do not reorder existing entries.
 
 ### 5. Test on Android
 
@@ -140,7 +139,10 @@ Build a debug APK with the OLD version (`N`) locally — revert the version bump
 ### 6. Test on iOS
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ```
 
 Same flow via Xcode if possible. At minimum, the framework must build.
@@ -149,7 +151,7 @@ Same flow via Xcode if possible. At minimum, the framework must build.
 
 ```bash
 ./gradlew :data-services:database:assemble
-./gradlew :shared:assembleSharedDebugXCFramework
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 

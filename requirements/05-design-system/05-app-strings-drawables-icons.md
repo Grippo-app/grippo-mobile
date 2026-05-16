@@ -1,5 +1,7 @@
 # `AppString`, `AppDrawable`, `AppIcon`
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 These three objects under `AppTokens` expose Compose Multiplatform Resources. They are thin wrappers that exist for **consistency** — every resource is reached through `AppTokens.*`, not through Compose Resources directly.
 
 ## `AppString`

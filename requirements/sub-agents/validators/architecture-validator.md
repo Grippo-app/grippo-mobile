@@ -98,4 +98,4 @@ If zero findings: report "No architecture findings on N changed modules ({list})
 - Do not edit any file. You are read-only.
 - Do not introduce new exceptions in your report. Exceptions live in `02-dependency-rules.md`; if the codebase needs a new one, escalate to the user, not the builder.
 - Do not flag a documented exception as a violation. Check the chapter first.
-- Do not run a full repo grep for every rule — scope to changed modules only. Full-repo audits are the `invalidate.md` job.
+- Do not run a full repo grep for every rule — scope to changed modules only. Full-repo audits are out of scope for this validator.

@@ -1,5 +1,7 @@
 # Database — Room Multiplatform
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 The single Room database lives in `:data-services:database`. It holds **all** local persistence: tokens, user profile, domain caches, drafts. There is **one** `@Database` class per app.
 
 ## `Database` shape

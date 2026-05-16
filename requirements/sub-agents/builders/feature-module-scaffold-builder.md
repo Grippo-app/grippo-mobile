@@ -5,7 +5,7 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 ---
 
-You scaffold an empty `:ui-screen-features:<name>` feature module so that `screen-builder` has a host to populate. The feature root is created in **single-screen (Debug-style) shape**: a `BaseComponent<<Feature>Direction>` with no internal `StackNavigation`, no inner `Child` sealed class. The companion `<Feature>Router` is created **empty** in `:ui-screen-features:screen-api`, reserved for `screen-builder` to fill in. The output MUST compile.
+You scaffold an empty `:ui-screen-features:<name>` feature module so that `screen-builder` has a host to populate. The feature root is created in **single-screen-style shape**: a `BaseComponent<<Feature>Direction>` with no internal `StackNavigation`, no inner `Child` sealed class. The companion `<Feature>Router` is created **empty** in `:ui-screen-features:screen-api`, reserved for `screen-builder` to fill in. The output MUST compile.
 
 ## Authoritative reading
 
@@ -19,7 +19,7 @@ Before writing any code, read in order:
 6. `requirements/09-conventions/02-naming.md` and `requirements/09-conventions/03-packages.md` — class names, package layout, dotted-vs-slashed directory convention.
 7. `requirements/13-anti-patterns/01-forbidden-patterns.md` and `requirements/13-anti-patterns/02-when-to-stop-and-ask.md` — what to refuse and when to surface a blocker.
 
-Also open an existing **bare-name single-screen feature** (`:ui-screen-features:debug`) as the structural reference for the root component you will produce. Its `DebugComponent` extends `BaseComponent<DebugDirection>` directly — no internal stack, no inner `Child` — which is exactly what an empty scaffold should look like.
+The single-screen pattern is fully described below — no internal `StackNavigation`, no inner `Child` sealed class. If the project already has a single-screen feature, mirror its shape; otherwise follow the template here.
 
 Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
@@ -44,7 +44,7 @@ Find each of these so you know exactly where to inject:
 - `:shared/build.gradle.kts` — locate the `sourceSets.commonMain.dependencies { … }` block that lists `projects.uiScreenFeatures.*` entries.
 - `settings.gradle.kts` — locate the cluster of `include(":ui-screen-features:…")` lines.
 
-If any are missing or shaped differently from the reference repo, **stop and escalate** — the project scaffold is not in a state this builder can safely modify.
+If any are missing, or the project's own scaffold conventions are violated (e.g. wrong `RootRouter` structure, missing `createChild`/`Child` sealed class), **stop and escalate** — the project scaffold is not in a state this builder can safely modify.
 
 ### 2. Register the module in `settings.gradle.kts`
 
@@ -56,7 +56,7 @@ include(":ui-screen-features:<name>")
 
 ### 3. Create the module `build.gradle.kts`
 
-`ui-screen-features/<name>/build.gradle.kts` — mirror `:ui-screen-features:debug`'s shape, but keep dependencies minimal (no logger, no domain features yet — `screen-builder` adds them when it needs them):
+`ui-screen-features/<name>/build.gradle.kts` — use the single-screen-style template below; keep dependencies minimal (no logger, no domain features yet — `screen-builder` adds them when it needs them):
 
 ```kotlin
 plugins {
@@ -108,7 +108,7 @@ public sealed class <Feature>Router : BaseRouter {
 }
 ```
 
-Empty sealed class. Do NOT add a placeholder `data object`. The feature root scaffolded in step 5 does **not** consume `<Feature>Router` yet — it is reserved purely as the contract slot `screen-builder` will populate. Decompose only requires a non-empty router when the component owns a `StackNavigation<<Feature>Router>`; the Debug-style root in step 5 does not.
+Empty sealed class. Do NOT add a placeholder `data object`. The feature root scaffolded in step 5 does **not** consume `<Feature>Router` yet — it is reserved purely as the contract slot `screen-builder` will populate. Decompose only requires a non-empty router when the component owns a `StackNavigation<<Feature>Router>`; the single-screen-style root in step 5 does not.
 
 ### 5. Create the feature-root MVI files (seven files)
 
@@ -166,7 +166,7 @@ internal class <Prefix>ViewModel :
 
 If `<Prefix>State` is a `data class`, instantiate it as `<Prefix>State()`.
 
-**`<Prefix>Component.kt`** — Debug-style root (no internal `StackNavigation`, no inner `Child` sealed class):
+**`<Prefix>Component.kt`** — single-screen-style root (no internal `StackNavigation`, no inner `Child` sealed class):
 
 ```kotlin
 public class <Prefix>Component(
@@ -229,7 +229,7 @@ Do **not** import `androidx.compose.ui.res.*`. Do **not** add hardcoded strings.
 
 ### 6. Register `<Feature>` in `RootRouter`
 
-In `:ui-screen-features:screen-api/RootRouter.kt`, append a new `data object` subtype (mirroring `RootRouter.Debug` / `RootRouter.Home`):
+In `:ui-screen-features:screen-api/RootRouter.kt`, append a new `data object` subtype (mirror existing siblings on `RootRouter`, if any; otherwise use the structure shown below):
 
 ```kotlin
 @Serializable
@@ -287,7 +287,10 @@ The `<nameCamelCase>` form follows Gradle's type-safe project accessor conventio
 Run from the repo root:
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ./gradlew :androidApp:assembleDebug
 ```
 
@@ -298,8 +301,8 @@ Build failures here are yours to fix before reporting done. The most common caus
 ## What you MUST NOT do
 
 - Do not create any sub-screen package. The feature module ships with the root MVI files only; `screen-builder` adds the first sub-screen on the next builder step.
-- Do not add a placeholder route (`<Feature>Router.Stub`, `Placeholder`, `Empty`) to `<Feature>Router`. The router stays truly empty; the Debug-style root does not consume it yet.
-- Do not declare an inner `sealed class Child` on `<Prefix>Component`. The Debug-style root has no child stack; `screen-builder` introduces both when (and only when) the first sub-screen needs hosting alongside others.
+- Do not add a placeholder route (`<Feature>Router.Stub`, `Placeholder`, `Empty`) to `<Feature>Router`. The router stays truly empty; the single-screen-style root does not consume it yet.
+- Do not declare an inner `sealed class Child` on `<Prefix>Component`. The single-screen-style root has no child stack; `screen-builder` introduces both when (and only when) the first sub-screen needs hosting alongside others.
 - Do not add a `StackNavigation<<Feature>Router>` / `childStack(...)` to `<Prefix>Component`. Same reason — `screen-builder` introduces it when needed.
 - Do not register a Koin module for the feature. UI features do not own Koin modules; the only Koin step is the `koin.annotation.convention` plugin, which is enough for `screen-builder` to add `@Single`/`@Factory` later.
 - Do not add a `RootDirection` entry for the feature. `RootDirection` entries belong to `cross-feature-nav-builder` — they're added when a real entry point is wired in.
@@ -327,7 +330,7 @@ A single message to the orchestrator with:
 4. **`RootRouter.<Feature>` shape** — `data object` (no payload yet). Note that `screen-builder` will rewrite this to `data class <Feature>(val value: <Feature>Router)` when introducing the first sub-screen and converting the feature root to multi-screen.
 5. **Build result** — pass / fail for each gradle command in step 10.
 6. **Hand-off note to the orchestrator** — verbatim:
-   > Next: invoke `screen-builder` for the first sub-screen of `<Feature>`. The current feature root is **single-screen (Debug-style)** — no internal `StackNavigation`. When `screen-builder` adds the first sub-screen, it must either (a) replace the feature root's placeholder `Screen` with the sub-screen content (continuing the single-screen pattern), or (b) introduce `StackNavigation<<Feature>Router>` + `childStack(...)` + `createChild` + inner `Child` sealed class on `<Prefix>Component`, populate the first entry on `<Feature>Router`, and rewrite `RootRouter.<Feature>` to `data class <Feature>(val value: <Feature>Router)` plus update `RootComponent.createChild` to thread `initial = router.value`. The choice depends on whether the feature is expected to grow beyond one screen; if unclear, escalate to the user.
+   > Next: invoke `screen-builder` for the first sub-screen of `<Feature>`. The current feature root is **single-screen-style** — no internal `StackNavigation`. When `screen-builder` adds the first sub-screen, it must either (a) replace the feature root's placeholder `Screen` with the sub-screen content (continuing the single-screen pattern), or (b) introduce `StackNavigation<<Feature>Router>` + `childStack(...)` + `createChild` + inner `Child` sealed class on `<Prefix>Component`, populate the first entry on `<Feature>Router`, and rewrite `RootRouter.<Feature>` to `data class <Feature>(val value: <Feature>Router)` plus update `RootComponent.createChild` to thread `initial = router.value`. The choice depends on whether the feature is expected to grow beyond one screen; if unclear, escalate to the user.
 7. **Open questions** — anything the task didn't specify that you had to assume (animator choice, package layout edge cases).
 
 If a validator later flags an issue in this scaffold, you will be re-invoked with the finding. Fix only what's flagged; do not pre-emptively upgrade to multi-screen shape — that decision belongs to `screen-builder`.

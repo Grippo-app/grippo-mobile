@@ -1,6 +1,6 @@
 ---
 name: build-validator
-description: Runs the two non-negotiable build gates — `./gradlew :shared:assembleSharedDebugXCFramework` (iOS framework) and `./gradlew :androidApp:assembleDebug` (Android APK). Both must pass before a task is declared done. If a builder reports done but a build fails, this validator is the catch.
+description: Runs the two non-negotiable build gates — the iOS XCFramework assemble (task name computed from `iosFrameworkName` in project-config, gated on `iosEnabled`) and `./gradlew :androidApp:assembleDebug` (Android APK). Both must pass before a task is declared done. If a builder reports done but a build fails, this validator is the catch.
 tools: Read, Bash, Grep, Glob
 model: sonnet
 ---
@@ -14,22 +14,41 @@ You run the build. Build green is the floor — every other validator's findings
 
 Before starting, verify each file in the list above exists (`[ -f <path> ]`). If any are missing, stop and report `BLOCKED: required reading missing — <list>` to the orchestrator. Do not proceed on assumed content.
 
-## Commands
-
-## Step 0 — read iOS gate
+## Step 0 — read config flags
 
 ```bash
 IOS_ENABLED=$(rg -m1 '^iosEnabled:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+IOS_TASK=":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ```
+
+## Step 1 — primary gates
 
 Run, in order:
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+if [ "$IOS_ENABLED" = "true" ]; then
+  ./gradlew "$IOS_TASK"
+fi
 ./gradlew :androidApp:assembleDebug
 ```
 
-If only the iOS framework is needed (no Android changes — rare), skip the second. Default is to run both.
+If `iosEnabled: false`, the XCFramework task is skipped — iOS isn't a target for this project. If only the iOS framework is needed (no Android changes — rare), skip the second. Default is to run both when iOS is enabled.
+
+## Step 2 — ancillary module assembles
+
+When a builder touched a specific module, also run that module's assemble for faster feedback:
+
+```bash
+./gradlew :data-services:database:assemble       # after a room-migration-builder run
+./gradlew :data-services:backend:assemble        # after an endpoint-builder run
+./gradlew :data-mappers:<direction>:assemble     # after a mapper-builder run
+./gradlew :design-system:resources:provider:assemble  # after a resource-builder run
+```
+
+Pass `--quiet` to suppress info-level output; `--no-daemon` is **not** required (the daemon is fine).
 
 ## Step 3 — iOS app build (conditional)
 
@@ -66,19 +85,6 @@ If a build fails:
    - Native linking failure on iOS (`unresolved external`, `ld: warning`) → likely a public-API change in `:shared` that wasn't reflected in the XCFramework declaration. Report verbatim.
 3. **Do NOT auto-fix**. Report the failure to the orchestrator; the orchestrator routes to the responsible builder.
 
-## Verifying ancillary modules
-
-When a builder touched a specific module, also run that module's assemble for faster feedback:
-
-```bash
-./gradlew :data-services:database:assemble       # after a room-migration-builder run
-./gradlew :data-services:backend:assemble        # after an endpoint-builder run
-./gradlew :data-mappers:<direction>:assemble     # after a mapper-builder run
-./gradlew :design-system:resources:provider:assemble  # after a resource-builder run
-```
-
-Pass `--quiet` to suppress info-level output; `--no-daemon` is **not** required (the daemon is fine).
-
 ## Output format
 
 ```
@@ -86,7 +92,7 @@ Pass `--quiet` to suppress info-level output; `--no-daemon` is **not** required 
 
 | Target | Result | Time | Notes |
 |---|---|---|---|
-| `:shared:assembleSharedDebugXCFramework` | PASS / FAIL | <duration> | <last error line if FAIL> |
+| iOS XCFramework (`$IOS_TASK`) | PASS / FAIL / SKIP (iosEnabled=false) | <duration> | <last error line if FAIL> |
 | `:androidApp:assembleDebug` | PASS / FAIL | <duration> | <last error line if FAIL> |
 | `xcodebuild :iosApp Debug iphonesimulator` | PASS / FAIL / SKIP (iosEnabled=false) | <duration> | <last error if FAIL> |
 

@@ -1,5 +1,7 @@
 # `<Product>Api` and DTOs
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `<Product>Api` is a **flat, one-method-per-endpoint** class. No subgrouping, no sub-services, no resource-style classes. Just methods grouped by **comments** (`/* * * Auth service * * */`). This is intentional — it keeps the entire HTTP contract visible in one file.
 
 The concrete class name is `<Product>Api` (PascalCase product slot from `00-overview/03-project-config.md`).
@@ -53,29 +55,29 @@ public class <Product>Api internal constructor(private val client: BackendClient
         request(method = HttpMethod.Put, path = "/users", body = body)
 
     /* * * * * * * * * * * * * * * * *
-     *  Notes service
+     *  <Entity> service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>> =
+    public suspend fun get<Entities>(start: String, end: String): Result<List<<Entity>Response>> =
         request(
             method = HttpMethod.Get,
-            path = "/notes",
+            path = "/<entity_table>s",
             queryParams = mapOf("start" to start, "end" to end),
         )
 
-    public suspend fun setNote(body: NoteBody): Result<IdResponse> =
-        request(method = HttpMethod.Post, path = "/notes", body = body)
+    public suspend fun set<Entity>(body: <Entity>Body): Result<IdResponse> =
+        request(method = HttpMethod.Post, path = "/<entity_table>s", body = body)
 
-    public suspend fun updateNote(id: String, body: NoteBody): Result<Unit> =
+    public suspend fun update<Entity>(id: String, body: <Entity>Body): Result<Unit> =
         request(
             method = HttpMethod.Put,
-            path = "/notes",
+            path = "/<entity_table>s",
             body = body,
             queryParams = mapOf("id" to id),
         )
 
-    public suspend fun deleteNote(id: String): Result<Unit> =
-        request(method = HttpMethod.Delete, path = "/notes/$id")
+    public suspend fun delete<Entity>(id: String): Result<Unit> =
+        request(method = HttpMethod.Delete, path = "/<entity_table>s/$id")
 
     /* * * * * * * * * * * * * * * * *
      *  Utilities
@@ -96,19 +98,19 @@ public class <Product>Api internal constructor(private val client: BackendClient
 
 ### One method per endpoint
 
-`GET /notes?start&end` → `suspend fun getNotes(start: String, end: String): Result<List<NoteResponse>>`.
+`GET /<entity_table>s?start&end` → `suspend fun get<Entities>(start: String, end: String): Result<List<<Entity>Response>>`.
 
-`POST /notes` → `suspend fun setNote(body: NoteBody): Result<IdResponse>`.
+`POST /<entity_table>s` → `suspend fun set<Entity>(body: <Entity>Body): Result<IdResponse>`.
 
-Method name reflects the action verb (`get`, `set`, `update`, `delete`, `register`, `login`, `refresh`) — not the HTTP verb. `set` is used instead of `post` to read more naturally at the call site (`api.setNote(...)`).
+Method name reflects the action verb (`get`, `set`, `update`, `delete`, `register`, `login`, `refresh`) — not the HTTP verb. `set` is used instead of `post` to read more naturally at the call site (`api.set<Entity>(...)`).
 
 ### Section comments
 
-Endpoints are grouped by domain (`Auth`, `Push token`, `User`, `Notes`, ...). The block-comment delimiter is consistent:
+Endpoints are grouped by domain (`Auth`, `Push token`, `User`, `<Entity>`, ...). The block-comment delimiter is consistent:
 
 ```kotlin
 /* * * * * * * * * * * * * * * * *
- *  Notes service
+ *  <Entity> service
  * * * * * * * * * * * * * * * * */
 ```
 
@@ -147,13 +149,13 @@ private suspend inline fun <reified T> request(
     <Name>Body.kt               // client → server
 ```
 
-`<area>` matches the API section (`auth`, `note`, `user`, `tag`, `push-token`, ...).
+`<area>` matches the API section (`auth`, `<entity>`, `user`, `<related>`, `push-token`, ...).
 
 ### Shape
 
 ```kotlin
 @Serializable
-public data class NoteResponse(
+public data class <Entity>Response(
     @SerialName("id")              val id: String? = null,
     @SerialName("title")           val title: String? = null,
     @SerialName("body")            val body: String? = null,
@@ -161,13 +163,13 @@ public data class NoteResponse(
     @SerialName("updatedAt")       val updatedAt: String? = null,
     @SerialName("profileId")       val profileId: String? = null,
     @SerialName("userId")          val userId: String? = null,
-    @SerialName("tags")            val tags: List<TagResponse> = emptyList(),
+    @SerialName("<relateds>")      val <relateds>: List<<RelatedEntity>Response> = emptyList(),
 )
 
 @Serializable
-public data class TagResponse(
+public data class <RelatedEntity>Response(
     @SerialName("id")        val id: String? = null,
-    @SerialName("noteId")    val noteId: String? = null,
+    @SerialName("<entity>Id")    val <entity>Id: String? = null,
     @SerialName("name")      val name: String? = null,
     @SerialName("color")     val color: String? = null,
     @SerialName("createdAt") val createdAt: String? = null,
@@ -184,7 +186,7 @@ public data class TagResponse(
 4. **`@SerialName("...")` on every field.** Even when the Kotlin name matches — explicit serial names are unambiguous and survive Kotlin renames.
 5. **Names mirror backend** (camelCase). Don't transform `created_at` → `createdAt` via serial-name magic; if backend uses snake_case, use `@SerialName("created_at") val createdAt: String? = null`.
 6. **No business logic, no computed properties.** DTOs are pure transport.
-7. **One DTO per file** for top-level types. Tightly-related DTOs (e.g. `NoteResponse` + `TagResponse` + `ItemResponse` all returned by the same endpoint) can share a file.
+7. **One DTO per file** for top-level types. Tightly-related DTOs (e.g. `<Entity>Response` + `<RelatedEntity>Response` + `ItemResponse` all returned by the same endpoint) can share a file.
 
 ### Why everything nullable
 
@@ -196,14 +198,14 @@ The downside: nullable fields propagate through mappers. The `:data-mappers:dto-
 
 ```kotlin
 @Serializable
-public data class NoteBody(
+public data class <Entity>Body(
     @SerialName("title")  val title: String,
     @SerialName("body")   val body: String,
-    @SerialName("tags")   val tags: List<TagBody>,
+    @SerialName("<relateds>") val <relateds>: List<<RelatedEntity>Body>,
 )
 
 @Serializable
-public data class TagBody(
+public data class <RelatedEntity>Body(
     @SerialName("name")   val name: String,
     @SerialName("color")  val color: String?,
     @SerialName("items")  val items: List<ItemBody>,
@@ -249,7 +251,7 @@ Routes Ktor's `Logging` plugin output to `AppLogger.Network` with color emojis (
 
 ## Anti-patterns
 
-- **Subgrouping `<Product>Api`** into `AuthApi`, `NotesApi`, `UserApi`. Flatness is intentional — discovery is easier.
+- **Subgrouping `<Product>Api`** into `AuthApi`, `<Entity>Api`, `UserApi`. Flatness is intentional — discovery is easier.
 - **Non-nullable DTO scalar fields.** Breaks on backend schema drift.
 - **`@Serializable` on a `sealed class` DTO without `@SerialName`** — kotlinx-serialization needs discriminator names.
 - **Inline path strings duplicated across methods.** Two endpoints sharing `/users/X` is fine; if a third appears, consider a `companion object Paths { const val USERS = "/users" }` block.

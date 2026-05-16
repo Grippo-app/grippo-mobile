@@ -1,5 +1,7 @@
 # `BaseScreen` / `BaseComposeScreen`
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `BaseComposeScreen` is a thin Composable wrapper applied at the root of every screen. It sets the screen background, lays out content in a `Column`, and registers a tap-anywhere gesture that clears focus (dismisses the keyboard).
 
 ## Signature

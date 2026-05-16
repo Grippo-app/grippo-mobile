@@ -1,5 +1,7 @@
 # `TokenProvider` — Ktor Auth with refresh
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `TokenProvider` implements Ktor's `AuthProvider`. It:
 
 1. Injects `Authorization: Bearer <accessToken>` on every authenticated request.

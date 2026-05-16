@@ -14,6 +14,8 @@ Run the prompt **once** at the start of a new project. Re-running it later is un
 4. The agent will create modules incrementally and verify each layer with `./gradlew` builds.
 5. After the agent completes the foundation, follow the cookbook to add features.
 
+> When you see `Note*` / `Tag*` / `User*` identifiers in example code blocks across the docs, treat them as `<Entity>` / `<RelatedEntity>` placeholders — they are illustrative, not architectural. Replace with your product's domain types.
+
 ---
 
 ## The prompt
@@ -44,7 +46,7 @@ Ask the user (via clarifying questions) the following:
 | Organization name              | productPackage (com.<org>.<product>) |
 | Backend host                   | backendHost |
 | Application ID                 | applicationId |
-| First product domain           | (informational — agents do not read this; used in Step 8) |
+| First product domain           | (remembered by agent — used to seed the first feature in Step 8) |
 | Locales to support             | supportedLocales (YAML list) |
 | Auth methods                   | diHandWrittenModules (append GoogleAuthModule / AppleAuthModule per choice) |
 | Firebase                       | firebaseEnabled |
@@ -250,7 +252,7 @@ Implement `:design-system:preview`:
 
 ## Step 8 — implement the first feature
 
-Pick the simplest end-to-end feature (e.g. a list screen for the first product domain).
+Use the first product domain the user specified in Step 0 question 5 as the first feature. Build the simplest end-to-end slice (e.g. a list screen for that domain).
 
 1. **Domain types** in `:data-features:feature-api`:
    - `<X>Feature` interface.
@@ -279,7 +281,7 @@ Pick the simplest end-to-end feature (e.g. a list screen for the first product d
 - `Deeplink` enum (empty initially or with one entry).
 - iOS bridge `RootViewController.kt` (`mainViewController(): UIViewController`).
 
-Verify: `./gradlew :shared:assembleSharedDebugXCFramework`.
+Verify: `./gradlew :<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework`. With the default `iosFrameworkName: shared`, the task is `./gradlew :shared:assembleSharedDebugXCFramework`. Substitute if the project chose a different framework name.
 
 ## Step 10 — implement `:androidApp`
 
@@ -296,6 +298,8 @@ Verify: `./gradlew :androidApp:assembleDebug`.
 
 ## Step 11 — implement `:iosApp`
 
+> Human handoff. Steps in this section require Xcode GUI interactions (creating the project, drag-and-drop XCFramework). The agent cannot perform these. Prepare the templates as fully as possible, then surface a clear handoff to the user with the exact list of clicks they need to perform.
+
 Create the Xcode project at `iosApp/` with:
 
 - `iOSApp.swift` — `@main` struct calling `FirebaseApp.configure()` and `KoinKt.doInit { _ in }`.
@@ -303,14 +307,14 @@ Create the Xcode project at `iosApp/` with:
 - `Info.plist` — basic.
 - `GoogleService-Info.plist` — placeholder.
 
-In Xcode, link `shared.xcframework` (drag-and-drop after running `./gradlew :shared:assembleSharedDebugXCFramework`).
+In Xcode, link `<iosFrameworkName>.xcframework` (defaults to `shared.xcframework`; drag-and-drop after running the XCFramework assemble task from Step 9).
 
 ## Step 12 — verify end-to-end
 
-Run:
+Run (substitute `<iosFrameworkName>` / `<IosFrameworkName>` per the project-config value; defaults to `shared` / `Shared`):
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+./gradlew :<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework
 ./gradlew :androidApp:assembleDebug
 ```
 
@@ -332,10 +336,12 @@ If both succeed, the foundation is complete.
 
 If the existing CLAUDE.md was authored for your new project (i.e. you didn't import it from a reference repo), STOP and ask the user before deleting — it may contain real project context.
 
+Write `CLAUDE.md` only after asking the user for: (1) one paragraph describing the product purpose; (2) any cross-repo rules. If the user has no input, write a minimal scaffold that says "(filled in later)" for those sections — do not invent content.
+
 At the project root, create `CLAUDE.md` describing:
 
-- The product purpose (one paragraph).
-- Cross-repo rules (if applicable).
+- The product purpose (one paragraph — from the user).
+- Cross-repo rules (if applicable — from the user; "(filled in later)" otherwise).
 - Communication / decision-making conventions.
 - Scope discipline ("don't refactor without an explicit request", etc.).
 - When to stop and ask (mirror `requirements/13-anti-patterns/02-when-to-stop-and-ask.md`).
@@ -350,7 +356,7 @@ See `requirements/README.md` section "Sub-agents — install before first use" f
 
 ```bash
 ls .claude/agents/   # should list orchestrator.md, builders, validators, helpers
-bash requirements/sub-agents/lint.sh   # if Prompt 1 from SUBAGENTS_TODO_PROMPTS.md ran
+bash requirements/sub-agents/lint.sh
 ```
 
 Verify `requirements/00-overview/03-project-config.md` was populated in Step 1.5. If you skipped Step 1.5 for any reason, do it now before invoking any sub-agent — they will all fail with BLOCKED otherwise. From here on, drop new tasks at `requirements/tasks/TASK_<N>_<title>.md` and ask the parent Claude session to "run task TASK_N_<title>.md". The orchestrator drives the rest.

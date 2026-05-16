@@ -1,5 +1,7 @@
 # Add an API Endpoint
 
+> **Concrete example.** The example task and identifiers below (`Note archive`, `tag-picker`, etc.) are illustrative; the recipe steps apply to any feature you build with this template.
+
 How to add a new endpoint to `<Product>Api`.
 
 ## Steps

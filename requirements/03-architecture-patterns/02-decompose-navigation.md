@@ -1,5 +1,7 @@
 # Decompose Navigation
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 Navigation is built on Decompose (`com.arkivanov.decompose`). Each `Component` is the owner of its own UI subtree and its own lifecycle; navigation is **type-safe** (routes are `@Serializable sealed class`); state survives **process death** because Decompose's `StateKeeper` serializes the entire router stack.
 
 ## Three layers of navigation

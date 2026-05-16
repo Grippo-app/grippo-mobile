@@ -1,5 +1,7 @@
 # `BaseComponent`
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 `BaseComponent` is the Decompose component base class. Every screen/dialog Component extends it. It:
 
 - Delegates `ComponentContext` (Decompose's lifecycle + state-keeper + back-handler aggregate).

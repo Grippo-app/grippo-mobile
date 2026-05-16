@@ -1,10 +1,12 @@
 # Room Entities, DAOs, and `*Pack` Models
 
+> **Illustrative domain.** Code blocks below use `Note` / `Tag` / `User` as the generic `<Entity>` / `<RelatedEntity>` for examples. Substitute identifiers from your product domain.
+
 ## Entities
 
 ```kotlin
 @Entity(
-    tableName = "note",
+    tableName = "<entity_table>",
     indices = [Index(value = ["profileId"])],
     foreignKeys = [
         ForeignKey(
@@ -15,7 +17,7 @@
         ),
     ],
 )
-public data class NoteEntity(
+public data class <Entity>Entity(
     @PrimaryKey val id: String,
     val profileId: String,
     val title: String,
@@ -42,20 +44,20 @@ For join tables:
 
 ```kotlin
 @Entity(
-    tableName = "user_tag",
-    primaryKeys = ["profileId", "tagId"],
+    tableName = "user_<related_table>",
+    primaryKeys = ["profileId", "<related>Id"],
     foreignKeys = [
         ForeignKey(entity = UserEntity::class, parentColumns = ["profileId"], childColumns = ["profileId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(entity = TagEntity::class, parentColumns = ["id"], childColumns = ["tagId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = <RelatedEntity>Entity::class, parentColumns = ["id"], childColumns = ["<related>Id"], onDelete = ForeignKey.CASCADE),
     ],
     indices = [
         Index("profileId"),
-        Index("tagId"),
+        Index("<related>Id"),
     ],
 )
-public data class UserTagEntity(
+public data class User<RelatedEntity>Entity(
     val profileId: String,
-    val tagId: String,
+    val <related>Id: String,
 )
 ```
 
@@ -65,56 +67,56 @@ public data class UserTagEntity(
 
 ```kotlin
 @Dao
-public interface NoteDao {
+public interface <Entity>Dao {
 
     @Transaction
     @Query("""
-        SELECT * FROM note
+        SELECT * FROM <entity_table>
         WHERE createdAt BETWEEN :from AND :to
         ORDER BY createdAt DESC
     """)
-    public fun get(from: String, to: String): Flow<List<NotePack>>
+    public fun get(from: String, to: String): Flow<List<<Entity>Pack>>
 
     @Transaction
     @Query("""
-        SELECT * FROM note
+        SELECT * FROM <entity_table>
         WHERE id = :id
         ORDER BY createdAt DESC
         LIMIT 1
     """)
-    public fun getById(id: String): Flow<NotePack?>
+    public fun getById(id: String): Flow<<Entity>Pack?>
 
     @Transaction
     public suspend fun insertOrReplace(
-        note: NoteEntity,
-        tags: List<TagEntity>,
+        <entity>: <Entity>Entity,
+        <relateds>: List<<RelatedEntity>Entity>,
         items: List<ItemEntity>,
     ) {
-        insertNote(note)
-        if (tags.isNotEmpty()) insertTags(tags)
+        insert<Entity>(<entity>)
+        if (<relateds>.isNotEmpty()) insert<RelatedEntities>(<relateds>)
         if (items.isNotEmpty()) insertItems(items)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertNote(note: NoteEntity)
+    public suspend fun insert<Entity>(<entity>: <Entity>Entity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertTags(tags: List<TagEntity>)
+    public suspend fun insert<RelatedEntities>(<relateds>: List<<RelatedEntity>Entity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertItems(items: List<ItemEntity>)
 
-    @Query("DELETE FROM note")
+    @Query("DELETE FROM <entity_table>")
     public suspend fun delete()
 
-    @Query("DELETE FROM note WHERE id = :id")
+    @Query("DELETE FROM <entity_table> WHERE id = :id")
     public suspend fun deleteById(id: String)
 
-    @Query("DELETE FROM note WHERE createdAt BETWEEN :from AND :to")
+    @Query("DELETE FROM <entity_table> WHERE createdAt BETWEEN :from AND :to")
     public suspend fun deleteByCreatedAtRange(from: String, to: String)
 
     @Query("""
-        DELETE FROM note
+        DELETE FROM <entity_table>
         WHERE createdAt BETWEEN :from AND :to
         AND id NOT IN (:ids)
     """)
@@ -131,7 +133,7 @@ public interface NoteDao {
 1. **`@Dao public interface <X>Dao`** — always `interface`, never `abstract class` (Room generates the impl).
 2. **Read-Flow accessors are named `get(...)` / `getById(...)`** — not `observe(...)`. They return `Flow<List<<X>Pack>>` for collections and `Flow<<X>Pack?>` for single records. The Repository layer renames them to `observe...` when re-exposed to the rest of the app.
 3. **Mutations are `suspend`.** Two upsert patterns coexist, chosen by whether the entity has cascading children:
-   - **`REPLACE` upsert** — for child entities and aggregate roots whose children are rewritten on every write. `@Insert(onConflict = OnConflictStrategy.REPLACE)` per entity (e.g. `insertNote`, `insertTags`, `insertItems`), composed by a `@Transaction suspend fun insertOrReplace(parent, children, grandchildren)` default-method that fans out the inserts in one DB transaction. Used for aggregate-root DAOs whose child rows are owned exclusively by the parent.
+   - **`REPLACE` upsert** — for child entities and aggregate roots whose children are rewritten on every write. `@Insert(onConflict = OnConflictStrategy.REPLACE)` per entity (e.g. `insert<Entity>`, `insertTags`, `insertItems`), composed by a `@Transaction suspend fun insertOrReplace(parent, children, grandchildren)` default-method that fans out the inserts in one DB transaction. Used for aggregate-root DAOs whose child rows are owned exclusively by the parent.
    - **Read-then-`@Insert` or `@Update`** — for parents whose children CASCADE on delete. `REPLACE` would drop and reinsert the parent row, taking the children with it. Instead: query for an existing row by id, then call `@Insert(onConflict = REPLACE) fun insert(...)` if absent or `@Update fun update(...)` if present, composed by a `@Transaction suspend fun insertOrUpdate(entity)` default-method. Used by `TokenDao`, `UserDao`, and any per-product DAO whose row owns CASCADE-linked children.
 4. **`@Insert(onConflict = OnConflictStrategy.REPLACE)`** — upsert semantics. Server is the source of truth; if it sends a record with an existing ID, overwrite. When the entity has cascading children, pair it with `@Update` and the `insertOrUpdate` pattern to preserve the children across writes.
 5. **`@Transaction` on `@Query` returning a `*Pack`** — Room executes the multi-table read in a single transaction. Without it, related rows could be inserted between the parent and child fetches.
@@ -150,38 +152,38 @@ For "all matching" queries (no range), expose `get()` with no args. Use sparingl
 The `deleteByCreatedAtRangeExceptIds(from, to, ids)` pattern is critical for cached collections:
 
 ```kotlin
-// inside NoteRepositoryImpl.getNotes()
-val response = api.getNotes(start = startUtc, end = endUtc)
+// inside <Entity>RepositoryImpl.get<Entities>()
+val response = api.get<Entities>(start = startUtc, end = endUtc)
 response.onSuccess { r ->
-    val actualIds = r.mapNotNull { note -> provideNote(note) }
+    val actualIds = r.mapNotNull { <entity> -> provide<Entity>(<entity>) }
     if (actualIds.isEmpty()) {
-        noteDao.deleteByCreatedAtRange(startUtc, endUtc)
+        <entity>Dao.deleteByCreatedAtRange(startUtc, endUtc)
     } else {
-        noteDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
+        <entity>Dao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
     }
 }
 ```
 
-`provideNote(...)` performs the upsert (`insertOrReplace(note, tags, items)`) and returns the parent id. After insertion, anything in the range **not** returned by the server is deleted locally. Stops "deleted on another device" rows from lingering forever.
+`provide<Entity>(...)` performs the upsert (`insertOrReplace(<entity>, <relateds>, items)`) and returns the parent id. After insertion, anything in the range **not** returned by the server is deleted locally. Stops "deleted on another device" rows from lingering forever.
 
 ## `*Pack` models
 
 Composite read models combining a parent entity with `@Relation`-loaded children. Live in `:data-services:database/models`.
 
 ```kotlin
-public data class NotePack(
-    @Embedded val note: NoteEntity,
+public data class <Entity>Pack(
+    @Embedded val <entity>: <Entity>Entity,
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "noteId",
-        entity = TagEntity::class,
+        entityColumn = "<entity>Id",
+        entity = <RelatedEntity>Entity::class,
     )
-    val tags: List<TagPack> = emptyList(),
+    val <relateds>: List<<RelatedEntity>Pack> = emptyList(),
 )
 
-public data class TagPack(
-    @Embedded val tag: TagEntity,
+public data class <RelatedEntity>Pack(
+    @Embedded val <related>: <RelatedEntity>Entity,
 
     @Relation(
         parentColumn = "categoryId",
@@ -191,7 +193,7 @@ public data class TagPack(
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "tagId",
+        entityColumn = "<related>Id",
         entity = ItemEntity::class,
     )
     val items: List<ItemEntity> = emptyList(),
@@ -204,7 +206,7 @@ public data class TagPack(
 2. **`@Embedded` is the **parent** entity** — flattens fields into the SQL columns.
 3. **`@Relation` for each child collection.** Room runs a separate query per relation, then groups by foreign key.
 4. **Default `= emptyList()`** for relation lists. Default `= null` for optional one-to-one relations.
-5. **Nested `*Pack`s** — `TagPack` references `CategoryEntity` via `@Relation` and includes `items`. Three levels of nesting is the practical limit; beyond that, query cost balloons.
+5. **Nested `*Pack`s** — `<RelatedEntity>Pack` references `CategoryEntity` via `@Relation` and includes `items`. Three levels of nesting is the practical limit; beyond that, query cost balloons.
 6. **`@Transaction` is required on the DAO query** returning a `*Pack` (see DAO rules).
 7. **Packs are read-only.** They're returned by DAO observers; mutations go through entity inserts/updates.
 
@@ -212,9 +214,9 @@ public data class TagPack(
 
 Without `@Relation`, you'd have to:
 
-1. Observe `NoteEntity`.
-2. For each note, observe `TagEntity` separately.
-3. For each tag, observe `ItemEntity` separately.
+1. Observe `<Entity>Entity`.
+2. For each `<entity>`, observe `<RelatedEntity>Entity` separately.
+3. For each `<related>`, observe `ItemEntity` separately.
 4. Combine in Kotlin with `combine(...)`.
 
 That's expensive (N+1 + reactive chaos) and fragile. `*Pack` + `@Relation` + `@Transaction` does it in one SQL transaction, returning a tree.

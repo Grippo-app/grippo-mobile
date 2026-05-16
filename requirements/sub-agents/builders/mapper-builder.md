@@ -134,8 +134,11 @@ If the build script is missing one of these, the orchestrator should escalate â€
 ### 4. Verify
 
 ```bash
+IOS_FW=$(rg -m1 '^iosFrameworkName:' requirements/00-overview/03-project-config.md | awk '{print $2}')
+IOS_FW=${IOS_FW:-shared}
+IOS_FW_PASCAL=$(echo "$IOS_FW" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 ./gradlew :data-mappers:<direction>:assemble
-./gradlew :shared:assembleSharedDebugXCFramework
+./gradlew ":$IOS_FW:assemble${IOS_FW_PASCAL}DebugXCFramework"
 ```
 
 Both must build green.
