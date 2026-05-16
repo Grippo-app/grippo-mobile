@@ -67,7 +67,7 @@ The reference repo configures `autoStart = true` in `ConnectivityModule`.
 
 - **`SharedFlow<Status>`** with `replay = 1` and `BufferOverflow.DROP_OLDEST`. The most recent status is replayed to new subscribers; older statuses are dropped if no consumer is ready.
 - **First emission** is the current status at subscription time.
-- **Distinct values** only — duplicate consecutive `Connected(metered = false)` emissions are filtered.
+- **No de-duplication.** `DefaultConnectivity` forwards every emission from the platform provider — Android's `onCapabilitiesChanged` can re-emit the same `Connected(...)` value. Apply `distinctUntilChanged()` at the call site if duplicates matter.
 
 ## Usage
 

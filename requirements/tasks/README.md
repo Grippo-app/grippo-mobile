@@ -54,9 +54,9 @@ The TASK file MUST include a `## Out of scope` section. Even if the section is s
    - Calls `helpers/task-intake` to classify the change and pick the builders.
    - Runs each builder.
    - Runs every applicable validator. Failures route back to the builder.
-   - Hands off to the Codex plugin for external review (if installed).
-   - Routes any Codex findings through `helpers/codex-review-loop` and loops.
-   - Reports done only when every validator passes and Codex has no findings.
+   - Hands off to an external reviewer — `helpers/codex-review-loop` when the Codex plugin is installed (and `codexEnabled` in `00-overview/03-project-config.md` permits), otherwise `helpers/internal-reviewer` as the Claude-backed fallback.
+   - Routes any reviewer findings back through the responsible builders and loops.
+   - Reports done only when every validator passes and the external reviewer is clean.
 
 See `requirements/sub-agents/README.md` for the full flow.
 

@@ -258,10 +258,10 @@ Use the full pipeline when the task touches the architecture (new feature, new d
 
 ## Self-calibration
 
-Sub-agent prompts drift the same way requirements do — a renamed class, a moved chapter, a deprecated rule. The `requirements/invalidate.md` file at section "Sub-agent auto-calibration" (line ~285) defines an iterative audit: it picks the lowest-audit-count agent, compares its prompt against the live `requirements/` and codebase, applies fixes, and increments the audit log. Run this monthly or after any large requirements refactor:
+Sub-agent prompts drift the same way requirements do — a renamed class, a moved chapter, a deprecated rule. `requirements/invalidate-sub.md` defines an iterative audit: it picks the lowest-audit-count row (agents + `lint.sh` + `tasks/README.md`), compares its claims against the live `requirements/` and codebase, applies fixes, and increments the audit log. Run hourly (or after any large requirements refactor):
 
 ```
-Feed the prompt under "Sub-agent auto-calibration" in requirements/invalidate.md to a fresh Claude session at the project root.
+Feed the prompt in requirements/invalidate-sub.md to a fresh Claude session at the project root.
 ```
 
-This is separate from `lint.sh` (which only catches mechanical drift like dead links, missing frontmatter, and README inventory mismatches).
+`invalidate-sub.md` is paired with `requirements/invalidate.md`, which owns the chapter audit (`requirements/00-overview/` … `14-cookbook/`). Run them independently; never concurrently. This is separate from `lint.sh` (which only catches mechanical drift like dead links, missing frontmatter, and README inventory mismatches).
