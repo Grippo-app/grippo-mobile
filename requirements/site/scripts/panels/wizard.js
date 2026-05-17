@@ -95,7 +95,18 @@
       if (hint) parts.push('Verify: ' + hint);
     }
     parts.push('');
-    parts.push("When every step is green and verify passes, report 'Bootstrap complete'.");
+    parts.push('========== FINAL REVIEW ==========');
+    parts.push('');
+    parts.push(
+      'After Step 14 finishes and both build gates are green, invoke an external reviewer on the full diff against the empty starting tree:'
+    );
+    parts.push('');
+    parts.push('  1. Read `codexEnabled` from `requirements/00-overview/03-project-config.md`.');
+    parts.push('  2. If `codexEnabled` is `true` or `auto` AND the Codex plugin is detectable (see requirements/sub-agents/helpers/orchestrator.md step 5 for detection rules), invoke the `codex-review-loop` agent on the full bootstrap diff.');
+    parts.push('  3. Otherwise, invoke the `internal-reviewer` agent on the full bootstrap diff.');
+    parts.push('  4. Route any findings to the relevant Step prompt above and re-run until the reviewer is clean.');
+    parts.push('');
+    parts.push("When every step is green, verify passes, and the external reviewer is clean, report 'Bootstrap complete'.");
     return parts.join('\n');
   }
 

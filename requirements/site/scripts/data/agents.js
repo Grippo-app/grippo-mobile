@@ -188,6 +188,13 @@
       what: 'Runs the two non-negotiable build gates: iOS XCFramework assemble (when iosEnabled) and :androidApp:assembleDebug.',
       when: 'Always — last gate before external review. Catches builders that reported done while builds were broken.',
       specPath: '../sub-agents/validators/build-validator.md'
+    },
+    {
+      name: 'scope-leak-validator',
+      role: 'validator',
+      what: "Diffs git against the task's Inputs/Acceptance/Out of scope. Flags unauthorised files, explicit Out-of-scope violations, and TODO/FIXME markers the agent inserted during the task.",
+      when: 'Always — final scope gate. Catches the "agent did extra stuff" leaks the other validators can\'t see.',
+      specPath: '../sub-agents/validators/scope-leak-validator.md'
     }
   ];
 })();

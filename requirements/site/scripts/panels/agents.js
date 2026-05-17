@@ -58,7 +58,7 @@
     'ln -sf "$(pwd)/requirements/sub-agents/validators/"*.md .claude/agents/\n' +
     'ln -sf "$(pwd)/requirements/sub-agents/helpers/"*.md    .claude/agents/\n' +
     '\n' +
-    'Then verify: ls .claude/agents/ | wc -l should print 24 (10 builders + 8 validators + 6 helpers).';
+    'Then verify: ls .claude/agents/ | wc -l should print 25 (10 builders + 9 validators + 6 helpers).';
 
   function renderBlurb() {
     sectionEl.appendChild(el('h2', { class: 'panel-title', text: 'Sub-agents' }));
@@ -101,7 +101,7 @@
     verifyWrap.appendChild(codeBlock('ls .claude/agents/ | wc -l'));
     verifyWrap.appendChild(el('p', {
       class: 'panel-lead',
-      text: 'Expected: 24 entries — 10 builders + 8 validators + 6 helpers.'
+      text: 'Expected: 25 entries — 10 builders + 9 validators + 6 helpers.'
     }));
     sectionEl.appendChild(verifyWrap);
   }

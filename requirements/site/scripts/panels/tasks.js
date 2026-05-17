@@ -162,6 +162,17 @@
     return out;
   }
 
+  // Default Out-of-scope bullets. Forces the agent to declare blast radius
+  // upfront. scope-leak-validator literally greps for these lines against the
+  // diff, so keep them in literal-match form (paths, file globs).
+  var DEFAULT_OUT_OF_SCOPE = [
+    '- no new entries in gradle/libs.versions.toml (new deps need user discussion)',
+    '- no changes to CLAUDE.md or requirements/**',
+    '- no changes to build-logic/** convention plugins',
+    '- no schema migration (Database.kt version, migrations/*) — separate task',
+    '- no TODO/FIXME markers left in code the task claims as done'
+  ].join('\n');
+
   function defaults(state) {
     var prog = (state && state.progress) || {};
     return {
@@ -171,7 +182,7 @@
       goal: '',
       inputs: '',
       acceptance: '',
-      outOfScope: '- nothing else',
+      outOfScope: DEFAULT_OUT_OF_SCOPE,
       dependsOn: '',
       selectedKinds: []
     };
@@ -211,7 +222,7 @@
     }
 
     if (bulletize(values.outOfScope).length === 0) {
-      errors.outOfScope = 'Required — write "nothing else" if the boundary is trivial.';
+      errors.outOfScope = 'Required — at minimum keep the pre-filled defaults; add task-specific exclusions above them.';
     }
 
     return errors;
@@ -333,24 +344,18 @@
     return null;
   }
 
-  // The shared App.dom.el helper currently emits data-attribute names
-  // verbatim via setAttribute, which the HTML parser lowercases. So
-  // `data: { taskField: 'goal' }` lands as `data-taskfield="goal"` not
-  // `data-task-field="goal"`. Probe both spellings so this code is robust
-  // to either behaviour (and works once that helper is fixed).
+  // Helpers scope kind-checkbox queries to sectionEl (the picker fieldset
+  // lives outside `form`), and task-field queries to the form.
   function findField(root, name) {
     if (!root) return null;
-    return root.querySelector('[data-task-field="' + name + '"]') ||
-      root.querySelector('[data-taskfield="' + name + '"]');
+    return root.querySelector('[data-task-field="' + name + '"]');
   }
   function findKindCheckboxes(root) {
     if (!root) return [];
-    var nodes = root.querySelectorAll('[data-builder-kind]');
-    if (nodes.length === 0) nodes = root.querySelectorAll('[data-builderkind]');
-    return nodes;
+    return root.querySelectorAll('[data-builder-kind]');
   }
   function kindOfCheckbox(cb) {
-    return cb.getAttribute('data-builder-kind') || cb.getAttribute('data-builderkind');
+    return cb.getAttribute('data-builder-kind');
   }
 
   function formHasUserContent(form) {
@@ -363,7 +368,7 @@
       if (inp && String(inp.value || '').length > 0) return true;
     }
     var oos = findField(form, 'outOfScope');
-    if (oos && String(oos.value || '') !== '- nothing else') return true;
+    if (oos && String(oos.value || '') !== DEFAULT_OUT_OF_SCOPE) return true;
     var cbs = findKindCheckboxes(sectionEl || form);
     for (var k = 0; k < cbs.length; k++) {
       if (cbs[k].checked) return true;
@@ -373,12 +378,15 @@
 
   function applyPreset(form, preset) {
     var setup = (App.store.get() || {}).setup || {};
+    // Presets seed task-specific Out-of-scope exclusions; append the always-on
+    // guards (DEFAULT_OUT_OF_SCOPE) so scope-leak-validator's literal-match
+    // anchors are present even on preset-generated tasks.
     var fields = {
       friendlyTitle: preset.friendlyTitle,
       goal: preset.goal,
       inputs: preset.inputs,
       acceptance: preset.acceptance,
-      outOfScope: preset.outOfScope
+      outOfScope: preset.outOfScope + '\n' + DEFAULT_OUT_OF_SCOPE
     };
     var keys = Object.keys(fields);
     for (var i = 0; i < keys.length; i++) {
@@ -750,7 +758,7 @@
       label: 'Out of scope',
       rows: 3,
       value: vals.outOfScope,
-      help: 'Explicit non-goals. Required even if trivial. Prevents builders from drifting.'
+      help: 'Pre-filled with the always-on guards scope-leak-validator checks against. Add task-specific exclusions ABOVE the defaults; don’t delete the defaults unless your task explicitly authorises that surface.'
     }));
 
     form.appendChild(buildTextarea({
@@ -786,7 +794,7 @@
     fs.appendChild(el('div', { class: 'task-selected-builders', data: { selectedBuilders: '' } }));
     fs.appendChild(el('p', {
       class: 'panel-lead task-validators-line',
-      text: 'Validators that run on every task: architecture-validator, mvi-contract-validator, anti-pattern-scanner, naming-convention-validator, di-validator, compose-stability-validator, data-layer-validator, build-validator.'
+      text: 'Validators that run on every task: architecture-validator, mvi-contract-validator, anti-pattern-scanner, naming-convention-validator, di-validator, compose-stability-validator, data-layer-validator, build-validator, scope-leak-validator.'
     }));
     // Delegate change events on the builder-kind checkboxes — they live
     // outside `form`, so wireForm(form) does not catch them.

@@ -43,7 +43,7 @@ flowchart TD
     Orchestrator --> Builders[builders sequential/parallel]
     Builders --> Diff{Diff sanity check}
     Diff -->|empty diff| Builders
-    Diff -->|OK| Validators[8 validators parallel]
+    Diff -->|OK| Validators[9 validators parallel]
     Validators -->|findings| Dedup{Dedup + route}
     Dedup -->|fix needed| Builders
     Dedup -->|all green| Acceptance{Acceptance check}
@@ -150,6 +150,7 @@ These markdown files are written in the standard Claude Code sub-agent format (Y
 | `compose-stability-validator` | `@Immutable` on state, `ImmutableList`/`ImmutableSet`, no `mutableStateOf` for logical state, no inline `dp`/`sp`/colors outside design-system. | `09-conventions/04-compose-rules.md`, `13-anti-patterns/01-forbidden-patterns.md` |
 | `data-layer-validator` | DTO all-nullable + default `= null`, Repository returns domain (never DTO), mappers via `:data-mappers:*`, range reconciliation, `AppLogger.Mapping.log` in DTO→Entity. | `06-data-layer/*`, `07-mappers/*` |
 | `build-validator` | iOS XCFramework assemble (task name derived from `iosFrameworkName`, gated by `iosEnabled`) and `./gradlew :androidApp:assembleDebug` both green. | n/a — runs Gradle directly. |
+| `scope-leak-validator` | Diffs `git` against the task's `Inputs`/`Acceptance`/`Out of scope`. Flags unauthorised files, explicit Out-of-scope violations, and `TODO`/`FIXME` markers the agent inserted during the task. | `13-anti-patterns/02-when-to-stop-and-ask.md`, the task file itself |
 
 ### Helpers
 
@@ -210,12 +211,12 @@ What happens (abbreviated):
 
 1. **orchestrator** spawns **task-intake**. Plan returns:
    - Builders: `screen-builder`.
-   - Validators: all 8.
+   - Validators: all 9.
    - No blockers.
 2. **orchestrator** spawns **context-finder** with: "where is `ProfileComponent`? where is `ProfileRouter`? does `NoteFeature` exist?". Returns 4 file paths + signatures.
 3. **orchestrator** spawns **screen-builder** with task content + context excerpts. Builder writes 7 files in `ui-screen-features/profile/.../notearchive/`, edits `ProfileRouter.kt`, edits `ProfileComponent.kt`. Reports done.
 4. **orchestrator** runs Diff sanity check — 9 files changed, all under `ui-screen-features/profile/`. OK.
-5. **orchestrator** spawns 8 validators in parallel. `mvi-contract-validator` flags 1 finding: `ProfileNoteArchiveContract.Empty` is missing the `onRangeChange` no-op. `naming-convention-validator` flags the same finding (dup).
+5. **orchestrator** spawns 9 validators in parallel. `mvi-contract-validator` flags 1 finding: `ProfileNoteArchiveContract.Empty` is missing the `onRangeChange` no-op. `naming-convention-validator` flags the same finding (dup).
 6. **orchestrator** dedupes → routes 1 finding to `screen-builder`. Builder fixes. Validators re-run, all green. `build-validator`: 2/2 PASS.
 7. **orchestrator** runs Acceptance check — grep `ProfileRouter.NoteArchive` in changed files: hit. Acceptance bullet 1 met.
 8. **orchestrator** resolves the external reviewer per `codexEnabled` + Codex detection, invokes **codex-review-loop** or **internal-reviewer**. Returns clean.

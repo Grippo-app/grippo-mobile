@@ -85,7 +85,10 @@ Before invoking the first builder, capture the workspace state:
 ```bash
 PRE_TASK_SHA=$(git rev-parse HEAD)
 git status --porcelain > /tmp/orchestrator_pre_task_status.txt
+echo "$PRE_TASK_SHA" > /tmp/orchestrator_pre_task_sha.txt
 ```
+
+The SHA file (`/tmp/orchestrator_pre_task_sha.txt`) is the contract `scope-leak-validator` reads to diff the current working tree against the pre-task state. Keep this write — removing it makes scope-leak fall back to `HEAD~1`, which is wrong when the orchestrator hasn't committed mid-task.
 
 On any escalation, build failure that resists 2 builder retries, or user-initiated halt, surface this rollback hint to the user verbatim:
 
@@ -181,7 +184,7 @@ Once all builders in the plan have reported done, run **every applicable** valid
 Agent × N (one per validator) in a single message
 ```
 
-The plan from `task-intake` told you which validators apply. Always include `build-validator` last (or in parallel — it runs Gradle, the others read files; they don't conflict).
+The plan from `task-intake` told you which validators apply. Always include `build-validator` last (or in parallel — it runs Gradle, the others read files; they don't conflict). Also always include `scope-leak-validator` regardless of what `task-intake` returned — it runs on every task to enforce the `Inputs`/`Acceptance`/`Out of scope` boundary the user wrote.
 
 Collect findings.
 
