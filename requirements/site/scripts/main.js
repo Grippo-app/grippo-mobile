@@ -99,7 +99,8 @@
       wizard: App.panels.wizard,
       agents: App.panels.agents,
       codex: App.panels.codex,
-      tasks: App.panels.tasks
+      tasks: App.panels.tasks,
+      'tasks-list': App.panels['tasks-list']
     });
     wirePointer();
     wireReset();

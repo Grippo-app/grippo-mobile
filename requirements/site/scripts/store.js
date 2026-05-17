@@ -10,7 +10,8 @@
       progress: {
         setupDone: false,
         wizardStepsDone: [],
-        taskCounter: 1
+        taskCounter: 1,
+        taskHistory: []
       }
     };
   }
@@ -75,6 +76,9 @@
     }
     if (typeof parsed.progress.taskCounter !== 'number') {
       parsed.progress.taskCounter = seed.progress.taskCounter;
+    }
+    if (!Array.isArray(parsed.progress.taskHistory)) {
+      parsed.progress.taskHistory = seed.progress.taskHistory;
     }
     cache = parsed;
     return clone(cache);

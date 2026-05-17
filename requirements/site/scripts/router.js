@@ -1,7 +1,7 @@
 (function () {
   window.App = window.App || {};
 
-  var ALLOWED = ['setup', 'wizard', 'agents', 'codex', 'tasks'];
+  var ALLOWED = ['setup', 'wizard', 'agents', 'codex', 'tasks', 'tasks-list'];
   var DEFAULT = 'setup';
 
   var panels = null;

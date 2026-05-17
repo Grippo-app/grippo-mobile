@@ -841,7 +841,16 @@
       var prog = App.store.get().progress || {};
       var current = prog.taskCounter || 1;
       var next = current + 1;
-      App.store.saveProgress({ taskCounter: next });
+      var hist = (App.store.get().progress || {}).taskHistory || [];
+      hist = hist.concat([{
+        n: parseInt(formValues.taskNumber, 10) || current,
+        filename: fn,
+        friendlyTitle: String(formValues.friendlyTitle || '').trim(),
+        createdAt: new Date().toISOString(),
+        status: 'active',
+        doneAt: null
+      }]);
+      App.store.saveProgress({ taskCounter: next, taskHistory: hist });
       showInstructionToast(
         fn,
         'Pasted into Claude? Counter advanced to ' + next +
@@ -863,7 +872,17 @@
       App.clipboard.copy(md);
       var prog = App.store.get().progress || {};
       var current = prog.taskCounter || 1;
-      App.store.saveProgress({ taskCounter: current + 1 });
+      var next = current + 1;
+      var hist = (App.store.get().progress || {}).taskHistory || [];
+      hist = hist.concat([{
+        n: parseInt(formValues.taskNumber, 10) || current,
+        filename: fn,
+        friendlyTitle: String(formValues.friendlyTitle || '').trim(),
+        createdAt: new Date().toISOString(),
+        status: 'active',
+        doneAt: null
+      }]);
+      App.store.saveProgress({ taskCounter: next, taskHistory: hist });
       showInstructionToast(fn);
     });
     actions.appendChild(saveAction);

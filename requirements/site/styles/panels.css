@@ -790,3 +790,62 @@
     overflow-y: auto;
   }
 }
+
+/* ============================================================
+   Task History panel (P8)
+   ============================================================ */
+
+.task-history-counts {
+  margin: 8px 0 4px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.task-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 8px 0 8px;
+}
+
+.task-history-card {
+  padding: 12px 14px;
+  gap: 6px;
+}
+
+.task-history-title {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+.task-history-filename {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--fg);
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.task-history-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.task-history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.task-history-actions .btn {
+  padding: 4px 10px;
+  font-size: 0.8125rem;
+}
