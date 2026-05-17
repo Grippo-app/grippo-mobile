@@ -1,0 +1,201 @@
+.btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+.btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.code-block-wrapper {
+  position: relative;
+  margin: 12px 0;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: pre;
+  margin: 0;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent);
+}
+
+.banner {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin: 12px 0;
+  font-size: 0.9375rem;
+}
+
+.banner--info {
+  background: var(--banner-info-bg);
+  border-color: var(--banner-info-border);
+}
+
+.banner--warn {
+  background: var(--banner-warn-bg);
+  border-color: var(--banner-warn-border);
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg);
+}
+
+.toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.toast.toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.copy-btn--copied {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.next-pointer {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  max-width: 280px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 32px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 90;
+  font-size: 0.875rem;
+}
+
+.next-pointer[hidden] {
+  display: none;
+}
+
+.next-pointer-label {
+  margin: 0;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.next-pointer-text {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.next-pointer-link {
+  align-self: flex-start;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.next-pointer-link:hover {
+  text-decoration: underline;
+}
+
+.next-pointer-close {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.next-pointer-close:hover {
+  color: var(--fg);
+}
+
+body.no-pointer .next-pointer {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .next-pointer {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+  }
+}

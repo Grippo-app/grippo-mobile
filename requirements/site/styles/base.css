@@ -1,0 +1,139 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  --accent: #2563eb;
+  --accent-fg: #ffffff;
+  --border: #e5e5e5;
+  --code-bg: #f6f6f6;
+  --banner-info-bg: #eef4ff;
+  --banner-warn-bg: #fff5e6;
+  --banner-info-border: #c6dafc;
+  --banner-warn-border: #f0c98a;
+  --toast-bg: #1a1a1a;
+  --toast-fg: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --fg: #e8e8e8;
+    --muted: #9ba3ad;
+    --accent: #5b8def;
+    --accent-fg: #0b0c0e;
+    --border: #2a2f36;
+    --code-bg: #1a1e23;
+    --banner-info-bg: #18243d;
+    --banner-warn-bg: #3a2a14;
+    --banner-info-border: #2d4575;
+    --banner-warn-border: #7a5320;
+    --toast-bg: #e8e8e8;
+    --toast-fg: #1a1a1a;
+  }
+}
+
+header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.header-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nav-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.nav-btn:hover {
+  border-color: var(--accent);
+}
+
+.nav-btn[aria-current="page"] {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.panel {
+  display: block;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+footer {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+a {
+  color: var(--accent);
+}
