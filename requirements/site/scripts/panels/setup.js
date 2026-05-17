@@ -87,6 +87,10 @@
 
   var CODEX_VALUES = ['auto', 'true', 'false'];
 
+  // SYNC: mirrors the body of requirements/00-overview/03-project-config.md
+  // (everything after the YAML frontmatter). When you edit that file, update
+  // this constant — the site renders the download from CONFIG_BODY, not from
+  // disk (file:// has no fetch).
   var CONFIG_BODY = [
     '> **Fresh-project state.** Every value in the frontmatter above is a placeholder or a neutral default. Before invoking any sub-agent (`orchestrator`, builders, validators), replace every `<placeholder>` with project-specific values per `requirements/launch.md` Step 1.5. Empty arrays (`featuresWithRootComponentSuffix: []`, `diHandWrittenModules: []`) stay empty until the project actually needs them — sub-agents update them on demand.',
     '',
@@ -210,51 +214,6 @@
     return errors;
   }
 
-  function sortLocales(arr) {
-    var out = arr.indexOf('en') >= 0 ? ['en'] : [];
-    var rest = arr.filter(function (l) { return l !== 'en'; }).sort();
-    return out.concat(rest);
-  }
-
-  function diHandWritten(setup) {
-    var mods = [];
-    if (setup.authMethods.indexOf('google') >= 0) mods.push('GoogleAuthModule');
-    if (setup.authMethods.indexOf('apple')  >= 0) mods.push('AppleAuthModule');
-    return mods;
-  }
-
-  function buildYaml(setup) {
-    var pkg     = derivedProductPackage(setup) || 'com.<product>';
-    var product = setup.productName || '<Product>';
-    var appId   = setup.applicationId || (pkg + '.android');
-    var host    = setup.backendHost || '<product-domain>.com';
-    var ios     = setup.iosFrameworkName || 'shared';
-    var face    = setup.typefaceFactory || '<typeface>';
-
-    var lines = ['---'];
-    lines.push('productName: ' + product);
-    lines.push('productPackage: ' + pkg);
-    lines.push('apiClassName: ' + product + 'Api');
-    lines.push('backendHost: ' + host);
-    lines.push('applicationId: ' + appId);
-    lines.push('iosFrameworkName: ' + ios);
-    lines.push('iosEnabled: ' + (setup.iosEnabled ? 'true' : 'false'));
-    lines.push('firebaseEnabled: ' + (setup.firebaseEnabled ? 'true' : 'false'));
-    lines.push('codexEnabled: ' + (setup.codexEnabled || 'auto'));
-    lines.push('prelaunch: ' + (setup.prelaunch ? 'true' : 'false'));
-    lines.push('supportedLocales:');
-    var locales = sortLocales(setup.supportedLocales.slice());
-    for (var i = 0; i < locales.length; i++) {
-      lines.push('  - ' + locales[i]);
-    }
-    lines.push('typefaceFactory: ' + face);
-    lines.push('featuresWithRootComponentSuffix: []');
-    var mods = diHandWritten(setup);
-    lines.push('diHandWrittenModules: ' + (mods.length === 0 ? '[]' : '[' + mods.join(', ') + ']'));
-    lines.push('---');
-    return lines.join('\n');
-  }
-
   function installCommandsText() {
     return [
       'mkdir -p .claude/agents',
@@ -265,7 +224,7 @@
   }
 
   function downloadConfigMd(setup) {
-    var content = buildYaml(setup) + '\n\n' + CONFIG_BODY;
+    var content = App.helpers.buildYaml(setup) + '\n\n' + CONFIG_BODY;
     try {
       var blob = new Blob([content], { type: 'text/markdown' });
       var url = URL.createObjectURL(blob);
@@ -429,7 +388,7 @@
       debouncedSaveSetup(snap);
       var errs = validate(snap);
       var yamlEl = sectionEl.querySelector('#setup-yaml');
-      if (yamlEl) yamlEl.textContent = buildYaml(snap);
+      if (yamlEl) yamlEl.textContent = App.helpers.buildYaml(snap);
       refreshErrors(form, errs);
       updatePrimaryState(snap, errs);
     }
@@ -577,7 +536,7 @@
       class: 'panel-lead',
       text: 'Replace the frontmatter block (between the first two --- delimiters) in requirements/00-overview/03-project-config.md with the YAML below.'
     }));
-    var yaml = codeBlock(buildYaml(setup));
+    var yaml = codeBlock(App.helpers.buildYaml(setup));
     yaml.code.id = 'setup-yaml';
     sectionEl.appendChild(yaml.wrap);
 

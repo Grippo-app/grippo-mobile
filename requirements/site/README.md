@@ -53,6 +53,21 @@ Editing the wizard? Edit files under `requirements/site/scripts/` and
 repo root regenerate the site from scratch if you ever need a clean
 rebuild.
 
+### Sync points
+
+The site cannot fetch from disk (it runs under `file://`), so a few
+chunks of content are mirrored in JS and must be kept in sync by hand:
+
+- `CONFIG_BODY` in `scripts/panels/setup.js` mirrors the body of
+  `requirements/00-overview/03-project-config.md` (everything after the
+  YAML frontmatter). The Setup panel's "Download .md" button builds the
+  file from `App.helpers.buildYaml(setup) + CONFIG_BODY`. If you edit
+  the real `.md` body, update `CONFIG_BODY` too.
+- `App.helpers.buildYaml` lives in `scripts/data/wizard-steps.js` and
+  is the single source of truth for the YAML frontmatter. All three
+  consumers (Setup preview, Setup download, Wizard single-shot prompt)
+  call it — do not re-implement.
+
 ## Portability
 
 The site lives at `requirements/site/`, so it travels with

@@ -245,6 +245,27 @@
     App.clipboard.attach(singleShot, buildSingleShotPrompt);
     headerActions.appendChild(singleShot);
 
+    if (!App.helpers.wizardComplete(state)) {
+      var markAllDone = el('button', {
+        type: 'button',
+        class: 'btn',
+        text: 'Mark all steps done'
+      });
+      markAllDone.addEventListener('click', function () {
+        var ok = window.confirm(
+          'Mark every wizard step as done? Use this only after the single-shot prompt finished and the build is green. Undo via "Reset wizard state" in the footer.'
+        );
+        if (!ok) return;
+        var ids = [];
+        for (var i = 0; i < steps.length; i++) {
+          if (!App.helpers.isAutoSkipped(steps[i], setup)) ids.push(steps[i].id);
+        }
+        App.store.saveProgress({ wizardStepsDone: ids });
+        render();
+      });
+      headerActions.appendChild(markAllDone);
+    }
+
     var retemplate = el('button', {
       type: 'button',
       class: 'btn',
