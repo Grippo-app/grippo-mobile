@@ -172,6 +172,34 @@
     return lines.join('\n');
   }
 
+  function buildStep11(setup) {
+    var firebase = setup.firebaseEnabled !== false;
+    var ios = setup.iosFrameworkName || 'shared';
+    var lines = [];
+    lines.push('Step 11 — implement :iosApp');
+    lines.push('');
+    lines.push('Read first:');
+    lines.push('- requirements/launch.md (Step 11)');
+    lines.push('');
+    lines.push('Human handoff. Steps in this section require Xcode GUI interactions (creating the project, drag-and-drop XCFramework). The agent cannot perform these. Prepare the templates as fully as possible, then surface a clear handoff to the user with the exact list of clicks they need to perform.');
+    lines.push('');
+    lines.push('Create the Xcode project at `iosApp/` with:');
+    lines.push('');
+    if (firebase) {
+      lines.push('- `iOSApp.swift` — `@main` struct calling `FirebaseApp.configure()` and `KoinKt.doInit { _ in }`.');
+    } else {
+      lines.push('- `iOSApp.swift` — `@main` struct calling `KoinKt.doInit { _ in }`.');
+    }
+    lines.push('- `ContentView.swift` — wraps `mainViewController()` from `:shared`.');
+    lines.push('- `Info.plist` — basic.');
+    if (firebase) {
+      lines.push('- `GoogleService-Info.plist` — placeholder.');
+    }
+    lines.push('');
+    lines.push('In Xcode, link `' + ios + '.xcframework` (drag-and-drop after running the XCFramework assemble task from Step 9).');
+    return lines.join('\n');
+  }
+
   function buildStep12(setup) {
     var ios = setup.iosFrameworkName || 'shared';
     var iosCap = ios.charAt(0).toUpperCase() + ios.slice(1);
@@ -492,24 +520,6 @@
     'Verify: `./gradlew :<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework`.'
   ].join('\n');
 
-  TPL.step11 = [
-    'Step 11 — implement :iosApp',
-    '',
-    'Read first:',
-    '- requirements/launch.md (Step 11)',
-    '',
-    'Human handoff. Steps in this section require Xcode GUI interactions (creating the project, drag-and-drop XCFramework). The agent cannot perform these. Prepare the templates as fully as possible, then surface a clear handoff to the user with the exact list of clicks they need to perform.',
-    '',
-    'Create the Xcode project at `iosApp/` with:',
-    '',
-    '- `iOSApp.swift` — `@main` struct calling `FirebaseApp.configure()` and `KoinKt.doInit { _ in }`.',
-    '- `ContentView.swift` — wraps `mainViewController()` from `:shared`.',
-    '- `Info.plist` — basic.',
-    '- `GoogleService-Info.plist` — placeholder.',
-    '',
-    'In Xcode, link `<iosFrameworkName>.xcframework` (drag-and-drop after running the XCFramework assemble task from Step 9).'
-  ].join('\n');
-
   TPL.step13 = [
     'Step 13 — write CLAUDE.md',
     '',
@@ -681,7 +691,7 @@
       id: '11',
       title: 'Step 11 — implement :iosApp',
       hook: 'Xcode handoff — the agent stages the Swift files; the user wires Xcode UI.',
-      promptTemplate: TPL.step11,
+      build: buildStep11,
       verifyHint: 'Xcode build succeeds and the iOS app launches in the simulator.',
       skipWhen: function (setup) { return setup.iosEnabled === false; },
       skipReason: 'iOS targets disabled in Setup — nothing to do for this step.'

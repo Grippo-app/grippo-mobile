@@ -50,6 +50,7 @@ This folder contains the system requirements for a new Kotlin Multiplatform (KMP
 ### Iteration
 
 - `launch.md` — the iterative prompt used to bootstrap a new project from scratch using these requirements.
+- `site/` — single-page static UI for `launch.md`; see "Interactive bootstrap wizard" below.
 
 ## Reference project
 
@@ -84,6 +85,16 @@ Per-project values (productName, locales, prelaunch flag, etc.) live in `require
 ## What ships to a new project
 
 `requirements/` is the portable package — copy this entire folder to a new KMP project's root and follow `launch.md`. Everything inside `requirements/` is project-agnostic (after applying `launch.md` Step 1.5 substitutions).
+
+## Interactive bootstrap wizard
+
+`requirements/site/` is a single-page static site that walks through `launch.md` step-by-step — Setup form, templated prompts per step, verify hints, sub-agent install commands, and a task-file generator. No build step, no server, no network — opens directly under `file://`:
+
+```bash
+open requirements/site/index.html
+```
+
+See `requirements/site/README.md` for the panel summary.
 
 ## Sub-agents — install before first use
 
