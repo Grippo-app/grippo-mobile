@@ -3,6 +3,7 @@
   App.panels = App.panels || {};
 
   var sectionEl = null;
+  var lastActiveStepId = null;
 
   // ----------------------------------------------------------------------
   // DOM helper — el() lives in scripts/dom.js (App.dom.el).
@@ -48,6 +49,16 @@
     var skipped = autoSkippedIds(setup);
     for (var j = 0; j < skipped.length; j++) set[skipped[j]] = true;
     return set;
+  }
+
+  function findActiveStep(steps, setup, doneSet) {
+    for (var i = 0; i < steps.length; i++) {
+      var s = steps[i];
+      if (App.helpers.isAutoSkipped(s, setup)) continue;
+      if (doneSet[s.id]) continue;
+      return s.id;
+    }
+    return null;
   }
 
   function renderStepBody(step, setup) {
@@ -131,12 +142,13 @@
     sectionEl.appendChild(banner);
   }
 
-  function renderStep(step, setup, doneSet, prevDone) {
+  function renderStep(step, setup, doneSet, prevDone, isActive) {
     var skipped = App.helpers.isAutoSkipped(step, setup);
     var details = el('details', {
       class: 'wizard-step',
       data: { 'step-id': step.id, skipped: skipped ? 'true' : 'false' }
     });
+    if (isActive) details.open = true;
 
     // Summary row.
     var summary = el('summary');
@@ -283,14 +295,30 @@
     }));
 
     // Stepper.
+    var activeStepId = findActiveStep(steps, setup, doneSet);
     var stepper = el('div', { class: 'wizard-stepper' });
     var prevDone = true; // Step 0 has no predecessor; treat as "previous done".
     for (var i = 0; i < steps.length; i++) {
       var step = steps[i];
-      stepper.appendChild(renderStep(step, setup, doneSet, prevDone));
+      stepper.appendChild(renderStep(step, setup, doneSet, prevDone, step.id === activeStepId));
       prevDone = doneSet[step.id] === true;
     }
     sectionEl.appendChild(stepper);
+
+    // Smooth-scroll + focus the next checkbox only when the active step
+    // CHANGED across renders. Skips the initial mount (lastActiveStepId === null)
+    // so we don't yank the user's viewport or steal focus on first visit.
+    var shouldNavigate = activeStepId && activeStepId !== lastActiveStepId && lastActiveStepId !== null;
+    lastActiveStepId = activeStepId;
+    if (shouldNavigate) {
+      setTimeout(function () {
+        var elx = sectionEl.querySelector('[data-step-id="' + activeStepId + '"]');
+        if (!elx) return;
+        elx.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var cb = elx.querySelector('input[type="checkbox"]');
+        if (cb) cb.focus();
+      }, 0);
+    }
 
     // Closing card.
     if (App.helpers.wizardComplete(state)) {
@@ -310,6 +338,7 @@
   App.panels.wizard = {
     mount: function (rootEl) {
       sectionEl = rootEl;
+      lastActiveStepId = null;
       render();
     },
     refresh: function () {

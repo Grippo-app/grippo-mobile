@@ -132,6 +132,48 @@
   margin: 16px 0 32px;
 }
 
+.save-indicator {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  vertical-align: middle;
+}
+
+.save-indicator--visible {
+  opacity: 1;
+}
+
+.setup-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setup-col--preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+@media (min-width: 1200px) {
+  .setup-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .setup-col--preview {
+    position: sticky;
+    top: 88px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+}
+
 /* ============================================================
    Wizard panel (P3)
    ============================================================ */
@@ -720,4 +762,31 @@
   text-align: center;
   white-space: normal;
   line-height: 1.4;
+}
+
+.task-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-col--preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+@media (min-width: 1200px) {
+  .task-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .task-col--preview {
+    position: sticky;
+    top: 88px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
 }

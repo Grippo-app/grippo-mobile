@@ -728,15 +728,25 @@
 
     while (sectionEl.firstChild) sectionEl.removeChild(sectionEl.firstChild);
 
+    // Two-column layout wrapper: LEFT = form + checks + action, RIGHT
+    // (sticky on ≥1200px) = YAML preview + download. Below 1200px the
+    // wrapper collapses to a single column via flex-direction: column.
+    var layout = el('div', { class: 'setup-layout' });
+    var leftCol = el('div', { class: 'setup-col setup-col--form' });
+    var rightCol = el('div', { class: 'setup-col setup-col--preview' });
+
     if (setupDone) {
-      sectionEl.appendChild(el('div', {
+      leftCol.appendChild(el('div', {
         class: 'banner banner--info',
         text: 'Setup complete. You can re-edit values and re-mark complete to update the YAML.'
       }));
     }
 
-    sectionEl.appendChild(el('h2', { class: 'panel-title', text: 'Project configuration' }));
-    sectionEl.appendChild(el('p', {
+    leftCol.appendChild(el('h2', { class: 'panel-title' }, [
+      document.createTextNode('Project configuration '),
+      el('span', { class: 'save-indicator', text: 'Saved', attrs: { 'aria-live': 'polite' } })
+    ]));
+    leftCol.appendChild(el('p', {
       class: 'panel-lead',
       text: 'These values populate the YAML frontmatter of requirements/00-overview/03-project-config.md and seed the templated prompts in the Launch Wizard.'
     }));
@@ -745,12 +755,12 @@
     // fresh file input + status slot — listeners are wired below, so we do
     // not leak handlers across renders.
     var importUi = buildImportSection();
-    sectionEl.appendChild(importUi.wrap);
+    leftCol.appendChild(importUi.wrap);
     wireImport(importUi.input, importUi.status);
 
     var form = el('form', { class: 'setup-form', attrs: { novalidate: '', autocomplete: 'off' } });
     form.addEventListener('submit', function (e) { e.preventDefault(); });
-    sectionEl.appendChild(form);
+    leftCol.appendChild(form);
 
     for (var i = 0; i < FIELDS.length; i++) {
       form.appendChild(buildTextField(FIELDS[i], setup[FIELDS[i].name] || '', errors[FIELDS[i].name]));
@@ -837,15 +847,15 @@
     codexFs.appendChild(codexRow);
     form.appendChild(codexFs);
 
-    // YAML preview
-    sectionEl.appendChild(el('h3', { class: 'panel-section-title', text: 'YAML preview' }));
-    sectionEl.appendChild(el('p', {
+    // YAML preview — RIGHT column (sticky on ≥1200px).
+    rightCol.appendChild(el('h3', { class: 'panel-section-title', text: 'YAML preview' }));
+    rightCol.appendChild(el('p', {
       class: 'panel-lead',
       text: 'Replace the frontmatter block (between the first two --- delimiters) in requirements/00-overview/03-project-config.md with the YAML below.'
     }));
     var yaml = codeBlock(App.helpers.buildYaml(setup));
     yaml.code.id = 'setup-yaml';
-    sectionEl.appendChild(yaml.wrap);
+    rightCol.appendChild(yaml.wrap);
 
     var yamlActions = el('div', { class: 'setup-action' });
     var downloadBtn = el('button', {
@@ -860,11 +870,11 @@
       downloadConfigMd(snap);
     });
     yamlActions.appendChild(downloadBtn);
-    sectionEl.appendChild(yamlActions);
+    rightCol.appendChild(yamlActions);
 
-    // Completion checks
-    sectionEl.appendChild(el('h3', { class: 'panel-section-title', text: 'Completion checks' }));
-    sectionEl.appendChild(el('p', {
+    // Completion checks — LEFT column.
+    leftCol.appendChild(el('h3', { class: 'panel-section-title', text: 'Completion checks' }));
+    leftCol.appendChild(el('p', {
       class: 'panel-lead',
       text: 'The site cannot inspect your filesystem — tick each box yourself once you have done the corresponding step.'
     }));
@@ -906,9 +916,9 @@
     }));
     checksList.appendChild(cItem);
 
-    sectionEl.appendChild(checksList);
+    leftCol.appendChild(checksList);
 
-    // Primary action
+    // Primary action — LEFT column.
     var action = el('div', { class: 'setup-action' });
     var primary = el('button', {
       type: 'button',
@@ -925,17 +935,39 @@
       App.router.go('wizard');
     });
     action.appendChild(primary);
-    sectionEl.appendChild(action);
+    leftCol.appendChild(action);
+
+    layout.appendChild(leftCol);
+    layout.appendChild(rightCol);
+    sectionEl.appendChild(layout);
 
     wireForm(form);
     wireChecks(checksList);
     updatePrimaryState(setup, errors);
   }
 
+  // Saved-indicator: fades in the .save-indicator span next to the panel
+  // title for ~1.5s whenever any store write happens while the user is on
+  // this panel. Subscribed once per mount; subsequent renders don't re-wire.
+  var saveIndicatorTimer = null;
+  function pulseSaveIndicator() {
+    if (!sectionEl) return;
+    if (App.router && typeof App.router.current === 'function' &&
+        App.router.current() !== 'setup') return;
+    var ind = sectionEl.querySelector('.save-indicator');
+    if (!ind) return;
+    ind.classList.add('save-indicator--visible');
+    if (saveIndicatorTimer) clearTimeout(saveIndicatorTimer);
+    saveIndicatorTimer = setTimeout(function () {
+      ind.classList.remove('save-indicator--visible');
+    }, 1500);
+  }
+
   App.panels.setup = {
     mount: function (rootEl) {
       sectionEl = rootEl;
       render();
+      App.store.on('change', pulseSaveIndicator);
     },
     refresh: function () {
       render();

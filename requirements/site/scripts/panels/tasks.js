@@ -661,8 +661,15 @@
     formValues = vals;
     shortTitleTouched = false;
 
-    sectionEl.appendChild(el('h2', { class: 'panel-title', text: 'Task form' }));
-    sectionEl.appendChild(el('p', {
+    // Two-column layout wrapper: LEFT = title + form + builder picker,
+    // RIGHT (sticky on ≥1200px) = preview heading + filename + code block
+    // + action buttons. Below 1200px collapses to a single column.
+    var layout = el('div', { class: 'task-layout' });
+    var leftCol = el('div', { class: 'task-col task-col--form' });
+    var rightCol = el('div', { class: 'task-col task-col--preview' });
+
+    leftCol.appendChild(el('h2', { class: 'panel-title', text: 'Task form' }));
+    leftCol.appendChild(el('p', {
       class: 'panel-lead'
     }, [
       document.createTextNode('Produces a valid '),
@@ -754,7 +761,7 @@
       help: 'Task stems (no .md) that must already live in requirements/tasks/done/.'
     }));
 
-    sectionEl.appendChild(form);
+    leftCol.appendChild(form);
 
     // Builder picker fieldset.
     var fs = el('fieldset', { class: 'form-field form-field--group task-builder-picker' });
@@ -789,11 +796,11 @@
         handleFieldEvent(form, ev);
       }
     });
-    sectionEl.appendChild(fs);
+    leftCol.appendChild(fs);
 
-    // Preview pane.
-    sectionEl.appendChild(el('h3', { class: 'panel-section-title', text: 'Preview' }));
-    sectionEl.appendChild(el('p', {
+    // Preview pane — RIGHT column (sticky on ≥1200px).
+    rightCol.appendChild(el('h3', { class: 'panel-section-title', text: 'Preview' }));
+    rightCol.appendChild(el('p', {
       class: 'panel-lead'
     }, [
       document.createTextNode('Filename: '),
@@ -812,7 +819,7 @@
     });
     App.clipboard.attach(copyBtn, function () { return code.textContent; });
     previewWrap.appendChild(copyBtn);
-    sectionEl.appendChild(previewWrap);
+    rightCol.appendChild(previewWrap);
 
     // Action buttons.
     var actions = el('div', { class: 'task-actions' });
@@ -885,7 +892,11 @@
     });
     actions.appendChild(dlAction);
 
-    sectionEl.appendChild(actions);
+    rightCol.appendChild(actions);
+
+    layout.appendChild(leftCol);
+    layout.appendChild(rightCol);
+    sectionEl.appendChild(layout);
 
     wireForm(form);
     var errs = validate(vals, state);
