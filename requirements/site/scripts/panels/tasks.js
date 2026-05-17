@@ -11,6 +11,95 @@
   var formValues = null;
 
   // ----------------------------------------------------------------------
+  // Presets — pick one at the top of the form to seed Goal / Inputs /
+  // Acceptance / Out of scope / builder kinds. <X>, <Y>, <Feature A> etc.
+  // are USER placeholders kept literal; <iosFrameworkName> /
+  // <IosFrameworkName> are SETUP tokens substituted via App.templates.render
+  // at apply-time so the build-gate line uses the real framework name.
+  // ----------------------------------------------------------------------
+  var PRESETS = [
+    {
+      key: 'screen',
+      label: 'New screen (sub-screen inside existing feature)',
+      friendlyTitle: 'Add the <X> screen',
+      goal: 'User can open the <X> screen from <existing feature> and see <what content>. Replace <X> with your screen name and fill in the parent-feature + content.',
+      inputs: '- existing :ui-screen-features:<feature> module\n' +
+        '- existing <ParentRouter> in :screen-api\n' +
+        '- existing <SomeFeature> from :data-features:feature-api (or note none)',
+      acceptance: '- screen renders the <content> via existing design-system components\n' +
+        '- navigation from <ParentScreen> opens it; back/close return to the parent\n' +
+        '- ./gradlew :<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework + ./gradlew :androidApp:assembleDebug',
+      outOfScope: '- new endpoints\n' +
+        '- new entities\n' +
+        '- new design-system components',
+      selectedKinds: ['New sub-screen inside an existing feature']
+    },
+    {
+      key: 'dialog',
+      label: 'New dialog (bottom sheet)',
+      friendlyTitle: 'Add the <X> picker dialog',
+      goal: 'User can open the <X> bottom-sheet from <caller screen> and pick a value; the dialog returns the choice via callback. Replace <X> with the dialog name and fill in the caller + value type.',
+      inputs: '- existing :ui-dialog-features:dialog-api/DialogConfig.kt\n' +
+        '- existing <CallerComponent> that will call DialogController.show(...)\n' +
+        '- existing <ValueType> the dialog returns',
+      acceptance: '- new :ui-dialog-features:<x> module with the seven MVI files\n' +
+        '- DialogConfig.<X>Picker case added with onResult callback (@Transient)\n' +
+        '- :shared/dialog routing dispatches to the new module\n' +
+        '- ./gradlew :<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework + ./gradlew :androidApp:assembleDebug',
+      outOfScope: '- new data feature\n' +
+        '- new endpoints',
+      selectedKinds: ['New dialog (bottom sheet)']
+    },
+    {
+      key: 'endpoint',
+      label: 'New API endpoint + DTO',
+      friendlyTitle: 'Add <Verb> <Noun> endpoint',
+      goal: 'Backend route <METHOD> /<path> is callable from the mobile client as a typed method on the api class returning Result<T>. Replace <Verb>, <Noun>, <METHOD>, <path>.',
+      inputs: '- existing :data-services:backend api class\n' +
+        '- existing repository that will consume the new method (or note that one will be added separately)',
+      acceptance: '- new <X>Response/<X>Body DTO under dto/<area>/, all fields nullable with @SerialName + default = null\n' +
+        '- new method on the api class in the matching section comment\n' +
+        '- ./gradlew :data-services:backend:assemble + ./gradlew :androidApp:assembleDebug',
+      outOfScope: '- repository wiring (separate task if needed)\n' +
+        '- UI changes',
+      selectedKinds: ['New API endpoint + DTO']
+    },
+    {
+      key: 'feature',
+      label: 'New domain feature + repository',
+      friendlyTitle: 'Add <X>Feature data feature',
+      goal: 'Add :data-features:<x> module so the UI can read/write <X> via the typed <X>Feature interface. Replace <X> with the domain noun.',
+      inputs: '- existing :data-features:feature-api module\n' +
+        '- existing :data-services:backend endpoints (or note which still need adding)\n' +
+        '- existing :data-services:database (if caching planned)',
+      acceptance: '- :data-features:<x> module added to settings.gradle.kts\n' +
+        '- <X>Feature / <X>UseCase interfaces in :feature-api\n' +
+        '- <X>RepositoryImpl + <X>FeatureImpl in :data-features:<x> with @Single bindings\n' +
+        '- <X>FeatureModule added to :shared/Koin.kt\n' +
+        '- ./gradlew :data-features:<x>:assemble + ./gradlew :androidApp:assembleDebug',
+      outOfScope: '- UI screens\n' +
+        '- new endpoints (write separate task if missing)',
+      selectedKinds: ['New domain capability + data feature']
+    },
+    {
+      key: 'nav',
+      label: 'Cross-feature navigation',
+      friendlyTitle: 'Open <X screen in Feature B> from <Y screen in Feature A>',
+      goal: 'User on <Y screen> can tap <CTA> and land on <X screen> in a different feature module. Back returns to <Y screen>. Replace <X>, <Y>, <Feature A/B>, <CTA>.',
+      inputs: '- existing <Feature A>Router with <Y> entry\n' +
+        '- existing <Feature B>Router with <X> entry\n' +
+        '- existing RootRouter / RootDirection / RootComponent',
+      acceptance: '- new RootDirection case + RootContract method\n' +
+        '- RootComponent.eventListener wires the new direction to navigation.push\n' +
+        '- <Feature A>RootComponent threads a new (() -> Unit) constructor param down to <Y component>\n' +
+        '- ./gradlew :<iosFrameworkName>:assemble<IosFrameworkName>DebugXCFramework + ./gradlew :androidApp:assembleDebug',
+      outOfScope: '- changes inside <Feature B>\n' +
+        '- new screens',
+      selectedKinds: ['Cross-feature navigation']
+    }
+  ];
+
+  // ----------------------------------------------------------------------
   // DOM helpers — el() lives in scripts/dom.js (App.dom.el).
   // ----------------------------------------------------------------------
 
@@ -233,6 +322,150 @@
   }
 
   // ----------------------------------------------------------------------
+  // Preset selector — fills the form with a realistic skeleton the user
+  // then customizes. Confirms before clobbering non-default content.
+  // ----------------------------------------------------------------------
+
+  function presetByKey(key) {
+    for (var i = 0; i < PRESETS.length; i++) {
+      if (PRESETS[i].key === key) return PRESETS[i];
+    }
+    return null;
+  }
+
+  // The shared App.dom.el helper currently emits data-attribute names
+  // verbatim via setAttribute, which the HTML parser lowercases. So
+  // `data: { taskField: 'goal' }` lands as `data-taskfield="goal"` not
+  // `data-task-field="goal"`. Probe both spellings so this code is robust
+  // to either behaviour (and works once that helper is fixed).
+  function findField(root, name) {
+    if (!root) return null;
+    return root.querySelector('[data-task-field="' + name + '"]') ||
+      root.querySelector('[data-taskfield="' + name + '"]');
+  }
+  function findKindCheckboxes(root) {
+    if (!root) return [];
+    var nodes = root.querySelectorAll('[data-builder-kind]');
+    if (nodes.length === 0) nodes = root.querySelectorAll('[data-builderkind]');
+    return nodes;
+  }
+  function kindOfCheckbox(cb) {
+    return cb.getAttribute('data-builder-kind') || cb.getAttribute('data-builderkind');
+  }
+
+  function formHasUserContent(form) {
+    // True if any text field is non-empty (besides defaults), or any
+    // builder-kind checkbox is checked. outOfScope defaults to a literal,
+    // so it's only "user content" when it differs from that literal.
+    var named = ['friendlyTitle', 'goal', 'inputs', 'acceptance', 'dependsOn'];
+    for (var i = 0; i < named.length; i++) {
+      var inp = findField(form, named[i]);
+      if (inp && String(inp.value || '').length > 0) return true;
+    }
+    var oos = findField(form, 'outOfScope');
+    if (oos && String(oos.value || '') !== '- nothing else') return true;
+    var cbs = findKindCheckboxes(sectionEl || form);
+    for (var k = 0; k < cbs.length; k++) {
+      if (cbs[k].checked) return true;
+    }
+    return false;
+  }
+
+  function applyPreset(form, preset) {
+    var setup = (App.store.get() || {}).setup || {};
+    var fields = {
+      friendlyTitle: preset.friendlyTitle,
+      goal: preset.goal,
+      inputs: preset.inputs,
+      acceptance: preset.acceptance,
+      outOfScope: preset.outOfScope
+    };
+    var keys = Object.keys(fields);
+    for (var i = 0; i < keys.length; i++) {
+      var name = keys[i];
+      var inp = findField(form, name);
+      if (inp) inp.value = App.templates.render(fields[name], setup);
+    }
+    // Re-derive short title from friendly title (since presets seed
+    // friendlyTitle but no shortTitle).
+    shortTitleTouched = false;
+    var stInput = findField(form, 'shortTitle');
+    var ftInput = findField(form, 'friendlyTitle');
+    if (stInput && ftInput) stInput.value = deriveShortTitle(ftInput.value);
+
+    // Clear all builder-kind checkboxes, then check those listed by the
+    // preset. Builder fieldset lives outside `form` — scope to sectionEl.
+    var cbs = findKindCheckboxes(sectionEl || form);
+    for (var c = 0; c < cbs.length; c++) {
+      var k = kindOfCheckbox(cbs[c]);
+      cbs[c].checked = preset.selectedKinds.indexOf(k) >= 0;
+    }
+
+    // Fire one synthetic event so handleFieldEvent recomputes preview,
+    // validation, action state, and the selected-builder cards.
+    if (ftInput) {
+      var ev = (typeof Event === 'function')
+        ? new Event('input', { bubbles: true })
+        : (function () {
+            var e = document.createEvent('Event');
+            e.initEvent('input', true, true);
+            return e;
+          })();
+      ftInput.dispatchEvent(ev);
+    }
+  }
+
+  function buildPresetSelector(form) {
+    var fid = 'task-preset';
+    var field = el('div', { class: 'form-field' });
+    field.appendChild(el('label', {
+      attrs: { 'for': fid },
+      text: 'Start from template'
+    }));
+    var select = el('select', {
+      id: fid,
+      attrs: { autocomplete: 'off' }
+    });
+    var defaultOpt = el('option', {
+      value: '',
+      text: '(no preset — empty form)'
+    });
+    defaultOpt.selected = true;
+    select.appendChild(defaultOpt);
+    for (var i = 0; i < PRESETS.length; i++) {
+      select.appendChild(el('option', {
+        value: PRESETS[i].key,
+        text: PRESETS[i].label
+      }));
+    }
+    select.addEventListener('change', function () {
+      var key = select.value;
+      if (!key) return;
+      var preset = presetByKey(key);
+      if (!preset) {
+        select.value = '';
+        return;
+      }
+      if (formHasUserContent(form)) {
+        var ok = window.confirm("Replace current form contents with the '" + preset.label + "' template?");
+        if (!ok) {
+          select.value = '';
+          return;
+        }
+      }
+      applyPreset(form, preset);
+      // Reset so the same preset can be picked again later.
+      select.value = '';
+    });
+    field.appendChild(select);
+    field.appendChild(el('small', {
+      class: 'field-help',
+      text: 'Fills Goal / Inputs / Acceptance / Out of scope and ticks the matching builder kind. You then customize the placeholders.'
+    }));
+    return field;
+  }
+
+  // ----------------------------------------------------------------------
   // Reading and writing form state.
   // ----------------------------------------------------------------------
 
@@ -450,6 +683,10 @@
       attrs: { novalidate: '', autocomplete: 'off' }
     });
     form.addEventListener('submit', function (e) { e.preventDefault(); });
+
+    // Preset selector — placed FIRST so it visually sits above the form
+    // and pre-fills the rest of the fields when picked.
+    form.appendChild(buildPresetSelector(form));
 
     form.appendChild(buildTextField({
       name: 'taskNumber',

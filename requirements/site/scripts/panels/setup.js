@@ -125,6 +125,214 @@
     'When a value changes (new locale added, app ships and `prelaunch` flips, codex installed), update this file. Sub-agents read it lazily — no rebuild needed.'
   ].join('\n');
 
+  // Keys emitted by buildYaml that we intentionally do not import. These are
+  // either derived from other fields (productPackage, apiClassName) or not
+  // managed by the site (featuresWithRootComponentSuffix).
+  var IGNORED_YAML_KEYS = ['productPackage', 'apiClassName', 'featuresWithRootComponentSuffix'];
+
+  // Reverse map of diHandWritten() in wizard-steps.js.
+  var DI_MODULE_TO_AUTH = {
+    GoogleAuthModule: 'google',
+    AppleAuthModule: 'apple'
+  };
+
+  // Minimal YAML parser tailored to the shape emitted by buildYaml. Returns
+  // { values: { key: scalar|boolean|array }, unrecognized: [keys] }.
+  // Supports: `key: value` scalars, `key: true|false`, `key: [a, b]` inline
+  // lists, and a block list (`key:` then `  - item` lines).
+  function parseConfigYaml(text) {
+    var lines = String(text == null ? '' : text).split(/\r?\n/);
+    var values = {};
+    var unrecognized = [];
+    var i = 0;
+    while (i < lines.length) {
+      var raw = lines[i];
+      var line = raw.replace(/\s+$/, '');
+      i++;
+      // Skip blank lines and full-line comments.
+      if (line.length === 0) continue;
+      var trimmed = line.replace(/^\s+/, '');
+      if (trimmed.charAt(0) === '#') continue;
+      // Indented lines outside a block-list context are not valid here.
+      if (line.charAt(0) === ' ' || line.charAt(0) === '\t') continue;
+
+      var colon = line.indexOf(':');
+      if (colon < 0) continue;
+      var key = line.slice(0, colon).trim();
+      var rest = line.slice(colon + 1).trim();
+      // Strip trailing inline comment (best-effort; not quote-aware, but the
+      // frontmatter shape never quotes its values).
+      var hashAt = rest.indexOf(' #');
+      if (hashAt >= 0) rest = rest.slice(0, hashAt).trim();
+
+      if (!key) continue;
+
+      // Inline list: [a, b] or [].
+      if (rest.length > 0 && rest.charAt(0) === '[' && rest.charAt(rest.length - 1) === ']') {
+        var inner = rest.slice(1, -1).trim();
+        var arr = [];
+        if (inner.length > 0) {
+          var parts = inner.split(',');
+          for (var p = 0; p < parts.length; p++) {
+            var item = parts[p].trim();
+            if (item.length > 0) arr.push(item);
+          }
+        }
+        assignParsed(values, unrecognized, key, arr);
+        continue;
+      }
+
+      // Block list: empty value, followed by `  - item` lines.
+      if (rest.length === 0) {
+        var listItems = [];
+        while (i < lines.length) {
+          var next = lines[i];
+          if (next.length === 0) { i++; continue; }
+          var m = next.match(/^\s+-\s*(.*)$/);
+          if (!m) break;
+          var v = m[1].trim();
+          if (v.length > 0) listItems.push(v);
+          i++;
+        }
+        assignParsed(values, unrecognized, key, listItems);
+        continue;
+      }
+
+      // Scalar value.
+      var lower = rest.toLowerCase();
+      var parsedVal;
+      if (lower === 'true') parsedVal = true;
+      else if (lower === 'false') parsedVal = false;
+      else parsedVal = rest;
+      assignParsed(values, unrecognized, key, parsedVal);
+    }
+    return { values: values, unrecognized: unrecognized };
+  }
+
+  function assignParsed(values, unrecognized, key, value) {
+    if (IGNORED_YAML_KEYS.indexOf(key) >= 0) return; // silently ignored: derived/not-managed
+    values[key] = value;
+  }
+
+  // Extract the YAML frontmatter substring (between the first `---` line and
+  // the next `---` line). Returns null if either delimiter is missing.
+  function extractFrontmatter(text) {
+    var s = String(text == null ? '' : text);
+    // First-line delimiter must be `---` (allow BOM / trailing whitespace).
+    var lines = s.split(/\r?\n/);
+    var startIdx = -1;
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].replace(/^﻿/, '').trim();
+      if (t === '') continue;
+      if (t === '---') { startIdx = i; break; }
+      return null; // non-blank, non-delimiter content before first ---
+    }
+    if (startIdx < 0) return null;
+    var endIdx = -1;
+    for (var j = startIdx + 1; j < lines.length; j++) {
+      if (lines[j].trim() === '---') { endIdx = j; break; }
+    }
+    if (endIdx < 0) return null;
+    return lines.slice(startIdx + 1, endIdx).join('\n');
+  }
+
+  // Map a parsed YAML values bag onto a partial setup object. Returns
+  // { setup, applied, unrecognized } where `applied` is the count of
+  // recognized keys actually mapped (orgName derivation counts as part of
+  // productPackage; authMethods counts as 1 for diHandWrittenModules).
+  function mapYamlToSetup(parsed, currentAuth) {
+    var v = parsed.values;
+    var unrecognized = parsed.unrecognized.slice();
+    var setup = {};
+    var applied = 0;
+    var keys = Object.keys(v);
+
+    var SCALAR_FIELDS = ['productName', 'backendHost', 'applicationId', 'iosFrameworkName', 'typefaceFactory'];
+    var BOOL_FIELDS = ['iosEnabled', 'firebaseEnabled', 'prelaunch'];
+
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      var val = v[k];
+      if (SCALAR_FIELDS.indexOf(k) >= 0) {
+        setup[k] = typeof val === 'string' ? val : String(val);
+        applied++;
+      } else if (BOOL_FIELDS.indexOf(k) >= 0) {
+        setup[k] = (val === true);
+        applied++;
+      } else if (k === 'codexEnabled') {
+        var cv = val === true ? 'true' : (val === false ? 'false' : String(val));
+        if (CODEX_VALUES.indexOf(cv) >= 0) {
+          setup.codexEnabled = cv;
+          applied++;
+        } else {
+          unrecognized.push(k);
+        }
+      } else if (k === 'supportedLocales') {
+        if (Array.isArray(val)) {
+          var locales = ['en'];
+          for (var li = 0; li < val.length; li++) {
+            var lc = String(val[li]).trim();
+            if (lc.length > 0 && lc !== 'en' && locales.indexOf(lc) < 0) locales.push(lc);
+          }
+          setup.supportedLocales = locales;
+          applied++;
+        } else {
+          unrecognized.push(k);
+        }
+      } else if (k === 'diHandWrittenModules') {
+        if (Array.isArray(val)) {
+          var fromYaml = [];
+          for (var di = 0; di < val.length; di++) {
+            var mod = String(val[di]).trim();
+            if (DI_MODULE_TO_AUTH[mod]) {
+              if (fromYaml.indexOf(DI_MODULE_TO_AUTH[mod]) < 0) fromYaml.push(DI_MODULE_TO_AUTH[mod]);
+            } else if (mod.length > 0) {
+              unrecognized.push('diHandWrittenModules:' + mod);
+            }
+          }
+          // Preserve email-password (not represented in YAML); replace only google/apple.
+          var preserved = (Array.isArray(currentAuth) ? currentAuth : []).filter(function (m) {
+            return m !== 'google' && m !== 'apple';
+          });
+          setup.authMethods = preserved.concat(fromYaml);
+          applied++;
+        } else {
+          unrecognized.push(k);
+        }
+      } else {
+        unrecognized.push(k);
+      }
+    }
+
+    // Derive orgName from productPackage if present in raw YAML. We can't
+    // read it from `v` (filtered out by IGNORED_YAML_KEYS), so peek at the
+    // raw text wasn't passed in — instead, recompute from productPackage if
+    // we kept it. Simpler: re-parse a second time to grab productPackage
+    // before it was filtered. We already filtered, so use a side channel.
+    // (See enrichWithDerived for the actual derivation step.)
+
+    return { setup: setup, applied: applied, unrecognized: unrecognized };
+  }
+
+  // Pull productPackage out of the raw frontmatter (before IGNORED_YAML_KEYS
+  // strips it) so we can derive orgName. Returns '' if absent.
+  function readProductPackage(frontmatter) {
+    var lines = String(frontmatter).split(/\r?\n/);
+    for (var i = 0; i < lines.length; i++) {
+      var m = lines[i].match(/^productPackage:\s*(.*)$/);
+      if (m) return m[1].trim();
+    }
+    return '';
+  }
+
+  function deriveOrgName(productPackage) {
+    if (!productPackage) return null;
+    var segs = productPackage.split('.');
+    if (segs.length === 3 && segs[0] === 'com') return segs[1];
+    if (segs.length === 2 && segs[0] === 'com') return '';
+    return null;
+  }
+
   function debounce(fn, ms) {
     var t = null;
     return function () {
@@ -243,6 +451,98 @@
 
   // DOM helper — el() lives in scripts/dom.js (App.dom.el).
   var el = App.dom.el;
+
+  // Orchestrator: take raw .md text, return { ok: bool, message: string,
+  // tone: 'info'|'warn', setup?: partial }. Caller is responsible for
+  // saveSetup + render.
+  function importFromText(text) {
+    var fm = extractFrontmatter(text);
+    if (fm == null) {
+      return { ok: false, tone: 'warn', message: 'No YAML frontmatter found in this file.' };
+    }
+    var parsed = parseConfigYaml(fm);
+    var current = currentSetup();
+    var mapped = mapYamlToSetup(parsed, current.authMethods);
+
+    // orgName derivation from productPackage (which is in IGNORED_YAML_KEYS).
+    var pkg = readProductPackage(fm);
+    var derivedOrg = deriveOrgName(pkg);
+    if (derivedOrg !== null) {
+      mapped.setup.orgName = derivedOrg;
+    }
+
+    if (mapped.applied === 0) {
+      return { ok: false, tone: 'warn', message: 'File loaded but no recognized keys.' };
+    }
+    var msg = 'Imported ' + mapped.applied + ' field(s).';
+    if (mapped.unrecognized.length > 0) {
+      msg += ' Unrecognized (ignored): ' + mapped.unrecognized.join(', ') + '.';
+    }
+    return { ok: true, tone: 'info', message: msg, setup: mapped.setup };
+  }
+
+  function showImportBanner(statusEl, tone, message) {
+    while (statusEl.firstChild) statusEl.removeChild(statusEl.firstChild);
+    var cls = tone === 'warn' ? 'banner banner--warn' : 'banner banner--info';
+    statusEl.appendChild(el('div', { class: cls, text: message }));
+  }
+
+  function buildImportSection() {
+    var wrap = el('div', { class: 'setup-import' });
+    wrap.appendChild(el('h3', { class: 'panel-section-title', text: 'Import existing config' }));
+    wrap.appendChild(el('p', {
+      class: 'panel-lead',
+      text: 'Already have a 03-project-config.md? Drop it here to reload the form from its YAML frontmatter.'
+    }));
+    var field = el('div', { class: 'form-field' });
+    field.appendChild(el('label', { attrs: { 'for': 'setup-import' }, text: 'Pick a .md file' }));
+    var input = el('input', {
+      type: 'file',
+      id: 'setup-import',
+      attrs: { accept: '.md,.yaml,.yml,text/markdown,text/yaml' }
+    });
+    field.appendChild(input);
+    field.appendChild(el('small', {
+      class: 'field-help',
+      text: 'Frontmatter values overwrite the matching form fields. Unrecognized keys are listed but not applied.'
+    }));
+    wrap.appendChild(field);
+    var status = el('div', { data: { 'import-status': '' } });
+    wrap.appendChild(status);
+    return { wrap: wrap, input: input, status: status };
+  }
+
+  function wireImport(input, status) {
+    input.addEventListener('change', function () {
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onerror = function () {
+        showImportBanner(status, 'warn', 'Failed to read file.');
+      };
+      reader.onload = function () {
+        var text = String(reader.result == null ? '' : reader.result);
+        var result = importFromText(text);
+        if (!result.ok) {
+          showImportBanner(status, result.tone, result.message);
+          // Reset value so picking the same file again re-fires `change`.
+          try { input.value = ''; } catch (e) { /* ignore */ }
+          return;
+        }
+        App.store.saveSetup(result.setup);
+        render(); // re-mounts the form (including a fresh file input)
+        // The new status slot is a different element; surface the banner
+        // inside the re-rendered section so the user sees the result.
+        var freshStatus = sectionEl.querySelector('[data-import-status]');
+        if (freshStatus) showImportBanner(freshStatus, result.tone, result.message);
+      };
+      try {
+        reader.readAsText(file);
+      } catch (e) {
+        showImportBanner(status, 'warn', 'Failed to read file.');
+      }
+    });
+  }
 
   function codeBlock(text) {
     var wrap = el('div', { class: 'code-block-wrapper' });
@@ -440,6 +740,13 @@
       class: 'panel-lead',
       text: 'These values populate the YAML frontmatter of requirements/00-overview/03-project-config.md and seed the templated prompts in the Launch Wizard.'
     }));
+
+    // Import-existing section (above the form). Each re-render mounts a
+    // fresh file input + status slot — listeners are wired below, so we do
+    // not leak handlers across renders.
+    var importUi = buildImportSection();
+    sectionEl.appendChild(importUi.wrap);
+    wireImport(importUi.input, importUi.status);
 
     var form = el('form', { class: 'setup-form', attrs: { novalidate: '', autocomplete: 'off' } });
     form.addEventListener('submit', function (e) { e.preventDefault(); });

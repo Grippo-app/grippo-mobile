@@ -635,6 +635,7 @@
 
 .task-form input[type="text"],
 .task-form input[type="number"],
+.task-form select,
 .task-form textarea {
   appearance: none;
   background: var(--bg);
@@ -657,6 +658,7 @@
 
 .task-form input[type="text"]:focus,
 .task-form input[type="number"]:focus,
+.task-form select:focus,
 .task-form textarea:focus {
   border-color: var(--accent);
   outline: none;
