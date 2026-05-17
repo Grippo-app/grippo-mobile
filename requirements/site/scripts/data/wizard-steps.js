@@ -79,6 +79,10 @@
     return lines.join('\n');
   }
 
+  // Expose the YAML builder so other panels (wizard single-shot prompt)
+  // can reuse the exact same serialization without re-implementing it.
+  App.helpers.buildYaml = buildYaml;
+
   // ----------------------------------------------------------------------
   // Build functions for steps whose body depends on list-valued or
   // conditional setup fields. Steps using `promptTemplate` go through

@@ -50,6 +50,16 @@
     'cp requirements/sub-agents/validators/*.md .claude/agents/\n' +
     'cp requirements/sub-agents/helpers/*.md    .claude/agents/';
 
+  var INSTALL_CLAUDE_CODE =
+    'Install the sub-agents into .claude/agents/ via symlinks so edits in requirements/sub-agents/ propagate. From the project root, run:\n' +
+    '\n' +
+    'mkdir -p .claude/agents\n' +
+    'ln -sf "$(pwd)/requirements/sub-agents/builders/"*.md   .claude/agents/\n' +
+    'ln -sf "$(pwd)/requirements/sub-agents/validators/"*.md .claude/agents/\n' +
+    'ln -sf "$(pwd)/requirements/sub-agents/helpers/"*.md    .claude/agents/\n' +
+    '\n' +
+    'Then verify: ls .claude/agents/ | wc -l should print 24 (10 builders + 8 validators + 6 helpers).';
+
   function renderBlurb() {
     sectionEl.appendChild(el('h2', { class: 'panel-title', text: 'Sub-agents' }));
     sectionEl.appendChild(el('p', {
@@ -74,13 +84,16 @@
     sectionEl.appendChild(el('h3', { class: 'panel-section-title', text: 'Install into .claude/agents/' }));
     sectionEl.appendChild(el('p', {
       class: 'panel-lead',
-      text: 'Sub-agents are NOT auto-discovered by Claude Code. Pick one of the two commands below; run it from your project root.'
+      text: 'Sub-agents are NOT auto-discovered by Claude Code. Pick one of the three options below — the Claude Code option is fastest if you\'re already in a session.'
     }));
 
-    sectionEl.appendChild(el('h4', { class: 'agents-install-subtitle', text: 'Symlink (recommended — edits propagate)' }));
+    sectionEl.appendChild(el('h4', { class: 'agents-install-subtitle', text: 'Via Claude Code (recommended — no terminal switch)' }));
+    sectionEl.appendChild(codeBlock(INSTALL_CLAUDE_CODE));
+
+    sectionEl.appendChild(el('h4', { class: 'agents-install-subtitle', text: 'Symlink (terminal)' }));
     sectionEl.appendChild(codeBlock(INSTALL_SYMLINK));
 
-    sectionEl.appendChild(el('h4', { class: 'agents-install-subtitle', text: 'Copy (snapshot — no propagation)' }));
+    sectionEl.appendChild(el('h4', { class: 'agents-install-subtitle', text: 'Copy (terminal — snapshot)' }));
     sectionEl.appendChild(codeBlock(INSTALL_COPY));
 
     var verifyWrap = el('div', { class: 'agents-verify' });

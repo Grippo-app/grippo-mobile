@@ -56,6 +56,39 @@
   }
 
   // ----------------------------------------------------------------------
+  // Single-shot bootstrap prompt: composes the YAML + every non-skipped
+  // step body so an agent can drive launch.md end-to-end in one go.
+  // Re-generated on every clipboard read so live setup edits are picked up.
+  // ----------------------------------------------------------------------
+
+  function buildSingleShotPrompt() {
+    var state = App.store.get();
+    var setup = state.setup || {};
+    var steps = App.data.wizardSteps;
+    var parts = [];
+    parts.push(
+      'You are bootstrapping a new KMP project from requirements/. ' +
+      'Execute the steps below end-to-end without pausing between them. ' +
+      'Stop only when you hit a blocker from ' +
+      'requirements/13-anti-patterns/02-when-to-stop-and-ask.md, ' +
+      'then surface the blocker and wait for user input.'
+    );
+    parts.push('');
+    parts.push(App.helpers.buildYaml(setup));
+    for (var i = 0; i < steps.length; i++) {
+      var step = steps[i];
+      if (App.helpers.isAutoSkipped(step, setup)) continue;
+      parts.push('\n\n========== STEP ' + step.id + ' ==========\n');
+      parts.push(renderStepBody(step, setup));
+      var hint = App.templates.render(step.verifyHint || '', setup);
+      if (hint) parts.push('Verify: ' + hint);
+    }
+    parts.push('');
+    parts.push("When every step is green and verify passes, report 'Bootstrap complete'.");
+    return parts.join('\n');
+  }
+
+  // ----------------------------------------------------------------------
   // Event handling.
   // ----------------------------------------------------------------------
 
@@ -184,21 +217,43 @@
     var steps = App.data.wizardSteps;
     var doneSet = effectiveDoneSet(state);
 
-    // Header: progress + re-template button.
-    var header = el('div', { class: 'wizard-header' });
+    // Header: progress (label + bar) + action buttons.
     var doneCount = 0;
     for (var d = 0; d < steps.length; d++) if (doneSet[steps[d].id]) doneCount++;
-    header.appendChild(el('div', {
+    var pct = steps.length === 0 ? 0 : Math.round((doneCount / steps.length) * 100);
+
+    var header = el('div', { class: 'wizard-header' });
+
+    var progressWrap = el('div', { class: 'wizard-progress-wrap' });
+    progressWrap.appendChild(el('div', {
       class: 'wizard-progress',
       text: doneCount + ' / ' + steps.length + ' done'
     }));
+    var bar = el('div', { class: 'wizard-progress-bar' });
+    var fill = el('div', { class: 'wizard-progress-fill' });
+    fill.style.width = pct + '%';
+    bar.appendChild(fill);
+    progressWrap.appendChild(bar);
+    header.appendChild(progressWrap);
+
+    var headerActions = el('div', { class: 'wizard-header-actions' });
+    var singleShot = el('button', {
+      type: 'button',
+      class: 'btn',
+      text: 'Copy single-shot prompt'
+    });
+    App.clipboard.attach(singleShot, buildSingleShotPrompt);
+    headerActions.appendChild(singleShot);
+
     var retemplate = el('button', {
       type: 'button',
       class: 'btn',
       text: 'Re-template prompts'
     });
     retemplate.addEventListener('click', function () { render(); });
-    header.appendChild(retemplate);
+    headerActions.appendChild(retemplate);
+    header.appendChild(headerActions);
+
     sectionEl.appendChild(header);
 
     sectionEl.appendChild(el('p', {

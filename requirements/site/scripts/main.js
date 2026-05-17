@@ -79,6 +79,19 @@
     }
   }
 
+  function wireReset() {
+    var btn = document.getElementById('reset-state');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var ok = window.confirm(
+        'Reset wizard state? This clears Setup values, wizard checkboxes, and the task counter. The actual requirements/ files are NOT affected.'
+      );
+      if (!ok) return;
+      App.store.reset();
+      App.router.go('setup');
+    });
+  }
+
   function start() {
     App.store.load();
     App.router.init({
@@ -89,6 +102,7 @@
       tasks: App.panels.tasks
     });
     wirePointer();
+    wireReset();
     updatePointer(App.store.get());
     App.store.on('change', updatePointer);
   }

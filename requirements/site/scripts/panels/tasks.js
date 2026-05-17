@@ -349,13 +349,16 @@
     }
   }
 
-  function showInstructionToast(fn) {
+  function showInstructionToast(fn, message) {
     var region = document.getElementById('toast-region');
     if (!region) return;
     region.innerHTML = '';
+    var text = message != null
+      ? message
+      : "Drop the file at requirements/tasks/" + fn + " and tell Claude: 'run task " + fn + "'.";
     var toast = el('div', {
       class: 'toast toast--instruction',
-      text: "Drop the file at requirements/tasks/" + fn + " and tell Claude: 'run task " + fn + "'."
+      text: text
     });
     region.appendChild(toast);
     void toast.offsetWidth;
@@ -576,6 +579,51 @@
 
     // Action buttons.
     var actions = el('div', { class: 'task-actions' });
+
+    var promptAction = el('button', {
+      type: 'button',
+      class: 'btn btn--primary',
+      text: 'Copy as Claude prompt',
+      data: { action: 'prompt' }
+    });
+    promptAction.addEventListener('click', function () {
+      if (promptAction.disabled) return;
+      var md = buildMarkdown(formValues);
+      var fn = filename(formValues);
+      var prompt = 'Create the file requirements/tasks/' + fn + ' with the following content:\n\n' +
+        md + '\n' +
+        'Then run task ' + fn + '.';
+      App.clipboard.copy(prompt);
+      var prog = App.store.get().progress || {};
+      var current = prog.taskCounter || 1;
+      var next = current + 1;
+      App.store.saveProgress({ taskCounter: next });
+      showInstructionToast(
+        fn,
+        'Pasted into Claude? Counter advanced to ' + next +
+          '. The agent will create the file and run the task.'
+      );
+    });
+    actions.appendChild(promptAction);
+
+    var saveAction = el('button', {
+      type: 'button',
+      class: 'btn',
+      text: 'Save & increment counter',
+      data: { action: 'save' }
+    });
+    saveAction.addEventListener('click', function () {
+      if (saveAction.disabled) return;
+      var md = buildMarkdown(formValues);
+      var fn = filename(formValues);
+      App.clipboard.copy(md);
+      var prog = App.store.get().progress || {};
+      var current = prog.taskCounter || 1;
+      App.store.saveProgress({ taskCounter: current + 1 });
+      showInstructionToast(fn);
+    });
+    actions.appendChild(saveAction);
+
     var copyAction = el('button', {
       type: 'button',
       class: 'btn',
@@ -600,23 +648,6 @@
     });
     actions.appendChild(dlAction);
 
-    var saveAction = el('button', {
-      type: 'button',
-      class: 'btn btn--primary',
-      text: 'Save & increment counter',
-      data: { action: 'save' }
-    });
-    saveAction.addEventListener('click', function () {
-      if (saveAction.disabled) return;
-      var md = buildMarkdown(formValues);
-      var fn = filename(formValues);
-      App.clipboard.copy(md);
-      var prog = App.store.get().progress || {};
-      var current = prog.taskCounter || 1;
-      App.store.saveProgress({ taskCounter: current + 1 });
-      showInstructionToast(fn);
-    });
-    actions.appendChild(saveAction);
     sectionEl.appendChild(actions);
 
     wireForm(form);
