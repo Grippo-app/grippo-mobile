@@ -1,0 +1,75 @@
+#!/bin/sh
+# Generated manifests must describe the index that will become the commit, not
+# unrelated unstaged bytes from the working tree. Both generators read the
+# working tree, so fail closed when any of their source inputs is partially
+# staged or wholly untracked. This keeps partial staging available everywhere
+# else without allowing a commit to contain a file and a hash from different
+# revisions.
+staged=$(git diff --cached --name-only --no-renames)
+unstaged_and_untracked=$(
+  {
+    git diff --name-only --no-renames
+    git ls-files --others --exclude-standard
+  } | sort -u
+)
+
+skill_manifest_sources='^(orchestrator/skills/[^/]+/(SKILL\.md|references/.*\.md)|orchestrator/figma/skill/SKILL\.md|orchestrator/skills/_index/_generate_install_manifest\.py)$'
+script_manifest_sources='^(orchestrator/figma/scripts/.*\.(mjs|cjs)|orchestrator/figma/scripts/_index/_generate_script_manifest\.py|orchestrator/figma/runtime/run-plan\.mjs|orchestrator/tests/[^/]+\.mjs|orchestrator/skills/checks/(hooks/pre-commit|ci/figma-gate\.yml))$'
+
+require_unmixed_manifest_sources() {
+  manifest_name=$1
+  source_pattern=$2
+  conflicts=$(printf '%s\n' "$unstaged_and_untracked" | grep -E "$source_pattern" || true)
+  if [ -n "$conflicts" ]; then
+    echo "pre-commit: BLOCKED — $manifest_name cannot be generated from mixed staged/unstaged source revisions:" >&2
+    printf '  %s\n' "$conflicts" >&2
+    echo "  Stage the complete source changes or leave the manifest-triggering changes for a separate commit." >&2
+    exit 1
+  fi
+}
+
+# Skill manifest guard: if any skill SKILL.md/reference is staged, regenerate
+# the install-manifest (reference hashes) and re-stage it, so the reference-hash gate
+# can never go RED from a content edit committed without a manifest refresh.
+if printf '%s\n' "$staged" | grep -qE "$skill_manifest_sources"; then
+  require_unmixed_manifest_sources "install-manifest.json" "$skill_manifest_sources"
+  python3 orchestrator/skills/_index/_generate_install_manifest.py >/dev/null 2>&1 || exit 1
+  git add orchestrator/skills/_index/install-manifest.json || exit 1
+fi
+
+# Second regen arm (E3): if a figma gate SCRIPT (or the enforcement hook/CI file) is staged,
+# regenerate the sha256 script-manifest and re-stage it, so figma:doctor's content-hash net can
+# never go RED from a production script edit committed without a manifest
+# refresh. Figma tests live outside scripts/, so every staged .mjs/.cjs under
+# scripts/ is production and must be pinned. Every top-level test-infrastructure
+# module and the trusted runtime entrypoint are pinned too, so they are manifest
+# triggers as well.
+if printf '%s\n' "$staged" | grep -qE "$script_manifest_sources"; then
+  require_unmixed_manifest_sources "script-manifest.json" "$script_manifest_sources"
+  python3 orchestrator/figma/scripts/_index/_generate_script_manifest.py >/dev/null 2>&1 || exit 1
+  git add orchestrator/figma/scripts/_index/script-manifest.json || exit 1
+fi
+
+# Screenshot-fidelity enforcement (the ONLY mechanical, LOCAL block that keeps a UI task
+# from reaching done/ with an uncertified or non-shippable comparison). ship-done.mjs is the
+# pre-`mv` interlock, but an agent can bypass it with a bare `mv`; the figma-gate CI net only
+# fires on a PR. This repo auto-commits locally with NO CI, so without this hook a skipped or
+# red (BLOCKER/INCOMPLETE) screenshot gate ships silently — exactly how a whole project's UI
+# tasks slipped past the comparison. verify-done.mjs re-checks every UI task in done/ (parses
+# the code-emitted Figma-meta digest; cheap, no build) and is a NO-OP for a non-figma project
+# (figmaEnabled != true → 0 audited). A red gate now BLOCKS the commit → the run loop is forced
+# back to write the captures, fix the qualifier, and re-run to PASS/WARN instead of shipping
+# uncompared. Deliberate emergency bypass: `git commit --no-verify`.
+if command -v node >/dev/null 2>&1; then
+  node orchestrator/figma/scripts/verify-done.mjs || {
+    echo "pre-commit: BLOCKED — a UI task in done/ has an uncertified or non-shippable Figma comparison (above)." >&2
+    echo "            Finish the screenshot gate (captures + qualifiers → PASS/WARN), or bypass with: git commit --no-verify" >&2
+    exit 1
+  }
+else
+  echo "pre-commit: node not found — cannot run the screenshot-fidelity (verify-done) gate." >&2
+  echo "            Install node, or bypass deliberately with: git commit --no-verify" >&2
+  exit 1
+fi
+
+exit 0

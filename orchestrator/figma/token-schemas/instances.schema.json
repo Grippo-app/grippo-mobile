@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/figma/token-schemas/instances.schema.json",
+  "title": "InstancesJson",
+  "description": "JSON Schema for a single screen's <ScreenName>.instances.json — the flat component-instances list consumed by component-census.mjs. figmaNodeId is the mandatory OWNING component-SET id used as registry identity; it is never the instance's own node id. nodeUrl deep-links the instance's own node so a MISSING component has a node to cite.",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/Instance"
+  },
+  "definitions": {
+    "Instance": {
+      "type": "object",
+      "required": ["name", "componentSetName", "figmaNodeId"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "componentSetName": {
+          "type": "string"
+        },
+        "figmaNodeId": {
+          "type": "string",
+          "pattern": "^[0-9]+:[0-9]+$",
+          "description": "OWNING component-SET id; never the instance's own id"
+        },
+        "nodeUrl": {
+          "type": "string",
+          "description": "deep link to the instance's OWN node — for citing a MISSING component in the task-prep Step-5.5 split"
+        },
+        "variantProps": {
+          "type": "object",
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        },
+        "bboxDp": {
+          "type": "object",
+          "required": ["x", "y", "w", "h"],
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "w": { "type": "number", "minimum": 0 },
+            "h": { "type": "number", "minimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

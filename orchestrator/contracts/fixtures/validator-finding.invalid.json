@@ -1,0 +1,19 @@
+{
+  "validator": "mvi-contract-validator",
+  "version": 1,
+  "status": "skipped",
+  "required": true,
+  "condition": "task touches UI state",
+  "skip_reason": null,
+  "disabled_by": null,
+  "file": "x.kt",
+  "line": 1,
+  "rule_id": "mvi.contract.empty-completeness",
+  "severity": "Major",
+  "evidence": "skipped without reason",
+  "routed_to": "screen-builder",
+  "fix": "n/a",
+  "blocking": false,
+  "suggestion_only": false,
+  "dedup_key": "x.kt::mvi.contract.empty-completeness"
+}

@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "note": "Executable prompt factories the production UI dispatches; the gate checks that each declared surface still exists.",
+  "surfaces": [
+    {
+      "path": "orchestrator/site/server/task-action-prompts.js",
+      "operation": "task.run/prep/answers/drop",
+      "owningCapability": "task-orchestrator",
+      "note": "Server-owned executable task prompt builders; the Board sends only typed action data."
+    },
+    {
+      "path": "orchestrator/site/scripts/panels/setup.js",
+      "operation": "setup.bootstrap/install",
+      "owningCapability": "launch-readiness"
+    },
+    {
+      "path": "orchestrator/site/scripts/data/wizard-steps.js",
+      "operation": "setup.wizard",
+      "owningCapability": "launch-readiness"
+    },
+    {
+      "path": ".claude/commands/serve-queue.md",
+      "operation": "queue.drain",
+      "owningCapability": "task-orchestrator"
+    },
+    {
+      "path": "orchestrator/site/scripts/panels/backend.js",
+      "operation": "contract.*",
+      "owningCapability": "backend-contract-client"
+    },
+    {
+      "path": "orchestrator/site/scripts/panels/api.js",
+      "operation": "contract.*",
+      "owningCapability": "backend-contract-client"
+    },
+    {
+      "path": "orchestrator/site/scripts/figma-actions.js",
+      "operation": "figma.*",
+      "owningCapability": "implement-figma"
+    },
+    {
+      "path": "orchestrator/site/scripts/panels/figma.js",
+      "operation": "figma.*",
+      "owningCapability": "implement-figma"
+    },
+    {
+      "path": "orchestrator/site/scripts/panels/design.js",
+      "operation": "figma.drift",
+      "owningCapability": "implement-figma"
+    },
+    {
+      "path": "orchestrator/api-contract/scripts/suggest-endpoint-tasks.mjs",
+      "operation": "contract.suggest",
+      "owningCapability": "backend-contract-client"
+    }
+  ]
+}

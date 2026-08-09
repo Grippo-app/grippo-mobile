@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "task-index-diagnostic",
+  "operation": "publish",
+  "ok": true,
+  "integrityOk": true,
+  "code": "INDEX_PUBLISHED",
+  "recordedAt": "2026-07-27T22:55:48Z",
+  "generatedAt": "2026-07-27T22:55:48Z",
+  "snapshotHash": "sha256:f11ecc72ee30eab8aa553adfd38c16da5436e1a44943840ca1ee7eae20dee38e",
+  "indexStatus": "fresh",
+  "message": null,
+  "findings": [],
+  "stats": {
+    "tasks": 1,
+    "files": 2,
+    "inventoryEntries": 70,
+    "taskRelatedEntries": 2,
+    "taskBodyReads": 2,
+    "taskBodyBytes": 830,
+    "scanMode": "full",
+    "durationMs": 46
+  }
+}

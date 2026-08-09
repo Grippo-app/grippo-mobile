@@ -1,0 +1,11 @@
+{
+  "name": "orchestrator-tasks",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node ../tests/run-suite.mjs tasks",
+    "test:crash-recovery": "node ../tests/run-suite.mjs crash-recovery"
+  }
+}

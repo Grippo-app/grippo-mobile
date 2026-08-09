@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Title is set at runtime by scripts/app.js (applyChromeTitle) from the
+       served project's folder name; this is the pre-hydration fallback. -->
+  <title>Orchestrator</title>
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/panels.css" />
+</head>
+<body>
+  <div id="site-status" class="status-strip" role="region" data-i18n-attr="aria-label:status.title" aria-label="Status"><!-- status indicator mounted by scripts/app.js via statusIndicator.init() --></div>
+  <div id="app-run-root" class="app-run-root"><!-- app runner split button / responsive FAB --></div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1 class="site-title">Orchestrator</h1>
+      <div id="nav-groups" class="sidebar-groups"><!-- labelled sections (work / project / integrations) generated from scripts/registry.js --></div>
+      <div class="sidebar-foot">
+        <div class="foot-bar">
+          <div class="lang-toggle" role="group" data-i18n-attr="aria-label:chrome.lang" aria-label="Language">
+            <button type="button" class="lang-btn" data-lang-set="en" aria-pressed="true">EN</button>
+            <button type="button" class="lang-btn" data-lang-set="ru" aria-pressed="false">RU</button>
+            <button type="button" class="lang-btn" data-lang-set="uk" aria-pressed="false">UA</button>
+          </div>
+        </div>
+        <details class="start-group">
+          <summary class="start-summary">
+            <span data-i18n="nav.groupStart">Start</span>
+            <span class="start-hint" data-i18n="nav.groupStartHint">One-time setup</span>
+          </summary>
+          <nav id="start-nav" class="sidebar-nav sidebar-nav--start" data-i18n-attr="aria-label:nav.groupStart" aria-label="Start"><!-- setup + launch wizard generated from scripts/registry.js --></nav>
+        </details>
+      </div>
+    </aside>
+
+    <main id="panel-root"><!-- route sections generated from scripts/registry.js --></main>
+  </div>
+
+  <div id="toast-region" aria-live="polite"></div>
+
+  <script type="module" src="scripts/app.js"></script>
+</body>
+</html>

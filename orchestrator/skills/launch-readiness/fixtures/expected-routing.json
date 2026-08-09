@@ -1,0 +1,19 @@
+{
+  "skill": "launch-readiness",
+  "primaryTriggers": [
+    "bootstrap a new project from an empty directory",
+    "run the launch.md pipeline",
+    "populate project-config.md from Step-0 answers",
+    "scaffold the foundation modules + first feature",
+    "verify end-to-end build readiness on both platforms",
+    "install skills + seed .arch-map.json"
+  ],
+  "prompts": [
+    { "prompt": "bootstrap a new KMP mobile app from this empty directory", "expectedPrimary": "launch-readiness", "allowedSecondary": [] },
+    { "prompt": "run the launch.md pipeline to set up the project", "expectedPrimary": "launch-readiness", "allowedSecondary": [] },
+    { "prompt": "populate orchestrator/project-config.md from the Step-0 answers", "expectedPrimary": "launch-readiness", "allowedSecondary": [] },
+    { "prompt": "scaffold the mandatory foundation modules and the first feature", "expectedPrimary": "launch-readiness", "allowedSecondary": ["platform-build-toolkit"] },
+    { "prompt": "check launch readiness — does it build green on Android and iOS?", "expectedPrimary": "launch-readiness", "allowedSecondary": [] },
+    { "prompt": "install the skills and seed the .arch-map.json", "expectedPrimary": "launch-readiness", "allowedSecondary": [] }
+  ]
+}

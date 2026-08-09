@@ -1,0 +1,296 @@
+{
+  "anchorGrammar": "^test:[a-z0-9]+(?:-[a-z0-9]+)*$",
+  "changeKinds": {
+    "bugfix": {
+      "minimumEvidence": [
+        "regression-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Regression test pinning the fixed behaviour, with a modeled input when the bug is externally triggered. The fail-before-pass-after class returns to this list once a red run can execute against an exact baseline (per-task worktree isolation)."
+    },
+    "changed-behavior": {
+      "minimumEvidence": [
+        "behavioral-test",
+        "regression-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "New or updated test pins the new contract; affected regression suites rerun."
+    },
+    "compose-ui": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "host",
+        "ios-simulator"
+      ],
+      "notes": "Shared Compose UI scenarios live in the dedicated uiTest tree; thin platform entries run them on the iOS simulator (kotlin-test) and on the single Android host task under Robolectric (JDK 21, ui-test-manifest). Plain host without Robolectric fails, and CMP 1.10.3 cannot configure withDeviceTest on a Compose module — never request the device lane for compose-ui at this pin."
+    },
+    "coroutine-flow": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "runTest with virtual time: emission order, completion/error/cancellation, no real delay."
+    },
+    "datastore": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Isolated temp file per test: read/write/remove/clear, malformed stored value, Flow updates."
+    },
+    "decompose-navigation": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Router serialization, exhaustive direction mapping, result key routing, no replay, single consumer per key."
+    },
+    "delete-only": {
+      "minimumEvidence": [
+        "absence-proof",
+        "regression-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Affected suites plus negative proof the old route/API/resource/symbol no longer exists."
+    },
+    "di-composition-root": {
+      "minimumEvidence": [
+        "behavioral-test",
+        "compile-contract"
+      ],
+      "defaultLanes": [
+        "host"
+      ],
+      "notes": "Generated graph compiles; Koin host verify() and composition-root smoke check the exact module list. Koin verify() is JVM/host evidence only, never Native evidence."
+    },
+    "documentation-only": {
+      "minimumEvidence": [],
+      "defaultLanes": [],
+      "notes": "Typed test-not-applicable; docs/link/contract structural gates remain mandatory. A copyable canonical source block is NOT documentation-only."
+    },
+    "dto-serialization": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Missing field, explicit null, unknown field/value, malformed payload, exact @SerialName contract."
+    },
+    "figma-visual": {
+      "minimumEvidence": [
+        "screenshot-capture"
+      ],
+      "defaultLanes": [
+        "screenshot"
+      ],
+      "notes": "One fresh capture per declared design state; a screenshot never substitutes for behavioral tests when behavior also changed (route the behavior delta through its own change kind)."
+    },
+    "gradle-build-wiring": {
+      "minimumEvidence": [
+        "structural-gate"
+      ],
+      "defaultLanes": [
+        "structural"
+      ],
+      "notes": "Gradle TestKit or generated-fixture configuration and task execution; escalates to the full suite via build-logic-conventions."
+    },
+    "ktor-endpoint": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "MockEngine with request-validating handler: method/path/query/body/headers, 2xx/204, 4xx/5xx mapping, malformed JSON, timeout/cancellation."
+    },
+    "manifest-deeplink": {
+      "minimumEvidence": [
+        "structural-gate"
+      ],
+      "defaultLanes": [
+        "structural"
+      ],
+      "notes": "Merged-manifest/Info.plist contract proof; platform smoke joins when routing behavior changes."
+    },
+    "mapper": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Valid input, each required-null separately, optional nulls, unknown enum/key, boundary/time-zone cases; expected values derive from the contract, not the implementation."
+    },
+    "new-behavior": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Happy path plus at least one relevant negative/boundary case for every new branch/condition/mapping/state transition."
+    },
+    "public-api-rename": {
+      "minimumEvidence": [
+        "absence-proof",
+        "compile-contract"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Compile/contract proof across all consumers plus absence of the old symbol/path."
+    },
+    "refactor": {
+      "minimumEvidence": [
+        "characterization-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Existing suites protect the behavior; uncovered behavior gets a characterization test that passes before and after; assertions never change together with the refactor."
+    },
+    "repository-cache": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Success side effects, failure without side effects, ordering, reconciliation, cancellation; the repository itself is never mocked."
+    },
+    "resource-localization": {
+      "minimumEvidence": [
+        "structural-gate"
+      ],
+      "defaultLanes": [
+        "structural"
+      ],
+      "notes": "Key parity, placeholder/format contract, locale compile/resource gate."
+    },
+    "room-schema": {
+      "minimumEvidence": [
+        "behavioral-test",
+        "platform-fidelity-test"
+      ],
+      "defaultLanes": [
+        "android-device",
+        "ios-simulator"
+      ],
+      "notes": "Real database integration, ordering, FK/cascade, transaction, Flow invalidation; migration proof runs without destructive fallback on both platform lanes."
+    },
+    "viewmodel-mvi": {
+      "minimumEvidence": [
+        "behavioral-test"
+      ],
+      "defaultLanes": [
+        "common"
+      ],
+      "notes": "Initial state, action-to-state, loader lifetime, error path, direction emission, duplicate/wrong-condition handling."
+    }
+  },
+  "domain": "test-policy",
+  "escalationRules": [
+    "architecture-rules",
+    "build-logic-conventions",
+    "database-schema-driver-policy",
+    "global-dispatcher-clock-abstraction",
+    "global-error-pipeline",
+    "global-serialization-config",
+    "navigation-root-deeplink-parser",
+    "resource-localization-framework",
+    "settings-module-graph",
+    "shared-composition-root",
+    "shared-public-api",
+    "test-infrastructure",
+    "unknown-dynamic-dependency",
+    "version-catalog"
+  ],
+  "evidenceClasses": [
+    "absence-proof",
+    "behavioral-test",
+    "characterization-test",
+    "compile-contract",
+    "fail-before-pass-after",
+    "platform-fidelity-test",
+    "regression-test",
+    "screenshot-capture",
+    "structural-gate"
+  ],
+  "executionTiers": [
+    "affected-closure",
+    "builder-feedback",
+    "certification-direct",
+    "full-suite",
+    "owner-module",
+    "platform-lanes"
+  ],
+  "flakyPolicy": {
+    "maxDiagnosticRetries": 1,
+    "failThenPassVerdict": "BLOCKED"
+  },
+  "lanes": [
+    "android-device",
+    "common",
+    "host",
+    "ios-simulator",
+    "screenshot",
+    "structural"
+  ],
+  "notApplicableForbidden": [
+    "builder-decided",
+    "hard-to-test",
+    "manual-check-is-enough",
+    "no-existing-tests",
+    "resource-only",
+    "scaffold-only",
+    "simple-change",
+    "time-budget",
+    "wiring-only"
+  ],
+  "notApplicableValidators": [
+    "docs-contract-gate",
+    "link-integrity-gate",
+    "task-shape-gate"
+  ],
+  "policyHash": "sha256:f670f82775627be17641138eb85be29ae4d63ce176033f76852910d70f7e1742",
+  "reasonCodeGrammar": "^[a-z][a-z0-9-]{0,79}$",
+  "selectionReasonCodes": [
+    "affected-consumer-closure",
+    "anchors-mapped",
+    "builder-feedback-only",
+    "full-suite-escalation",
+    "observed-footprint-widened",
+    "planner-proposed",
+    "platform-actual-changed",
+    "policy-minimum-widened",
+    "unknown-dependency-widened"
+  ],
+  "structuralGateIds": [
+    "bootstrap-foundation-fixture",
+    "docs-contract-gate",
+    "link-integrity-gate",
+    "task-shape-gate"
+  ],
+  "testNotApplicable": [
+    "comment-only",
+    "documentation-only",
+    "non-executable-reference-only",
+    "task-metadata-only"
+  ],
+  "version": 1
+}

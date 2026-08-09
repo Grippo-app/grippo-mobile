@@ -1,0 +1,14 @@
+{
+  "name": "orchestrator-site",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node ../tests/run-suite.mjs site",
+    "test:app-run": "node ../tests/run-suite.mjs app-run"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
+  }
+}

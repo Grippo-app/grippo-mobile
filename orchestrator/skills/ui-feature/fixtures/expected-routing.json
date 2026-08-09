@@ -1,0 +1,19 @@
+{
+  "skill": "ui-feature",
+  "primaryTriggers": [
+    "add a screen / sub-screen / tab",
+    "seven-file MVI contract (State / Direction / Loader / Contract / ViewModel / Component / Screen)",
+    "wire Decompose navigation (ChildStack / SlotNavigation / cross-feature jump)",
+    "bottom-sheet dialog / picker / modal",
+    "scaffold a feature module",
+    ":ui-core:state UI models + stub*() previews"
+  ],
+  "prompts": [
+    { "prompt": "add a new profile screen to the settings feature", "expectedPrimary": "ui-feature", "allowedSecondary": ["design-system"] },
+    { "prompt": "scaffold a brand-new feature module with its root component and first screen", "expectedPrimary": "ui-feature", "allowedSecondary": ["di-modules", "platform-build-toolkit"] },
+    { "prompt": "create a bottom-sheet dialog for picking a workout date", "expectedPrimary": "ui-feature", "allowedSecondary": [] },
+    { "prompt": "author the seven-file MVI contract for the exercise editor", "expectedPrimary": "ui-feature", "allowedSecondary": [] },
+    { "prompt": "wire a cross-feature Decompose navigation jump from the dashboard to detail", "expectedPrimary": "ui-feature", "allowedSecondary": [] },
+    { "prompt": "add the :ui-core:state UI models and stub*() previews the screen binds to", "expectedPrimary": "ui-feature", "allowedSecondary": ["mappers"] }
+  ]
+}

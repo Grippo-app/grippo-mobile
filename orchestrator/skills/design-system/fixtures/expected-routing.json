@@ -1,0 +1,19 @@
+{
+  "skill": "design-system",
+  "primaryTriggers": [
+    ":design-system:components shared widget (Button / Input / Chip / Toolbar / Card)",
+    "AppColor / AppDp / AppTypography token slot via AppTokens facade",
+    "AppTheme + composition locals",
+    "resource: string per locale / drawable / ImageVector icon / font",
+    "@AppPreview / PreviewContainer",
+    "frozen binding spec for a widget"
+  ],
+  "prompts": [
+    { "prompt": "add a new Chip variant to :design-system:components", "expectedPrimary": "design-system", "allowedSecondary": [] },
+    { "prompt": "add an AppColor.banner.* token slot for the banner card", "expectedPrimary": "design-system", "allowedSecondary": [] },
+    { "prompt": "register a new string in every locale and a webp drawable", "expectedPrimary": "design-system", "allowedSecondary": [] },
+    { "prompt": "add an ImageVector icon to the design system", "expectedPrimary": "design-system", "allowedSecondary": [] },
+    { "prompt": "tweak AppTheme composition locals and add a PreviewContainer", "expectedPrimary": "design-system", "allowedSecondary": ["ui-feature"] },
+    { "prompt": "rewrite the shared Button widget against its frozen binding spec", "expectedPrimary": "design-system", "allowedSecondary": ["implement-figma"] }
+  ]
+}

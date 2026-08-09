@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScreenCacheIndex",
+  "type": "object",
+  "required": ["schemaVersion", "taskStem", "nodes"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "taskStem": { "type": "string", "maxLength": 120, "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$" },
+    "nodes": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[A-Za-z0-9_]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "anyOf": [
+          { "required": ["url", "nodeId"] },
+          { "required": ["darkUrl", "darkNodeId"] }
+        ],
+        "additionalProperties": false,
+        "required": ["kind", "variants"],
+        "dependencies": {
+          "url": ["nodeId", "fetchedAt"],
+          "nodeId": ["url", "fetchedAt"],
+          "fetchedAt": ["url", "nodeId"],
+          "darkUrl": ["darkNodeId", "darkFetchedAt"],
+          "darkNodeId": ["darkUrl", "darkFetchedAt"],
+          "darkFetchedAt": ["darkUrl", "darkNodeId"]
+        },
+        "properties": {
+          "url": { "type": "string", "pattern": "^https://www\\.figma\\.com/design/" },
+          "nodeId": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+          "kind": { "type": "string", "enum": ["screen", "dialog", "component", "overlay"] },
+          "fetchedAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$" },
+          "darkUrl": { "type": "string", "pattern": "^https://www\\.figma\\.com/design/" },
+          "darkNodeId": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+          "darkFetchedAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$" },
+          "variants": {
+            "description": "Canonical normalized theme/locale/platform captures.",
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "theme", "locale", "platform", "url", "nodeId", "fetchedAt", "imageFile", "tokensFile", "tokensHash", "captureOperationId", "captureSequence"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+                "theme": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$" },
+                "locale": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$" },
+                "platform": { "enum": ["shared", "android", "ios"] },
+                "url": { "type": "string", "pattern": "^https://www\\.figma\\.com/design/" },
+                "nodeId": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+                "fetchedAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?Z$" },
+                "imageFile": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,159}\\.png$" },
+                "specFile": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,159}\\.json$" },
+                "instancesFile": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,159}\\.json$" }
+                ,
+                "tokensFile": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,159}\\.tokens\\.json$" },
+                "tokensHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+                "captureOperationId": { "type": "string", "pattern": "^tokop_[A-Za-z0-9_-]{16,96}$" },
+                "captureSequence": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

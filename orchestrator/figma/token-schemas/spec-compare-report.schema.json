@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpecCompareReport",
+  "allOf": [
+    { "$ref": "report-envelope.schema.json" },
+    {
+      "type": "object",
+      "required": ["engineVersion", "unresolvedRefs", "implementationModel", "comparisons", "widgetClasses", "implementation"],
+      "properties": {
+        "engineVersion": { "const": "spec-compare-v1" },
+        "unresolvedRefs": { "type": "array", "items": { "$ref": "implementation-model.schema.json#/definitions/UnresolvedRef" } },
+        "implementationModel": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["path", "hash"],
+              "additionalProperties": false,
+              "properties": {
+                "path": { "type": "string", "pattern": "^(?!/)" },
+                "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+                "schemaVersion": { "const": 1 }
+              }
+            }
+          ]
+        },
+        "comparisons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["screen", "theme", "file", "stableId", "elementName", "status"],
+            "additionalProperties": false,
+            "properties": {
+              "screen": { "type": "string" },
+              "theme": { "type": ["string", "null"] },
+              "file": { "type": "string" },
+              "stableId": { "type": "string" },
+              "elementName": { "type": "string" },
+              "status": { "type": "string", "enum": ["PASS", "REVIEW"] },
+              "binding": { "enum": ["n/a", "resolved", "unresolved"] }
+            }
+          }
+        },
+        "widgetClasses": {
+          "type": "object",
+          "additionalProperties": { "const": "canvas" }
+        },
+        "implementation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["files", "screenMap", "tokenCount", "tokenValueCount", "rawColorCount", "rawDpCount"],
+          "properties": {
+            "files": { "type": "array", "items": { "type": "string" } },
+            "screenMap": { "type": "object", "additionalProperties": { "type": "string" } },
+            "tokenCount": { "type": "integer", "minimum": 0 },
+            "tokenValueCount": { "type": "integer", "minimum": 0 },
+            "rawColorCount": { "type": "integer", "minimum": 0 },
+            "rawDpCount": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  ]
+}

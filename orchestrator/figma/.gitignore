@@ -1,0 +1,13 @@
+# orchestrator/figma/ — runtime artifacts & secrets are NEVER committed.
+# Committed (template content, copied to generated projects): scripts/ token-schemas/
+# + curated tokens/*.json + manifests/*.json + skill/ + package.json/.nvmrc/.env.example/README.
+node_modules/
+
+# Secrets (also denied by the site static server — see server/static.js denylist):
+.rest-token
+.account.json
+
+# Caches & reports now live under orchestrator/.cache/figma/ (ignored by the repo-root .cache/ rule).
+
+# Misc
+.env

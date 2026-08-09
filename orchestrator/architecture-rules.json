@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "dependencyRules": [
+    {
+      "id": "ui-must-not-depend-on-infrastructure",
+      "fromLayer": "ui",
+      "disallowToLayer": "infrastructure",
+      "fromPlatform": null,
+      "toPlatform": null,
+      "fromModule": null,
+      "toModule": null,
+      "severity": "error"
+    },
+    {
+      "id": "domain-must-not-depend-on-ui",
+      "fromLayer": "domain",
+      "disallowToLayer": "ui",
+      "fromPlatform": null,
+      "toPlatform": null,
+      "fromModule": null,
+      "toModule": null,
+      "severity": "error"
+    }
+  ],
+  "rootModules": [
+    "composeApp",
+    "androidApp",
+    "iosApp",
+    "server",
+    "tooling/**"
+  ],
+  "standaloneModules": []
+}

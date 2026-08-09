@@ -1,0 +1,1 @@
+{ "$comment": "shared constraints: stem ^TASK_[0-9]+_[a-z0-9_]+$, mode enum, no path traversal" }

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "test-impact.schema.json",
+  "title": "test-impact",
+  "description": "Planned/observed test impact artifact (pipeline improvement 05). Model output proposes; the deterministic resolver normalizes against the machine policy and may only widen, never narrow. `impactHash` = sha256 over `test-impact\\0` + canonical JSON without the hash field. `sourceSnapshotHash` is an input (domain `content-snapshot-v1`), so the dependency is one-way and never cyclic. Suites, lanes, builders, capabilities and reason codes are ids from the machine policy / capability inventory, never free strings. Any unknown dependency forces fullSuiteRequired.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "policyVersion", "policyHash", "taskStem", "runId", "phase", "taskInputHash", "sourceSnapshotHash", "capabilityInventoryHash", "moduleGraphHash", "behaviors", "affectedModules", "affectedConsumers", "requiredSuites", "fullSuiteRequired", "requiredCapabilities", "testNotApplicable", "notApplicableValidators", "unknownDependencies", "selectionReasons", "impactHash"],
+  "properties": {
+    "version": { "const": 1 },
+    "policyVersion": { "const": 1 },
+    "policyHash": { "$ref": "#/$defs/sha256" },
+    "taskStem": { "type": "string", "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$", "maxLength": 140 },
+    "runId": { "type": "string", "pattern": "^run-[A-Za-z0-9][A-Za-z0-9-]{0,79}$" },
+    "phase": { "enum": ["planned", "observed"] },
+    "taskInputHash": { "$ref": "#/$defs/sha256" },
+    "sourceSnapshotHash": { "$ref": "#/$defs/sha256" },
+    "capabilityInventoryHash": { "$ref": "#/$defs/sha256" },
+    "moduleGraphHash": { "$ref": "#/$defs/sha256" },
+    "behaviors": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["anchor", "acceptanceHash", "changeKind", "ownerBuilder", "ownerModule", "testLayer", "testFile", "proposedTestCases", "observedTestCases", "requiredLanes", "negativeCases"],
+        "properties": {
+          "anchor": { "type": "string", "pattern": "^test:[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 120 },
+          "acceptanceHash": { "$ref": "#/$defs/sha256" },
+          "changeKind": { "$ref": "#/$defs/id" },
+          "ownerBuilder": { "$ref": "#/$defs/id" },
+          "ownerModule": { "type": "string", "pattern": "^:[A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)*$", "maxLength": 200 },
+          "testLayer": { "enum": ["common", "host", "android-device", "ios-simulator", "structural", "screenshot"] },
+          "testFile": { "type": "string", "minLength": 1, "maxLength": 400 },
+          "proposedTestCases": { "type": "array", "maxItems": 64, "items": { "type": "string", "minLength": 1, "maxLength": 300 } },
+          "observedTestCases": { "type": "array", "maxItems": 256, "items": { "type": "string", "minLength": 1, "maxLength": 300 } },
+          "requiredLanes": { "type": "array", "minItems": 1, "maxItems": 6, "uniqueItems": true, "items": { "enum": ["android-device", "common", "host", "ios-simulator", "screenshot", "structural"] } },
+          "negativeCases": { "type": "array", "maxItems": 64, "items": { "type": "string", "minLength": 1, "maxLength": 300 } }
+        }
+      }
+    },
+    "affectedModules": { "type": "array", "maxItems": 2000, "uniqueItems": true, "items": { "type": "string", "pattern": "^:[A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)*$" } },
+    "affectedConsumers": { "type": "array", "maxItems": 2000, "uniqueItems": true, "items": { "type": "string", "pattern": "^:[A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)*$" } },
+    "requiredSuites": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "fullSuiteRequired": { "type": "boolean" },
+    "requiredCapabilities": { "type": "array", "maxItems": 16, "uniqueItems": true, "items": { "enum": ["base", "compose-ui", "coroutines", "coverage", "di", "flow", "network", "room", "screenshot"] } },
+    "testNotApplicable": {
+      "oneOf": [
+        { "type": "null" },
+        { "enum": ["comment-only", "documentation-only", "non-executable-reference-only", "task-metadata-only"] }
+      ]
+    },
+    "notApplicableValidators": { "type": "array", "maxItems": 16, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "unknownDependencies": { "type": "array", "maxItems": 200, "items": { "type": "string", "minLength": 1, "maxLength": 300 } },
+    "selectionReasons": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/id" } },
+    "impactHash": { "$ref": "#/$defs/sha256" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "phase": { "const": "planned" } }, "required": ["phase"] },
+      "then": {
+        "properties": {
+          "behaviors": {
+            "items": {
+              "properties": {
+                "proposedTestCases": { "minItems": 1 },
+                "observedTestCases": { "maxItems": 0 }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "phase": { "const": "observed" } }, "required": ["phase"] },
+      "then": {
+        "properties": {
+          "behaviors": {
+            "items": {
+              "properties": {
+                "observedTestCases": { "minItems": 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,79}$" }
+  }
+}

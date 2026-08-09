@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CaptureConfigReport",
+  "allOf": [
+    { "$ref": "report-envelope.schema.json" },
+    {
+      "type": "object",
+      "required": ["version", "inputs", "fixed", "designLocale", "designLocaleEnvOverrides"],
+      "properties": {
+        "version": { "const": 1 },
+        "inputs": {
+          "type": "object",
+          "required": ["screensDir", "codeRoots", "specs", "testFilesScanned", "fixed", "captureDiscovery"],
+          "additionalProperties": false,
+          "properties": {
+            "screensDir": { "type": "string", "minLength": 1 },
+            "codeRoots": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "specs": { "type": "integer", "minimum": 0 },
+            "testFilesScanned": { "type": "integer", "minimum": 0 },
+            "fixed": { "type": "integer", "minimum": 0 },
+            "captureDiscovery": {
+              "type": "object",
+              "required": ["version", "roots", "screensDir", "digest"],
+              "additionalProperties": false,
+              "properties": {
+                "version": { "const": 1 },
+                "roots": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": { "type": "string", "minLength": 1 }
+                },
+                "screensDir": { "type": "string", "minLength": 1 },
+                "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+              }
+            }
+          }
+        },
+        "fixed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["screen", "theme", "test", "expected", "file"],
+            "properties": {
+              "screen": { "type": "string", "minLength": 1 },
+              "theme": { "enum": ["primary", "dark"] },
+              "test": { "type": "string", "minLength": 1 },
+              "expected": { "type": "string", "minLength": 1 },
+              "file": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "designLocaleEnvOverrides": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["FIGMA_DESIGN_LOCALE", "FIGMA_SUPPORTED_LOCALES", "FIGMA_STRING_RESOURCE_ROOTS"]
+          },
+          "uniqueItems": true
+        },
+        "designLocale": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["language", "rtl", "source"],
+              "additionalProperties": false,
+              "properties": {
+                "language": { "type": "string", "minLength": 2 },
+                "rtl": { "type": "boolean" },
+                "source": { "type": "string", "enum": ["config", "detected"] }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["language", "reason"],
+              "additionalProperties": false,
+              "properties": {
+                "language": { "type": "null" },
+                "reason": { "type": "string", "enum": ["no-signal", "invalid-config", "not-confident"] }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

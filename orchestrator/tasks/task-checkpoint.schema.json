@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bootstrapper-orchestrator.local/contracts/task-checkpoint.schema.json",
+  "title": "Task phase checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "checkpointId",
+    "stem",
+    "runId",
+    "phase",
+    "attempt",
+    "status",
+    "createdAt",
+    "taskState",
+    "taskSourceRevision",
+    "projectSourceRevision",
+    "configHash",
+    "dependencySnapshotHash",
+    "inputFingerprint",
+    "testPolicyHash",
+    "outputReceiptIds",
+    "priorPhaseReceiptIds",
+    "failureCode",
+    "retryPolicy",
+    "checkpointHash"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "checkpointId": { "type": "string", "pattern": "^cp-[a-f0-9]{32}$" },
+    "stem": { "type": "string", "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$", "maxLength": 120 },
+    "runId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$" },
+    "phase": {
+      "enum": [
+        "lock", "prep", "intake", "preflight", "screen-preflight", "planner",
+        "builders", "diff-sanity", "validators", "tests", "assemble-gate",
+        "runtime-verify", "screenshot-gate", "review", "security-review",
+        "ship", "design-pull"
+      ]
+    },
+    "attempt": { "type": "integer", "minimum": 1, "maximum": 99 },
+    "status": { "enum": ["completed", "failed", "blocked"] },
+    "createdAt": { "type": "string", "format": "date-time", "maxLength": 32 },
+    "taskState": { "enum": ["backlog", "pending", "todo", "done"] },
+    "taskSourceRevision": { "$ref": "#/$defs/hash" },
+    "projectSourceRevision": { "$ref": "#/$defs/hash" },
+    "configHash": { "$ref": "#/$defs/hash" },
+    "dependencySnapshotHash": { "$ref": "#/$defs/hash" },
+    "inputFingerprint": { "$ref": "#/$defs/hash" },
+    "testPolicyHash": { "$ref": "#/$defs/hash" },
+    "outputReceiptIds": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "priorPhaseReceiptIds": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "failureCode": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "enum": [
+            "checkpoint-stale", "config-invalid", "dependency-blocked",
+            "figma-required", "phase-blocked", "phase-failed",
+            "review-failed", "runtime-validation-failed",
+            "source-revision-changed", "validation-failed"
+          ]
+        }
+      ]
+    },
+    "retryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "safePhase", "reasonCode"],
+      "properties": {
+        "kind": {
+          "enum": ["retry-phase", "resume-run", "restart-from-phase", "restart-task", "manual"]
+        },
+        "safePhase": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/phase" }
+          ]
+        },
+        "reasonCode": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "enum": [
+                "checkpoint-stale", "config-invalid", "dependency-blocked",
+                "manual-retry", "phase-blocked", "phase-failed",
+                "review-failed", "runtime-validation-failed",
+                "source-revision-changed", "validation-failed"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "checkpointHash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$" },
+    "phase": {
+      "enum": [
+        "lock", "prep", "intake", "preflight", "screen-preflight", "planner",
+        "builders", "diff-sanity", "validators", "tests", "assemble-gate",
+        "runtime-verify", "screenshot-gate", "review", "security-review",
+        "ship", "design-pull"
+      ]
+    }
+  }
+}

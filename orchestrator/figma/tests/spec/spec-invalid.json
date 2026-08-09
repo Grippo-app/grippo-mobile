@@ -1,0 +1,13 @@
+{
+  "screen": "BrokenScreen",
+  "frameSizeDp": { "w": 390 },
+  "theme": "magenta",
+  "elements": [
+    {
+      "name": "TODO — update element name",
+      "bboxDp": { "x": 0, "y": 0, "w": -10, "h": 40 },
+      "fills": ["#ZZZ999", "not-a-token"],
+      "textStyle": { "sizeSp": 0 }
+    }
+  ]
+}

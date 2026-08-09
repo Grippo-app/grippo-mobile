@@ -1,0 +1,19 @@
+{
+  "skill": "validation-gates",
+  "primaryTriggers": [
+    "validate the produced code before merge",
+    "run the gates (machine-validator + agent-reviewer pipeline)",
+    "did this break an anti-pattern?",
+    "trace acceptance criteria",
+    "is scope leaking?",
+    "reviewer-only gaps no validator catches"
+  ],
+  "prompts": [
+    { "prompt": "validate this task before it merges", "expectedPrimary": "validation-gates", "allowedSecondary": [] },
+    { "prompt": "run the gates on the produced change set", "expectedPrimary": "validation-gates", "allowedSecondary": ["task-orchestrator"] },
+    { "prompt": "did this break an anti-pattern?", "expectedPrimary": "validation-gates", "allowedSecondary": [] },
+    { "prompt": "trace the acceptance criteria against what was built", "expectedPrimary": "validation-gates", "allowedSecondary": [] },
+    { "prompt": "is scope leaking outside the task footprint?", "expectedPrimary": "validation-gates", "allowedSecondary": [] },
+    { "prompt": "check the reviewer-only gaps no validator catches mechanically", "expectedPrimary": "validation-gates", "allowedSecondary": [] }
+  ]
+}

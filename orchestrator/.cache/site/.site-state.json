@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "setupForm": {},
+  "manualSteps": {},
+  "taskTiming": {},
+  "taskLifecycle": {},
+  "uiLang": "uk",
+  "backendActiveEnvironmentId": "",
+  "backendSelectionRevision": 0,
+  "appRunPreferences": {
+    "platform": null,
+    "targetStableHint": null,
+    "variantId": null,
+    "buildMode": null
+  }
+}

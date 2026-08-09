@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "repository": "bootstrapper-orchestrator",
+  "scopePolicy": {
+    "templateRepositoryOnly": true,
+    "consumerRepositoriesRead": false,
+    "consumerRepositoriesUsedForAcceptance": false
+  },
+  "capabilityDecision": {
+    "tokenProvider": "node-bound-resolved-variables",
+    "tokenIdentityQuality": "name-scoped-observation",
+    "componentAuthoritativeCapability": "enumerable-component-scope",
+    "componentEvidenceCapability": "observed-component-node",
+    "fullVariablesCensus": false,
+    "stableVariableIds": false,
+    "collectionsModesAliases": false
+  },
+  "workingTreePolicy": {
+    "preservedUserOwnedFiles": [
+      "UX_EMULATOR_PLAN.md",
+      "UX_PROJECT_ARCHITECTURE_PLAN.md",
+      "UX_PROJECT_BACKEND_PLAN.md",
+      "UX_TASK_DETAILS_PLAN.md",
+      "UX_TASK_LIST_PLAN.md"
+    ],
+    "preserveWithoutOverwrite": true,
+    "commitPushPullRequestAllowed": false
+  },
+  "inventory": {
+    "tokenContractsAndDomain": {
+      "decision": "current-required-owner",
+      "files": [
+        "orchestrator/figma/schemas/observed-token-capture-shard.schema.json",
+        "orchestrator/figma/schemas/observed-token-catalog.schema.json",
+        "orchestrator/figma/schemas/observed-token-source-capture.schema.json",
+        "orchestrator/figma/schemas/observed-token-source-index.schema.json",
+        "orchestrator/figma/schemas/observed-token-source-shard.schema.json",
+        "orchestrator/figma/schemas/observed-token-source.schema.json",
+        "orchestrator/figma/schemas/project-adapters.schema.json",
+        "orchestrator/figma/schemas/project-token-analysis-index.schema.json",
+        "orchestrator/figma/schemas/project-token-inventory.schema.json",
+        "orchestrator/figma/schemas/task-token-capture-plan.schema.json",
+        "orchestrator/figma/schemas/token-baseline.schema.json",
+        "orchestrator/figma/schemas/token-binding-snapshot.schema.json",
+        "orchestrator/figma/schemas/token-comparison.schema.json",
+        "orchestrator/figma/schemas/token-mappings.schema.json",
+        "orchestrator/figma/schemas/token-observation-receipt.schema.json",
+        "orchestrator/figma/schemas/token-source-health-index.schema.json",
+        "orchestrator/figma/schemas/token-source-health-shard.schema.json",
+        "orchestrator/figma/schemas/token-source-ingestion-intent.schema.json",
+        "orchestrator/figma/schemas/token-source-refresh-plan-index.schema.json",
+        "orchestrator/figma/schemas/token-source-refresh-plan-shard.schema.json",
+        "orchestrator/figma/schemas/token-task-binding.schema.json",
+        "orchestrator/figma/tokens/baseline.mjs",
+        "orchestrator/figma/tokens/binder.mjs",
+        "orchestrator/figma/tokens/catalog-aggregator.mjs",
+        "orchestrator/figma/tokens/comparator.mjs",
+        "orchestrator/figma/tokens/error-codes.mjs",
+        "orchestrator/figma/tokens/limits.mjs",
+        "orchestrator/figma/tokens/mapping-contract.mjs",
+        "orchestrator/figma/tokens/project-inventory-contract.mjs",
+        "orchestrator/figma/tokens/source-contract.mjs",
+        "orchestrator/figma/tokens/source-health.mjs",
+        "orchestrator/figma/tokens/source-normalizer.mjs",
+        "orchestrator/figma/tokens/task-ingestion-intent.mjs",
+        "orchestrator/figma/tokens/task-observation-receipt.mjs"
+      ]
+    },
+    "sharedAdaptersRunnerGeneration": {
+      "decision": "current-required-owner",
+      "files": [
+        "orchestrator/figma/runtime/adapter-config-identity.cjs",
+        "orchestrator/figma/runtime/adapter-config.mjs",
+        "orchestrator/figma/runtime/adapter-registry.mjs",
+        "orchestrator/figma/runtime/canonical-json.mjs",
+        "orchestrator/figma/runtime/component-extraction.mjs",
+        "orchestrator/figma/runtime/error-codes.mjs",
+        "orchestrator/figma/runtime/file-safety.mjs",
+        "orchestrator/figma/runtime/input-snapshot.mjs",
+        "orchestrator/figma/runtime/run-plan.mjs",
+        "orchestrator/figma/runtime/token-extraction.mjs",
+        "orchestrator/site/server/figma-generation.js",
+        "orchestrator/site/server/figma-sync.js",
+        "orchestrator/site/server/figma-sync-history.js",
+        "orchestrator/site/server/figma-token-jobs.js"
+      ]
+    },
+    "screenEvidenceAndFinalization": {
+      "decision": "current-required-owner",
+      "files": [
+        "orchestrator/figma/token-schemas/screen-index.schema.json",
+        "orchestrator/figma/scripts/check-screen-cache.mjs",
+        "orchestrator/figma/scripts/evidence-bundle.mjs",
+        "orchestrator/figma/scripts/ship-done.mjs",
+        "orchestrator/figma/scripts/verify-done.mjs",
+        "orchestrator/site/scripts/figma-actions.js",
+        "orchestrator/site/server/figma-evidence.js",
+        "orchestrator/site/server/figma-screens.js",
+        "orchestrator/site/server/figma-task-publication.js",
+        "orchestrator/tasks/finalize-task.mjs",
+        "orchestrator/tasks/token-binding-contract.cjs",
+        "orchestrator/tasks/component-binding-contract.cjs"
+      ]
+    },
+    "tokenServerApiUi": {
+      "decision": "current-required-owner",
+      "files": [
+        "orchestrator/site/server/design-catalog.js",
+        "orchestrator/site/server/design-comparison.js",
+        "orchestrator/site/server/design-mappings.js",
+        "orchestrator/site/server/design-overview.js",
+        "orchestrator/site/server/design-relations.js",
+        "orchestrator/site/server/design-task-actions.js",
+        "orchestrator/site/server/design-token-compare.js",
+        "orchestrator/site/server/design-token-state.js",
+        "orchestrator/site/server/http.js",
+        "orchestrator/site/scripts/design/analysis-banner.js",
+        "orchestrator/site/scripts/design/entity-drawer.js",
+        "orchestrator/site/scripts/design/filters.js",
+        "orchestrator/site/scripts/design/overview.js",
+        "orchestrator/site/scripts/design/tokens.js",
+        "orchestrator/site/scripts/panels/design.js",
+        "orchestrator/site/scripts/i18n/dictionaries/design/en.js",
+        "orchestrator/site/scripts/i18n/dictionaries/design/ru.js",
+        "orchestrator/site/scripts/i18n/dictionaries/design/uk.js"
+      ]
+    },
+    "componentContractsAndDomain": {
+      "decision": "current-required-owner",
+      "files": [
+        "orchestrator/figma/schemas/component-baseline.schema.json",
+        "orchestrator/figma/schemas/component-comparison.schema.json",
+        "orchestrator/figma/schemas/component-mapping-suggestions.schema.json",
+        "orchestrator/figma/schemas/component-mappings.schema.json",
+        "orchestrator/figma/schemas/component-task-binding.schema.json",
+        "orchestrator/figma/schemas/component-task-suggestions.schema.json",
+        "orchestrator/figma/schemas/design-component-capture.schema.json",
+        "orchestrator/figma/schemas/design-component-inventory.schema.json",
+        "orchestrator/figma/schemas/project-component-analysis-index.schema.json",
+        "orchestrator/figma/schemas/project-component-inventory.schema.json",
+        "orchestrator/figma/components/baseline.mjs",
+        "orchestrator/figma/components/capture-normalizer.mjs",
+        "orchestrator/figma/components/comparator.mjs",
+        "orchestrator/figma/components/design-inventory-contract.mjs",
+        "orchestrator/figma/components/error-codes.mjs",
+        "orchestrator/figma/components/limits.mjs",
+        "orchestrator/figma/components/mapping-contract.mjs",
+        "orchestrator/figma/components/mapping-suggestions.mjs",
+        "orchestrator/figma/components/project-inventory-contract.mjs",
+        "orchestrator/figma/components/task-suggestions.mjs"
+      ]
+    },
+    "componentAdapterCensusServerUi": {
+      "decision": "current-required-owner",
+      "files": [
+        "orchestrator/figma/adapters/component-manifest/components.mjs",
+        "orchestrator/figma/adapters/kotlin-compose/components.mjs",
+        "orchestrator/figma/scripts/component-census.mjs",
+        "orchestrator/figma/token-schemas/bindings.schema.json",
+        "orchestrator/figma/token-schemas/census.schema.json",
+        "orchestrator/site/server/design-component-compare.js",
+        "orchestrator/site/server/design-component-mappings.js",
+        "orchestrator/site/server/design-component-state.js",
+        "orchestrator/site/scripts/design/components.js"
+      ]
+    },
+    "oldTokenProviderPath": {
+      "decision": "obsolete-absent",
+      "identifiers": [
+        "design-token-capture",
+        "design-token-inventory",
+        "variableId",
+        "designTokenId",
+        "token-comparison missing-in-design semantics",
+        "full-variable figma:sync-tokens producer contract"
+      ]
+    },
+    "observedTokenRefreshAction": {
+      "decision": "current-required-owner",
+      "identifiers": [
+        "figma:sync-tokens",
+        "sync-tokens"
+      ],
+      "condition": "The public action identity is retained. An empty first-run index is seeded from the configured Figma root and valid task Design nodes; every provider read then remains an exact server-planned source capture, and later runs are registered-source refreshes."
+    },
+    "oldComponentPath": {
+      "decision": "obsolete-absent",
+      "identifiers": [
+        "component-inventory.json",
+        "component-registry",
+        "component-matrix",
+        "connectIdOf",
+        "setName-keyed binding",
+        "component-token-dependency-contract-incompatible"
+      ]
+    },
+    "screenSurfacePixelPipeline": {
+      "decision": "verified-unaffected",
+      "files": [
+        "orchestrator/figma/scripts/compare-screen-spec.mjs",
+        "orchestrator/figma/scripts/compare-screenshots.mjs",
+        "orchestrator/figma/scripts/check-spec.mjs",
+        "orchestrator/figma/scripts/run-figma-gates.mjs",
+        "orchestrator/site/server/pixel-review.js"
+      ],
+      "condition": "Only token/component identity readers are updated; screenshot, spec and provenance gates remain fail-closed."
+    },
+    "genericTaskAndBackendDomains": {
+      "decision": "verified-unaffected",
+      "files": [
+        "orchestrator/api-contract",
+        "orchestrator/site/server/contract-generation.js",
+        "orchestrator/site/server/contract-job.js",
+        "orchestrator/tasks/task-state-core.cjs",
+        "orchestrator/tasks/task-lock.mjs"
+      ],
+      "condition": "Shared writer primitives may be reused but backend and generic task semantics are not refactored."
+    }
+  },
+  "currentRuntimeFindings": [
+    "Token provider is explicitly limited to node-bound-resolved-variables with name-scoped identity.",
+    "Observed source shards/index/catalog, Source Health, durable task receipts/outbox, exact binding, comparator and v2 project adapters are implemented.",
+    "Screen index v3 requires operation-bound token observation sidecars.",
+    "Component capture/inventory/mapping/comparison/task contracts are schemaVersion 2.",
+    "Compose component extraction uses Tree-sitter Kotlin and deterministic symbol resolution.",
+    "Component sync stages fixed-bucket token observations and requires an atomic components+tokens domain set."
+  ],
+  "cleanCutoverAudit": {
+    "status": "passed",
+    "screenIndexSchemaVersion": 3,
+    "productionOldTokenReadersWritersRoles": [],
+    "productionOldComponentReadersWritersRoles": [],
+    "compatibilityReaders": false,
+    "migrationConverters": false,
+    "dualReadWrite": false,
+    "hiddenFallbacks": false,
+    "intentionalNegativeProofs": [
+      "orchestrator/site/tests/observed-token-generation.test.mjs rejects design-token-inventory",
+      "orchestrator/site/tests/design-token-mappings.test.mjs proves designTokenId is absent"
+    ]
+  }
+}

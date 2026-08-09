@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "note": "Thin capability adapter: AI-backed logical operation -> owning skill. Site request actions, lock stages and session keys are frozen. Deterministic server-owned backlog creation and its advisory shallow intake are intentionally outside this skill-dispatch map.",
+  "operations": [
+    {
+      "operation": "task.prep",
+      "requestAction": "prep",
+      "lockStage": "task-prep",
+      "sessionKeyPattern": "task:<stem>",
+      "skill": "task-prep"
+    },
+    {
+      "operation": "task.answers",
+      "requestAction": "answers",
+      "lockStage": "task-prep",
+      "sessionKeyPattern": "task:<stem>",
+      "skill": "task-prep"
+    },
+    {
+      "operation": "task.run",
+      "requestAction": "run",
+      "lockStage": "orchestrator",
+      "sessionKeyPattern": "task:<stem>",
+      "skill": "task-orchestrator"
+    },
+    {
+      "operation": "task.drop",
+      "requestAction": "drop",
+      "lockStage": null,
+      "sessionKeyPattern": null,
+      "skill": "task-orchestrator"
+    },
+    {
+      "operation": "figma.run",
+      "requestAction": null,
+      "lockStage": null,
+      "sessionKeyPattern": "figma:*",
+      "skill": "implement-figma"
+    },
+    {
+      "operation": "contract.run",
+      "requestAction": null,
+      "lockStage": null,
+      "sessionKeyPattern": "contract:*",
+      "skill": "backend-contract-client"
+    },
+    {
+      "operation": "setup.bootstrap",
+      "requestAction": null,
+      "lockStage": null,
+      "sessionKeyPattern": "setup",
+      "skill": "launch-readiness"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+[
+  { "name": "Button/Filled", "componentSetName": "Button", "figmaNodeId": "9:50", "variantProps": { "Style": "Filled", "Size": "Medium", "State": "Default" }, "bboxDp": { "x": 16, "y": 640, "w": 328, "h": 48 } },
+  { "name": "Button/Outline", "componentSetName": "Button", "figmaNodeId": "9:50", "variantProps": { "Style": "Outline", "Size": "Medium", "State": "Default" }, "bboxDp": { "x": 16, "y": 700, "w": 328, "h": 48 } },
+  { "name": "Card/Note", "componentSetName": "Card", "figmaNodeId": "11:200", "variantProps": { "Kind": "Note" }, "bboxDp": { "x": 16, "y": 120, "w": 328, "h": 96 } },
+  { "name": "FilterChip/Default", "componentSetName": "FilterChip", "figmaNodeId": "12:300", "variantProps": { "State": "Default" }, "bboxDp": { "x": 16, "y": 72, "w": 96, "h": 32 } },
+  { "name": "Badge/Count", "componentSetName": "Badge", "figmaNodeId": "13:400", "variantProps": { "Kind": "Count" }, "bboxDp": { "x": 300, "y": 24, "w": 24, "h": 16 } }
+]

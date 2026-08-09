@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "bindings.schema.json",
+  "title": "TaskBindings",
+  "description": "Per-task binding artifact at orchestrator/.cache/figma/screens/<stem>/bindings.json. The figma:screens session seeds screens[] from index.json, component-census upserts id-anchored components[] from the mapping registry truth, and the planner/builder fills implFile/composable. If present, the artifact is strict; component rows are keyed by the durable design identity (designComponentId), never by display name — two sets sharing one name are two rows.",
+  "type": "object",
+  "required": ["schemaVersion", "stem", "screens"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "stem": { "type": "string", "maxLength": 120, "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$" },
+    "screens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["screenName"],
+        "additionalProperties": false,
+        "properties": {
+          "nodeId": { "type": "string", "minLength": 1 },
+          "screenName": { "type": "string", "minLength": 1 },
+          "implFile": { "type": "string", "minLength": 1 },
+          "composable": { "type": "string", "minLength": 1 },
+          "captureBasename": { "type": "string", "minLength": 1 },
+          "qualifiers": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "enum": ["screen", "dialog", "component", "overlay"] }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["designComponentId", "setNodeId", "setName", "mappingId", "implementations"],
+        "additionalProperties": false,
+        "properties": {
+          "designComponentId": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 200,
+            "pattern": "^figma-component:[a-f0-9]{16}:(?:none|[a-f0-9]{16}):[A-Za-z0-9][A-Za-z0-9:;_-]{0,79}$"
+          },
+          "setNodeId": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+          "setName": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "mappingId": { "type": "string", "pattern": "^cmap-[a-f0-9]{24}$" },
+          "implementations": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "required": ["adapterId", "platform", "projectComponentId"],
+              "additionalProperties": false,
+              "properties": {
+                "adapterId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z0-9][a-z0-9-]{0,63}$" },
+                "platform": { "type": "string", "minLength": 1, "maxLength": 60, "pattern": "^[a-z][a-z0-9-]{0,59}$" },
+                "projectComponentId": { "type": "string", "minLength": 10, "maxLength": 400 },
+                "sourcePath": { "type": "string", "minLength": 1, "maxLength": 300 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

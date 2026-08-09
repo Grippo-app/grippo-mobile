@@ -1,0 +1,19 @@
+{
+  "skill": "task-orchestrator",
+  "primaryTriggers": [
+    "run task TASK_<N>",
+    "orchestrate the build loop",
+    "drive builders to done",
+    "route validators back to builders",
+    "reopen TASK_<N>",
+    "drop a task"
+  ],
+  "prompts": [
+    { "prompt": "run task TASK_42", "expectedPrimary": "task-orchestrator", "allowedSecondary": [] },
+    { "prompt": "orchestrate the build loop for the profile screen task", "expectedPrimary": "task-orchestrator", "allowedSecondary": [] },
+    { "prompt": "drive the builders to done and route the validators", "expectedPrimary": "task-orchestrator", "allowedSecondary": ["validation-gates"] },
+    { "prompt": "the reviewer flagged findings — route them back to the builders", "expectedPrimary": "task-orchestrator", "allowedSecondary": ["validation-gates"] },
+    { "prompt": "reopen TASK_31, the acceptance criteria regressed", "expectedPrimary": "task-orchestrator", "allowedSecondary": [] },
+    { "prompt": "drop TASK_28, we're abandoning that work", "expectedPrimary": "task-orchestrator", "allowedSecondary": [] }
+  ]
+}

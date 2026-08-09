@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "test-summary.schema.json",
+  "title": "test-summary",
+  "description": "Sealed aggregate certification summary (pipeline improvement 05). Built ONLY from verified terminal receipts; identity fields are repeated from those receipts, never trusted from a builder. Final verdict grammar: PASS (every required lane/suite proven fresh), SKIPPED (exact allowlisted testNotApplicable + zero required behaviors/suites/lanes/capabilities + fresh structural-gate receipts for exactly the impact's notApplicableValidators — never a synonym for skipping tests), BLOCKED (infrastructure/flaky/zero-test/stale conditions), FAIL (a required case failed). `summaryHash` = sha256 over `test-summary\\0` + canonical JSON without the hash field; the summary is never part of the source snapshot (that would be a hash cycle).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "taskStem", "runId", "sessionId", "taskInputHash", "sourceSnapshotHash", "policyVersion", "policyHash", "plannedImpactHash", "observedImpactHash", "requiredLanes", "executedLanes", "anchorEvidence", "requiredSuites", "passedSuites", "fullSuiteRequired", "fullSuiteResult", "failBeforePassAfter", "zeroTestVerdicts", "flakyVerdicts", "coverage", "snapshotVerification", "commandReceiptHashes", "structuralReceiptHashes", "verdict", "verdictReasons", "summaryHash"],
+  "properties": {
+    "version": { "const": 1 },
+    "taskStem": { "type": "string", "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$", "maxLength": 140 },
+    "runId": { "type": "string", "pattern": "^run-[A-Za-z0-9][A-Za-z0-9-]{0,79}$" },
+    "sessionId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,162}$" },
+    "taskInputHash": { "$ref": "#/$defs/sha256" },
+    "sourceSnapshotHash": { "$ref": "#/$defs/sha256" },
+    "policyVersion": { "const": 1 },
+    "policyHash": { "$ref": "#/$defs/sha256" },
+    "plannedImpactHash": { "$ref": "#/$defs/sha256" },
+    "observedImpactHash": { "$ref": "#/$defs/sha256" },
+    "requiredLanes": { "type": "array", "maxItems": 6, "uniqueItems": true, "items": { "$ref": "#/$defs/lane" } },
+    "executedLanes": { "type": "array", "maxItems": 6, "uniqueItems": true, "items": { "$ref": "#/$defs/lane" } },
+    "anchorEvidence": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["anchor", "testIdentities", "receiptHashes", "verified"],
+        "properties": {
+          "anchor": { "type": "string", "pattern": "^test:[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 120 },
+          "testIdentities": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 300 } },
+          "receiptHashes": { "type": "array", "maxItems": 16, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" } },
+          "verified": { "type": "boolean" }
+        }
+      }
+    },
+    "requiredSuites": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "passedSuites": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "fullSuiteRequired": { "type": "boolean" },
+    "fullSuiteResult": { "oneOf": [{ "type": "null" }, { "enum": ["passed", "failed", "blocked"] }] },
+    "failBeforePassAfter": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["testIdentity", "failReceiptHash", "passReceiptHash", "expectedFailure"],
+        "properties": {
+          "testIdentity": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "failReceiptHash": { "$ref": "#/$defs/sha256" },
+          "passReceiptHash": { "$ref": "#/$defs/sha256" },
+          "expectedFailure": { "type": "boolean" }
+        }
+      }
+    },
+    "zeroTestVerdicts": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/reasoned" } },
+    "flakyVerdicts": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/reasoned" } },
+    "coverage": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label", "reportHash"],
+          "properties": {
+            "label": { "const": "jvm-host-coverage" },
+            "reportHash": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      ]
+    },
+    "snapshotVerification": { "enum": ["current", "stale"] },
+    "commandReceiptHashes": { "type": "array", "maxItems": 256, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" } },
+    "structuralReceiptHashes": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" } },
+    "verdict": { "enum": ["PASS", "SKIPPED", "BLOCKED", "FAIL"] },
+    "verdictReasons": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/id" } },
+    "summaryHash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,79}$" },
+    "lane": { "enum": ["android-device", "common", "host", "ios-simulator", "screenshot", "structural"] },
+    "reasoned": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "reason"],
+      "properties": {
+        "subject": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "reason": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,79}$" }
+      }
+    }
+  }
+}

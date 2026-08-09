@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "note": "Normative doc surfaces the skills own (checked by the docs-map gate).",
+  "docs": [
+    {
+      "path": "README.md",
+      "owningCapability": "template"
+    },
+    {
+      "path": "orchestrator/README.md",
+      "owningCapability": "template"
+    },
+    {
+      "path": "orchestrator/skills/README.md",
+      "owningCapability": "template"
+    },
+    {
+      "path": "orchestrator/launch.md",
+      "owningCapability": "launch-readiness"
+    },
+    {
+      "path": "orchestrator/tasks/README.md",
+      "owningCapability": "task-orchestrator"
+    },
+    {
+      "path": "orchestrator/site/README.md",
+      "owningCapability": "template"
+    },
+    {
+      "path": "orchestrator/figma/README.md",
+      "owningCapability": "implement-figma"
+    },
+    {
+      "path": "orchestrator/api-contract/README.md",
+      "owningCapability": "backend-contract-client"
+    },
+    {
+      "path": "orchestrator/tasks/regen-index.py",
+      "owningCapability": "task-orchestrator",
+      "kind": "script-docstring"
+    },
+    {
+      "path": "orchestrator/tasks/regen-arch.py",
+      "owningCapability": "task-orchestrator",
+      "kind": "script-docstring"
+    }
+  ],
+  "globs": [
+    {
+      "glob": ".claude/commands/*.md",
+      "owningCapability": "template"
+    }
+  ]
+}

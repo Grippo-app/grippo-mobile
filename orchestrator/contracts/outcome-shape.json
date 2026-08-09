@@ -1,0 +1,11 @@
+{
+  "statusValid": ["completed", "completed-with-caveats", "partially-completed"],
+  "reviewerValid": ["codex", "internal-reviewer"],
+  "headings": ["Build gates", "Runtime verify", "Acceptance trace", "Caveats", "Follow-ups", "Files touched"],
+  "acceptanceVerdicts": ["verified", "manual", "deferred"],
+  "buildGateVerdicts": ["pass", "fail", "skipped"],
+  "runtimeGates": ["ran", "deferred", "skipped"],
+  "runtimeResults": ["pass", "fail", "n/a"],
+  "followUpColumns": ["backlog", "pending", "todo", "done"],
+  "fileChanges": ["created", "modified", "deleted", "renamed"]
+}

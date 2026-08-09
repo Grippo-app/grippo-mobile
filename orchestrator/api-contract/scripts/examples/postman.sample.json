@@ -1,0 +1,114 @@
+{
+  "info": {
+    "_postman_id": "9b1f2c4e-7d11-4e35-9d2e-5a1c0b9f3e21",
+    "name": "Sample Notes API — observed",
+    "description": "Committed fixture matching scripts/examples/openapi.sample.json — exercised by contract:test through the typed sidecar. Matches GET /notes and GET /notifications, plus one request the spec does not declare (GET /health -> unmatched WARNING). The /notes example observes updated_at as null (the spec declares it non-nullable) and the /notifications example carries the beyond-spec enum value PROMO.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "notes",
+      "item": [
+        {
+          "name": "List notes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notes?page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["notes"],
+              "query": [{ "key": "page", "value": "1" }]
+            }
+          },
+          "response": [
+            {
+              "name": "200 — two notes (one never updated)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{baseUrl}}/notes?page=1", "host": ["{{baseUrl}}"], "path": ["notes"], "query": [{ "key": "page", "value": "1" }] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[{\"id\":\"6f1e6a2c-9a30-4d6b-bb59-0a4f4ad58a01\",\"title\":\"Grocery list\",\"content\":null,\"kind\":\"PERSONAL\",\"created_at\":\"2026-06-01T09:30:00Z\",\"updated_at\":null,\"tags\":[\"home\"]},{\"id\":\"1d9c2b7e-44f0-4c2a-8a17-5b6f2a9c3d44\",\"title\":\"Sprint retro actions\",\"content\":\"Cut the flaky test\",\"kind\":\"WORK\",\"created_at\":\"2026-06-02T14:05:00Z\",\"updated_at\":\"2026-06-03T08:12:00Z\",\"tags\":[]}]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "notifications",
+      "item": [
+        {
+          "name": "List notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 — three notifications (PROMO is not in the spec enum)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{baseUrl}}/notifications", "host": ["{{baseUrl}}"], "path": ["notifications"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[{\"id\":\"a1b2c3d4-1111-4222-8333-444455556666\",\"kind\":\"INFO\",\"read\":true,\"created_at\":\"2026-06-04T10:00:00Z\",\"note\":{\"id\":\"6f1e6a2c-9a30-4d6b-bb59-0a4f4ad58a01\",\"title\":\"Grocery list\",\"content\":null,\"kind\":\"PERSONAL\",\"created_at\":\"2026-06-01T09:30:00Z\",\"updated_at\":null,\"tags\":[\"home\"]}},{\"id\":\"b2c3d4e5-2222-4333-8444-555566667777\",\"kind\":\"SYSTEM\",\"read\":null,\"created_at\":\"2026-06-05T11:30:00Z\"},{\"id\":\"c3d4e5f6-3333-4444-8555-666677778888\",\"kind\":\"PROMO\",\"read\":false,\"created_at\":\"2026-06-06T09:15:00Z\"}]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ops",
+      "item": [
+        {
+          "name": "Health check (NOT in the OpenAPI spec — exercises the unmatched WARNING)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 — alive",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\"status\":\"ok\"}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

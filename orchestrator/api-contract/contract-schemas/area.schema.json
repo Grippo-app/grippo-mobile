@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/api-contract/contract-schemas/area.schema.json",
+  "title": "Per-area contract slice (the field detail endpoint-builder/mapper-builder read)",
+  "description": "manifests/areas/<area>.json — every request/response schema reachable from the area's endpoints, field by field. nullable_declared comes from the spec; nullable_observed/enum_observed/example come from Postman example bodies (null = never observed). The field contract is closed: adding an annotation requires an explicit schema change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "area", "schemas"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "area": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,99}$" },
+    "schemas": {
+      "type": "object",
+      "maxProperties": 10000,
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
+        "maxLength": 200
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fields"],
+        "properties": {
+          "fields": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": { "$ref": "#/definitions/field" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "jsonName", "type", "required"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "jsonName": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "type": {
+          "type": "string",
+          "pattern": "^(string|integer|number|boolean|object|array|ref:[A-Za-z][A-Za-z0-9_.-]*)$",
+          "maxLength": 204
+        },
+        "itemsRef": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
+          "maxLength": 200
+        },
+        "format": { "type": ["string", "null"], "maxLength": 100 },
+        "required": { "type": "boolean" },
+        "nullable_declared": { "type": ["boolean", "null"] },
+        "nullable_observed": { "type": ["boolean", "null"] },
+        "enum": { "type": ["array", "null"], "maxItems": 10000, "items": {} },
+        "enum_observed": { "type": ["array", "null"], "maxItems": 10, "items": {} },
+        "enum_observed_truncated": { "const": true },
+        "example": {},
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
+            "minLength", "maxLength", "minItems", "maxItems",
+            "minProperties", "maxProperties", "pattern", "patternHash"
+          ],
+          "properties": {
+            "minimum": { "type": ["number", "null"] },
+            "maximum": { "type": ["number", "null"] },
+            "exclusiveMinimum": { "type": ["number", "null"] },
+            "exclusiveMaximum": { "type": ["number", "null"] },
+            "minLength": { "type": ["integer", "null"], "minimum": 0 },
+            "maxLength": { "type": ["integer", "null"], "minimum": 0 },
+            "minItems": { "type": ["integer", "null"], "minimum": 0 },
+            "maxItems": { "type": ["integer", "null"], "minimum": 0 },
+            "minProperties": { "type": ["integer", "null"], "minimum": 0 },
+            "maxProperties": { "type": ["integer", "null"], "minimum": 0 },
+            "pattern": { "type": ["string", "null"], "maxLength": 2000 },
+            "patternHash": {
+              "type": ["string", "null"],
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

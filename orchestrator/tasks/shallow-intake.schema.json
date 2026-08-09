@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orchestrator.local/contracts/shallow-intake-model-output-v1.schema.json",
+  "title": "Shallow backlog intake model output v1",
+  "description": "Tool-less, advisory triage output. Identity, source hashes, timestamps, status, and telemetry are added by the server and are deliberately forbidden here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "readiness",
+    "summary",
+    "likelyAreas",
+    "possibleDuplicates",
+    "missingContext",
+    "riskFlags"
+  ],
+  "properties": {
+    "readiness": {
+      "type": "string",
+      "enum": ["ready", "needs-context", "possible-duplicate"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\r\\n]+$"
+    },
+    "likelyAreas": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "ui",
+          "navigation",
+          "data",
+          "backend-contract",
+          "database",
+          "configuration",
+          "build",
+          "unknown"
+        ]
+      }
+    },
+    "possibleDuplicates": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stem", "reason", "evidence"],
+        "properties": {
+          "stem": {
+            "type": "string",
+            "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[^\\r\\n]+$"
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": { "$ref": "#/$defs/evidence" }
+          }
+        }
+      }
+    },
+    "missingContext": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item", "evidence"],
+        "properties": {
+          "item": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[^\\r\\n]+$"
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": { "$ref": "#/$defs/evidence" }
+          }
+        }
+      }
+    },
+    "riskFlags": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reason", "evidence"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "schema-migration",
+              "authentication-security",
+              "shared-navigation",
+              "public-api",
+              "destructive-data",
+              "broad-cross-module",
+              "unknown"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[^\\r\\n]+$"
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": { "$ref": "#/$defs/evidence" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceStem", "quote"],
+      "properties": {
+        "sourceStem": {
+          "type": "string",
+          "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$"
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 240,
+          "pattern": "^[^\\r\\n]+$"
+        }
+      }
+    }
+  }
+}

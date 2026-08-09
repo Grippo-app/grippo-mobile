@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 2,
+  "screen": "HomeScreen",
+  "frameSizeDp": { "w": 390, "h": 844 },
+  "theme": "light",
+  "source": { "fileKey": "fixture", "nodeId": "1:1" },
+  "rootNodeId": "home-screen",
+  "coordinateSystem": { "units": "dp", "density": 1, "origin": "frame" },
+  "themeMetadata": { "themeKey": "light" },
+  "nodes": [
+    {
+      "stableId": "home-screen",
+      "figmaNodeId": "1:1",
+      "name": "HomeScreen",
+      "role": "screen",
+      "bboxDp": { "x": 0, "y": 0, "w": 390, "h": 844 }
+    },
+    {
+      "stableId": "home-top-bar",
+      "figmaNodeId": "1:2",
+      "name": "TopBar",
+      "bboxDp": { "x": 0, "y": 0, "w": 390, "h": 56 },
+      "fills": ["{surface.background}"],
+      "paddingDp": { "l": 16, "t": 0, "r": 16, "b": 0 }
+    },
+    {
+      "stableId": "home-title-label",
+      "figmaNodeId": "1:3",
+      "name": "TitleLabel",
+      "bboxDp": { "x": 16, "y": 16, "w": 200, "h": 24 },
+      "fills": ["{text.primary}"],
+      "textStyle": { "sizeSp": 20, "weight": 700, "lineHeightSp": 28, "case": "none" }
+    }
+  ],
+  "elements": [
+    {
+      "stableId": "home-top-bar",
+      "figmaNodeId": "1:2",
+      "name": "TopBar",
+      "bboxDp": { "x": 0, "y": 0, "w": 390, "h": 56 },
+      "fills": ["{surface.background}"],
+      "paddingDp": { "l": 16, "t": 0, "r": 16, "b": 0 }
+    },
+    {
+      "stableId": "home-title-label",
+      "figmaNodeId": "1:3",
+      "name": "TitleLabel",
+      "bboxDp": { "x": 16, "y": 16, "w": 200, "h": 24 },
+      "fills": ["{text.primary}"],
+      "textStyle": { "sizeSp": 20, "weight": 700, "lineHeightSp": 28, "case": "none" }
+    }
+  ]
+}

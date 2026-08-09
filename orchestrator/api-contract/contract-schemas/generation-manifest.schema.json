@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/api-contract/contract-schemas/generation-manifest.schema.json",
+  "title": "Committed backend contract generation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generationId", "environmentId", "sourceKind", "sourceFingerprint", "previousHash", "currentHash", "state", "createdAt", "committedAt", "artifacts"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generationId": { "type": "string", "pattern": "^gen-[0-9]{8}T[0-9]{6}Z-[0-9a-f]{12}$" },
+    "environmentId": { "enum": ["local", "dev", "stage", "prod"] },
+    "sourceKind": { "enum": ["openapi", "postman"] },
+    "sourceFingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "previousHash": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+    "currentHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "state": { "enum": ["staged", "committed"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "committedAt": { "type": ["string", "null"], "format": "date-time" },
+    "artifacts": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 260,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "path", "schemaVersion", "size", "hash", "persistence", "required"],
+        "properties": {
+          "role": { "type": "string", "pattern": "^(normalized-spec|source-descriptor|inventory|area:[a-z0-9][a-z0-9-]*|change-report|refresh-report)$" },
+          "path": { "type": "string", "pattern": "^orchestrator/(api-contract/manifests/generation-artifacts/|\\.cache/api-contract/reports/)" },
+          "schemaVersion": { "enum": [1, 2] },
+          "size": { "type": "integer", "minimum": 0, "maximum": 10485760 },
+          "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "persistence": { "enum": ["committed", "runtime"] },
+          "required": { "type": "boolean" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "role": { "type": "string", "pattern": "^(normalized-spec|source-descriptor|inventory|area:)" } } },
+            "then": { "properties": { "persistence": { "const": "committed" }, "required": { "const": true } } }
+          },
+          {
+            "if": { "properties": { "role": { "enum": ["change-report", "refresh-report"] } } },
+            "then": { "properties": { "persistence": { "const": "runtime" }, "required": { "const": false } } }
+          },
+          {
+            "if": { "properties": { "role": { "const": "change-report" } }, "required": ["role"] },
+            "then": { "properties": { "schemaVersion": { "enum": [1, 2] } } },
+            "else": { "properties": { "schemaVersion": { "const": 1 } } }
+          }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    { "properties": { "artifacts": { "type": "array", "contains": { "type": "object", "properties": { "role": { "const": "inventory" } }, "required": ["role"] } } } },
+    {
+      "if": { "properties": { "sourceKind": { "const": "openapi" } } },
+      "then": {
+        "properties": { "artifacts": { "type": "array", "contains": { "type": "object", "properties": { "role": { "const": "normalized-spec" } }, "required": ["role"] } } }
+      }
+    },
+    {
+      "if": { "properties": { "sourceKind": { "const": "postman" } } },
+      "then": {
+        "properties": { "artifacts": { "type": "array", "contains": { "type": "object", "properties": { "role": { "const": "source-descriptor" } }, "required": ["role"] } } }
+      }
+    }
+  ]
+}

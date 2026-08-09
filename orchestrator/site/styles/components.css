@@ -1,0 +1,593 @@
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: var(--radius-control);
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 620;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: color-mix(in srgb, var(--accent-strong) 70%, var(--accent));
+  color: var(--accent-fg);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  filter: brightness(1.04);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.btn--secondary {
+  background: var(--surface-soft);
+  color: var(--fg);
+}
+.btn--secondary:hover:not(:disabled) {
+  background: var(--surface);
+}
+
+/* Shared navigation treatment for every control that opens either the embedded
+   CLI session or the native project terminal. */
+.btn--terminal {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  color: var(--accent-strong);
+}
+.btn--terminal:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--sm {
+  padding: 5px 10px;
+  border-radius: var(--radius-control);
+  font-size: 0.78rem;
+}
+
+.btn--danger {
+  border-color: var(--banner-danger-border);
+  color: var(--banner-danger-fg);
+}
+.btn--danger:hover:not(:disabled) {
+  background: var(--banner-danger-bg);
+  border-color: var(--banner-danger-fg);
+}
+
+/* Low-emphasis variant for inline action clusters (evidence viewer + fix-task
+   buttons): reads as plain text until hovered. */
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.btn--ghost:hover:not(:disabled) {
+  background: var(--code-bg);
+  border-color: var(--border);
+}
+/* A `display` on `.btn` overrides the UA `[hidden]` rule — restore it so
+   buttons toggled via the `hidden` attribute (board run/copy/stop) stay hidden. */
+.btn[hidden] { display: none; }
+
+/* Field-like controls are an explicit component. Every visible text field,
+   search box, select and textarea opts into `.input`; native tags do not receive
+   a second implicit visual treatment. */
+.input {
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--control-bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  caret-color: var(--fg);
+  box-shadow: inset 0 1px 2px rgba(37, 38, 40, 0.035);
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input:hover:not(:disabled):not([readonly]) {
+  border-color: var(--border-strong);
+}
+
+.input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring), 0 7px 18px rgba(37, 38, 40, 0.065);
+}
+
+.input::placeholder {
+  color: var(--control-placeholder);
+  opacity: 1;
+}
+
+.input:disabled,
+.input[readonly] {
+  background: var(--control-disabled-bg);
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--fg);
+  caret-color: var(--fg);
+  box-shadow: 0 0 0 1000px var(--control-bg) inset;
+}
+
+.input:-webkit-autofill:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1000px var(--control-bg) inset, 0 0 0 3px var(--focus-ring);
+}
+
+select.input option,
+select.input optgroup {
+  background: var(--surface);
+  color: var(--fg);
+}
+
+.input--compact {
+  min-height: 32px;
+  padding: 6px 8px;
+  border-radius: var(--radius-compact);
+  font-size: 0.8rem;
+}
+
+/* Checkbox/radio and range remain native controls, but opt into the shared
+   accent explicitly instead of relying on a global input[type] fallback. */
+.choice-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.range-input {
+  min-width: 0;
+  accent-color: var(--accent);
+}
+
+.code-block-wrapper {
+  position: relative;
+  margin: 12px 0;
+}
+
+/* Code blocks intentionally have no border — the background tint
+   already separates them from body text. Reduces visual noise on
+   step pages that show a code block per step. */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-radius: var(--radius-surface);
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  white-space: pre;
+  margin: 0;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: var(--radius-control);
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.copy-btn:hover {
+  color: var(--fg);
+  border-color: var(--border-strong);
+}
+
+/* Page-level semantic messages use one colored rail rather than a complete
+   frame. Full borders are reserved for controls, records, and tables. */
+.banner {
+  display: block;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: var(--radius-control);
+  margin: 8px 0 16px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.banner--info {
+  background: color-mix(in srgb, var(--info) 7%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--info) 58%, transparent);
+  color: var(--banner-info-fg);
+  box-shadow: none;
+}
+
+.banner--warn {
+  background: var(--banner-warn-bg);
+  border-left: 2px solid color-mix(in srgb, var(--warning) 62%, transparent);
+  color: var(--banner-warn-fg);
+  box-shadow: none;
+}
+
+.banner--danger {
+  background: var(--banner-danger-bg);
+  border-left: 2px solid color-mix(in srgb, var(--danger) 64%, transparent);
+  color: var(--banner-danger-fg);
+  box-shadow: none;
+}
+
+.banner a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Shared "card" — generic elevated surface. Used by codex callouts,
+   wizard completion card, and any panel that needs a self-contained
+   block. Lifted to --surface so it reads as elevation against --bg
+   without requiring a heavy border. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-dialog);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: none;
+}
+
+#toast-region {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--layer-toast);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 32px));
+  /* The toast belongs to the page, not to the OS: an inverted slab (a near-white
+     pill in the dark theme) read as a flash of the wrong product. It sits on an
+     elevated surface — lifted off --surface so it reads as floating rather than
+     as a patch of panel — with a semantic rail carrying success/failure. */
+  background: color-mix(in srgb, var(--fg) 7%, var(--surface));
+  color: var(--fg);
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: none;
+  /* A toast normally inherits #toast-region's layer. It keeps its own value
+     because clipboard.js mounts it inside an open native <dialog>, whose
+     browser top-layer cannot be overtaken by a body-level z-index. */
+  z-index: var(--layer-toast);
+}
+
+.toast.toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* A failure must not look like "Copied!". */
+.toast--error {
+  background: color-mix(in srgb, var(--danger) 16%, var(--banner-danger-bg-solid));
+  color: var(--banner-danger-fg);
+  border-color: color-mix(in srgb, var(--danger) 46%, var(--border-strong));
+  border-left-color: var(--danger);
+}
+
+.copy-btn--copied {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Language toggle (header — EN / RU / UA segmented button). */
+.lang-toggle {
+  align-self: flex-end;
+  display: inline-flex;
+  gap: 2px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--code-bg));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+
+.lang-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.lang-btn:hover {
+  color: var(--fg);
+}
+
+.lang-btn[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--accent-strong);
+  box-shadow: var(--shadow-sm);
+}
+/* ---- typed app runner ------------------------------------------------ */
+.status-strip { padding-right: 250px; }
+.app-run-root {
+  position: fixed;
+  top: 3px;
+  right: 18px;
+  z-index: calc(var(--layer-status) + 2);
+}
+.app-run-split { display: inline-flex; filter: drop-shadow(0 1px 3px rgb(0 0 0 / .12)); }
+.app-run-primary { position: relative; border-radius: 8px 0 0 8px; min-height: 30px; padding-block: 3px; }
+.app-run-chevron {
+  border-radius: 0 8px 8px 0;
+  min-width: 32px;
+  min-height: 30px;
+  padding: 3px 8px;
+  border-left-color: color-mix(in srgb, white 30%, transparent);
+}
+.app-run-menu,
+.app-run-drawer {
+  position: fixed;
+  right: 18px;
+  top: 42px;
+  width: min(390px, calc(100vw - 32px));
+  max-height: calc(100vh - 58px);
+  overflow: auto;
+  padding: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 60px rgb(0 0 0 / .24);
+}
+.app-run-drawer { width: min(460px, calc(100vw - 32px)); }
+.app-run-menu__head,
+.app-run-drawer__head,
+.app-run-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.app-run-menu__head h2,
+.app-run-drawer__head h2,
+.app-run-dialog__head h2 { margin: 0; font-size: 1rem; }
+.app-run-field { display: grid; gap: 5px; margin: 10px 0; }
+.app-run-field__label { color: var(--muted); font-size: .78rem; font-weight: 650; }
+.app-run-select { width: 100%; }
+.app-run-check { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: .86rem; }
+.app-run-context,
+.app-run-hint { color: var(--muted); font-size: .82rem; line-height: 1.45; }
+.app-run-menu__actions,
+.app-run-drawer__actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.app-run-summary {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: .85rem;
+  text-transform: capitalize;
+}
+.app-run-stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.app-run-stage {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 7px;
+  padding: 7px 8px;
+  border-radius: 8px;
+}
+.app-run-stage--running { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.app-run-stage--failed { background: color-mix(in srgb, var(--danger) 10%, transparent); }
+.app-run-stage__mark { font-weight: 800; color: var(--muted); }
+.app-run-stage--success .app-run-stage__mark { color: var(--success); }
+.app-run-stage--failed .app-run-stage__mark { color: var(--danger); }
+.app-run-stage small { grid-column: 2 / 4; color: var(--muted); }
+.app-run-stage time { color: var(--muted); font-size: .72rem; }
+.app-run-session {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 5px 12px;
+  margin: 14px 0;
+  font-size: .82rem;
+}
+.app-run-session dt { color: var(--muted); }
+.app-run-session dd { margin: 0; overflow-wrap: anywhere; }
+.app-run-logs,
+.app-run-validation {
+  width: min(900px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+.app-run-logs::backdrop,
+.app-run-validation::backdrop { background: rgb(0 0 0 / .42); }
+.app-run-log-lines {
+  max-height: 65vh;
+  overflow: auto;
+  margin: 0;
+  padding: 10px 10px 10px 34px;
+  background: var(--code-bg);
+  border-radius: 10px;
+}
+.app-run-log-line { padding: 2px 0; overflow-wrap: anywhere; }
+.app-run-log-line__phase { display: inline-block; min-width: 110px; color: var(--muted); font-size: .72rem; }
+.app-run-log-line--stderr code { color: var(--danger); }
+.app-run-validation__body { display: grid; gap: 12px; }
+.app-run-validation__item {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.app-run-validation__item legend { font-weight: 650; padding: 0 5px; }
+.app-run-validation__screenshot { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.app-run-validation__screenshot-status { color: var(--muted); font-size: .78rem; }
+.app-run-validation__message { min-height: 1.2em; color: var(--muted); }
+/* The banner variant supplies its own colour; the muted default above would
+   otherwise win by source order and grey out the failure text. */
+.app-run-validation__message.banner { color: inherit; }
+
+@media (max-width: 640px) {
+  .status-strip { padding-right: 6px; }
+  .app-run-root {
+    top: auto;
+    right: 16px;
+    bottom: 16px;
+    z-index: calc(var(--layer-modal) + 2);
+  }
+  .app-run-primary {
+    width: 54px;
+    height: 54px;
+    overflow: hidden;
+    color: transparent;
+    border-radius: 50%;
+    padding: 0;
+  }
+  .app-run-primary::before {
+    content: "▶";
+    color: white;
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.1rem;
+  }
+  .app-run-primary--active::before {
+    content: "●";
+    color: var(--surface);
+  }
+  .app-run-chevron { display: none; }
+  .app-run-menu,
+  .app-run-drawer {
+    top: auto;
+    right: 8px;
+    bottom: 8px;
+    width: calc(100vw - 16px);
+    max-height: min(78vh, 720px);
+    border-radius: 18px;
+  }
+  .app-run-root:has(.app-run-menu) .app-run-split,
+  .app-run-root:has(.app-run-drawer) .app-run-split { visibility: hidden; }
+  body:has(.board-modal) .app-run-root:not(:has(.app-run-menu, .app-run-drawer)) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-run-stage--running .app-run-stage__mark { animation: none; }
+}
+
+/* ---- shared confirm / prompt dialog (replaces window.confirm|prompt) ---- */
+.ui-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(86vh, 720px);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-dialog);
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-md);
+}
+.ui-dialog::backdrop {
+  background: rgb(5 7 12 / 68%);
+  backdrop-filter: blur(4px);
+}
+.ui-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  max-height: min(86vh, 720px);
+  overflow: auto;
+  padding: 20px;
+}
+.ui-dialog__title { margin: 0; font-size: 1.0625rem; line-height: 1.35; }
+.ui-dialog__message { margin: 0; color: var(--muted); line-height: 1.55; overflow-wrap: anywhere; }
+.ui-dialog__lines {
+  margin: 0;
+  padding: 12px 14px;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  border-radius: var(--radius-control);
+  background: var(--code-bg);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.ui-dialog__line--child { padding-left: 16px; color: var(--muted); }
+.ui-dialog__field { width: 100%; box-sizing: border-box; }
+.ui-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.ui-dialog--danger .ui-dialog__title { color: var(--banner-danger-fg); }

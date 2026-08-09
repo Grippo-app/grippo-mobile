@@ -1,0 +1,19 @@
+{
+  "skill": "task-prep",
+  "primaryTriggers": [
+    "prep TASK_<N>",
+    "promote a backlog item to todo",
+    "set acceptance anchors",
+    "classify builders and builder order",
+    "re-evaluate the answered questions sidecar",
+    "split a task before it runs"
+  ],
+  "prompts": [
+    { "prompt": "prep TASK_42_add_profile_screen", "expectedPrimary": "task-prep", "allowedSecondary": [] },
+    { "prompt": "promote this backlog item into a well-formed todo", "expectedPrimary": "task-prep", "allowedSecondary": [] },
+    { "prompt": "turn the backlog file TASK_17 into a todo with acceptance anchors", "expectedPrimary": "task-prep", "allowedSecondary": [] },
+    { "prompt": "the answers are filled in TASK_17.questions.md — re-evaluate and promote it", "expectedPrimary": "task-prep", "allowedSecondary": [] },
+    { "prompt": "classify the builders for this task and emit the builder order", "expectedPrimary": "task-prep", "allowedSecondary": ["task-orchestrator"] },
+    { "prompt": "this task is too big — split it and set acceptance anchors before we run it", "expectedPrimary": "task-prep", "allowedSecondary": [] }
+  ]
+}

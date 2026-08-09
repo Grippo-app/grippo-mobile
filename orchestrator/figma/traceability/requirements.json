@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "groups": [
+    {
+      "owner": "architecture-and-authority",
+      "requirements": ["REQ-ARCH-001", "REQ-ARCH-002", "REQ-ARCH-003", "REQ-ARCH-004", "REQ-ARCH-005", "REQ-ARCH-006", "REQ-ARCH-007"],
+      "codeRefs": ["orchestrator/figma/runtime/run-plan.mjs", "orchestrator/site/server/figma-generation.js", "orchestrator/site/server/figma-sync.js"],
+      "testRefs": ["orchestrator/site/tests/figma-integration-contracts.test.mjs", "orchestrator/figma/tests/observed-token-runner.test.mjs", "orchestrator/figma/tests/component-runner.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/token-schemas/generation-manifest.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "figma-source-capture",
+      "requirements": ["REQ-FIGMA-001", "REQ-FIGMA-002", "REQ-FIGMA-003", "REQ-FIGMA-004", "REQ-FIGMA-005"],
+      "codeRefs": ["orchestrator/figma/tokens/source-normalizer.mjs", "orchestrator/figma/components/capture-normalizer.mjs"],
+      "testRefs": ["orchestrator/figma/tests/observed-token-domain.test.mjs", "orchestrator/figma/tests/component-capture.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/observed-token-source-capture.schema.json", "orchestrator/figma/schemas/design-component-capture.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "stable-identities",
+      "requirements": ["REQ-ID-001", "REQ-ID-002", "REQ-ID-003", "REQ-ID-004", "REQ-ID-005"],
+      "codeRefs": ["orchestrator/figma/tokens/source-contract.mjs", "orchestrator/figma/components/design-inventory-contract.mjs"],
+      "testRefs": ["orchestrator/figma/tests/observed-token-domain.test.mjs", "orchestrator/figma/tests/component-schemas.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/observed-token-catalog.schema.json", "orchestrator/figma/schemas/design-component-inventory.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "project-adapters",
+      "requirements": ["REQ-ADAPT-001", "REQ-ADAPT-002", "REQ-ADAPT-003", "REQ-ADAPT-004", "REQ-ADAPT-005", "REQ-ADAPT-006", "REQ-ADAPT-007"],
+      "codeRefs": ["orchestrator/figma/runtime/adapter-config.mjs", "orchestrator/figma/runtime/adapter-config-identity.cjs", "orchestrator/figma/runtime/token-extraction.mjs", "orchestrator/figma/runtime/component-extraction.mjs"],
+      "testRefs": ["orchestrator/figma/tests/adapter-contract.test.mjs", "orchestrator/figma/tests/token-kotlin-adapter.test.mjs", "orchestrator/figma/tests/component-kotlin-adapter.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/project-adapters.schema.json", "orchestrator/figma/schemas/project-token-inventory.schema.json", "orchestrator/figma/schemas/project-component-inventory.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "absence-proof",
+      "requirements": ["REQ-ABS-001", "REQ-ABS-002", "REQ-ABS-003", "REQ-ABS-004", "REQ-ABS-005", "REQ-ABS-006"],
+      "codeRefs": ["orchestrator/figma/tokens/comparator.mjs", "orchestrator/figma/components/comparator.mjs", "orchestrator/figma/runtime/input-snapshot.mjs"],
+      "testRefs": ["orchestrator/figma/tests/token-comparator.test.mjs", "orchestrator/figma/tests/component-comparator.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-comparison.schema.json", "orchestrator/figma/schemas/component-comparison.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "mapping-authority",
+      "requirements": ["REQ-MAP-001", "REQ-MAP-002", "REQ-MAP-003", "REQ-MAP-004", "REQ-MAP-005", "REQ-MAP-006"],
+      "codeRefs": ["orchestrator/site/server/mapping-mutation.js", "orchestrator/site/server/design-mappings.js", "orchestrator/site/server/design-component-mappings.js"],
+      "testRefs": ["orchestrator/site/tests/design-token-mappings.test.mjs", "orchestrator/site/tests/design-component-mappings.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-mappings.schema.json", "orchestrator/figma/schemas/component-mappings.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/design/tokens.js", "orchestrator/site/scripts/design/components.js"]
+    },
+    {
+      "owner": "comparison-lifecycle",
+      "requirements": ["REQ-CMP-001", "REQ-CMP-002", "REQ-CMP-003", "REQ-CMP-004", "REQ-CMP-005", "REQ-CMP-006", "REQ-CMP-007", "REQ-CMP-008"],
+      "codeRefs": ["orchestrator/figma/tokens/comparator.mjs", "orchestrator/figma/components/comparator.mjs", "orchestrator/figma/components/task-suggestions.mjs"],
+      "testRefs": ["orchestrator/figma/tests/token-comparator.test.mjs", "orchestrator/figma/tests/component-comparator.test.mjs", "orchestrator/figma/tests/component-acceptance.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-comparison.schema.json", "orchestrator/figma/schemas/component-comparison.schema.json", "orchestrator/figma/schemas/component-task-suggestions.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/design/tokens.js", "orchestrator/site/scripts/design/components.js"]
+    },
+    {
+      "owner": "generation-publication",
+      "requirements": ["REQ-GEN-001", "REQ-GEN-002", "REQ-GEN-003", "REQ-GEN-004", "REQ-GEN-005", "REQ-GEN-006", "REQ-GEN-007"],
+      "codeRefs": ["orchestrator/site/server/figma-generation.js", "orchestrator/site/server/figma-sync.js", "orchestrator/figma/runtime/run-plan.mjs"],
+      "testRefs": ["orchestrator/site/tests/figma-integration-contracts.test.mjs", "orchestrator/site/tests/backend-generation.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/token-schemas/generation-pointer.schema.json", "orchestrator/figma/token-schemas/generation-manifest.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/panels/design.js"]
+    },
+    {
+      "owner": "concurrency-and-recovery",
+      "requirements": ["REQ-CONC-001", "REQ-CONC-002", "REQ-CONC-003", "REQ-CONC-004", "REQ-CONC-005", "REQ-CONC-006", "REQ-CONC-007", "REQ-CONC-008"],
+      "codeRefs": ["orchestrator/tasks/writer-lease.mjs", "orchestrator/tasks/writer-leases.cjs", "orchestrator/tasks/finalize-task.mjs"],
+      "testRefs": ["orchestrator/tasks/tests/test-writer-lease.mjs", "orchestrator/tasks/tests/test-writer-lease-recovery.mjs", "orchestrator/site/tests/writer-lease-primitives.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-task-binding.schema.json", "orchestrator/figma/schemas/component-task-binding.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "task-finalization",
+      "requirements": ["REQ-TASK-001", "REQ-TASK-002", "REQ-TASK-003", "REQ-TASK-004", "REQ-TASK-005", "REQ-TASK-006", "REQ-TASK-007"],
+      "codeRefs": ["orchestrator/tasks/finalize-task.mjs", "orchestrator/tasks/token-binding-contract.cjs", "orchestrator/tasks/component-binding-contract.cjs"],
+      "testRefs": ["orchestrator/tasks/tests/test-finalize-task.mjs", "orchestrator/tasks/tests/test-writer-lease.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-task-binding.schema.json", "orchestrator/figma/schemas/component-task-binding.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "business-behavior",
+      "requirements": ["REQ-BIZ-001", "REQ-BIZ-002", "REQ-BIZ-003", "REQ-BIZ-004", "REQ-BIZ-005"],
+      "codeRefs": ["orchestrator/figma/traceability/business-rules.json", "orchestrator/figma/traceability/decisions.json"],
+      "testRefs": ["orchestrator/figma/tests/traceability.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/traceability/mutation-race-matrix.json"],
+      "uiRefs": ["orchestrator/site/scripts/panels/design.js"]
+    },
+    {
+      "owner": "api-contracts",
+      "requirements": ["REQ-CONTRACT-001", "REQ-CONTRACT-002", "REQ-CONTRACT-003", "REQ-CONTRACT-004"],
+      "codeRefs": ["orchestrator/site/server/design-token-compare.js", "orchestrator/site/server/design-component-compare.js", "orchestrator/site/server/figma-token-jobs.js"],
+      "testRefs": ["orchestrator/site/tests/design-contracts.test.mjs", "orchestrator/site/tests/figma-integration-contracts.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-comparison.schema.json", "orchestrator/figma/schemas/component-comparison.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/panels/design.js"]
+    },
+    {
+      "owner": "ui-state-and-actions",
+      "requirements": ["REQ-UI-001", "REQ-UI-002", "REQ-UI-003", "REQ-UI-004", "REQ-UI-005", "REQ-UI-006", "REQ-UI-007"],
+      "codeRefs": ["orchestrator/site/scripts/design/tokens.js", "orchestrator/site/scripts/design/components.js", "orchestrator/site/scripts/panels/design.js"],
+      "testRefs": ["orchestrator/site/tests/design-contracts.test.mjs", "orchestrator/site/tests/i18n-locales.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/token-comparison.schema.json", "orchestrator/figma/schemas/component-comparison.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/i18n/dictionaries/design/en.js", "orchestrator/site/scripts/i18n/dictionaries/design/ru.js", "orchestrator/site/scripts/i18n/dictionaries/design/uk.js", "orchestrator/site/styles/panels.css"]
+    },
+    {
+      "owner": "security-and-containment",
+      "requirements": ["REQ-SEC-001", "REQ-SEC-002", "REQ-SEC-003", "REQ-SEC-004", "REQ-SEC-005"],
+      "codeRefs": ["orchestrator/figma/runtime/file-safety.mjs", "orchestrator/figma/runtime/input-snapshot.mjs", "orchestrator/figma/runtime/project-identity.mjs", "orchestrator/site/server/figma-sync.js"],
+      "testRefs": ["orchestrator/site/tests/backend-config-security.test.mjs", "orchestrator/figma/tests/adapter-contract.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/project-adapters.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "performance-bounds",
+      "requirements": ["REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003", "REQ-PERF-004"],
+      "codeRefs": ["orchestrator/figma/runtime/file-safety.mjs", "orchestrator/figma/runtime/input-snapshot.mjs", "orchestrator/figma/tokens/comparator.mjs", "orchestrator/figma/components/comparator.mjs"],
+      "testRefs": ["orchestrator/figma/tests/adapter-contract.test.mjs", "orchestrator/figma/tests/token-comparator.test.mjs", "orchestrator/figma/tests/component-comparator.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/project-adapters.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "errors-and-observability",
+      "requirements": ["REQ-ERR-001", "REQ-ERR-002", "REQ-ERR-003", "REQ-ERR-004", "REQ-ERR-005", "REQ-OBS-001", "REQ-OBS-002", "REQ-OBS-003", "REQ-OBS-004"],
+      "codeRefs": ["orchestrator/site/server/figma-sync.js", "orchestrator/site/server/figma-sync-history.js", "orchestrator/site/server/design-domain-freshness.js"],
+      "testRefs": ["orchestrator/site/tests/design-contracts.test.mjs", "orchestrator/site/tests/figma-integration-contracts.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/token-schemas/report-envelope.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/panels/design.js", "orchestrator/site/scripts/i18n.js"]
+    },
+    {
+      "owner": "cutover-cleanup",
+      "requirements": ["REQ-CUT-001", "REQ-CUT-002", "REQ-CUT-003", "REQ-CUT-004", "REQ-CLEAN-001", "REQ-CLEAN-002", "REQ-CLEAN-003", "REQ-CLEAN-004"],
+      "codeRefs": ["orchestrator/figma/package.json", "orchestrator/figma/scripts/doctor.mjs", "orchestrator/figma/scripts/_index/script-manifest.json"],
+      "testRefs": ["orchestrator/figma/tests/traceability.test.mjs", "orchestrator/site/tests/design-contracts.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/project-adapters.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/panels/design.js"]
+    },
+    {
+      "owner": "content-and-localization",
+      "requirements": ["REQ-CONT-001", "REQ-CONT-002", "REQ-CONT-003", "REQ-CONT-004"],
+      "codeRefs": ["orchestrator/site/scripts/i18n.js"],
+      "testRefs": ["orchestrator/site/tests/i18n-locales.test.mjs", "orchestrator/site/tests/design-contracts.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/component-task-suggestions.schema.json"],
+      "uiRefs": ["orchestrator/site/scripts/i18n/dictionaries/design/en.js", "orchestrator/site/scripts/i18n/dictionaries/design/ru.js", "orchestrator/site/scripts/i18n/dictionaries/design/uk.js"]
+    },
+    {
+      "owner": "implementation-quality",
+      "requirements": ["REQ-CODE-001", "REQ-CODE-002", "REQ-CODE-003", "REQ-CODE-004", "REQ-CODE-005", "REQ-CODE-006", "REQ-CODE-007", "REQ-CODE-008", "REQ-CODE-009"],
+      "codeRefs": ["orchestrator/figma/runtime/run-plan.mjs", "orchestrator/site/server/figma-generation.js", "orchestrator/tasks/finalize-task.mjs"],
+      "testRefs": ["orchestrator/figma/tests/traceability.test.mjs", "orchestrator/site/tests/figma-integration-contracts.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/schemas/project-adapters.schema.json", "orchestrator/figma/token-schemas/generation-manifest.schema.json"],
+      "uiRefs": []
+    },
+    {
+      "owner": "verification",
+      "requirements": ["REQ-TEST-001", "REQ-TEST-002", "REQ-TEST-003", "REQ-TEST-004", "REQ-TEST-005", "REQ-TEST-006", "REQ-TEST-007", "REQ-TEST-008", "REQ-TEST-009", "REQ-TEST-010", "REQ-TEST-011"],
+      "codeRefs": ["orchestrator/figma/package.json"],
+      "testRefs": ["orchestrator/figma/tests/observed-token-runner.test.mjs", "orchestrator/figma/tests/component-runner.test.mjs", "orchestrator/site/tests/figma-integration-contracts.test.mjs", "orchestrator/tasks/tests/test-finalize-task.mjs"],
+      "schemaRefs": ["orchestrator/figma/token-schemas/generation-manifest.schema.json"],
+      "uiRefs": ["orchestrator/site/tests/design-contracts.test.mjs"]
+    },
+    {
+      "owner": "traceability",
+      "requirements": ["REQ-TRACE-001", "REQ-TRACE-002", "REQ-TRACE-003", "REQ-TRACE-004", "REQ-TRACE-005"],
+      "codeRefs": ["orchestrator/figma/traceability/business-rules.json", "orchestrator/figma/traceability/decisions.json", "orchestrator/figma/traceability/mutation-race-matrix.json", "orchestrator/figma/traceability/requirements.json"],
+      "testRefs": ["orchestrator/figma/tests/traceability.test.mjs"],
+      "schemaRefs": ["orchestrator/figma/traceability/requirements.json"],
+      "uiRefs": ["orchestrator/site/scripts/panels/design.js"]
+    }
+  ]
+}

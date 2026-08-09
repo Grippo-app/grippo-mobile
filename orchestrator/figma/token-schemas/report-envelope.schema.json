@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "report-envelope.schema.json",
+  "title": "FigmaReportEnvelope",
+  "type": "object",
+  "required": ["schemaVersion", "gatePolicyVersion", "taskStem", "pipelineRunId", "mode", "inputs", "inputHashes", "overall", "blockingCount", "warningCount", "issues", "reportPath"],
+  "additionalProperties": true,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "gatePolicyVersion": { "type": "integer", "minimum": 1, "description": "Gate-policy version from the committed screenshot-thresholds.json at write time; records which strictness regime certified this report." },
+    "taskStem": { "type": "string", "maxLength": 120, "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$" },
+    "pipelineRunId": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["gate", "advisory", "transport"] },
+    "inputs": { "type": "object" },
+    "inputHashes": { "type": "object" },
+    "overall": { "type": "string", "minLength": 1 },
+    "blockingCount": { "type": "integer", "minimum": 0 },
+    "warningCount": { "type": "integer", "minimum": 0 },
+    "issues": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Issue" }
+    },
+    "reportPath": { "type": "string", "minLength": 1, "pattern": "^(?!/)" },
+    "reportRelPath": { "type": ["string", "null"] },
+    "generatedAt": { "type": "string" }
+  },
+  "definitions": {
+    "Issue": {
+      "type": "object",
+      "required": ["severity", "issueKind", "message"],
+      "additionalProperties": true,
+      "properties": {
+        "severity": { "type": "string", "enum": ["INFO", "WARN", "WARNING", "MINOR", "MAJOR", "REVIEW_REQUIRED", "ERROR", "BLOCKER", "FAIL"] },
+        "issueKind": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "screen": { "type": "string" },
+        "theme": { "type": ["string", "null"] },
+        "file": { "type": "string" },
+        "path": { "type": "string" },
+        "stableId": { "type": "string" },
+        "elementName": { "type": "string" }
+      }
+    }
+  }
+}

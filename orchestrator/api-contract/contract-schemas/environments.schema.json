@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/api-contract/contract-schemas/environments.schema.json",
+  "title": "Backend contract environments",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "environments", "defaultEnvironmentId"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "environments": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "$ref": "#/definitions/environment" }
+    },
+    "defaultEnvironmentId": { "enum": ["local", "dev", "stage", "prod"] }
+  },
+  "definitions": {
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "sourceKind", "sourceUrl", "postmanEnrichmentUrl", "authRef"],
+      "properties": {
+        "id": { "enum": ["local", "dev", "stage", "prod"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "sourceKind": { "enum": ["openapi", "postman"] },
+        "authKind": { "enum": ["bearer", "x-api-key"] },
+        "sourceUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "allOf": [
+            { "pattern": "^https?://" },
+            { "not": { "pattern": "[?#]" } }
+          ]
+        },
+        "postmanEnrichmentUrl": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "string",
+              "maxLength": 2048,
+              "allOf": [
+                { "pattern": "^https?://" },
+                { "not": { "pattern": "[?#]" } }
+              ]
+            }
+          ]
+        },
+        "authRef": { "type": ["string", "null"], "enum": [null, "local", "dev", "stage", "prod"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "sourceKind": { "const": "postman" } } },
+          "then": { "properties": { "postmanEnrichmentUrl": { "const": null } } }
+        },
+        {
+          "if": { "properties": { "id": { "const": "local" } } },
+          "then": {
+            "properties": {
+              "authRef": { "enum": [null, "local"] },
+              "sourceUrl": { "type": "string", "pattern": "^https?://(?:localhost|127(?:\\.[0-9]{1,3}){3}|\\[(?:::1|0:0:0:0:0:0:0:1)\\])(?::[0-9]{1,5})?(?:/|$)" },
+              "postmanEnrichmentUrl": {
+                "anyOf": [
+                  { "type": "null" },
+                  { "type": "string", "pattern": "^https?://(?:localhost|127(?:\\.[0-9]{1,3}){3}|\\[(?:::1|0:0:0:0:0:0:0:1)\\])(?::[0-9]{1,5})?(?:/|$)" }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "id": { "const": "dev" } } },
+          "then": { "properties": { "authRef": { "enum": [null, "dev"] }, "sourceUrl": { "type": "string", "pattern": "^https://" }, "postmanEnrichmentUrl": { "type": ["string", "null"], "pattern": "^https://" } } }
+        },
+        {
+          "if": { "properties": { "id": { "const": "stage" } } },
+          "then": { "properties": { "authRef": { "enum": [null, "stage"] }, "sourceUrl": { "type": "string", "pattern": "^https://" }, "postmanEnrichmentUrl": { "type": ["string", "null"], "pattern": "^https://" } } }
+        },
+        {
+          "if": { "properties": { "id": { "const": "prod" } } },
+          "then": { "properties": { "authRef": { "enum": [null, "prod"] }, "sourceUrl": { "type": "string", "pattern": "^https://" }, "postmanEnrichmentUrl": { "type": ["string", "null"], "pattern": "^https://" } } }
+        }
+      ]
+    }
+  }
+}

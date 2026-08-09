@@ -1,0 +1,1 @@
+object Broken { val = = }

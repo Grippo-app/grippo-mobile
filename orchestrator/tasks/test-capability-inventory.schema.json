@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "test-capability-inventory.schema.json",
+  "title": "test-capability-inventory",
+  "description": "Machine shape of the test capability inventory a generated product publishes through its canonical root Gradle alias. The Node runtime validates this schema and the domain-separated inventoryHash only — it never parses Gradle build scripts. Lane task/source-set/compilation names are the frozen pinned-stack decisions proven by the Phase-1 compatibility spike on AGP 9.0.1 + Kotlin 2.3.21 + Gradle 9.1.0: host lane task `testAndroidHostTest` (source set `androidHostTest`, compilation `hostTest`, single enabler `withHostTest`), iOS simulator lane task `iosSimulatorArm64Test`, device lane task `connectedAndroidDeviceTest` via `withDeviceTest` (source set `androidDeviceTest`, compilation `deviceTest` — a standalone instrumented compilation that does NOT include `commonTest`, so shared scenarios reach the device lane only through an explicitly wired dedicated tree; the provider-based `androidDeviceCheck`/`deviceAndroidTest` pair is a proven false-green no-op without configured device providers and must never be an alias target), screenshot wrappers `recordRoborazziAndroidHostTest`/`verifyRoborazziAndroidHostTest` around the same single host task.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "domain", "generatedBy", "modules", "inventoryHash"],
+  "properties": {
+    "version": { "const": 1 },
+    "domain": { "const": "test-capability-inventory" },
+    "generatedBy": {
+      "description": "Exact Gradle task path that produced this inventory.",
+      "type": "string",
+      "pattern": "^:[A-Za-z0-9._:-]*[A-Za-z0-9]$",
+      "maxLength": 200
+    },
+    "modules": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "capabilities", "lanes"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^:[A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)*$",
+            "maxLength": 200
+          },
+          "capabilities": {
+            "description": "Applied opt-in test capabilities. `base` is required whenever any lane is configured; capability conventions never appear without it.",
+            "type": "array",
+            "uniqueItems": true,
+            "maxItems": 16,
+            "items": {
+              "enum": ["base", "compose-ui", "coroutines", "coverage", "di", "flow", "network", "room", "screenshot"]
+            }
+          },
+          "lanes": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "host": { "$ref": "#/$defs/lane" },
+              "ios-simulator": { "$ref": "#/$defs/lane" },
+              "android-device": { "$ref": "#/$defs/lane" },
+              "screenshot": { "$ref": "#/$defs/lane" }
+            }
+          }
+        }
+      }
+    },
+    "inventoryHash": {
+      "description": "sha256 over `test-capability-inventory\\0` + canonical JSON of the inventory without this field. Never comparable with hashes from other domains.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["taskPath"],
+      "properties": {
+        "taskPath": {
+          "description": "Exact executable Gradle task path for this lane (e.g. `:feature:testAndroidHostTest`). Aliases depend on the real test task provider; suffix matching is never proof.",
+          "type": "string",
+          "pattern": "^:[A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)*:[A-Za-z0-9]+$",
+          "maxLength": 240
+        },
+        "sourceSet": { "type": "string", "maxLength": 100 },
+        "compilation": { "type": "string", "maxLength": 100 }
+      }
+    }
+  }
+}

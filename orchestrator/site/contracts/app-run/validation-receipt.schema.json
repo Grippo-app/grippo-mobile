@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orchestrator.local/schemas/app-run-validation.schema.json",
+  "title": "Manual app-run validation receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "receiptId", "taskStem", "taskSourceRevision",
+    "runJobId", "sessionId", "platform", "deviceSummary", "artifactId",
+    "appProjectSourceRevision", "checklist", "overall", "staleSource",
+    "staleTask", "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "receiptId": { "type": "string", "pattern": "^receipt-[a-f0-9]{36}$" },
+    "taskStem": { "type": "string", "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$", "maxLength": 120 },
+    "taskSourceRevision": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "runJobId": { "type": "string", "pattern": "^job-[a-f0-9]{36}$" },
+    "sessionId": { "type": "string", "pattern": "^session-[a-f0-9]{36}$" },
+    "platform": { "enum": ["android", "ios"] },
+    "deviceSummary": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "artifactId": { "type": "string", "pattern": "^artifact-[a-f0-9]{36}$" },
+    "appProjectSourceRevision": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "checklist": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["itemId", "result", "note", "screenshotIds"],
+        "properties": {
+          "itemId": { "type": "string", "pattern": "^manual-[a-f0-9]{24}$" },
+          "result": { "enum": ["pass", "fail", "not-tested"] },
+          "note": { "type": ["string", "null"], "maxLength": 1000 },
+          "screenshotIds": {
+            "type": "array",
+            "maxItems": 10,
+            "items": { "type": "string", "pattern": "^shot-[a-f0-9]{36}$" }
+          }
+        }
+      }
+    },
+    "overall": { "enum": ["passed", "failed", "partial"] },
+    "staleSource": { "type": "boolean" },
+    "staleTask": { "type": "boolean" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

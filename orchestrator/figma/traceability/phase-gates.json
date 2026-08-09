@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "programOrder": ["tokens", "token-checkpoint", "components", "final"],
+  "tokens": [
+    {"phase": 0, "status": "passed", "evidence": ["runtime/provider-capabilities.mjs", "traceability/business-rules.json", "traceability/decisions.json"], "decision": "node-bound-resolved-variables"},
+    {"phase": 1, "status": "passed", "evidence": ["traceability/current-state-audit.json", "traceability/requirements.json", "traceability/mutation-race-matrix.json"]},
+    {"phase": 2, "status": "passed", "evidence": ["schemas/observed-token-source-capture.schema.json", "schemas/observed-token-capture-shard.schema.json", "schemas/observed-token-source.schema.json", "schemas/observed-token-source-shard.schema.json", "schemas/observed-token-source-index.schema.json", "schemas/observed-token-catalog.schema.json", "schemas/token-source-health-shard.schema.json", "schemas/token-source-health-index.schema.json", "schemas/token-binding-snapshot.schema.json", "schemas/token-observation-receipt.schema.json", "schemas/token-source-ingestion-intent.schema.json", "tests/observed-token-domain.test.mjs"]},
+    {"phase": 3, "status": "passed", "evidence": ["tokens/source-contract.mjs", "tokens/source-normalizer.mjs", "tests/observed-token-domain.test.mjs"]},
+    {"phase": 4, "status": "passed", "evidence": ["tokens/catalog-aggregator.mjs", "tests/observed-token-domain.test.mjs"]},
+    {"phase": 5, "status": "passed", "evidence": ["runtime/run-plan.mjs", "tokens/source-health.mjs", "tests/observed-token-runner.test.mjs", "tests/token-source-health.test.mjs", "../site/tests/observed-token-generation.test.mjs", "../site/tests/token-source-health-store.test.mjs"]},
+    {"phase": 6, "status": "passed", "evidence": ["token-schemas/screen-index.schema.json", "../site/server/screen-token-plans.js", "scripts/check-screen-cache.mjs", "tests/check-screen-cache.test.mjs", "tests/pipeline-dry-run.test.mjs"]},
+    {"phase": 7, "status": "passed", "evidence": ["tokens/task-observation-receipt.mjs", "tokens/task-ingestion-intent.mjs", "../tasks/finalize-task.mjs", "tests/task-observation-receipt.test.mjs", "../tasks/tests/test-finalize-task.mjs"]},
+    {"phase": 8, "status": "passed", "evidence": ["runtime/run-plan.mjs", "schemas/design-component-capture.schema.json", "../site/tests/figma-component-token-atomic.test.mjs", "tests/component-runner.test.mjs"]},
+    {"phase": 9, "status": "passed", "evidence": ["../site/server/figma-token-jobs.js", "../site/server/figma-sync.js", "../site/server/token-source-health-store.js", "../site/tests/token-source-management.test.mjs", "tests/observed-token-runner.test.mjs"]},
+    {"phase": 10, "status": "passed", "evidence": ["schemas/project-adapters.schema.json", "runtime/adapter-config.mjs", "runtime/adapter-registry.mjs", "tests/adapter-contract.test.mjs"]},
+    {"phase": 11, "status": "passed", "evidence": ["tokens/binder.mjs", "tests/token-binder.test.mjs"]},
+    {"phase": 12, "status": "passed", "evidence": ["tokens/comparator.mjs", "tokens/baseline.mjs", "tests/token-comparator.test.mjs", "tests/token-drift-runner.test.mjs"]},
+    {"phase": 13, "status": "passed", "evidence": ["schemas/token-task-binding.schema.json", "../tasks/token-binding-contract.cjs", "../tasks/finalize-task.mjs", "../tasks/tests/test-finalize-task.mjs"]},
+    {"phase": 14, "status": "passed", "evidence": ["../site/server/design-token-sources.js", "../site/server/token-source-ingestion.js", "../site/server/http.js", "../site/tests/design-token-mappings.test.mjs", "../site/tests/token-source-management.test.mjs"]},
+    {"phase": 15, "status": "passed", "evidence": ["../site/scripts/design/tokens.js", "../site/scripts/design/entity-drawer.js", "../site/scripts/design/filters.js", "../site/scripts/i18n/dictionaries/design/en.js", "../site/scripts/i18n/dictionaries/design/ru.js", "../site/scripts/i18n/dictionaries/design/uk.js", "../site/tests/design-contracts.test.mjs"]},
+    {"phase": 16, "status": "passed", "evidence": ["README.md", "skill/SKILL.md", "package.json", "scripts/_index/script-manifest.json", "scripts/check-direct-figma-access.mjs"]},
+    {"phase": 17, "status": "passed", "evidence": ["traceability/current-state-audit.json", "../site/tests/observed-token-generation.test.mjs", "tests/pipeline-dry-run.test.mjs", "tests/evidence-final.test.mjs"]},
+    {"phase": 18, "status": "passed", "evidence": ["tests/traceability.test.mjs", "tests/component-acceptance.test.mjs", "../site/tests/figma-integration-contracts.test.mjs", "../tasks/tests/test-writer-lease-recovery.mjs", "../tasks/tests/test-finalize-task.mjs"]}
+  ],
+  "tokenCheckpoint": {
+    "status": "passed",
+    "evidence": [
+      "all token phase gates passed",
+      "token Definition of Done passed",
+      "the previous component contract remained isolated until the clean component cutover",
+      "old token readers/writers/roles/schemas absent",
+      "no migration, compatibility fallback, or dual path",
+      "crash, restart, race, and diff checks passed"
+    ]
+  },
+  "components": [
+    {"step": 1, "status": "passed", "evidence": ["traceability/current-state-audit.json", "tests/component-acceptance.test.mjs"]},
+    {"step": 2, "status": "passed", "evidence": ["runtime/run-plan.mjs", "runtime/adapter-registry.mjs", "runtime/input-snapshot.mjs", "runtime/file-safety.mjs"]},
+    {"step": 3, "status": "passed", "evidence": ["schemas/design-component-capture.schema.json", "schemas/design-component-inventory.schema.json", "schemas/project-component-inventory.schema.json", "schemas/component-mappings.schema.json", "schemas/component-comparison.schema.json", "schemas/component-task-binding.schema.json", "tests/component-schemas.test.mjs"]},
+    {"step": 4, "status": "passed", "evidence": ["components/capture-normalizer.mjs", "components/design-inventory-contract.mjs", "tests/component-capture.test.mjs", "../site/tests/figma-component-token-atomic.test.mjs"]},
+    {"step": 5, "status": "passed", "evidence": ["schemas/design-component-inventory.schema.json", "components/design-inventory-contract.mjs", "tests/component-capture.test.mjs"]},
+    {"step": 6, "status": "passed", "evidence": ["adapters/kotlin-compose/components.mjs", "runtime/component-extraction.mjs", "tests/component-kotlin-adapter.test.mjs"]},
+    {"step": 7, "status": "passed", "evidence": ["runtime/run-plan.mjs", "runtime/component-extraction.mjs", "components/project-inventory-contract.mjs", "tests/component-runner.test.mjs"]},
+    {"step": 8, "status": "passed", "evidence": ["components/mapping-contract.mjs", "schemas/component-mappings.schema.json", "tests/component-mapping.test.mjs", "../site/tests/design-component-mappings.test.mjs"]},
+    {"step": 9, "status": "passed", "evidence": ["components/mapping-suggestions.mjs", "schemas/component-mapping-suggestions.schema.json", "tests/component-mapping.test.mjs"]},
+    {"step": 10, "status": "passed", "evidence": ["components/comparator.mjs", "components/baseline.mjs", "components/task-suggestions.mjs", "tests/component-comparator.test.mjs"]},
+    {"step": 11, "status": "passed", "evidence": ["runtime/run-plan.mjs", "../site/server/figma-generation.js", "../site/server/figma-sync.js", "tests/component-runner.test.mjs", "../site/tests/figma-component-token-atomic.test.mjs"]},
+    {"step": 12, "status": "passed", "evidence": ["scripts/component-census.mjs", "token-schemas/bindings.schema.json", "token-schemas/census.schema.json", "tests/component-census.test.mjs", "tests/bindings.test.mjs"]},
+    {"step": 13, "status": "passed", "evidence": ["components/task-suggestions.mjs", "schemas/component-task-suggestions.schema.json", "tests/component-comparator.test.mjs"]},
+    {"step": 14, "status": "passed", "evidence": ["../tasks/component-binding-contract.cjs", "../tasks/finalize-task.mjs", "../tasks/tests/test-finalize-task.mjs", "../site/tests/finalizations.test.mjs"]},
+    {"step": 15, "status": "passed", "evidence": ["../site/server/design-catalog.js", "../site/server/design-component-state.js", "../site/server/design-component-compare.js", "../site/server/design-component-mappings.js", "../site/tests/design-contracts.test.mjs"]},
+    {"step": 16, "status": "passed", "evidence": ["../site/scripts/panels/design.js", "../site/scripts/design/entity-drawer.js", "../site/scripts/i18n/dictionaries/design/en.js", "../site/scripts/i18n/dictionaries/design/ru.js", "../site/scripts/i18n/dictionaries/design/uk.js", "../site/tests/design-component-mappings.test.mjs"]},
+    {"step": 17, "status": "passed", "evidence": ["README.md", "../site/README.md", "skill/SKILL.md", "package.json", "scripts/_index/script-manifest.json"]},
+    {"step": 18, "status": "passed", "evidence": ["tests/component-acceptance.test.mjs", "tests/component-runner.test.mjs", "../site/tests/figma-component-token-atomic.test.mjs"]},
+    {"step": 19, "status": "passed", "evidence": ["adapters/component-manifest/components.mjs", "tests/component-kotlin-adapter.test.mjs", "tests/component-acceptance.test.mjs"]},
+    {"step": 20, "status": "passed", "evidence": ["traceability/current-state-audit.json", "../site/tests/observed-token-generation.test.mjs", "tests/pipeline-dry-run.test.mjs"]},
+    {"step": 21, "status": "passed", "evidence": ["tests/traceability.test.mjs", "tests/component-acceptance.test.mjs", "../site/tests/figma-integration-contracts.test.mjs", "../tasks/tests/test-finalize-task.mjs", "../site/tests/finalizations.test.mjs"]}
+  ],
+  "final": {
+    "status": "passed",
+    "canonicalCommand": "npm run figma:verify",
+    "exitCode": 0
+  }
+}

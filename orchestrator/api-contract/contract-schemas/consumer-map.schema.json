@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/api-contract/contract-schemas/consumer-map.schema.json",
+  "title": "Generation-bound API consumer map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "analyzerVersion",
+    "committedGenerationId",
+    "contractHash",
+    "environmentId",
+    "projectCodeRevision",
+    "generatedAt",
+    "architectureStructuralHash",
+    "analysisStatus",
+    "operations",
+    "limitations"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "analyzerVersion": { "type": "string", "pattern": "^api-project-analyzer-v[1-9][0-9]*$" },
+    "committedGenerationId": {
+      "type": "string",
+      "pattern": "^gen-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{12}$"
+    },
+    "contractHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "environmentId": { "enum": ["local", "dev", "stage", "prod"] },
+    "projectCodeRevision": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "architectureStructuralHash": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "analysisStatus": { "enum": ["complete", "partial"] },
+    "operations": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["operationId", "analysisStatus", "consumers"],
+        "properties": {
+          "operationId": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "analysisStatus": { "enum": ["complete", "partial", "not-checked"] },
+          "consumers": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "architectureId", "file", "symbol", "kind"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^consumer-[a-f0-9]{24}$" },
+                "architectureId": { "type": ["string", "null"], "maxLength": 300 },
+                "file": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?!/)(?![A-Za-z]:)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+                },
+                "symbol": { "type": ["string", "null"], "maxLength": 300 },
+                "kind": { "enum": ["architecture-node", "source-reference"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+    }
+  }
+}

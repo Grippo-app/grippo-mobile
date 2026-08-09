@@ -1,0 +1,25 @@
+{
+  "name": "api-contract-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Backend OpenAPI/Postman -> contract snapshot + drift tooling sidecar (contract-as-knowledge, NOT codegen). Lives under orchestrator/api-contract/, copied wholesale into generated projects like orchestrator/site/. NEVER part of the Gradle/KMP/app build (Gradle does not read package.json).",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "contract:doctor": "node scripts/doctor.mjs",
+    "contract:probe": "node scripts/backend-cli.mjs probe",
+    "contract:refresh-openapi": "node scripts/backend-cli.mjs refresh-openapi",
+    "contract:refresh-postman": "node scripts/backend-cli.mjs refresh-postman",
+    "contract:paths": "node scripts/resolve-current.mjs",
+    "contract:verify": "node scripts/verify.mjs",
+    "contract:analyze": "node scripts/analyze-project.mjs",
+    "contract:diff": "node scripts/diff.mjs",
+    "contract:suggest": "node scripts/suggest-endpoint-tasks.mjs",
+    "contract:test": "node ../tests/run-suite.mjs api"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.8.1"
+  }
+}

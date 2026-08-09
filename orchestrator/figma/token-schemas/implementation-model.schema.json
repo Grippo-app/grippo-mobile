@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "implementation-model.schema.json",
+  "title": "ComposeImplementationModel",
+  "type": "object",
+  "required": ["schemaVersion", "parser", "inputs", "inputHashes", "overall", "issues", "files", "composables", "calls", "tokens", "unresolvedRefs"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string" },
+    "parser": {
+      "type": "object",
+      "required": ["engine", "grammar"],
+      "additionalProperties": false,
+      "properties": {
+        "engine": { "const": "tree-sitter-kotlin" },
+        "treeSitter": { "type": "string" },
+        "grammar": { "type": "string" },
+        "grammarVersion": { "type": "string" }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["files", "roots"],
+      "additionalProperties": false,
+      "properties": {
+        "files": { "type": "array", "items": { "type": "string" } },
+        "roots": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "inputHashes": { "type": "object", "additionalProperties": { "type": ["string", "null"] } },
+    "overall": { "type": "string", "enum": ["PASS", "WARN", "BLOCKER"] },
+    "issues": {
+      "type": "array",
+      "items": { "$ref": "report-envelope.schema.json#/definitions/Issue" }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "hash", "sourceHash", "parseStatus", "parseErrors", "composables", "calls"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "hash": { "type": ["string", "null"] },
+          "sourceHash": { "type": "string" },
+          "package": { "type": ["string", "null"] },
+          "parseStatus": { "type": "string", "enum": ["OK", "PARSE_ERROR"] },
+          "parseErrors": { "type": "array", "items": { "$ref": "#/definitions/ParseError" } },
+          "composables": { "type": "array", "items": { "type": "string" } },
+          "calls": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "composables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "fqName", "file", "line", "params"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "fqName": { "type": "string" },
+          "file": { "type": "string" },
+          "package": { "type": ["string", "null"] },
+          "visibility": { "enum": ["public", "private", "protected", "internal"] },
+          "line": { "type": "integer", "minimum": 1 },
+          "params": { "type": "array", "items": { "$ref": "#/definitions/Param" } }
+        }
+      }
+    },
+    "calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["callee", "file", "line", "raw"],
+        "additionalProperties": false,
+        "properties": {
+          "callee": { "type": "string" },
+          "file": { "type": "string" },
+          "package": { "type": ["string", "null"] },
+          "owner": { "type": ["string", "null"] },
+          "ownerVia": { "type": "string", "description": "When set, this call is a one-level owner-closure DUPLICATE (W2-3): `owner` is the same-file public invoker the call was re-attributed to, `ownerVia` is its direct (private sub-composable) owner. The direct-owner entry always coexists." },
+          "line": { "type": "integer", "minimum": 1 },
+          "raw": { "type": "string" },
+          "localTarget": { "type": "boolean" },
+          "args": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "dp": { "type": "array", "items": { "type": "number" } },
+              "tokens": { "type": "array", "items": { "type": "string" } },
+              "colors": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "required": ["paths", "refs"],
+      "additionalProperties": false,
+      "properties": {
+        "paths": { "type": "array", "items": { "type": "string" } },
+        "refs": { "type": "object", "additionalProperties": { "type": "array" } }
+      }
+    },
+    "unresolvedRefs": { "type": "array", "items": { "$ref": "#/definitions/UnresolvedRef" } }
+  },
+  "definitions": {
+    "Position": {
+      "type": "object",
+      "required": ["row", "column"],
+      "additionalProperties": false,
+      "properties": {
+        "row": { "type": "integer", "minimum": 0 },
+        "column": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ParseError": {
+      "type": "object",
+      "required": ["type", "missing", "start", "end", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "missing": { "type": "boolean" },
+        "start": { "$ref": "#/definitions/Position" },
+        "end": { "$ref": "#/definitions/Position" },
+        "text": { "type": "string" }
+      }
+    },
+    "Param": {
+      "type": "object",
+      "required": ["raw"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "defaultValue": { "type": ["string", "null"] },
+        "raw": { "type": "string" },
+        "unresolved": { "type": "boolean" }
+      }
+    },
+    "UnresolvedRef": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "kind": { "type": "string", "minLength": 1 },
+        "callee": { "type": "string" },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

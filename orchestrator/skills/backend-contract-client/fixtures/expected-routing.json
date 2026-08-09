@@ -1,0 +1,19 @@
+{
+  "skill": "backend-contract-client",
+  "primaryTriggers": [
+    "read the backend contract before building a DTO/endpoint",
+    "OpenAPI / Swagger snapshot (contract:refresh-openapi)",
+    "Postman enrichment (contract:refresh-postman)",
+    "endpoint inventory / per-area field slice",
+    "contract drift audit (contract:diff)",
+    "endpoint coverage planning (contract:suggest)"
+  ],
+  "prompts": [
+    { "prompt": "check the backend contract before I add this DTO", "expectedPrimary": "backend-contract-client", "allowedSecondary": ["data-layer"] },
+    { "prompt": "refresh the latest OpenAPI/Swagger snapshot — contract:refresh-openapi", "expectedPrimary": "backend-contract-client", "allowedSecondary": [] },
+    { "prompt": "audit the data layer for contract drift against the committed snapshot", "expectedPrimary": "backend-contract-client", "allowedSecondary": [] },
+    { "prompt": "refresh the snapshot from the Postman collection — contract:refresh-postman", "expectedPrimary": "backend-contract-client", "allowedSecondary": [] },
+    { "prompt": "look up the endpoint inventory and the per-area field slice for profile", "expectedPrimary": "backend-contract-client", "allowedSecondary": [] },
+    { "prompt": "the server changed an endpoint — did the client drift? run contract:diff", "expectedPrimary": "backend-contract-client", "allowedSecondary": [] }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "flows": [
+    "sync-publication",
+    "local-analysis-publication",
+    "mapping-review",
+    "task-finalization",
+    "task-creation",
+    "maintenance-recovery",
+    "retention"
+  ],
+  "pairs": [
+    { "left": "sync-publication", "right": "sync-publication", "rule": "one compatible in-flight job or explicit conflict; one pointer writer", "testRef": "orchestrator/site/tests/figma-integration-contracts.test.mjs" },
+    { "left": "sync-publication", "right": "local-analysis-publication", "rule": "sole writer lease serializes generation publication; loser replans", "testRef": "orchestrator/site/tests/figma-integration-contracts.test.mjs" },
+    { "left": "sync-publication", "right": "mapping-review", "rule": "mapping CAS pins design/project revisions and conflicts after sync", "testRef": "orchestrator/site/tests/design-token-mappings.test.mjs" },
+    { "left": "sync-publication", "right": "task-finalization", "rule": "sole writer authority and final revision recheck prevent mixed task/generation state", "testRef": "orchestrator/tasks/tests/test-finalize-task.mjs" },
+    { "left": "sync-publication", "right": "task-creation", "rule": "creation pins exact finding generation and conflicts when it moves", "testRef": "orchestrator/site/tests/figma-task-publication.test.mjs" },
+    { "left": "sync-publication", "right": "maintenance-recovery", "rule": "recovery reconciles exact owner/phase and never clears an active publisher", "testRef": "orchestrator/site/tests/startup-recovery-barrier.test.mjs" },
+    { "left": "sync-publication", "right": "retention", "rule": "retention preserves current/staged/recovery-referenced generation artifacts", "testRef": "orchestrator/site/tests/figma-integration-contracts.test.mjs" },
+    { "left": "local-analysis-publication", "right": "local-analysis-publication", "rule": "compatible request reuses in-flight work; incompatible request conflicts/queues without a second writer", "testRef": "orchestrator/site/tests/design-contracts.test.mjs" },
+    { "left": "local-analysis-publication", "right": "mapping-review", "rule": "mapping commit bumps durable revision; analysis must recheck or republish from new revision", "testRef": "orchestrator/site/tests/design-component-mappings.test.mjs" },
+    { "left": "local-analysis-publication", "right": "task-finalization", "rule": "finalization owns the writer; background compare enqueues only after release", "testRef": "orchestrator/tasks/tests/test-finalize-task.mjs" },
+    { "left": "local-analysis-publication", "right": "task-creation", "rule": "task intent resolves only against its exact comparison generation", "testRef": "orchestrator/site/tests/figma-task-publication.test.mjs" },
+    { "left": "local-analysis-publication", "right": "maintenance-recovery", "rule": "startup reconciliation validates exact analysis fingerprint without taking a live lease", "testRef": "orchestrator/site/tests/design-component-mappings.test.mjs" },
+    { "left": "local-analysis-publication", "right": "retention", "rule": "staged/current analysis artifacts remain referenced until publication/recovery settles", "testRef": "orchestrator/site/tests/figma-integration-contracts.test.mjs" },
+    { "left": "mapping-review", "right": "mapping-review", "rule": "mapping CAS plus durable operation receipt gives one commit, exact replay, or typed conflict", "testRef": "orchestrator/site/tests/design-token-mappings.test.mjs" },
+    { "left": "mapping-review", "right": "task-finalization", "rule": "sole writer lease plus mapping revision CAS prevents lost authority decisions", "testRef": "orchestrator/tasks/tests/test-finalize-task.mjs" },
+    { "left": "mapping-review", "right": "task-creation", "rule": "task creation pins comparison/mapping evidence and rejects stale findings", "testRef": "orchestrator/site/tests/figma-task-publication.test.mjs" },
+    { "left": "mapping-review", "right": "maintenance-recovery", "rule": "project-owned registry is not repaired or replaced by startup recovery", "testRef": "orchestrator/site/tests/design-component-mappings.test.mjs" },
+    { "left": "mapping-review", "right": "retention", "rule": "project-owned mappings and embedded receipts are outside cache retention", "testRef": "orchestrator/site/tests/design-token-mappings.test.mjs" },
+    { "left": "task-finalization", "right": "task-finalization", "rule": "task/run/finalization identity and sole writer lease serialize canonical mutations", "testRef": "orchestrator/tasks/tests/test-finalize-task.mjs" },
+    { "left": "task-finalization", "right": "task-creation", "rule": "task namespace reservation and writer checks prevent stem/source collisions", "testRef": "orchestrator/site/tests/publication-guard.test.mjs" },
+    { "left": "task-finalization", "right": "maintenance-recovery", "rule": "journal phase and exact before/after hashes decide recovery; age is diagnostic only", "testRef": "orchestrator/tasks/tests/test-finalize-task.mjs" },
+    { "left": "task-finalization", "right": "retention", "rule": "active/staged finalization and task evidence protect referenced artifacts", "testRef": "orchestrator/tasks/tests/test-finalize-task.mjs" },
+    { "left": "task-creation", "right": "task-creation", "rule": "stable intent/dedup identity and no-clobber reservation allow one winner", "testRef": "orchestrator/site/tests/creation-markers.test.mjs" },
+    { "left": "task-creation", "right": "maintenance-recovery", "rule": "creation marker recovery reconciles exact source/target hashes", "testRef": "orchestrator/site/tests/publication-recovery.test.mjs" },
+    { "left": "task-creation", "right": "retention", "rule": "active creation markers protect their evidence and target state", "testRef": "orchestrator/site/tests/creation-markers.test.mjs" },
+    { "left": "maintenance-recovery", "right": "maintenance-recovery", "rule": "exact ownership and recovery markers make repeated recovery idempotent", "testRef": "orchestrator/tasks/tests/test-writer-lease-recovery.mjs" },
+    { "left": "maintenance-recovery", "right": "retention", "rule": "recovery references dominate age and retention eligibility", "testRef": "orchestrator/site/tests/file-guards-publication-recovery.test.mjs" },
+    { "left": "retention", "right": "retention", "rule": "reference-graph proof makes repeated deletion no-op and never touches authority files", "testRef": "orchestrator/site/tests/figma-integration-contracts.test.mjs" }
+  ]
+}

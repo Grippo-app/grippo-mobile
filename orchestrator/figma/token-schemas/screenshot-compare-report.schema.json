@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScreenshotCompareReport",
+  "allOf": [
+    { "$ref": "report-envelope.schema.json" },
+    {
+      "type": "object",
+      "required": ["metric", "semantic", "results"],
+      "properties": {
+        "metric": { "type": "string" },
+        "artifactSet": {
+          "type": "object",
+          "required": ["schemaVersion", "kind", "entries"],
+          "additionalProperties": true,
+          "properties": {
+            "schemaVersion": { "const": 1 },
+            "kind": { "type": "string" },
+            "root": { "type": ["string", "null"] },
+            "entries": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/definitions/artifactEntry" }
+            }
+          }
+        },
+        "artifactSets": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/artifactSet" }
+        },
+        "semantic": {
+          "type": "object",
+          "required": ["enabled", "status", "promoted", "zones", "findings"],
+          "additionalProperties": true,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "status": { "type": "string" },
+            "metric": { "type": ["string", "null"] },
+            "promoted": { "type": "boolean" },
+            "zones": { "type": "array" },
+            "findings": { "type": "array" }
+          }
+        },
+        "results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["screen", "themeKey", "status"],
+            "additionalProperties": true,
+            "properties": {
+              "screen": { "type": "string" },
+              "theme": { "type": ["string", "null"] },
+              "themeKey": { "type": "string" },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PASS", "MINOR", "MAJOR", "BLOCKER", "REVIEW_REQUIRED",
+                  "MISSING_CAPTURE", "UNREPRESENTABLE_OVERLAY", "MISSING_ORACLE",
+                  "ASPECT_MISMATCH", "LOW_CONTENT_ORACLE", "STALE_CAPTURE",
+                  "DUPLICATE_CAPTURE", "CAPTURE_PATH_UNCONTAINED", "CAPTURE_IS_ORACLE_COPY",
+                  "CAPTURE_LOCALE_MISMATCH", "NO_INDEXED_SCREENS"
+                ]
+              },
+              "score": { "type": ["number", "null"] },
+              "artifactSet": { "$ref": "#/definitions/artifactSet" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "artifactEntry": {
+      "type": "object",
+      "required": ["id", "kind", "path", "hash"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string" },
+        "path": { "type": "string" },
+        "hash": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" },
+        "bytes": { "type": "number" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "mime": { "type": "string" }
+      }
+    },
+    "artifactSet": {
+      "type": "object",
+      "required": ["schemaVersion", "id", "manifest", "artifacts"],
+      "additionalProperties": true,
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "id": { "type": "string" },
+        "manifest": { "$ref": "#/definitions/artifactEntry" },
+        "artifacts": {
+          "type": "object",
+          "$comment": "A full comparison carries figma+actual+diff+overlay; a diff-less BAIL (writeReferenceArtifacts) carries figma-only (MISSING_CAPTURE) or figma+actual (ASPECT_MISMATCH), so only `figma` is universally required.",
+          "required": ["figma"],
+          "additionalProperties": { "$ref": "#/definitions/artifactEntry" }
+        }
+      }
+    }
+  }
+}

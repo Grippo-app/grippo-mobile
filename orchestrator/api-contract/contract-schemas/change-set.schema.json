@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/api-contract/contract-schemas/change-set.schema.json",
+  "title": "Generation-bound API change set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classifierVersion",
+    "changeSetId",
+    "environmentId",
+    "previousHash",
+    "currentHash",
+    "generatedAt",
+    "jobId",
+    "sourceFingerprint",
+    "committedGenerationId",
+    "summary",
+    "changes",
+    "limitations"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "classifierVersion": { "type": "string", "pattern": "^api-change-classifier-v[1-9][0-9]*$" },
+    "changeSetId": { "type": "string", "pattern": "^changes-[a-f0-9]{24}$" },
+    "environmentId": { "enum": ["local", "dev", "stage", "prod"] },
+    "previousHash": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "currentHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["breaking", "potentiallyBreaking", "compatible", "info", "total"],
+      "properties": {
+        "breaking": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "potentiallyBreaking": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "compatible": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "info": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "total": { "type": "integer", "minimum": 0, "maximum": 10000 }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "severity",
+          "operationId",
+          "modelId",
+          "beforeSummary",
+          "afterSummary",
+          "affectedConsumers",
+          "affectedImplementation",
+          "linkedTasks",
+          "evidence"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^chg-[a-f0-9]{24}$" },
+          "kind": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "severity": { "enum": ["breaking", "potentially-breaking", "compatible", "info"] },
+          "operationId": { "type": ["string", "null"], "maxLength": 200 },
+          "modelId": { "type": ["string", "null"], "maxLength": 200 },
+          "beforeSummary": { "type": ["string", "null"], "maxLength": 500 },
+          "afterSummary": { "type": ["string", "null"], "maxLength": 500 },
+          "affectedConsumers": {
+            "type": "array",
+            "maxItems": 500,
+            "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+          },
+          "affectedImplementation": { "type": ["string", "null"], "maxLength": 500 },
+          "linkedTasks": {
+            "type": "array",
+            "maxItems": 100,
+            "items": { "type": "string", "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$" }
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 20,
+            "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+    },
+    "jobId": { "type": "string", "pattern": "^job-[a-f0-9]{32}$" },
+    "sourceFingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "committedGenerationId": {
+      "type": "string",
+      "pattern": "^gen-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{12}$"
+    }
+  }
+}

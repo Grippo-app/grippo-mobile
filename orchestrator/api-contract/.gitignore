@@ -1,0 +1,12 @@
+# orchestrator/api-contract/ — runtime artifacts & secrets are NEVER committed.
+# Committed template content: scripts/, schemas, package metadata and README.
+# Published generation pointers/manifests/artifacts are committed by the typed refresh flow.
+node_modules/
+
+# Secrets (also denied by the site static server — see server/static.js denylist):
+.secrets/
+
+# Caches & reports now live under orchestrator/.cache/api-contract/ (ignored by the repo-root .cache/ rule).
+
+# Misc
+.env

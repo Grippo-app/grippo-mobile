@@ -1,0 +1,19 @@
+{
+  "skill": "di-modules",
+  "primaryTriggers": [
+    "add a Koin @Module @ComponentScan",
+    "@Single / @Factory / viewModel binding (binds = [Interface::class])",
+    "register a module in :shared/Koin.kt",
+    "compose modules via @Module(includes = [...])",
+    "inline @Single internal fun provider",
+    "Koin Annotations + KSP wiring"
+  ],
+  "prompts": [
+    { "prompt": "add a Koin module for the profile feature", "expectedPrimary": "di-modules", "allowedSecondary": [] },
+    { "prompt": "provide a @Single binding with binds = [ProfileRepository::class]", "expectedPrimary": "di-modules", "allowedSecondary": [] },
+    { "prompt": "wire a viewModel factory binding for the new ViewModel", "expectedPrimary": "di-modules", "allowedSecondary": ["ui-feature"] },
+    { "prompt": "register the new module in :shared/Koin.kt modules(...)", "expectedPrimary": "di-modules", "allowedSecondary": [] },
+    { "prompt": "compose the modules with @Module(includes = [...])", "expectedPrimary": "di-modules", "allowedSecondary": [] },
+    { "prompt": "add an inline @Single internal fun provider for the http client", "expectedPrimary": "di-modules", "allowedSecondary": ["platform-build-toolkit"] }
+  ]
+}

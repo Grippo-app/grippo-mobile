@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orchestrator.local/schemas/app-run.schema.json",
+  "title": "Orchestrator app-run configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "android", "ios"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "android": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["module", "variants"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^(?!(?:build|DerivedData|node_modules|orchestrator|out)$)[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "variants": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "assembleTaskRef"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$" },
+              "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "assembleTaskRef": { "const": "project-config.androidAssembleTask" }
+            }
+          }
+        }
+      }
+    },
+    "ios": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["project", "scheme", "configurations"],
+      "properties": {
+        "project": {
+          "type": "string",
+          "pattern": "^(?!(?:\\.git|\\.gradle|\\.idea|\\.kotlin|\\.swiftpm|build|DerivedData|node_modules|orchestrator|out)(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*\\.xcodeproj$"
+        },
+        "scheme": { "type": "string", "pattern": "^[A-Za-z0-9._ -]{1,80}$" },
+        "configurations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "configuration"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$" },
+              "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "configuration": { "type": "string", "pattern": "^[A-Za-z0-9._ -]{1,80}$" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "skill": "mappers",
+  "primaryTriggers": [
+    "add a mapper in a :data-mappers:* directional module",
+    "DTO→Entity / Entity→Domain / DTO→Domain bridge",
+    "Domain→State / State→Domain mapping",
+    "to<Target>() / to<Target>OrNull() naming",
+    "null-and-drop logging rule for nullable DTOs",
+    "Domain→Body / Domain→Entity (drafts) bridge"
+  ],
+  "prompts": [
+    { "prompt": "add a DTO→Entity mapper for the profile area", "expectedPrimary": "mappers", "allowedSecondary": ["data-layer"] },
+    { "prompt": "add the Entity→Domain mapper in the :data-mappers module", "expectedPrimary": "mappers", "allowedSecondary": [] },
+    { "prompt": "map the Domain→State direction for the exercise list", "expectedPrimary": "mappers", "allowedSecondary": ["ui-feature"] },
+    { "prompt": "the DTO shape changed — update the existing mapper to follow", "expectedPrimary": "mappers", "allowedSecondary": [] },
+    { "prompt": "handle the nullable DTO fields with the null-and-drop logging rule", "expectedPrimary": "mappers", "allowedSecondary": [] },
+    { "prompt": "add a State→Domain mapper for the form submission", "expectedPrimary": "mappers", "allowedSecondary": [] }
+  ]
+}

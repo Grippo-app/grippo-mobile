@@ -1,0 +1,3 @@
+{ "triggered": true, "entrypoint": "ui-feature",
+  "sourceReads": ["orchestrator/skills/ui-feature/SKILL.md", "orchestrator/skills/ui-feature/references/index.md"],
+  "validators": ["mvi-contract-validator","build-validator"], "outputContract": "builder-report" }

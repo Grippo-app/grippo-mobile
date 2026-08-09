@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "screenshot-thresholds.schema.json",
+  "title": "Committed screenshot-gate strictness config (orchestrator/figma/screenshot-thresholds.json)",
+  "description": "The ONE source of the screenshot gate's numeric strictness: compare-screenshots.mjs derives its env-knob defaults from it and evidence-bundle.mjs derives the anti-forgery canon (CANONICAL_SCREENSHOT_THRESHOLDS values) from the same object. Env knobs remain per-run overrides; weakening past these values is caught at the final gate as THRESHOLDS_WEAKENED.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "metric",
+    "pass",
+    "minor",
+    "major",
+    "aspectTolerance",
+    "minCoverage",
+    "bgTolerance",
+    "deltaEPass",
+    "shiftRadius",
+    "gaussianSigma",
+    "aaTolerance",
+    "varFloor",
+    "deltaEStride",
+    "zoneGate",
+    "zoneBlocker",
+    "zoneTextBlocker",
+    "minRegionPx",
+    "statusBarDp",
+    "navBarDp",
+    "extraContentWarn",
+    "extraContentDeltaE",
+    "extraContentRingPx"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "gatePolicyVersion \u2014 bumped on ANY strictness change (bands, canon rules, gate semantics). Stamped into every report and final digest, so each immutable done/ record names the policy that certified it."
+    },
+    "metric": {
+      "const": "masked-ssim-luma-v2"
+    },
+    "pass": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "minor": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "major": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "aspectTolerance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "minCoverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "bgTolerance": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 442
+    },
+    "deltaEPass": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "shiftRadius": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "gaussianSigma": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 3
+    },
+    "aaTolerance": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "varFloor": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 65025
+    },
+    "deltaEStride": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "zoneGate": {
+      "const": true
+    },
+    "zoneBlocker": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "zoneTextBlocker": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "minRegionPx": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "statusBarDp": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 96
+    },
+    "navBarDp": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 96
+    },
+    "extraContentWarn": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "extraContentDeltaE": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "extraContentRingPx": {
+      "description": "W5-3 mask-dilation ring: unmasked pixels within this many px of the oracle content-mask edge are skipped by the extra-content probe (blur halos / gradient spill hugging real content are not render-added content). RAISING it skips more pixels = weaker \u2014 canon-pinned lte the committed value; 0 disables the ring (stricter, always allowed).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    }
+  }
+}

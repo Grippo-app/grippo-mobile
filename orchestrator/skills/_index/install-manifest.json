@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "count": 12,
+  "skills": [
+    {
+      "folderName": "backend-contract-client",
+      "frontmatterName": "backend-contract-client",
+      "frontmatterDescriptionSha256": "ab5854e560c349ae1bcd72769a17026cfd57a61951b6bc117784287097fdea26",
+      "sourcePath": "orchestrator/skills/backend-contract-client/SKILL.md",
+      "installPath": ".claude/skills/backend-contract-client/SKILL.md",
+      "sourceSha256": "21adbd6a9793d9ad19e68946ea215aada467d865e24082208661eb73af8695b8",
+      "referenceSha256s": {
+        "references/data-services-backend.md": "b78a736977f31b6799115f1adf9b10855a85b00f98ac649783ef9d7a87ab4694",
+        "references/drift.md": "4220c46086b748147183f73a24273553e0ce4227ed31598aeac385fe28c75d68",
+        "references/endpoint-inventory.md": "553c0b45b64b02d707263b6d21c8ff27abb86b6bdb239e1ffd6396808d9c931a",
+        "references/index.md": "1cfd1716a9662969a62a6a1f0690c987e1d0a1e240dbb5939e1c96ab426d9c14",
+        "references/overview.md": "2840e10e4311c6fc37bbd7f1ce01f91948f935e6882b945292e93b71443e5dbf",
+        "references/postman.md": "6e7b9b298d2425c755cec19191f5cf731882d7dde021489cf3eca73c0be99344",
+        "references/secrets-and-ci.md": "b1289709a8c2a127912704ed6f506a258d961ad84c7b9a2db29f51abf3e7e01f",
+        "references/snapshot-pipeline.md": "5a9411afca5dc2d2b5e38d0827204b20f293899d6b61df0c42a4067063cd6695",
+        "references/tooling-sidecar.md": "29d7a0da9cc514cdcfc0f0c34fd2e2c0460d21027cf73a2f2c210d6666afec92"
+      }
+    },
+    {
+      "folderName": "data-layer",
+      "frontmatterName": "data-layer",
+      "frontmatterDescriptionSha256": "3251b983b598a2fceb89ce2372c6220c9ad10836300676d13a24d08aa007c7f4",
+      "sourcePath": "orchestrator/skills/data-layer/SKILL.md",
+      "installPath": ".claude/skills/data-layer/SKILL.md",
+      "sourceSha256": "01aef6ca5155e8c947e186fc4cb1887bf10ea2e52ad2220aff15d509483972f4",
+      "referenceSha256s": {
+        "references/auth-session.md": "7b42e664582747a24636c4ac7e8bcf47fbeaf5efecacd26cfe783b0cffbd1fae",
+        "references/backend-client.md": "60ce115a8443d32c45d94f3908a582668618461cba20d8821719d3bebff3b0af",
+        "references/cookbook-data-feature.md": "fc67b1f977e23da8c4dd29e3166dc13144df5949a9c74f3e7e402e4ce8f88b62",
+        "references/cookbook-endpoint.md": "ecea7d4b15d58b2229795c7236c528b93891c7e00b57fb03436d040c5de7ed35",
+        "references/cookbook-room-migration.md": "14d5dc25cc1d8499ebf6baf9774a111e0781c72dfdaf93a7c09c0685e1f62c75",
+        "references/datastore.md": "42a74c2865856712ba7160fa04de6300d1e30ddb9f1568c4d3d7ed816c6f4a0f",
+        "references/dtos-and-api.md": "34edccbb99dd82cd53787e83d3b635e807210ea4b464d54a4d7b29a823e4b0ef",
+        "references/error-pipeline.md": "b7fb1781e8f9e8a9e1d8fa72f6d10df3a337ad199b6b5cc8b718fdeb2d6a6bbc",
+        "references/index.md": "0714ae4071e262b836abdfe6085d46017f154bbd6239874cbfa734e0b833d520",
+        "references/module-structure.md": "4a5123b3733fb59f52af642b540df2ecf9d8989a98dbf141900cbbd646718b80",
+        "references/persistence-room.md": "95bbe864e0df01a8816060e807fbfe67248bc0d6f4ffc88a59fe32eb28a0a303",
+        "references/repositories.md": "714e96616c5a7d934d043b2446f3124c7e439965885e93d51772d12aada973f5"
+      }
+    },
+    {
+      "folderName": "design-system",
+      "frontmatterName": "design-system",
+      "frontmatterDescriptionSha256": "1dd8dd965485decb9b13bd6c0e94b5c96b7750eebbcbfcbab50aa9c082dcca02",
+      "sourcePath": "orchestrator/skills/design-system/SKILL.md",
+      "installPath": ".claude/skills/design-system/SKILL.md",
+      "sourceSha256": "76384dec75fcf7000bb9285dbe05843a7b8d824d22f999572dd597bc50245113",
+      "referenceSha256s": {
+        "references/accessors.md": "b84fb1af86a58de4230813ad853f7825b39aa45d229c8c134906aa9e48af4d86",
+        "references/color.md": "8867a993c975116e4cba84dddd197cff5109441a60ced251484ad5da63066347",
+        "references/components.md": "e4faedb6e92baab8034696e3fc99a2b9326a4cc57c3eb902f114050f3f398e4f",
+        "references/cookbook-resource.md": "648699311ec311a9cdde4b42df5a6b2c53393a68ed8133541bd2cb735d556981",
+        "references/design-system-modules.md": "94e99746f3dbb0f2b86492b4afbda1e59ceb954974b3288d344aafaddbc26dda",
+        "references/dp.md": "94bd1951d0e7d80f8cfb0ed55cafee70297ba513230650ff8ec3d239b751f1f7",
+        "references/image-loader.md": "816453a72f71bfb31729e8d23431cc42f1bae061b39fec646edb7c616e8bf78a",
+        "references/index.md": "f8203bae694c34dec5bd7c15d12422b4bdb499dc480cae66f2374480d449aafa",
+        "references/kotlin-style.md": "b18ea6292c58e25f65f4f232842a164fe02e14ca289122e5e049efb663a94492",
+        "references/naming.md": "b94cb10b54957fb99d12499a303cc2d8ee2ccfe07323fc07a085129edf585303",
+        "references/packages.md": "ba64e47831ff57e88c90245287d298c2463d47f83e25302ae60ec4b8215089c6",
+        "references/previews.md": "bb8fb7c203d170da86b8acdf57a7fecd5964825a81640f0ebcc9791c1c4553ef",
+        "references/resources.md": "b483f69a36f404b86cb33d6a25b8db5213fcf2a516d578cffd1039d66e15ec39",
+        "references/theme.md": "446e4f91dcf38172f2eb3132d114b70a21dc852b8e5ff268456d9fd8eb6538cd",
+        "references/tokens.md": "5670155daf98ce238baf3535991b665aa6a851ad4b8084ccac7b6fb531fd9b31",
+        "references/typography.md": "1e5808ed8ce691e9d7c191e1b11848245979801b8815406d6d27b99c0689be46"
+      }
+    },
+    {
+      "folderName": "di-modules",
+      "frontmatterName": "di-modules",
+      "frontmatterDescriptionSha256": "00f7352a7b25bcdf7e54a6cdadc319cbe407f3c308678d58ceb62c84da605331",
+      "sourcePath": "orchestrator/skills/di-modules/SKILL.md",
+      "installPath": ".claude/skills/di-modules/SKILL.md",
+      "sourceSha256": "cabb6e5800577a7dd5e167ffc7f3c6044444b8d81e678b95d8c4c93993b7e060",
+      "referenceSha256s": {
+        "references/annotations.md": "a283aabd39496076b1f9e2104463ee26641705d26d8db1900860f9928b53ce81",
+        "references/composition-root.md": "524d897a5a3969e91c170cf58b9a83c8da18a19606515b013c4fb2d77566a472",
+        "references/index.md": "85efc568e546335df1b08197c7ed91fb9cf954ba5aa4bf52d274af042a2794ca",
+        "references/koin-overview.md": "ef7bc62bcb9dee3f68875649f8fc1ec0edcc75f48884cfde72e690dffe5e61e2",
+        "references/shared-module.md": "63d369717701be6c3c151e7a4dbc27319ffca89cfa7a5204db66f4d1f74af637"
+      }
+    },
+    {
+      "folderName": "launch-readiness",
+      "frontmatterName": "launch-readiness",
+      "frontmatterDescriptionSha256": "5a835869342f7e5ed51119e42377d58b0b782a0c3605d5ad3b50448d61a2a092",
+      "sourcePath": "orchestrator/skills/launch-readiness/SKILL.md",
+      "installPath": ".claude/skills/launch-readiness/SKILL.md",
+      "sourceSha256": "c6f017b68d4dad4202762f1f5f4000756214d1db2ac0916505c0db5fffb66df6",
+      "referenceSha256s": {
+        "references/architecture-overview.md": "c53d79071a44cfb9b1bff7644b42240a6d8304729402290fcfe571792ab09b11",
+        "references/glossary.md": "1f7ad11681838c5d516ac7f9ebb5db1f3602c486ebc01a6562197df2f65be3b1",
+        "references/index.md": "404d86fb5fdcbd3c4a52b8ce14cf4ab80e96fd31f07b1cbd83d9d8030c89ca17",
+        "references/project-config.md": "6c9fe203150ea08175ee3fb1521bb1830393d9f8b3847f5c320985b56d93ac11",
+        "references/project-vision.md": "6eccada87528f4d7eb3f8687438bd8e17d1ccef64c4dc58a145a4ebab66bf6f0",
+        "references/template-conventions.md": "96f2b0bb1f1a0011fe2840d5e40c528cade3e911bdf947258b9c44a0b38f074a"
+      }
+    },
+    {
+      "folderName": "mappers",
+      "frontmatterName": "mappers",
+      "frontmatterDescriptionSha256": "7568fe0a08720eaa6e7f07560e6874410f9e46a786c53fe5001e3493fc6e2e31",
+      "sourcePath": "orchestrator/skills/mappers/SKILL.md",
+      "installPath": ".claude/skills/mappers/SKILL.md",
+      "sourceSha256": "442a9f62ce4673b809e9f3c8b84656cfef6c4d159425ec04168aab5c1e8342bc",
+      "referenceSha256s": {
+        "references/cookbook-add-mapper.md": "705f3a9fe3d90d1287ac5f85c603501be24af3f27cd5a51a7aa5761bbb42d53b",
+        "references/index.md": "44f1d5df8ded3cd226bf20b4f573dada057e5d0e8ca22acecf537ad950f51873",
+        "references/mapper-directions.md": "6eb0527b656c40d7dbcabe290a639d140a69604a9d270d9644148aaaf337f73a",
+        "references/mapping-conventions.md": "de863e9e4d9468127b8a6d333618800fc27dc90f1a25cd98eb6cdfaa558fe0e4",
+        "references/null-safety-and-logging.md": "35505850d56c1992589dd4c789ebf258cfacf39bf2945e06437e8977ef6b95a5"
+      }
+    },
+    {
+      "folderName": "platform-build-toolkit",
+      "frontmatterName": "platform-build-toolkit",
+      "frontmatterDescriptionSha256": "879a3d92a1aa37d5595570ff358653a6fe02c5822de194a9352fdc01a666eb35",
+      "sourcePath": "orchestrator/skills/platform-build-toolkit/SKILL.md",
+      "installPath": ".claude/skills/platform-build-toolkit/SKILL.md",
+      "sourceSha256": "78a1ac9e72ca596f50147709749b36473f45f72cdb8ad4b91389b371e8359e16",
+      "referenceSha256s": {
+        "references/convention-plugins.md": "b938d9d6f0101ea099961b6df04f82167657ba9a5bbc5fdf95595e414a7b6d56",
+        "references/gradle-build.md": "9820f3e505dc13bdfd44fe0560a4daada23bdc1eb9209364f931a2d20ebea625",
+        "references/index.md": "e2dda94ab5a41a6ddb6667208ab27a54c586d14943778eaa05b260371cdeb21a",
+        "references/ios-app-project.md": "8811645d283e0d81bed4d4356e0d6bf2362b68dd58b095eea8c978fc7a90c856",
+        "references/ios-framework.md": "37583381736d0e14c7ddd8b600060e7975b3b804f875595438e99c6d5a92501f",
+        "references/module-structure.md": "88f5d377549f40a53f81dfabecebe289954c7050fa9600125c198e89651fef61",
+        "references/tech-stack.md": "387381bb58b09f541a79215529bfd396bd7c3ac15c2fc24e199537d48dae3b49",
+        "references/toolkit-cookbook.md": "031bf63abd4d75509fcc5265c1f3fc253198447ebf0d466579233c3d66401799",
+        "references/toolkit-modules.md": "ec4d252003560b950edc7523153289c6dd3f35f2fe78b232a80f7f9601a78496",
+        "references/toolkit-utilities-core.md": "a97ad82a3c1990bd022e4ae370fcfa6f91e98cce45767037989bcd653de002b0",
+        "references/toolkit-utilities-platform.md": "0446a022261ffe8e99723085722a24c2e9608da3515919ed7f20ee136b958085",
+        "references/version-catalog-and-settings.md": "d3251e3f7090da3f38477633f49429ebe9cec865d9c88990fb7e314230cb72ef"
+      }
+    },
+    {
+      "folderName": "task-orchestrator",
+      "frontmatterName": "task-orchestrator",
+      "frontmatterDescriptionSha256": "cb862d92f683a063b21ba82705e492c0b2cbbd6c8dced490bc7944f66887ee43",
+      "sourcePath": "orchestrator/skills/task-orchestrator/SKILL.md",
+      "installPath": ".claude/skills/task-orchestrator/SKILL.md",
+      "sourceSha256": "8e5d1f334ee63677449ca09163db9034074535bf7d2b21e847d6ed1eee262bf7",
+      "referenceSha256s": {
+        "references/context-finder.md": "77c9e3a424c9c274bffae833ca023ec1fc6308c9ed7512d78bbbc8c20f0ee24f",
+        "references/index.md": "a85f1a0bd37e22583248b8908927eaa9739aa1a5a588eb43b48dea15a900bfb6",
+        "references/outcome-appendix.md": "6d592f3f6dc6f7a431f39be8bb0f1f5b2759428f5ce2bd5bd48a5e7f70076e55",
+        "references/planner.md": "b28182c5aab1079c9697f64854134c028b6eceddefc50b8e0780353e5058f75c",
+        "references/requirements-lookup.md": "bbaa28e2ba82edcf80fe65d9f4ad1e3329f9f60b56e617f734c373f8b5a43485",
+        "references/run-loop.md": "57c3600bc10161e8c5c164719beac1704c37f9af3b69466d2e14ff4ede18853b",
+        "references/task-drop.md": "7546f09cc4bd584d9c33be1a5510ffcf665fa792775db120da0ff0e8de05b86b",
+        "references/validator-routing.md": "3192ce113b7e39e0beb9e5d300c4ede4755894e8ecea39daf115da57076689b4"
+      }
+    },
+    {
+      "folderName": "task-prep",
+      "frontmatterName": "task-prep",
+      "frontmatterDescriptionSha256": "d971bd290f7f26eb352d8019c0f18b7b0a00683da1d5ac46eca98df924fa6001",
+      "sourcePath": "orchestrator/skills/task-prep/SKILL.md",
+      "installPath": ".claude/skills/task-prep/SKILL.md",
+      "sourceSha256": "767c7246aada34604be9af6e5504097003a4512944eedc951ce9e7484a06c7bf",
+      "referenceSha256s": {
+        "references/acceptance-anchors.md": "94638415fcdfe2ac9e606a9aa6c4e7eff37aa2c8bb760029819dd920852be579",
+        "references/blockers-and-dependencies.md": "81331d1e55609e2019088bcadd18ec524446e770428f0c1bda39dbb94fb2f64f",
+        "references/figma-split.md": "1b72e10b32dd76bdae015106ba46acad13e7a92bda205bcd3ecbe252260ccd6b",
+        "references/index.md": "b5faef788335e1f660fa7b03775e8b6aebdef0193991ef5c1cc11e62a0472ad4",
+        "references/intake-classification.md": "dcd75b792675fd4193fdcfff6f314f5830dc052ba27e727018c7b71f799f0bd4",
+        "references/prep-flow.md": "edf683288a0dec7104d97f2c4a5e9db96587dc59d7ac70952933f95695d15613"
+      }
+    },
+    {
+      "folderName": "ui-feature",
+      "frontmatterName": "ui-feature",
+      "frontmatterDescriptionSha256": "b50ecb675e41e93690cabafda438fc7a054e937460f3562d9119940118e9c44c",
+      "sourcePath": "orchestrator/skills/ui-feature/SKILL.md",
+      "installPath": ".claude/skills/ui-feature/SKILL.md",
+      "sourceSha256": "0fad62a4b91448ccdd8bdfd7107fef3325b4089fa8275de3f0e9bddc194512d5",
+      "referenceSha256s": {
+        "references/add-screen.md": "c8b646dbc0669d698ccfbfd55cce0622a1c6ca0c7139d578983696f97ae1dd43",
+        "references/base-classes.md": "2be169b1b2c37a8866cdd1ad9b21fd857d3ba91935dba2eacaf9d6d1ee63a8c5",
+        "references/compose-rules.md": "f04e0fa36d16200dd32278b3bf32015b9a11c95d6082c95ddf05c2a4b3ba40d5",
+        "references/dialogs.md": "f25aca635b2bee0fd09b57cef2756554b5ef09e2c6398cea74ce95a576b35ef7",
+        "references/error-pipeline.md": "2c9d6f64c6df36aecd38593736384eb2db2d0999948dda29281b8331f3e10174",
+        "references/index.md": "46c850aa8589ee85bfe74d67290abf08039c4b910be8252bd671d7e850db0ca8",
+        "references/module-structure.md": "89f425624d5f1deeffa3141ece0dfb17f6bd7d17098be6f6cf583a09b3f22f26",
+        "references/mvi-contract.md": "20947eefbed9acafd28f34d4c92aac4a8b1254beca812c49f7e6555f4a1a35b4",
+        "references/navigation.md": "d3f23b2a26922402b05f5e408153adf3a07cb4243d029d938567a379dfd72036",
+        "references/process-death.md": "1057302214e951da2cc4d46ea801d9c1f68cca5bbee8c276ae9f22f82c91f68c",
+        "references/results.md": "a5eec75eef0d6597f767c0e5e23774ee6b15fc21abd14f0867ac6deb24720f39",
+        "references/state.md": "4fdcad8f8e34f6cc1270fb4074d8a158f9bcec81ef0491da458405bd97ff851b"
+      }
+    },
+    {
+      "folderName": "validation-gates",
+      "frontmatterName": "validation-gates",
+      "frontmatterDescriptionSha256": "3bc7748ba089bf2cd51fb3da427e8406562ef09f5a2c3f1276fde8d84380a12b",
+      "sourcePath": "orchestrator/skills/validation-gates/SKILL.md",
+      "installPath": ".claude/skills/validation-gates/SKILL.md",
+      "sourceSha256": "00a449e85768397aeb6dcdf6c5c75ec3184fb4f773b8c63abac858954846ee05",
+      "referenceSha256s": {
+        "references/config-gates.md": "2711e2d8c86219c8fdcd0b77f7d741b64dbdd4fd731f9cabe9eeb25a52efa808",
+        "references/forbidden-patterns.md": "d4aa10d39ce8eb4effaaf4ed5b6d5cd06dfa2571586afb6c8415a919ce4baf8f",
+        "references/index.md": "40aba6527b0385c0c37e7187e3783da2d5a37a57f187fffcfcc7eabf9a1da62c",
+        "references/screenshot-fidelity-gate.md": "01642f8a253e67a983446b4e9ce0228940c21deb6968e3df786dd424bd870de5",
+        "references/spec-fidelity-gate.md": "4d82d3f43de0aa6e20324481fad9f4bbb66e8759b8bd5a64faa51ffe30d64355",
+        "references/when-to-stop-and-ask.md": "dbf69cfcffc30fd80ca2b97f6a447095eaa342b448a752679a323c3e877899f4"
+      }
+    },
+    {
+      "folderName": "implement-figma",
+      "frontmatterName": "implement-figma",
+      "frontmatterDescriptionSha256": "1e72f6845919242203e634beb2d7f0ef7bd35e2575aa8dee157af57755039764",
+      "sourcePath": "orchestrator/figma/skill/SKILL.md",
+      "installPath": ".claude/skills/implement-figma/SKILL.md",
+      "sourceSha256": "0ae889edce635da55236f4af1fb369a2212dd5e49add1c217c2820eb4755b8c4",
+      "externalSourceException": true,
+      "note": "canonical source stays orchestrator/figma/skill/SKILL.md"
+    }
+  ]
+}

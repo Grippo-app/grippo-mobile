@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestrator/api-contract/contract-schemas/inventory.schema.json",
+  "title": "Backend endpoint inventory (canonical, spec-structure-agnostic)",
+  "description": "The compact index the data-layer agents read instead of opening Swagger by eye. Produced by normalize.mjs (OpenAPI), optionally enriched or bootstrapped by import-postman.mjs. Per-area field detail lives in the area artifacts resolved from the current generation (area.schema.json).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "source", "stats", "areas", "endpoints"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "source": {
+      "description": "Provenance of the snapshot — which document(s) produced it and when.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "openApiUrl", "openApiVersion", "title", "specHash", "fetchedAt", "postmanImportedAt"],
+      "properties": {
+        "kind": { "enum": ["openapi", "postman", "merged"] },
+        "openApiUrl": { "type": ["string", "null"], "maxLength": 2000 },
+        "openApiVersion": { "type": ["string", "null"], "maxLength": 100 },
+        "title": { "type": ["string", "null"], "maxLength": 1000 },
+        "specHash": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+        "fetchedAt": { "type": ["string", "null"], "maxLength": 50 },
+        "postmanImportedAt": { "type": ["string", "null"], "maxLength": 50 }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["endpoints", "areas", "schemas"],
+      "properties": {
+        "endpoints": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "areas": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "schemas": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "areas": {
+      "description": "area -> operationIds. Area = first OpenAPI tag kebab-cased, else first path segment.",
+      "type": "object",
+      "maxProperties": 10000,
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]{0,99}$" },
+      "additionalProperties": {
+        "type": "array",
+        "maxItems": 10000,
+        "uniqueItems": true,
+        "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["operationId", "method", "path", "area", "summary", "auth", "deprecated", "request", "response", "errors", "examples"],
+        "properties": {
+          "operationId": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+          "path": { "type": "string", "pattern": "^/", "maxLength": 2000 },
+          "area": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,99}$" },
+          "summary": { "type": ["string", "null"], "maxLength": 1000 },
+          "auth": { "type": ["string", "null"], "maxLength": 100 },
+          "deprecated": { "type": "boolean" },
+          "request": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["pathParams", "query", "body"],
+            "properties": {
+              "pathParams": { "type": "array", "maxItems": 500, "items": { "$ref": "#/definitions/param" } },
+              "query": { "type": "array", "maxItems": 500, "items": { "$ref": "#/definitions/param" } },
+              "body": {
+                "type": ["object", "null"],
+                "additionalProperties": false,
+                "required": ["schemaRef", "contentType"],
+                "properties": {
+                  "schemaRef": { "type": "string", "minLength": 1, "maxLength": 200 },
+                  "contentType": { "type": "string", "minLength": 1, "maxLength": 200 }
+                }
+              }
+            }
+          },
+          "response": {
+            "description": "Non-error responses keyed by status (or \"default\"). Error statuses live in `errors`.",
+            "type": "object",
+            "maxProperties": 100,
+            "propertyNames": { "pattern": "^([0-9]{3}|default)$" },
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["schemaRef", "array"],
+              "properties": {
+                "schemaRef": { "type": ["string", "null"], "maxLength": 200 },
+                "array": { "type": "boolean" }
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[0-9]{3}$" }
+          },
+          "examples": {
+            "description": "Whether observed example data backs this endpoint's request/response schemas.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["request", "response"],
+            "properties": {
+              "request": { "type": "boolean" },
+              "response": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "type": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "required": { "type": "boolean" }
+      }
+    }
+  }
+}

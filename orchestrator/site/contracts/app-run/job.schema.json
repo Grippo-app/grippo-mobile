@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orchestrator.local/schemas/app-run-job.schema.json",
+  "title": "Public app-run job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "jobId", "jobRevision", "action", "linkedJobId",
+    "platform", "phase", "state", "progress", "stages", "startedAt",
+    "updatedAt", "finishedAt", "result", "errorCode"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "jobId": { "type": "string", "pattern": "^job-[a-f0-9]{36}$" },
+    "jobRevision": { "type": "integer", "minimum": 1 },
+    "action": { "enum": ["run", "restart", "install", "create-device"] },
+    "linkedJobId": { "type": ["string", "null"], "pattern": "^job-[a-f0-9]{36}$" },
+    "platform": { "enum": ["android", "ios"] },
+    "targetId": { "type": ["string", "null"], "pattern": "^target-[a-f0-9]{32}$" },
+    "variantId": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{0,31}$" },
+    "buildMode": { "enum": ["rebuild", "if-needed", "last-build", null] },
+    "taskStem": { "type": ["string", "null"], "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$", "maxLength": 120 },
+    "surfaceId": { "type": ["string", "null"], "pattern": "^srf-[a-f0-9]{24}$" },
+    "requestedProjectSourceRevision": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "appProjectSourceRevision": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "runConfigHash": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "profileId": { "type": "string", "pattern": "^profile-[a-f0-9]{32}$" },
+    "runtimeId": { "type": "string", "pattern": "^runtime-[a-f0-9]{32}$" },
+    "creationPreviewHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "phase": {
+      "enum": [
+        "queued", "detecting", "waiting-for-project", "creating-device",
+        "starting-device", "building", "resolving-artifact", "installing",
+        "launching", "running", "stopping", "completed", "cancelled",
+        "failed", "interrupted"
+      ]
+    },
+    "state": {
+      "enum": [
+        "queued", "detecting", "waiting-for-project", "creating-device",
+        "starting-device", "building", "resolving-artifact", "installing",
+        "launching", "running", "stopping", "completed", "cancelled",
+        "failed", "interrupted"
+      ]
+    },
+    "progress": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "status", "startedAt", "durationMs", "message"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "label": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "status": { "enum": ["queued", "running", "success", "skipped", "failed"] },
+          "startedAt": { "type": ["string", "null"], "format": "date-time" },
+          "durationMs": { "type": ["integer", "null"], "minimum": 0 },
+          "message": { "type": ["string", "null"], "maxLength": 1000 }
+        }
+      }
+    },
+    "artifactId": { "type": ["string", "null"], "pattern": "^artifact-[a-f0-9]{36}$" },
+    "sessionId": { "type": ["string", "null"], "pattern": "^session-[a-f0-9]{36}$" },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": ["string", "null"], "format": "date-time" },
+    "result": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["launched", "rebuilt", "pidObserved", "stopped"],
+          "properties": {
+            "launched": { "type": "boolean" },
+            "rebuilt": { "type": "boolean" },
+            "pidObserved": { "type": "boolean" },
+            "stopped": { "type": ["boolean", "null"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["managedDeviceCreated", "displayName", "targetStableHint"],
+          "properties": {
+            "managedDeviceCreated": { "const": true },
+            "displayName": { "type": "string", "maxLength": 120 },
+            "targetStableHint": { "type": "string", "pattern": "^hint-[a-f0-9]{32}$" }
+          }
+        }
+      ]
+    },
+    "errorCode": {
+      "enum": [
+        null, "adb-unavailable", "android-boot-timeout", "android-project-missing",
+        "android-sdk-ambiguous", "android-sdk-invalid", "android-sdk-missing",
+        "android-toolchain-incomplete", "android-run-config-missing",
+        "app-run-config-invalid",
+        "artifact-architecture-mismatch", "artifact-config-mismatch",
+        "artifact-hash-mismatch", "artifact-invalid", "artifact-not-found",
+        "artifact-path-mismatch", "artifact-toolchain-mismatch", "build-failed",
+        "cancelled", "device-create-failed", "discovery-failed", "install-failed",
+        "ios-boot-failed", "ios-boot-timeout", "ios-disabled",
+        "ios-project-missing", "ios-requires-macos", "ios-run-config-missing",
+        "launch-failed", "no-ios-runtime", "operation-failed",
+        "process-interrupted", "project-busy", "project-config-invalid",
+        "project-config-unavailable", "project-not-generated",
+        "scan-limit-exceeded", "symlink-input", "hardlink-input", "source-changed",
+        "source-race", "simctl-output-invalid", "target-not-found",
+        "task-context-changed",
+        "unsafe-source-input", "unsafe-project-root", "invalid-app-root",
+        "invalid-task-stem", "unknown-profile",
+        "variant-not-found", "writer-lease-lost", "writer-lease-release-failed",
+        "writer-lease-unavailable", "xcode-missing", "xcode-setup-incomplete"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "action": { "const": "create-device" } } },
+      "then": {
+        "required": ["profileId", "runtimeId", "creationPreviewHash"],
+        "properties": {
+          "linkedJobId": { "const": null },
+          "phase": {
+            "enum": [
+              "queued", "detecting", "creating-device", "completed",
+              "cancelled", "failed", "interrupted"
+            ]
+          },
+          "state": {
+            "enum": [
+              "queued", "detecting", "creating-device", "completed",
+              "cancelled", "failed", "interrupted"
+            ]
+          },
+          "result": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["managedDeviceCreated", "displayName", "targetStableHint"],
+                "properties": {
+                  "managedDeviceCreated": { "const": true },
+                  "displayName": { "type": "string", "maxLength": 120 },
+                  "targetStableHint": { "type": "string", "pattern": "^hint-[a-f0-9]{32}$" }
+                }
+              }
+            ]
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["targetId"] },
+            { "required": ["variantId"] },
+            { "required": ["buildMode"] },
+            { "required": ["taskStem"] },
+            { "required": ["surfaceId"] },
+            { "required": ["requestedProjectSourceRevision"] },
+            { "required": ["appProjectSourceRevision"] },
+            { "required": ["runConfigHash"] },
+            { "required": ["artifactId"] },
+            { "required": ["sessionId"] }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "targetId", "variantId", "buildMode", "taskStem", "surfaceId",
+          "requestedProjectSourceRevision", "appProjectSourceRevision",
+          "runConfigHash", "artifactId", "sessionId"
+        ],
+        "properties": {
+          "targetId": { "type": "string", "pattern": "^target-[a-f0-9]{32}$" },
+          "variantId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$" },
+          "buildMode": { "enum": ["rebuild", "if-needed", "last-build"] },
+          "requestedProjectSourceRevision": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "runConfigHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+          "phase": {
+            "enum": [
+              "queued", "detecting", "waiting-for-project", "starting-device",
+              "building", "resolving-artifact", "installing", "launching",
+              "running", "stopping", "completed", "cancelled", "failed",
+              "interrupted"
+            ]
+          },
+          "state": {
+            "enum": [
+              "queued", "detecting", "waiting-for-project", "starting-device",
+              "building", "resolving-artifact", "installing", "launching",
+              "running", "stopping", "completed", "cancelled", "failed",
+              "interrupted"
+            ]
+          },
+          "result": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["launched", "rebuilt", "pidObserved", "stopped"],
+                "properties": {
+                  "launched": { "type": "boolean" },
+                  "rebuilt": { "type": "boolean" },
+                  "pidObserved": { "type": "boolean" },
+                  "stopped": { "type": ["boolean", "null"] }
+                }
+              }
+            ]
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["profileId"] },
+            { "required": ["runtimeId"] },
+            { "required": ["creationPreviewHash"] }
+          ]
+        }
+      }
+    },
+    {
+      "if": { "properties": { "action": { "const": "run" } } },
+      "then": {
+        "properties": {
+          "linkedJobId": { "const": null },
+          "buildMode": { "enum": ["rebuild", "if-needed"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "action": { "const": "install" } } },
+      "then": {
+        "properties": {
+          "linkedJobId": { "const": null },
+          "buildMode": { "const": "last-build" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "action": { "const": "restart" } } },
+      "then": {
+        "properties": {
+          "linkedJobId": { "type": "string", "pattern": "^job-[a-f0-9]{36}$" }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["state"],
+        "properties": {
+          "state": { "enum": ["completed", "cancelled", "failed", "interrupted"] }
+        }
+      },
+      "then": {
+        "properties": { "finishedAt": { "type": "string", "format": "date-time" } }
+      },
+      "else": {
+        "properties": { "finishedAt": { "const": null } }
+      }
+    },
+    {
+      "if": {
+        "required": ["action", "state"],
+        "properties": {
+          "action": { "enum": ["run", "restart", "install"] },
+          "state": { "enum": ["running", "stopping", "completed"] }
+        }
+      },
+      "then": {
+        "properties": {
+          "appProjectSourceRevision": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "artifactId": { "type": "string", "pattern": "^artifact-[a-f0-9]{36}$" },
+          "sessionId": { "type": "string", "pattern": "^session-[a-f0-9]{36}$" },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["launched", "rebuilt", "pidObserved", "stopped"],
+            "properties": {
+              "launched": { "type": "boolean" },
+              "rebuilt": { "type": "boolean" },
+              "pidObserved": { "type": "boolean" },
+              "stopped": { "type": ["boolean", "null"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["action", "state"],
+        "properties": {
+          "action": { "const": "create-device" },
+          "state": { "const": "completed" }
+        }
+      },
+      "then": {
+        "properties": {
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["managedDeviceCreated", "displayName", "targetStableHint"],
+            "properties": {
+              "managedDeviceCreated": { "const": true },
+              "displayName": { "type": "string", "maxLength": 120 },
+              "targetStableHint": { "type": "string", "pattern": "^hint-[a-f0-9]{32}$" }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

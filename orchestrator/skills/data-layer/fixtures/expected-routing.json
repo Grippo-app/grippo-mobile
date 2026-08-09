@@ -1,0 +1,19 @@
+{
+  "skill": "data-layer",
+  "primaryTriggers": [
+    "add a :data-features:<name> module + <X>Feature interface",
+    "repository + feature-api split",
+    "Room entity / DAO / migration (schema delta)",
+    "DataStore key-value preference",
+    "domain model / enum for the UI to consume",
+    "extend an endpoint + DTO on <Product>Api"
+  ],
+  "prompts": [
+    { "prompt": "add a new :data-features:profile module exposing a ProfileFeature", "expectedPrimary": "data-layer", "allowedSecondary": ["di-modules"] },
+    { "prompt": "add a repository and feature-api split for the new domain concept", "expectedPrimary": "data-layer", "allowedSecondary": [] },
+    { "prompt": "add a Room entity, DAO, and write the migration for the new column", "expectedPrimary": "data-layer", "allowedSecondary": [] },
+    { "prompt": "persist a key-value preference via DataStore on the owning repository", "expectedPrimary": "data-layer", "allowedSecondary": [] },
+    { "prompt": "add a domain model and enum for the closed exercise-category set", "expectedPrimary": "data-layer", "allowedSecondary": ["mappers"] },
+    { "prompt": "extend the <Product>Api with a new endpoint and its DTO", "expectedPrimary": "data-layer", "allowedSecondary": ["backend-contract-client"] }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "comment": "Synthetic calibration corpus — mutations with ground truth BY CONSTRUCTION. generate-calibration-mutations.mjs renders each case's oracle+capture pair from the seed; the verdict-pin test (calibration-verdict.test.mjs) asserts the comparator reproduces every expectBand under the committed screenshot-thresholds.json, so a metric or threshold change that shifts any verdict fails figma:verify. expect (pass|minor|fail) is the calibrator's three-class ground truth. The expectBand values PIN CURRENT BEHAVIOUR of the calibrated defaults (doctrine 6.5); re-pin deliberately when thresholds are re-calibrated.",
+  "seed": {
+    "w": 240,
+    "h": 480,
+    "bg": [16, 16, 16],
+    "elements": [
+      { "name": "header", "rect": [12, 16, 228, 56], "color": [235, 235, 235] },
+      { "name": "card", "rect": [12, 80, 228, 220], "color": [58, 92, 150] },
+      { "name": "icon", "rect": [24, 250, 64, 290], "color": [240, 200, 60] },
+      { "name": "list", "rect": [12, 310, 228, 406], "color": [190, 190, 200], "stripes": 3 },
+      { "name": "footer", "rect": [12, 420, 228, 460], "color": [80, 80, 88] }
+    ]
+  },
+  "mutations": [
+    { "name": "Identity", "op": "none", "expect": "pass", "expectBand": "PASS", "note": "byte-distinct but pixel-identical render" },
+    { "name": "ShiftOne", "op": "shift", "dx": 1, "dy": 0, "expect": "pass", "expectBand": "PASS", "note": "within the +-2px shift search" },
+    { "name": "ShiftThreeV", "op": "shift", "dx": 0, "dy": 3, "expect": "fail", "expectBand": "BLOCKER", "note": "beyond the +-2px search - the striped list anti-aligns (fine-content misalignment)" },
+    { "name": "RemoveCard", "op": "remove", "element": "card", "expect": "fail", "expectBand": "BLOCKER", "note": "a whole Figma node gone" },
+    { "name": "MoveList", "op": "move", "element": "list", "dx": 0, "dy": 3, "expect": "fail", "expectBand": "BLOCKER", "note": "ONE fine-content node locally displaced - the zone/cell floor must catch what the global mean averages away" },
+    { "name": "MoveIcon", "op": "move", "element": "icon", "dx": 12, "dy": 0, "expect": "pass", "expectBand": "PASS", "note": "KNOWN METRIC LIMIT pinned deliberately: a small SOLID node displaced within its cell keeps high luma-v2 SSIM; bbox displacement is the spec-compare gate's territory (declarative element geometry)" },
+    { "name": "DimIcon", "op": "dim", "element": "icon", "factor": 0.3, "expect": "pass", "expectBand": "PASS", "note": "KNOWN METRIC LIMIT pinned deliberately: luma-normalized SSIM forgives a uniform local dim of a solid fill; the Delta-E colour axis flags it advisorily (spec-compare owns token-level colour)" },
+    { "name": "TintCard", "op": "tint", "element": "card", "delta": [24, 0, 0], "expect": "pass", "expectBand": "PASS", "note": "colour drift SSIM forgives - the Delta-E axis flags it advisorily" },
+    { "name": "ExtraPanel", "op": "extra", "rect": [110, 250, 210, 300], "color": [200, 60, 60], "expect": "pass", "expectBand": "PASS", "expectIssue": "RENDER_EXTRA_CONTENT", "note": "render-added content on clean background OUTSIDE the oracle mask: the oracle-masked SCORE stays ~1.0 (so for score-sweeps this is class pass - inseparable by construction), and the RENDER_EXTRA_CONTENT witness is the pinned catcher" },
+    { "name": "BlurOne", "op": "blur", "radius": 1, "expect": "minor", "expectBand": "MINOR", "note": "BAND-DECIDED pin: diffuse whole-frame softening lands in the MINOR band by the global mean with NO zone below its floor - a weakened `minor`/`pass` commit flips THIS verdict" },
+    { "name": "BlurTwo", "op": "blur", "radius": 1, "passes": 2, "expect": "fail", "expectBand": "MAJOR", "note": "BAND-DECIDED pin: heavier diffuse softening lands in the MAJOR band (blocking since the 2026-07-02 promotion) by the global mean alone - a weakened `major`/`minor` commit flips THIS verdict" }
+  ]
+}

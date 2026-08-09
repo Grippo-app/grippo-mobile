@@ -1,0 +1,563 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Design tokens.
+
+   Two surface levels, neutral (zinc-style) palette, semantic banners
+   that are quiet by default — fills lean on alpha so the banner reads
+   as "tinted page", not "candy box". Hierarchy is meant to come from
+   typography + spacing, not from borders, so borders are intentionally
+   soft and used sparingly.
+
+   Light/dark mirror each other: --bg is the page, --surface is the one
+   step elevated layer used for cards and modals. */
+:root {
+  color-scheme: light;
+  /* Global UI layer contract. Keep transient feedback above every in-page
+     overlay; native modal dialogs are handled by clipboard.js because the
+     browser top layer sits outside the z-index hierarchy. */
+  --layer-status: 20;
+  --layer-popover: 50;
+  --layer-modal: 200;
+  --layer-terminal: 300;
+  --layer-toast: 1000;
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-soft: #f0f2f5;
+  --fg: #1a1c22;
+  --muted: #676b75;
+  --accent: #6847e8;
+  --accent-strong: #5033c8;
+  --accent-fg: #ffffff;
+  --success: #16835f;
+  --warning: #b36b00;
+  --danger: #d3384e;
+  --info: #2d68c4;
+  --success-soft: color-mix(in srgb, var(--success) 14%, transparent);
+  --warning-soft: color-mix(in srgb, var(--warning) 14%, transparent);
+  --danger-soft: color-mix(in srgb, var(--danger) 14%, transparent);
+  --info-soft: color-mix(in srgb, var(--info) 14%, transparent);
+  --radius-micro: 3px;
+  --radius-compact: 5px;
+  --radius-control: 7px;
+  --radius-surface: 10px;
+  --radius-dialog: 12px;
+  --radius-pill: 999px;
+  --figma-red: #f24e1e;
+  --figma-orange: #ff7262;
+  --figma-purple: #a259ff;
+  --figma-ink: #7a38d0;
+  --figma-blue: #1abcfe;
+  --figma-green: #0acf83;
+  --postman: #ff6c37;
+  --postman-ink: #c4471f;
+  --openapi: #29843a;
+  --border: #dfe1e7;
+  --border-strong: #c9ccd4;
+  --code-bg: #eef0f3;
+  --control-bg: #ffffff;
+  --control-disabled-bg: #eceef2;
+  --control-placeholder: #686d77;
+  --focus-ring: rgba(104, 71, 232, 0.25);
+  --shadow-sm: 0 1px 2px rgba(37, 38, 40, 0.05), 0 3px 10px rgba(37, 38, 40, 0.035);
+  --shadow-md: 0 12px 32px rgba(37, 38, 40, 0.10), 0 2px 8px rgba(37, 38, 40, 0.04);
+  --banner-info-bg: color-mix(in srgb, var(--info) 10%, transparent);
+  --banner-info-border: color-mix(in srgb, var(--info) 30%, transparent);
+  --banner-info-fg: #2458a3;
+  --banner-warn-bg: color-mix(in srgb, var(--warning) 10%, transparent);
+  --banner-warn-border: color-mix(in srgb, var(--warning) 32%, transparent);
+  --banner-warn-fg: #8a5100;
+  --banner-success-bg: color-mix(in srgb, var(--success) 10%, transparent);
+  --banner-success-border: color-mix(in srgb, var(--success) 30%, transparent);
+  --banner-success-fg: #126a4d;
+  --banner-danger-bg: color-mix(in srgb, var(--danger) 10%, transparent);
+  --banner-danger-border: color-mix(in srgb, var(--danger) 30%, transparent);
+  --banner-danger-fg: #a92b3c;
+  --toast-bg: #252628;
+  --toast-fg: #ffffff;
+  /* Opaque danger surface for overlays that float over arbitrary content, where
+     the translucent --banner-danger-bg would let the page show through. */
+  --banner-danger-bg-solid: #fdf1f3;
+  /* A failure toast is opaque and prominent, so its foreground is pinned per
+     theme rather than reusing --danger (which flips light/dark and would drop
+     the text contrast below AA on one of them). */
+  --toast-error-bg: #b32639;
+  --toast-error-fg: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0f1115;
+    --surface: #171a20;
+    --surface-soft: #13161b;
+    --fg: #f3f4f6;
+    --muted: #a5a9b2;
+    --accent: #7c5cff;
+    --accent-strong: #9278ff;
+    --accent-fg: #ffffff;
+    --success: #34c98d;
+    --warning: #f0a72f;
+    --danger: #ff5d70;
+    --info: #5f9df5;
+    --openapi: #62d96b;
+    --figma-ink: #bd7cff;
+    --postman-ink: #ff835d;
+    --border: #2c3038;
+    --border-strong: #424754;
+    --code-bg: #20242b;
+    --control-bg: #1c2027;
+    --control-disabled-bg: #13161b;
+    --control-placeholder: #a5a9b2;
+    --focus-ring: rgba(124, 92, 255, 0.30);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 5px 14px rgba(0, 0, 0, 0.16);
+    --shadow-md: 0 16px 40px rgba(0, 0, 0, 0.42), 0 3px 10px rgba(0, 0, 0, 0.22);
+    --banner-info-bg: color-mix(in srgb, var(--info) 12%, transparent);
+    --banner-info-border: color-mix(in srgb, var(--info) 34%, transparent);
+    --banner-info-fg: #79aff8;
+    --banner-warn-bg: color-mix(in srgb, var(--warning) 12%, transparent);
+    --banner-warn-border: color-mix(in srgb, var(--warning) 34%, transparent);
+    --banner-warn-fg: #f0b34b;
+    --banner-success-bg: color-mix(in srgb, var(--success) 12%, transparent);
+    --banner-success-border: color-mix(in srgb, var(--success) 32%, transparent);
+    --banner-success-fg: #43d39a;
+    --banner-danger-bg: color-mix(in srgb, var(--danger) 12%, transparent);
+    --banner-danger-border: color-mix(in srgb, var(--danger) 34%, transparent);
+    --banner-danger-fg: #ff7183;
+    --toast-bg: #f7f9fc;
+    --toast-fg: #141824;
+    --banner-danger-bg-solid: #2a1a1f;
+    --toast-error-bg: #ffd7dc;
+    --toast-error-fg: #7a1122;
+  }
+}
+
+/* ---- top status strip: full-width, thin, pinned to the very top ---- */
+.status-strip {
+  position: sticky;
+  top: 0;
+  z-index: var(--layer-status);
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  gap: 2px;
+  padding: 0 20px;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+  backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* Each header indicator (status.js, cli-status.js, sessions-menu.js,
+   figma-status.js) mounts its pill + popover wrapped in a .site-status-item.
+   That wrapper is the positioning context so the popover anchors under ITS OWN
+   pill — the base `right: 0` resolves against the small wrapper, not the strip.
+   In the strip the pill blends in; the popover drops down just below it. */
+.status-strip .site-status-item {
+  position: relative;
+  display: inline-block;
+}
+.status-strip .site-status-pill {
+  background: transparent;
+  border-color: transparent;
+  padding: 4px 8px;
+}
+.status-strip .site-status-pill:hover { background: var(--code-bg); }
+.status-strip .site-status-pop {
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+}
+
+@media (max-width: 640px) {
+  .status-strip {
+    width: 100%;
+    max-width: 100vw;
+    justify-content: space-between;
+    gap: 2px;
+    padding-inline: 6px;
+  }
+  .status-strip .site-status-item { min-width: 0; }
+  .status-strip .site-status-pill {
+    min-width: 30px;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+  /* Five status labels do not fit on a phone. The buttons retain their exact
+     aria-labels, while the dot states stay visible and tappable. */
+  .status-strip .site-status-label { display: none; }
+  /* Anchor every status detail to the viewport on mobile. A right-side pill
+     must never push its 320px popover beyond the document edge. */
+  .status-strip .site-status-pop {
+    position: fixed;
+    top: 42px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ---- app shell: fixed sidebar + fluid main ---- */
+.app-shell {
+  display: grid;
+  grid-template-columns: 252px minmax(0, 1fr);
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.sidebar {
+  position: sticky;
+  top: 36px; /* sits directly under the status strip */
+  align-self: start;
+  height: calc(100vh - 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 24px 16px 18px;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(120%);
+  overflow-y: auto;
+}
+
+.site-title {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  row-gap: 2px;
+  margin: 0;
+  padding: 0 8px;
+}
+
+.site-title::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  grid-row: 1 / span 2;
+  margin-top: 2px;
+  background: var(--accent-strong);
+  -webkit-mask: url("../assets/icons/workflow.svg") center / contain no-repeat;
+  mask: url("../assets/icons/workflow.svg") center / contain no-repeat;
+}
+
+.site-title-project {
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 720;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.site-title-kind {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Sidebar body = a primary item (Board) on top, then labelled groups
+   (Project / Integrations). A hairline + generous space separates groups so
+   each small-caps header reads as a section label, not another nav item. */
+.sidebar-groups {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Divider + breathing room between groups — never above the first (Board). */
+.nav-group + .nav-group {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.nav-group-title {
+  margin: 0;
+  padding: 0 12px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.82;
+}
+
+/* Footer bar: the EN/RU/UA toggle, kept right-aligned. */
+.foot-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.foot-bar .lang-toggle { align-self: auto; }
+
+/* Collapsible footer group: Start is the one-time bootstrap
+   (Setup + Launch Wizard; it collapses once the
+   setup gate flips — see syncStartGroup in app.js). */
+.start-group {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.start-summary {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 10px 6px 28px;
+  border-radius: var(--radius-control);
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.start-summary::-webkit-details-marker { display: none; }
+.start-summary:hover { background: var(--code-bg); color: var(--fg); }
+.start-group[open] .start-summary { color: var(--fg); }
+
+/* CSS chevron, rotates ▸ -> ▾ on open, so the group reads as collapsible. */
+.start-summary::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  opacity: 0.7;
+  transition: transform 120ms ease, top 120ms ease;
+}
+.start-group[open] .start-summary::before {
+  transform: rotate(45deg);
+  top: 9px;
+}
+
+.start-hint {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+.sidebar-nav--start { margin-top: 6px; }
+
+/* Sidebar nav buttons: full-width, left-aligned pills. The current page
+   gets a soft accent tint rather than a solid fill — minimalist. */
+.nav-btn {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  border-radius: var(--radius-control);
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  --nav-icon: url("../assets/icons/workflow.svg");
+  --nav-icon-color: color-mix(in srgb, var(--fg) 58%, var(--muted));
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+/* Decorative route marks: empty pseudo-elements keep the navigation's
+   accessible name entirely text-based while giving each product area a
+   recognizable visual identity. */
+.nav-btn::before {
+  content: '';
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  background: var(--nav-icon-color);
+  -webkit-mask: var(--nav-icon) center / contain no-repeat;
+  mask: var(--nav-icon) center / contain no-repeat;
+  transition: background-color 140ms ease;
+}
+
+.nav-btn[data-target="board"]::before {
+  --nav-icon: url("../assets/icons/kanban.svg");
+}
+.nav-btn[data-target="archmap"]::before {
+  --nav-icon: url("../assets/icons/network.svg");
+}
+.nav-btn[data-target="design"]::before {
+  --nav-icon: url("../assets/icons/palette.svg");
+}
+.nav-btn[data-target="api"]::before {
+  --nav-icon: url("../assets/icons/openapiinitiative.svg");
+  --nav-icon-color: var(--openapi);
+}
+.nav-btn[data-target="figma"]::before {
+  --nav-icon: url("../assets/icons/figma.svg");
+  --nav-icon-color: var(--figma-ink);
+}
+.nav-btn[data-target="backend"]::before {
+  --nav-icon: url("../assets/icons/postman.svg");
+  --nav-icon-color: var(--postman-ink);
+}
+.nav-btn[data-target="reviewer"]::before {
+  --nav-icon: url("../assets/icons/shield-check.svg");
+}
+.nav-btn[data-target="setup"]::before {
+  --nav-icon: url("../assets/icons/settings-2.svg");
+}
+.nav-btn[data-target="wizard"]::before {
+  --nav-icon: url("../assets/icons/wand-sparkles.svg");
+}
+
+.nav-btn:hover {
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  color: var(--fg);
+}
+
+.nav-btn:hover::before {
+  background: var(--accent-strong);
+}
+
+.nav-btn[aria-current="page"] {
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  color: var(--accent-strong);
+  border-color: transparent;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.nav-btn[aria-current="page"]::before {
+  background: var(--nav-icon-color);
+}
+
+main {
+  min-width: 0;
+  padding: 36px 42px 64px;
+}
+
+/* Narrow screens: sidebar becomes a stacked band above the content. Groups
+   keep their labels; each group's buttons wrap into a horizontal row. */
+@media (max-width: 860px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
+  }
+  .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+  .nav-btn { width: auto; }
+  .sidebar-foot { margin-top: 0; }
+  .foot-bar { flex-wrap: wrap; }
+  main { padding: 24px 16px 48px; }
+}
+
+.panel {
+  display: block;
+}
+
+/* Routes move focus to the active panel so assistive technology announces the
+   new screen. The panel is not an interactive control, so a page-sized focus
+   rectangle is misleading; links, buttons and fields retain their own rings. */
+.panel:focus,
+.panel:focus-visible {
+  outline: none;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-micro);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.625rem;
+  font-weight: 720;
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  margin: 32px 0 12px;
+  font-size: 1.0625rem;
+  font-weight: 680;
+  letter-spacing: -0.012em;
+}
+
+h4 {
+  margin: 16px 0 6px;
+  font-size: 0.9375rem;
+  font-weight: 660;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

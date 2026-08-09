@@ -1,0 +1,19 @@
+{
+  "skill": "platform-build-toolkit",
+  "primaryTriggers": [
+    "add or extend a :toolkit:<name> utility",
+    "version catalog entry / build-logic convention plugin",
+    "build.gradle.kts / settings.gradle.kts authoring",
+    "add a :compose-libs:<name> product-agnostic widget",
+    "thin :androidApp / :iosApp shell wiring",
+    "iOS SwiftPackage framework / :iosApp Xcode project"
+  ],
+  "prompts": [
+    { "prompt": "add a :toolkit:connectivity utility module", "expectedPrimary": "platform-build-toolkit", "allowedSecondary": [] },
+    { "prompt": "add a version catalog entry and a build-logic convention plugin", "expectedPrimary": "platform-build-toolkit", "allowedSecondary": [] },
+    { "prompt": "author the build.gradle.kts for the new module and touch settings.gradle.kts", "expectedPrimary": "platform-build-toolkit", "allowedSecondary": [] },
+    { "prompt": "add a :compose-libs widget shared across products", "expectedPrimary": "platform-build-toolkit", "allowedSecondary": ["design-system"] },
+    { "prompt": "wire a deeplink intent filter in the thin :androidApp shell", "expectedPrimary": "platform-build-toolkit", "allowedSecondary": [] },
+    { "prompt": "set up the iOS SwiftPackage framework and the :iosApp Xcode project", "expectedPrimary": "platform-build-toolkit", "allowedSecondary": ["launch-readiness"] }
+  ]
+}

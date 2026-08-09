@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec.schema.json",
+  "title": "SpecJson",
+  "description": "Current screen spec JSON produced by figma:screens: semantic nodes plus a required comparable elements projection.",
+  "$ref": "#/definitions/Spec",
+  "definitions": {
+    "Spec": {
+      "type": "object",
+      "required": ["schemaVersion", "screen", "frameSizeDp", "theme", "source", "rootNodeId", "nodes", "elements", "coordinateSystem", "themeMetadata"],
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": { "const": 2 },
+        "screen": { "type": "string", "minLength": 1 },
+        "frameSizeDp": { "$ref": "#/definitions/FrameSize" },
+        "theme": { "$ref": "#/definitions/Theme" },
+        "sourceFrameId": { "type": "string" },
+        "sourceFrameName": { "type": "string" },
+        "source": {
+          "type": "object",
+          "required": ["fileKey", "nodeId"],
+          "additionalProperties": false,
+          "properties": {
+            "fileKey": { "type": "string", "minLength": 1 },
+            "nodeId": { "type": "string", "minLength": 1 },
+            "url": { "type": "string" },
+            "pulledAt": { "type": "string" }
+          }
+        },
+        "rootNodeId": { "type": "string", "minLength": 1 },
+        "coordinateSystem": {
+          "type": "object",
+          "required": ["units"],
+          "additionalProperties": false,
+          "properties": {
+            "units": { "enum": ["dp"] },
+            "density": { "type": "number", "exclusiveMinimum": 0 },
+            "origin": { "enum": ["frame"] }
+          }
+        },
+        "themeMetadata": {
+          "type": "object",
+          "required": ["themeKey"],
+          "additionalProperties": false,
+          "properties": {
+            "themeKey": { "type": "string", "minLength": 1 },
+            "modeId": { "type": "string" },
+            "modeName": { "type": "string" }
+          }
+        },
+        "chromeCrop": { "$ref": "#/definitions/ChromeCrop" },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/Node" }
+        },
+        "elements": {
+          "description": "Comparable projection consumed by the spec comparator. Semantic nodes without this projection are invalid.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/Element" }
+        }
+      }
+    },
+    "Theme": { "type": "string", "enum": ["dark", "light"] },
+    "ChromeCrop": {
+      "description": "R6 audit stamp written by normalize-oracle.mjs: the oracle PNG + spec were cropped by topDp/bottomDp of iOS device chrome at pull time (matched = which strict-predicate signals fired). check-screen-cache re-verifies a stamped spec for residue/geometry consistency.",
+      "type": "object",
+      "required": ["topDp", "bottomDp", "matched", "at"],
+      "additionalProperties": false,
+      "properties": {
+        "topDp": { "type": "number", "minimum": 0 },
+        "bottomDp": { "type": "number", "minimum": 0 },
+        "matched": { "type": "array", "items": { "type": "string" } },
+        "at": { "type": "string" }
+      }
+    },
+    "FrameSize": {
+      "type": "object",
+      "required": ["w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "HexOrToken": {
+      "oneOf": [
+        { "type": "string", "pattern": "^(#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})|\\{[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9._-]+)+\\})$" },
+        {
+          "type": "object",
+          "required": ["tokenRef", "resolvedValue"],
+          "additionalProperties": false,
+          "properties": {
+            "tokenRef": { "type": "string", "pattern": "^\\{[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9._-]+)+\\}$" },
+            "resolvedValue": { "type": "string", "pattern": "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$" }
+          }
+        }
+      ]
+    },
+    "Bbox": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number", "minimum": 0 },
+        "h": { "type": "number", "minimum": 0 }
+      }
+    },
+    "Padding": {
+      "type": "object",
+      "required": ["l", "t", "r", "b"],
+      "additionalProperties": false,
+      "properties": {
+        "l": { "type": "number", "minimum": 0 },
+        "t": { "type": "number", "minimum": 0 },
+        "r": { "type": "number", "minimum": 0 },
+        "b": { "type": "number", "minimum": 0 }
+      }
+    },
+    "TextStyle": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["sizeSp", "weight", "lineHeightSp", "case"],
+          "additionalProperties": false,
+          "properties": {
+            "sizeSp": { "type": "number", "exclusiveMinimum": 0 },
+            "weight": { "type": "number", "minimum": 1 },
+            "lineHeightSp": { "type": "number", "exclusiveMinimum": 0 },
+            "case": { "type": "string", "enum": ["none", "as-is", "upper", "lower", "title"] },
+            "fontFamily": { "type": "string", "minLength": 1, "description": "design font family, verbatim, when the pull's design context provides it (W5-5) — Robolectric renders bundled fonts only, so a non-bundled family is recorded as a verdict-neutral `row.substitutedFonts[]` report field instead of laundering unnamed into the colour/SSIM axes; omit when unknown" }
+          }
+        }
+      ]
+    },
+    "Node": {
+      "type": "object",
+      "required": ["stableId", "name"],
+      "additionalProperties": false,
+      "dependencies": {
+        "componentSetName": ["componentSetNodeId"],
+        "componentSetNodeId": ["componentSetName"]
+      },
+      "properties": {
+        "stableId": { "type": "string", "minLength": 1 },
+        "figmaNodeId": { "type": "string", "minLength": 1 },
+        "parentStableId": { "type": ["string", "null"] },
+        "childrenStableIds": { "type": "array", "items": { "type": "string" } },
+        "name": { "type": "string", "minLength": 1 },
+        "figmaType": { "type": "string" },
+        "role": { "type": "string" },
+        "identitySource": { "type": "string" },
+        "bboxDp": { "$ref": "#/definitions/Bbox" },
+        "fills": { "type": "array", "items": { "$ref": "#/definitions/HexOrToken" } },
+        "textStyle": { "$ref": "#/definitions/TextStyle" },
+        "text": { "type": "string", "description": "visible text content of a glyph node, verbatim from the design — the mechanical content-parity check (check-stub-text.mjs) searches the code for exactly this string" },
+        "cornerRadiusDp": { "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }] },
+        "strokes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["color", "widthDp"],
+            "additionalProperties": false,
+            "properties": {
+              "color": { "$ref": "#/definitions/HexOrToken" },
+              "widthDp": { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "paddingDp": { "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/Padding" }] },
+        "gapsToSiblingsDp": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } },
+        "componentSetName": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "componentSetNodeId": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+        "variantProps": { "type": "object", "additionalProperties": { "type": ["string", "number", "boolean"] } }
+      }
+    },
+    "Element": {
+      "type": "object",
+      "required": ["name", "bboxDp"],
+      "anyOf": [
+        { "required": ["stableId"] },
+        { "required": ["figmaNodeId"] }
+      ],
+      "additionalProperties": false,
+      "dependencies": {
+        "componentSetName": ["componentSetNodeId"],
+        "componentSetNodeId": ["componentSetName"]
+      },
+      "properties": {
+        "stableId": { "type": "string", "minLength": 1 },
+        "figmaNodeId": { "type": "string", "minLength": 1 },
+        "nodeUrl": { "type": "string" },
+        "figmaPath": { "type": "string" },
+        "role": { "type": "string" },
+        "componentSetName": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "componentSetNodeId": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+        "variantProps": { "type": "object", "additionalProperties": { "type": ["string", "number", "boolean"] } },
+        "name": { "type": "string", "minLength": 1 },
+        "bboxDp": { "$ref": "#/definitions/Bbox" },
+        "fills": { "type": "array", "items": { "$ref": "#/definitions/HexOrToken" } },
+        "textStyle": { "$ref": "#/definitions/TextStyle" },
+        "text": { "type": "string", "description": "visible text content of a glyph node, verbatim from the design — the mechanical content-parity check (check-stub-text.mjs) searches the code for exactly this string" },
+        "cornerRadiusDp": { "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }] },
+        "strokes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["color", "widthDp"],
+            "additionalProperties": false,
+            "properties": {
+              "color": { "$ref": "#/definitions/HexOrToken" },
+              "widthDp": { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "gapsToSiblingsDp": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } },
+        "paddingDp": { "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/Padding" }] }
+      }
+    }
+  }
+}

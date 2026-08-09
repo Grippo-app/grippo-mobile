@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "test-structural-receipt.schema.json",
+  "title": "test-structural-receipt",
+  "description": "Typed receipt for one allowlisted non-test structural gate (pipeline improvement 05): bootstrap fixture preflight, docs/link/contract proof for a typed N/A. The request supplies only a policy gate id; the producer owns a closed executable/argv mapping. A structural receipt carries NO test counts and can never satisfy an executable behavior anchor, a platform lane or an owner suite — only gate ids listed in the impact's notApplicableValidators may close a SKIPPED verdict. `executionMode: in-process` binds the exact validator code hash instead of a pid and cannot claim external execution. `receiptHash` = sha256 over `test-structural-receipt\\0` + canonical JSON without the hash field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "kind", "stage", "taskStem", "runId", "sessionId", "lockStage", "taskInputHash", "sourceSnapshotHash", "policyHash", "gateId", "executionMode", "tool", "validatorCodeHash", "pid", "processGroup", "startedAt", "startedReceiptHash", "endedAt", "durationMs", "exitCode", "signal", "timedOut", "result", "artifacts", "outputDigest", "receiptHash"],
+  "properties": {
+    "version": { "const": 1 },
+    "kind": { "const": "test-structural-gate" },
+    "stage": { "enum": ["started", "terminal"] },
+    "taskStem": { "type": "string", "pattern": "^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$", "maxLength": 140 },
+    "runId": { "type": "string", "pattern": "^run-[A-Za-z0-9][A-Za-z0-9-]{0,79}$" },
+    "sessionId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,162}$" },
+    "lockStage": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,39}$" },
+    "taskInputHash": { "$ref": "#/$defs/sha256" },
+    "sourceSnapshotHash": { "$ref": "#/$defs/sha256" },
+    "policyHash": { "$ref": "#/$defs/sha256" },
+    "gateId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,79}$" },
+    "executionMode": { "enum": ["in-process", "external"] },
+    "tool": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "validatorCodeHash": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }] },
+    "pid": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }] },
+    "processGroup": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }] },
+    "startedAt": { "$ref": "#/$defs/iso" },
+    "startedReceiptHash": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }] },
+    "endedAt": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/iso" }] },
+    "durationMs": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0, "maximum": 86400000 }] },
+    "exitCode": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0, "maximum": 255 }] },
+    "signal": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^SIG[A-Z0-9]{1,16}$" }] },
+    "timedOut": { "type": "boolean" },
+    "result": { "enum": ["pending", "passed", "failed", "aborted"] },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "bytes", "hash"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "maxLength": 400 },
+          "bytes": { "type": "integer", "minimum": 0, "maximum": 67108864 },
+          "hash": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "outputDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bytes", "hash", "redacted"],
+      "properties": {
+        "bytes": { "type": "integer", "minimum": 0, "maximum": 16777216 },
+        "hash": { "$ref": "#/$defs/sha256" },
+        "redacted": { "const": true }
+      }
+    },
+    "receiptHash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "iso": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" }
+  }
+}
