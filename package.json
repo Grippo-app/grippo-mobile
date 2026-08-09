@@ -1,0 +1,34 @@
+{
+  "name": "grippo-mobile",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "orchestrator/api-contract",
+    "orchestrator/figma",
+    "orchestrator/site",
+    "orchestrator/tasks"
+  ],
+  "scripts": {
+    "start": "node orchestrator/site/server.js",
+    "test": "npm run verify:fast",
+    "lint": "bash orchestrator/lint.sh && bash orchestrator/skills/checks/run-all.sh",
+    "audit": "npm audit --audit-level=high",
+    "test:syntax": "node orchestrator/tests/check-syntax.mjs",
+    "test:ownership": "node orchestrator/tests/run-suite.mjs --check",
+    "test:site": "node orchestrator/tests/run-suite.mjs site",
+    "test:api": "node orchestrator/tests/run-suite.mjs api",
+    "test:app-run": "node orchestrator/tests/run-suite.mjs app-run",
+    "test:tooling": "node orchestrator/tests/run-suite.mjs tooling",
+    "test:tasks": "node orchestrator/tests/run-suite.mjs tasks",
+    "test:figma": "node orchestrator/tests/run-suite.mjs figma",
+    "test:crash-recovery:task-state": "node orchestrator/tests/run-suite.mjs crash-recovery:task-state",
+    "test:crash-recovery:intake": "node orchestrator/tests/run-suite.mjs crash-recovery:intake",
+    "test:crash-recovery:runtime": "node orchestrator/tests/run-suite.mjs crash-recovery:runtime",
+    "test:crash-recovery:finalization": "node orchestrator/tests/run-suite.mjs crash-recovery:finalization",
+    "test:crash-recovery": "node orchestrator/tests/run-suite.mjs crash-recovery",
+    "verify:fast": "npm run test:syntax && npm run test:ownership && npm run test:tooling && npm run lint && npm run audit && npm run test:api && npm run test:app-run && npm run test:site",
+    "verify:full": "npm run verify:fast && npm run test:tasks && npm run test:figma && npm run test:crash-recovery"
+  }
+}

@@ -97,3 +97,17 @@ androidApp/release/
 .*.swo
 
 /build-logic/convention/bin/
+
+# Orchestrator site + Figma + api-contract tooling — local secrets + runtime artifacts (never commit)
+.claude/settings.local.json
+node_modules/
+.env
+orchestrator/figma/.account.json
+orchestrator/api-contract/.secrets/
+# Consolidated cache root (gitignored): tasks locks/requests/worker/runs/journal,
+# figma + api-contract caches & reports, and site state — all created at runtime (mkdir -p).
+orchestrator/.cache/
+# Atomic finalizer proofs must share the task filesystem but are runtime-only.
+orchestrator/tasks/todo/.finalize-*.ship
+orchestrator/tasks/todo/.finalize-*.ship.tmp.*
+orchestrator/tasks/todo/.finalize-*.detach.md

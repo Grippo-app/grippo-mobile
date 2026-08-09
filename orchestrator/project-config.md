@@ -1,19 +1,23 @@
 ---
-productName: <Product>
-productPackage: com.<org>.<product>
-apiClassName: <Product>Api
-backendHost: <product-domain>
-applicationId: com.<org>.<product>
+productName: Grippo
+productPackage: com.grippo
+apiClassName: GrippoApi
+backendHost: grippo-app.com
+applicationId: com.grippo.android
 iosFrameworkName: shared
 iosEnabled: true
 firebaseEnabled: true
 codexEnabled: auto
 verifyEnabled: auto
-prelaunch: true
+prelaunch: false
 supportedLocales:
   - en
-typefaceFactory: <typeface>
-featuresWithRootComponentSuffix: []
+  - uk
+  - ru
+typefaceFactory: manrope
+featuresWithRootComponentSuffix:
+  - home
+  - trainings
 diHandWrittenModules: []
 figmaEnabled: false
 figmaLibraryUrl: <figma-library-url>
@@ -25,7 +29,16 @@ moduleCompileTask: compileAndroidMain
 backendContractEnabled: auto
 ---
 
-> **Fresh-project state.** Every value in the frontmatter above is a placeholder or a neutral default. Before invoking any skill (`task-orchestrator`, the builder skills, the validation gates), replace the required identity/build placeholders with project-specific values per `orchestrator/launch.md` Step 1.5. The optional Figma placeholder may remain until that integration is enabled. Fresh projects start without `orchestrator/api-contract/environments.json`; Integrations → Backend creates the sole canonical Backend source manifest when the first source is added. Empty arrays (`featuresWithRootComponentSuffix: []`, `diHandWrittenModules: []`) stay empty until the project actually needs them — the orchestrator appends the former on demand; you append the latter by hand when a module deliberately uses a hand-written Koin `module { … }` block.
+> **Bound to Grippo** (existing production codebase — the project this orchestrator was originally authored on). Values above are live configuration, not placeholders. Deviations from template conventions, recorded deliberately:
+>
+> - `applicationId: com.grippo.android` is the Android/Play id; the iOS bundle id is **`com.grippo.app`** (predates the template's "same id on both platforms" convention — do not "fix" either side).
+> - `productPackage: com.grippo` is single-org (no `<org>` segment).
+> - `prelaunch: false` — the app has shipped; Room migrations (2→3, 3→4, 4→5) are in production. Schema changes require real migrations; the `fallbackToDestructiveMigration(dropAllTables = true)` present on both platforms is an intentional, pre-existing decision, not a license to skip migrations.
+> - `featuresWithRootComponentSuffix: [home, trainings]` — `HomeRootComponent.kt` / `TrainingsRootComponent.kt`; the other features use bare names (`AuthComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`). Note `authorization`'s component prefix is `Auth`, not `Authorization`.
+> - `figmaEnabled: false` is a project decision — there is no Figma library for Grippo; the Figma sidecar stays dormant.
+> - `backendContractEnabled: auto` — the backend contract (Swagger from `grippo-backend`, served at `/docs`) is not yet snapshotted. Add the first environment in Integrations → Backend and run Test + Refresh; until then endpoint/DTO work is BLOCKED by the drift gate rather than guessed.
+>
+> Fresh projects start without `orchestrator/api-contract/environments.json`; Integrations → Backend creates the sole canonical Backend source manifest when the first source is added. `diHandWrittenModules` stays `[]` — all Koin modules in this codebase (including `google-auth`/`apple-auth`) are annotation-based.
 
 # Project config — core scalar source of truth
 

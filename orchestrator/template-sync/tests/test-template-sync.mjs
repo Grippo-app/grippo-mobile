@@ -56,8 +56,8 @@ try {
   const configRel = join('orchestrator', 'project-config.md')
   const productConfig = join(product, configRel)
   copyFileSync(join(root, configRel), productConfig)
-  const configured = readFileSync(productConfig, 'utf8').replace(/^productName: <Product>$/m, 'productName: SampleApp')
-  assert.notEqual(configured, readFileSync(productConfig, 'utf8'), 'fixture product identity must replace the template placeholder')
+  const configured = readFileSync(productConfig, 'utf8').replace(/^productName: (?!SampleApp$).*$/m, 'productName: SampleApp')
+  assert.notEqual(configured, readFileSync(productConfig, 'utf8'), 'fixture product identity must replace the source productName (template placeholder or bound product value)')
   writeFileSync(productConfig, configured)
 
   const productGenerator = join(product, 'orchestrator', 'template-sync', '_generate_template_manifest.py')
@@ -105,17 +105,32 @@ try {
   expectStatus(missingCheck, 1, 'missing template-owned file must be reported')
   assert.match(output(missingCheck), /MISSING.*orchestrator\/README\.md/)
 
-  const dryRun = run('bash', [sourceSync, root, product])
+  // The live checkout may itself be a configured product (bound identity in
+  // project-config.md); the sync directionality guard rightly refuses such a
+  // tree as a SOURCE. Build a template-identity source fixture from the same
+  // owned files so the sync mechanics are provable in both checkouts.
+  const templateSource = join(scratch, 'template-source')
+  mkdirSync(templateSource)
+  for (const rel of ownedFiles) {
+    const destination = join(templateSource, rel)
+    mkdirSync(dirname(destination), { recursive: true })
+    copyFileSync(join(root, rel), destination)
+  }
+  const sourceConfig = join(templateSource, configRel)
+  copyFileSync(join(root, configRel), sourceConfig)
+  writeFileSync(sourceConfig, readFileSync(sourceConfig, 'utf8').replace(/^productName: .*$/m, 'productName: <Product>'))
+
+  const dryRun = run('bash', [sourceSync, templateSource, product])
   expectStatus(dryRun, 0, 'sync preview must stay read-only and succeed')
   assert.match(output(dryRun), /to copy\s+: 1 file/)
   assert.match(output(dryRun), /<- orchestrator\/README\.md/)
   assert.match(output(dryRun), /DRY-RUN \(nothing written\)/)
   assert.equal(existsSync(ownedReadme), false, 'dry-run must not restore the missing file')
 
-  const apply = run('bash', [sourceSync, root, product, '--apply'])
+  const apply = run('bash', [sourceSync, templateSource, product, '--apply'])
   expectStatus(apply, 0, 'explicit sync apply must restore the reviewed file')
-  assert.equal(readFileSync(ownedReadme, 'utf8'), readFileSync(join(root, 'orchestrator', 'README.md'), 'utf8'))
-  expectStatus(run('node', [productChecker], { env: { TEMPLATE_ROOT: root } }), 0,
+  assert.equal(readFileSync(ownedReadme, 'utf8'), readFileSync(join(templateSource, 'orchestrator', 'README.md'), 'utf8'))
+  expectStatus(run('node', [productChecker], { env: { TEMPLATE_ROOT: templateSource } }), 0,
     'applied consumer must be re-stamped from and match the live template')
 
   const extraFile = join(product, 'orchestrator', 'rogue-extra.txt')

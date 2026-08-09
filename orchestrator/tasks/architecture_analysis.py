@@ -1073,6 +1073,15 @@ class Analyzer:
                     class_name = match.group(1)
                     stem = class_name[:-len("Feature")]
                     ownership = re.sub(r"(?<!^)(?=[A-Z])", "-", stem).lower()
+                    node_id = stable_id("feature", ownership)
+                    existing = self.nodes.get(node_id)
+                    if existing is not None and existing["metadata"]["interfaceClass"] is None:
+                        # Same ownership already registered by the :ui-screen-features:
+                        # pass — one product feature spans both surfaces. Keep the UI
+                        # node; the domain pass contributes only the interface class.
+                        existing["metadata"]["interfaceClass"] = class_name
+                        feature_by_stem[stem.lower()] = node_id
+                        continue
                     feature_by_stem[stem.lower()] = self.add_node(
                         "feature",
                         ownership,
@@ -1127,15 +1136,21 @@ class Analyzer:
                         {"className": class_name, "sourceType": suffix},
                     )
                     data_source_nodes.append((node_id, class_name, relative, module))
+        seen_consumers: set[tuple[str, str]] = set()
         for node_id, class_name, declaration, _decl_module in repository_nodes + data_source_nodes:
             reference = re.compile(r"\b" + re.escape(class_name) + r"\b")
             for module, relative, text in all_kotlin:
                 if relative == declaration:
                     continue
+                # One consumes edge per (module, node): several files of the same
+                # module may reference the class; first evidence wins.
+                if (module, node_id) in seen_consumers:
+                    continue
                 clean = strip_kotlin_comments_and_strings(text)
                 match = reference.search(clean)
                 if not match:
                     continue
+                seen_consumers.add((module, node_id))
                 self.add_edge(make_edge(
                     MODULE_ID_BY_GRADLE[module], node_id, "consumes", relative,
                     line_number(clean, match.start()), "kotlin-reference-v1",
@@ -1187,6 +1202,8 @@ class Analyzer:
                             line_number(clean, match.start()), "kotlin-api-consumer-v1",
                             "exact", api_class_name,
                         ))
+                        # One consumes edge per module; first evidence wins.
+                        break
 
         database_re = re.compile(r"@Database\s*\((?P<body>[\s\S]*?)\)\s*(?:abstract\s+)?class\s+(?P<name>[A-Z][A-Za-z0-9_]*)")
         version_re = re.compile(r"\bversion\s*=\s*(\d+)")

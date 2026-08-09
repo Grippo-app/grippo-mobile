@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openai.local/orchestrator/architecture-rules.schema.json",
+  "title": "Orchestrator architecture rules",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "dependencyRules", "rootModules", "standaloneModules"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "dependencyRules": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "fromLayer",
+          "disallowToLayer",
+          "fromPlatform",
+          "toPlatform",
+          "fromModule",
+          "toModule",
+          "severity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{0,95}$"
+          },
+          "fromLayer": {
+            "type": ["string", "null"],
+            "enum": ["ui", "domain", "data", "infrastructure", "build", "unknown", null]
+          },
+          "disallowToLayer": {
+            "type": ["string", "null"],
+            "enum": ["ui", "domain", "data", "infrastructure", "build", "unknown", null]
+          },
+          "fromPlatform": {
+            "type": ["string", "null"],
+            "enum": ["shared", "android", "ios", "tooling", "unknown", null]
+          },
+          "toPlatform": {
+            "type": ["string", "null"],
+            "enum": ["shared", "android", "ios", "tooling", "unknown", null]
+          },
+          "fromModule": {
+            "anyOf": [
+              { "$ref": "#/$defs/pattern" },
+              { "type": "null" }
+            ]
+          },
+          "toModule": {
+            "anyOf": [
+              { "$ref": "#/$defs/pattern" },
+              { "type": "null" }
+            ]
+          },
+          "severity": { "enum": ["error", "warning", "info"] }
+        },
+        "anyOf": [
+          { "properties": { "fromLayer": { "type": "string" } } },
+          { "properties": { "disallowToLayer": { "type": "string" } } },
+          { "properties": { "fromPlatform": { "type": "string" } } },
+          { "properties": { "toPlatform": { "type": "string" } } },
+          { "properties": { "fromModule": { "type": "string" } } },
+          { "properties": { "toModule": { "type": "string" } } }
+        ]
+      }
+    },
+    "rootModules": {
+      "type": "array",
+      "maxItems": 200,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/pattern" }
+    },
+    "standaloneModules": {
+      "type": "array",
+      "maxItems": 200,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/pattern" }
+    }
+  },
+  "$defs": {
+    "pattern": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*[!\\\\$`(){};|&<>])[A-Za-z0-9._~/*-]+$"
+    }
+  }
+}

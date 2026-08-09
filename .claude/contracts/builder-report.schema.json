@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bootstrapper-orchestrator.local/contracts/builder-report.schema.json",
+  "title": "Current builder report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "agent", "status", "files_touched", "produced_signatures",
+    "blockers", "assumptions", "scope_deviations", "handoff", "tests_created",
+    "tests_modified", "behavior_anchors", "test_cases", "test_capabilities_added",
+    "developer_runs", "fail_before_claim", "additional_impact_found", "test_not_applicable"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "agent": { "$ref": "#/$defs/id" },
+    "status": { "enum": ["done", "blocked", "failed", "skipped"] },
+    "files_touched": { "$ref": "#/$defs/paths" },
+    "produced_signatures": { "$ref": "#/$defs/strings" },
+    "blockers": { "$ref": "#/$defs/strings" },
+    "assumptions": { "$ref": "#/$defs/strings" },
+    "scope_deviations": { "$ref": "#/$defs/strings" },
+    "handoff": {
+      "type": "object",
+      "maxProperties": 32,
+      "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,79}$" },
+      "additionalProperties": { "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1, "maxLength": 500 }] }
+    },
+    "tests_created": { "$ref": "#/$defs/paths" },
+    "tests_modified": { "$ref": "#/$defs/paths" },
+    "behavior_anchors": {
+      "type": "array", "maxItems": 200, "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^test:[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 120 }
+    },
+    "test_cases": {
+      "type": "array", "maxItems": 512,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["anchor", "file", "identity", "lane"],
+        "properties": {
+          "anchor": { "type": "string", "pattern": "^test:[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 120 },
+          "file": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "identity": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "lane": { "enum": ["android-device", "common", "host", "ios-simulator", "screenshot", "structural"] }
+        }
+      }
+    },
+    "test_capabilities_added": {
+      "type": "array", "maxItems": 32, "uniqueItems": true,
+      "items": { "enum": ["base", "compose-ui", "coroutines", "coverage", "di", "flow", "network", "room", "screenshot"] }
+    },
+    "developer_runs": { "$ref": "#/$defs/strings" },
+    "fail_before_claim": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["testIdentity", "reason"],
+          "properties": {
+            "testIdentity": { "type": "string", "minLength": 1, "maxLength": 300 },
+            "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+          }
+        }
+      ]
+    },
+    "additional_impact_found": { "$ref": "#/$defs/strings" },
+    "test_not_applicable": {
+      "oneOf": [{ "type": "null" }, { "enum": ["comment-only", "documentation-only", "non-executable-reference-only", "task-metadata-only"] }]
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,79}$" },
+    "strings": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+    },
+    "paths": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?/)(?!.*\\\\).+$" }
+    }
+  }
+}
