@@ -44,7 +44,7 @@
     "orchestrator/figma/scripts/sweep-done-drift.mjs": "fc6e2bc426fa52fbf3e5c7199579299ca6c2f0143158c88befcb325bba12dbd3",
     "orchestrator/figma/scripts/verify-done.mjs": "2e9380edfae0eda982b62e7fbdb697be02d58f2a599a164372da030f52c00491",
     "orchestrator/figma/scripts/write-spec-report.mjs": "6f9a3acdd33fabd996de15aa1f9f85bbc90cb566d58542a297cf4233f6e809bb",
-    "orchestrator/skills/checks/hooks/pre-commit": "4f1d321403d0583d9340f27c031710ad90940c45f94b4ab628a0776bb725909b",
+    "orchestrator/skills/checks/hooks/pre-commit": "83da806a150492a877b31a6cad8bae5d2c7cad1834ce215fe31d310b6e850548",
     "orchestrator/tests/check-syntax.mjs": "8afbdaa562ce030686ec7dfc0cec028cd519a2ddf2d54da259ee265e8926d74d",
     "orchestrator/tests/run-suite.mjs": "e64a9041a096e8a99a4384185b96234b6c5d32fb97824bbdddb74a85bc328693",
     "orchestrator/tests/suite-contract.mjs": "650811efc9aa9b3952199b7b64cb1e01969a005055f37f77982a5fb8ae8f758d",

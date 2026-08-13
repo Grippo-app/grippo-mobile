@@ -209,9 +209,8 @@ function validateManifestShape(value, expectedId) {
   var seen = Object.create(null), seenPath = Object.create(null);
   for (var i = 0; i < value.artifacts.length; i++) {
     var row = value.artifacts[i];
-    var supportedArtifactSchema = row && row.role === 'change-report'
-      ? row.schemaVersion === 1 || row.schemaVersion === 2
-      : row && row.schemaVersion === 1;
+    var supportedArtifactSchema = row && row.schemaVersion ===
+      (row.role === 'change-report' ? 2 : 1);
     if (!exactKeys(row, ['hash', 'path', 'persistence', 'required', 'role', 'schemaVersion', 'size']) ||
         typeof row.role !== 'string' || !/^(normalized-spec|source-descriptor|inventory|area:[a-z0-9][a-z0-9-]*|change-report|refresh-report)$/.test(row.role) ||
         seen[row.role] || !supportedArtifactSchema ||

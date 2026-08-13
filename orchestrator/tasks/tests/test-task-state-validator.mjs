@@ -1125,11 +1125,10 @@ try {
       const result = validate(project, { stem })
       assertCode(result, 'TODO_QUESTIONS_INVALID')
       const reported = result.findings.find((item) => item.code === 'TODO_QUESTIONS_INVALID')
-      // Advisory on purpose: an error would fail action admission and leave
-      // Drop as the only exit, including for a legacy prose heading.
-      assert.equal(reported.severity, 'warning', label + ' must stay repairable')
-      assert.equal(result.ok, true, label + ' must not wedge canonical admission')
-      assert.equal(core.actionAdmission(result).ok, true, label + ' must keep edit admissible')
+      assert.equal(reported.severity, 'error', label + ' must fail closed')
+      assert.equal(result.ok, false, label + ' must block canonical admission')
+      assert.equal(core.actionAdmission(result).ok, false, label + ' must not be action-admissible')
+      assert.equal(core.dropAdmission(result, stem).ok, true, label + ' must remain explicitly droppable')
     }
 
     // A task body without the reserved section stays entirely unaffected.

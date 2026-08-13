@@ -180,10 +180,13 @@ Podfile.lock
 ._*
 Thumbs.db
 
+# BEGIN ORCHESTRATOR RUNTIME IGNORE CONTRACT
 # Orchestrator site + Figma + api-contract tooling — local secrets + runtime artifacts (never commit)
 .claude/settings.local.json
 node_modules/
 .env
+__pycache__/
+*.pyc
 orchestrator/figma/.account.json
 orchestrator/api-contract/.secrets/
 # Consolidated cache root (gitignored): tasks locks/requests/worker/runs/journal,
@@ -193,6 +196,7 @@ orchestrator/.cache/
 orchestrator/tasks/todo/.finalize-*.ship
 orchestrator/tasks/todo/.finalize-*.ship.tmp.*
 orchestrator/tasks/todo/.finalize-*.detach.md
+# END ORCHESTRATOR RUNTIME IGNORE CONTRACT
 ```
 
 Figma tooling lives under `orchestrator/figma/`, but its regenerable artifacts now live under
@@ -382,6 +386,11 @@ first, and if it is `false`, do nothing here and proceed to Step 6.6. A non-Figm
 unaffected.
 
 When `figmaEnabled: true`:
+
+If you change `figmaEnabled` from `false` to `true` while the Site is already
+running, restart the Site before using any Figma action. The process pins
+applicability at startup so recovery, watchers, and session owners cannot be
+partially initialized.
 
 1. The `orchestrator/figma/` sidecar (the Node tooling: `package.json`, `.nvmrc`, `.env.example`,
    `scripts/`, `token-schemas/`, `tokens/`, `manifests/`, `README.md`) is already present — it ships as
@@ -938,11 +947,15 @@ This file becomes the high-level guide for future agent/contributor work. The de
 
 After the foundation builds green and the first end-to-end "hello world" feature is in place, install the skill toolkit so ongoing work can be automated. (If you bootstrapped through the site's **Setup** panel, the toolkit was already installed there — in that flow this step only verifies.)
 
-Install the 11 skills into the project's `.claude/skills/` with the deploy script (run from the project root):
+Install the 11 skills plus the frozen contracts, queue command, and launch
+configuration with the deploy script (run from the project root):
 
 ```bash
 bash orchestrator/skills/install-skills.sh .          # copy; add --symlink for a dev checkout
 ls .claude/skills/   # expect at least 11 skill directories; 12 when implement-figma was installed in Step 6.5
+bash orchestrator/skills/checks/install-sync.sh .     # exact skill/reference/contract/command/launch parity
+cmp orchestrator/skills/_index/install-surfaces/commands/serve-queue.md .claude/commands/serve-queue.md
+cmp orchestrator/skills/_index/install-surfaces/launch.json .claude/launch.json
 # Stamp the vendored-copy integrity manifest — the drift sensor's baseline
 # (orchestrator/template-sync/README.md). Stamped ONLY here and by an explicit
 # sync-from-template.sh --apply; never by a hook or daemon (an auto-regen would

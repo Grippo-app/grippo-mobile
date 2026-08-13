@@ -155,9 +155,7 @@ function ensureDir(dir) {
     }
     if (!snapshot) throw reproofError;
   }
-  if (process.platform !== 'win32') {
-    return snapshot;
-  }
+  if (process.platform !== 'win32') return hardenOwnedPrivateDirectory(dir, snapshot);
   var state = windowsRuntime.privatePathState(path.resolve(dir), snapshot.stat);
   if (state !== 'private') {
     state = windowsRuntime.hardenPrivatePath(path.resolve(dir), snapshot.stat);
@@ -166,6 +164,40 @@ function ensureDir(dir) {
   }
   if (windowsRuntime.privatePathState(path.resolve(dir), snapshot.stat) !== 'private') {
     throw codedError('INTAKE_DIR_UNSAFE', 'Windows intake directory privacy proof changed');
+  }
+  return snapshot;
+}
+function hardenOwnedPrivateDirectory(dir, snapshot) {
+  if (privateScratchDirectory(snapshot, path.resolve(dir))) return snapshot;
+  if (typeof process.geteuid !== 'function' || !snapshot || !snapshot.stat) {
+    throw codedError('INTAKE_DIR_UNSAFE', 'POSIX intake directory ownership cannot be proven');
+  }
+  var mode = Number(BigInt(snapshot.stat.modeExact || snapshot.stat.mode) & 0o777n);
+  if ((mode & 0o022) !== 0) {
+    throw codedError('INTAKE_DIR_UNSAFE', 'POSIX intake directory is group/world writable');
+  }
+  var fd;
+  try {
+    fd = fs.openSync(path.resolve(dir), fs.constants.O_RDONLY |
+      (fs.constants.O_DIRECTORY || 0) | (fs.constants.O_NOFOLLOW || 0));
+    var opened = fs.fstatSync(fd, { bigint: true });
+    if (!opened.isDirectory() || opened.uid !== BigInt(process.geteuid()) ||
+        String(opened.dev) !== String(snapshot.stat.dev) ||
+        String(opened.ino) !== String(snapshot.stat.ino)) {
+      throw codedError('INTAKE_DIR_UNSAFE', 'POSIX intake directory identity changed before hardening');
+    }
+    fs.fchmodSync(fd, 0o700);
+    var hardened = fs.fstatSync(fd, { bigint: true });
+    if ((hardened.mode & 0o777n) !== 0o700n || hardened.uid !== opened.uid ||
+        hardened.dev !== opened.dev || hardened.ino !== opened.ino) {
+      throw codedError('INTAKE_DIR_UNSAFE', 'POSIX intake directory privacy hardening did not settle exactly');
+    }
+  } finally {
+    if (fd !== undefined) try { fs.closeSync(fd); } catch (ignore) {}
+  }
+  snapshot = safeDirectory(dir);
+  if (!privateScratchDirectory(snapshot, path.resolve(dir))) {
+    throw codedError('INTAKE_DIR_UNSAFE', 'POSIX intake directory privacy proof changed after hardening');
   }
   return snapshot;
 }
@@ -2155,7 +2187,11 @@ function ensureSafeScratch() {
     if (lexical === '' || lexical.split(path.sep)[0] !== '..') {
       throw codedError('INTAKE_SCRATCH_UNSAFE', 'shallow-intake scratch must be outside the project repository');
     }
-    var scratchRootSnapshot = ensureDir(SCRATCH_DIR);
+    var scratchRootSnapshot;
+    try { scratchRootSnapshot = ensureDir(SCRATCH_DIR); }
+    catch (scratchDirectoryError) {
+      throw codedError('INTAKE_SCRATCH_UNSAFE', String(scratchDirectoryError && scratchDirectoryError.message || scratchDirectoryError));
+    }
     if (!privateScratchDirectory(scratchRootSnapshot, path.resolve(SCRATCH_DIR))) {
       throw codedError('INTAKE_SCRATCH_UNSAFE', 'shallow-intake scratch root is not owned and private');
     }

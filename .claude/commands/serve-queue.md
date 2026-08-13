@@ -34,18 +34,18 @@ node orchestrator/site/scripts/standby-queue.mjs begin-pass
 
 Interpret only its exact status:
 
-- `ready`: the CLI runner marker was absent or stale — either valid content
-  with an old timestamp, or non-conforming content (legacy shape, torn
-  refresh, garbage) whose file mtime proves no live runner has refreshed it —
-  and the private atomic heartbeat is durable. Keep the returned 64-hex
+- `ready`: the CLI runner marker was absent, or its exact version-1 record
+  names a process generation proven dead/reused, and the private atomic
+  heartbeat is durable. Keep the returned 64-hex
   `passToken` only in this pass's private context and continue immediately.
-- `runner-active`: the exact bounded runner marker is fresh; report
+- `runner-active`: the exact bounded version-1 runner marker names a live,
+  matching process generation; report
   `runner active — standing down` and end this pass.
 - `runner-unknown`: runner ownership could not be disproved: the marker is
-  structurally unsafe (symlink, extra hardlink, wrong mode), future-dated, or
-  its content is non-conforming while the file is still FRESH (a live runner
-  rewrites it every tick); report it and end this pass without a heartbeat or
-  claim.
+  structurally unsafe, non-conforming, or its exact process-generation probe
+  is unavailable. Marker age never grants takeover authority. Report it and
+  end this pass without a heartbeat or claim; explicit operator recovery must
+  remove an unprovable marker.
 - `error`: stop fail-closed. Do not guess another root or path.
 
 The helper validates that cwd is the configured project root by directory

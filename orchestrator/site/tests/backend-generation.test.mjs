@@ -129,6 +129,30 @@ test('manifest role policy is fail-closed even when an attacker recomputes the p
   assert.equal(generation.current().ok, true)
 })
 
+test('change-report manifests accept only the current schema version', () => {
+  const before = generation.current()
+  const changeReport = join(root, 'orchestrator', '.cache', 'api-contract', 'reports', 'change-report.json')
+  mkdirSync(join(root, 'orchestrator', '.cache', 'api-contract', 'reports'), { recursive: true })
+  writeFileSync(changeReport, JSON.stringify({ schemaVersion: 2 }) + '\n')
+  const published = publish(before.snapshotHash, { changeReportFile: changeReport })
+  assert.equal(published.ok, true)
+  const current = generation.current()
+  const manifestFile = join(contractDir, 'manifests', 'generations', current.manifest.generationId + '.json')
+  const manifestBytes = readFileSync(manifestFile)
+  const pointerBytes = readFileSync(generation.POINTER_FILE)
+  const changed = JSON.parse(manifestBytes)
+  changed.artifacts.find((row) => row.role === 'change-report').schemaVersion = 1
+  const changedBytes = Buffer.from(JSON.stringify(changed, null, 2) + '\n')
+  writeFileSync(manifestFile, changedBytes)
+  const pointer = JSON.parse(pointerBytes)
+  pointer.manifestHash = generation.sha(changedBytes)
+  writeFileSync(generation.POINTER_FILE, JSON.stringify(pointer, null, 2) + '\n')
+  assert.deepEqual(generation.current(), { ok: false, error: 'generation-contract-invalid' })
+  writeFileSync(manifestFile, manifestBytes)
+  writeFileSync(generation.POINTER_FILE, pointerBytes)
+  assert.equal(generation.current().ok, true)
+})
+
 test('artifact schema versions are exact and never treated as forward-compatible', () => {
   const current = generation.current()
   const manifestFile = join(contractDir, 'manifests', 'generations', current.manifest.generationId + '.json')

@@ -53,6 +53,7 @@ const projectConfigFile = join(orchestrator, 'project-config.md')
 writeFileSync(projectConfigFile, [
   '---',
   'productName: Fixture',
+  'figmaEnabled: true',
   'figmaLibraryUrl: https://www.figma.com/design/' + fileKey + '/Fixture?node-id=12-34',
   '---',
   ''
@@ -128,6 +129,18 @@ try {
       const gone = await actions.resolveAction(key, action)
       assert.equal(gone.ok, false, `${key} must not resolve`)
     }
+  })
+
+  await check('runtime enablement cannot outrun startup initialization', () => {
+    const gate = require('../server/figma-feature-gate.js')
+    const disabled = { ok: true, figmaEnabledState: 'selected', figmaEnabled: false }
+    const enabled = { ok: true, figmaEnabledState: 'selected', figmaEnabled: true }
+    assert.deepEqual(gate._test.evaluate(disabled, enabled), {
+      enabled: false, status: 503, error: 'figma-restart-required',
+    })
+    assert.deepEqual(gate._test.evaluate(enabled, disabled), {
+      enabled: false, status: 409, error: 'figma-disabled',
+    })
   })
 
   await check('file-scoped sync actions fail closed when the canonical file key is invalid', async () => {
@@ -243,13 +256,59 @@ try {
   })
 
   await check('Figma terminal exposes the same free-text rail before revealing the overlay', async () => {
-    const source = readFileSync(new URL('../scripts/terminal.js', import.meta.url), 'utf8')
-    const openStart = source.indexOf('function openTerminal(key)')
-    const keySwitch = source.indexOf('if (key && key !== curKey) reset(key);', openStart)
-    const inputReady = source.indexOf('enableInput();', openStart)
-    const reveal = source.indexOf('els.overlay.hidden = false;', openStart)
-    assert.ok(openStart >= 0 && keySwitch > openStart)
-    assert.ok(inputReady > keySwitch && inputReady < reveal)
+    const [{ terminal }, { dom }, { tasksApi }] = await Promise.all([
+      import('../scripts/terminal.js'), import('../scripts/dom.js'), import('../scripts/data/tasks-api.js'),
+    ])
+    const originalEl = dom.el
+    const originalEvents = tasksApi.sessionEvents
+    const originalDocument = globalThis.document
+    const originalWindow = globalThis.window
+    const changes = []
+    function node(tag, attrs) {
+      const children = []
+      const value = {
+        tag, className: '', textContent: '', value: '', children, parentNode: null,
+        appendChild(child) { children.push(child); child.parentNode = this; return child },
+        removeChild(child) { const at = children.indexOf(child); if (at >= 0) children.splice(at, 1) },
+        addEventListener() {}, removeEventListener() {}, setAttribute() {}, removeAttribute() {},
+        querySelectorAll() { return [] }, focus() {},
+      }
+      Object.defineProperty(value, 'firstChild', { get() { return children[0] || null } })
+      for (const property of ['hidden', 'disabled']) {
+        let current = false
+        Object.defineProperty(value, property, {
+          get() { return current },
+          set(next) { current = next; changes.push({ className: value.className, property, value: next }) },
+        })
+      }
+      for (const [key, entry] of Object.entries(attrs || {})) {
+        if (key === 'class') value.className = entry
+        else if (key === 'text') value.textContent = entry
+        else if (key !== 'attrs') value[key] = entry
+      }
+      return value
+    }
+    try {
+      const body = node('body')
+      globalThis.document = {
+        body, activeElement: null,
+        addEventListener() {}, removeEventListener() {},
+      }
+      globalThis.window = { addEventListener() {}, removeEventListener() {} }
+      dom.el = node
+      tasksApi.sessionEvents = () => new Promise(() => {})
+      terminal.open('figma:file:fixture')
+      const inputReady = changes.findIndex((row) => row.className.includes('terminal__input') && row.property === 'disabled' && row.value === false)
+      const sendReady = changes.findIndex((row) => row.className === 'btn btn--primary' && row.property === 'disabled' && row.value === false)
+      const reveal = changes.findIndex((row) => row.className === 'terminal' && row.property === 'hidden' && row.value === false)
+      assert.ok(inputReady >= 0 && sendReady >= 0 && reveal > inputReady && reveal > sendReady)
+      terminal.close()
+    } finally {
+      dom.el = originalEl
+      tasksApi.sessionEvents = originalEvents
+      globalThis.document = originalDocument
+      globalThis.window = originalWindow
+    }
   })
 
   figma.sessionAdmission = () => null
@@ -284,6 +343,47 @@ try {
   }
   const post = (body) => fetch(base + '/api/session/start', { method: 'POST', headers, body: JSON.stringify(body) })
   const send = (body) => fetch(base + '/api/session/send', { method: 'POST', headers, body: JSON.stringify(body) })
+
+  await check('figma-disabled state never reads a leftover account receipt', async () => {
+    const enabledConfig = readFileSync(projectConfigFile, 'utf8')
+    const enabledAccount = figma.account
+    let accountReads = 0
+    try {
+      writeFileSync(projectConfigFile, enabledConfig.replace('figmaEnabled: true', 'figmaEnabled: false'))
+      figma.account = () => { accountReads++; return { email: 'must-not-read@example.test' } }
+      const disabled = await (await fetch(base + '/api/state')).json()
+      assert.equal(disabled.figma.state, 'disabled')
+      assert.equal(disabled.figma.account, null)
+      assert.equal(disabled.figmaIntegration, null)
+      const integration = await (await fetch(base + '/api/figma/integration')).json()
+      assert.equal(integration.error, 'figma-disabled')
+      const startDisabled = await post({ key: 'figma:whoami', figmaAction: 'whoami' })
+      assert.equal(startDisabled.status, 409)
+      assert.equal((await startDisabled.json()).error, 'figma-disabled')
+      assert.equal(accountReads, 0)
+    } finally {
+      writeFileSync(projectConfigFile, enabledConfig)
+      figma.account = enabledAccount
+    }
+  })
+
+  await check('a non-canonical figma gate is unavailable, never silently disabled', async () => {
+    const enabledConfig = readFileSync(projectConfigFile, 'utf8')
+    try {
+      writeFileSync(projectConfigFile, enabledConfig.replace('figmaEnabled: true', 'figmaEnabled: TRUE'))
+      const invalid = await (await fetch(base + '/api/state')).json()
+      assert.equal(invalid.figma.state, 'unavailable')
+      assert.equal(invalid.figma.configError, 'figma-config-invalid')
+      const integration = await fetch(base + '/api/figma/integration')
+      assert.equal(integration.status, 503)
+      assert.equal((await integration.json()).error, 'figma-config-invalid')
+      const startInvalid = await post({ key: 'figma:whoami', figmaAction: 'whoami' })
+      assert.equal(startInvalid.status, 503)
+      assert.equal((await startInvalid.json()).error, 'figma-config-invalid')
+    } finally {
+      writeFileSync(projectConfigFile, enabledConfig)
+    }
+  })
 
   await check('new Figma endpoints inherit CSRF, origin, JSON and public-redaction guards', async () => {
     let response = await fetch(base + '/api/figma/sync/plan', {

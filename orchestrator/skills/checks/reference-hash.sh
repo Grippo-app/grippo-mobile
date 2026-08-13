@@ -38,6 +38,26 @@ for s in man["skills"]:
         if not os.path.isfile(p): print(f"    FAIL: {s['folderName']}/{rel} missing"); fail=1; continue
         cur=sha(p)
         if cur!=h: print(f"    FAIL: {s['folderName']}/{rel} hash drift vs manifest"); fail=1
-if not fail: print("    ok: all skill sources and reference files match install-manifest hashes")
+files=man.get("files") or []
+expected_sources={
+    'orchestrator/skills/_index/install-surfaces/commands/serve-queue.md',
+    'orchestrator/skills/_index/install-surfaces/launch.json',
+}
+contracts=os.path.join(root,'orchestrator/contracts')
+for cur,dirs,names in os.walk(contracts):
+    for name in names:
+        expected_sources.add(os.path.relpath(os.path.join(cur,name),root).replace(os.sep,'/'))
+manifest_sources=[f.get('sourcePath') for f in files]
+manifest_destinations=[f.get('installPath') for f in files]
+if len(manifest_sources)!=len(set(manifest_sources)) or len(manifest_destinations)!=len(set(manifest_destinations)):
+    print("    FAIL: install-manifest file source/destination paths are not unique"); fail=1
+if set(manifest_sources)!=expected_sources:
+    print("    FAIL: install-manifest file surface is incomplete or contains retired sources"); fail=1
+for f in files:
+    source=f.get('sourcePath')
+    p=os.path.join(root,source or '')
+    if not source or not os.path.isfile(p): print(f"    FAIL: installed-file source missing {source}"); fail=1
+    elif sha(p)!=f.get('sourceSha256'): print(f"    FAIL: {source} hash drift vs manifest"); fail=1
+if not fail: print("    ok: all skill, reference, contract, command, and launch sources match install-manifest hashes")
 sys.exit(fail)
 PY

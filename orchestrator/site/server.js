@@ -72,11 +72,17 @@ var shallowIntake = require('./server/shallow-intake');
 var contractJob = require('./server/contract-job');
 var architectureGeneration = require('./server/architecture-generation');
 var taskIntegrity = require('./server/task-integrity');
+var figmaFeatureGate = require('./server/figma-feature-gate');
 var startupRecovery = require('./server/startup-recovery');
 var appRunner = require('./server/app-runner');
 var apiMock = require('./server/api-mock');
 
 var publicationRecoveryController = null;
+var startupFigmaGate = figmaFeatureGate.startup();
+var figmaEnabled = startupFigmaGate.enabled;
+if (!startupFigmaGate.valid) {
+  console.error('[site] FIGMA_CONFIG_INVALID: canonical figmaEnabled: true|false could not be read; Figma startup remains fail-closed.');
+}
 
 try {
   persistence.readPersisted();
@@ -142,8 +148,14 @@ server.listen(PORT, '127.0.0.1', function () {
     console.error('[site] advisory shallow-intake runtime preparation failed: ' +
       String(intakePrepareError && intakePrepareError.message || intakePrepareError));
   }
-  figmaTaskPublication.beginRecovery();
-  sessions.configureTurnPublication(figmaTaskPublication);
+  // The global architecture scan walks the product source tree. Start it
+  // without delaying recovery or blocking the HTTP/SSE event loop; state reads
+  // expose the strict unavailable verdict until this promise settles.
+  taskIntegrity.prewarmArchitectureState();
+  if (figmaEnabled) {
+    figmaTaskPublication.beginRecovery();
+    sessions.configureTurnPublication(figmaTaskPublication);
+  }
   sessions.init();
   finalizations.init();
   appRunner.init({
@@ -158,47 +170,49 @@ server.listen(PORT, '127.0.0.1', function () {
       });
     }
   });
-  figmaTestJob.init({ notify: function (eventName, payload) {
-    sse.broadcast(eventName, payload);
-    sse.pollLoop();
-  }, syncActive: figmaSync.busy, syncRecoveryState: figmaSync.recoveryState });
-  figmaSync.init({ notify: function (eventName, payload) {
-    sse.broadcast(eventName, payload);
-    sse.pollLoop();
-  }, testActive: figmaTestJob.busy }).then(function () {
-    return designTokenSources.init({
-      publishDomains: figmaSync.publishDomains,
-      requestDriftComparison: figmaSync.requestDriftComparison,
-      startReactivation: figmaSync.startSourceReactivation,
-      job: figmaSync.get,
-      cleanupStage: figmaSync.cleanupExternalStage
-    });
-  }).then(function () {
-    return figmaTaskPublication.init({
-      publishDomains: figmaSync.publishDomains,
-      notify: function (eventName, payload) {
-        sse.broadcast(eventName, payload);
-        sse.pollLoop();
-      }
+  if (figmaEnabled) {
+    figmaTestJob.init({ notify: function (eventName, payload) {
+      sse.broadcast(eventName, payload);
+      sse.pollLoop();
+    }, syncActive: figmaSync.busy, syncRecoveryState: figmaSync.recoveryState });
+    figmaSync.init({ notify: function (eventName, payload) {
+      sse.broadcast(eventName, payload);
+      sse.pollLoop();
+    }, testActive: figmaTestJob.busy }).then(function () {
+      return designTokenSources.init({
+        publishDomains: figmaSync.publishDomains,
+        requestDriftComparison: figmaSync.requestDriftComparison,
+        startReactivation: figmaSync.startSourceReactivation,
+        job: figmaSync.get,
+        cleanupStage: figmaSync.cleanupExternalStage
+      });
+    }).then(function () {
+      return figmaTaskPublication.init({
+        publishDomains: figmaSync.publishDomains,
+        notify: function (eventName, payload) {
+          sse.broadcast(eventName, payload);
+          sse.pollLoop();
+        }
+      }).catch(function (error) {
+        figmaTaskPublication.failRecovery(error);
+        console.error('[site] Figma task publication recovery failed: ' + String(error && error.message || error));
+      });
+    }).then(function () {
+      // Comparison freshness: one exact startup fingerprint pass per domain
+      // over the configured adapter roots plus the advisory root watchers.
+      // Read-only — it only marks the projections stale, never repairs state.
+      return designTokenCompare.init().catch(function (error) {
+        console.error('[site] Token comparison startup reconcile failed: ' + String(error && error.message || error));
+      }).then(function () {
+        return designComponentCompare.init().catch(function (error) {
+          console.error('[site] Component comparison startup reconcile failed: ' + String(error && error.message || error));
+        });
+      });
     }).catch(function (error) {
       figmaTaskPublication.failRecovery(error);
-      console.error('[site] Figma task publication recovery failed: ' + String(error && error.message || error));
+      console.error('[site] Figma sync recovery failed: ' + String(error && error.message || error));
     });
-  }).then(function () {
-    // Comparison freshness: one exact startup fingerprint pass per domain
-    // over the configured adapter roots plus the advisory root watchers.
-    // Read-only — it only marks the projections stale, never repairs state.
-    return designTokenCompare.init().catch(function (error) {
-      console.error('[site] Token comparison startup reconcile failed: ' + String(error && error.message || error));
-    }).then(function () {
-      return designComponentCompare.init().catch(function (error) {
-        console.error('[site] Component comparison startup reconcile failed: ' + String(error && error.message || error));
-      });
-    });
-  }).catch(function (error) {
-    figmaTaskPublication.failRecovery(error);
-    console.error('[site] Figma sync recovery failed: ' + String(error && error.message || error));
-  });
+  }
   contractJob.init({ notify: function (eventName, payload) {
     sse.broadcast(eventName, payload);
     sse.pollLoop();
@@ -295,11 +309,11 @@ server.listen(PORT, '127.0.0.1', function () {
   cli.init();
   // Figma MCP connector readiness probe (connected / needs-auth) for the header
   // pill + the Figma panel. Read-only, like cli.init(); see server/figma.js.
-  figma.init();
+  if (figmaEnabled) figma.init();
   // A restart rotates the connector identity generation. Once the initial MCP
   // probe and any active writer session settle, refresh the strict account and
   // file-access receipts without requiring a manual "Check connection" click.
-  figmaTestJob.startupVerify();
+  if (figmaEnabled) figmaTestJob.startupVerify();
 
   console.log('Orchestrator site server');
   console.log('  open:          http://localhost:' + PORT + '/site/');

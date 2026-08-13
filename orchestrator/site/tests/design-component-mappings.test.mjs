@@ -46,6 +46,7 @@ const generation = require('../server/figma-generation.js')
 const componentMappings = require('../server/design-component-mappings.js')
 const componentState = require('../server/design-component-state.js')
 const componentCompare = require('../server/design-component-compare.js')
+const domainFreshness = require('../server/design-domain-freshness.js')
 const figmaSync = require('../server/figma-sync.js')
 
 // design-component-mappings resolves its ESM contracts + ajv relative to
@@ -277,6 +278,10 @@ const writersDir = join(cache, 'finalizations', '.writers')
 const leaseTail = () => { try { return readdirSync(writersDir).filter((name) => !name.startsWith('.')) } catch { return [] } }
 
 try {
+  await check('DOMAIN CONTRACT: analysis reader is pinned to the one current schema', () => {
+    assert.equal(domainFreshness.ANALYSIS_SCHEMA_VERSION, 2)
+  })
+
   await check('CMP-MAP-CAS: an absent registry reads as revision 0 and is not "present"', async () => {
     const listed = await componentMappings.get()
     assert.equal(listed.ok, true, JSON.stringify(listed).slice(0, 300))

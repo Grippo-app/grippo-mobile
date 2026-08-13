@@ -7,7 +7,6 @@ module.exports = freshness.create({
   capability: 'tokens',
   state: state,
   indexRole: 'project-token-analysis-index',
-  analysisSchemaVersion: 2,
   generationError: 'TOKEN_GENERATION_RESYNC_REQUIRED',
   extractionModule: 'token-extraction.mjs',
   contractModule: 'tokens/project-inventory-contract.mjs',

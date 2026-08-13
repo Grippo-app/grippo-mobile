@@ -4,7 +4,7 @@
 # STANDALONE (deliberately NOT a lint.sh check — that would be "a check that counts
 # checks", and lint.sh's own count is one of the things this asserts), wired into
 # run-all.sh. A documentation "N lint checks / N gates / N skills /
-# N server-modules" claim that
+# N server-modules / N agent contracts" claim that
 # drifts from disk fails HERE instead of rotting silently until a human audit.
 #
 # Mechanism: re-derive each real count from disk, then for every doc line whose
@@ -31,6 +31,7 @@ runall = read("orchestrator/skills/checks/run-all.sh") or ""
 GATES  = len(re.findall(r'^\s*"[a-z][a-z0-9-]*\|', runall, re.M))
 SKILLS = len(glob.glob("orchestrator/skills/*/SKILL.md"))
 SERVER = len(glob.glob("orchestrator/site/server/*.js"))
+AGENTS = len(glob.glob("orchestrator/contracts/agents/*.md"))
 
 # --- (label, real, file, pattern with ONE capture group = the doc's claimed count) ---
 # Each pattern is keyword-anchored so a bare "8"/"13"/"11" elsewhere never false-matches.
@@ -43,6 +44,8 @@ CHECKS = [
     ("installed skills", SKILLS, "orchestrator/skills/README.md",                r'\b(\d+)\s+(?:self-contained |core )?skills\b'),
     ("server modules",   SERVER, "README.md",                                    r'Server architecture \((\d+)\s+single-purpose'),
     ("server modules",   SERVER, "orchestrator/site/server.js",                  r'lives in the (\d+) CommonJS'),
+    ("agent contracts", AGENTS, "orchestrator/contracts/README.md",             r'agents/<agent>\.md` ×(\d+)'),
+    ("agent contracts", AGENTS, "orchestrator/skills/task-orchestrator/references/run-loop.md", r'There are (\d+) frozen agent contracts'),
 ]
 
 fail = 0
@@ -64,4 +67,4 @@ if [ $rc -ne 0 ]; then
   echo "FAIL: documentation count(s) drifted from disk."
   exit 1
 fi
-echo "OK: doc counts match disk (lint checks, gates, installed skills, server modules)."
+echo "OK: doc counts match disk (lint checks, gates, installed skills, server modules, agent contracts)."

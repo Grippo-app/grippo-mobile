@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://orchestrator.local/schemas/app-run-validation.schema.json",
+  "$id": "https://orchestrator.local/site/contracts/app-run/validation-receipt.schema.json",
   "title": "Manual app-run validation receipt",
   "type": "object",
   "additionalProperties": false,

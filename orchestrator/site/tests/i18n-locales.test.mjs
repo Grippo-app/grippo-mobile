@@ -33,7 +33,7 @@ test('Ukrainian is wired through the client toggle and persisted language allowl
 
 test('EN, RU, and UK dictionaries have exact key and placeholder parity', () => {
   const enKeys = Object.keys(dictionaries.en).sort()
-  assert.equal(enKeys.length, 3631)
+  assert.equal(enKeys.length, 3634)
   for (const locale of ['ru', 'uk']) {
     assert.deepEqual(Object.keys(dictionaries[locale]).sort(), enKeys, locale + ' keys')
     for (const key of enKeys) {

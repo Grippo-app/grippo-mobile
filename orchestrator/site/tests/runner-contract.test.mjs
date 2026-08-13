@@ -233,6 +233,8 @@ check('runner concurrency is frozen serial until per-task worktree isolation', (
     const doc = readFileSync(surface, 'utf8')
     assert.ok(doc.replace(/\s+/g, ' ').includes('--kind task-session'), surface)
     assert.ok(doc.includes('--owner-pid "$PPID"'), surface + ' must anchor the guarded acquire to $PPID')
+    assert.match(doc, /never inside `bash -c`, a\s+heredoc, or any\s+nested shell/i,
+      surface + ' must keep the short-lived nested-shell warning beside the $PPID anchor')
   }
   // Board-task writers are mutually exclusive across stems AND drainers at the
   // lease layer — the cross-process half of the frozen serial cap.

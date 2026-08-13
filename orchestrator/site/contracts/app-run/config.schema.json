@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://orchestrator.local/schemas/app-run.schema.json",
+  "$id": "https://orchestrator.local/site/contracts/app-run/config.schema.json",
   "title": "Orchestrator app-run configuration",
   "type": "object",
   "additionalProperties": false,

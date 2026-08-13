@@ -683,6 +683,12 @@ while an explicitly requested stale map makes `overallOk` and the CLI exit red.
 Both read-only modes return `absent` before bootstrap (no
 `settings.gradle.kts`).
 
+The Site invokes this global scan asynchronously, never on the HTTP/SSE event
+loop. A reference bound-product scan takes about 30 seconds, so the process
+deadline is 45 seconds (50% headroom, below the explicit 60-second ceiling)
+and a settled result is cached for 60 seconds. Initial and expired-cache reads
+remain fail-closed as `unavailable` until the single in-flight refresh settles.
+
 Every Architecture reader accepts only the canonical v2 map. Unsupported
 shapes fail closed and require regeneration; there are no alternate
 converters, payload projections or duplicate endpoints. Regression coverage is
@@ -832,11 +838,11 @@ at the end: an unterminated container masks every later heading, including the
 next question round and the `## Outcome` appendix. They also refuse CR bytes and
 a leading BOM, like every other canonical task write.
 
-A section that is already malformed is reported as the advisory
-`TODO_QUESTIONS_INVALID` finding. Both intents refuse to write while it stands
-and the board offers no answer rail for it at all, so the escalation path stays
-closed until the section is repaired or removed through an authorized in-column
-`edit`.
+A section that is already malformed is reported as the error
+`TODO_QUESTIONS_INVALID` finding. Canonical task actions and both question-write
+intents refuse it, and the board offers no answer rail for it. Explicit Drop
+remains available as the bounded repair operation; otherwise the section must
+be repaired or removed through an authorized in-column `edit`.
 
 ## Todo shape (structured task)
 

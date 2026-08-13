@@ -13,7 +13,7 @@ unstaged_and_untracked=$(
   } | sort -u
 )
 
-skill_manifest_sources='^(orchestrator/skills/[^/]+/(SKILL\.md|references/.*\.md)|orchestrator/figma/skill/SKILL\.md|orchestrator/skills/_index/_generate_install_manifest\.py)$'
+skill_manifest_sources='^(orchestrator/skills/[^/]+/(SKILL\.md|references/.*\.md)|orchestrator/figma/skill/SKILL\.md|orchestrator/contracts/.*|orchestrator/skills/_index/install-surfaces/.*|orchestrator/skills/_index/_generate_install_manifest\.py)$'
 script_manifest_sources='^(orchestrator/figma/scripts/.*\.(mjs|cjs)|orchestrator/figma/scripts/_index/_generate_script_manifest\.py|orchestrator/figma/runtime/run-plan\.mjs|orchestrator/tests/[^/]+\.mjs|orchestrator/skills/checks/(hooks/pre-commit|ci/figma-gate\.yml))$'
 
 require_unmixed_manifest_sources() {

@@ -256,6 +256,13 @@ for (const step of wizardSteps) {
     `wizard step ${step.id} prompt must not instruct asking the user`);
 }
 
+assert.match(setupSource, /replace only its opening YAML frontmatter/,
+  'Setup reruns must update only frontmatter in an existing project config');
+assert.match(setupSource, /preserve every byte after the existing closing `---`, including product-specific notes/,
+  'Setup reruns must preserve product-owned Markdown notes');
+assert.doesNotMatch(setupSource, /If the file already exists, read it first, then overwrite/,
+  'Setup must not instruct a whole-file project-config overwrite');
+
 // project-config.md is product-owned after bootstrap, so this exact mirror
 // check applies only to the fresh source template (identified by its required
 // identity placeholder). Product copies still run the wizard checks above.

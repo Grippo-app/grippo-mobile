@@ -12,6 +12,8 @@ import re
 HERE = os.path.dirname(os.path.abspath(__file__))
 SKILLS = os.path.normpath(os.path.join(HERE, ".."))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
+REPO_ROOT = os.path.dirname(ROOT)
+INSTALL_SURFACES = os.path.join(HERE, "install-surfaces")
 SKIP = {"_index", "checks"}
 
 
@@ -59,6 +61,31 @@ def reference_hashes(skill_dir):
     return dict(sorted(refs.items()))
 
 
+def install_files():
+    pairs = [
+        (os.path.join(INSTALL_SURFACES, "commands", "serve-queue.md"),
+         ".claude/commands/serve-queue.md"),
+        (os.path.join(INSTALL_SURFACES, "launch.json"), ".claude/launch.json"),
+    ]
+    contracts = os.path.join(ROOT, "contracts")
+    for cur, dirs, files in os.walk(contracts):
+        dirs.sort()
+        for name in sorted(files):
+            source = os.path.join(cur, name)
+            rel = os.path.relpath(source, contracts).replace(os.sep, "/")
+            pairs.append((source, ".claude/contracts/" + rel))
+    result = []
+    for source, install_path in pairs:
+        if os.path.islink(source) or not os.path.isfile(source):
+            raise SystemExit(f"install surface is not a regular file: {source}")
+        result.append({
+            "sourcePath": os.path.relpath(source, REPO_ROOT).replace(os.sep, "/"),
+            "installPath": install_path,
+            "sourceSha256": sha(source),
+        })
+    return result
+
+
 def main():
     skills = []
     for name in sorted(os.listdir(SKILLS)):
@@ -93,9 +120,10 @@ def main():
         "note": "canonical source stays orchestrator/figma/skill/SKILL.md",
     })
     out = os.path.join(HERE, "install-manifest.json")
-    json.dump({"version": 1, "count": len(skills), "skills": skills}, open(out, "w"), indent=2)
+    files = install_files()
+    json.dump({"version": 1, "count": len(skills), "skills": skills, "files": files}, open(out, "w"), indent=2)
     open(out, "a").write("\n")
-    print(f"wrote install-manifest.json: {len(skills)} skills "
+    print(f"wrote install-manifest.json: {len(skills)} skills, {len(files)} installed files "
           f"({len(skills)-1} authored skeletons + implement-figma external)")
     return 0
 

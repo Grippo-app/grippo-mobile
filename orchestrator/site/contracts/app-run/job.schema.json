@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://orchestrator.local/schemas/app-run-job.schema.json",
+  "$id": "https://orchestrator.local/site/contracts/app-run/job.schema.json",
   "title": "Public app-run job",
   "type": "object",
   "additionalProperties": false,

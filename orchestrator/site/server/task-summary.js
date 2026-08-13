@@ -828,7 +828,9 @@ function build(options, dependencies) {
   return {
     schemaVersion: 1,
     revision: revision,
-    indexSchemaVersion: indexRead && indexRead.value && indexRead.value.version || 2,
+    // This declares the one protocol the read model emits; it must never echo
+    // or default from untrusted/non-current INDEX bytes.
+    indexSchemaVersion: core.INDEX_VERSION,
     generatedAt: generatedAt,
     columns: page.columns,
     total: page.total,

@@ -972,6 +972,16 @@ test('a non-fresh canonical INDEX produces a partial but usable summary', () => 
   assert.equal(flatten(summary).length, 2)
 })
 
+test('summary protocol never echoes a non-current INDEX version', () => {
+  const deps = fixture()
+  deps.indexRead = {
+    value: { ...deps.indexRead.value, version: 99 },
+    revision: deps.indexRead.revision,
+  }
+  const summary = taskSummary.build({ limit: 2 }, deps)
+  assert.equal(summary.indexSchemaVersion, 2)
+})
+
 test('typed action admission rejects stale cards and returns only a server-owned prompt', () => {
   const deps = fixture()
   deps.snapshot.runnerActive = false

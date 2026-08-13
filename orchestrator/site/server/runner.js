@@ -34,7 +34,7 @@
 //     until it clears — the in-memory cap cannot see those writers.
 //     finalizations.beginMutation enforces the same exclusion authoritatively
 //     at lease-acquire time; this check only avoids claim→refuse→requeue churn.
-//   - Marker ownership: a fresh `.runner-alive` owned by a DIFFERENT live
+//   - Marker ownership: an exact version-1 `.runner-alive` owned by a DIFFERENT live
 //     process means another runner drains this root — this one stands down
 //     instead of stealing the marker. While our own task children are alive
 //     the marker is kept fresh even through a CLI auth flip, so the standby
@@ -147,50 +147,47 @@ function withdrawMarker() {
   );
 }
 
-// Foreign-runner probe: a marker owned by a DIFFERENT process that may still
-// be alive means another site runner drains this project root. This runner
-// then stands down instead of stealing the marker; only a provably dead owner
-// (identity mismatch/ESRCH at that pid) may be replaced. Malformed content is
-// held fail-closed while the file is fresh (a live runner rewrites it every
-// tick, and a reader can catch the non-atomic refresh mid-write); malformed
-// AND stale falls through to takeover, mirroring the standby freshness window.
-var FOREIGN_MARKER_FRESH_MS = 30 * 1000;
+// Foreign-runner probe: only the exact current marker schema plus a proven
+// pid/start-generation identity can establish a live owner. Unknown or
+// malformed bytes never age into authority to take over; explicit operator
+// removal is required when ownership cannot be proven dead.
+function exactUtc(value) {
+  return typeof value === 'string' &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) &&
+    Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value;
+}
+function conformingRunnerMarker(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) &&
+    Object.keys(value).sort().join(',') === 'at,pid,processStartId,projectRoot,version' &&
+    value.version === 1 && exactUtc(value.at) && value.projectRoot === PROJECT_ROOT &&
+    Number.isSafeInteger(value.pid) && value.pid > 0 &&
+    typeof value.processStartId === 'string' &&
+    writerLeases.PROCESS_START_ID_RE.test(value.processStartId);
+}
 function foreignRunnerOwner() {
+  var entry = fileGuards.inspectEntryUnder(PROJECT_ROOT, RUNS_DIR, RUNNER_MARKER);
+  if (!entry || entry.status === 'missing') return null;
+  if (entry.status !== 'present') return { pid: null, state: 'structural-unsafe' };
   var boundedRead = fileGuards.boundedRegularFileUnder(PROJECT_ROOT, RUNS_DIR, RUNNER_MARKER, 4096);
-  if (!boundedRead) return null;
+  if (!boundedRead || boundedRead.stat.nlink !== '1' ||
+      (process.platform !== 'win32' && (boundedRead.stat.mode & 0o777) !== 0o600)) {
+    return { pid: null, state: 'structural-unsafe' };
+  }
   var value = null;
   try { value = JSON.parse(boundedRead.bytes.toString('utf8')); } catch (parseError) {}
-  var shaped = value && typeof value === 'object' && !Array.isArray(value) &&
-    Number.isSafeInteger(value.pid) && value.pid > 0 && value.projectRoot === PROJECT_ROOT;
-  if (!shaped) {
-    var mtimeMs = Number(boundedRead.stat && boundedRead.stat.mtimeMs);
-    if (Number.isFinite(mtimeMs) && (Date.now() - mtimeMs) <= FOREIGN_MARKER_FRESH_MS) {
-      return { pid: null, state: 'malformed-fresh' };
-    }
-    return null;
-  }
-  if (value.pid === process.pid) return null;
-  var state = writerLeases.processIdentityState(value.pid,
-    typeof value.processStartId === 'string' ? value.processStartId : null);
+  if (!conformingRunnerMarker(value)) return { pid: null, state: 'nonconforming' };
+  if (value.pid === process.pid && value.processStartId === RUNNER_PROCESS_START_ID) return null;
+  var state = writerLeases.processIdentityState(value.pid, value.processStartId);
   // Exact identity proof (pid + start id both match a live process): a real
   // runner owns the marker — never steal it, whatever the file age.
   if (state === 'match') return { pid: value.pid, state: state };
-  if (state === 'pid-live' || state === 'unknown') {
-    // Unproven identity: a psid-less legacy marker, a recycled pid, or a
-    // failed probe. A live runner refreshes the marker every tick, so a stale
-    // file proves the writing runner is gone and the pid observation is a
-    // bystander — take over. Fresh-and-unproven stays stood down.
-    var shapedMtimeMs = Number(boundedRead.stat && boundedRead.stat.mtimeMs);
-    if (Number.isFinite(shapedMtimeMs) &&
-        (Date.now() - shapedMtimeMs) > FOREIGN_MARKER_FRESH_MS) return null;
-    return { pid: value.pid, state: state };
-  }
-  return null;
+  if (state === 'dead' || state === 'reused') return null;
+  return { pid: value.pid, state: state };
 }
 
 function touchMarker() {
   var bytes = Buffer.from(JSON.stringify({
-    at: new Date().toISOString(), pid: process.pid,
+    version: 1, at: new Date().toISOString(), pid: process.pid,
     processStartId: RUNNER_PROCESS_START_ID, projectRoot: PROJECT_ROOT
   }) + '\n', 'utf8');
   if (runnerMarkerFd === null) {
@@ -652,7 +649,7 @@ function tick() {
       if (foreignRunnerLogged !== foreignKey) {
         foreignRunnerLogged = foreignKey;
         console.warn('[runner] another runner owns the liveness marker (' +
-          (foreignRunner.pid === null ? 'unreadable, fresh' : 'pid ' + foreignRunner.pid + ', ' + foreignRunner.state) +
+          (foreignRunner.pid === null ? 'unprovable' : 'pid ' + foreignRunner.pid + ', ' + foreignRunner.state) +
           '); this runner stands down.');
       }
       return;
@@ -864,6 +861,10 @@ function init() {
   started = true;
   if (process.env.RUNNER_DISABLED === '1') {
     console.log('[runner] disabled via RUNNER_DISABLED=1 — using /loop worker fallback.');
+    return;
+  }
+  if (!writerLeases.PROCESS_START_ID_RE.test(String(RUNNER_PROCESS_START_ID || ''))) {
+    console.error('[runner] process-start identity is unavailable; runner remains dormant until this host can prove exact process generations.');
     return;
   }
   probeClaudeOnPath(function (found) {

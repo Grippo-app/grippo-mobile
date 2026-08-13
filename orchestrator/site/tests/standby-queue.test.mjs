@@ -433,19 +433,16 @@ test('begin-pass publishes an exact private atomic heartbeat', () => {
 test('fresh exact runner marker stands down without heartbeat', () => {
   const fx = fixture();
   fs.mkdirSync(fx.runs, { recursive: true, mode: 0o700 });
-  fs.writeFileSync(path.join(fx.runs, '.runner-alive'), JSON.stringify({ at: new Date().toISOString(), pid: 123, processStartId: null, projectRoot: fx.root }) + '\n', { mode: 0o600 });
+  fs.writeFileSync(path.join(fx.runs, '.runner-alive'), JSON.stringify({
+    version: 1, at: new Date().toISOString(), pid: process.pid,
+    processStartId: writerLeases.captureProcessStartId(process.pid), projectRoot: fx.root,
+  }) + '\n', { mode: 0o600 });
   const result = run(fx, ['begin-pass']);
   assert.deepEqual(result.json, { status: 'runner-active' });
   assert.equal(fs.existsSync(path.join(fx.worker, 'heartbeat.json')), false);
 });
 
-test('non-conforming marker content is fail-closed while fresh and ages out by mtime', () => {
-  // Clean cutover pin: the v-old 3-key marker (and any other non-conforming
-  // content — torn refresh, foreign garbage) is judged by file freshness. A
-  // live runner rewrites the marker every tick, so fresh mtime stands the
-  // standby down ('unknown'), while stale mtime proves no live runner
-  // refreshes it — 'stale' lets a runner-dormant deployment drain instead of
-  // wedging forever on a dead runner's leftover bytes.
+test('non-conforming marker content never ages into takeover authority', () => {
   const fx = fixture();
   fs.mkdirSync(fx.runs, { recursive: true, mode: 0o700 });
   const marker = path.join(fx.runs, '.runner-alive');
@@ -457,7 +454,8 @@ test('non-conforming marker content is fail-closed while fresh and ages out by m
   const aged = new Date(Date.now() - 120000);
   fs.utimesSync(marker, aged, aged);
   const stale = run(fx, ['begin-pass']);
-  assert.equal(stale.json?.status, 'ready', JSON.stringify(stale.json));
+  assert.deepEqual(stale.json, { status: 'runner-unknown' });
+  assert.equal(fs.existsSync(path.join(fx.worker, 'heartbeat.json')), false);
   assert.equal(fs.existsSync(marker), true, 'the standby never deletes markers');
 });
 
@@ -470,11 +468,14 @@ test('unsafe or malformed runner marker is fail-closed and writes no heartbeat',
   assert.equal(fs.existsSync(path.join(fx.worker, 'heartbeat.json')), false);
 });
 
-test('valid stale runner marker permits heartbeat without deleting marker', () => {
+test('exact marker with a proven dead owner permits heartbeat without deleting marker', () => {
   const fx = fixture();
   fs.mkdirSync(fx.runs, { recursive: true, mode: 0o700 });
   const marker = path.join(fx.runs, '.runner-alive');
-  fs.writeFileSync(marker, JSON.stringify({ at: '2020-01-01T00:00:00.000Z', pid: 123, processStartId: null, projectRoot: fx.root }) + '\n', { mode: 0o600 });
+  fs.writeFileSync(marker, JSON.stringify({
+    version: 1, at: '2020-01-01T00:00:00.000Z', pid: 2147483647,
+    processStartId: writerLeases.captureProcessStartId(process.pid), projectRoot: fx.root,
+  }) + '\n', { mode: 0o600 });
   assert.equal(run(fx, ['begin-pass']).json?.status, 'ready');
   assert.equal(fs.existsSync(marker), true);
 });
@@ -545,7 +546,8 @@ test('pass-token heartbeat must remain canonical, private, regular, and single-l
 
 test('claim-next rechecks exact runner exclusion after begin-pass and before queue movement', () => {
   for (const [marker, expected] of [
-    [{ at: new Date().toISOString(), pid: 123, processStartId: null, projectRoot: null }, 'runner-active'],
+    [{ version: 1, at: new Date().toISOString(), pid: process.pid,
+      processStartId: writerLeases.captureProcessStartId(process.pid), projectRoot: null }, 'runner-active'],
     ['{bad', 'runner-unknown'],
   ]) {
     const fx = fixture();

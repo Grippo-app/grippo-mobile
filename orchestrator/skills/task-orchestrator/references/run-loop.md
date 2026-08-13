@@ -37,7 +37,8 @@ never re-derive them loosely.
    atomic finalizer alone republishes and verifies it after `todo → done`;
    orchestration agents never edit or regenerate it independently.
 
-There are 40 frozen agent contracts under `contracts/agents/` (15 builders + 16 validators + 9 helpers).
+There are 39 frozen agent contracts under `contracts/agents/`; the directory is
+the roster source of truth, and `doc-counts.sh` mechanically guards this count.
 The validator split is `inputs-resolver` pre-flight plus the 10-validator
 parallel group; the 5 remaining validators are conditional — the 2 `figma-*`
 component validators (`figma-drift`, `figma-component-coverage`)

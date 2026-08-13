@@ -150,7 +150,7 @@
         "references/outcome-appendix.md": "6d592f3f6dc6f7a431f39be8bb0f1f5b2759428f5ce2bd5bd48a5e7f70076e55",
         "references/planner.md": "b28182c5aab1079c9697f64854134c028b6eceddefc50b8e0780353e5058f75c",
         "references/requirements-lookup.md": "bbaa28e2ba82edcf80fe65d9f4ad1e3329f9f60b56e617f734c373f8b5a43485",
-        "references/run-loop.md": "57c3600bc10161e8c5c164719beac1704c37f9af3b69466d2e14ff4ede18853b",
+        "references/run-loop.md": "1959c8b7098b81ed70fecae05e97e45f7d23d4ff1732ad8f9d0b17f61f9e5649",
         "references/task-drop.md": "7546f09cc4bd584d9c33be1a5510ffcf665fa792775db120da0ff0e8de05b86b",
         "references/validator-routing.md": "3192ce113b7e39e0beb9e5d300c4ede4755894e8ecea39daf115da57076689b4"
       }
@@ -218,6 +218,338 @@
       "sourceSha256": "0ae889edce635da55236f4af1fb369a2212dd5e49add1c217c2820eb4755b8c4",
       "externalSourceException": true,
       "note": "canonical source stays orchestrator/figma/skill/SKILL.md"
+    }
+  ],
+  "files": [
+    {
+      "sourcePath": "orchestrator/skills/_index/install-surfaces/commands/serve-queue.md",
+      "installPath": ".claude/commands/serve-queue.md",
+      "sourceSha256": "a858622e8c3b079d2241a6b012fda770dead7adfe186cee82d3300a50c39370d"
+    },
+    {
+      "sourcePath": "orchestrator/skills/_index/install-surfaces/launch.json",
+      "installPath": ".claude/launch.json",
+      "sourceSha256": "6c53a8c3c523444ca42ad9e46ab14a812a88b0bdd64bdeef1902521880740bfa"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/README.md",
+      "installPath": ".claude/contracts/README.md",
+      "sourceSha256": "82f3d8be6fd6028e6de6f3f9e478a3a4834bac2ab33b2164b84a4cec515936eb"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/acceptance-trace.md",
+      "installPath": ".claude/contracts/acceptance-trace.md",
+      "sourceSha256": "f6dfe9c67ae56ff3883fe8976a9e840e6cf459ed3c4cbf1df6d86b54f877cec1"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/acceptance-tracer-report.md",
+      "installPath": ".claude/contracts/acceptance-tracer-report.md",
+      "sourceSha256": "62529af2129c63eb4db6ead85cdd97115b2d243ab8dda2acbd0eebf944a0b458"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/architecture-map.schema.json",
+      "installPath": ".claude/contracts/architecture-map.schema.json",
+      "sourceSha256": "5974e06eeb74061bb1bddb6921af3548c69b5a4c48d21142c238e2e5c12e9e5e"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/architecture-rules.schema.json",
+      "installPath": ".claude/contracts/architecture-rules.schema.json",
+      "sourceSha256": "f2f76510af65c25d12566b0180a6099ba967e72386b5421d89e5c70d66a6324d"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/builder-order.md",
+      "installPath": ".claude/contracts/builder-order.md",
+      "sourceSha256": "9c2de7dc19422d69fac738759a65f1fa4c1dc414d589e1c65372ffedf18088e1"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/builder-report.md",
+      "installPath": ".claude/contracts/builder-report.md",
+      "sourceSha256": "1129010ea348abd79c5eb862bee9447ddacf01a73f3199a2e25d76ad45d7922c"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/builder-report.schema.json",
+      "installPath": ".claude/contracts/builder-report.schema.json",
+      "sourceSha256": "a0eb893c5cb8a7c383b7d6c3fafb4090ca5bcbe71aa2832e5874a7813555a670"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/execution-plan.md",
+      "installPath": ".claude/contracts/execution-plan.md",
+      "sourceSha256": "19392f489aad7230bdd767b4e590b7f9f057d22ffe22a695e6d9c924f2f2a455"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/launch-sequence.md",
+      "installPath": ".claude/contracts/launch-sequence.md",
+      "sourceSha256": "e4eb145894de00a349bcd4105666d1ad318ea131cef9fde45cff3d1ec7334f8a"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/orchestrator-loop.md",
+      "installPath": ".claude/contracts/orchestrator-loop.md",
+      "sourceSha256": "ea91ac235ca190b673ca643d2014249cb7b120770e6cc5c6ea698ae78af6991e"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/outcome-shape.json",
+      "installPath": ".claude/contracts/outcome-shape.json",
+      "sourceSha256": "0b127463022258ce4831580e5a4d532dca64c86be1fa1b1ec581f895ac2df3ce"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/planner-output.md",
+      "installPath": ".claude/contracts/planner-output.md",
+      "sourceSha256": "63daedb3ef31348ffab26181afcd3e3e8b6ed22a8c9e892cad24029afc8abaa0"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/reviewer-output.md",
+      "installPath": ".claude/contracts/reviewer-output.md",
+      "sourceSha256": "de50613a04881f1155b62c2e73da1a3a184fe35354328f663778f3db5e0f2c05"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/test-policy.md",
+      "installPath": ".claude/contracts/test-policy.md",
+      "sourceSha256": "9c0fd986c1aecc107f3ec49a84aac386499102f9c655cf25e83dcadf6838bdb4"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/validation-run.md",
+      "installPath": ".claude/contracts/validation-run.md",
+      "sourceSha256": "01a866f655306b70be81e9a3023e90ff0173a15b7b64050111ca2530a8c542a3"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/validator-finding.md",
+      "installPath": ".claude/contracts/validator-finding.md",
+      "sourceSha256": "4c902cc2bbd6b0deae4f557d17e101529ccbfeb8a0267434da704f96908329ec"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/acceptance-tracer.md",
+      "installPath": ".claude/contracts/agents/acceptance-tracer.md",
+      "sourceSha256": "d6d181ee3fcab8e5e71b77b104d3868d84e5666355d185f92e35b1ea95e81fbb"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/anti-pattern-scanner.md",
+      "installPath": ".claude/contracts/agents/anti-pattern-scanner.md",
+      "sourceSha256": "a28bd20cdd246a70005548fd27542dbda12708a9405b7e3b04d753a935263a0f"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/app-shell-builder.md",
+      "installPath": ".claude/contracts/agents/app-shell-builder.md",
+      "sourceSha256": "3906dfe87df6ff7cbebd2bde5ec75c13ef64bb1d09a873863cdb22c7f1cb4dae"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/architecture-validator.md",
+      "installPath": ".claude/contracts/agents/architecture-validator.md",
+      "sourceSha256": "6b7418127bdffbd25cf5904a3565dd8bdd686ab1267855fe7a734a99a9dc4713"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/backend-contract-drift.md",
+      "installPath": ".claude/contracts/agents/backend-contract-drift.md",
+      "sourceSha256": "d5c2d653894197d3aed501f0494716cb76c83d5df2956890ea900f6bc3688f33"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/build-validator.md",
+      "installPath": ".claude/contracts/agents/build-validator.md",
+      "sourceSha256": "3e7e0ea5d0df367013a2075f1042aabe9c867e80f5e577a08298240cdfaeeaa3"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/compose-lib-builder.md",
+      "installPath": ".claude/contracts/agents/compose-lib-builder.md",
+      "sourceSha256": "8afad8d28541e0317ba74409c08e232c211bf12bbcf2820523ffe3d4b15fa5ef"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/compose-stability-validator.md",
+      "installPath": ".claude/contracts/agents/compose-stability-validator.md",
+      "sourceSha256": "17759364bd01102445c9ce8d0befb7259c5ece7f9327aa482689ad3b1960429d"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/context-finder.md",
+      "installPath": ".claude/contracts/agents/context-finder.md",
+      "sourceSha256": "28f2564f2bde344762d6ec477690348d94e8d1a73569d817fe564e71d8fd2fbb"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/cross-feature-nav-builder.md",
+      "installPath": ".claude/contracts/agents/cross-feature-nav-builder.md",
+      "sourceSha256": "f505c41eb8c97ec4b3a7d515e0105cdbc2a14e1f45ed505fde7108503afd116f"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/data-feature-builder.md",
+      "installPath": ".claude/contracts/agents/data-feature-builder.md",
+      "sourceSha256": "f218b33414183e58c73af96cac17be56716282f3a4622358dac911f1fa3f3e25"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/data-layer-validator.md",
+      "installPath": ".claude/contracts/agents/data-layer-validator.md",
+      "sourceSha256": "f5af21db8d86b05f3505333ad44d08af3dc8838106c850ce98e95b4196e3a7e0"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/data-service-scaffold-builder.md",
+      "installPath": ".claude/contracts/agents/data-service-scaffold-builder.md",
+      "sourceSha256": "4b0ad5036982a206cb20fc5dac69eed08275f758b4c2db0c707f61f8f7df8d09"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/design-system-component-builder.md",
+      "installPath": ".claude/contracts/agents/design-system-component-builder.md",
+      "sourceSha256": "4ceef581bb5d322f65edce57d31104cd6fb3b673bc59b418e5ec9cb36707ba09"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/di-validator.md",
+      "installPath": ".claude/contracts/agents/di-validator.md",
+      "sourceSha256": "be20d003693de2fa7f479cc82c9ef352e36bdc27fc799b87f7550da68dd6d99e"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/dialog-builder.md",
+      "installPath": ".claude/contracts/agents/dialog-builder.md",
+      "sourceSha256": "8399bd38dff3186c6755afbefb6da292992a78588f8e798bc22e74119d5da001"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/endpoint-builder.md",
+      "installPath": ".claude/contracts/agents/endpoint-builder.md",
+      "sourceSha256": "543b97e4890a25d7d51ac8ee9130d61a26f9ce59ac82b5dde39fd00ca9bc5bf1"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/feature-module-scaffold-builder.md",
+      "installPath": ".claude/contracts/agents/feature-module-scaffold-builder.md",
+      "sourceSha256": "aaf4cc2477f11efbf9815265a1e438e75571029108bfe8ef4301aa0101458f16"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/figma-component-coverage.md",
+      "installPath": ".claude/contracts/agents/figma-component-coverage.md",
+      "sourceSha256": "ddfe71ba0c765ab23a1656d4383921266fa8995d52a5497145e0466acdef89e5"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/figma-drift.md",
+      "installPath": ".claude/contracts/agents/figma-drift.md",
+      "sourceSha256": "7c79868c594c0531db88500505f0784f1e8d1af2fc9a2427db6f26d243180cfe"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/figma-screenshot-validator.md",
+      "installPath": ".claude/contracts/agents/figma-screenshot-validator.md",
+      "sourceSha256": "b5e3a302dafbc139cb5afa0e97cee43d091bcaec2107f72e4c2d9d8ff6c73561"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/figma-spec-validator.md",
+      "installPath": ".claude/contracts/agents/figma-spec-validator.md",
+      "sourceSha256": "428a4e4496a45766e7875577a960b44fec38c027e076bedcf166fd2e9472c878"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/implementation-planner.md",
+      "installPath": ".claude/contracts/agents/implementation-planner.md",
+      "sourceSha256": "fc669ebb77587f29761a2764c0b485de352fa0862e24b948c9b737bac5e82856"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/inputs-resolver.md",
+      "installPath": ".claude/contracts/agents/inputs-resolver.md",
+      "sourceSha256": "002923a3f597444207b4248ad4a1525abf03f36b8580385256cd26b4477bd021"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/internal-reviewer.md",
+      "installPath": ".claude/contracts/agents/internal-reviewer.md",
+      "sourceSha256": "2a7742b18828b4dcb9f7b695c461ee60de327dd7177a8c08e593a15ede1eace7"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/mapper-builder.md",
+      "installPath": ".claude/contracts/agents/mapper-builder.md",
+      "sourceSha256": "3d97262850eb9c83dbabd76a00c502371d60d460184aa96a3a7a7140e82f5e65"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/mvi-contract-validator.md",
+      "installPath": ".claude/contracts/agents/mvi-contract-validator.md",
+      "sourceSha256": "7622d83c7a2b52daa9a35cefddc2a6c2f9c0b8e8312a289425072b6ea22795db"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/naming-convention-validator.md",
+      "installPath": ".claude/contracts/agents/naming-convention-validator.md",
+      "sourceSha256": "7646877683c4047fbfdce27799009a4491ed985817e69568511ef4887ebe44d6"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/orchestrator.md",
+      "installPath": ".claude/contracts/agents/orchestrator.md",
+      "sourceSha256": "d7850e4bf1994046c01674d6563f77e89369aae128ad571c268b924e6d62a47d"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/requirements-lookup.md",
+      "installPath": ".claude/contracts/agents/requirements-lookup.md",
+      "sourceSha256": "66531ce4c6f3d800bad651fb5305a01e369c04ce4ecc862225f5bf91aa4d6858"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/resource-builder.md",
+      "installPath": ".claude/contracts/agents/resource-builder.md",
+      "sourceSha256": "a5c900dd350aaa76e9521762eb6902dc69f63cfa675960b935bca7ee15a5d9fa"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/room-migration-builder.md",
+      "installPath": ".claude/contracts/agents/room-migration-builder.md",
+      "sourceSha256": "daf429104eeccb287a35d8d96a59f26c906a830590467b8f2d2f82b2c418465e"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/scope-leak-validator.md",
+      "installPath": ".claude/contracts/agents/scope-leak-validator.md",
+      "sourceSha256": "582242d1ad213c01ae050a48cbbd14020a6d5997e2ee1f7206856c68fc959d03"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/screen-builder.md",
+      "installPath": ".claude/contracts/agents/screen-builder.md",
+      "sourceSha256": "60f58a16207d3c7adf6d8f53c1a3844f8e89d36cf322f0429a142d207eec4b28"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/task-drop.md",
+      "installPath": ".claude/contracts/agents/task-drop.md",
+      "sourceSha256": "171d21647862fbcc01a56112c8a3e7261a6d97546db17fdaff13bfaf89d7add8"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/task-intake.md",
+      "installPath": ".claude/contracts/agents/task-intake.md",
+      "sourceSha256": "442a23809ec3a3b13bb7cfd0223311b188725930a6e562cdb607f64cdbcd1ba2"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/task-prep.md",
+      "installPath": ".claude/contracts/agents/task-prep.md",
+      "sourceSha256": "2925b5a51f9d1b214573ce7d96d006b9e55c17f2b0f1c0075815a6c8c41aded6"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/toolkit-builder.md",
+      "installPath": ".claude/contracts/agents/toolkit-builder.md",
+      "sourceSha256": "25bd0bda11bbe5623879bcb286889d2b0762fe7b6f9a285a819637be57165f1e"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/agents/ui-core-state-builder.md",
+      "installPath": ".claude/contracts/agents/ui-core-state-builder.md",
+      "sourceSha256": "fe24987dddb5082d10494a6a466944b88b5a3353c9368bbe74b363bd24a86b95"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/builder-report.invalid.json",
+      "installPath": ".claude/contracts/fixtures/builder-report.invalid.json",
+      "sourceSha256": "686cdc033a3573ea30c461820b3caaffe2dd49e4c2af21a3576c731f038f1f8d"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/builder-report.valid.json",
+      "installPath": ".claude/contracts/fixtures/builder-report.valid.json",
+      "sourceSha256": "a06f7e6a14953f014a4576edeb630aa7433f54f50276ace69f46c278348687d9"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/execution-plan.invalid.md",
+      "installPath": ".claude/contracts/fixtures/execution-plan.invalid.md",
+      "sourceSha256": "485eab0bebcdbc656d89ad85fcba1e18e4c49479998276de150abcb5a4d429a6"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/execution-plan.valid.md",
+      "installPath": ".claude/contracts/fixtures/execution-plan.valid.md",
+      "sourceSha256": "092da277a35a5ea3b57f91e5dc8728ed77c1a8887623b76c844c1e5a5763f356"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/planner-output.invalid.md",
+      "installPath": ".claude/contracts/fixtures/planner-output.invalid.md",
+      "sourceSha256": "44491f20bf41c6243277894fa19747b00c5a02318a1385aa80e7d3a5c1d144b5"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/planner-output.valid.md",
+      "installPath": ".claude/contracts/fixtures/planner-output.valid.md",
+      "sourceSha256": "f33cfc16056bc7774a6c1b66a74f485fa9016d7a189d140319940931dfba8f3d"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/validator-finding.invalid.json",
+      "installPath": ".claude/contracts/fixtures/validator-finding.invalid.json",
+      "sourceSha256": "130b8d023e733ba3ec4c4d794d5635bec2f79e3d1b7dc206391ac04575cf90c6"
+    },
+    {
+      "sourcePath": "orchestrator/contracts/fixtures/validator-finding.valid.json",
+      "installPath": ".claude/contracts/fixtures/validator-finding.valid.json",
+      "sourceSha256": "45dcc4169f678a5ff5c930a8ddd53e3860432a22669265ef72fbc06bea49ec60"
     }
   ]
 }

@@ -54,7 +54,7 @@ mk orchestrator/project-config.md <<'EOF'
 ---
 apiClassName: "DemoApi"
 productPackage: com.demo.app
-featuresWithRootComponentSuffix: []
+featuresWithRootComponentSuffix: [home]
 ---
 EOF
 
@@ -123,6 +123,14 @@ package com.demo.app
 */
 class NoteUseCase(private val repository: NoteRepository)
 EOF
+mk shared/src/commonMain/kotlin/com/demo/app/MoreUses.kt <<'EOF'
+package com.demo.app
+class MoreUses(private val repository: NoteRepository, private val api: DemoApi)
+EOF
+mk shared/src/commonMain/kotlin/com/demo/app/ApiUse.kt <<'EOF'
+package com.demo.app
+class ApiUse(private val api: DemoApi)
+EOF
 mk ui-screen-features/screen-api/src/commonMain/kotlin/com/demo/app/screenapi/HomeRouter.kt <<'EOF'
 package com.demo.app.screenapi
 import kotlinx.serialization.Serializable
@@ -139,6 +147,7 @@ mk data-features/feature-api/src/commonMain/kotlin/com/demo/app/featureapi/Featu
 package com.demo.app.featureapi
 interface NoteFeature
 interface NoteTagFeature
+interface HomeFeature
 EOF
 mk data-features/note/src/commonMain/kotlin/com/demo/app/note/NoteRepository.kt <<'EOF'
 package com.demo.app.note
@@ -234,9 +243,12 @@ assert_py "nodes/edges/findings sorted" "all([a==sorted(a,key=lambda x:x['id']) 
 assert_py "10 modules deduped/comments ignored" "d['summary']['modules']==10"
 assert_py "screen and feature ownership extracted" "any(n['kind']=='screen' and n['name']=='Home' for n in d['nodes']) and any(e['kind']=='owns' and dct[e['to']]['kind']=='screen' for e in d['edges'] for dct in [{n['id']:n for n in d['nodes']}])"
 assert_py "routes retained as searchable metadata" "next(n for n in d['nodes'] if n['kind']=='screen')['metadata']['routes']==['Detail','Feed']"
+assert_py "UI/domain ownership collision merges into one feature node" "len([n for n in d['nodes'] if n['id']=='feature:home'])==1 and next(n for n in d['nodes'] if n['id']=='feature:home')['layer']=='ui' and next(n for n in d['nodes'] if n['id']=='feature:home')['metadata']=={'ownershipId':'home','interfaceClass':'HomeFeature'}"
+assert_py "configured screen root suffix is preserved" "next(n for n in d['nodes'] if n['kind']=='screen' and n['name']=='Home')['metadata']['rootSuffix'] is True"
 assert_py "repositories extracted without prefix collision" "{n['metadata']['className'] for n in d['nodes'] if n['kind']=='repository'}=={'NoteRepository','NoteTagRepository'}"
 assert_py "nested comments and dependency strings are ignored" "not any(n['name']=='GhostRepository' for n in d['nodes']) and d['analysis']['coverage']['unsupportedDependencyExpressions']==2"
 assert_py "API methods extracted" "next(n for n in d['nodes'] if n['kind']=='api')['metadata']['methods']==['createNote','getNotes']"
+assert_py "consumes edges are unique per module and target node" "len([(e['from'],e['to']) for e in d['edges'] if e['kind']=='consumes'])==len(set((e['from'],e['to']) for e in d['edges'] if e['kind']=='consumes'))"
 assert_py "Room entities block-scoped" "{n['metadata']['entityClass'] for n in d['nodes'] if n['kind']=='database-entity'}=={'NoteEntity','NoteTagEntity'}"
 assert_py "database summary is known" "d['summary']['databaseEntities']==2"
 assert_py "supported dependency edges extracted" "sum(e['kind']=='depends-on' for e in d['edges'])==3"
@@ -247,6 +259,7 @@ assert_py "orphan exception/root rules applied" "any(f['type']=='orphan-module' 
 assert_py "partial unused repository is not error" "all(f['severity']!='error' for f in d['findings'] if f['type']=='unused-repository')"
 assert_py "finding fingerprints and firstSeen revisions are hashes" "all(m.HASH_RE.fullmatch(f['fingerprint']) and m.HASH_RE.fullmatch(f['firstSeenRevision']) for f in d['findings'])"
 [ -f orchestrator/.cache/architecture/input-receipt.json ] && ok "canonical input receipt published" || bad "input receipt missing"
+assert_py "architecture cache directories are owner-only" "all(m.stat.S_IMODE(m.os.lstat(p).st_mode)==0o700 for p in ['orchestrator/.cache','orchestrator/.cache/architecture','orchestrator/.cache/architecture/history'])"
 assert_py "v2 diff exposes exact totals and truncation state" "all(all([m.valid_compact_diff(x),x['schemaVersion']==2,not x['truncated'],all(v==0 for v in x['changeTotals'].values())]) for x in [m.json.load(open('orchestrator/.cache/architecture/history/'+m.os.listdir('orchestrator/.cache/architecture/history')[0]))])"
 [ -f orchestrator/.cache/architecture/latest-diff.json ] && ok "latest diff pointer published" || bad "latest diff missing"
 

@@ -32,7 +32,7 @@ function safeResolve(root, urlPath) {
   decoded = decoded.replace(/^\/+/, '');
   // Security denylist: never serve a path with a dot-segment (dotfile or dot-dir).
   // Covers orchestrator/figma/.account.json, .cache/, and .git/.env.
-  if (decoded.split('/').some(function (seg) { return seg.charAt(0) === '.'; })) return null;
+  if (decoded.split(/[\\/]/).some(function (seg) { return seg.charAt(0) === '.'; })) return null;
   // Never raw-serve the committed evidence tree (tasks/evidence/**): ship receipts +
   // frozen matrices embed absolute local filesystem paths (report inputHashes/inputs keys)
   // that the /api/figma/* readers scrub before echoing — a raw static serve would bypass
@@ -44,6 +44,34 @@ function safeResolve(root, urlPath) {
   // Confine to docroot.
   if (target !== root && !target.startsWith(root + path.sep)) return null;
   return target;
+}
+
+function isDeniedRelative(relative) {
+  if (!relative || relative === '.') return false;
+  if (path.isAbsolute(relative) || relative === '..' || relative.startsWith('..' + path.sep)) return true;
+  var segments = relative.split(path.sep);
+  if (segments.some(function (seg) { return seg.charAt(0) === '.'; })) return true;
+  return segments[0] === 'tasks' && segments[1] === 'evidence';
+}
+
+// Resolve both ends before reading. This closes the lexical-safe-but-canonical-
+// unsafe case where a harmless-looking path is a symlink to a secret dot-path
+// or to a file outside the static root.
+function confinedRealpath(root, target, done) {
+  fs.realpath(root, function (rootErr, realRoot) {
+    if (rootErr) { done(rootErr); return; }
+    fs.realpath(target, function (targetErr, realTarget) {
+      if (targetErr) { done(targetErr); return; }
+      var relative = path.relative(realRoot, realTarget);
+      if (isDeniedRelative(relative)) {
+        var error = new Error('static target is outside the public surface');
+        error.code = 'STATIC_TARGET_DENIED';
+        done(error);
+        return;
+      }
+      done(null, realRoot, realTarget);
+    });
+  });
 }
 
 function sendBuffer(res, file, buf) {
@@ -62,18 +90,39 @@ function sendFile(res, file) {
   });
 }
 
-function serveStatic(req, res, target) {
-  fs.stat(target, function (err, st) {
+function sendConfinedFile(res, root, file) {
+  confinedRealpath(root, file, function (resolveErr, _realRoot, realFile) {
+    if (resolveErr) { res.writeHead(404); res.end('not found'); return; }
+    var flags = fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0);
+    fs.open(realFile, flags, function (openErr, fd) {
+      if (openErr) { res.writeHead(404); res.end('not found'); return; }
+      fs.fstat(fd, function (statErr, st) {
+        if (statErr || !st.isFile()) {
+          fs.close(fd, function () {});
+          res.writeHead(404); res.end('not found');
+          return;
+        }
+        fs.readFile(fd, function (readErr, buf) {
+          fs.close(fd, function () {});
+          if (readErr) { res.writeHead(404); res.end('not found'); return; }
+          sendBuffer(res, realFile, buf);
+        });
+      });
+    });
+  });
+}
+
+function serveStatic(req, res, target, root) {
+  confinedRealpath(root, target, function (resolveErr, _realRoot, realTarget) {
+    if (resolveErr) { res.writeHead(404); res.end('not found'); return; }
+    fs.stat(realTarget, function (err, st) {
     if (err) { res.writeHead(404); res.end('not found'); return; }
     if (st.isDirectory()) {
-      var idx = path.join(target, 'index.html');
-      fs.stat(idx, function (e2, st2) {
-        if (e2 || !st2.isFile()) { res.writeHead(404); res.end('not found'); return; }
-        sendFile(res, idx);
-      });
+      sendConfinedFile(res, root, path.join(realTarget, 'index.html'));
       return;
     }
-    sendFile(res, target);
+    sendConfinedFile(res, root, realTarget);
+    });
   });
 }
 

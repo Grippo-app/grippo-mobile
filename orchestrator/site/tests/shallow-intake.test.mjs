@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict'
-import { chmodSync, existsSync, linkSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, linkSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
 import { hostname, tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { createRequire } from 'node:module'
@@ -499,6 +499,42 @@ try {
         init: 'INTAKE_DIR_UNSAFE', schedule: 'INTAKE_DIR_UNSAFE', recordExists: false
       })
     }
+  })
+
+  await check('same-user read-only exposure is hardened to private mode on startup', () => {
+    if (process.platform === 'win32') return
+    const project = join(root, 'runtime-privacy-self-heal')
+    const projectTasks = join(project, 'orchestrator', 'tasks')
+    const taskCache = join(project, 'orchestrator', '.cache', 'tasks')
+    const runtime = join(taskCache, 'intake')
+    const stemLocks = join(runtime, '.stem-locks')
+    const externalScratch = join(root, 'runtime-privacy-self-heal-scratch')
+    for (const column of ['backlog', 'pending', 'todo', 'done']) mkdirSync(join(projectTasks, column), { recursive: true })
+    mkdirSync(stemLocks, { recursive: true })
+    mkdirSync(externalScratch, { recursive: true })
+    chmodSync(runtime, 0o755)
+    chmodSync(stemLocks, 0o755)
+    chmodSync(externalScratch, 0o755)
+    const modulePath = resolve(HERE, '../server/shallow-intake.js')
+    const probe = spawnSync(process.execPath, ['-e', `
+      const intake = require(${JSON.stringify(modulePath)});
+      intake.prepareRuntime();
+    `], {
+      cwd: project,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        ORCHESTRATOR_PROJECT_ROOT: project,
+        ORCHESTRATOR_TASKS_DIR: projectTasks,
+        ORCHESTRATOR_TASK_INTAKE_DIR: runtime,
+        SHALLOW_INTAKE_SCRATCH_DIR: externalScratch,
+        SHALLOW_INTAKE_SCRATCH_ROOT: root,
+      }
+    })
+    assert.equal(probe.status, 0, probe.stderr)
+    assert.equal(statSync(runtime).mode & 0o777, 0o700)
+    assert.equal(statSync(stemLocks).mode & 0o777, 0o700)
+    assert.equal(statSync(externalScratch).mode & 0o777, 0o700)
   })
 
   await check('a symlinked intake ancestor is rejected before any external cache write', () => {

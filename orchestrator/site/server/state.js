@@ -17,6 +17,7 @@ var persistence = require('./persistence');
 var validators  = require('./validators');
 var projectCfg  = require('./project-config');
 var projectConfigUpdate = require('./project-config-update');
+var figmaFeatureGate = require('./figma-feature-gate');
 var locksMod    = require('./locks');
 var requestsMod = require('./requests');
 var statusModel = require('./status');
@@ -412,8 +413,12 @@ function deriveState(observations) {
   setupForm = Object.assign({}, setupForm);
   delete setupForm.codexEnabled;
   if (canonicalCodexEnabled) setupForm.codexEnabled = canonicalCodexEnabled;
-  var figmaIntegration = figmaIntegrationMod.get();
-  if (figmaIntegration.projectFile && figmaIntegration.projectFile.state === 'selected') {
+  var liveFigmaGate = figmaFeatureGate.current();
+  var figmaEnabled = liveFigmaGate.enabled;
+  setupForm.figmaEnabled = reviewerConfigRead.ok &&
+    reviewerConfigRead.figmaEnabledState !== 'invalid' && reviewerConfigRead.figmaEnabled === true;
+  var figmaIntegration = figmaEnabled ? figmaIntegrationMod.get() : null;
+  if (figmaIntegration && figmaIntegration.projectFile && figmaIntegration.projectFile.state === 'selected') {
     setupForm.figmaLibraryUrl = figmaIntegration.projectFile.url;
   }
 
@@ -512,9 +517,11 @@ function deriveState(observations) {
   var boardStems = indexRead.stems;
   var heartbeat = workerMod.readHeartbeat();
   var act = activityTracker.snapshot();
-  var figmaStatus = figmaMod.status();
-  var figmaTokensInfo = figmaMod.tokensInfo();
-  var figmaAccount = figmaStatus.state === 'connected' ? figmaMod.account() : null;
+  var figmaStatus = liveFigmaGate.error && liveFigmaGate.error !== 'figma-disabled'
+    ? { state: 'unavailable', local: null, global: null, configError: liveFigmaGate.error }
+    : (figmaEnabled ? figmaMod.status() : { state: 'disabled', local: null, global: null });
+  var figmaTokensInfo = figmaEnabled ? figmaMod.tokensInfo() : null;
+  var figmaAccount = figmaEnabled && figmaStatus.state === 'connected' ? figmaMod.account() : null;
   var creationRecoveryState = creationMarkersMod.scan();
   var editRecoveryState = editMarkersMod.scan();
   var publicationRecoveryIssues = creationRecoveryState.blocking.map(function (issue) {
@@ -585,10 +592,7 @@ function deriveState(observations) {
     // board "Pull Figma screens" button's green/re-pull state and the
     // screens-not-pulled card chip + confirm-on-Run warning. designIssues
     // only appears when figmaEnabled. See screensCacheMap().
-    screensCache: screensCacheMap(
-      setupForm.figmaEnabled === true || setupForm.figmaEnabled === 'true',
-      boardStems
-    ),
+    screensCache: screensCacheMap(figmaEnabled, boardStems),
     // True when the in-process CLI runner is draining the queue itself. When so,
     // the standby /loop worker is unnecessary, so the UI shows "runner active"
     // instead of a "worker offline" warning. running/max let the pill show

@@ -11,6 +11,8 @@ const here = dirname(fileURLToPath(import.meta.url))
 const root = join(here, '..', '..', '..')
 const sourceGenerator = join(here, '..', '_generate_template_manifest.py')
 const sourceSync = join(here, '..', 'sync-from-template.sh')
+const sourceTrackedGate = join(here, '..', 'check-tracked-runtime-artifacts.mjs')
+const sourceExclusionGate = join(here, '..', 'check-template-exclusion-contract.mjs')
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -41,12 +43,78 @@ assert.ok(pureMissing.some((finding) => finding.msg.includes('MISSING')), 'pure 
 const scratch = mkdtempSync(join(tmpdir(), 'orchestrator-template-sync-'))
 const product = join(scratch, 'product')
 try {
+  const trackedFixture = join(scratch, 'tracked-fixture')
+  mkdirSync(trackedFixture)
+  expectStatus(run('git', ['init', '-q', trackedFixture]), 0, 'tracked-runtime fixture init must succeed')
+  const trackedPaths = [
+    'vendor/node_modules/pkg/index.js',
+    'orchestrator/.cache/tasks/runs/receipt.json',
+    'orchestrator/figma/.account.json',
+    'orchestrator/figma/.env',
+    'orchestrator/api-contract/.env',
+    'orchestrator/api-contract/.secrets/backend.env',
+  ]
+  for (const rel of ['orchestrator/README.md', ...trackedPaths]) {
+    const file = join(trackedFixture, rel)
+    mkdirSync(dirname(file), { recursive: true })
+    writeFileSync(file, 'fixture\n')
+  }
+  expectStatus(run('git', ['-C', trackedFixture, 'add', '-f', '.']), 0, 'tracked-runtime fixture add must succeed')
+  const trackedFailure = run('node', [sourceTrackedGate, trackedFixture])
+  expectStatus(trackedFailure, 1, 'tracked runtime artifacts must fail closed')
+  for (const rel of trackedPaths) assert.match(output(trackedFailure), new RegExp(rel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  expectStatus(run('git', ['-C', trackedFixture, 'rm', '-q', '--cached', ...trackedPaths]), 0,
+    'tracked-runtime fixture cleanup must succeed')
+  expectStatus(run('node', [sourceTrackedGate, trackedFixture]), 0,
+    'ordinary tracked source must pass runtime-artifact hygiene')
+
+  expectStatus(run('node', [sourceExclusionGate, root]), 0,
+    'source manifest exclusions and ignore documentation must agree')
+
+  const exclusionFixture = join(scratch, 'exclusion-fixture')
+  const fixtureGenerator = join(exclusionFixture, 'orchestrator', 'template-sync', '_generate_template_manifest.py')
+  const fixtureLaunch = join(exclusionFixture, 'orchestrator', 'launch.md')
+  const fixtureIgnore = join(exclusionFixture, '.gitignore')
+  for (const [source, destination] of [
+    [sourceGenerator, fixtureGenerator],
+    [join(root, 'orchestrator', 'launch.md'), fixtureLaunch],
+    [join(root, '.gitignore'), fixtureIgnore],
+  ]) {
+    mkdirSync(dirname(destination), { recursive: true })
+    copyFileSync(source, destination)
+  }
+  const ignoreBytes = readFileSync(fixtureIgnore)
+  writeFileSync(fixtureIgnore, readFileSync(fixtureIgnore, 'utf8').replace(
+    '# END ORCHESTRATOR RUNTIME IGNORE CONTRACT',
+    'orchestrator/.root-only-runtime/\n# END ORCHESTRATOR RUNTIME IGNORE CONTRACT',
+  ))
+  let exclusionFailure = run('node', [sourceExclusionGate, exclusionFixture])
+  expectStatus(exclusionFailure, 1, 'root-only runtime ignore must fail lockstep')
+  assert.match(output(exclusionFailure), /root \.gitignore runtime pattern is absent from launch Step 2\.5/)
+  writeFileSync(fixtureIgnore, ignoreBytes)
+
+  const launchBytes = readFileSync(fixtureLaunch)
+  writeFileSync(fixtureLaunch, readFileSync(fixtureLaunch, 'utf8').replace(
+    '# END ORCHESTRATOR RUNTIME IGNORE CONTRACT',
+    'orchestrator/.launch-only-runtime/\n# END ORCHESTRATOR RUNTIME IGNORE CONTRACT',
+  ))
+  exclusionFailure = run('node', [sourceExclusionGate, exclusionFixture])
+  expectStatus(exclusionFailure, 1, 'launch-only runtime ignore must fail lockstep')
+  assert.match(output(exclusionFailure), /launch Step 2\.5 runtime pattern is absent from root \.gitignore/)
+  writeFileSync(fixtureLaunch, launchBytes)
+  expectStatus(run('node', [sourceExclusionGate, exclusionFixture]), 0,
+    'exclusion gate must recover after exact fixture restoration')
+
   mkdirSync(product)
   const sourceScan = run('python3', [sourceGenerator, '--print', '--root', root])
   expectStatus(sourceScan, 0, 'source manifest scan must succeed')
   const sourceManifest = JSON.parse(sourceScan.stdout)
   const ownedFiles = Object.keys(sourceManifest.files || {})
   assert.ok(ownedFiles.length > 500, 'consumer test must exercise the complete template-owned tree')
+  assert.ok(ownedFiles.includes('orchestrator/figma/tokens/baseline.mjs'),
+    'committed Figma token logic must remain template-owned')
+  assert.ok(ownedFiles.includes('orchestrator/figma/manifests/.gitkeep'),
+    'the committed Figma manifests placeholder must remain template-owned')
   for (const rel of ownedFiles) {
     const destination = join(product, rel)
     mkdirSync(dirname(destination), { recursive: true })

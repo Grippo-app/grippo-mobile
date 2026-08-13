@@ -14,9 +14,10 @@
 #   5. The canonical Site i18n aggregate exposes the same key SET for
 #      en/ru/uk. Importing the aggregate also exercises its duplicate, missing
 #      domain, and value-shape guards.
-#   6. Every figma:/contract: npm script's `node scripts/<file>.mjs|.cjs`
-#      target file exists, and the root/vendored Figma CI workflow copies stay
-#      byte-identical. A renamed/removed script or CI copy drift fails at lint time.
+#   6. Every figma:/contract: npm script target exists, workspace/Node pins are
+#      coherent, Git tracks no runtime/dependency/cache/account/secret junk,
+#      and template exclusions agree with launch/root ignore policy without
+#      hiding committed Figma sources.
 #   7. Runtime/UI enum MIRRORS stay in sync. (a) Every
 #      log-event.py journal PHASE, and every STATUS the board renders as a label,
 #      has a `taskDetails.phase.*`/`taskDetails.status.*` key in every locale (the
@@ -209,6 +210,15 @@ else
   done
 fi
 
+if ! node orchestrator/template-sync/check-tracked-runtime-artifacts.mjs .; then
+  echo "FAIL: Git tracks generated runtime, dependency, cache, account, or secret artifacts."
+  fail=$((fail + 1))
+fi
+if ! node orchestrator/template-sync/check-template-exclusion-contract.mjs .; then
+  echo "FAIL: template manifest exclusions, launch instructions, and root .gitignore disagree."
+  fail=$((fail + 1))
+fi
+
 # Check 7: runtime/UI enum MIRRORS stay in sync. Families of cross-language
 # constants whose drift only surfaces as an unlabeled journal row long after
 # the edit:
@@ -392,4 +402,4 @@ if [ $fail -gt 0 ]; then
   exit 1
 fi
 n_checks=$(grep -cE '^# Check [0-9]' "$SELF")
-echo "OK: all $n_checks lint checks passed (task subdirectories, INDEX.json validity, pending sidecar parity, arch-map freshness, i18n locale parity, npm script targets, outcome-shape contract + journal-label/Design-kind mirrors, Step-6b gate-prose integrity, vendored-copy tooling E2E)."
+echo "OK: all $n_checks lint checks passed (task subdirectories, INDEX.json validity, pending sidecar parity, arch-map freshness, i18n locale parity, npm/workspace/Node/tracked-runtime hygiene, outcome-shape contract + journal-label/Design-kind mirrors, Step-6b gate-prose integrity, vendored-copy tooling E2E)."

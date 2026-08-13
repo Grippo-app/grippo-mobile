@@ -18,6 +18,7 @@ for arg in "${@:2}"; do
   esac
 done
 MAN="$ROOT/orchestrator/skills/_index/install-manifest.json"
+python3 "$ROOT/orchestrator/skills/_index/validate-install-manifest.py" "$ROOT" >/dev/null
 for name in $(python3 -c "import json;[print(s['folderName']) for s in json.load(open('$MAN'))['skills'] if not s.get('externalSourceException')]"); do
   dst="$TARGET/.claude/skills/$name"
   src="$ROOT/orchestrator/skills/$name"
@@ -33,27 +34,30 @@ for name in $(python3 -c "import json;[print(s['folderName']) for s in json.load
     mkdir -p "$dst/references"
     rm -f "$dst/SKILL.md"
     cp "$src/SKILL.md" "$dst/SKILL.md"
-    cp -R "$src/references/." "$dst/references/" 2>/dev/null || true
+    cp -R "$src/references/." "$dst/references/"
   fi
 done
 echo "installed $(python3 -c "import json;print(sum(1 for s in json.load(open('$MAN'))['skills'] if not s.get('externalSourceException')))") skills into $TARGET/.claude/skills/"
 
-# ── Frozen contracts: skills cite ../../contracts/* (from SKILL.md) and
-# ../../../contracts/* (from references/) — both resolve to .claude/contracts/
-# from the install dir, so the contracts must land there or every cite dangles.
-CON_SRC="$ROOT/orchestrator/contracts"
-CON_DST="$TARGET/.claude/contracts"
-if [ -d "$CON_SRC" ]; then
-  mkdir -p "$TARGET/.claude"
-  rm -rf "$CON_DST"
+# ── Manifest-owned installed files: frozen contracts plus the queue command
+# and launch configuration. The contracts tree is wholly owned and replaced so
+# retired files cannot survive an idempotent reinstall. Other .claude folders
+# may contain user-owned entries; only the exact command and launch paths are
+# replaced there.
+rm -rf "$TARGET/.claude/contracts"
+while IFS=$'\t' read -r source_path install_path; do
+  [ -n "$source_path" ] || continue
+  src="$ROOT/$source_path"
+  dst="$TARGET/$install_path"
+  mkdir -p "$(dirname "$dst")"
+  rm -f "$dst"
   if [ "$MODE" = "--symlink" ]; then
-    ln -sf "$CON_SRC" "$CON_DST"
+    ln -s "$src" "$dst"
   else
-    mkdir -p "$CON_DST"
-    cp -R "$CON_SRC/." "$CON_DST/"
+    cp "$src" "$dst"
   fi
-  echo "installed contracts into $TARGET/.claude/contracts/ (mode: ${MODE#--})"
-fi
+done < <(python3 -c "import json;[print(f['sourcePath']+'\\t'+f['installPath']) for f in json.load(open('$MAN'))['files']]")
+echo "installed $(python3 -c "import json;print(len(json.load(open('$MAN'))['files']))") manifest-owned files into $TARGET/.claude/"
 
 # ── Enforcement wiring (screenshot gate): a bootstrapped product has NO
 # mechanical gate until (a) git executes the tracked pre-commit hook and

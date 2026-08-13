@@ -2074,15 +2074,44 @@ def valid_compact_diff(value: Any) -> bool:
 def ensure_safe_directory(root: Path, relative: str) -> Path:
     normalized = normalize_rel(relative)
     current = root
+    private_cache = False
     for part in normalized.split("/"):
         current = current / part
+        private_cache = private_cache or part == ".cache"
         try:
             info = os.lstat(current)
         except FileNotFoundError:
-            os.mkdir(current, 0o755)
+            os.mkdir(current, 0o700 if private_cache else 0o755)
             info = os.lstat(current)
         if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
             raise ArchitectureError("publication-root-unsafe", f"publication directory is unsafe: {normalized}")
+        if private_cache and os.name != "nt":
+            if not hasattr(os, "geteuid") or info.st_uid != os.geteuid():
+                raise ArchitectureError("publication-root-unsafe", f"publication cache is not owned by the current user: {normalized}")
+            mode = stat.S_IMODE(info.st_mode)
+            if mode & 0o022:
+                raise ArchitectureError("publication-root-unsafe", f"publication cache is group/world writable: {normalized}")
+            flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+            fd = None
+            try:
+                fd = os.open(current, flags)
+                opened = os.fstat(fd)
+                if (not stat.S_ISDIR(opened.st_mode) or opened.st_dev != info.st_dev or
+                        opened.st_ino != info.st_ino or opened.st_uid != info.st_uid):
+                    raise ArchitectureError("publication-root-unsafe", f"publication cache changed before privacy hardening: {normalized}")
+                if stat.S_IMODE(opened.st_mode) != 0o700:
+                    os.fchmod(fd, 0o700)
+                hardened = os.fstat(fd)
+                if (stat.S_IMODE(hardened.st_mode) != 0o700 or hardened.st_dev != opened.st_dev or
+                        hardened.st_ino != opened.st_ino or hardened.st_uid != opened.st_uid):
+                    raise ArchitectureError("publication-root-unsafe", f"publication cache privacy hardening failed: {normalized}")
+                live = os.lstat(current)
+                if (stat.S_ISLNK(live.st_mode) or live.st_dev != hardened.st_dev or
+                        live.st_ino != hardened.st_ino or live.st_uid != hardened.st_uid):
+                    raise ArchitectureError("publication-root-unsafe", f"publication cache changed after privacy hardening: {normalized}")
+            finally:
+                if fd is not None:
+                    os.close(fd)
     return current
 
 

@@ -24,8 +24,8 @@ but never changes a product automatically.
    CHECKER reads it back from the artifact, while the sync tool re-derives both
    sides with the same generator — no second copy of the rules anywhere. It must skip everything per-product (`project-config.md`, the four
    task columns + evidence + INDEX.json, `.cache/`, generated
-   `figma/project-adapters.json`, populated figma/api-contract snapshots,
-   secrets, `.arch-map.json`) or a pristine copy reports red on day
+   `figma/project-adapters.json`, populated api-contract snapshots, secrets,
+   `.arch-map.json`) or a pristine copy reports red on day
    one and the sensor gets ignored. Keep it in lockstep with the root
    `.gitignore` + launch.md Step 2.5.
 3. **An absent manifest is an explicit `unstamped copy` verdict** — the checker

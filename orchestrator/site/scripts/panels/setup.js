@@ -124,7 +124,7 @@ import { reviewerErrorMessage } from '../reviewer-errors.js';
     '\n' +
     INSTALL_SYMLINK +
     '\n' +
-    '\nThen verify: ls .claude/skills/ should list the 11 skill directories, each with SKILL.md + references/.\n' +
+    '\nThen verify with `bash orchestrator/skills/checks/install-sync.sh .`; it checks all 11 skills, references, frozen contracts, the queue command, and launch configuration.\n' +
     '\nThen wire the screenshot-gate enforcement (install-skills.sh does this automatically — run by hand only if skipped):\n' +
     '\n' +
     'git config core.hooksPath orchestrator/skills/checks/hooks';
@@ -337,7 +337,7 @@ import { reviewerErrorMessage } from '../reviewer-errors.js';
       '',
       '## 2. Write the project config',
       '',
-      'Use the Write tool to create the file `orchestrator/project-config.md` with exactly the content in the fenced block below. If the file already exists, read it first, then overwrite. Write the block verbatim — do not modify the YAML or the body, and do not add commentary inside the file.',
+      'If `orchestrator/project-config.md` is absent, create it with exactly the fenced block below. If it already exists, read it first and replace only its opening YAML frontmatter (the first `---` block) with the fenced block\'s frontmatter; preserve every byte after the existing closing `---`, including product-specific notes. Never overwrite or normalize the existing Markdown body.',
       '',
       '```markdown',
       content,
@@ -351,7 +351,7 @@ import { reviewerErrorMessage } from '../reviewer-errors.js';
       INSTALL_SYMLINK,
       '```',
       '',
-      'Verify with `ls .claude/skills/` — expect the 11 skill directories, each with SKILL.md + references/.',
+      'Verify with `bash orchestrator/skills/checks/install-sync.sh .` — it must confirm all 11 skills, references, frozen contracts, the queue command, and launch configuration.',
       '',
       'Report `Bootstrap setup complete` once all three steps succeed.'
     ].join('\n');

@@ -165,7 +165,7 @@ function persist(job) {
   );
   if (!result || !result.ok) {
     var error = new Error('architecture job report could not be persisted');
-    error.code = 'architecture-publication-invalid';
+    error.code = 'architecture-job-storage-unavailable';
     throw error;
   }
 }
@@ -174,8 +174,32 @@ function notify(job) {
 }
 function phase(job, value) {
   job.phase = value;
-  try { persist(job); } catch (ignore) {}
+  persist(job);
   notify(job);
+}
+function terminalFailure(job, code) {
+  job.state = 'failed';
+  job.phase = 'failed';
+  job.finishedAt = terminalInstant(job.startedAt);
+  job.error = { code: code };
+  job.structuralHash = null;
+  job.generatedAtRevision = null;
+  try {
+    persist(job);
+    return true;
+  } catch (error) {
+    if (code !== 'architecture-job-storage-unavailable') {
+      job.error = { code: 'architecture-job-storage-unavailable' };
+      try {
+        persist(job);
+      } catch (retryError) {
+        console.error('[site] architecture job report storage is unavailable');
+      }
+    } else {
+      console.error('[site] architecture job report storage is unavailable');
+    }
+    return false;
+  }
 }
 function processGroupGone(child) {
   if (!child || !child.pid) return true;
@@ -257,12 +281,10 @@ function finish(job, code) {
     }
     job.phase = job.state === 'succeeded' ? 'completed' : 'failed';
     job.finishedAt = terminalInstant(job.startedAt);
-    try { persist(job); } catch (reportError) {
-      job.state = 'failed';
-      job.phase = 'failed';
-      job.error = { code: 'architecture-publication-invalid' };
-      job.structuralHash = null;
-      job.generatedAtRevision = null;
+    try {
+      persist(job);
+    } catch (reportError) {
+      terminalFailure(job, 'architecture-job-storage-unavailable');
     }
     notify(job);
     if (job.state === 'succeeded') {
@@ -345,7 +367,11 @@ function spawn(job) {
   });
   child.on('error', function () { finish(job, 1); });
   child.on('close', function (code) {
-    phase(job, 'validating-publication');
+    try {
+      phase(job, 'validating-publication');
+    } catch (error) {
+      job.error = { code: 'architecture-job-storage-unavailable' };
+    }
     finish(job, Number.isInteger(code) ? code : 1);
   });
 }
@@ -397,7 +423,7 @@ function start(request) {
   try { persist(job); } catch (error) {
     activeJobId = null;
     delete jobs[job.id];
-    return { ok: false, status: 503, error: 'architecture-publication-invalid' };
+    return { ok: false, status: 503, error: 'architecture-job-storage-unavailable' };
   }
   notify(job);
   var lease = finalizations.beginMutation({
@@ -408,18 +434,27 @@ function start(request) {
     requireSoleWriter: true
   });
   if (!lease.ok) {
-    job.state = 'failed';
-    job.phase = 'failed';
-    job.finishedAt = terminalInstant(job.startedAt);
-    job.error = { code: 'architecture-writer-unavailable' };
     activeJobId = null;
-    try { persist(job); } catch (ignore) {}
+    if (!terminalFailure(job, 'architecture-writer-unavailable')) {
+      return { ok: false, status: 503, error: 'architecture-job-storage-unavailable',
+        job: publicJob(job) };
+    }
     notify(job);
     return { ok: false, status: 409, error: 'architecture-writer-unavailable',
       job: publicJob(job) };
   }
   job.lease = lease.handle;
-  spawn(job);
+  try {
+    spawn(job);
+  } catch (error) {
+    activeJobId = null;
+    finalizations.endMutation(job.lease);
+    job.lease = null;
+    terminalFailure(job, 'architecture-job-storage-unavailable');
+    notify(job);
+    return { ok: false, status: 503, error: 'architecture-job-storage-unavailable',
+      job: publicJob(job) };
+  }
   return { ok: true, status: 202, replayed: false, job: publicJob(job) };
 }
 function get(jobId) {
@@ -438,29 +473,37 @@ function init(options) {
   // Reports are process-owned. A queued/running report left after restart is
   // marked interrupted; the durable writer lease remains the authority for
   // any still-live detached child.
-  var listed;
-  try { listed = fileGuards.boundedDirectoryNamesUnder(paths.PROJECT_ROOT, JOB_DIR, JOB_SCAN_MAX); }
-  catch (error) { listed = { ok: false, names: [] }; }
-  if (!listed || !listed.ok) return Promise.resolve();
-  (listed.names || []).filter(function (name) { return /^archjob-[a-f0-9]{32}\.json$/.test(name); })
-    .forEach(function (name) {
+  return Promise.resolve().then(function () {
+    var listed = fileGuards.boundedDirectoryNamesUnder(
+      paths.PROJECT_ROOT, JOB_DIR, JOB_SCAN_MAX
+    );
+    if (!listed || !listed.ok) {
+      throw Object.assign(new Error('architecture job report directory is unavailable'), {
+        code: 'architecture-job-storage-unavailable'
+      });
+    }
+    (listed.names || []).filter(function (name) {
+      return /^archjob-[a-f0-9]{32}\.json$/.test(name);
+    }).forEach(function (name) {
       var jobId = name.slice(0, -5);
       var value = get(jobId);
       if (!value || value.finishedAt ||
           ['queued', 'running'].indexOf(value.state) < 0) return;
-      if (!value.finishedAt) {
-        var recovered = {
-          id: value.id, state: 'interrupted', phase: 'failed', reason: value.reason,
-          expectedSourceRevision: value.expectedSourceRevision, startedAt: value.startedAt,
-          finishedAt: terminalInstant(value.startedAt), structuralHash: null,
-          generatedAtRevision: null, error: { code: 'architecture-job-interrupted' }
-        };
-        jobs[jobId] = recovered;
-        try { persist(recovered); } catch (ignore) {}
-      }
+      var recovered = {
+        id: value.id, state: 'interrupted', phase: 'failed', reason: value.reason,
+        expectedSourceRevision: value.expectedSourceRevision, startedAt: value.startedAt,
+        finishedAt: terminalInstant(value.startedAt), structuralHash: null,
+        generatedAtRevision: null, error: { code: 'architecture-job-interrupted' }
+      };
+      persist(recovered);
+      jobs[jobId] = recovered;
     });
-  pruneReports();
-  return Promise.resolve();
+    if (!pruneReports()) {
+      throw Object.assign(new Error('architecture job report pruning failed'), {
+        code: 'architecture-job-storage-unavailable'
+      });
+    }
+  });
 }
 function killAll() {
   Object.keys(children).forEach(function (jobId) {

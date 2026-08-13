@@ -98,6 +98,7 @@ androidApp/release/
 
 /build-logic/convention/bin/
 
+# BEGIN ORCHESTRATOR RUNTIME IGNORE CONTRACT
 # Orchestrator site + Figma + api-contract tooling — local secrets + runtime artifacts (never commit)
 .claude/settings.local.json
 node_modules/
@@ -111,3 +112,6 @@ orchestrator/.cache/
 orchestrator/tasks/todo/.finalize-*.ship
 orchestrator/tasks/todo/.finalize-*.ship.tmp.*
 orchestrator/tasks/todo/.finalize-*.detach.md
+__pycache__/
+*.pyc
+# END ORCHESTRATOR RUNTIME IGNORE CONTRACT

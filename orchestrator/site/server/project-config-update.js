@@ -134,7 +134,7 @@ function read() {
       return {
         ok: true, revision: null, figmaLibraryUrl: null, figmaFileKey: null,
         figmaFieldState: 'missing', hasFigmaField: false,
-        productPackage: null, figmaEnabled: false,
+        productPackage: null, figmaEnabled: false, figmaEnabledState: 'missing',
         codexEnabled: null, codexFieldState: 'missing', hasCodexField: false
       };
     }
@@ -158,6 +158,8 @@ function read() {
       /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+$/.test(rawPackage)
       ? rawPackage : null;
     var rawFigmaEnabled = figmaEnabledRows.length ? figmaEnabledRows[0].value.trim() : null;
+    var figmaEnabledState = rawFigmaEnabled === 'true' || rawFigmaEnabled === 'false'
+      ? 'selected' : (!rawFigmaEnabled || /^<[^>]+>$/.test(rawFigmaEnabled) ? 'missing' : 'invalid');
     var rawCodex = codexRows.length ? codexRows[0].value.trim() : null;
     var codexEnabled = validateCodexEnabled(rawCodex);
     var codexFieldState = codexEnabled ? 'selected' : (!rawCodex || /^<[^>]+>$/.test(rawCodex) ? 'missing' : 'invalid');
@@ -169,7 +171,8 @@ function read() {
       figmaFieldState: figmaFieldState,
       hasFigmaField: figmaRows.length === 1,
       productPackage: productPackage,
-      figmaEnabled: rawFigmaEnabled === 'true',
+      figmaEnabled: figmaEnabledState === 'selected' && rawFigmaEnabled === 'true',
+      figmaEnabledState: figmaEnabledState,
       codexEnabled: codexEnabled,
       codexFieldState: codexFieldState,
       hasCodexField: codexRows.length === 1

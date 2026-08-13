@@ -5,7 +5,6 @@ var state = require('./design-component-state');
 
 module.exports = freshness.create({
   capability: 'components',
-  analysisSchemaVersion: 2,
   state: state,
   indexRole: 'project-component-analysis-index',
   generationError: 'COMPONENT_GENERATION_RESYNC_REQUIRED',

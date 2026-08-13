@@ -284,7 +284,7 @@ function sendAnswer() {
 }
 
 function build() {
-  var overlay = el('div', { class: 'terminal' });
+  var overlay = el('div', { class: 'terminal', hidden: true });
   var panel = el('div', { class: 'terminal__panel', attrs: { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'terminal-title' } });
 
   var head = el('div', { class: 'terminal__head' });
@@ -309,9 +309,9 @@ function build() {
   panel.appendChild(body);
 
   var foot = el('div', { class: 'terminal__foot' });
-  var input = el('input', { type: 'text', class: 'input terminal__input', maxLength: 60000, attrs: { placeholder: t('setup.console.answerPlaceholder'), spellcheck: 'false', 'aria-label': t('setup.console.answerPlaceholder') } });
+  var input = el('input', { type: 'text', class: 'input terminal__input', maxLength: 60000, hidden: true, disabled: true, attrs: { placeholder: t('setup.console.answerPlaceholder'), spellcheck: 'false', 'aria-label': t('setup.console.answerPlaceholder') } });
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sendAnswer(); } else if (e.key === 'Escape') { e.preventDefault(); close(); } });
-  var sendBtn = el('button', { type: 'button', class: 'btn btn--primary', text: t('setup.console.send') });
+  var sendBtn = el('button', { type: 'button', class: 'btn btn--primary', text: t('setup.console.send'), hidden: true, disabled: true });
   sendBtn.addEventListener('click', sendAnswer);
   var stopBtn = el('button', { type: 'button', class: 'btn btn--danger', text: t('setup.console.stop') });
   stopBtn.addEventListener('click', function () {

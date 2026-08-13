@@ -21,9 +21,9 @@ guarded by `orchestrator/skills/checks/` and `orchestrator/lint.sh`.
 | `acceptance-tracer-report` | drift | the `validation-gates` skill | FROZEN ✓ |
 | `reviewer-output` | drift | README + codex/internal-reviewer | FROZEN ✓ |
 | `launch-sequence` | drift | `launch.md` (Step 0–14 + half-steps) | FROZEN ✓ |
-| `agents/<agent>.md` ×40 | roster | frozen per-role capability contracts | FROZEN ✓ |
+| `agents/<agent>.md` ×39 | roster | frozen per-role capability contracts | FROZEN ✓ |
 
-The skills cite the 11 versioned contracts and 40 per-role records by name. The
+The skills cite the frozen contracts and 39 per-role records by name. The
 guard surface is the skill gate suite plus `orchestrator/lint.sh`.
 
 `outcome-shape.json` is different in kind: it is the one LIVE machine-read data

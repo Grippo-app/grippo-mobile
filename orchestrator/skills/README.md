@@ -8,8 +8,9 @@ workflow — they are the sole runtime surface. The runtime invokes the installe
 skills directly. The live config is
 `orchestrator/project-config.md`; lint is `orchestrator/lint.sh` (9 checks); the
 gate layer is `checks/` (`run-all.sh`, 14 gates). Deploy with
-`install-skills.sh <root>` → `.claude/skills/`. Frozen output schemas the skills
-cite live in `orchestrator/contracts/*.md` + `contracts/agents/*.md`.
+`install-skills.sh <root>` → `.claude/skills/`, `.claude/contracts/`,
+`.claude/commands/serve-queue.md`, and `.claude/launch.json`. Frozen output
+schemas the skills cite live in `orchestrator/contracts/`.
 
 The 11 self-contained skills here (+ `implement-figma` at `figma/skill/`) are the
 template's runtime architecture surface. The `_index/` manifests and the `checks/`
@@ -19,9 +20,11 @@ gate suite keep them coherent and deploy-ready.
 
 ```
 <skill>/SKILL.md + references/**   each of the 11 self-contained skills (rules + workflow)
-install-skills.sh                  deploy: installs the 11 skills into a target .claude/skills/
+install-skills.sh                  deploy: installs the 11 skills plus every manifest-owned .claude file
 _index/                            manifests + measurement surface
-  install-manifest.json            the deployable skill roster (11 installed + implement-figma external)
+  install-manifest.json            the deployable skill roster and hashed installed-file surface
+  validate-install-manifest.py     fail-closed path/hash/inventory check run before installer mutations
+  install-surfaces/                canonical queue command + launch configuration
   capabilities.json                operation → skill entrypoint (thin adapter)
   docs-map.json                    normative doc surfaces the gates check
   prompt-surfaces.json             executable prompt factories the site dispatches

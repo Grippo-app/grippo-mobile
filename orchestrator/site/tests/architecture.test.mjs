@@ -505,6 +505,146 @@ try {
   assert.equal(generatedJob.state, 'succeeded', JSON.stringify(generatedJob))
   assert.match(generatedJob.structuralHash, /^sha256:[a-f0-9]{64}$/)
   assert.equal(arch.readValidated().map.structuralHash, generatedJob.structuralHash)
+
+  const fileGuards = require('../server/file-guards.js')
+  const finalizations = require('../server/finalizations.js')
+  const atomicReplace = fileGuards.atomicReplaceRegularFileResult
+  fileGuards.atomicReplaceRegularFileResult = function () {
+    return { ok: false, error: 'injected-storage-failure' }
+  }
+  let initialStorageFailure
+  try {
+    initialStorageFailure = generation.start({
+      expectedSourceRevision: overview.generatedAtRevision,
+      reason: 'manual',
+    })
+  } finally {
+    fileGuards.atomicReplaceRegularFileResult = atomicReplace
+  }
+  assert.equal(initialStorageFailure.ok, false)
+  assert.equal(initialStorageFailure.status, 503)
+  assert.equal(initialStorageFailure.error, 'architecture-job-storage-unavailable')
+
+  let failedAnalyzingWrite = false
+  fileGuards.atomicReplaceRegularFileResult = function (...args) {
+    const report = JSON.parse(Buffer.from(args[3]).toString('utf8'))
+    if (!failedAnalyzingWrite && report.phase === 'analyzing') {
+      failedAnalyzingWrite = true
+      return { ok: false, error: 'injected-storage-failure' }
+    }
+    return atomicReplace.apply(this, args)
+  }
+  let phaseStorageFailure
+  try {
+    phaseStorageFailure = generation.start({
+      expectedSourceRevision: overview.generatedAtRevision,
+      reason: 'manual',
+    })
+  } finally {
+    fileGuards.atomicReplaceRegularFileResult = atomicReplace
+  }
+  assert.equal(failedAnalyzingWrite, true)
+  assert.equal(phaseStorageFailure.ok, false)
+  assert.equal(phaseStorageFailure.status, 503)
+  assert.equal(phaseStorageFailure.error, 'architecture-job-storage-unavailable')
+  assert.equal(phaseStorageFailure.job.state, 'failed')
+  assert.equal(phaseStorageFailure.job.error.code, 'architecture-job-storage-unavailable')
+
+  const beginMutation = finalizations.beginMutation
+  finalizations.beginMutation = function () {
+    return { ok: false, error: 'injected-writer-unavailable' }
+  }
+  let failedWriterReportWrite = false
+  fileGuards.atomicReplaceRegularFileResult = function (...args) {
+    const report = JSON.parse(Buffer.from(args[3]).toString('utf8'))
+    if (!failedWriterReportWrite &&
+        report.error && report.error.code === 'architecture-writer-unavailable') {
+      failedWriterReportWrite = true
+      return { ok: false, error: 'injected-storage-failure' }
+    }
+    return atomicReplace.apply(this, args)
+  }
+  let writerReportStorageFailure
+  try {
+    writerReportStorageFailure = generation.start({
+      expectedSourceRevision: overview.generatedAtRevision,
+      reason: 'manual',
+    })
+  } finally {
+    fileGuards.atomicReplaceRegularFileResult = atomicReplace
+    finalizations.beginMutation = beginMutation
+  }
+  assert.equal(failedWriterReportWrite, true)
+  assert.equal(writerReportStorageFailure.ok, false)
+  assert.equal(writerReportStorageFailure.status, 503)
+  assert.equal(writerReportStorageFailure.error, 'architecture-job-storage-unavailable')
+  assert.equal(writerReportStorageFailure.job.error.code,
+    'architecture-job-storage-unavailable')
+
+  let failedValidationWrite = false
+  fileGuards.atomicReplaceRegularFileResult = function (...args) {
+    const report = JSON.parse(Buffer.from(args[3]).toString('utf8'))
+    if (!failedValidationWrite && report.phase === 'validating-publication') {
+      failedValidationWrite = true
+      return { ok: false, error: 'injected-storage-failure' }
+    }
+    return atomicReplace.apply(this, args)
+  }
+  let validationStorageStart
+  try {
+    validationStorageStart = generation.start({
+      expectedSourceRevision: overview.generatedAtRevision,
+      reason: 'manual',
+    })
+    assert.equal(validationStorageStart.ok, true, JSON.stringify(validationStorageStart))
+    let validationStorageJob = validationStorageStart.job
+    const validationDeadline = Date.now() + 15_000
+    while (validationStorageJob && ['queued', 'running'].includes(validationStorageJob.state) &&
+        Date.now() < validationDeadline) {
+      await new Promise(resolvePromise => setTimeout(resolvePromise, 50))
+      validationStorageJob = generation.get(validationStorageJob.id)
+    }
+    assert.equal(failedValidationWrite, true)
+    assert.equal(validationStorageJob.state, 'failed', JSON.stringify(validationStorageJob))
+    assert.equal(validationStorageJob.error.code, 'architecture-job-storage-unavailable')
+  } finally {
+    fileGuards.atomicReplaceRegularFileResult = atomicReplace
+  }
+
+  const interruptedId = `archjob-${'f'.repeat(32)}`
+  const interruptedFile = join(FIXTURE, 'orchestrator', '.cache', 'architecture', 'jobs',
+    `${interruptedId}.json`)
+  writeFileSync(interruptedFile, JSON.stringify({
+    schemaVersion: 1,
+    id: interruptedId,
+    state: 'queued',
+    phase: 'acquiring-writer',
+    reason: 'manual',
+    expectedSourceRevision: overview.generatedAtRevision,
+    startedAt: new Date().toISOString(),
+    finishedAt: null,
+    structuralHash: null,
+    generatedAtRevision: null,
+    error: null,
+  }, null, 2) + '\n')
+  let failedRecoveryWrite = false
+  fileGuards.atomicReplaceRegularFileResult = function (...args) {
+    const report = JSON.parse(Buffer.from(args[3]).toString('utf8'))
+    if (report.id === interruptedId && report.state === 'interrupted') {
+      failedRecoveryWrite = true
+      return { ok: false, error: 'injected-storage-failure' }
+    }
+    return atomicReplace.apply(this, args)
+  }
+  try {
+    await assert.rejects(generation.init(), error =>
+      error && error.code === 'architecture-job-storage-unavailable')
+  } finally {
+    fileGuards.atomicReplaceRegularFileResult = atomicReplace
+    rmSync(interruptedFile, { force: true })
+  }
+  assert.equal(failedRecoveryWrite, true)
+
   const futureInstant = '2999-01-01T00:00:00.000Z'
   assert.equal(generation._test.terminalInstant(futureInstant), futureInstant)
   const jobDirectory = join(FIXTURE, 'orchestrator', '.cache', 'architecture', 'jobs')

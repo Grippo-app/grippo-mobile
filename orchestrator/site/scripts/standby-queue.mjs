@@ -24,8 +24,7 @@ const TASK_LOCK = path.join(HERE, '..', '..', 'tasks', 'task-lock.mjs');
 const REQUEST_MAX = 256 * 1024;
 const DIRECTORY_MAX = 10_000;
 const RUNNER_MARKER_MAX = 4096;
-const RUNNER_FRESH_MS = 30_000;
-const RUNNER_FUTURE_SKEW_MS = 5_000;
+const PASS_FUTURE_SKEW_MS = 5_000;
 const PASS_FRESH_MS = 30_000;
 const HANDLE_RE = /^[a-f0-9]{64}$/;
 const PASS_TOKEN_RE = /^[a-f0-9]{64}$/;
@@ -366,26 +365,16 @@ function runnerMarkerStatus(directories, now = Date.now()) {
   let value = null;
   try { value = JSON.parse(bounded.bytes.toString('utf8')); } catch {}
   const conforming = value !== null && typeof value === 'object' &&
-    exactKeys(value, ['at', 'pid', 'processStartId', 'projectRoot']) && exactUtc(value.at) &&
+    exactKeys(value, ['version', 'at', 'pid', 'processStartId', 'projectRoot']) && value.version === 1 && exactUtc(value.at) &&
     value.projectRoot === paths.PROJECT_ROOT &&
     Number.isSafeInteger(value.pid) && value.pid > 0 &&
-    (value.processStartId === null || (typeof value.processStartId === 'string' &&
-      writerLeases.PROCESS_START_ID_RE.test(value.processStartId)));
-  if (!conforming) {
-    // Non-conforming CONTENT: a torn mid-refresh read, a pre-processStartId
-    // legacy marker, or foreign garbage. A live runner rewrites the file every
-    // tick, so fresh mtime is fail-closed 'unknown', while stale mtime proves
-    // no live runner refreshes it — 'stale', so a runner-dormant deployment is
-    // never wedged forever by a dead runner's leftover bytes. Structural
-    // violations (missing, symlink, extra hardlink, wrong mode) above stay
-    // hard 'unknown' and never age out.
-    const mtimeMs = Number(bounded.stat.mtimeMs);
-    if (!Number.isFinite(mtimeMs)) return 'unknown';
-    return now - mtimeMs > RUNNER_FRESH_MS ? 'stale' : 'unknown';
-  }
-  const age = now - Date.parse(value.at);
-  if (age < -RUNNER_FUTURE_SKEW_MS) return 'unknown';
-  return age <= RUNNER_FRESH_MS ? 'active' : 'stale';
+    typeof value.processStartId === 'string' &&
+    writerLeases.PROCESS_START_ID_RE.test(value.processStartId);
+  if (!conforming) return 'unknown';
+  const identity = writerLeases.processIdentityState(value.pid, value.processStartId);
+  if (identity === 'match') return 'active';
+  if (identity === 'dead' || identity === 'reused') return 'stale';
+  return 'unknown';
 }
 
 function passTokenHash(passToken) {
@@ -440,7 +429,7 @@ function consumePassToken(directories, passToken, now = Date.now()) {
       !SHA_RE.test(String(value.passTokenHash || '')) ||
       !bounded.bytes.equals(heartbeatBytes(value))) fail('pass-token-invalid');
   const age = now - Date.parse(value.at);
-  if (age < -RUNNER_FUTURE_SKEW_MS || age > PASS_FRESH_MS) fail('pass-token-expired');
+  if (age < -PASS_FUTURE_SKEW_MS || age > PASS_FRESH_MS) fail('pass-token-expired');
   const expectedHash = Buffer.from(value.passTokenHash, 'utf8');
   const suppliedHash = Buffer.from(passTokenHash(passToken), 'utf8');
   if (expectedHash.length !== suppliedHash.length || !crypto.timingSafeEqual(expectedHash, suppliedHash)) {

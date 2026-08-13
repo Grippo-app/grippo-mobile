@@ -58,7 +58,15 @@ The architecture rules and the agent workforce are packaged as **11 self-contain
 bash orchestrator/skills/install-skills.sh "$(pwd)"
 ```
 
-This installs the **11 core skills** into `.claude/skills/<name>/`: `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, and `launch-readiness`. The 12th skill, `implement-figma`, lives in the Figma sidecar and is **not** installed by this script — it is deployed separately (copy/symlink `orchestrator/figma/skill/SKILL.md` → `.claude/skills/implement-figma/`, as launch Step 6.5 does). After running the script, verify with `ls .claude/skills/ | wc -l` → **11** (or **12** once `implement-figma` is added).
+This installs the **11 core skills** into `.claude/skills/<name>/`, the frozen
+contracts into `.claude/contracts/`, and the manifest-owned
+`.claude/commands/serve-queue.md` + `.claude/launch.json` files. The 12th skill,
+`implement-figma`, lives in the Figma sidecar and is **not** installed by this
+script — it is deployed separately (copy/symlink
+`orchestrator/figma/skill/SKILL.md` → `.claude/skills/implement-figma/`, as
+launch Step 6.5 does). After running the script, `install-sync.sh` verifies the
+complete deployed surface (11 skills, all references/contracts, command, and
+launch file); there are **12** skills only after `implement-figma` is added.
 
 ## Task workflow
 

@@ -2,7 +2,7 @@
 
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync as fsUtimes, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, utimesSync as fsUtimes, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -240,7 +240,7 @@ try {
     assert.equal(existsSync(join(dirs.runs, '.runner-alive')), true)
   })
 
-  check('a fresh foreign live marker stands the runner down; a dead owner is taken over', () => {
+  check('an exact foreign live marker stands the runner down; a dead owner is taken over', () => {
     const writerLeases = require('../../tasks/writer-leases.cjs')
     // Release our own marker fd first (logged-out idle path withdraws it).
     cliStatus = { installed: true, loggedIn: false, authProblem: null }
@@ -253,7 +253,7 @@ try {
     try { foreignStartId = writerLeases.captureProcessStartId(process.ppid) } catch {}
     const marker = join(dirs.runs, '.runner-alive')
     writeFileSync(marker, JSON.stringify({
-      at: new Date().toISOString(), pid: process.ppid,
+      version: 1, at: new Date().toISOString(), pid: process.ppid,
       processStartId: foreignStartId, projectRoot: root
     }) + '\n', { mode: 0o600 })
     runner.tick()
@@ -261,9 +261,8 @@ try {
     assert.equal(existsSync(join(dirs.requests, id + '.json')), true)
     assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.ppid,
       'a live foreign marker is never stolen')
-    // Unproven identity (no processStartId → 'pid-live') plus a STALE file is
-    // taken over: a live runner refreshes the marker every tick, so a stale
-    // mtime proves the writer is gone and the live pid is a bystander/reuse.
+    // A previous/unversioned shape never ages into takeover authority. The
+    // operator must remove bytes whose exact owner identity cannot be proved.
     writeFileSync(marker, JSON.stringify({
       at: new Date(Date.now() - 120000).toISOString(), pid: process.ppid,
       processStartId: null, projectRoot: root
@@ -271,25 +270,54 @@ try {
     const aged = new Date(Date.now() - 120000)
     fsUtimes(marker, aged, aged)
     runner.tick()
-    assert.equal(starts.length, 5, 'stale unproven-identity marker is taken over and the queue drains')
-    assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.pid)
-    starts[4].meta.onPromptSettled(true, null)
-    // A provably dead owner is replaced even while FRESH.
+    assert.equal(starts.length, 4, 'non-conforming marker remains fail-closed regardless of age')
+    assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.ppid)
+    // Explicit recovery removes the unprovable marker. A conforming marker
+    // with a provably dead owner is then replaced even while fresh.
+    unlinkSync(marker)
     cliStatus = { installed: true, loggedIn: false, authProblem: null }
-    runner.tick()                                    // idle logged-out → withdraw own marker
+    runner.tick()
     assert.equal(existsSync(marker), false)
     cliStatus = { installed: true, loggedIn: true, authProblem: null }
     const nextId = '1700000000307-deadowner'
     enqueue(nextId, 'TASK_7_dead_owner')
     const dead = cp.spawnSync(process.execPath, ['-e', ''])
     writeFileSync(marker, JSON.stringify({
-      at: new Date().toISOString(), pid: dead.pid,
-      processStartId: null, projectRoot: root
+      version: 1, at: new Date().toISOString(), pid: dead.pid,
+      processStartId: writerLeases.captureProcessStartId(process.pid), projectRoot: root
     }) + '\n', { mode: 0o600 })
     runner.tick()
-    assert.equal(starts.length, 6, 'dead-owner marker is taken over and the queue drains')
+    assert.equal(starts.length, 5, 'dead-owner marker is taken over and the queue drains')
     assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.pid)
-    starts[5].meta.onPromptSettled(true, null)
+    assert.equal(JSON.parse(readFileSync(marker, 'utf8')).version, 1)
+    starts[4].meta.onPromptSettled(true, null)
+  })
+
+  check('non-conforming runner-marker content is never parsed as an exact live owner', () => {
+    const writerLeases = require('../../tasks/writer-leases.cjs')
+    const marker = join(dirs.runs, '.runner-alive')
+    // Drop our exact descriptor-backed marker before installing foreign bytes.
+    cliStatus = { installed: true, loggedIn: false, authProblem: null }
+    runner.tick()
+    assert.equal(existsSync(marker), false)
+    cliStatus = { installed: true, loggedIn: true, authProblem: null }
+    const id = '1700000000308-malformedowner'
+    enqueue(id, 'TASK_10_malformed_owner')
+    let foreignStartId = null
+    try { foreignStartId = writerLeases.captureProcessStartId(process.ppid) } catch {}
+    // The extra key makes this content non-conforming. Neither source fields
+    // nor age can turn it into an owner or takeover capability.
+    writeFileSync(marker, JSON.stringify({
+      version: 1, at: new Date().toISOString(), pid: process.ppid,
+      processStartId: foreignStartId, projectRoot: root, extra: true
+    }) + '\n', { mode: 0o600 })
+    runner.tick()
+    assert.equal(starts.length, 5, 'fresh non-conforming content stands the runner down')
+    const aged = new Date(Date.now() - 120000)
+    fsUtimes(marker, aged, aged)
+    runner.tick()
+    assert.equal(starts.length, 5, 'stale non-conforming content remains fail-closed')
+    assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.ppid)
   })
 
   console.log(`runner-handoff-settlement: ${checks} checks passed`)

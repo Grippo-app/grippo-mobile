@@ -76,6 +76,10 @@ const MAX_RUNTIME_STATUSES = 5000;
 const MAX_RUNTIME_FINDINGS = 2000;
 const MAX_RUNTIME_SNAPSHOT_INPUTS = 12000;
 const MAX_ARCH_OUTPUT_BYTES = 256 * 1024;
+// A bound-product scan is about 30s on the reference repository. The global
+// checker gets 50% headroom while staying below the explicit 60s API ceiling;
+// Site callers run it asynchronously and cache a settled result for 60s.
+const ARCH_CHECK_TIMEOUT_MS = 45000;
 const MAX_COMPLETED_LOCK_RELEASES_PER_STEM = 256;
 
 const RUNTIME_ROOT_FIELDS = Object.freeze([
@@ -2008,11 +2012,10 @@ function validateContent(model) {
       const parsedQuestions = parseTaskQuestions(group.todo.text);
       if (parsedQuestions.sectionCount > 0) {
         const questionsIssue = taskQuestionsIssue(parsedQuestions);
-        // Advisory on purpose: an error would fail canonical action admission
-        // and leave Drop as the only exit, including for a legacy body that
-        // merely uses the heading as prose. The rail itself already refuses to
-        // read or write a malformed section.
-        if (questionsIssue) findings.push(finding('TODO_QUESTIONS_INVALID', 'warning', stem, [group.todo.relPath],
+        // Questions is a reserved machine-owned section. A malformed instance
+        // cannot be treated as prose or admitted through the current task
+        // protocol; explicit Drop remains available as the repair operation.
+        if (questionsIssue) findings.push(finding('TODO_QUESTIONS_INVALID', 'error', stem, [group.todo.relPath],
           'Todo Questions section is not canonical.',
           'Repair or remove the question blocks through an authorized in-column edit.',
           { reason: questionsIssue }));
@@ -2430,27 +2433,35 @@ function mergeRuntimeInspection(model, options) {
   }
 }
 
-function checkArchitectureState(options = {}) {
+function architectureCheckCommand(options = {}) {
   if (options.stem) {
     const error = new Error('architecture freshness is global-only'); error.exitCode = 2; throw error;
   }
   const repoRoot = path.resolve(options.repoRoot || process.env.ORCHESTRATOR_PROJECT_ROOT || path.join(__dirname, '..', '..'));
   const script = path.resolve(options.scriptPath || path.join(__dirname, 'regen-arch.py'));
-  const rawTimeout = options.timeoutMs === undefined ? Number(process.env.TASK_STATE_ARCH_CHECK_TIMEOUT_MS || 15000) : options.timeoutMs;
-  const timeout = Number.isSafeInteger(rawTimeout) && rawTimeout >= 1000 && rawTimeout <= 60000 ? rawTimeout : 15000;
-  const child = childProcess.spawnSync(options.python || process.env.PYTHON || 'python3', [script, '--check-json'], {
+  const timeout = options.timeoutMs === undefined ? ARCH_CHECK_TIMEOUT_MS : options.timeoutMs;
+  if (!Number.isSafeInteger(timeout) || timeout < 1000 || timeout > 60000) {
+    const error = new Error('architecture freshness timeout must be between 1000 and 60000ms');
+    error.exitCode = 2;
+    throw error;
+  }
+  return {
+    command: options.python || process.env.PYTHON || 'python3',
+    args: [script, '--check-json'],
+    repoRoot,
+    spawnOptions: {
     cwd: repoRoot,
     env: Object.assign({}, process.env, { PYTHONDONTWRITEBYTECODE: '1' }),
     encoding: 'utf8',
     timeout,
     maxBuffer: MAX_ARCH_OUTPUT_BYTES
-  });
-  if (child.error || ![0, 1].includes(child.status)) {
-    throw new ContractError('architecture freshness check could not complete safely: ' +
-      String(child.error && child.error.message || child.stderr || ('exit ' + child.status)).slice(0, 300));
-  }
+    }
+  };
+}
+
+function architectureStateFromOutput(repoRoot, status, stdout) {
   let payload;
-  try { payload = JSON.parse(child.stdout); }
+  try { payload = JSON.parse(stdout); }
   catch (_) { throw new ContractError('architecture freshness check returned invalid machine output'); }
   const hashOrNull = (value) => value === null || HASH_RE.test(String(value || ''));
   const pairIsNull = payload.actualHash === null && payload.actualRevision === null;
@@ -2464,7 +2475,7 @@ function checkArchitectureState(options = {}) {
       typeof payload.fresh !== 'boolean' ||
       !hashOrNull(payload.actualHash) || !hashOrNull(payload.actualRevision) ||
       !hashOrNull(payload.expectedHash) || !hashOrNull(payload.expectedRevision) ||
-      payload.fresh !== (payload.status !== 'stale') || (payload.status === 'stale') !== (child.status === 1) ||
+      payload.fresh !== (payload.status !== 'stale') || (payload.status === 'stale') !== (status === 1) ||
       payload.path !== 'orchestrator/.arch-map.json' ||
       (payload.reason !== null && (typeof payload.reason !== 'string' || payload.reason.length > 100)) ||
       (payload.status === 'fresh' && (
@@ -2518,6 +2529,35 @@ function checkArchitectureState(options = {}) {
     expectedHash: payload.expectedHash,
     findings
   };
+}
+
+function checkArchitectureState(options = {}) {
+  const invocation = architectureCheckCommand(options);
+  const child = childProcess.spawnSync(invocation.command, invocation.args, invocation.spawnOptions);
+  if (child.error || ![0, 1].includes(child.status)) {
+    throw new ContractError('architecture freshness check could not complete safely: ' +
+      String(child.error && child.error.message || child.stderr || ('exit ' + child.status)).slice(0, 300));
+  }
+  return architectureStateFromOutput(invocation.repoRoot, child.status, child.stdout);
+}
+
+function checkArchitectureStateAsync(options = {}) {
+  let invocation;
+  try { invocation = architectureCheckCommand(options); }
+  catch (error) { return Promise.reject(error); }
+  return new Promise((resolve, reject) => {
+    childProcess.execFile(invocation.command, invocation.args, invocation.spawnOptions,
+      function (error, stdout, stderr) {
+        const status = error ? Number(error.code) : 0;
+        if ((error && ![0, 1].includes(status)) || ![0, 1].includes(status)) {
+          reject(new ContractError('architecture freshness check could not complete safely: ' +
+            String(error && error.message || stderr || ('exit ' + status)).slice(0, 300)));
+          return;
+        }
+        try { resolve(architectureStateFromOutput(invocation.repoRoot, status, stdout)); }
+        catch (contractError) { reject(contractError); }
+      });
+  });
 }
 
 function scopeFindingApplies(item, stem) {
@@ -2750,6 +2790,7 @@ function dropImpactHash(stem, sourceRevision, dependents) {
 
 module.exports = {
   VERSION,
+  INDEX_VERSION,
   STEM_RE,
   STEM_MAX,
   HASH_RE,
@@ -2792,6 +2833,7 @@ module.exports = {
   dropAdmission,
   admissionForAction,
   checkArchitectureState,
+  checkArchitectureStateAsync,
   dropImpactHash,
   deriveIndex,
   finding,

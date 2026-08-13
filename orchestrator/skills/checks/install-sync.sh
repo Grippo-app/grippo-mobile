@@ -24,7 +24,10 @@ def actual_refs(base):
     return out
 required=[s for s in man["skills"] if not s.get("externalSourceException")]
 any_required_installed=any(os.path.isfile(os.path.join(target,s["installPath"])) for s in required)
-if any_required_installed:
+files=man.get("files") or []
+any_file_installed=any(os.path.isfile(os.path.join(target,f["installPath"])) for f in files)
+install_started=any_required_installed or any_file_installed
+if install_started:
     for s in required:
         if not os.path.isfile(os.path.join(target,s["installPath"])):
             print(f"    FAIL: partial skill install: {s['folderName']} is missing"); fail=1
@@ -46,8 +49,30 @@ for s in man["skills"]:
         p=os.path.join(base,rel)
         if os.path.isfile(p) and sha(p)!=h:
             print(f"    FAIL: installed {s['folderName']}/{rel} drifts from canonical source"); fail=1
+file_checked=0
+if install_started:
+    for f in files:
+        inst=os.path.join(target,f["installPath"])
+        if not os.path.isfile(inst):
+            print(f"    FAIL: partial installed-file set: {f['installPath']} is missing"); fail=1
+            continue
+        file_checked+=1
+        if sha(inst)!=f["sourceSha256"]:
+            print(f"    FAIL: installed {f['installPath']} drifts from canonical source"); fail=1
+    contracts_root=os.path.join(target,'.claude/contracts')
+    expected_contracts={f["installPath"][len('.claude/contracts/'):] for f in files
+                        if f["installPath"].startswith('.claude/contracts/')}
+    actual_contracts=set()
+    if os.path.isdir(contracts_root):
+        for cur,dirs,names in os.walk(contracts_root):
+            for name in names:
+                actual_contracts.add(os.path.relpath(os.path.join(cur,name),contracts_root).replace(os.sep,'/'))
+    for rel in sorted(actual_contracts-expected_contracts):
+        print(f"    FAIL: installed .claude/contracts/{rel} is not in install-manifest"); fail=1
 if not fail:
-    print(f"    ok: {checked} installed skill(s) match source" if checked else
-          "    ok: no product skills installed in this checkout (deploy at launch Step 14) — nothing to drift")
+    if checked or file_checked:
+        print(f"    ok: {checked} installed skill(s) and {file_checked} installed file(s) match source")
+    else:
+        print("    ok: no product skills/files installed in this checkout (deploy at launch Step 14) — nothing to drift")
 sys.exit(fail)
 PY

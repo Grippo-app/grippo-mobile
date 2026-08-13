@@ -206,32 +206,34 @@ test('app-run HTTP surface is local, typed, bounded, and path-opaque', async () 
   assert.equal(response.body.error, 'bad-json');
 
   assert.equal((await fetch(base + '/orchestrator/.cache/runtime/app-run/index.json')).status, 403);
+  assert.equal((await fetch(base + '/.cache/runtime/app-run/index.json')).status, 403);
+  assert.equal((await fetch(base + '/figma/.account.json')).status, 403);
+  assert.equal((await fetch(base + '/figma/%2eaccount.json')).status, 403);
+  assert.equal((await fetch(base + '/figma%5c.account.json')).status, 403);
 });
 
-test('app-run schemas have feature-owned canonical paths and compatible aliases', async () => {
+test('app-run schemas have one feature-owned canonical path and no legacy aliases', async () => {
   const schemaPaths = [
     {
       current: '/site/contracts/app-run/config.schema.json',
-      aliases: ['/app-run.schema.json', '/schemas/app-run.schema.json'],
+      retiredPaths: ['/app-run.schema.json', '/schemas/app-run.schema.json'],
     },
     {
       current: '/site/contracts/app-run/job.schema.json',
-      aliases: ['/app-run-job.schema.json', '/schemas/app-run-job.schema.json'],
+      retiredPaths: ['/app-run-job.schema.json', '/schemas/app-run-job.schema.json'],
     },
     {
       current: '/site/contracts/app-run/validation-receipt.schema.json',
-      aliases: ['/app-run-validation.schema.json', '/schemas/app-run-validation.schema.json'],
+      retiredPaths: ['/app-run-validation.schema.json', '/schemas/app-run-validation.schema.json'],
     },
   ];
 
   for (const entry of schemaPaths) {
     const current = await fetch(base + entry.current);
     assert.equal(current.status, 200);
-    const expected = await current.json();
-    for (const alias of entry.aliases) {
-      const compatible = await fetch(base + alias);
-      assert.equal(compatible.status, 200, alias);
-      assert.deepEqual(await compatible.json(), expected, alias);
+    await current.json();
+    for (const retiredPath of entry.retiredPaths) {
+      assert.equal((await fetch(base + retiredPath)).status, 404, retiredPath);
     }
   }
 });

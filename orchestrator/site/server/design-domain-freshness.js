@@ -18,6 +18,7 @@ var WATCH_DEBOUNCE_MS = 2000;
 var WATCH_DIRECTORIES_MAX = 2048;
 var WATCH_ENTRIES_MAX = 20000;
 var WATCH_POLL_MS = 1000;
+var ANALYSIS_SCHEMA_VERSION = 2;
 
 function exactStat(stat) {
   return [
@@ -49,7 +50,7 @@ function create(options) {
       options.state.markProjectDirty('startup-analysis-invalid');
       return Promise.resolve({ ok: true, dirty: true, error: options.generationError });
     }
-    if (!index || index.schemaVersion !== (options.analysisSchemaVersion || 1) || !Array.isArray(index.adapters)) {
+    if (!index || index.schemaVersion !== ANALYSIS_SCHEMA_VERSION || !Array.isArray(index.adapters)) {
       options.state.markProjectDirty('startup-analysis-invalid');
       return Promise.resolve({ ok: true, dirty: true, error: options.generationError });
     }
@@ -288,4 +289,4 @@ function create(options) {
   return { ensureFresh: ensureFresh, init: init };
 }
 
-module.exports = { create: create };
+module.exports = { ANALYSIS_SCHEMA_VERSION: ANALYSIS_SCHEMA_VERSION, create: create };

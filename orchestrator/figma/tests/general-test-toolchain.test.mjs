@@ -25,7 +25,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -39,10 +39,17 @@ let checks = 0;
 function check(name, fn) { fn(); checks++; console.log(`ok ${checks} - ${name}`); }
 function read(relPath) { return readFileSync(join(ROOT, relPath), 'utf8'); }
 
-check('template mode is explicit: generated Gradle execution stays disposable', () => {
-  assert.equal(existsSync(join(ROOT, 'settings.gradle.kts')), false,
-    'the compatibility fixture must never turn the template repository into a product build');
+check('template and product callers keep generated Gradle execution disposable', () => {
+  const source = read('orchestrator/figma/tests/general-test-toolchain.test.mjs');
+  assert.doesNotMatch(source, /(?:writeFileSync|mkdirSync|rmSync)\(\s*join\(ROOT\b/,
+    'the compatibility fixture must never mutate its caller repository');
 });
+
+function assertDisposableFixture(fixture) {
+  const offset = relative(resolve(ROOT), resolve(fixture));
+  assert.ok(offset === '..' || offset.startsWith('..' + sep),
+    'generated compatibility builds must live outside the caller repository');
+}
 
 check('version catalog reference pins the exact proven stack', () => {
   const techStack = read('orchestrator/skills/platform-build-toolkit/references/tech-stack.md');
@@ -132,6 +139,7 @@ function deviceAttached(androidSdk) {
 function generatedFixture() {
   const androidSdk = resolveAndroidSdk();
   const fixture = mkdtempSync(join(tmpdir(), 'mandatory-test-stack-'));
+  assertDisposableFixture(fixture);
   const write = (relative, text) => {
     const file = join(fixture, relative);
     mkdirSync(dirname(file), { recursive: true });
@@ -441,6 +449,7 @@ check('disposable pinned-stack product executes real lanes and reuses configurat
 function roomMigrationFixture() {
   const androidSdk = resolveAndroidSdk();
   const fixture = mkdtempSync(join(tmpdir(), 'room-migration-probe-'));
+  assertDisposableFixture(fixture);
   const write = (relative, text) => {
     const file = join(fixture, relative);
     mkdirSync(dirname(file), { recursive: true });

@@ -19,6 +19,14 @@ for (const path of [dir, runsDir, creationsDir, editsDir]) mkdirSync(path, { rec
 // workspace state here previously hid obsolete persisted envelopes behind the
 // production reader and made this test depend on unrelated local cache bytes.
 process.env.ORCHESTRATOR_PROJECT_ROOT = root
+mkdirSync(join(root, 'orchestrator'), { recursive: true })
+writeFileSync(join(root, 'orchestrator', 'project-config.md'), [
+  '---',
+  'productName: Finalization Fixture',
+  'figmaEnabled: true',
+  '---',
+  ''
+].join('\n'))
 process.env.ORCHESTRATOR_FINALIZATIONS_DIR = dir
 process.env.ORCHESTRATOR_RUNS_DIR = runsDir
 process.env.ORCHESTRATOR_TASK_CREATIONS_DIR = creationsDir

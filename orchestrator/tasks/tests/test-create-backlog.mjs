@@ -394,6 +394,7 @@ await check('READY/JSON contract, exact creation, durable replay, and payload co
   assert.match(bytes.toString('utf8'), /^# TASK 1 — .+\n\n## Source\n\n- Kind: manual\n- Type: manual\n- Ref: intent-[a-f0-9]{64}\n- Fingerprint: sha256:[a-f0-9]{64}\n\n## Goal/m)
   const idx = readIndex(p)
   assert.equal(idx.version, 2)
+  assert.ok(Date.parse(idx.generatedAt) > 0, 'first task publication must replace the bootstrap INDEX sentinel')
   assert.deepEqual(idx.backlog.map(x => x.stem), [first.json.stem])
   assert.equal(idx.backlog[0].title, payload.title)
   assert.equal(idx.backlog[0].origin.kind, 'manual')

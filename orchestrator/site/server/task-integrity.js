@@ -14,11 +14,24 @@ var PUBLIC_PATHS_MAX = 20;
 var PUBLIC_TEXT_MAX = 500;
 var PUBLIC_RUNTIME_STATUSES_MAX = 500;
 var CACHE_TTL_MS = 1500;
-var ARCH_CACHE_TTL_MS = 5000;
+// 60s: the freshness probe re-parses the whole Kotlin tree (~30s wall on a real
+// product repo); a 5s TTL kept it running back-to-back on every scan tick.
+var ARCH_CACHE_TTL_MS = 60000;
 var cachedAt = 0;
 var cachedResult = null;
 var archCachedAt = 0;
 var archCachedResult = null;
+var archCheckInFlight = null;
+
+function unavailableArchitecture() {
+  return {
+    version: 1, checked: false, ok: false, status: 'unavailable', fresh: false,
+    actualHash: null, expectedHash: null,
+    findings: [{ code: 'ARCH_MAP_UNAVAILABLE', severity: 'warning', paths: [],
+      message: 'Architecture freshness could not be checked safely.',
+      recovery: 'Retry the read-only architecture check after its generator/runtime is available.' }]
+  };
+}
 
 function options(extra) {
   return Object.assign({
@@ -91,18 +104,34 @@ function validateAll(caller) {
 function architectureStateCached() {
   var at = Date.now();
   if (archCachedResult && at - archCachedAt < ARCH_CACHE_TTL_MS) return archCachedResult;
-  try { archCachedResult = core.checkArchitectureState({ repoRoot: paths.PROJECT_ROOT }); }
-  catch (error) {
-    archCachedResult = {
-      version: 1, checked: false, ok: false, status: 'unavailable', fresh: false,
-      actualHash: null, expectedHash: null,
-      findings: [{ code: 'ARCH_MAP_UNAVAILABLE', severity: 'warning', paths: [],
-        message: 'Architecture freshness could not be checked safely.',
-        recovery: 'Retry the read-only architecture check after its generator/runtime is available.' }]
-    };
+  prewarmArchitectureState();
+  return unavailableArchitecture();
+}
+
+// The architecture scan walks the product source tree and can take tens of
+// seconds. Keep it entirely off the HTTP/SSE event loop. Until an initial or
+// expired-cache prewarm settles, callers receive a strict unavailable verdict
+// rather than a guessed green state.
+function prewarmArchitectureState(force) {
+  var at = Date.now();
+  if (!force && archCachedResult && at - archCachedAt < ARCH_CACHE_TTL_MS) {
+    return Promise.resolve(archCachedResult);
   }
-  archCachedAt = at;
-  return archCachedResult;
+  if (archCheckInFlight) return archCheckInFlight;
+  archCheckInFlight = core.checkArchitectureStateAsync({ repoRoot: paths.PROJECT_ROOT })
+    .catch(function () { return unavailableArchitecture(); })
+    .then(function (result) {
+      archCachedResult = result;
+      archCachedAt = Date.now();
+      // A prior hot-path snapshot may contain the strict unavailable verdict
+      // emitted while this refresh was in flight. Retire it immediately so
+      // the settled architecture result is visible on the next state read.
+      cachedResult = null;
+      cachedAt = 0;
+      return result;
+    })
+    .finally(function () { archCheckInFlight = null; });
+  return archCheckInFlight;
 }
 
 function inspectDrop(stem) {
@@ -147,7 +176,11 @@ function admissionForAction(result, stem, options) {
 // never allowed to reuse this result.
 function validateAllCached() {
   var at = Date.now();
-  if (cachedResult && at - cachedAt < CACHE_TTL_MS) return cachedResult;
+  var architectureStillFresh = archCachedResult &&
+    at - archCachedAt < ARCH_CACHE_TTL_MS;
+  if (cachedResult && at - cachedAt < CACHE_TTL_MS && architectureStillFresh) {
+    return cachedResult;
+  }
   cachedResult = validateAll();
   cachedAt = at;
   return cachedResult;
@@ -306,6 +339,7 @@ module.exports = {
   validateAction: validateAction,
   validateAll: validateAll,
   validateAllCached: validateAllCached,
+  prewarmArchitectureState: prewarmArchitectureState,
   inspectDrop: inspectDrop,
   actionAdmission: actionAdmission,
   dropAdmission: dropAdmission,

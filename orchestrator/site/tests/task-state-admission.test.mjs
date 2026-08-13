@@ -21,6 +21,14 @@ for (const dir of ['locks', 'requests', 'request-reservations', 'runs', 'superse
   mkdirSync(join(cache, dir), { recursive: true })
 }
 if (process.platform !== 'win32') chmodSync(join(cache, 'intake'), 0o700)
+// This fixture exercises the enabled Figma session rail explicitly. Never
+// inherit the caller product's permanent feature-gate choice.
+writeFileSync(join(root, 'orchestrator', 'project-config.md'), [
+  '---',
+  'figmaEnabled: true',
+  '---',
+  '',
+].join('\n'))
 
 const stem = 'TASK_1_queue_fencing'
 const taskFile = join(tasks, 'backlog', stem + '.md')

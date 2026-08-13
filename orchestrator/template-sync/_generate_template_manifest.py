@@ -46,6 +46,8 @@ MANIFEST_REL = os.path.join("orchestrator", "template-manifest.json")
 # All paths are product-root-relative with forward slashes.
 EXCLUDES = {
     # Whole per-product / runtime subtrees (dir prefixes, trailing slash).
+    # Curated figma/tokens source and the manifests/.gitkeep placeholder are
+    # template-owned; all generated Figma runtime data lives under .cache/.
     "prefixes": [
         "orchestrator/.cache/",
         "orchestrator/tasks/backlog/",
@@ -53,8 +55,6 @@ EXCLUDES = {
         "orchestrator/tasks/todo/",
         "orchestrator/tasks/done/",
         "orchestrator/tasks/evidence/",
-        "orchestrator/figma/tokens/",
-        "orchestrator/figma/manifests/",
         "orchestrator/api-contract/spec/",
         "orchestrator/api-contract/manifests/",
         "orchestrator/api-contract/.secrets/",

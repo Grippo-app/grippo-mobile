@@ -32,6 +32,7 @@ var figmaIntegrationMod = require('./figma-integration');
 var figmaTestJobMod = require('./figma-test-job');
 var figmaSyncMod = require('./figma-sync');
 var figmaTaskPublicationMod = require('./figma-task-publication');
+var figmaFeatureGateMod = require('./figma-feature-gate');
 var figmaSyncHistoryMod = require('./figma-sync-history');
 var designCatalogMod = require('./design-catalog');
 var designMappingsMod = require('./design-mappings');
@@ -81,17 +82,6 @@ var appRunnerMod = require('./app-runner');
 var ORCHESTRATOR_DIR = paths.ORCHESTRATOR_DIR;
 var REQUESTS_DIR     = paths.REQUESTS_DIR;
 var STEP_VALIDATORS  = validators.STEP_VALIDATORS;
-// App-run schemas used to live at the orchestrator root. Keep those URLs, and
-// the paths declared by their stable $id values, readable while the canonical
-// files live with the Site feature contracts.
-var APP_RUN_SCHEMA_ALIASES = Object.freeze({
-  '/app-run.schema.json': '/site/contracts/app-run/config.schema.json',
-  '/app-run-job.schema.json': '/site/contracts/app-run/job.schema.json',
-  '/app-run-validation.schema.json': '/site/contracts/app-run/validation-receipt.schema.json',
-  '/schemas/app-run.schema.json': '/site/contracts/app-run/config.schema.json',
-  '/schemas/app-run-job.schema.json': '/site/contracts/app-run/job.schema.json',
-  '/schemas/app-run-validation.schema.json': '/site/contracts/app-run/validation-receipt.schema.json'
-});
 // Manual-override keys the Setup panel's escape-hatch posts (in addition to the
 // wizard step ids above) — one per FS setup gate, OR-combined back into each
 // gate in state.js deriveState. Whitelisted here so the /api/state-patch merge
@@ -140,6 +130,10 @@ function hostNameOnly(value) {
 function isLocalHost(value) {
   var h = hostNameOnly(value);
   return h === 'localhost' || h === '127.0.0.1' || h === '::1';
+}
+
+function figmaFeatureGate() {
+  return figmaFeatureGateMod.current();
 }
 
 function rejectMutation(req, res, code, error) {
@@ -2291,6 +2285,8 @@ function handleSessionStart(req, res) {
       jsonResponse(res, 409, { error: 'finalization-active', detail: 'Interactive workspace sessions are blocked while durable task finalization needs recovery.' }); return;
     }
     if (key.indexOf('figma:') === 0) {
+      var figmaGate = figmaFeatureGate();
+      if (!figmaGate.enabled) { jsonResponse(res, figmaGate.status, { error: figmaGate.error }); return; }
       if (body && Object.prototype.hasOwnProperty.call(body, 'prompt')) {
         jsonResponse(res, 400, { error: 'figma-client-prompt-forbidden', detail: 'Send an exact figmaAction; the server owns executable Figma prompts.' });
         return;
@@ -2341,6 +2337,10 @@ function handleSessionSend(req, res) {
   readJsonBody(req).then(function (body) {
     var key = body && typeof body.key === 'string' ? body.key : '';
     if (!validSessionKey(key)) { jsonResponse(res, 400, { error: 'bad-key' }); return; }
+    var figmaGate = key.indexOf('figma:') === 0 ? figmaFeatureGate() : null;
+    if (figmaGate && !figmaGate.enabled) {
+      jsonResponse(res, figmaGate.status, { error: figmaGate.error }); return;
+    }
     var text = body && typeof body.text === 'string' ? body.text : '';
     if (!text || !text.trim()) { jsonResponse(res, 400, { error: 'no-text' }); return; }
     if (text.length > REQUEST_PROMPT_MAX) { jsonResponse(res, 400, { error: 'bad-prompt' }); return; }
@@ -2362,6 +2362,10 @@ function handleSessionCancel(req, res) {
   readJsonBody(req).then(function (body) {
     var key = body && typeof body.key === 'string' ? body.key : '';
     if (!validSessionKey(key)) { jsonResponse(res, 400, { error: 'bad-key' }); return; }
+    var figmaGate = key.indexOf('figma:') === 0 ? figmaFeatureGate() : null;
+    if (figmaGate && !figmaGate.enabled) {
+      jsonResponse(res, figmaGate.status, { error: figmaGate.error }); return;
+    }
     var ok = sessionsMod.cancel(key);
     sse.pollLoop();
     jsonResponse(res, 200, { canceled: ok });
@@ -2371,6 +2375,10 @@ function handleSessionCancel(req, res) {
 function handleSessionEvents(req, res, url) {
   var key = url.searchParams.get('key') || '';
   if (!validSessionKey(key)) { jsonResponse(res, 400, { error: 'bad-key' }); return; }
+  var figmaGate = key.indexOf('figma:') === 0 ? figmaFeatureGate() : null;
+  if (figmaGate && !figmaGate.enabled) {
+    jsonResponse(res, figmaGate.status, { error: figmaGate.error }); return;
+  }
   var since = parseInt(url.searchParams.get('since') || '0', 10);
   if (!Number.isFinite(since) || since < 0) since = 0;
   jsonResponse(res, 200, { events: sessionsMod.eventsSince(key, since), status: sessionsMod.status(key) });
@@ -2632,6 +2640,12 @@ function handleApi(req, res, url) {
     return true;
   }
   if (req.method === 'POST' && !validateMutationRequest(req, res)) return true;
+  if (/^\/api\/figma(?:\/|$)/.test(url.pathname)) {
+    var figmaGate = figmaFeatureGate();
+    if (!figmaGate.enabled) {
+      jsonResponse(res, figmaGate.status, { ok: false, error: figmaGate.error }); return true;
+    }
+  }
   if (req.method === 'POST' && /^\/api\/figma\//.test(url.pathname) &&
       url.pathname !== '/api/figma/integration/reset' && figmaIntegrationMod.resetting()) {
     jsonResponse(res, 409, { ok: false, error: 'writer-lease-conflict' }); return true;
@@ -2810,10 +2824,9 @@ function handle(req, res) {
     res.writeHead(405); res.end('method not allowed');
     return;
   }
-  var staticPath = APP_RUN_SCHEMA_ALIASES[url.pathname] || url.pathname;
-  var target = staticMod.safeResolve(ORCHESTRATOR_DIR, staticPath);
+  var target = staticMod.safeResolve(ORCHESTRATOR_DIR, url.pathname);
   if (target === null || target === undefined) { res.writeHead(403); res.end('forbidden'); return; }
-  staticMod.serveStatic(req, res, target);
+  staticMod.serveStatic(req, res, target, ORCHESTRATOR_DIR);
 }
 
 module.exports = {
