@@ -1,8 +1,28 @@
 {
   "version": 2,
-  "generatedAt": "1970-01-01T00:00:00Z",
+  "generatedAt": "2026-08-13T19:32:46Z",
   "backlog": [],
   "pending": [],
-  "todo": [],
+  "todo": [
+    {
+      "stem": "TASK_1_dobavit_home_screen",
+      "title": "Добавить Home screen",
+      "state": "todo",
+      "sourceRevision": "sha256:b78f69033a02f748a80471ffb094193eb97cf2b33a5869bd59432a70068a0b4d",
+      "createdAt": "2026-08-13T19:32:45Z",
+      "doneAt": null,
+      "origin": {
+        "kind": "manual",
+        "type": "manual",
+        "ref": "intent-774d0cb4711b71f842de8cb8c18550af71f4875f74655f96e46a77670f4f0522",
+        "fingerprint": "sha256:91b0e627b643525918b0a20a179d18dc1f2053f2320580702793e846d22f74a5"
+      },
+      "dependsOn": [],
+      "splitFrom": null,
+      "outcomeStatus": null,
+      "questionsCount": null,
+      "round": null
+    }
+  ],
   "done": []
 }
