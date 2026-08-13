@@ -8,7 +8,7 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
@@ -620,6 +620,37 @@ await check('canonical request plan admits only sealed structural-only bootstrap
     behaviors: [{ requiredLanes: ['host'] }],
     requiredSuites: ['host-suite'],
   }, inventory, policy), (error) => error && error.code === 'PLAN_INCOMPLETE');
+});
+
+await check('canonical request resolves task-worktree execution through the manager-owned binding', () => {
+  const controlRoot = fixture({ xml: GREEN_XML });
+  const executionRoot = fixture({ xml: GREEN_XML });
+  const request = {
+    executionRootKind: 'task-worktree',
+    identity: {
+      taskStem: 'TASK_5_save_note',
+      runId: 'run-worktree-binding',
+    },
+  };
+  const environment = {
+    ORCHESTRATOR_WRITER_STEM: request.identity.taskStem,
+  };
+  const manager = {
+    executionEnvironmentContext(actualEnvironment) {
+      assert.equal(actualEnvironment, environment);
+      return { ok: true, context: {
+        controlRoot,
+        executionRoot,
+        runId: request.identity.runId,
+      } };
+    },
+  };
+  assert.equal(requestEntrypoint.resolveExecutionRoot(controlRoot, request, { environment, manager }),
+    realpathSync.native(executionRoot));
+  assert.throws(() => requestEntrypoint.resolveExecutionRoot(controlRoot, {
+    ...request,
+    identity: { ...request.identity, runId: 'run-foreign-binding' },
+  }, { environment, manager }), (error) => error && error.code === 'EXECUTION_ROOT_MISMATCH');
 });
 
 for (const root of roots) rmSync(root, { recursive: true, force: true });

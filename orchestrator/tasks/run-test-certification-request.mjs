@@ -160,6 +160,23 @@ function verifyLock(productRoot, identity) {
   }
 }
 
+function resolveExecutionRoot(controlRoot, request, options = {}) {
+  if (request.executionRootKind !== 'task-worktree') return controlRoot;
+  const environment = options.environment || process.env;
+  const manager = options.manager || require('../site/server/worktree-manager.js');
+  const resolved = manager.executionEnvironmentContext(environment);
+  if (!resolved || resolved.ok !== true || !resolved.context) {
+    fail('EXECUTION_ROOT_UNPROVEN', String(resolved && resolved.message ||
+      'task-worktree execution environment could not be proven').slice(0, 500));
+  }
+  const context = resolved.context;
+  if (environment.ORCHESTRATOR_WRITER_STEM !== request.identity.taskStem ||
+      context.runId !== request.identity.runId || context.controlRoot !== controlRoot) {
+    fail('EXECUTION_ROOT_MISMATCH', 'task-worktree binding differs from the certification identity');
+  }
+  return canonicalRoot(context.executionRoot);
+}
+
 function validateExecutionPlan(request, observed, inventory, policy) {
   if (inventory.inventoryHash !== observed.capabilityInventoryHash) {
     fail('INVENTORY_MISMATCH', 'observed impact binds a different capability inventory');
@@ -221,12 +238,13 @@ function validateExecutionPlan(request, observed, inventory, policy) {
   return allowed;
 }
 
-export { validateExecutionPlan };
+export { resolveExecutionRoot, validateExecutionPlan };
 
 async function runCertificationRequest({ productRoot, request }) {
   const root = canonicalRoot(productRoot);
   const validRequest = validateRequest(request);
   verifyLock(root, validRequest.identity);
+  const executionRoot = resolveExecutionRoot(root, validRequest);
   const taskRelative = 'orchestrator/tasks/todo/' + validRequest.identity.taskStem + '.md';
   const actualTaskInputHash = taskInputContract.taskInputHashOf(
     safeBytes(root, taskRelative, 'canonical task input', 8 * 1024 * 1024));
@@ -257,7 +275,7 @@ async function runCertificationRequest({ productRoot, request }) {
   for (let index = 0; index < validRequest.commands.length; index++) {
     const command = validRequest.commands[index];
     await certifyCommand({
-      certificationRoot, productRoot: root, taskPaths: command.taskPaths, allowedTaskPaths,
+      certificationRoot, productRoot: executionRoot, taskPaths: command.taskPaths, allowedTaskPaths,
       suite: command.suite, tier: command.tier, lane: command.lane, identity, hashes,
       toolchain: validRequest.toolchain, reportInputs: command.reportInputs,
       timeoutMs: command.timeoutMs, continueOnFailure: command.continueOnFailure,
@@ -267,12 +285,12 @@ async function runCertificationRequest({ productRoot, request }) {
   }
   for (let index = 0; index < validRequest.structuralGateIds.length; index++) {
     await certifyStructuralGate({
-      certificationRoot, productRoot: root, gateId: validRequest.structuralGateIds[index], identity, hashes,
+      certificationRoot, productRoot: executionRoot, gateId: validRequest.structuralGateIds[index], identity, hashes,
       ordinal: String(index).padStart(3, '0')
     });
   }
   return aggregateAndSeal({
-    certificationRoot, productRoot: root, identity,
+    certificationRoot, productRoot: executionRoot, identity,
     taskInputHash: validRequest.taskInputHash, sourceManifest, policy, plannedImpact, observedImpact
   });
 }
