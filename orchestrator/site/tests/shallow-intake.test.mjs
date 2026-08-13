@@ -225,6 +225,30 @@ try {
     assert.equal(projected[stem].sourceHash, complete.sourceHash)
   })
 
+  await check('an authoritative runner claim shadows but does not invalidate its source-bound advisory', async () => {
+    const stem = 'TASK_1_profile'
+    const claim = join(requestsDir, '.1786651007116-intakeshadow.claim')
+    writePrivateJson(claim, {
+      version: 3,
+      action: 'prep',
+      stem,
+      expectedState: 'backlog',
+      sourceRevision: 'sha256:' + 'a'.repeat(64),
+      dedupKey: null,
+      dedupReport: null,
+      projectRoot: root,
+      prompt: 'Prepare the task.',
+      createdAt: '2026-08-13T19:55:21.214Z'
+    })
+    assert.equal(intake.snapshot()[stem], undefined,
+      'an authoritative claim must hide the advisory from UI projection')
+    assert.equal(intake.scanIntegrity(stem).findings.some((finding) =>
+      finding.code === 'INTAKE_RESULT_INVALID'), false,
+      'the runner claim window must not make its own execution fence fail')
+    rmSync(claim)
+    assert.ok(intake.snapshot()[stem], 'the advisory becomes visible again if handoff is refused')
+  })
+
   await check('model process is tool-less, safe-mode, schema-bound, scratch-cwd, and prompt context is bounded', async () => {
     const args = JSON.parse(readFileSync(join(intakeDir, 'captured-args.json'), 'utf8'))
     assert.ok(args.includes('--safe-mode'))

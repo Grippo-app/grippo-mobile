@@ -941,11 +941,16 @@ function sourceState(stem) {
   if (existsUnsafe(path.join(paths.TASKS_DIR, 'done', stem + '.md'))) return { eligible: false, reason: 'done' };
   var raw = readRegular(backlog, TASK_STORAGE_MAX, false);
   if (raw === null) return { eligible: false, reason: 'missing' };
-  if (hasAuthoritativeWork(stem)) return { eligible: false, reason: 'task-prep' };
-  if (finalizationsMod.mutationBlocked(stem)) return { eligible: false, reason: 'publication-recovery' };
   var text = raw.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(raw) || text.indexOf('\u0000') >= 0) throw codedError('TASK_UTF8_INVALID', 'backlog task must be valid UTF-8');
-  return { eligible: true, bytes: raw, text: text, sourceHash: sha256(raw) };
+  var source = { eligible: true, bytes: raw, text: text, sourceHash: sha256(raw) };
+  // Keep the exact source binding while an authoritative claim temporarily
+  // shadows this advisory result.  Runtime integrity still needs to validate
+  // the durable complete record during the runner's claim -> handoff window;
+  // UI projection continues to hide it because eligible remains false.
+  if (hasAuthoritativeWork(stem)) return Object.assign(source, { eligible: false, reason: 'task-prep' });
+  if (finalizationsMod.mutationBlocked(stem)) return Object.assign(source, { eligible: false, reason: 'publication-recovery' });
+  return source;
 }
 function goalExcerpt(text) {
   var match = /(?:^|\n)##[ \t]+Goal[ \t]*\r?\n([\s\S]*?)(?=\r?\n##[ \t]+|$)/i.exec(text || '');
@@ -2408,7 +2413,9 @@ function scanIntegrity(scope) {
       validateRecord(read.value, rowStem);
       if (read.value.status === 'complete') {
         var completeSource = sourceState(rowStem);
-        if (!completeSource.eligible || completeSource.sourceHash !== read.value.sourceHash) {
+        var authoritativeShadow = !completeSource.eligible && completeSource.reason === 'task-prep' &&
+          completeSource.sourceHash === read.value.sourceHash;
+        if ((!completeSource.eligible && !authoritativeShadow) || completeSource.sourceHash !== read.value.sourceHash) {
           throw codedError('INTAKE_RESULT_INVALID', 'stored complete intake result is not bound to the current source');
         }
         if (!integrityActiveStems) integrityActiveStems = activeStemSet();
