@@ -209,11 +209,19 @@ function validateExecutionPlan(request, observed, inventory, policy) {
   if (observed.testNotApplicable !== null && request.commands.length > 0) {
     fail('PLAN_INCOMPLETE', 'typed N/A cannot execute command receipts');
   }
-  if (observed.testNotApplicable === null && request.commands.length === 0) {
+  const structuralOnly = observed.testNotApplicable === null &&
+    request.commands.length === 0 &&
+    observed.requiredSuites.length === 0 &&
+    requiredLanes.length > 0 &&
+    requiredLanes.every((lane) => lane === 'structural') &&
+    request.structuralGateIds.length > 0;
+  if (observed.testNotApplicable === null && request.commands.length === 0 && !structuralOnly) {
     fail('PLAN_INCOMPLETE', 'executable impact requires command receipts');
   }
   return allowed;
 }
+
+export { validateExecutionPlan };
 
 async function runCertificationRequest({ productRoot, request }) {
   const root = canonicalRoot(productRoot);

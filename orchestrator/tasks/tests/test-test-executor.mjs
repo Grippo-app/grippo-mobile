@@ -19,9 +19,11 @@ const receiptContract = require('../task-test-receipt-contract.cjs');
 const registry = require('../task-receipt-registry.cjs');
 const snapshotContract = require('../content-snapshot.cjs');
 const policyContract = require('../task-test-policy-contract.cjs');
+const capabilityContract = require('../task-test-capability-contract.cjs');
 const executor = await import('../run-test-certification.mjs');
 const aggregator = await import('../aggregate-test-certification.mjs');
 const resolver = await import('../resolve-test-impact.mjs');
+const requestEntrypoint = await import('../run-test-certification-request.mjs');
 
 const roots = [];
 const failures = [];
@@ -585,6 +587,39 @@ await check('canonical request CLI recomputes taskInputHash from the current tod
   assert.equal(cli.status, 1, cli.stderr + cli.stdout);
   assert.match(cli.stderr, /TASK_INPUT_STALE/);
   assert.equal(existsSync(join(root, 'orchestrator', '.cache', 'tasks', 'test-certification')), false);
+});
+
+await check('canonical request plan admits only sealed structural-only bootstrap execution without commands', () => {
+  const policy = policyContract.loadPolicy();
+  const inventory = {
+    version: 1,
+    domain: 'test-capability-inventory',
+    generatedBy: ':testCapabilityInventory',
+    modules: [],
+    inventoryHash: H('0'),
+  };
+  inventory.inventoryHash = capabilityContract.inventoryHashOf(inventory);
+  const structuralObserved = {
+    capabilityInventoryHash: inventory.inventoryHash,
+    behaviors: [{ requiredLanes: ['structural'] }],
+    requiredSuites: [],
+    fullSuiteRequired: false,
+    testNotApplicable: null,
+  };
+  const allowed = requestEntrypoint.validateExecutionPlan({
+    commands: [],
+    structuralGateIds: ['bootstrap-foundation-fixture'],
+  }, structuralObserved, inventory, policy);
+  assert.ok(allowed.includes(':allConfiguredTests'));
+
+  assert.throws(() => requestEntrypoint.validateExecutionPlan({
+    commands: [],
+    structuralGateIds: [],
+  }, {
+    ...structuralObserved,
+    behaviors: [{ requiredLanes: ['host'] }],
+    requiredSuites: ['host-suite'],
+  }, inventory, policy), (error) => error && error.code === 'PLAN_INCOMPLETE');
 });
 
 for (const root of roots) rmSync(root, { recursive: true, force: true });
