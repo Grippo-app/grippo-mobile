@@ -670,7 +670,7 @@ function newWorktreeId() {
 function candidateRefFor(stem, runId) {
   var number = /^TASK_([1-9][0-9]{0,15})_/.exec(stem)[1];
   var stemHash = crypto.createHash('sha256').update(stem, 'utf8').digest('hex').slice(0, 12);
-  var short = String(runId).split('-')[1].slice(0, 32);
+  var short = String(runId).split('-').slice(-1)[0].slice(0, 32);
   return 'refs/heads/orchestrator/task/TASK_' + number + '-' + stemHash + '/' + short;
 }
 // §7.1: every home component is manager-created 0700, lstat-verified and
@@ -859,7 +859,7 @@ function provisionUnderLease(options) {
   if (typeof runId !== 'string' || !worktreeContract.RUN_ID_RE.test(runId)) {
     return provisionFail('PROVISION_RUN_ID_INVALID', 'runId is not canonical');
   }
-  if (typeof requestId !== 'string' || !worktreeContract.RUN_ID_RE.test(requestId)) {
+  if (typeof requestId !== 'string' || !worktreeContract.REQUEST_ID_RE.test(requestId)) {
     return provisionFail('PROVISION_REQUEST_ID_INVALID', 'requestId is not canonical');
   }
   if (typeof sourceRevision !== 'string' || !SOURCE_REVISION_RE.test(sourceRevision)) {

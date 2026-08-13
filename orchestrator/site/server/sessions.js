@@ -73,7 +73,7 @@ var SESSION_EVENTS_MAX_BYTES = 32 * 1024 * 1024;
 // set and is rejected outright — the version is a hard constant, never a
 // behavioural fork, and a session sidecar is regenerable runtime state.
 var SESSION_SIDECAR_VERSION = 3;
-var EXECUTION_RUN_ID_RE = /^[0-9]{1,16}-[a-z0-9]{1,32}$/;
+var EXECUTION_RUN_ID_RE = /^(?:run-)?[0-9]{1,16}-[a-z0-9]{1,32}$/;
 // `worktreeId` IS the execution generation identity the plan calls
 // `executionGeneration`; a second name for it would be a second source of
 // truth. `candidateTree` is deliberately absent: nothing is sealed while a
