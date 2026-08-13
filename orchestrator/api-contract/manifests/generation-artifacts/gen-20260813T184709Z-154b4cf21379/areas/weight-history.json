@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "area": "weight-history",
+  "schemas": {
+    "WeightHistoryRequest": {
+      "fields": [
+        {
+          "name": "weight",
+          "jsonName": "weight",
+          "type": "number",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    }
+  }
+}

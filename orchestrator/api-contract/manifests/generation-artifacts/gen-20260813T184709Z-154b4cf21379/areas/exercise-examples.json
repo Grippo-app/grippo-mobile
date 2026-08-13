@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 1,
+  "area": "exercise-examples",
+  "schemas": {
+    "ExerciseComponentsAssistWeightDto": {
+      "fields": [
+        {
+          "name": "required",
+          "jsonName": "required",
+          "type": "boolean",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    },
+    "ExerciseComponentsBodyWeightDto": {
+      "fields": [
+        {
+          "name": "required",
+          "jsonName": "required",
+          "type": "boolean",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        },
+        {
+          "name": "multiplier",
+          "jsonName": "multiplier",
+          "type": "number",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    },
+    "ExerciseComponentsDto": {
+      "fields": [
+        {
+          "name": "externalWeight",
+          "jsonName": "externalWeight",
+          "type": "ref:ExerciseComponentsExternalWeightDto",
+          "itemsRef": null,
+          "format": null,
+          "required": false,
+          "nullable_declared": true,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        },
+        {
+          "name": "bodyWeight",
+          "jsonName": "bodyWeight",
+          "type": "ref:ExerciseComponentsBodyWeightDto",
+          "itemsRef": null,
+          "format": null,
+          "required": false,
+          "nullable_declared": true,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        },
+        {
+          "name": "extraWeight",
+          "jsonName": "extraWeight",
+          "type": "ref:ExerciseComponentsExtraWeightDto",
+          "itemsRef": null,
+          "format": null,
+          "required": false,
+          "nullable_declared": true,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        },
+        {
+          "name": "assistWeight",
+          "jsonName": "assistWeight",
+          "type": "ref:ExerciseComponentsAssistWeightDto",
+          "itemsRef": null,
+          "format": null,
+          "required": false,
+          "nullable_declared": true,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    },
+    "ExerciseComponentsExternalWeightDto": {
+      "fields": [
+        {
+          "name": "required",
+          "jsonName": "required",
+          "type": "boolean",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    },
+    "ExerciseComponentsExtraWeightDto": {
+      "fields": [
+        {
+          "name": "required",
+          "jsonName": "required",
+          "type": "boolean",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    },
+    "ExerciseExampleResponseDto": {
+      "fields": [
+        {
+          "name": "components",
+          "jsonName": "components",
+          "type": "ref:ExerciseComponentsDto",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    },
+    "ExerciseExampleWithStatsResponse": {
+      "fields": [
+        {
+          "name": "entity",
+          "jsonName": "entity",
+          "type": "ref:ExerciseExampleResponseDto",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        },
+        {
+          "name": "usageCount",
+          "jsonName": "usageCount",
+          "type": "number",
+          "itemsRef": null,
+          "format": null,
+          "required": true,
+          "nullable_declared": false,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        },
+        {
+          "name": "lastUsed",
+          "jsonName": "lastUsed",
+          "type": "string",
+          "itemsRef": null,
+          "format": "date-time",
+          "required": true,
+          "nullable_declared": true,
+          "nullable_observed": null,
+          "enum": null,
+          "enum_observed": null,
+          "example": null,
+          "constraints": {
+            "minimum": null,
+            "maximum": null,
+            "exclusiveMinimum": null,
+            "exclusiveMaximum": null,
+            "minLength": null,
+            "maxLength": null,
+            "minItems": null,
+            "maxItems": null,
+            "minProperties": null,
+            "maxProperties": null,
+            "pattern": null,
+            "patternHash": null
+          }
+        }
+      ]
+    }
+  }
+}

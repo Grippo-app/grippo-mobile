@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "environments": [
+    {
+      "id": "prod",
+      "label": "Prod",
+      "sourceKind": "openapi",
+      "authKind": "bearer",
+      "sourceUrl": "https://grippo-app.com/docs-json",
+      "postmanEnrichmentUrl": null,
+      "authRef": null
+    }
+  ],
+  "defaultEnvironmentId": "prod"
+}

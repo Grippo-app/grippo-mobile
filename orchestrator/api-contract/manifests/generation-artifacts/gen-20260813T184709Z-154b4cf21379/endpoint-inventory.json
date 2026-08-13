@@ -1,0 +1,1391 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "kind": "openapi",
+    "openApiUrl": null,
+    "openApiVersion": "3.0.0",
+    "title": "🏋️ Grippo API",
+    "specHash": "sha256:1c848ebd631db130b0b8c6d28d0c70b5498d57d68cc345f9169e9756cb85a54a",
+    "fetchedAt": "2026-08-13T18:47:09.827Z",
+    "postmanImportedAt": null
+  },
+  "stats": {
+    "endpoints": 42,
+    "areas": 10,
+    "schemas": 44
+  },
+  "areas": {
+    "admin": [
+      "AdminController_createExerciseExample",
+      "AdminController_updateExerciseExample",
+      "AdminController_deleteExerciseExample",
+      "AdminController_makeAdmin",
+      "AdminController_getUsers",
+      "AdminController_setUserRole",
+      "AdminController_getUserGoal",
+      "AdminController_getUserTrainings",
+      "AdminController_getUserWeightHistory",
+      "AdminController_deleteUser"
+    ],
+    "auth": [
+      "AuthController_login",
+      "AuthController_register",
+      "AuthController_google",
+      "AuthController_apple",
+      "AuthController_refresh"
+    ],
+    "equipments": [
+      "EquipmentsController_getEquipments"
+    ],
+    "exercise-examples": [
+      "ExerciseExampleController_getExerciseExamples",
+      "ExerciseExampleController_getExerciseExampleById"
+    ],
+    "exercise-metrics": [
+      "ExerciseMetricsController_getAchievements",
+      "ExerciseMetricsController_getRecentExercises"
+    ],
+    "muscles": [
+      "MusclesController_getMuscles"
+    ],
+    "push-tokens": [
+      "PushTokensController_savePushToken",
+      "PushTokensController_deletePushTokens"
+    ],
+    "trainings": [
+      "TrainingsController_getTrainings",
+      "TrainingsController_createTraining",
+      "TrainingsController_updateTraining",
+      "TrainingsController_getTrainingById",
+      "TrainingsController_deleteTraining"
+    ],
+    "users": [
+      "UsersController_getUser",
+      "UsersController_createProfile",
+      "UsersController_deleteAccount",
+      "UsersController_updateExperience",
+      "UsersController_updateHeight",
+      "UsersController_getExcludedMuscles",
+      "UsersController_updateExcludedMuscles",
+      "UsersController_getExcludedEquipments",
+      "UsersController_updateExcludedEquipments",
+      "UsersController_getGoal",
+      "UsersController_setGoal"
+    ],
+    "weight-history": [
+      "WeightHistoryController_getWeightHistory",
+      "WeightHistoryController_setWeightHistory",
+      "WeightHistoryController_removeWeightHistory"
+    ]
+  },
+  "endpoints": [
+    {
+      "operationId": "AuthController_login",
+      "method": "POST",
+      "path": "/auth/login",
+      "area": "auth",
+      "summary": "Login by email and password",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "LoginRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "LoginResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AuthController_register",
+      "method": "POST",
+      "path": "/auth/register",
+      "area": "auth",
+      "summary": "Register a new user",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "RegisterRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "201": {
+          "schemaRef": "LoginResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AuthController_google",
+      "method": "POST",
+      "path": "/auth/google",
+      "area": "auth",
+      "summary": "Login/Register with Google ID token",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "GoogleLoginRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "LoginResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AuthController_apple",
+      "method": "POST",
+      "path": "/auth/apple",
+      "area": "auth",
+      "summary": "Login/Register with Apple authorization code",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "AppleLoginRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "LoginResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AuthController_refresh",
+      "method": "POST",
+      "path": "/auth/refresh",
+      "area": "auth",
+      "summary": "Refresh access token",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "AuthControllerRefreshBody",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "LoginResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "UsersController_getUser",
+      "method": "GET",
+      "path": "/users",
+      "area": "users",
+      "summary": "Get current user profile by token",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "UserResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "UsersController_createProfile",
+      "method": "POST",
+      "path": "/users",
+      "area": "users",
+      "summary": "Create user profile after registration",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "CreateUserProfileRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "201": {
+          "schemaRef": "UserResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "UsersController_deleteAccount",
+      "method": "DELETE",
+      "path": "/users",
+      "area": "users",
+      "summary": "Delete current user account",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "UsersController_updateExperience",
+      "method": "POST",
+      "path": "/users/experience",
+      "area": "users",
+      "summary": "Update user experience level",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "UpdateExperienceRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "UserResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "UsersController_updateHeight",
+      "method": "POST",
+      "path": "/users/height",
+      "area": "users",
+      "summary": "Update user height",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "UpdateHeightRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "UserResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "UsersController_getExcludedMuscles",
+      "method": "GET",
+      "path": "/users/excluded-muscles",
+      "area": "users",
+      "summary": "Get all excluded muscles for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "UsersController_updateExcludedMuscles",
+      "method": "POST",
+      "path": "/users/excluded-muscles",
+      "area": "users",
+      "summary": "Replace excluded muscles with provided list",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "UpdateExcludedIdsDto",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": true,
+        "response": false
+      }
+    },
+    {
+      "operationId": "UsersController_getExcludedEquipments",
+      "method": "GET",
+      "path": "/users/excluded-equipments",
+      "area": "users",
+      "summary": "Get all excluded equipments for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "UsersController_updateExcludedEquipments",
+      "method": "POST",
+      "path": "/users/excluded-equipments",
+      "area": "users",
+      "summary": "Replace excluded equipments with provided list",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "UpdateExcludedIdsDto",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": true,
+        "response": false
+      }
+    },
+    {
+      "operationId": "UsersController_getGoal",
+      "method": "GET",
+      "path": "/users/goal",
+      "area": "users",
+      "summary": "Get current goal profile",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "GoalResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "UsersController_setGoal",
+      "method": "POST",
+      "path": "/users/goal",
+      "area": "users",
+      "summary": "Set or update goal profile",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "GoalRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "GoalResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "TrainingsController_getTrainings",
+      "method": "GET",
+      "path": "/trainings",
+      "area": "trainings",
+      "summary": "Get all trainings in date range for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [
+          {
+            "name": "start",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "end",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "TrainingsEntity",
+          "array": true
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "TrainingsController_createTraining",
+      "method": "POST",
+      "path": "/trainings",
+      "area": "trainings",
+      "summary": "Create a new training for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "TrainingsRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "201": {
+          "schemaRef": "TrainingCreateResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "TrainingsController_updateTraining",
+      "method": "PUT",
+      "path": "/trainings",
+      "area": "trainings",
+      "summary": "Update an existing training for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "body": {
+          "schemaRef": "TrainingsRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401",
+        "404"
+      ],
+      "examples": {
+        "request": true,
+        "response": false
+      }
+    },
+    {
+      "operationId": "TrainingsController_getTrainingById",
+      "method": "GET",
+      "path": "/trainings/{id}",
+      "area": "trainings",
+      "summary": "Get training details by ID for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "TrainingsEntity",
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "TrainingsController_deleteTraining",
+      "method": "DELETE",
+      "path": "/trainings/{id}",
+      "area": "trainings",
+      "summary": "Delete a training by ID for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401",
+        "404"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "ExerciseExampleController_getExerciseExamples",
+      "method": "GET",
+      "path": "/exercise-examples",
+      "area": "exercise-examples",
+      "summary": "List exercise examples with per-user stats (usageCount, lastUsed)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "ExerciseExampleWithStatsResponse",
+          "array": true
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "ExerciseExampleController_getExerciseExampleById",
+      "method": "GET",
+      "path": "/exercise-examples/{id}",
+      "area": "exercise-examples",
+      "summary": "Get exercise example by ID with per-user stats (usageCount, lastUsed)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "ExerciseExampleWithStatsResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401",
+        "404"
+      ],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "MusclesController_getMuscles",
+      "method": "GET",
+      "path": "/muscles",
+      "area": "muscles",
+      "summary": "Get public muscle list (unauthorized access allowed)",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "WeightHistoryController_getWeightHistory",
+      "method": "GET",
+      "path": "/weight-history",
+      "area": "weight-history",
+      "summary": "Get full weight history for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "WeightHistoryController_setWeightHistory",
+      "method": "POST",
+      "path": "/weight-history",
+      "area": "weight-history",
+      "summary": "Add new weight entry for current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "WeightHistoryRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "201": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": false
+      }
+    },
+    {
+      "operationId": "WeightHistoryController_removeWeightHistory",
+      "method": "DELETE",
+      "path": "/weight-history/{id}",
+      "area": "weight-history",
+      "summary": "Remove weight entry by ID",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "ExerciseMetricsController_getAchievements",
+      "method": "GET",
+      "path": "/exercise-metrics/exercise-example/{id}/achievements",
+      "area": "exercise-metrics",
+      "summary": "Get aggregated achievements for the exercise example",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "ExerciseAchievementsResponseDto",
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "ExerciseMetricsController_getRecentExercises",
+      "method": "GET",
+      "path": "/exercise-metrics/exercise-example/{id}/recent",
+      "area": "exercise-metrics",
+      "summary": "Get most recent exercises for the exercise example",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [
+          {
+            "name": "limit",
+            "type": "number",
+            "required": true
+          }
+        ],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "EquipmentsController_getEquipments",
+      "method": "GET",
+      "path": "/equipments",
+      "area": "equipments",
+      "summary": "Get public equipment list (unauthorized access allowed)",
+      "auth": "none",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "AdminController_createExerciseExample",
+      "method": "POST",
+      "path": "/admin/exercise-examples",
+      "area": "admin",
+      "summary": "Create a new exercise example (admin only)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "ExerciseExampleRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "201": {
+          "schemaRef": "ExerciseExampleCreateResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401",
+        "403"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AdminController_updateExerciseExample",
+      "method": "PUT",
+      "path": "/admin/exercise-examples",
+      "area": "admin",
+      "summary": "Update an existing exercise example (admin only)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "body": {
+          "schemaRef": "ExerciseExampleRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401",
+        "403",
+        "404"
+      ],
+      "examples": {
+        "request": true,
+        "response": false
+      }
+    },
+    {
+      "operationId": "AdminController_deleteExerciseExample",
+      "method": "DELETE",
+      "path": "/admin/exercise-examples/{id}",
+      "area": "admin",
+      "summary": "Delete an exercise example (admin only)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401",
+        "403",
+        "404",
+        "409"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "AdminController_makeAdmin",
+      "method": "POST",
+      "path": "/admin/users/make-admin",
+      "area": "admin",
+      "summary": "Promote user to admin role",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "AssignAdminRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "AdminUserResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "401",
+        "404"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AdminController_getUsers",
+      "method": "GET",
+      "path": "/admin/users",
+      "area": "admin",
+      "summary": "List all users",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "AdminUserResponse",
+          "array": true
+        }
+      },
+      "errors": [],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AdminController_setUserRole",
+      "method": "PUT",
+      "path": "/admin/users/{id}/role",
+      "area": "admin",
+      "summary": "Set user role",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": {
+          "schemaRef": "AdminSetRoleRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "200": {
+          "schemaRef": "AdminUserResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "400",
+        "404"
+      ],
+      "examples": {
+        "request": true,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AdminController_getUserGoal",
+      "method": "GET",
+      "path": "/admin/users/{id}/goal",
+      "area": "admin",
+      "summary": "Get goal of any user (admin only)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "GoalResponse",
+          "array": false
+        }
+      },
+      "errors": [
+        "401",
+        "404"
+      ],
+      "examples": {
+        "request": false,
+        "response": true
+      }
+    },
+    {
+      "operationId": "AdminController_getUserTrainings",
+      "method": "GET",
+      "path": "/admin/users/{id}/trainings",
+      "area": "admin",
+      "summary": "Get trainings of any user in date range (admin only)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [
+          {
+            "name": "start",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "end",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "TrainingsEntity",
+          "array": true
+        }
+      },
+      "errors": [
+        "400",
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "AdminController_getUserWeightHistory",
+      "method": "GET",
+      "path": "/admin/users/{id}/weight-history",
+      "area": "admin",
+      "summary": "Get full weight history of any user (admin only)",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "200": {
+          "schemaRef": "WeightHistoryEntity",
+          "array": true
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "AdminController_deleteUser",
+      "method": "DELETE",
+      "path": "/admin/users/{id}",
+      "area": "admin",
+      "summary": "Remove user by admin",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "403",
+        "404"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    },
+    {
+      "operationId": "PushTokensController_savePushToken",
+      "method": "POST",
+      "path": "/push-tokens",
+      "area": "push-tokens",
+      "summary": "Register or update a push token for the current device",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": {
+          "schemaRef": "PushTokenRequest",
+          "contentType": "application/json"
+        }
+      },
+      "response": {
+        "201": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": true,
+        "response": false
+      }
+    },
+    {
+      "operationId": "PushTokensController_deletePushTokens",
+      "method": "DELETE",
+      "path": "/push-tokens",
+      "area": "push-tokens",
+      "summary": "Delete all push tokens for the current user",
+      "auth": "bearer",
+      "deprecated": false,
+      "request": {
+        "pathParams": [],
+        "query": [],
+        "body": null
+      },
+      "response": {
+        "204": {
+          "schemaRef": null,
+          "array": false
+        }
+      },
+      "errors": [
+        "401"
+      ],
+      "examples": {
+        "request": false,
+        "response": false
+      }
+    }
+  ]
+}
