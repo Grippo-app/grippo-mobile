@@ -130,8 +130,10 @@ kinds + severities) for the full surface.
 - The `endpoint-builder` agent (`Read, Edit, Write, Bash, Grep, Glob`, sonnet) is
   pinned by `contracts/agents/endpoint-builder.md` — preserve its role,
   BLOCKED message, required reads, and footprint verbatim.
-- Drift output is `.cache/api-contract/reports/drift.json`; coverage output is
-  `.cache/api-contract/reports/suggested-endpoints.json` (both gitignored). The
+- Control-plane analysis/drift/coverage output is
+  `.cache/api-contract/reports/{implementation-map.json,consumer-map.json,drift.json,suggested-endpoints.json}`.
+  Inside a manager-issued task execution, these files are instead isolated at
+  `.cache/api-contract/reports/executions/<worktreeId>/<runId>/` (all are gitignored). The
   site creates a fix or implementation task through its idempotent deterministic
   backlog endpoint — the contract skill never chooses a number or writes a task
   file directly. Shallow AI intake runs separately and cannot block creation.

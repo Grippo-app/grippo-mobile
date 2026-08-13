@@ -16,7 +16,7 @@ contract drift (backend changed, consumers didn't)".
 ## Mechanical core (NORMATIVE)
 
 ```bash
-cd orchestrator/api-contract && npm run contract:diff   # → .cache/api-contract/reports/drift.json
+cd orchestrator/api-contract && npm run contract:diff   # → the current control/task report scope's drift.json
 ```
 
 `diff.mjs` pairs each DTO class with its snapshot schema by **schema name** — the authoritative,
@@ -42,16 +42,20 @@ The script is mechanical; the validator corroborates and extends it where syntax
   matches any inventory endpoint (`../../data-layer/references/dtos-and-api.md` fixes the flat
   one-method-per-endpoint shape, so this pairing is deterministic).
 
-## Report — `.cache/api-contract/reports/drift.json`
+## Report — scoped `drift.json`
 
 ```jsonc
-// .cache/api-contract/reports/drift.json
+// control: .cache/api-contract/reports/drift.json
+// task:    .cache/api-contract/reports/executions/<worktreeId>/<runId>/drift.json
 { "schemaVersion":1, "checkedAt":ISO, "specHash":str|null, "summary":{errors,warnings,infos}, "findings":[ { "severity":"ERROR|WARNING|INFO", "kind":"dto-field-unknown|server-field-missing-in-dto|type-mismatch|endpoint-missing-server-side|enum-new-value|nullability-mismatch|info", "area":str|null, "schemaRef":str|null, "operationId":str|null, "field":str|null, "dtoFile":str|null, "message":str, "suggestion":str|null } ] }
 ```
 
-Written to `orchestrator/.cache/api-contract/reports/` (gitignored contents); the current API
-workbench reads it through `GET /api/api/changes`. The Changes tab renders the findings and the
-Diagnostics tab owns the explicit refresh actions.
+Written to the gitignored control report directory when invoked outside a task. A manager-issued
+task execution writes to its exact `executions/<worktreeId>/<runId>/` child so concurrent runs cannot
+replace each other's evidence. Task-scoped consumers must resolve that namespace from the manager
+binding; a raw environment path is not authority. The API workbench reads the control projection
+through `GET /api/api/changes`; the Changes tab renders the findings and the Diagnostics tab owns the
+explicit control refresh actions.
 
 ## Finding kinds + severities (NORMATIVE)
 
@@ -106,7 +110,7 @@ make the task runnable.
 The site offers the same path with one click: the API panel's Drift tab renders a **"Create fix task"**
 button next to the report summary. It builds a backlog task from the report (ERROR/WARNING findings
 verbatim with their suggestions, INFO collapsed to per-kind counts,
-`.cache/api-contract/reports/drift.json` cited as the primary Input) and submits
+the exact scoped `drift.json` cited as the primary Input) and submits
 it through the same deterministic endpoint with a stable idempotency key — one
 task per report (re-enabled when a newer report lands).
 
@@ -116,8 +120,8 @@ Drift is client-anchored: it audits the endpoints the client *already* reference
 about endpoints in the snapshot the client has not built. The **coverage planner**
 (`scripts/suggest-endpoint-tasks.mjs`, npm `contract:suggest`) answers the reverse question. It walks
 the generation-aware inventory returned by `contract:paths`, reconciles each endpoint against the client's
-`<Product>Api.request()` calls and the latest `.cache/api-contract/reports/drift.json` (by area), and
-writes a PLAN — `.cache/api-contract/reports/suggested-endpoints.json` — classifying every endpoint:
+`<Product>Api.request()` calls and the `drift.json` from the same report scope (by area), and writes a
+PLAN — `suggested-endpoints.json` beside that drift report — classifying every endpoint:
 
 - `not-implemented` — in the snapshot, no client call → a ready-to-create **implementation** task
   (route `endpoint-builder`).

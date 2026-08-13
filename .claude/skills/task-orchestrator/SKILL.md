@@ -35,13 +35,11 @@ check (see `## Stop and ask`, "no inline product code").
 - A passing Step 0 scaffold check + `orchestrator/project-config.md` flags
   (`figmaEnabled`, `iosEnabled`, `verifyEnabled`, `codexEnabled`,
   `backendContractEnabled`, `supportedLocales`).
-- `TASK_STEM` = the todo/done filename without `.md` — set once before the
-  first write; it namespaces every `/tmp/orchestrator_*` baseline and the
-  `.cache/tasks/locks|journal/<STEM>` files. The site runner is frozen at
-  `MAX_PARALLEL=1` (serial safety until per-task worktree isolation), but the
-  namespace still guards against `/tmp` leftovers from crashed or consecutive
-  runs feeding a wrong baseline.
-
+- `TASK_STEM` = the todo/done filename without `.md` — the identity for the
+  lock, journal and checkpoints under the CONTROL cache
+  (`.cache/tasks/locks|journal/<STEM>`). A run executes in its own worktree at
+  the sealed base commit, so there is no shared baseline to namespace: the
+  base commit IS the baseline and the candidate diff IS the footprint.
 ## Workflow
 
 Step 0 bootstrap check → Step 0.5 verify writer authority, then acquire/verify
@@ -70,8 +68,8 @@ the caller-owned generation. The
    citation stability). Pass it **verbatim** to every builder and to
    `acceptance-tracer`.
 3. **Builders** in `builderSequence`; parallel only on disjoint file sets. After
-   each builder run **Step 3.5 diff-sanity** + footprint isolation
-   (`comm -13` against the pre-task snapshot → task footprint).
+   each builder run **Step 3.5 diff-sanity**: in the execution root the whole
+   `git status --porcelain` IS this task's footprint (nothing to subtract).
 4. **Validators (parallel):** always-on three (`build-validator`
    mode=compile, `scope-leak-validator`, `acceptance-tracer`) + the conditional
    set. **Dedup by `(file, rule_id)`**, highest severity wins; same
@@ -94,9 +92,10 @@ the caller-owned generation. The
    an attempt starts; an invocation failure closes that attempt as failed.
 5.5. **Security review** (conditional; diff touches
     token/auth/credential paths). **No severity threshold** — any finding routes.
-6. **Ship (same turn):** summary → 6a Outcome draft → 6b–6d
-    `finalize-task.mjs --outcome-file` (durable Outcome install → components/tokens binding
-    phases → interlocked todo→done → INDEX/arch verification → ownership-safe lock release).
+6. **Finish (same turn):** summary → 6a Outcome draft into the control cache →
+    6b–6d hand-off. The manager seals the candidate; the owner's **Integrate**
+    runs the whole publication (product apply → finalizer prepare → ONE canonical
+    commit → finalizer confirm → lock release). A run never publishes.
 
 **Numeric caps (do not change — frozen in `orchestrator-loop.md`):**
 
@@ -111,12 +110,12 @@ the caller-owned generation. The
 | Step 4.6b screenshot | **3** invocations | per task |
 | Step 5.5 security review | **2** iterations | per task |
 | acceptance bullet repeatedly missing | **2** consecutive validator cycles | per task |
-| site runner concurrency | `MAX_PARALLEL=1` (frozen serial safety; no env override until per-task worktree isolation) | n/a |
+| site runner concurrency | `MAX_PARALLEL=2` (canary; source constant, no env override) | n/a |
 
 **Lock + journal discipline:** acquire the lock at Step 0.5; on the happy path,
-only `finalize-task` releases it after Step 6 verification (an explicit terminal
-drop **before finalization starts** is the other owner action; a marker makes
-Drop unavailable) — never on an intermediate
+only the integration transaction's finalizer confirm releases it, after the
+canonical commit verifies (an explicit terminal drop **before finalization
+starts** is the other owner action; a marker makes Drop unavailable) — never on an intermediate
 `BLOCKED`/`ESCALATE` (the lock means "in the pipeline", including
 paused-for-clarification). Only the parent emits journal events
 (`log-event.py`, best-effort `|| true`).

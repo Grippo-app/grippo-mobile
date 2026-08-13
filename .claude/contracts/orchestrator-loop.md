@@ -17,12 +17,12 @@ Source of truth: the `task-orchestrator` skill (`references/run-loop.md` + `vali
 | Step 4.6b screenshot | 3 invocations | per task | `at most 3 invocations per task` |
 | Step 5.5 security-review | 2 iterations | per task | `2 security-review iterations per task` |
 | acceptance bullet repeatedly missing | 2 consecutive validator cycles | per task | `across 2 consecutive validator cycles` |
-| site runner concurrency | `MAX_PARALLEL=1` (frozen serial safety; no env override until per-task worktree isolation) | n/a | `MAX_PARALLEL=1` |
+| site runner concurrency | `MAX_PARALLEL=2` (canary; source constant, no env override) | n/a | `MAX_PARALLEL=2` |
 
 ## Other frozen mechanics (preserve, parser-pinned where greppable)
 
 - **Dedup** by `(file, rule_id)`, highest severity wins; same `(file,rule_id)` from two validators counts once. Pin: `same `(file, rule_id)` from two validators counts as one`.
-- **footprint-scoping**: diff-sensitive validators scoped to the task footprint; `TASK_STEM` namespaces `/tmp/orchestrator_*`. Pin: `TASK_STEM` namespaces every `/tmp/orchestrator_*`.
+- **footprint-scoping**: diff-sensitive validators scoped to the candidate diff — every change against the sealed base tree of the execution root. Pin: the footprint is the candidate diff; there is no `/tmp` baseline and no set difference.
 - **parent-adopts-orchestrator-role** (not spawned as a sub-agent).
 - **validator-adjudication** vs requirements (opposite verdicts resolved against the spec, not blind-routed) — distinct from dedup.
 - **miss-signal protocol**: `MAP_MISS` / `REGISTRY_MISS` / `CONTRACT_MISS` not silently dropped.

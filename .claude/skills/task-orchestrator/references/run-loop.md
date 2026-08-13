@@ -58,8 +58,50 @@ proceed on assumed content.
 
 ## Inputs from invocation
 
-- The task file path: `orchestrator/tasks/todo/TASK_<N>_<title>.md`. Tasks in
-  `backlog/` or `pending/` are **task-prep**'s, not yours.
+- The task identity: `TASK_<N>_<title>`. Its TEXT comes from the sealed
+  snapshot (see below), never from a checkout copy. Tasks in `backlog/` or
+  `pending/` are **task-prep**'s, not yours.
+
+## Execution root (mandatory worktree isolation)
+
+A `run` turn NEVER executes in the shared control root. The site runner
+provisions a manager-owned git worktree per run and spawns this session with:
+
+- `$PWD` = the execution root (an isolated checkout of the exact target base
+  commit on a manager-namespaced candidate branch). Every product read, edit,
+  build and validator works HERE via relative paths.
+- `ORCHESTRATOR_EXECUTION_ROOT`, `ORCHESTRATOR_WORKTREE_ID`,
+  `ORCHESTRATOR_RUN_ID`,
+  `ORCHESTRATOR_EXECUTION_MANIFEST` — the manager-sealed execution identity.
+- `ORCHESTRATOR_TASK_SNAPSHOT_FILE` + `ORCHESTRATOR_TASK_SNAPSHOT_HASH` — the
+  IMMUTABLE task text. Read the task from this snapshot, verify its sha256
+  equals the hash, and never trust `orchestrator/tasks/todo/<STEM>.md` from
+  the checkout (it is base-commit-stale by construction) for task CONTENT.
+  Lifecycle checks (lock, transition, finalize helpers) still address the
+  control corpus through their env-pinned control root.
+- `ORCHESTRATOR_PROJECT_ROOT` = the CONTROL root: every lock/lease/journal/
+  checkpoint/finalization helper invoked with relative paths from the
+  execution root writes control-plane state there — never a second control
+  plane inside the checkout.
+
+Runs may now overlap: with per-task isolation complete the site runner sits at
+the canary value `MAX_PARALLEL=2` (a source constant, no environment override),
+so a second task can execute while yours does — in its OWN worktree, on its own
+candidate branch. Nothing about your turn changes: you never see its files, and
+publication stays serialized because the integration transaction is
+repository-wide.
+
+If these variables are absent (a direct invocation outside the site runner),
+the run mode is BLOCKED: report
+`BLOCKED[execution-root]: run requires a manager-provisioned worktree` and
+make no mutation. There is no shared-root run path.
+
+A run NEVER publishes. When every gate is green you write the Outcome draft
+into the control cache and end the turn; the manager seals your tree into one
+candidate commit and the Board raises **Integrate**. The owner's Integrate runs
+the whole publication — product apply, finalizer prepare, ONE canonical commit,
+finalizer confirm — in the control root. There is no publication command you
+can run from here.
 
 ## Step 0 — Bootstrap check
 
@@ -107,48 +149,28 @@ Do not proceed to task-intake.
 
 ## Rollback safety
 
-Before invoking the first builder, capture the workspace state. `TASK_STEM` is
-the todo/done filename without `.md` (e.g. `TASK_3_chart_redesign`) — the SAME
-identifier used for the Step 0.5 lock:
+The execution root is an isolated checkout of the exact target base commit, so
+the baseline is the base commit itself — there is nothing to snapshot into
+`/tmp` and no pre-existing dirt to subtract. Two facts follow:
 
-```bash
-TASK_STEM=<STEM>
-PRE_TASK_SHA=$(git rev-parse HEAD)
-git status --porcelain > /tmp/orchestrator_pre_task_status_${TASK_STEM}.txt
-echo "$PRE_TASK_SHA" > /tmp/orchestrator_pre_task_sha_${TASK_STEM}.txt
-```
-
-`TASK_STEM` namespaces every `/tmp/orchestrator_*` file per task. The site
-runner is frozen at `MAX_PARALLEL=1` (serial safety; no env override until
-per-task worktree isolation lands), so two live runs never overlap — but the
-namespace still matters: `/tmp` survives crashed or consecutive runs, and an
-un-namespaced baseline from a previous task would silently feed the
-diff-sensitive validators the wrong baseline. Establish it here, before the
-first write, and carry the same value into every later read and into the
-validator/reviewer briefs.
-
-- `/tmp/orchestrator_pre_task_sha_${TASK_STEM}.txt` is the contract
-  `scope-leak-validator` reads to diff the working tree against the pre-task
-  state. Removing it makes scope-leak fall back to `HEAD~1`, wrong when the
-  orchestrator hasn't committed mid-task.
-- `/tmp/orchestrator_pre_task_status_${TASK_STEM}.txt` is the **pre-task
-  baseline** Step 3.5 diffs the post-builder tree against to isolate this task's
-  true footprint when the tree carries uncommitted work from a prior task.
+- every byte that differs from the base tree in this checkout is THIS task's
+  work, by construction;
+- the user's own working tree is untouched by anything that happens here, so a
+  failed run can never require a repository-wide rollback of their bytes.
 
 On any escalation, build failure that resists **2** builder retries, or
-user-initiated halt, preserve and surface the recovery context instead of a
-repository-wide rollback command:
+user-initiated halt, surface the recovery context instead of a rollback
+command:
 
-- the exact pre-task SHA from
-  `/tmp/orchestrator_pre_task_sha_${TASK_STEM}.txt`;
-- the pre-task untracked/modified snapshot from
-  `/tmp/orchestrator_pre_task_status_${TASK_STEM}.txt`;
-- the current `git status --short` and a bounded path list from the task diff;
-- which paths are known task-owned and which pre-existed or remain ambiguous.
+- the base commit (`git rev-parse HEAD` in this execution root — it is the
+  sealed base until Integrate);
+- the current candidate diff: `git status --porcelain` plus
+  `git diff --stat HEAD`;
+- which paths the plan authorized versus anything unexpected.
 
-Do not suggest or run a destructive whole-repository reset/clean. Preserve all
-current bytes, report the exact task-owned candidates, and request explicit
-user direction before any path-specific restoration or deletion.
+Never run a destructive reset/clean, and never touch the control root's tree.
+The worktree persists with all bytes intact for inspection; the owner decides
+whether to release it.
 
 ## Step 0.5 — Acquire the in-progress lock (after Step 0 passes)
 
@@ -161,11 +183,14 @@ The site runner and standby worker enforce the same global rule; this check is
 the defense for a direct skill invocation.
 
 Never trust the mere presence of an inherited
-`ORCHESTRATOR_WRITER_SESSION_ID`. For a site-started turn, validate that it is
-still bound to exactly one active, verified, non-expiring, child-attached,
-same-stem site `task-session` lease and that finalization has not won the
-marker/mutex handshake. A TTL-bounded direct lease is never valid inherited
-authority because it could expire between this check and the first mutation.
+`ORCHESTRATOR_WRITER_SESSION_ID`. For a site-started turn, validate that the
+environment-only lease id and private delegation token still identify exactly
+one active, verified, non-expiring, child-attached, same-stem site
+`task-session` lease, that the caller is inside its recorded process tree, and
+that finalization has not won the marker/mutex handshake. Never print, copy, or
+pass the delegation token as a command-line argument. A TTL-bounded direct
+lease is never valid inherited authority because it could expire between this
+check and the first mutation.
 Run this **before any lock/task/INDEX write**, including the first mutation
 after a resumed prompt:
 
@@ -175,7 +200,8 @@ node orchestrator/tasks/writer-lease.mjs verify-session --guard-finalization \
   --session-id "$ORCHESTRATOR_WRITER_SESSION_ID" --stem "$STEM"
 ```
 
-Require exit 0. Exit 2 means the inherited credential is stale/unverified or
+Require exit 0. Exit 2 means the exact inherited delegation is stale,
+unverified, outside its process tree, or missing its private token, or
 publication owns the workspace: make no mutation and return
 `BLOCKED[finalization]: writer session is no longer authorized; restart or resume through the site`.
 The verification is read-only and MUST NOT be replaced by an environment-value
@@ -228,8 +254,8 @@ every drainer — release it on every failure path, and if a hold persists,
 cleanly. Never delete lease files by hand.
 
 Keep the returned `leaseId`, `token`, and `sessionId` in private run context.
-Exit 2 means a marker/mutex — or, under frozen serial safety, another live
-board-task writer for ANY stem — won the handshake: make no mutation. The helper
+Exit 2 means a marker/mutex — or another live board-task writer for the SAME
+stem — won the handshake: make no mutation. The helper
 publishes the lease first and then rechecks finalization, so either this run or
 the finalizer wins before either mutates. A successfully verified site-started
 or caller-owned standby run already has the same lease and MUST NOT acquire a
@@ -268,7 +294,7 @@ called. Never hand-compose or overwrite its JSON.
 STEM=<STEM>
 # Site-started turn (the helper binds ORCHESTRATOR_WRITER_SESSION_ID):
 node orchestrator/tasks/task-lock.mjs acquire \
-  --stem "$STEM" --stage orchestrator \
+  --stem "$STEM" --stage orchestrator --run-id "$ORCHESTRATOR_RUN_ID" \
   --owner-kind site --owner-id "site:<bounded run owner identity>"
 
 # Direct turn (use the guarded writer-lease sessionId returned above):
@@ -327,28 +353,30 @@ The board paints "в работе · orchestrator" while
 is currently in the pipeline"* — including paused-for-clarification — not *"the
 agent is crunching this very second"*.
 
-- **Acquire** at Step 0.5. **Release** only by `finalize-task` Step 6d after all
-  postconditions verify (the only happy-path release),
+- **Acquire** at Step 0.5. **Release** only by the integration transaction's
+  finalizer confirm, after the canonical commit and every postcondition verify
+  (the only happy-path release),
   or on a terminal drop where the user explicitly abandons the task **before a
   finalization marker exists** (after that, recovery owns the lock and Drop is
   refused).
 - **Do NOT release on intermediate `BLOCKED`/`ESCALATE`/`HALT`** from ANY step
-  before 6d (Steps 1, 1a, 1b, 2a, 3, 4, 4.5, 4.6, 4.6b, 5, 5.5 — the closed
+  before the integration confirm (Steps 1, 1a, 1b, 2a, 3, 4, 4.5, 4.6, 4.6b, 5, 5.5 — the closed
   rule is "any step before the happy-path release"). The session stays alive
   waiting for the user's reply — the task is still in the pipeline.
 - If the session is killed before finalization starts, the lock is left behind.
   Age alone never enables a clear action: recover only after proving the exact
   owner generation and use the receipt-bound helper. Once a finalization marker
-  exists, use **Resume finalization**, which preserves the phase and verifies
-  lock ownership.
+  exists, use **Resume integration**, which continues the exact transaction
+  phase and verifies lock ownership.
 - An escalation that published a durable `## Questions` section is the normal
   case of the line above: the answer needs a fresh `orchestrator` lock, so the
   board keeps the **previous run stopped** blocker in front of the answer rail
   until the owner releases the dead generation through that helper. You never
   release, reuse, or work around that lock yourself.
 
-There is no manual happy-path release command. `finalize-task` removes the lock
-only when its identity and bytes match the captured canonical receipt; a
+There is no manual happy-path release command. The finalizer's confirm half
+removes the lock only after it has proven the canonical commit AND only when the
+lock's identity and bytes still match the captured canonical receipt; a
 changed/replaced lock is a conflict and is preserved.
 
 **Journal.** Append structured events to
@@ -357,8 +385,10 @@ changed/replaced lock is a conflict and is preserved.
 spawned sub-agent to log. **Best-effort, never fatal** — append `|| true` to
 every call. Emit a `phase-start` when you enter a phase and a `phase-end`
 (`ok`/`fail`/`skipped`) when it resolves; emit `stop` on exactly the escalations
-that KEEP the lock; emit `phase-end --phase ship --status ok --column done` after
-`finalize-task.mjs` reports complete. The journal is gitignored runtime telemetry; the permanent
+that KEEP the lock; emit `phase-end --phase ship --status ok --column todo` once your Outcome draft
+is written and the turn ends (the task is still in `todo/` — the integration
+transaction is what moves it, and `--column` only accepts the four board
+columns). The journal is gitignored runtime telemetry; the permanent
 digest is the `### Execution log` block in the `## Outcome` appendix (Step 6a).
 
 Review events have a stricter shared contract. Each attempt uses one canonical
@@ -386,8 +416,11 @@ The input has exactly `runId`, `phase`, `attempt`, `status`,
 `outputReceiptIds`, `priorPhaseReceiptIds`, `failureCode`, and `retryPolicy`.
 Use the exact `runId` from the verified task-lock receipt; `status` is
 `completed|failed|blocked`; receipt arrays contain only canonical durable IDs
-actually produced/consumed by the phase (otherwise `[]`). A failed status needs
-an allowlisted failure code. The retry policy is conservative:
+actually produced/consumed by the phase (otherwise `[]`). A completed `ship`
+checkpoint is the exception: it MUST consume exactly one current sealed
+`test-summary:<sha256>` receipt for the same run and exact non-null execution
+pin; without it candidate sealing refuses. A failed status needs an allowlisted
+failure code. The retry policy is conservative:
 
 - exact `retry-phase` is limited to preflight, validators, assemble,
   runtime/screenshot gates, review, security review, and design-pull, with
@@ -432,7 +465,7 @@ produced by another board task — add an optional `DEPENDS-ON: TASK_<…>` line
 1b. screen-design pre-flight (conditional: figmaEnabled + any non-none ## Design bullet)
 2a. implementation-planner → file-level contract (passed verbatim to every builder)
 3.  for each builder in plan.builderSequence: invoke with task + context + plan
-3.5 diff sanity + footprint isolation after EVERY builder run
+3.5 diff sanity against the sealed base after EVERY builder run
 4.  run every applicable validator in PARALLEL — always incl. the three always-on
        (build-validator mode=compile, scope-leak-validator, acceptance-tracer)
     if any finding: dedup → route → goto 4
@@ -447,14 +480,14 @@ produced by another board task — add an optional `DEPENDS-ON: TASK_<…>` line
        Critical/Major → goto 4; Minor/Style/Info → batch or ### Caveats
 5.5 conditional security-review (only if diff touches auth/token/credential).
        no severity threshold; cap: 2 iterations
-6.  finalize same turn: summary → 6a Outcome draft → 6b–6d
-       `finalize-task.mjs --outcome-file` (components/tokens phases → sanctioned ship →
-       INDEX/arch verification → ownership-safe lock release)
+6.  finish same turn: summary → 6a Outcome draft into the control cache → 6b–6d
+       hand off — the manager seals the candidate, the owner's Integrate runs
+       product apply → finalizer prepare → one canonical commit → confirm
 ```
 
 ## Step 1 — Read the task and run intake
 
-`Agent(subagent_type: "task-intake", prompt: "Read orchestrator/tasks/todo/TASK_<N>_<title>.md and produce an execution plan per your spec.")`
+`Agent(subagent_type: "task-intake", prompt: "Read the task text at $ORCHESTRATOR_TASK_SNAPSHOT_FILE (the immutable sealed snapshot — never the checkout copy) and produce an execution plan per your spec.")`
 
 **Placement-feasibility probe (part of intake, advisory-strength).** When an
 acceptance bullet places NEW code into a named module AND that code's signature
@@ -498,7 +531,7 @@ Issue the resolver and the residual context-finder calls **in a single message
 with multiple Agent tool uses** so they run concurrently:
 
 ```
-Agent(subagent_type: "inputs-resolver", prompt: "Read orchestrator/tasks/todo/TASK_<N>_<title>.md and verify each Inputs claim resolves against the live codebase.")
+Agent(subagent_type: "inputs-resolver", prompt: "Read the task text at $ORCHESTRATOR_TASK_SNAPSHOT_FILE (the immutable sealed snapshot) and verify each Inputs claim resolves against the live codebase in this execution root.")
 Agent(subagent_type: "context-finder", prompt: "<consolidated residual questions for builder X>")
 Agent(subagent_type: "context-finder", prompt: "<consolidated residual questions for builder Y>")
 ... one context-finder call per builder with residual questions ...
@@ -634,8 +667,9 @@ the **3**-iteration cap with task-intake.
 
 ## Step 3 — Run builders
 
-Confirm the pre-task snapshot was captured (re-capture if missing, before the
-first builder). Verify every builder name from the plan is a known capability
+The baseline needs no capture: this execution root starts at the sealed base
+commit, so every later difference is this task's. Verify every builder name
+from the plan is a known capability
 whose owning skill is installed. In skills-only mode a builder is no longer a
 standalone agent file — it is a capability carried by an implementation
 skill (and pinned by its frozen agent contract). Resolve each builder to its
@@ -723,20 +757,25 @@ After **every** builder reports done — including the fix-cycle builds from Ste
 builder lied or no-op'd — surface and re-prompt with the explicit acceptance
 bullets; do not advance.
 
-**Isolate the task's true footprint** (the tree may carry uncommitted prior-task
-work):
+**The footprint is the candidate diff.** In the execution root every change
+against the base tree belongs to this task, so the footprint is simply:
 
 ```bash
-git status --porcelain | sort > /tmp/orchestrator_post_builder_status_${TASK_STEM}.txt
-comm -13 <(sort /tmp/orchestrator_pre_task_status_${TASK_STEM}.txt) /tmp/orchestrator_post_builder_status_${TASK_STEM}.txt \
-  > /tmp/orchestrator_task_footprint_${TASK_STEM}.txt
+git status --porcelain
 ```
 
-`…task_footprint_${TASK_STEM}.txt` now lists only this task's entries. When it
-equals the whole-tree status (no pre-existing work), the two are identical and
-nothing downstream changes. Step 4 uses the footprint to scope the
-diff-sensitive validators. Every retry path that re-invokes a builder re-runs
-Step 3.5 before Step 4 sees the change.
+There is no baseline file to subtract and no set difference to compute: a path
+that was already modified before the run cannot exist here, and a path this
+task modified twice still carries its exact base-to-candidate content
+difference. Pass that path list to the diff-sensitive validators in Step 4.
+
+Control-owned paths (`orchestrator/**`, `.github/**`, `.git*` and everything
+under `.claude/` except the skill/contract copies the manager installs here)
+are never part of a candidate: the sealer refuses them outright. If one shows
+up in the status because a builder wrote where it must not, say so and
+re-prompt that builder to undo its own write — never reset or clean anything
+yourself, and never touch the manager's installed `.claude/skills/` or
+`.claude/contracts/` copies.
 
 ## Steps 4 → 5.5 (validators, tests, gates, reviewer)
 
@@ -751,14 +790,15 @@ runs exactly once per Step-4 entry; the existing Step-4 outer re-entry cap
 
 ## Step 6 — Finalize (same turn)
 
-When every gate is green, post the chat summary, write the Outcome draft, then
-invoke the recoverable finalizer — **all in one turn**. The finalizer owns the
-todo-file mutation, move, derived artifacts, verification, and lock. The chat
-summary block and structured `## Outcome` draft (Steps 6a–6d) are
-covered in [`outcome-appendix.md`](outcome-appendix.md).
+When every gate is green, post the chat summary and write the Outcome draft into
+the control cache — **both in one turn** — then end the turn. The chat summary
+block and the structured `## Outcome` draft (Steps 6a–6d) are covered in
+[`outcome-appendix.md`](outcome-appendix.md).
 
-The happy path ends only after Step 6d. Ending the turn on a gate skill's report
-strands the task: work done, but still in `todo/`, lock live, no appendix.
+Publication is not yours: the integration transaction owns the todo-file
+mutation, the move to `done/`, the derived artifacts, the canonical commit and
+the lock. Ending the turn WITHOUT the draft is what strands a task — work done,
+candidate sealed, but nothing for Integrate to publish.
 
 ## Escalation triggers
 
@@ -870,13 +910,12 @@ log`) and append-only journal lines via `log-event.py`. The escalation
 only through `transition-task-state.mjs publish-questions` / the owner's
 answers through `persist-task-answers` — you still never write the file
 yourself. Reopen publication is
-owned exclusively by `transition-task-state.mjs`; forward publication happens exclusively via
-`node orchestrator/tasks/finalize-task.mjs <stem> --outcome-file <draft>`.
-For a direct lease or caller-owned standby lease, append
-`--writer-session-id <exact verified receipt sessionId>`; a site turn uses its
-already-verified inherited session.
-That deterministic tool is the sole writer of the todo Outcome, component-mapping
-publication, `done/` move, `INDEX.json`, architecture map, and lock release.
+owned exclusively by `transition-task-state.mjs`; forward publication happens
+exclusively inside the owner-authorized integration transaction, which drives
+`finalize-task.mjs --mode prepare|confirm` itself. You never invoke the
+finalizer: without a transaction it refuses, and the todo Outcome,
+component-mapping publication, `done/` move, `INDEX.json`, architecture map,
+canonical commit and lock release all belong to that one transaction.
 Anything else — `.kt`/`.kts`/`.swift`/`.gradle`/resource/manifest/any
 `orchestrator/skills/**/*.md` spec markdown/any committed `.json` — is forbidden
 for you to write directly. If a task maps to no builder:

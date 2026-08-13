@@ -1,10 +1,12 @@
 # Ship — Step 6: chat summary + `## Outcome` appendix (6a–6d)
 
-Self-contained orchestrator finalization. When every gate is green, do all of
-this **in the same turn**: post the chat summary → 6a write an Outcome draft →
-6b–6d hand the complete publication to `finalize-task.mjs`. The finalizer owns
-the atomic Outcome install, component/token binding phases, sanctioned move, derived
-artifacts, verification, and lock release. The happy path ends only when it
+When every gate is green, do all of this **in the same turn**: post the chat
+summary → 6a write an Outcome draft → 6b–6d record that the run is ready for
+integration. A run NEVER publishes: it cannot reach the control root at all, and
+`finalize-task.mjs` is driven only by the integration transaction the owner
+starts with Integrate. That transaction owns the atomic Outcome install,
+component/token binding phases, sanctioned move, derived artifacts,
+verification, and lock release. The happy path ends only when it
 reports success and removes its recovery marker.
 
 The frozen `## Outcome` → `### Acceptance trace` shape (six required `###`
@@ -70,9 +72,15 @@ Omit `### Manual verify hint` entirely unless the verify gate is `deferred`.
 
 ## Step 6a — Write the outcome appendix
 
-Write the `## Outcome` trailer as a draft at
-`orchestrator/.cache/tasks/finalizations/<stem>.draft.md`; do **not** mutate the
-todo file yourself. `finalize-task --outcome-file` validates the combined task,
+Write the `## Outcome` trailer as a draft in the CONTROL cache at
+`$ORCHESTRATOR_FINALIZATIONS_DIR/<stem>.$ORCHESTRATOR_WORKTREE_ID.draft.md`
+(both variables are pinned in your environment; the same path inside your
+execution checkout is a different, throwaway directory and the transaction will
+never see it). The worktree id in the name binds the draft to THIS generation —
+a draft written by an earlier run describes work this candidate does not
+contain, and the transaction refuses it rather than publishing it. Do **not** mutate the
+todo file yourself — it lives in the control root and you cannot reach it. The
+integration transaction validates the combined task,
 persists an internal recovery snapshot, and atomically installs the trailer as
 its first phase. **Six headings are always required, in this exact order; `###
 Execution log` is parser-optional after `### Files touched`, but REQUIRED for a
@@ -215,7 +223,7 @@ Every bullet is one physical line. Free-form caveat text is bounded to 120
 characters; build/runtime notes use their explicitly bounded grammar, and
 execution-log bullets use the dedicated ≤6-line contract above.
 
-**Self-check the draft parses, BEFORE Step 6b (`finalize-task`).** Confirm all six
+**Self-check the draft parses, BEFORE Step 6b (the hand-off).** Confirm all six
 required `### ` headings exactly — `Build gates`, `Runtime verify`, `Acceptance
 trace`, `Caveats`, `Follow-ups`, `Files touched` (PascalCase; add the seventh
 `### Execution log` whenever the Figma UI gate applies) — plus a `**Status**` line and a `**Reviewer**` line with the
@@ -228,58 +236,52 @@ first: the interlock catching it costs a re-run.
 fix a wrong outcome, use the explicit move-back procedure (see
 [`run-loop.md`](run-loop.md) "Move-back").
 
-## Steps 6b–6d — Run the recoverable finalizer
+## Steps 6b–6d — Hand the sealed candidate over to Integrate
 
-**Do not call `ship-done`, `regen-index`, `regen-arch`,
-`mv`, or `rm` separately, and never write `component-mappings.json` by hand.** Invoke the single transaction with the draft from
-Step 6a:
+**You never publish.** A run works in an isolated worktree against the committed
+base; the task file, `INDEX.json`, the architecture map and the mapping
+registries all live in the control root, which your checkout cannot write. So
+there is no finalizer call in this step, and there is no `ship-done`,
+`regen-index`, `regen-arch`, `mv` or `rm` to run by hand.
 
-```bash
-node orchestrator/tasks/finalize-task.mjs "$STEM" \
-  --outcome-file "orchestrator/.cache/tasks/finalizations/${STEM}.draft.md"
-```
+What you do instead:
 
-The finalizer persists a write-ahead marker under
-`orchestrator/.cache/tasks/finalizations/` plus an immutable, content-addressed
-Outcome snapshot and executes these idempotent phases:
+1. leave the Outcome draft from Step 6a in the control cache;
+2. end the turn with the report below.
 
-1. atomically install and revalidate the Outcome;
-2. when Figma is enabled, run the `components` and `tokens` binding phases: a
-   design-origin component task's frozen binding evidence is validated and its
-   binding-authorized mapping is published into
-   `orchestrator/figma/component-mappings.json` after a staged validation
-   compare; a generic task only passes the touch-scoped extraction regression
-   gate (it never auto-maps);
-3. call the transaction-authorized `ship-done.mjs`, whose final driver re-pins
-   census after a consulted mapping/inventory projection changes, stages receipts/digest,
-   publishes an immutable transaction-owned task in `done/` without
-   overwriting an existing file, then commits the staged receipts;
-4. invoke the finalizer-owned canonical INDEX publisher and structurally check
-   its exact `INDEX.json` receipt;
-5. regenerate and check the architecture map (cleanly non-applicable before
-   bootstrap);
-6. verify the task exists only in `done/`, Outcome/INDEX/arch/mapping-registry
-   state are fresh, and a UI task's ship receipts bind to the current task;
-7. atomically detach the task lock only when its identity and bytes still match
-   the lock captured at transaction start, retaining a durable proof across the
-   unlink crash window;
-8. mark complete, reverify the exact done bytes, and delete private publication,
-   receipt, lock, snapshot, and marker proofs last (the marker is final).
+The site manager then seals your working tree into ONE candidate commit on the
+manager-owned branch, publishes a candidate receipt, and moves the generation to
+`ready-for-integration`. The Board raises **Integrate** on the task.
 
-Each mutating phase records intent before its effect. A crash, terminal close,
-or server restart therefore leaves the lock and marker in place. Resume with the
-same command without `--outcome-file`, or use **Resume finalization** on the
-Board; it continues from physical postconditions and never starts the AI task
-again. Do not clear a finalization lock manually — the server rejects that while
-a marker exists (and blocks competing task mutations during the pre-marker
-global-mutex window too).
+When the owner presses it, the integration transaction runs under a write-ahead
+log and does all of the publication in one serialized sequence:
 
-**Exit 0** means the complete transaction verified and cleaned up. **Exit 2**
-means `ship-done` hit a Figma/task-shape gate: keep the marker+lock, route the
-finding to Step 4, repair the same todo task, then invoke the finalizer again.
-It accepts a newly valid pre-ship task body, refreshes the durable intent, and
-replays the components phase and ship onward. **Exit 1** is an exact phase/precondition failure;
-fix that cause and rerun the same finalizer. Never bypass it with a hand move.
+1. re-check its preconditions — the candidate base is still the target tip, the
+   control root is clean apart from this task's own source, the identity is
+   configured — and refuse with the exact blocking paths otherwise;
+2. apply the exact candidate diff into the control root's index and worktree;
+3. run the finalizer's PREPARE half: install and revalidate the Outcome, run the
+   Figma component/token binding phases, publish the task into `done/` through
+   the transaction-authorized `ship-done`, regenerate and check `INDEX.json` and
+   the architecture map, and verify every derived artifact — all while keeping
+   the task lock and the recovery marker;
+4. create ONE canonical commit on the exact target base, with your repository's
+   own configured git identity, carrying exactly the candidate paths plus the
+   artifacts prepare produced, with every repository hook run;
+5. run the finalizer's CONFIRM half: re-prove the branch, parent, commit and the
+   published artifacts against that commit, then release the lock and remove the
+   marker last;
+6. release the worktree and delete the candidate branch.
+
+Every phase records intent before effect, so a crash at any boundary leaves the
+transaction resumable from physical state — **Resume integration** on the Board,
+or `node orchestrator/tasks/task-worktree.mjs integrate --stem <STEM>`. Nothing
+is ever rolled back and no user change is stashed or committed to clear a
+blocker.
+
+If a gate refuses during prepare, the transaction stops with the lock and marker
+intact: route the finding back to Step 4, repair the task in a new run, and the
+owner integrates again.
 
 `done/` remains the single source of truth for what shipped. If the task ends in
 escalation with no completion claim, do not create the Outcome draft and do not
