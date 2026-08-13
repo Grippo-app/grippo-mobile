@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "orchestrator/site/server.js"
+      ],
+      "port": 8000,
+      "autoPort": true
+    }
+  ]
+}
