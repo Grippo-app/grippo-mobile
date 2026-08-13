@@ -2,11 +2,13 @@
 
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { spawnSync } from 'node:child_process'
 import { once } from 'node:events'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
 const root = mkdtempSync(join(tmpdir(), 'session-delegation-'))
@@ -35,6 +37,10 @@ process.env.ORCHESTRATOR_TASK_PREP_NO_QUESTIONS = '1'
 process.env.NODE_OPTIONS = '--require=/tmp/untrusted-preload.cjs'
 process.env.NODE_PATH = '/tmp/untrusted-node-path'
 process.env.LD_PRELOAD = '/tmp/untrusted-loader.so'
+process.env.POSTMAN_API_KEY = 'PMAK-secret-from-shell'
+process.env.BACKEND_AUTH_TOKEN = 'backend-secret-from-shell'
+process.env.API_CONTRACT_PRIVATE_KEY = 'contract-secret-from-shell'
+process.env.BACKEND_LOG_LEVEL = 'debug'
 
 const childProcess = require('node:child_process')
 const originalSpawn = childProcess.spawn
@@ -66,25 +72,85 @@ try {
       'ORCHESTRATOR_WRITER_DELEGATION_TOKEN',
       'ORCHESTRATOR_TASK_PREP_NO_QUESTIONS',
       'NODE_OPTIONS', 'NODE_PATH', 'LD_PRELOAD',
+      'POSTMAN_API_KEY', 'BACKEND_AUTH_TOKEN', 'API_CONTRACT_PRIVATE_KEY',
     ]) assert.equal(Object.hasOwn(unrelated, key), false, key)
+    assert.equal(unrelated.BACKEND_LOG_LEVEL, 'debug', 'non-secret backend metadata still passes')
+    const forced = childEnv({ POSTMAN_API_KEY: 'forced-secret', BACKEND_AUTH_TOKEN: 'forced-secret' })
+    assert.equal(Object.hasOwn(forced, 'POSTMAN_API_KEY'), false)
+    assert.equal(Object.hasOwn(forced, 'BACKEND_AUTH_TOKEN'), false)
   })
 
   check('test-injection seams never reach a child environment', () => {
     process.env.FINALIZE_FAILPOINT = 'after-intent:outcome'
     process.env.FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT = '/tmp/attacker-todo.md'
+    process.env.FINALIZE_FS_TEST_CRASH_STAGE = 'after-replace'
+    process.env.TASK_FS_TEST_SWAP_PATH = '/tmp/attacker-task-root'
+    process.env.FINALIZATION_TEST_WINDOWS_JOB = '1'
+    process.env.ORCHESTRATOR_FILE_GUARD_TEST_MODE = '1'
     try {
       const inherited = childEnv()
-      assert.equal(Object.hasOwn(inherited, 'FINALIZE_FAILPOINT'), false)
-      assert.equal(Object.hasOwn(inherited, 'FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT'), false)
+      for (const key of [
+        'FINALIZE_FAILPOINT', 'FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT',
+        'FINALIZE_FS_TEST_CRASH_STAGE', 'TASK_FS_TEST_SWAP_PATH',
+        'FINALIZATION_TEST_WINDOWS_JOB', 'ORCHESTRATOR_FILE_GUARD_TEST_MODE',
+      ]) assert.equal(Object.hasOwn(inherited, key), false, key)
       // An explicit caller override cannot smuggle one back in either.
-      const forced = childEnv({ FINALIZE_FAILPOINT: 'x', FINALIZE_TEST_ANYTHING: 'y', FINALIZE_STATE_DIR: '/state' })
+      const forced = childEnv({
+        FINALIZE_FAILPOINT: 'x', FINALIZE_TEST_ANYTHING: 'y',
+        FINALIZE_FS_TEST_ANYTHING: 'z', TASK_FS_TEST_ANYTHING: 'q',
+        FINALIZATION_TEST_ANYTHING: 'w', ORCHESTRATOR_FILE_GUARD_TEST_ANYTHING: 'v',
+        FINALIZE_STATE_DIR: '/state',
+      })
       assert.equal(Object.hasOwn(forced, 'FINALIZE_FAILPOINT'), false)
       assert.equal(Object.hasOwn(forced, 'FINALIZE_TEST_ANYTHING'), false)
+      assert.equal(Object.hasOwn(forced, 'FINALIZE_FS_TEST_ANYTHING'), false)
+      assert.equal(Object.hasOwn(forced, 'TASK_FS_TEST_ANYTHING'), false)
+      assert.equal(Object.hasOwn(forced, 'FINALIZATION_TEST_ANYTHING'), false)
+      assert.equal(Object.hasOwn(forced, 'ORCHESTRATOR_FILE_GUARD_TEST_ANYTHING'), false)
       assert.equal(forced.FINALIZE_STATE_DIR, '/state', 'real finalizer configuration still passes')
     } finally {
       delete process.env.FINALIZE_FAILPOINT
       delete process.env.FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT
+      delete process.env.FINALIZE_FS_TEST_CRASH_STAGE
+      delete process.env.TASK_FS_TEST_SWAP_PATH
+      delete process.env.FINALIZATION_TEST_WINDOWS_JOB
+      delete process.env.ORCHESTRATOR_FILE_GUARD_TEST_MODE
     }
+  })
+
+  check('canonical file-guard workers ignore inherited test-mode controls', () => {
+    const canonicalRoot = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
+    const probeEnv = {
+      ...process.env,
+      ORCHESTRATOR_FILE_GUARD_TEST_MODE: '1',
+      ORCHESTRATOR_FILE_GUARD_TEST_FORCE_DIRECTORY_FSYNC_UNSUPPORTED: '1',
+    }
+    delete probeEnv.NODE_OPTIONS
+    delete probeEnv.NODE_PATH
+    const probe = spawnSync(process.execPath, ['-e', String.raw`
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = process.argv[1];
+const parent = path.join(root, 'orchestrator', '.cache');
+fs.mkdirSync(parent, { recursive: true });
+const directory = fs.mkdtempSync(path.join(parent, '.guard-test-env-'));
+try {
+  const guards = require(path.join(root, 'orchestrator/site/server/file-guards.js'));
+  const target = path.join(directory, 'proof.txt');
+  const result = guards.atomicReplaceRegularFileResult(root, directory, target,
+    Buffer.from('canonical durability\n'), { create: true, mode: 0o600, maxBytes: 1024 });
+  assert.equal(result.ok, true, JSON.stringify(result));
+} finally {
+  fs.rmSync(directory, { recursive: true, force: true });
+}
+`, canonicalRoot], {
+      cwd: canonicalRoot,
+      env: probeEnv,
+      encoding: 'utf8',
+      timeout: 10000,
+    })
+    assert.equal(probe.status, 0, probe.stderr + probe.stdout)
   })
 
   const sessions = require('../server/sessions.js')

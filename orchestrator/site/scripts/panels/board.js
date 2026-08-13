@@ -25,6 +25,7 @@ import { createBoardLoadController } from '../board/board-load-controller.js';
 import { createBoardTaskTargetController } from '../board/board-task-target-controller.js';
 import { createBoardTaskInbox } from '../board/board-task-inbox.js';
 import { createBoardFinalizationController } from '../board/board-finalization-controller.js';
+import { createBoardIntegrationController } from '../board/board-integration-controller.js';
 import { createBoardTaskNavigationController } from '../board/board-task-navigation-controller.js';
 import { createBoardConfirmDialog } from '../board/board-confirm-dialog.js';
 import { createBoardOpenCardFreshness } from '../board/board-open-card-freshness.js';
@@ -202,6 +203,13 @@ import { appRunControl } from '../app-run-control.js';
     confirmScreensBeforeRun: boardFigmaScreensController.confirmBeforeRun,
     confirm: boardConfirmDialog.open,
     executeAction: function (stem, action, confirmation) {
+      // Integrate is not a queued task action: it opens the preview so the
+      // owner sees the exact diff and the exact blockers before authorizing
+      // one canonical commit. The card rail and the details rail must agree.
+      if (action && action.kind === 'integrate') {
+        boardIntegrationController.open(stem);
+        return Promise.resolve({ navigation: true });
+      }
       return tasksApi.executeTaskAction(stem, action, confirmation);
     },
     toast: function (message) { clipboard.toast(message); },
@@ -417,6 +425,24 @@ import { appRunControl } from '../app-run-control.js';
     setOpenStem: function (stem) { state.openFinalizationStem = stem; },
     modal: boardModal,
     resume: function (finalization) { return tasksApi.resumeFinalization(finalization); },
+    toast: function (message) { clipboard.toast(message); },
+    requestError: boardRequestError,
+    reloadStore: function () { store.load(); }
+  });
+  var boardIntegrationController = createBoardIntegrationController({
+    t: t,
+    el: el,
+    getSnapshot: function () { return store.get(); },
+    hasActiveModal: function () { return !!state.activeModal; },
+    getOpenStem: function () { return state.openIntegrationStem; },
+    setOpenStem: function (stem) { state.openIntegrationStem = stem; },
+    modal: boardModal,
+    preview: function (stem) { return tasksApi.previewIntegration(stem); },
+    run: function (stem, resuming) {
+      return resuming ? tasksApi.resumeIntegration(stem) : tasksApi.startIntegration(stem);
+    },
+    abandon: function (stem, integrationId) { return tasksApi.abandonIntegration(stem, integrationId); },
+    release: function (stem) { return tasksApi.releaseWorktree(stem); },
     toast: function (message) { clipboard.toast(message); },
     requestError: boardRequestError,
     reloadStore: function () { store.load(); }
@@ -1180,6 +1206,16 @@ import { appRunControl } from '../app-run-control.js';
         }
         button.disabled = true;
         button.setAttribute('aria-busy', 'true');
+        if (action.kind === 'integrate') {
+          // The Integrate button never commits on the first click: it opens the
+          // preview so the owner sees the exact diff and the exact blockers
+          // before authorizing one canonical commit.
+          button.removeAttribute('aria-busy');
+          button.disabled = false;
+          boardModal.close();
+          boardIntegrationController.open(stem);
+          return Promise.resolve({ navigation: true });
+        }
         if (action.kind === 'resume-finalization') {
           var finalization = details.recovery && details.recovery.finalization;
           if (!finalization) return Promise.reject({ kind: 'finalization-resume-unavailable' });
@@ -1467,6 +1503,7 @@ import { appRunControl } from '../app-run-control.js';
     // It enables as soon as the global mutex becomes available and disappears
     // after successful cleanup removes the marker.
     boardFinalizationController.refreshOpen();
+    boardIntegrationController.refreshOpen();
     boardTaskInbox.load();
     boardRefreshClock.scheduleRefresh();
   }

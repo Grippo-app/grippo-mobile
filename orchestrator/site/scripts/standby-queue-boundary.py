@@ -374,7 +374,7 @@ def _projection_shape(value, request_id: str) -> bool:
     fields = ("id", "version", "action", "stem", "expectedState", "sourceRevision", "createdAt", "fingerprint", "promptHash")
     return (
         _exact_keys(value, fields) and value["id"] == request_id
-        and type(value["version"]) is int and value["version"] == 2
+        and type(value["version"]) is int and value["version"] == 3
         and isinstance(value["action"], str) and isinstance(value["stem"], str)
         and isinstance(value["expectedState"], str) and isinstance(value["sourceRevision"], str)
         and isinstance(value["createdAt"], str) and SHA_RE.fullmatch(str(value["fingerprint"] or "")) is not None
@@ -459,10 +459,42 @@ def _intent_from_source(requests_fd: int, op_id: str) -> dict:
     }
 
 
+def _standby_claimable(requests_fd: int, name: str) -> bool:
+    """A `run` executes ONLY inside the site runner's provisioned worktree
+    (pipeline improvement 01, Phase 2), so the standby never claims one: run
+    requests are invisible to the oldest-first rule instead of blocking every
+    younger prep/answers/drop behind them. Anything unreadable or malformed
+    stays claimable so the existing invalid-claim retention classifies it.
+    This predicate mirrors the peek in standby-queue.mjs claimNext()."""
+    st = _lstat(requests_fd, name)
+    if st is None:
+        return True
+    proof = _proof(st)
+    if proof["type"] != "file" or proof["nlink"] != "1" or int(proof["size"]) > REQUEST_MAX:
+        return True
+    opened = None
+    try:
+        opened = os.open(name, READ_FLAGS, dir_fd=requests_fd)
+        raw = os.read(opened, REQUEST_MAX + 1)
+    except OSError:
+        return True
+    finally:
+        if opened is not None:
+            os.close(opened)
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return True
+    return not (isinstance(value, dict) and value.get("action") == "run")
+
+
 def _oldest(requests_fd: int):
     names = _list(requests_fd, DIRECTORY_MAX)
     canonical = sorted(name for name in names if REQUEST_RE.fullmatch(name))
-    return canonical[0] if canonical else None
+    for name in canonical:
+        if _standby_claimable(requests_fd, name):
+            return name
+    return None
 
 
 def _read_claim(op_fd: int, claimed: dict) -> tuple[bytes, dict]:

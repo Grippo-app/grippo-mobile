@@ -127,6 +127,7 @@ const dictionary = Object.freeze({
     'appRun.reason.unknown-profile': 'The requested source revision profile is unsupported.',
     'appRun.reason.unknown': 'The platform is unavailable for a safely classified reason.',
     'appRun.error.project-busy': 'The project is being updated. Queue the run or try again later.',
+    'appRun.error.execution-binding-unavailable': 'The isolated task execution binding cannot be verified.',
     'appRun.error.task-context-unavailable': 'The linked task is no longer available.',
     'appRun.error.task-context-changed': 'The linked task changed while the run was waiting. Review it and run again.',
     'appRun.error.android-sdk-missing': 'The Android SDK or Gradle wrapper is unavailable.',

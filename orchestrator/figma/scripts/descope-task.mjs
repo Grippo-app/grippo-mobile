@@ -31,6 +31,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync 
 import { dirname, join, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
 import { PROJECT_ROOT, displayPath, ensureContained, figmaScreensRoot, parseCli } from './_util.mjs'
 
 const requireCjs = createRequire(import.meta.url)
@@ -200,9 +201,13 @@ const authorityEnv = {
   FINALIZE_PROJECT_ROOT: projectRoot,
   FINALIZE_STATE_DIR: finalizationsDir,
 }
-const writerLeaseCli = join(PROJECT_ROOT, 'orchestrator', 'tasks', 'writer-lease.mjs')
-const transitionCli = join(PROJECT_ROOT, 'orchestrator', 'tasks', 'transition-task-state.mjs')
-const taskLockCli = join(PROJECT_ROOT, 'orchestrator', 'tasks', 'task-lock.mjs')
+// Control-plane helpers are CODE, not project data: they are resolved from this
+// script's own installation, never from the configured project root, which a
+// sandbox or an execution checkout may point somewhere without a template copy.
+const HELPERS_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', 'tasks')
+const writerLeaseCli = join(HELPERS_DIR, 'writer-lease.mjs')
+const transitionCli = join(HELPERS_DIR, 'transition-task-state.mjs')
+const taskLockCli = join(HELPERS_DIR, 'task-lock.mjs')
 
 function bounded(value, max = 1000) {
   const text = String(value || '').replace(/[\0\r]+/g, ' ').trim()

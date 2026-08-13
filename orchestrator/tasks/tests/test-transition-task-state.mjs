@@ -1970,8 +1970,9 @@ child.once('close', (code, signal) => {
     const sourceRevision = revision(project, stem, 'backlog')
     const lease = writerLeases.acquire(writers, {
       kind: 'task-session', stem, key: 'task:' + stem, sessionId,
-      ownerPid: process.pid, childPid: process.pid, rootDir: project.root,
+      ownerPid: process.pid, pendingChild: true, rootDir: project.root,
     })
+    writerLeases.updateChildPid(lease, process.pid)
     canonicalTaskLock(project, stem, 'task-prep', sessionId)
     try {
       const result = run(project, [
@@ -1979,6 +1980,8 @@ child.once('close', (code, signal) => {
       ], {
         TASK_TRANSITION_TEST_UNLEASED: '0',
         ORCHESTRATOR_WRITER_SESSION_ID: sessionId,
+        ORCHESTRATOR_WRITER_LEASE_ID: lease.leaseId,
+        ORCHESTRATOR_WRITER_DELEGATION_TOKEN: lease.delegationToken,
         FINALIZE_PROJECT_ROOT: project.root,
         FINALIZE_STATE_DIR: finalizations,
       }, Buffer.from(pendingDoc(stem)))

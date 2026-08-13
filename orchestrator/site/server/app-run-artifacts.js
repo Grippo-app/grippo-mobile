@@ -12,6 +12,7 @@ var APP_ID_RE = /^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/;
 var ARTIFACT_FIELDS = [
   'schemaVersion', 'artifactId', 'platform', 'variantId', 'appProjectSourceRevision',
   'buildInputFingerprint', 'runConfigHash', 'applicationId', 'toolchainFingerprint',
+  'worktreeId', 'executionRunId', 'candidateTree',
   'artifactRelativePath', 'artifactHash', 'artifactSize', 'targetArchitectures', 'builtAt'
 ];
 
@@ -33,6 +34,11 @@ function safeRelative(value) {
 }
 
 function validate(value) {
+  var controlScoped = value && value.worktreeId === null && value.executionRunId === null &&
+    value.candidateTree === null;
+  var executionScoped = value && /^wt-[a-f0-9]{32}$/.test(String(value.worktreeId || '')) &&
+    /^[0-9]{1,16}-[a-z0-9]{1,32}$/.test(String(value.executionRunId || '')) &&
+    /^[a-f0-9]{40}$/.test(String(value.candidateTree || ''));
   if (!exactKeys(value, ARTIFACT_FIELDS) || value.schemaVersion !== 1 ||
       !/^artifact-[a-f0-9]{36}$/.test(String(value.artifactId || '')) ||
       ['android', 'ios'].indexOf(value.platform) < 0 ||
@@ -43,6 +49,7 @@ function validate(value) {
       !HASH_RE.test(String(value.runConfigHash || '')) ||
       !HASH_RE.test(String(value.toolchainFingerprint || '')) ||
       !HASH_RE.test(String(value.artifactHash || '')) ||
+      (!controlScoped && !executionScoped) ||
       !safeRelative(value.artifactRelativePath) ||
       !Number.isSafeInteger(value.artifactSize) || value.artifactSize < 1 ||
       !Array.isArray(value.targetArchitectures) || value.targetArchitectures.length > 20 ||
@@ -74,10 +81,20 @@ function toolchainFingerprint(platform, tools) {
 
 function create(input) {
   var id = storage.randomId('artifact');
-  var projectReal = fs.realpathSync(paths.PROJECT_ROOT);
+  var execution = input.execution === undefined ? null : input.execution;
+  if (execution !== null && (!exactKeys(execution,
+      ['worktreeId', 'runId', 'executionRoot', 'candidateTree']) ||
+      !/^wt-[a-f0-9]{32}$/.test(String(execution.worktreeId || '')) ||
+      !/^[0-9]{1,16}-[a-z0-9]{1,32}$/.test(String(execution.runId || '')) ||
+      !path.isAbsolute(String(execution.executionRoot || '')) ||
+      !/^[a-f0-9]{40}$/.test(String(execution.candidateTree || '')))) {
+    throw new Error('artifact execution scope is invalid');
+  }
+  var scopeRoot = execution ? execution.executionRoot : paths.PROJECT_ROOT;
+  var scopeReal = fs.realpathSync(scopeRoot);
   var artifactReal = fs.realpathSync(input.artifact.path);
-  var relative = path.relative(projectReal, artifactReal).split(path.sep).join('/');
-  if (!safeRelative(relative)) throw new Error('artifact is outside the project root');
+  var relative = path.relative(scopeReal, artifactReal).split(path.sep).join('/');
+  if (!safeRelative(relative)) throw new Error('artifact is outside its exact product root');
   var value = {
     schemaVersion: 1,
     artifactId: id,
@@ -88,6 +105,9 @@ function create(input) {
     runConfigHash: input.runConfigHash,
     applicationId: input.artifact.applicationId,
     toolchainFingerprint: toolchainFingerprint(input.platform, input.tools),
+    worktreeId: execution ? execution.worktreeId : null,
+    executionRunId: execution ? execution.runId : null,
+    candidateTree: execution ? execution.candidateTree : null,
     artifactRelativePath: relative,
     artifactHash: input.artifact.hash,
     artifactSize: input.artifact.size,
@@ -114,13 +134,25 @@ function read(id) {
   return value;
 }
 
-function artifactPath(manifest) {
-  var candidate = path.resolve(paths.PROJECT_ROOT, manifest.artifactRelativePath.split('/').join(path.sep));
-  var rel = path.relative(paths.PROJECT_ROOT, candidate);
-  if (rel === '..' || rel.indexOf('..' + path.sep) === 0 || path.isAbsolute(rel)) throw new Error('artifact path escaped project root');
-  var projectReal = fs.realpathSync(paths.PROJECT_ROOT);
-  var canonicalExpected = path.resolve(projectReal,
-    path.relative(path.resolve(paths.PROJECT_ROOT), candidate));
+function artifactPath(manifest, expected) {
+  var executionScoped = manifest.worktreeId !== null;
+  if (executionScoped && (!expected || expected.worktreeId !== manifest.worktreeId ||
+      expected.executionRunId !== manifest.executionRunId ||
+      expected.candidateTree !== manifest.candidateTree ||
+      !path.isAbsolute(String(expected.executionRoot || '')))) {
+    var mismatch = new Error('artifact execution scope does not match the current job');
+    mismatch.code = 'artifact-scope-mismatch';
+    throw mismatch;
+  }
+  var scopeRoot = executionScoped ? expected.executionRoot : paths.PROJECT_ROOT;
+  var candidate = path.resolve(scopeRoot, manifest.artifactRelativePath.split('/').join(path.sep));
+  var rel = path.relative(scopeRoot, candidate);
+  if (rel === '..' || rel.indexOf('..' + path.sep) === 0 || path.isAbsolute(rel)) {
+    throw new Error('artifact path escaped its exact product root');
+  }
+  var scopeReal = fs.realpathSync(scopeRoot);
+  var canonicalExpected = path.resolve(scopeReal,
+    path.relative(path.resolve(scopeRoot), candidate));
   var candidateReal = fs.realpathSync(candidate);
   if (candidateReal !== canonicalExpected) throw new Error('artifact path contains an untrusted symlink ancestor');
   return candidate;
@@ -129,10 +161,6 @@ function artifactPath(manifest) {
 function containedBy(root, candidate) {
   var rootReal = fs.realpathSync(root);
   var candidateReal = fs.realpathSync(candidate);
-  var projectReal = fs.realpathSync(paths.PROJECT_ROOT);
-  var canonicalRoot = path.resolve(projectReal,
-    path.relative(path.resolve(paths.PROJECT_ROOT), path.resolve(root)));
-  if (rootReal !== canonicalRoot) return false;
   var rel = path.relative(rootReal, candidateReal);
   return rel === '' || (rel !== '..' && rel.indexOf('..' + path.sep) !== 0 && !path.isAbsolute(rel));
 }
@@ -194,8 +222,9 @@ function verify(manifest, expected) {
     return { ok: false, error: 'artifact-config-mismatch' };
   }
   var file;
-  try { file = artifactPath(manifest); }
-  catch (error) { return { ok: false, error: 'artifact-invalid', detail: error.message }; }
+  try { file = artifactPath(manifest, expected); }
+  catch (error) { return { ok: false, error: error && error.code === 'artifact-scope-mismatch'
+    ? 'artifact-scope-mismatch' : 'artifact-invalid', detail: error.message }; }
   try {
     if (expected && expected.allowedBuildRoot && !containedBy(expected.allowedBuildRoot, file)) {
       return { ok: false, error: 'artifact-path-mismatch' };

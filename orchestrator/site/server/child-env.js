@@ -35,13 +35,23 @@ function isWriterCapabilityKey(key) {
   return /^(?:ORCHESTRATOR_WRITER_(?:SESSION_ID|STEM|LEASE_ID|LEASE_TOKEN|DELEGATION_TOKEN)|ORCHESTRATOR_TASK_PREP_NO_QUESTIONS)$/.test(String(key || ''));
 }
 
+// Backend/API credentials are delivered only by backend-credentials.readForJob
+// to the dedicated network sidecar. A shell variable must never become a
+// second, untyped credential channel into a product/task child.
+function isBackendApiSecretKey(key) {
+  var k = String(key || '').toUpperCase();
+  if (!/^(?:POSTMAN|BACKEND|API_CONTRACT)(?:_|$)/.test(k)) return false;
+  return /(?:TOKEN|SECRET|PASSWORD|BEARER|AUTH|API[_-]?KEY|CREDENTIAL|COOKIE|SESSION|JWT|PRIVATE[_-]?KEY)/.test(k);
+}
+
 // Crash failpoints and fixture replacement sources belong to the suites that
 // spawn a script directly. Inherited from whatever shell launched the site,
 // one of these would let an environment variable abort a live transaction or
 // overwrite a task file mid-finalization.
 function isTestInjectionKey(key) {
   var k = String(key || '');
-  return k === 'FINALIZE_FAILPOINT' || k.indexOf('FINALIZE_TEST_') === 0;
+  return k === 'FINALIZE_FAILPOINT' ||
+    /^(?:FINALIZE_TEST_|FINALIZE_FS_TEST_|FINALIZATION_TEST_|TASK_FS_TEST_|ORCHESTRATOR_FILE_GUARD_TEST_)/.test(k);
 }
 
 function isRuntimeInjectionKey(key) {
@@ -56,7 +66,7 @@ function childEnv(extra) {
     // Writer authority is minted per exact child by sessions.js. Never copy a
     // credential-bearing shell/site environment or runtime preload hooks into
     // unrelated subprocesses.
-    if (isFigmaSecretKey(k) || isWriterCapabilityKey(k) || isRuntimeInjectionKey(k) ||
+    if (isFigmaSecretKey(k) || isBackendApiSecretKey(k) || isWriterCapabilityKey(k) || isRuntimeInjectionKey(k) ||
         isTestInjectionKey(k)) continue;
     env[k] = process.env[k];
   }
@@ -64,7 +74,7 @@ function childEnv(extra) {
     var extraKeys = Object.keys(extra);
     for (var j = 0; j < extraKeys.length; j++) {
       var ek = extraKeys[j];
-      if (isFigmaSecretKey(ek) || isRuntimeInjectionKey(ek) || isTestInjectionKey(ek)) continue;
+      if (isFigmaSecretKey(ek) || isBackendApiSecretKey(ek) || isRuntimeInjectionKey(ek) || isTestInjectionKey(ek)) continue;
       env[ek] = extra[ek];
     }
   }

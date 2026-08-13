@@ -80,7 +80,10 @@ Key composite:
 
 `figma:ship-done` is an internal interlock owned by
 `orchestrator/tasks/finalize-task.mjs`; a direct invocation has no active
-transaction marker/owner and intentionally fails before touching the task.
+transaction marker/owner and intentionally fails before touching the task. It
+additionally refuses unless an integration record for the stem is in its
+`finalizer-preparing` phase — a task reaches `done/` only inside the owner's
+integration transaction.
 
 | Script | What it chains |
 |---|---|

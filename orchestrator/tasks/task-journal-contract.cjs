@@ -10,6 +10,12 @@ const PHASES = Object.freeze([
   'builders', 'diff-sanity', 'validators', 'tests', 'assemble-gate',
   'runtime-verify', 'screenshot-gate', 'review', 'security-review', 'ship',
   'design-pull',
+  // The owner-started transaction that moves a sealed candidate into the
+  // canonical branch. It is a typed phase, not free text, because the History
+  // tab is where an operator reconstructs what happened to a task — and until
+  // it existed the single most consequential step, the canonical commit, left
+  // no trace there at all.
+  'integration',
 ])
 const STATUSES = Object.freeze(['ok', 'blocked', 'escalate', 'fail', 'skipped', 'info'])
 const COLUMNS = Object.freeze(['backlog', 'pending', 'todo', 'done'])

@@ -56,10 +56,10 @@
  *   2 — `--gate` found blocking or incomplete visual evidence
  */
 
-import { readFileSync, existsSync, readdirSync, statSync, lstatSync, realpathSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync, statSync, lstatSync, realpathSync } from 'node:fs'
 import { join, basename, delimiter, dirname, resolve, sep } from 'node:path'
 import { createRequire } from 'node:module'
-import { PROJECT_ROOT as REPO_ROOT, artifactSegment, cacheRelative, displayPath, figmaPath, figmaScreensRoot, isDirectRun, loadScreenshotThresholds, parseCli, pipelineRunId, readConfig } from './_util.mjs'
+import { PROJECT_ROOT as REPO_ROOT, artifactSegment, cacheRelative, displayPath, figmaPath, figmaScreensRoot, isDirectRun, loadScreenshotThresholds, parseCli, pipelineRunId, readConfig, FIGMA_CACHE_ROOT, FIGMA_TASK_SOURCE_FILE, FIGMA_TASK_SOURCE_EXPLICIT, PROJECT_CONFIG_FILE, PROJECT_CONFIG_HASH } from './_util.mjs'
 import { assertTaskStem, compileSchema, fileHash, schemaIssues, writeReport } from './report-utils.mjs'
 import { deriveResourceRoots, languageOf, resolveDesignLocale } from './lib/design-locale.mjs'
 import { detectChrome } from './lib/oracle-chrome.mjs'
@@ -68,6 +68,7 @@ import { readTaskMarkdown } from './lib/task-markdown.mjs'
 
 const requireCjs = createRequire(import.meta.url)
 const { parseDesignSources } = requireCjs('./design-parser.cjs')
+const fileGuards = requireCjs('../../site/server/file-guards.js')
 
 const USAGE = 'usage: node scripts/compare-screenshots.mjs <stem> [--gate|--advisory] [--semantic]'
 const SCREEN_KEY_RE = /^[A-Za-z0-9_]+$/
@@ -315,7 +316,36 @@ function artifactRoot() {
       CONFIG_ERRORS.push('FIGMA_COMPARE_ARTIFACTS_DIR must equal FIGMA_CACHE_ROOT/artifacts/screenshot so final evidence can validate cache-relative artifact paths')
     }
   }
+  // A fresh project may not have created the consolidated cache root yet. Prove
+  // and materialize that root before using it as the authority for descendants:
+  // the project root is the anchor for the canonical cache, while an explicit
+  // out-of-project fixture override is allowed only as a direct child of its
+  // already-real parent. In both cases a symlink at the cache-root name is
+  // rejected rather than followed.
+  const cacheAnchor = fileGuards.isUnder(REPO_ROOT, FIGMA_CACHE_ROOT)
+    ? REPO_ROOT
+    : dirname(FIGMA_CACHE_ROOT)
+  const cacheReady = fileGuards.realDirectoryUnder(
+    cacheAnchor, FIGMA_CACHE_ROOT, { create: true, mode: 0o700 },
+  )
+  if (!cacheReady || !fileGuards.realDirectoryUnder(FIGMA_CACHE_ROOT, root, { create: true, mode: 0o700 })) {
+    CONFIG_ERRORS.push('FIGMA compare artifact root is not a real root-anchored cache directory')
+  }
   return root
+}
+
+const ARTIFACT_FILE_MAX_BYTES = 32 * 1024 * 1024
+function writeArtifactFile(target, bytes) {
+  const payload = Buffer.isBuffer(bytes) ? bytes : Buffer.from(String(bytes))
+  const published = fileGuards.atomicReplaceRegularFileResult(
+    FIGMA_CACHE_ROOT, dirname(target), target, payload,
+    { create: true, directoryMode: 0o700, mode: 0o600, maxBytes: ARTIFACT_FILE_MAX_BYTES },
+  )
+  if (!published.ok) throw new Error(`artifact publication refused for ${basename(target)}: ${published.code}`)
+}
+
+async function writeArtifactImage(image, target) {
+  writeArtifactFile(target, await image.getBuffer('image/png'))
 }
 
 function artifactPublicPath(file) {
@@ -386,15 +416,14 @@ async function writeCompareArtifacts(Jimp, {
   const runSeg = artifactSegment(runId)
   const groupSeg = `${String(sequence).padStart(3, '0')}-${artifactSegment(screen)}-${artifactSegment(theme)}`
   const dir = join(root, stemSeg, runSeg, groupSeg)
-  mkdirSync(dir, { recursive: true })
 
   const W = oracleImage.bitmap.width, H = oracleImage.bitmap.height
   const figmaPng = join(dir, 'figma.png')
   const actualPng = join(dir, 'actual.png')
   const diffPng = join(dir, 'diff.png')
   const overlayPng = join(dir, 'overlay.png')
-  await oracleImage.write(figmaPng)
-  await renderImage.write(actualPng)
+  await writeArtifactImage(oracleImage, figmaPng)
+  await writeArtifactImage(renderImage, actualPng)
 
   const diff = new Jimp({ width: W, height: H, color: 0x101010ff })
   const overlay = new Jimp({ width: W, height: H, color: 0x101010ff })
@@ -428,8 +457,8 @@ async function writeCompareArtifacts(Jimp, {
       else writePixel(vd, i, br, bg, bb)
     }
   }
-  await diff.write(diffPng)
-  await overlay.write(overlayPng)
+  await writeArtifactImage(diff, diffPng)
+  await writeArtifactImage(overlay, overlayPng)
 
   const baseId = groupSeg
   const artifacts = {
@@ -462,7 +491,7 @@ async function writeCompareArtifacts(Jimp, {
     artifacts,
     generatedAt: new Date().toISOString(),
   }
-  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n')
+  writeArtifactFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n')
   return {
     schemaVersion: 1,
     id: baseId,
@@ -498,18 +527,17 @@ async function writeReferenceArtifacts(Jimp, {
   const runSeg = artifactSegment(runId)
   const groupSeg = `${String(sequence).padStart(3, '0')}-${artifactSegment(screen)}-${artifactSegment(theme)}`
   const dir = join(root, stemSeg, runSeg, groupSeg)
-  mkdirSync(dir, { recursive: true })
 
   const W = oracleImage.bitmap.width, H = oracleImage.bitmap.height
   const figmaPng = join(dir, 'figma.png')
-  await oracleImage.write(figmaPng)
+  await writeArtifactImage(oracleImage, figmaPng)
   const artifacts = {
     figma: imageEntry({ id: `${groupSeg}-figma`, kind: 'figma', file: figmaPng, screen, theme, status, width: W, height: H }),
   }
   const source = { figma: displayPath(oraclePath), figmaHash: fileHash(oraclePath) }
   if (renderImage) {
     const actualPng = join(dir, 'actual.png')
-    await renderImage.write(actualPng)
+    await writeArtifactImage(renderImage, actualPng)
     artifacts.actual = imageEntry({ id: `${groupSeg}-actual`, kind: 'actual', file: actualPng, screen, theme, status, width: renderImage.bitmap.width, height: renderImage.bitmap.height })
     source.actual = displayPath(roboPath)
     source.actualHash = roboPath ? fileHash(roboPath) : null
@@ -533,7 +561,7 @@ async function writeReferenceArtifacts(Jimp, {
     artifacts,
     generatedAt: new Date().toISOString(),
   }
-  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n')
+  writeArtifactFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n')
   return {
     schemaVersion: 1,
     id: groupSeg,
@@ -550,19 +578,48 @@ async function writeReferenceArtifacts(Jimp, {
   }
 }
 
+const ARTIFACT_PRUNE_ENTRY_MAX = 4096
+const ARTIFACT_PRUNE_DEPTH_MAX = 12
+function removeArtifactDirectory(target, budget, depth = 0) {
+  if (depth > ARTIFACT_PRUNE_DEPTH_MAX || budget.count >= ARTIFACT_PRUNE_ENTRY_MAX) return false
+  const parent = dirname(target)
+  const inspected = fileGuards.inspectEntryUnder(FIGMA_CACHE_ROOT, parent, target)
+  if (inspected && inspected.status === 'missing') return true
+  if (!inspected || inspected.status !== 'present' || !inspected.stat ||
+      !inspected.stat.isDirectory() || inspected.stat.isSymbolicLink()) return false
+  const listed = fileGuards.boundedDirectoryNamesUnder(
+    FIGMA_CACHE_ROOT, target, ARTIFACT_PRUNE_ENTRY_MAX - budget.count,
+  )
+  if (!listed.ok) return false
+  for (const name of listed.names) {
+    budget.count += 1
+    const child = join(target, name)
+    const entry = fileGuards.inspectEntryUnder(FIGMA_CACHE_ROOT, target, child)
+    if (!entry || entry.status !== 'present' || !entry.stat) return false
+    if (entry.stat.isFile() && !entry.stat.isSymbolicLink()) {
+      if (!fileGuards.unlinkRegularFileUnder(FIGMA_CACHE_ROOT, target, child, { allowMissing: true })) return false
+    } else if (entry.stat.isDirectory() && !entry.stat.isSymbolicLink()) {
+      if (!removeArtifactDirectory(child, budget, depth + 1)) return false
+    } else return false
+  }
+  return fileGuards.removeEmptyDirectoryUnder(FIGMA_CACHE_ROOT, parent, target)
+}
+
 function pruneArtifactRuns(root, stem, activeRunId, keepRuns) {
   if (!keepRuns) return
   const stemDir = join(root, artifactSegment(stem))
   const activeRunSeg = artifactSegment(activeRunId)
-  let rows = []
-  try {
-    rows = readdirSync(stemDir).map((name) => {
-      const dir = join(stemDir, name)
-      const st = statSync(dir)
-      return st.isDirectory() ? { name, dir, mtimeMs: st.mtimeMs } : null
-    }).filter(Boolean)
-  } catch {
-    return
+  const listed = fileGuards.boundedDirectoryNamesUnder(
+    FIGMA_CACHE_ROOT, stemDir, ARTIFACT_PRUNE_ENTRY_MAX,
+  )
+  if (!listed.ok || listed.exists === false) return
+  const rows = []
+  for (const name of listed.names) {
+    const dir = join(stemDir, name)
+    const entry = fileGuards.inspectEntryUnder(FIGMA_CACHE_ROOT, stemDir, dir)
+    if (!entry || entry.status !== 'present' || !entry.stat ||
+        !entry.stat.isDirectory() || entry.stat.isSymbolicLink()) return
+    rows.push({ name, dir, mtimeMs: entry.stat.mtimeMs })
   }
   rows.sort((a, b) => b.mtimeMs - a.mtimeMs)
   const keep = new Set(rows.some((row) => row.name === activeRunSeg) ? [activeRunSeg] : [])
@@ -571,7 +628,7 @@ function pruneArtifactRuns(root, stem, activeRunId, keepRuns) {
     keep.add(row.name)
   }
   for (const row of rows) {
-    if (!keep.has(row.name)) rmSync(row.dir, { recursive: true, force: true })
+    if (!keep.has(row.name)) removeArtifactDirectory(row.dir, { count: 0 })
   }
 }
 
@@ -1401,9 +1458,9 @@ async function main() {
   // value is a malformed design blocked at the cache gate), so this lookup can never soften.
   // Task file resolution mirrors check-screen-cache's (env override first, then task columns).
   const taskGate = (() => {
-    const explicit = !!process.env.FIGMA_SCREEN_TASK_FILE
-    const candidates = explicit
-      ? [process.env.FIGMA_SCREEN_TASK_FILE]
+    const explicit = FIGMA_TASK_SOURCE_EXPLICIT
+    const candidates = FIGMA_TASK_SOURCE_FILE
+      ? [FIGMA_TASK_SOURCE_FILE]
       : [
           join(REPO_ROOT, 'orchestrator', 'tasks', 'todo', `${stem}.md`),
           join(REPO_ROOT, 'orchestrator', 'tasks', 'backlog', `${stem}.md`),
@@ -1540,8 +1597,10 @@ async function main() {
       for (const f of r.resourceFiles || []) { try { inputHashes[f] = inputHashes[f] || fileHash(f) } catch { /* consulted file vanished — the re-hash net will catch it */ } }
       // Both explicit and detected outcomes depend on project-config: supportedLocales controls
       // the vote and adding/removing designLocale changes which branch wins.
-      const cfg = join(REPO_ROOT, 'orchestrator', 'project-config.md')
-      try { inputHashes[cfg] = inputHashes[cfg] || fileHash(cfg) } catch { /* absent config cannot influence the decision */ }
+      try {
+        inputHashes[PROJECT_CONFIG_FILE] = inputHashes[PROJECT_CONFIG_FILE] ||
+          PROJECT_CONFIG_HASH || fileHash(PROJECT_CONFIG_FILE)
+      } catch { /* absent config cannot influence the decision */ }
       if (r.language) {
         designLocaleMemo = { language: r.language, source: r.source }
       }

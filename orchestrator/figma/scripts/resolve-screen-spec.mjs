@@ -9,10 +9,10 @@
 //   Token truth is resolved only from the current observed catalog and its
 //   exact effective binding snapshot.
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync, renameSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import Ajv from 'ajv'
-import { figmaPath, figmaScreensRoot, isDirectRun } from './_util.mjs'
+import { figmaPath, figmaScreensRoot, isDirectRun, executionFigmaOutputPath, writeFigmaRuntimeFile } from './_util.mjs'
 import { assertTaskStem, fileHash } from './report-utils.mjs'
 import { loadObservedTokenDomain, loadPublishedBindingSnapshot } from './lib/observed-token-domain.mjs'
 import { contextKey } from '../tokens/source-contract.mjs'
@@ -200,10 +200,7 @@ export function loadResolvedSpecs({ stem, screensRoot = figmaScreensRoot() }) {
 }
 
 function atomicWrite(path, data) {
-  mkdirSync(dirname(path), { recursive: true })
-  const tmp = path + '.tmp'
-  writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n')
-  renameSync(tmp, path)
+  writeFigmaRuntimeFile(path, JSON.stringify(data, null, 2) + '\n')
 }
 
 if (isDirectRun(import.meta.url)) {
@@ -213,7 +210,8 @@ if (isDirectRun(import.meta.url)) {
     process.exit(1)
   }
   const screensRoot = figmaScreensRoot()
-  const out = valueAfter('--out') || process.env.FIGMA_RESOLVED_SPEC_OUT || figmaPath('reports', `resolved-spec-${stem}.json`)
+  const out = executionFigmaOutputPath(
+    valueAfter('--out') || process.env.FIGMA_RESOLVED_SPEC_OUT || figmaPath('reports', `resolved-spec-${stem}.json`))
   const resolved = loadResolvedSpecs({ stem, screensRoot })
   atomicWrite(out, resolved)
   console.log(`resolve-screen-spec: ${stem} ${resolved.specs.length} spec file(s) -> ${out}`)

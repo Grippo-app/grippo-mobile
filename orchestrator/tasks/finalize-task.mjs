@@ -30,6 +30,7 @@ import testSnapshotContract from './content-snapshot.cjs'
 import creationMarkerContract from './creation-marker-contract.cjs'
 import editMarkerContract from './edit-marker-contract.cjs'
 import taskState from './task-state-core.cjs'
+import integrationContract from './integration-record-contract.cjs'
 import platformSupport from './platform-support.cjs'
 import { validateCommittedTaskObservationReceipt } from '../figma/tokens/task-observation-receipt.mjs'
 import { validateTaskIngestionIntent } from '../figma/tokens/task-ingestion-intent.mjs'
@@ -43,9 +44,16 @@ const LOCKS_DIR = resolve(process.env.FINALIZE_LOCKS_DIR || join(PROJECT_ROOT, '
 const CREATIONS_DIR = resolve(process.env.FINALIZE_CREATIONS_DIR || join(dirname(CACHE_DIR), 'creations'))
 const TEST_CERTIFICATION_DIR = resolve(process.env.ORCHESTRATOR_TEST_CERTIFICATION_DIR || join(dirname(CACHE_DIR), 'test-certification'))
 const EDITS_DIR = resolve(process.env.FINALIZE_EDITS_DIR || join(dirname(CACHE_DIR), 'edits'))
+const INTEGRATIONS_DIR = resolve(process.env.FINALIZE_INTEGRATIONS_DIR || join(dirname(CACHE_DIR), 'integrations'))
 const MUTEX_PATH = join(CACHE_DIR, '.mutex.json')
 const WRITER_LEASES_DIR = join(CACHE_DIR, '.writers')
 const PHASES = ['outcome', 'components', 'tokens', 'ship', 'index', 'arch', 'verify', 'unlock', 'cleanup']
+// The prepare/confirm boundary (plan §10.4). Prepare publishes every artifact
+// but keeps the lock and the marker; confirm proves the canonical commit and
+// only then unlocks and cleans up. The nine phases above are unchanged: the
+// split is WHERE the loop stops, not a new lattice.
+const FINALIZE_MODES = ['prepare', 'confirm']
+const PREPARE_LAST_PHASE = 'verify'
 const STEM_RE = taskState.STEM_RE
 const STEM_MAX = taskState.STEM_MAX
 const HASH_RE = /^sha256:[a-f0-9]{64}$/
@@ -579,6 +587,12 @@ function taskArtifacts(stem) {
   for (const [column, path] of Object.entries(paths)) present[column] = !!regularFile(path, { code: 'UNSAFE_TASK_FILE' })
   return { paths, present, columns: Object.keys(present).filter((column) => present[column]) }
 }
+// The task has already landed: the only state in which a confirm may find no
+// prepared marker (an interrupted cleanup that already removed it).
+function completedColumnOnly(stem) {
+  const state = taskArtifacts(stem)
+  return state.columns.length === 1 && state.columns[0] === 'done'
+}
 function requireOnlyColumn(stem, expected) {
   const state = taskArtifacts(stem)
   if (state.columns.length !== 1 || state.columns[0] !== expected) {
@@ -1052,7 +1066,17 @@ function assertWriterQuiescence(stem, cliSessionId = '') {
     if (matches.length !== 1) fail('WRITER_SESSION_OWNER_MISSING', `expected exactly one active same-stem writer lease for session ${expectedSessionId}; found ${matches.length}`)
     allowed = matches[0]
   }
-  const blockers = scan.active.filter((row) => row !== allowed)
+  // §16: finalization prepare is incompatible with CONTROL writers. The only
+  // exemption is the class whose key PROVES its effects stay inside one
+  // checkout or on one device — an app-run must not refuse every publication it
+  // happens to overlap. A board-task session is deliberately not exempt even
+  // for another stem: `task-session` is what prep/answers/drop/reopen hold too,
+  // and those run in the control root, so the lease cannot prove isolation.
+  // Same predicate, same single definition, as the site's own gate.
+  const blockers = scan.active.filter(function (row) {
+    if (row === allowed) return false;
+    return !writerLeases.isolatedWriterKind(row.kind);
+  })
   if (!blockers.length) return expectedSessionId || null
   const first = blockers[0]
   const label = first.stem ? `${first.kind}:${first.stem}` : first.kind
@@ -2638,10 +2662,23 @@ function completedWithoutMarker(stem, scriptSet) {
 
 function parseCli(argv) {
   const out = { stem: '', outcomeFile: '', writerSessionId: '', json: false, status: false, list: false,
+    mode: '', integrationId: '', integrationCommit: '',
     tokenFixtureOptions: {}, componentFixtureOptions: {} }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
-    if (arg === '--outcome-file') { out.outcomeFile = argv[++i] || ''; if (!out.outcomeFile) fail('USAGE', '--outcome-file needs a path') }
+    if (arg === '--mode') {
+      out.mode = argv[++i] || ''
+      if (!FINALIZE_MODES.includes(out.mode)) fail('USAGE', `--mode must be one of ${FINALIZE_MODES.join('|')}`)
+    }
+    else if (arg === '--integration-id') {
+      out.integrationId = argv[++i] || ''
+      if (!integrationContract.INTEGRATION_ID_RE.test(out.integrationId)) fail('USAGE', '--integration-id needs a canonical ig-* id')
+    }
+    else if (arg === '--integration-commit') {
+      out.integrationCommit = argv[++i] || ''
+      if (!/^[a-f0-9]{40}$/.test(out.integrationCommit)) fail('USAGE', '--integration-commit needs a full commit id')
+    }
+    else if (arg === '--outcome-file') { out.outcomeFile = argv[++i] || ''; if (!out.outcomeFile) fail('USAGE', '--outcome-file needs a path') }
     else if (arg === '--writer-session-id') {
       out.writerSessionId = argv[++i] || ''
       if (!writerLeases.SESSION_ID_RE.test(out.writerSessionId)) fail('USAGE', '--writer-session-id needs a valid ws-* writer session id')
@@ -2682,17 +2719,165 @@ function parseCli(argv) {
     else fail('USAGE', `unexpected positional argument ${arg}`)
   }
   if (out.list) {
-    if (out.stem || out.status || out.outcomeFile || out.writerSessionId ||
+    if (out.stem || out.status || out.outcomeFile || out.writerSessionId || out.mode ||
+        out.integrationId || out.integrationCommit ||
         Object.keys(out.tokenFixtureOptions).length || Object.keys(out.componentFixtureOptions).length) {
       fail('USAGE', '--list-incomplete does not accept a stem, mutation options, or fixture inputs')
     }
   } else validateStem(out.stem)
+  // Forward publication belongs to the integration transaction (plan §10.4):
+  // prepare stops with the lock still held, confirm proves the canonical commit
+  // and only then releases. There is no third, mode-less path.
+  if (!out.list && !out.status) {
+    if (!out.mode) fail('USAGE', '--mode prepare|confirm is required; the finalizer runs only inside an integration transaction')
+    if (out.mode === 'confirm') {
+      if (!out.integrationId) fail('USAGE', '--mode confirm requires --integration-id')
+      if (!out.integrationCommit) fail('USAGE', '--mode confirm requires --integration-commit')
+      if (out.outcomeFile) fail('USAGE', '--mode confirm cannot install an Outcome draft')
+    } else if (out.integrationId || out.integrationCommit) {
+      fail('USAGE', '--integration-id/--integration-commit belong to --mode confirm')
+    }
+  }
+  if (out.status && out.mode) fail('USAGE', '--status cannot be combined with --mode')
+  if (out.status && (out.integrationId || out.integrationCommit)) fail('USAGE', '--status cannot be combined with integration proofs')
   if (out.status && out.outcomeFile) fail('USAGE', '--status cannot be combined with --outcome-file')
   if (out.status && out.writerSessionId) fail('USAGE', '--status cannot be combined with --writer-session-id')
   if (out.status && (Object.keys(out.tokenFixtureOptions).length || Object.keys(out.componentFixtureOptions).length)) {
     fail('USAGE', '--status cannot be combined with fixture inputs')
   }
   return out
+}
+
+// --- §10.4 confirm: prove the canonical commit before releasing anything ----
+// The integration owner hands over an id and a commit; this side trusts
+// neither. It re-reads the WAL, re-reads git, and re-compares the artifacts it
+// published itself against what the commit actually carries. Only then does
+// the lock come off.
+const GIT_READ_PREFIXES = [['rev-parse'], ['cat-file'], ['symbolic-ref'], ['ls-tree']]
+function gitRead(args, { binary = false } = {}) {
+  if (!Array.isArray(args) || !args.length ||
+      !GIT_READ_PREFIXES.some((prefix) => prefix.every((token, index) => args[index] === token))) {
+    return { ok: false, stdout: binary ? Buffer.alloc(0) : '' }
+  }
+  const env = {}
+  for (const key of Object.keys(process.env)) if (!key.startsWith('GIT_')) env[key] = process.env[key]
+  env.GIT_TERMINAL_PROMPT = '0'
+  env.GIT_OPTIONAL_LOCKS = '0'
+  env.LC_ALL = 'C'
+  let result
+  try {
+    result = spawnSync('git', args, { cwd: PROJECT_ROOT, env, timeout: 30000,
+      maxBuffer: 64 * 1024 * 1024, encoding: binary ? 'buffer' : 'utf8' })
+  } catch (e) { return { ok: false, stdout: binary ? Buffer.alloc(0) : '' } }
+  if (result.error || result.signal || typeof result.status !== 'number') {
+    return { ok: false, stdout: binary ? Buffer.alloc(0) : '' }
+  }
+  return { ok: result.status === 0, stdout: result.stdout || (binary ? Buffer.alloc(0) : '') }
+}
+function commitBlobState(commit, relativePath) {
+  // `cat-file commit:path` uses the same non-zero exit for "path absent" and
+  // for an unreadable object store. Prove membership first with an exact tree
+  // query so an I/O/tool failure can never masquerade as a required deletion.
+  const listed = gitRead(['ls-tree', '-z', '--full-tree', commit, '--', relativePath], { binary: true })
+  if (!listed.ok) {
+    fail('INTEGRATION_ARTIFACT_UNREADABLE', `${relativePath} could not be resolved in the canonical commit`, 4)
+  }
+  if (listed.stdout.length === 0) return { present: false, hash: null }
+  const rows = listed.stdout.toString('utf8').split('\0')
+  const separator = rows[0].indexOf('\t')
+  if (rows.length !== 2 || rows[1] !== '' || separator < 0 || rows[0].slice(separator + 1) !== relativePath) {
+    fail('INTEGRATION_ARTIFACT_UNREADABLE', `${relativePath} has an ambiguous canonical tree entry`, 4)
+  }
+  const probe = gitRead(['cat-file', 'blob', `${commit}:${relativePath}`], { binary: true })
+  if (!probe.ok) {
+    fail('INTEGRATION_ARTIFACT_UNREADABLE', `${relativePath} could not be read from the canonical commit`, 4)
+  }
+  return { present: true, hash: sha256(probe.stdout) }
+}
+function readIntegrationRecord(stem) {
+  const file = join(INTEGRATIONS_DIR, `${stem}.json`)
+  if (!regularFile(file, { code: 'INTEGRATION_RECORD_UNREADABLE', maxBytes: integrationContract.MAX_BYTES })) {
+    fail('INTEGRATION_RECORD_MISSING', `${stem} has no integration record; forward publication runs only inside an integration transaction`, 4)
+  }
+  const bytes = readRegular(file, { code: 'INTEGRATION_RECORD_UNREADABLE', maxBytes: integrationContract.MAX_BYTES })
+  try { return integrationContract.validateBytes(bytes) }
+  catch (e) { fail('INTEGRATION_RECORD_INVALID', `${stem} integration record is invalid: ${e.message}`, 4) }
+}
+function assertIntegrationPublished(marker, cli) {
+  const record = readIntegrationRecord(marker.stem)
+  if (record.integrationId !== cli.integrationId) {
+    fail('INTEGRATION_PROOF_MISMATCH', `${marker.stem} integration record is ${record.integrationId}, not ${cli.integrationId}`, 4)
+  }
+  if (record.status !== 'active') fail('INTEGRATION_PROOF_MISMATCH', `integration ${record.integrationId} is ${record.status}`, 4)
+  if (record.phases['commit-published'].provenAt === null) {
+    fail('INTEGRATION_COMMIT_UNPROVEN', 'the integration has not proven a published commit', 4)
+  }
+  if (record.commitPin.publishedCommit !== cli.integrationCommit) {
+    fail('INTEGRATION_PROOF_MISMATCH', 'the integration record names a different published commit', 4)
+  }
+  // Canonical branch, parent and tip — read from git, not from the record.
+  const head = gitRead(['symbolic-ref', '-q', 'HEAD'])
+  if (!head.ok || head.stdout.trim() !== record.target.ref) {
+    fail('INTEGRATION_BRANCH_MISMATCH', `the repository is not on ${record.target.ref}`, 4)
+  }
+  const tip = gitRead(['rev-parse', '-q', '--verify', record.target.ref])
+  if (!tip.ok || tip.stdout.trim() !== cli.integrationCommit) {
+    fail('INTEGRATION_COMMIT_ABSENT', `${record.target.ref} does not carry ${cli.integrationCommit}`, 4)
+  }
+  const parent = gitRead(['rev-parse', '-q', '--verify', `${cli.integrationCommit}^1`])
+  if (!parent.ok || parent.stdout.trim() !== record.target.baseCommit) {
+    fail('INTEGRATION_PARENT_MISMATCH', 'the canonical commit does not sit on the recorded base', 4)
+  }
+  const second = gitRead(['rev-parse', '-q', '--verify', `${cli.integrationCommit}^2`])
+  if (second.ok) fail('INTEGRATION_PARENT_MISMATCH', 'the canonical commit is a merge', 4)
+  // The artifacts THIS finalizer published must be byte-identical inside the
+  // commit. This is the independent half of the proof: the WAL's own pins
+  // could only ever prove the integration owner agreed with itself.
+  const artifacts = taskArtifacts(marker.stem)
+  if (artifacts.columns.length !== 1 || artifacts.columns[0] !== 'done') {
+    fail('INTEGRATION_TASK_NOT_PUBLISHED', `${marker.stem} is not published in done/`, 4)
+  }
+  const doneRelative = `orchestrator/tasks/done/${marker.stem}.md`
+  const todoRelative = `orchestrator/tasks/todo/${marker.stem}.md`
+  const doneBytes = readRegular(artifacts.paths.done, { code: 'TASK_MISSING', maxBytes: TASK_MAX_BYTES })
+  const committedDone = commitBlobState(cli.integrationCommit, doneRelative)
+  if (!committedDone.present || committedDone.hash !== sha256(doneBytes)) {
+    fail('INTEGRATION_ARTIFACT_MISMATCH', `${doneRelative} in the canonical commit differs from the published task`, 4)
+  }
+  if (commitBlobState(cli.integrationCommit, todoRelative).present) {
+    fail('INTEGRATION_ARTIFACT_MISMATCH', `${todoRelative} is still present in the canonical commit`, 4)
+  }
+  // The WAL's closed prepared-path set is the hand-off contract between the
+  // integration owner and this independent confirmer. Check every current
+  // artifact byte-for-byte (and every recorded deletion for absence), not just
+  // the historically hard-coded done/INDEX/arch subset. Otherwise a mapping or
+  // ship receipt can be changed after commit and confirm will never read it.
+  for (const pin of record.finalizerPrepared || []) {
+    const relative = pin.path
+    const onDisk = join(PROJECT_ROOT, relative)
+    const state = entryStat(onDisk, true)
+    if (state.missing) {
+      if (commitBlobState(cli.integrationCommit, relative).present) {
+        fail('INTEGRATION_ARTIFACT_MISMATCH', `${relative} was deleted by prepare but is present in the canonical commit`, 4)
+      }
+      continue
+    }
+    const bytes = readRegular(onDisk, { code: 'DERIVED_ARTIFACT_UNREADABLE', maxBytes: 32 * 1024 * 1024 })
+    const committed = commitBlobState(cli.integrationCommit, relative)
+    if (!committed.present || committed.hash !== sha256(bytes)) {
+      fail('INTEGRATION_ARTIFACT_MISMATCH', `${relative} in the canonical commit differs from the prepared artifact`, 4)
+    }
+  }
+  for (const relative of ['orchestrator/tasks/INDEX.json', 'orchestrator/.arch-map.json']) {
+    const onDisk = join(PROJECT_ROOT, relative)
+    if (entryStat(onDisk, true).missing) continue
+    const bytes = readRegular(onDisk, { code: 'DERIVED_ARTIFACT_UNREADABLE', maxBytes: TASK_MAX_BYTES })
+    const committed = commitBlobState(cli.integrationCommit, relative)
+    if (!committed.present || committed.hash !== sha256(bytes)) {
+      fail('INTEGRATION_ARTIFACT_MISMATCH', `${relative} in the canonical commit differs from the verified artifact`, 4)
+    }
+  }
+  return record
 }
 
 async function finalize(cli) {
@@ -2718,8 +2903,19 @@ async function finalize(cli) {
       marker = readMarker(cli.stem).marker
       reconcileInterruptedShip(marker)
       if (marker.status === 'completed') {
+        // Only confirm ever reaches a completed marker: it is the retry of an
+        // interrupted cleanup. A completed marker seen by prepare would mean a
+        // task released its lock without a canonical commit — fail closed.
+        if (cli.mode !== 'confirm') {
+          fail('FINALIZATION_COMPLETED_WITHOUT_INTEGRATION',
+            `${cli.stem} carries a completed finalization marker outside an integration confirm`, 4)
+        }
         if (cli.outcomeFile) assertLateOutcomeMatches(cli.stem, cli.outcomeFile)
         const completedScripts = scripts()
+        // A completed marker is recovery authority for an interrupted cleanup,
+        // not permission to forget which canonical transaction authorized it.
+        // Re-prove the caller's exact WAL/commit before deleting that authority.
+        assertIntegrationPublished(marker, cli)
         effectVerify(marker, completedScripts)
         await settleProcessEvents()
         assertMutexHeld(lease)
@@ -2735,9 +2931,16 @@ async function finalize(cli) {
       refreshPreShipIntent(marker, cli.outcomeFile)
       assertMutexHeld(lease)
     } else {
+      // Confirm never starts a publication: without a prepared marker there is
+      // nothing whose commit could have been proven.
+      if (cli.mode === 'confirm' && !completedColumnOnly(cli.stem)) {
+        fail('INTEGRATION_PREPARE_INCOMPLETE',
+          `${cli.stem} has no prepared finalization marker to confirm`, 4)
+      }
       marker = createMarker(cli.stem, cli.outcomeFile, invocationId, writerSessionId)
       assertMutexHeld(lease)
       if (!marker) {
+        if (cli.mode === 'confirm') assertIntegrationPublished({ stem: cli.stem }, cli)
         const completed = completedWithoutMarker(cli.stem, scripts())
         await settleProcessEvents()
         assertMutexHeld(lease)
@@ -2747,7 +2950,21 @@ async function finalize(cli) {
     }
 
     const scriptSet = scripts()
-    for (const phase of PHASES.slice(0, -1)) {
+    // Prepare stops after `verify`: every artifact is published and checked,
+    // but the lock stays held and the marker stays put, because the canonical
+    // commit does not exist yet. Confirm re-enters with the commit proven and
+    // runs only the release half.
+    const lastPhase = cli.mode === 'prepare' ? PREPARE_LAST_PHASE : 'unlock'
+    if (cli.mode === 'confirm') {
+      const unfinished = PHASES.slice(0, PHASES.indexOf('unlock')).filter((phase) => !markerPhaseDone(marker, phase))
+      if (unfinished.length) {
+        fail('INTEGRATION_PREPARE_INCOMPLETE',
+          `${cli.stem} cannot be confirmed: ${unfinished.join(', ')} did not complete during prepare`, 4)
+      }
+      assertIntegrationPublished(marker, cli)
+      assertMutexHeld(lease)
+    }
+    for (const phase of PHASES.slice(0, PHASES.indexOf(lastPhase) + 1)) {
       await settleProcessEvents()
       assertMutexHeld(lease)
       if (markerPhaseDone(marker, phase)) continue
@@ -2765,6 +2982,22 @@ async function finalize(cli) {
       assertMutexHeld(lease)
       failpoint('after-effect', phase)
       finishPhase(marker, phase, phaseState, phaseState === 'skipped' ? 'not applicable' : null)
+    }
+
+    if (cli.mode === 'prepare') {
+      // Hand ownership back without releasing anything: the lock is still
+      // held, the marker is still the recovery authority, and the task is in
+      // a transaction-owned done state waiting for its canonical commit. A
+      // retry may have skipped every succeeded phase, so verify the PHYSICAL
+      // bytes once more here instead of treating marker flags as evidence.
+      effectVerify(marker, scriptSet)
+      await settleProcessEvents()
+      assertMutexHeld(lease)
+      marker.owner = null
+      writeMarker(marker)
+      failpoint('after-effect', 'prepare')
+      return { stem: cli.stem, prepared: true, transactionId: marker.transactionId,
+        phase: marker.phase, doneRelative: `orchestrator/tasks/done/${cli.stem}.md` }
     }
 
     assertMutexHeld(lease)

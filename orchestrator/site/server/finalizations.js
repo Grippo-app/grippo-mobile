@@ -36,10 +36,14 @@ var MAX_RUNTIME_ENTRIES = 10000;
 var PHASES = { outcome: 1, components: 1, tokens: 1, ship: 1, index: 1, arch: 1, verify: 1, unlock: 1, cleanup: 1 };
 var PHASE_STATES = { pending: 1, running: 1, failed: 1, succeeded: 1, skipped: 1 };
 var IDENTITY_PROOF_FIELDS = ['ctimeNs', 'dev', 'hash', 'ino', 'kind', 'mode', 'mtimeNs', 'size'];
+var CANONICAL_PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
 var children = Object.create(null);
 var lastRuns = Object.create(null);
 var localHost = os.hostname();
-function windowsJobMode() { return process.platform === 'win32' || process.env.FINALIZATION_TEST_WINDOWS_JOB === '1'; }
+function windowsJobMode() {
+  return process.platform === 'win32' ||
+    (paths.PROJECT_ROOT !== CANONICAL_PROJECT_ROOT && process.env.FINALIZATION_TEST_WINDOWS_JOB === '1');
+}
 
 function bounded(value, max) {
   var s = String(value == null ? '' : value);
@@ -201,28 +205,35 @@ function mutexIssue() {
   if (!processOwnerActive(owner)) return null;
   return { code: 'FINALIZATION_MUTEX_BUSY', message: 'another finalization owns the global publication mutex' };
 }
-function writerLeaseIssue() {
-  var scan = writerLeases.scan(paths.WRITER_LEASES_DIR, paths.WRITER_AUTHORITY_ROOT);
+// The ONE definition of "a writer that makes a control-tree publication
+// impossible" (§16: finalization prepare is incompatible with control writers).
+// Everything active counts except the classes whose key proves their effects
+// stay inside one checkout or on one device — otherwise an app-run overlapping
+// a publication would refuse it for no reason. Board-task sessions are NOT
+// exempt by stem: `task-session` is also what `prep`/`answers`/`drop`/`reopen`
+// hold, and §9.1 gives a worktree only to `run`, so the lease cannot prove the
+// session is isolated. Three callers share this: the Board's recoverability
+// verdict, the integration precondition, and — through the same predicate in
+// writer-leases.cjs — the finalizer's own quiescence gate.
+function controlWriterIssue() {
+  var scan;
+  try { scan = writerLeases.scan(paths.WRITER_LEASES_DIR, paths.WRITER_AUTHORITY_ROOT); }
+  catch (e) { return { code: 'WRITER_LEASE_DIR_UNSAFE', message: bounded(e && e.message || e) }; }
   if (scan.issues.length) return {
     code: scan.issues[0].code || 'WRITER_LEASE_INVALID',
     message: 'workspace writer lease state is unsafe: ' + bounded(scan.issues[0].message)
   };
-  if (!scan.active.length) return null;
-  var row = scan.active[0];
+  var blocking = scan.active.filter(function (row) {
+    return !writerLeases.isolatedWriterKind(row.kind);
+  });
+  if (!blocking.length) return null;
+  var row = blocking[0];
   return {
     code: 'WORKSPACE_WRITER_ACTIVE',
-    message: 'a workspace-writing turn is still active' + (row.stem ? ' for ' + row.stem : '') +
-      (scan.active.length > 1 ? ' (+' + (scan.active.length - 1) + ' more)' : '')
+    message: 'a workspace-writing turn is still active' +
+      (row.stem ? ' for ' + row.stem : ' (' + row.kind + ')') +
+      (blocking.length > 1 ? ' (+' + (blocking.length - 1) + ' more)' : '')
   };
-}
-function exclusivePublicationLease(row) {
-  return row && (row.kind === 'runtime-build' || typeof row.key === 'string' && (
-    row.key === 'task:create-backlog' ||
-    row.key === 'task:recover-backlog-creations' ||
-    row.key === 'task:recover-backlog-edits' ||
-    row.key.indexOf('task:edit-backlog:') === 0 ||
-    row.key === 'figma:ship-drift-artifacts'
-  ));
 }
 function mutationWriterIssue(stem, options) {
   options = options || {};
@@ -236,20 +247,18 @@ function mutationWriterIssue(stem, options) {
     // Deterministic create/edit helpers republish shared task + INDEX state;
     // ship-drift sweep writes across every shipped task. Their leases therefore
     // gate every other writer even before a later artifact/marker lands.
-    if (exclusivePublicationLease(row)) return true;
+    if (writerLeases.deterministicPublisherLease(row)) return true;
     // A global deterministic publisher must start only when it is the sole
     // active writer.  Its already-published lease makes later writers lose the
     // opposite side of the same lease-before-second-check handshake.
     if (options.requireSoleWriter === true) return true;
-    // Frozen serial safety (pipeline improvement 01, Phase 0): board-task
-    // writers are mutually exclusive across stems AND drainers. A second
-    // task-session acquisition loses the publish-then-scan handshake against
-    // any live board-task writer — a runner session, a standby execution, or
-    // a detached orphan surviving a dead site process — not only same-stem.
-    // Control-plane writers (workspace-session, runtime-build) keep the
-    // narrower rules below. Relaxing this back to per-stem is allowed only
-    // atomically with per-task worktree isolation.
-    if (options.kind === 'task-session' && row.kind === 'task-session') return true;
+    // Per-task worktree isolation is complete (pipeline improvement 01, Phases
+    // 1-5), so board-task writers are exclusive PER STEM again rather than
+    // across every stem and drainer: two runs now own disjoint checkouts, seal
+    // separate candidates, and can never see each other's files. What still
+    // serializes globally is unchanged and lives elsewhere — the integration
+    // mutex, the finalization marker/mutex, and the device/bundle resource
+    // leases. The same-stem rule below is what keeps one task single-writer.
     // Never two owners for the same task/key (including a detached orphan
     // left by a dead site process).
     if (stem && row.stem === stem) return true;
@@ -268,7 +277,14 @@ function mutationWriterIssue(stem, options) {
 // any of those. Scan issues fail closed: an unprovable writer state pauses
 // the queue drain instead of admitting a second shared-root writer.
 // beginMutation stays the authoritative arbiter via the same lease scan.
-function foreignTaskSessionWriterIssue() {
+// §16: "execution A is incompatible with cleanup A". An app-run holds
+// `execution:<worktreeId>` for the whole build/install/launch, so anything that
+// DESTROYS that checkout — the integration's release phase, the operator's
+// explicit release — must refuse while it is held. This is the single exception
+// to isolatedWriterKind: the lease is isolated from every OTHER checkout and
+// from the control tree, but it is not isolated from its own cleanup.
+function executionWriterIssue(worktreeId) {
+  var key = writerLeases.executionLeaseKeyFor(worktreeId);
   var scan;
   try { scan = writerLeases.scan(paths.WRITER_LEASES_DIR, paths.WRITER_AUTHORITY_ROOT); }
   catch (e) { return { code: 'WRITER_LEASE_DIR_UNSAFE', message: bounded(e && e.message || e) }; }
@@ -276,8 +292,29 @@ function foreignTaskSessionWriterIssue() {
     code: scan.issues[0].code || 'WRITER_LEASE_INVALID',
     message: 'workspace writer lease state is unsafe: ' + bounded(scan.issues[0].message)
   };
+  var row = scan.active.find(function (candidate) { return candidate.key === key; });
+  return row ? {
+    code: 'EXECUTION_WRITER_ACTIVE',
+    message: 'an app-run is still building in this checkout (' + key + ', lease ' + row.leaseId +
+      '); finish or stop it before the generation can be released'
+  } : null;
+}
+
+// The runner's durable occupancy hold. With a stem it answers "may THIS task be
+// claimed" — a foreign board-task writer for another stem is now irrelevant,
+// because the two runs own disjoint checkouts. Without a stem it answers only
+// "is the lease store provable at all", which must hold the whole drain.
+function foreignTaskSessionWriterIssue(stem) {
+  var scan;
+  try { scan = writerLeases.scan(paths.WRITER_LEASES_DIR, paths.WRITER_AUTHORITY_ROOT); }
+  catch (e) { return { code: 'WRITER_LEASE_DIR_UNSAFE', message: bounded(e && e.message || e) }; }
+  if (scan.issues.length) return {
+    code: scan.issues[0].code || 'WRITER_LEASE_INVALID',
+    message: 'workspace writer lease state is unsafe: ' + bounded(scan.issues[0].message)
+  };
+  if (!stem) return null;
   var row = scan.active.find(function (candidate) {
-    return candidate.kind === 'task-session' &&
+    return candidate.kind === 'task-session' && candidate.stem === stem &&
       !(candidate.owner && candidate.owner.pid === process.pid &&
         writerLeases.processIdentityMatches(candidate.owner.pid, candidate.owner.processStartId));
   });
@@ -361,7 +398,7 @@ function replacementProjection(stem, names) {
   var otherServerStem = Object.keys(children).find(function (activeStem) { return activeStem !== stem; });
   var unavailable = !running && otherServerStem ? {
     code: 'FINALIZATION_SERVER_BUSY', message: 'another task finalization is still running: ' + otherServerStem
-  } : (!running ? (writerLeaseIssue() || mutexIssue()) : null);
+  } : (!running ? (controlWriterIssue() || mutexIssue()) : null);
   return {
     version: 1, stem: stem, status: 'incomplete', state: 'incomplete', phase: 'marker-replace-recovery',
     observedColumn: observedColumn(stem), revision: 1, etag: digest(read.bytes),
@@ -507,7 +544,7 @@ function readOne(stem) {
   var treeIssue = children[stem] && children[stem].treeUnverified ? lastRuns[stem] : null;
   var runtimeUnsupported = !!(marker.figma && marker.figma.enabled) && Number(String(process.versions.node || '').split('.')[0]) < 22;
   var mutex = mutexIssue();
-  var writer = writerLeaseIssue();
+  var writer = controlWriterIssue();
   var otherServerStem = Object.keys(children).find(function (activeStem) { return activeStem !== stem; });
   var unavailable = runtimeUnsupported ? {
     code: 'NODE_VERSION_UNSUPPORTED',
@@ -607,6 +644,11 @@ function mutationBlocked(stem, options) {
   // corrupt state or multiple incomplete transactions remain fail-closed.
   if (creationMarkers.blockingIssue(options.creationKeyHash || null, options.allowAllCreationRecovery === true)) return true;
   if (editMarkers.blockingIssue(stem, options.allowAllEditRecovery === true)) return true;
+  // An integration transaction mutates the canonical branch, the task board and
+  // every derived registry at once (plan §12.1/§17). Nothing else may write
+  // while one is mid-flight, and an unreadable integration store is never
+  // treated as an absent one.
+  if (require('./integrations').activeIssue().active) return true;
   if (mutationWriterIssue(stem, options)) return true;
   return !!mutexIssue();
 }
@@ -869,22 +911,35 @@ function terminateRecord(stem, record) {
     if (typeof record.killTimer.unref === 'function') record.killTimer.unref();
   }
 }
-function resume(stem, expectedRevision, expectedEtag) {
+// Spawn and supervise ONE finalizer child. Since the integration transaction
+// owns forward publication (plan §10.4), the mode and its arguments always come
+// from the integration WAL: `options.extraArgs` is mandatory, so no caller can
+// reach the finalizer outside a transaction. `options.onSettled` hands the exit
+// back to the WAL driver, which then advances or stops. This is a supervision
+// primitive, not an action: optimistic-concurrency and recoverability are
+// decided by the integration owner before it ever gets here.
+function runFinalizer(stem, options) {
   if (!validStem(stem)) return { ok: false, statusCode: 400, error: 'bad-stem' };
-  if (!Number.isInteger(expectedRevision) || expectedRevision < 1 || !ETAG_RE.test(String(expectedEtag || ''))) {
-    return { ok: false, statusCode: 400, error: 'bad-concurrency-token' };
+  var extraArgs = options && Array.isArray(options.extraArgs) ? options.extraArgs : null;
+  if (!extraArgs || !extraArgs.length) {
+    return { ok: false, statusCode: 409, error: 'finalization-integration-owned',
+      detail: 'A finalization runs only as part of an integration transaction; start or resume it from the Board.' };
   }
-  var current = readOne(stem);
+  var settled = options && typeof options.onSettled === 'function' ? options.onSettled : null;
+  // A FIRST `--mode prepare` legitimately has no marker yet — the finalizer
+  // creates it. readOne reports an absent marker as corrupt (it is only ever
+  // asked about markers that exist), so the existence check comes first.
+  var current = hasMarker(stem) ? readOne(stem) : { status: 'none', recoveryRunning: false };
   if (current.status === 'corrupt') return { ok: false, statusCode: 409, error: 'finalization-corrupt', detail: current.errorMessage };
-  if (current.revision !== expectedRevision || current.etag !== expectedEtag) {
-    return { ok: false, statusCode: 409, error: 'finalization-changed', current: current };
-  }
+  // Admission here is only about PROCESS ownership: whether this publication
+  // may advance at all is the integration WAL's decision, and a marker-shaped
+  // admission rule would make a first `--mode prepare` (no marker yet)
+  // structurally impossible.
   if (children[stem] || current.recoveryRunning) return { ok: true, accepted: false, alreadyRunning: true, finalization: current };
   var activeStems = Object.keys(children);
   if (activeStems.length) {
     return { ok: false, statusCode: 409, error: 'finalization-busy', detail: 'Another task finalization is already running: ' + activeStems[0] };
   }
-  if (!current.recoverable) return { ok: false, statusCode: 409, error: 'finalization-unavailable', detail: current.errorMessage, current: current };
 
   var script = process.env.FINALIZE_TASK_SCRIPT || path.join(paths.ORCHESTRATOR_DIR, 'tasks', 'finalize-task.mjs');
   var child, useJob = windowsJobMode();
@@ -910,11 +965,11 @@ function resume(stem, expectedRevision, expectedEtag) {
     if (isTestInjectionKey(key)) delete childEnv[key];
   });
   var command = process.execPath;
-  var commandArgs = [script, stem, '--json'];
+  var commandArgs = [script, stem, '--json'].concat(extraArgs);
   if (useJob) {
     command = process.env.FINALIZATION_WINDOWS_JOB_PYTHON || process.env.FINALIZE_LOCK_PYTHON || 'python';
     commandArgs = [process.env.FINALIZATION_WINDOWS_JOB_WRAPPER || path.join(paths.ORCHESTRATOR_DIR, 'tasks', 'windows-job.py'),
-      '--', process.execPath, script, stem, '--json'];
+      '--', process.execPath, script, stem, '--json'].concat(extraArgs);
     childEnv.FINALIZATION_JOB_NONCE = jobNonce;
   }
   try {
@@ -959,6 +1014,21 @@ function resume(stem, expectedRevision, expectedEtag) {
   }, record.timeoutMs);
   if (typeof record.timeoutTimer.unref === 'function') record.timeoutTimer.unref();
   child.on('close', function (code, signal) {
+    // Scheduled first so it fires after this handler completes, whichever
+    // branch it takes — including the early Windows-job return — and after any
+    // synchronous ownership release, so the driver's next spawn is admissible.
+    if (settled) {
+      setImmediate(function () {
+        var failure = lastRuns[stem];
+        try {
+          settled(failure
+            ? { ok: false, code: failure.code, message: failure.message, exitCode: record.exitCode }
+            : { ok: true, exitCode: record.exitCode, output: record.output });
+        } catch (error) {
+          console.error('[site] integration driver threw on finalizer settlement: ' + bounded(error && error.stack || error));
+        }
+      });
+    }
     clearTimeout(record.timeoutTimer);
     if (record.windowsJobMode && record.jobControlBuffer) {
       appendOutput(record, record.jobControlBuffer);
@@ -1023,6 +1093,20 @@ function dirMtime() {
 function init() {
   try { ensureDir(); }
   catch (e) { console.error('[site] finalization marker directory is unavailable: ' + bounded(e && e.message || e)); }
+  // A site crash can leave a clean canonical writer lease, or a durable lease
+  // CAS prefix, after its exact local owner/process tree is gone. Reconcile
+  // only generations the lease contract can prove dead before task admission
+  // scans them; otherwise the new site would advertise a permanent recovery
+  // blocker and could never reach the operation that safely clears it.
+  try {
+    var writerRecovery = writerLeases.reconcileStaleMutations(
+      paths.WRITER_LEASES_DIR, paths.WRITER_AUTHORITY_ROOT);
+    if (writerRecovery.blocked.length) console.warn('[site] ' + writerRecovery.blocked.length +
+      ' writer lease generation(s) still require explicit recovery');
+  } catch (writerRecoveryError) {
+    console.error('[site] writer lease recovery is unavailable: ' +
+      bounded(writerRecoveryError && writerRecoveryError.message || writerRecoveryError));
+  }
   var pending = list();
   if (pending.length) console.warn('[site] found ' + pending.length + ' unfinished/corrupt task finalization(s); recovery is available on the Board');
 }
@@ -1168,7 +1252,10 @@ module.exports = {
   attachMutationChild: attachMutationChild,
   retainMutation: retainMutation,
   endMutation: endMutation,
-  resume: resume,
+  controlWriterIssue: controlWriterIssue,
+  markerShapeError: markerShapeError,
+  executionWriterIssue: executionWriterIssue,
+  runFinalizer: runFinalizer,
   killAll: killAll,
   dirMtime: dirMtime,
   mutexRecordIssue: mutexRecordIssue,

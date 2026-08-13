@@ -119,6 +119,8 @@ const androidRunner = require('../server/android-runner.js');
 const storage = require('../server/app-run-storage.js');
 const writerLeases = require('../../tasks/writer-leases.cjs');
 const finalizations = require('../server/finalizations.js');
+const worktreeManager = require('../server/worktree-manager.js');
+const appRunValidation = require('../server/app-run-validation.js');
 
 async function waitFor(predicate, label) {
   for (let attempt = 0; attempt < 200; attempt++) {
@@ -204,7 +206,12 @@ try {
   assert.equal(secondWhileRunning.error, 'app-run-active',
     'the first release must keep exactly one active app target');
 
+  // The context carries the SAME proven product root production always
+  // supplies. Without it the call would refuse on the missing root and this
+  // check would pass for the wrong reason, proving nothing about the
+  // application id.
   assert.throws(() => androidRunner.resolveArtifact({
+    executionRoot: root,
     tools: { apkanalyzer: tools.apkanalyzer, aapt: null },
     commandRunner: {
       runSync() { return result('com.example.substituted\n'); },
@@ -224,6 +231,7 @@ try {
     elements: [{ type: 'SINGLE', filters: {}, outputFile: 'fixture-debug.apk' }],
   }) + '\n');
   assert.throws(() => androidRunner.resolveArtifact({
+    executionRoot: root,
     tools: { apkanalyzer: tools.apkanalyzer, aapt: null },
     commandRunner: {
       runSync() { return result('com.example.runner\n'); },
@@ -572,6 +580,74 @@ try {
   });
   assert.equal(restartedStopped.ok, true);
 
+  // A live app session belongs to the exact execution generation that built
+  // and installed it. Reusing only taskStem here would let a later checkout for
+  // the same task silently become the restart/source-validation authority.
+  const originalExecutionBindingFor = worktreeManager.executionBindingFor;
+  const originalExecutionPinFor = worktreeManager.executionPinFor;
+  const originalChecklist = appRunValidation.checklist;
+  const taskStem = 'TASK_91_app_run_generation';
+  const executionA = {
+    worktreeId: 'wt-' + 'a'.repeat(32), executionRoot: root,
+    runId: '1700000000000-appa', baseCommit: '1'.repeat(40), targetRef: 'refs/heads/main',
+  };
+  const executionB = {
+    worktreeId: 'wt-' + 'b'.repeat(32), executionRoot: root,
+    runId: '1700000000001-appb', baseCommit: '1'.repeat(40), targetRef: 'refs/heads/main',
+  };
+  worktreeManager.executionBindingFor = () => ({ ok: true, binding: executionA });
+  worktreeManager.executionPinFor = (_stem, runId) => ({
+    ok: true,
+    pin: {
+      worktreeId: runId === executionA.runId ? executionA.worktreeId : executionB.worktreeId,
+      executionTree: runId === executionA.runId ? 'a'.repeat(40) : 'b'.repeat(40),
+    },
+  });
+  appRunValidation.checklist = () => ({
+    ok: true, taskSourceRevision: 'sha256:' + '9'.repeat(64), checklist: [], limitations: [],
+  });
+  const taskTargets = runner.targets('android', true).targets;
+  const taskStart = runner.start({
+    ...startBody,
+    targetId: taskTargets.platforms[0].devices[0].id,
+    discoveryRevision: taskTargets.discoveryRevision,
+    expectedProjectSourceRevision: taskTargets.projectSourceRevision,
+    taskStem,
+    buildMode: 'if-needed',
+    idempotencyKey: 'task-bound-generation-a',
+  });
+  assert.equal(taskStart.status, 202);
+  const taskRunning = await waitFor(() => {
+    const current = runner.status();
+    return current.session && current.session.jobId === taskStart.job.jobId &&
+      current.session.state === 'running' ? current : null;
+  }, 'task-bound generation A app session');
+  worktreeManager.executionBindingFor = () => ({ ok: true, binding: executionB });
+  const changedGenerationTargets = runner.targets('android', true).targets;
+  const changedGenerationRestart = await runner.restart({
+    sessionId: taskRunning.session.sessionId,
+    expectedSessionRevision: taskRunning.session.sessionRevision,
+    buildMode: 'if-needed',
+    discoveryRevision: changedGenerationTargets.discoveryRevision,
+    expectedProjectSourceRevision: changedGenerationTargets.projectSourceRevision,
+    confirmationToken: null,
+    idempotencyKey: 'reject-task-generation-switch',
+  });
+  assert.equal(changedGenerationRestart.error, 'execution-binding-unavailable',
+    'restart must not rebind a live session from generation A to generation B');
+  assert.equal(runner.status().session.sessionId, taskRunning.session.sessionId,
+    'a generation mismatch must be refused before the running app is stopped');
+  worktreeManager.executionBindingFor = () => ({ ok: true, binding: executionA });
+  const taskStopped = await runner.stop({
+    sessionId: taskRunning.session.sessionId,
+    expectedSessionRevision: taskRunning.session.sessionRevision,
+    idempotencyKey: 'task-bound-generation-a-stop',
+  });
+  assert.equal(taskStopped.ok, true);
+  worktreeManager.executionBindingFor = originalExecutionBindingFor;
+  worktreeManager.executionPinFor = originalExecutionPinFor;
+  appRunValidation.checklist = originalChecklist;
+
   const runningJobRecord = storage.readJson(paths.APP_RUN_JOBS_DIR, restarted.job.jobId);
   const runningSessionRecord = storage.readJson(
     paths.APP_RUN_SESSIONS_DIR, restartedRunning.session.sessionId,
@@ -676,7 +752,9 @@ try {
   assert.equal(recovered.errorCode, 'process-interrupted');
 
   const corrupted = storage.readJson(paths.APP_RUN_JOBS_DIR, persisted.jobId);
-  corrupted.unexpectedField = true;
+  for (const field of ['worktreeId', 'executionRoot', 'executionRunId', 'candidateTree', 'applicationId']) {
+    delete corrupted[field];
+  }
   storage.writeJson(paths.APP_RUN_JOBS_DIR, corrupted.jobId, corrupted);
   runner._resetForTests();
   runner.init({ commandRunner: fakeRunner, androidTools: tools });

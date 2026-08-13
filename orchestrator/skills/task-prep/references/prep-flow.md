@@ -149,8 +149,8 @@ authority before acquiring anything:
   `leaseId`/`token`/`sessionId` privately and ownership-safely release this
   prep-owned lease on every task-prep return (promotion, new question round,
   validation failure, or no-op). Exit 2 means finalization owns publication —
-  or, under frozen serial safety, another live board-task writer for ANY stem
-  won the handshake; make no mutation.
+  or another live board-task writer for the SAME stem won the handshake; make
+  no mutation.
 
 A successfully verified site or standby generation must not acquire a
 duplicate. Release a prep-owned direct lease with `node

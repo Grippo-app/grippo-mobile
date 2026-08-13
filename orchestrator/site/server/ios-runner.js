@@ -254,23 +254,41 @@ async function ensureStarted(context, target) {
   return target.rawIdentifier;
 }
 
+// §26: the product root is always PROVEN by the caller. A missing one is a
+// typed refusal, never a silent fall back to the control root — that would
+// build or read the shared tree and label the result with a task's identity.
+function assertProductRoot(context) {
+  if (!context || typeof context.executionRoot !== 'string' || context.executionRoot === '') {
+    var error = new Error('the job carries no proven product root');
+    error.code = 'artifact-invalid';
+    throw error;
+  }
+}
+
 function derivedDataPath(context) {
-  var directory = path.join(paths.APP_RUN_DIR, 'derived-data', context.runConfigHash.replace(/^sha256:/, '').slice(0, 24));
+  // Task-local by construction (§14): the same scope the artifact expectation
+  // allows, so a build and its verification can never disagree about where the
+  // product was produced.
+  var scope = context.runConfigHash.replace(/^sha256:/, '').slice(0, 24);
+  var directory = path.join(paths.APP_RUN_DIR, 'derived-data',
+    context.worktreeId ? scope + '-' + String(context.worktreeId).slice(-12) : scope);
   storage.ensureDirectory(directory);
   return directory;
 }
 
 async function build(context, variant) {
+  assertProductRoot(context);
   var derived = derivedDataPath(context);
   var result = await context.commandRunner.run({
     executable: context.tools.xcodebuild,
     argv: [
-      'build', '-project', path.join(paths.PROJECT_ROOT, variant.project),
+      'build', '-project', path.join(context.executionRoot, variant.project),
       '-scheme', variant.scheme, '-configuration', variant.configuration,
       '-sdk', 'iphonesimulator', '-destination', 'generic/platform=iOS Simulator',
       '-derivedDataPath', derived, 'CODE_SIGNING_ALLOWED=NO'
     ],
-    cwd: paths.PROJECT_ROOT, timeoutMs: 30 * 60 * 1000,
+    // The product is compiled where the product IS.
+    cwd: context.executionRoot, timeoutMs: 30 * 60 * 1000,
     signal: context.signal, onLine: context.onLine,
     beforeSpawn: context.beforeBuildSpawn,
     onSpawn: context.onBuildSpawn

@@ -477,6 +477,20 @@ import { requestJson } from './request-json.js';
     });
   }
 
+  // The integration transaction (plan §10). Preview is read-only and returns
+  // the exact candidate diff plus the exact blocking paths; start and resume
+  // drive the same write-ahead log, so a repeated click is idempotent rather
+  // than a second commit.
+  function previewIntegration(stem) { return postJson('/api/integrations/preview', { stem: stem }); }
+  function startIntegration(stem) { return postJson('/api/integrations/start', { stem: stem }, 600000); }
+  function resumeIntegration(stem) { return postJson('/api/integrations/resume', { stem: stem }, 600000); }
+  // The two operator exits from a wedged state. Abandon carries the exact
+  // integration id: it is the confirmation that a human read the record.
+  function abandonIntegration(stem, integrationId) {
+    return postJson('/api/integrations/abandon', { stem: stem, integrationId: integrationId });
+  }
+  function releaseWorktree(stem) { return postJson('/api/worktrees/release', { stem: stem }); }
+
   // Generic interactive sessions (Setup / Wizard / Board task terminals). `key`
   // is the context: "setup" | "task:<stem>". `sessionStart`
   // spawns (or no-ops if already running) and optionally sends `prompt` as the
@@ -573,6 +587,11 @@ import { requestJson } from './request-json.js';
     editBacklog: editBacklog,
     recoverTaskLock: recoverTaskLock,
     resumeFinalization: resumeFinalization,
+    previewIntegration: previewIntegration,
+    startIntegration: startIntegration,
+    resumeIntegration: resumeIntegration,
+    abandonIntegration: abandonIntegration,
+    releaseWorktree: releaseWorktree,
     cliInstall: cliInstall,
     cliLogin: cliLogin,
     cliLoginCode: cliLoginCode,

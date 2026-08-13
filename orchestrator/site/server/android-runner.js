@@ -546,10 +546,15 @@ function readyExistingAvd(context, target) {
 }
 
 async function build(context, variant, rebuild) {
+  assertProductRoot(context);
   var argv = [variant.assembleTask, '--no-daemon', '--stacktrace'];
   if (rebuild) argv.push('--rerun-tasks');
+  // The product is built where the product IS: for a task-bound job that is the
+  // isolated checkout carrying the candidate, so the build never reads the
+  // control root's tree and never writes its build outputs there.
   var result = await context.commandRunner.run({
-    executable: context.tools.gradlew, argv: argv, cwd: paths.PROJECT_ROOT,
+    executable: context.gradlew || context.tools.gradlew, argv: argv,
+    cwd: context.executionRoot,
     timeoutMs: 30 * 60 * 1000, signal: context.signal, onLine: context.onLine,
     beforeSpawn: context.beforeBuildSpawn,
     onSpawn: context.onBuildSpawn
@@ -603,8 +608,24 @@ function hashStableRegular(held, maximum) {
   }
 }
 
+// §26: the product root is always PROVEN by the caller. A missing one is a
+// typed refusal, never a silent fall back to the control root — that would
+// build or read the shared tree and label the result with a task's identity.
+function assertProductRoot(context) {
+  if (!context || typeof context.executionRoot !== 'string' || context.executionRoot === '') {
+    var error = new Error('the job carries no proven product root');
+    error.code = 'artifact-invalid';
+    throw error;
+  }
+}
+
 function resolveArtifact(context, variant) {
-  var outputRoot = path.join(paths.PROJECT_ROOT, variant.module, 'build', 'outputs', 'apk', variant.id);
+  // Read the outputs of the tree that was actually built — the control root's
+  // APK would be a different product entirely. The root is never defaulted: a
+  // caller that cannot say which tree it built has no artifact to resolve.
+  assertProductRoot(context);
+  var outputRoot = path.join(context.executionRoot,
+    variant.module, 'build', 'outputs', 'apk', variant.id);
   var metadataFile = path.join(outputRoot, 'output-metadata.json');
   var metadata = JSON.parse(readStableRegular(metadataFile, 1024 * 1024).toString('utf8'));
   if (!metadata || !Array.isArray(metadata.elements) || metadata.elements.length < 1 || metadata.elements.length > 100) {

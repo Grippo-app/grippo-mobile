@@ -18,6 +18,7 @@ var locksMod    = require('./locks');
 var requestsMod = require('./requests');
 var timingModel = require('./timing');
 var finalizationsMod = require('./finalizations');
+var integrationsMod = require('./integrations');
 var shallowIntakeMod = require('./shallow-intake');
 var editMarkersMod = require('./edit-markers');
 var reviewerMod = require('./reviewer');
@@ -112,6 +113,7 @@ function stateHash(snapshot, reviewerRevision) {
     + '|locks:' + locksMod.locksDirMtime()
     + '|requests:' + requestsMod.requestsDirMtime()
     + '|finalizations:' + finalizationsMod.dirMtime()
+    + '|integrations:' + integrationsMod.dirMtime()
     + '|shallow-intake:' + shallowIntakeMod.dirMtime()
     + '|backlog-edits:' + editMarkersMod.dirMtime()
     + '|task-journal:' + tasksLogMod.revision()

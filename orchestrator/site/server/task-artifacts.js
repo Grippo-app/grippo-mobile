@@ -325,12 +325,25 @@ function safeRelativePath(value) {
     });
 }
 
-function changedTreeArtifacts(row, rows, limitations, provided) {
+function changedTreeArtifacts(stem, row, rows, limitations, provided) {
   var runtime = row.runtimeStatus || {};
   if (['running', 'queued', 'waiting-runner', 'awaiting', 'stopped'].indexOf(runtime.state) < 0) return;
+  // A run writes its OWN checkout, never the control root. Summarising the
+  // control root here labelled the owner's uncommitted work as the agent's
+  // changed tree. The binding must be proven: without one there is no run tree
+  // to describe, and an unreadable ownership store is not "no binding".
+  var binding;
+  try { binding = require('./worktree-manager').executionBindingFor(stem); }
+  catch (_) { binding = { ok: false }; }
+  if (provided === undefined && (!binding.ok || !binding.binding)) {
+    limitations.push(binding.ok ? 'active-changed-tree-unbound' : 'active-changed-tree-unavailable');
+    return;
+  }
   var summary;
-  try { summary = provided === undefined ? git.statusSummary() : provided; }
-  catch (_) { summary = null; }
+  try {
+    summary = provided === undefined
+      ? git.statusSummary(binding.binding.executionRoot) : provided;
+  } catch (_) { summary = null; }
   if (!summary || summary.available !== true || !Array.isArray(summary.files)) {
     limitations.push('active-changed-tree-unavailable');
     return;
@@ -346,7 +359,7 @@ function changedTreeArtifacts(row, rows, limitations, provided) {
     rows.push(artifact('active-file-' + hash(file.path).slice(7, 31), 'file',
       file.path, 'warning', 'active-run-changed-tree', null, null, {
         change: change,
-        scope: 'project-working-tree',
+        scope: 'execution-working-tree',
         branch: typeof summary.branch === 'string' ? summary.branch.slice(0, 200) : null
       }));
   });
@@ -396,7 +409,7 @@ function build(stem, options, dependencies) {
   figmaArtifacts(stem, rows, limitations);
   validationArtifacts(stem, source, rows, limitations, dependencies.validationReceipts);
   if (!source.metadata.outcome) changedTreeArtifacts(
-    current.task, rows, limitations, dependencies.gitStatus
+    stem, current.task, rows, limitations, dependencies.gitStatus
   );
   var seen = Object.create(null);
   rows = rows.filter(function (item) {

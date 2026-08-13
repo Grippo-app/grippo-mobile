@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bootstrapper-orchestrator.local/contracts/worktree-record.schema.json",
+  "title": "Worktree generation record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiGenerationHash",
+    "baseCommit",
+    "baseTree",
+    "candidateRef",
+    "capabilities",
+    "controlProjectId",
+    "controlRoot",
+    "createdAt",
+    "dependencySnapshotHash",
+    "executionRoot",
+    "figmaGenerationHash",
+    "gitCommonDirIdentity",
+    "owner",
+    "projectConfigHash",
+    "recordHash",
+    "requestId",
+    "runId",
+    "status",
+    "stem",
+    "targetRef",
+    "taskSnapshotHash",
+    "taskSourceRevision",
+    "taskState",
+    "updatedAt",
+    "version",
+    "worktreeId"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "create-intent",
+        "ready",
+        "ready-for-integration",
+        "recovery-required",
+        "released",
+        "releasing",
+        "revalidation-required",
+        "sealing"
+      ]
+    },
+    "worktreeId": {
+      "type": "string",
+      "pattern": "^wt-[a-f0-9]{32}$"
+    }
+  }
+}

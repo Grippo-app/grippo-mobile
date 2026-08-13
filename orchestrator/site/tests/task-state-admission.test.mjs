@@ -312,14 +312,31 @@ try {
     rmSync(lockPath)
   })
 
-  await check('malformed pre-claim v2 bytes cannot influence queue dedup state', async () => {
+  await check('malformed pre-claim v3 bytes cannot influence queue dedup state', async () => {
     const invalidId = '1000000000000-invalid'
     const invalidPath = join(cache, 'requests', invalidId + '.json')
     const snapshot = core.validateTaskState({ tasksDir: tasks, repoRoot: root, stem, checkIndex: true })
     writeFileSync(invalidPath, JSON.stringify({
-      version: 2, action: 'prep', stem, expectedState: 'backlog', sourceRevision: snapshot.sourceRevision,
+      version: 3, action: 'prep', stem, expectedState: 'backlog', sourceRevision: snapshot.sourceRevision,
       dedupKey: null, dedupReport: null, projectRoot: root, prompt: 'malformed extra-field fixture',
       createdAt: '2026-07-13T00:00:00.000Z', extra: true
+    }))
+    assert.deepEqual(requests.scanRequests(), {
+      ok: false,
+      code: 'request-record-invalid',
+      rows: [],
+    })
+    rmSync(invalidPath)
+  })
+
+  await check('a superseded queue schema blocks the complete admission scan', async () => {
+    const invalidId = '1000000000000-superseded'
+    const invalidPath = join(cache, 'requests', invalidId + '.json')
+    const snapshot = core.validateTaskState({ tasksDir: tasks, repoRoot: root, stem, checkIndex: true })
+    writeFileSync(invalidPath, JSON.stringify({
+      version: 2, action: 'prep', stem, expectedState: 'backlog', sourceRevision: snapshot.sourceRevision,
+      dedupKey: null, dedupReport: null, projectRoot: root, prompt: 'superseded queue fixture',
+      createdAt: '2026-07-13T00:00:00.000Z'
     }))
     assert.deepEqual(requests.scanRequests(), {
       ok: false,
@@ -333,7 +350,7 @@ try {
     const id = '1000000000001-noclobber'
     const snapshot = core.validateTaskState({ tasksDir: tasks, repoRoot: root, stem, checkIndex: true })
     const record = {
-      version: 2, action: 'prep', stem, expectedState: 'backlog', sourceRevision: snapshot.sourceRevision,
+      version: 3, action: 'prep', stem, expectedState: 'backlog', sourceRevision: snapshot.sourceRevision,
       dedupKey: null, dedupReport: null, projectRoot: root, prompt: 'first complete request',
       createdAt: '2026-07-13T00:00:00.000Z'
     }
@@ -515,7 +532,7 @@ try {
 
   let requestId
   let requestRecord
-  await check('admission writes an exact server-stamped v2 state/revision record', async () => {
+  await check('admission writes an exact server-stamped v3 state/revision record', async () => {
     const response = await enqueue('prep')
     const responseBody = await response.json()
     assert.equal(response.status, 200, JSON.stringify(responseBody))
@@ -525,7 +542,7 @@ try {
       'action', 'createdAt', 'dedupKey', 'dedupReport', 'expectedState',
       'projectRoot', 'prompt', 'sourceRevision', 'stem', 'version'
     ])
-    assert.equal(requestRecord.version, 2)
+    assert.equal(requestRecord.version, 3)
     assert.equal(requestRecord.expectedState, 'backlog')
     assert.match(requestRecord.sourceRevision, /^sha256:[a-f0-9]{64}$/)
     assert.equal(runner.claimedRequestIssue(requestRecord, root), null)

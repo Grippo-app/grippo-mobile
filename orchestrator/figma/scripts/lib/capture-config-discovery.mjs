@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import { join, resolve, sep } from 'node:path'
 import { deriveResourceRoots, localeValueDirs } from './design-locale.mjs'
+import { EXECUTION_SCOPE } from '../_util.mjs'
 
 export const CAPTURE_CONFIG_DISCOVERY_KEY = 'virtual:capture-config-discovery-v1'
 
@@ -37,6 +38,10 @@ function collectTestFiles(root, out, inTest = false, errors = [], visited = new 
     let isDirectory = entry.isDirectory()
     let isFile = entry.isFile()
     if (entry.isSymbolicLink()) {
+      if (EXECUTION_SCOPE) {
+        errors.push(discoveryError(path, { code: 'EXECUTION_SYMLINK_UNSAFE' }))
+        continue
+      }
       try {
         const target = statSync(path)
         isDirectory = target.isDirectory()

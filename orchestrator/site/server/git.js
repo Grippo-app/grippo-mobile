@@ -26,9 +26,9 @@ var TIMEOUT_MS   = 5000;
 
 // Run a read-only git command in the project root. Returns stdout on exit 0,
 // or null on any failure (not a repo, git missing, timeout, non-zero exit).
-function runReadOnly(args) {
+function runReadOnly(args, root) {
   try {
-    var r = cp.spawnSync('git', args, { cwd: PROJECT_ROOT, encoding: 'utf8', timeout: TIMEOUT_MS });
+    var r = cp.spawnSync('git', args, { cwd: root || PROJECT_ROOT, encoding: 'utf8', timeout: TIMEOUT_MS });
     if (!r || r.status !== 0) return null;
     return r.stdout || '';
   } catch (e) {
@@ -38,15 +38,20 @@ function runReadOnly(args) {
 
 // { available:false }                                   — not a git repo / git unavailable
 // { available:true, branch, count, truncated, files[] } — files: { status, path }
-function statusSummary() {
+// `root` is the tree being summarised. It defaults to the control root, but a
+// caller describing a RUN must pass that run's checkout: since per-task
+// worktree isolation a run never writes the control root, so summarising the
+// control root and labelling it "the active run's changed tree" describes the
+// owner's own uncommitted work as the agent's.
+function statusSummary(root) {
   // --untracked-files=no: this projection is about tracked changes left by an
   // active/stopped run. NUL records avoid quote/unescape ambiguity for spaces
   // and non-ASCII names. Rename/copy records carry the destination first and
   // one additional NUL-delimited source path, which is intentionally skipped.
-  var porcelain = runReadOnly(['status', '--porcelain=v1', '-z', '--untracked-files=no']);
+  var porcelain = runReadOnly(['status', '--porcelain=v1', '-z', '--untracked-files=no'], root);
   if (porcelain === null || porcelain === undefined) return { available: false };
 
-  var branchRaw = runReadOnly(['rev-parse', '--abbrev-ref', 'HEAD']);
+  var branchRaw = runReadOnly(['rev-parse', '--abbrev-ref', 'HEAD'], root);
   var branch = branchRaw != null ? branchRaw.trim() : null;
 
   var files = [];
@@ -109,7 +114,30 @@ function enforcementWiring() {
   return value;
 }
 
+// The ONE statement of "is the local screenshot-gate net active". Two very
+// different moments ask it — run admission (sessions.js) and the canonical
+// commit (integrations.js) — and they must agree, or a task blocked from
+// running could still be published, or vice versa. Returns null when the net
+// is healthy, deliberately opted out, or irrelevant to this project; otherwise
+// the exact operator-facing reason.
+function enforcementNetIssue() {
+  if (process.env.FIGMA_WIRING_GATE === '0') return null;
+  var cfg;
+  try { cfg = require('./project-config').parseConfigForm(); } catch (error) { cfg = null; }
+  if (!cfg || cfg.figmaEnabled !== true) return null;
+  var w = enforcementWiring();
+  if (w.wired) return null;
+  var state = w.inGit
+    ? 'core.hooksPath is ' + (w.hooksPath ? '\'' + w.hooksPath + '\'' : 'UNSET') + ', expected \'' + w.expected + '\''
+    : 'not a git work-tree (or git unavailable)';
+  return 'figma-net-unwired: ' + state + ' — the LOCAL screenshot-gate net (pre-commit verify-done) ' +
+    'is INACTIVE, so an uncompared UI task could ship to done/. Wire it: ' +
+    '`git config core.hooksPath ' + w.expected + '` (or run orchestrator/skills/install-skills.sh). ' +
+    'Deliberate opt-out (self-managed hooks): FIGMA_WIRING_GATE=0.';
+}
+
 module.exports = {
   statusSummary: statusSummary,
-  enforcementWiring: enforcementWiring
+  enforcementWiring: enforcementWiring,
+  enforcementNetIssue: enforcementNetIssue
 };

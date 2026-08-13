@@ -15,7 +15,7 @@ const requests = require('../server/requests.js')
 const paths = require('../server/paths.js')
 const expectedRoot = '/fixture/project'
 const valid = {
-  version: 2,
+  version: 3,
   action: 'prep',
   stem: 'TASK_7_profile_note_archive',
   expectedState: 'backlog',
@@ -84,7 +84,7 @@ check('optional metadata and timestamp are exact, never coerced', () => {
   assert.match(issue({ createdAt: '2026-02-31T12:34:56.789Z' }), /createdAt/)
 })
 
-check('admitted state and source revision are action-bound exact v2 fields', () => {
+check('admitted state and source revision are action-bound exact v3 fields', () => {
   assert.match(issue({ expectedState: 'todo' }), /expectedState/)
   assert.match(issue({ action: 'answers', expectedState: 'backlog' }), /expectedState/)
   assert.match(issue({ sourceRevision: 'sha256:bad' }), /sourceRevision/)
@@ -95,7 +95,7 @@ check('admitted state and source revision are action-bound exact v2 fields', () 
 check('standby publishes its lease before the combined publication guard', () => {
   const doc = readFileSync(join(root, '.claude', 'commands', 'serve-queue.md'), 'utf8')
   assert.match(doc, /writer-lease\.mjs acquire \\\n\s+--guard-finalization \\\n\s+--kind task-session/)
-  assert.match(doc, /rejects ANY other foreign ACTIVE board-task[\s\S]{0,120}any stem, any drainer, frozen serial safety/)
+  assert.match(doc, /rejects a foreign ACTIVE board-task[\s\S]{0,120}for the SAME stem — any drainer/)
   assert.match(doc, /global deterministic creation\/edit[\s\S]{0,80}publication lease/)
   assert.match(doc, /Exit 2 means another writer or[\s\S]{0,80}publication recovery refused the lease/)
   assert.match(doc, /Only `standby-queue\.mjs restore` may restore the private claim[\s\S]{0,120}link\/rename\/unlink sequences are forbidden/)
@@ -116,6 +116,9 @@ check('standby publishes its lease before the combined publication guard', () =>
   assert.match(doc, /record-superseded \\\n+\s+--handle[\s\S]{0,160}--lease-id[\s\S]{0,100}--session-id/)
   assert.match(doc, /record-finalization-superseded --handle/)
   assert.doesNotMatch(doc, /record-superseded[\s\S]{0,120}--reason/)
+  assert.match(doc, /standby never claims `run`[\s\S]{0,180}every standby-executed action[\s\S]{0,120}proven-absent canonical task lock/i)
+  assert.doesNotMatch(doc, /For `run`, lock absence is an accepted/)
+  assert.doesNotMatch(doc, /canonical retained orchestrator lock/)
 })
 
 check('standby mirrors the exact claimed-file contract and quarantines invalid input', () => {
@@ -124,7 +127,7 @@ check('standby mirrors the exact claimed-file contract and quarantines invalid i
   assert.match(doc, /O_RDONLY\|O_NOFOLLOW[\s\S]{0,180}256 KiB/)
   assert.match(doc, /\^TASK_\(\[1-9\]\[0-9\]\*\)_\[A-Za-z0-9_\]\+\$/)
   assert.match(doc, /60,000 UTF-16 code units and 180,000[\s\S]{0,40}UTF-8 bytes/)
-  assert.match(doc, /version[^\n]{0,100}`2`/i)
+  assert.match(doc, /version[^\n]{0,100}`3`/i)
   assert.match(doc, /sourceRevision[\s\S]{0,120}sha256/i)
   assert.match(doc, /mismatched root, or unsupported `createBacklog` action is permanently invalid/)
   assert.match(doc, /do not execute, restore, or unlink it/)
@@ -161,7 +164,7 @@ check('in-process handoff fences under lease before exact release and stdin', ()
   const runnerSource = readFileSync(join(root, 'orchestrator', 'site', 'server', 'runner.js'), 'utf8')
   const sessionsSource = readFileSync(join(root, 'orchestrator', 'site', 'server', 'sessions.js'), 'utf8')
   const httpSource = readFileSync(join(root, 'orchestrator', 'site', 'server', 'http.js'), 'utf8')
-  const hookAt = runnerSource.indexOf('var beforePrompt = function ()')
+  const hookAt = runnerSource.indexOf('const beforePrompt = function ()')
   const finalFenceAt = runnerSource.indexOf('inspectClaimForExecution(req)', hookAt)
   const releaseAt = runnerSource.indexOf('releaseRequestReservation(reservationHandle)', finalFenceAt)
   assert.ok(hookAt > 0 && finalFenceAt > hookAt && releaseAt > finalFenceAt)
@@ -190,15 +193,17 @@ check('in-process handoff fences under lease before exact release and stdin', ()
   assert.match(sessionsSource, /Once a context has pending input, preserve strict submission order/)
 })
 
-check('runner concurrency is frozen serial until per-task worktree isolation', () => {
-  // Shared-tree safety (pipeline improvement 05, Phase 0A): every task session
-  // works in ONE working tree, so a second concurrent run could attribute a
-  // neighbour task's bytes to its own result. The cap is a frozen constant —
-  // raising it back is only allowed atomically with worktree isolation.
-  assert.equal(runner.MAX_PARALLEL, 1)
+check('runner concurrency is a source constant at the canary value', () => {
+  // The pre-isolation freeze existed because every task session worked in ONE
+  // tree, so a second run could attribute a neighbour's bytes to its own
+  // result. Per-task worktree isolation removed that failure mode, and the cap
+  // is now the plan's CANARY value — still a source constant, because a knob
+  // that could silently raise it would defeat the guarantee. Raising it to the
+  // eventual default is an explicit owner decision.
+  assert.equal(runner.MAX_PARALLEL, 2)
   const runnerPath = join(root, 'orchestrator', 'site', 'server', 'runner.js')
   const runnerSource = readFileSync(runnerPath, 'utf8')
-  assert.match(runnerSource, /var MAX_PARALLEL = 1;/)
+  assert.match(runnerSource, /var MAX_PARALLEL = 2;/)
   assert.doesNotMatch(runnerSource, /parseInt\(process\.env\.RUNNER_MAX_PARALLEL/)
   // The header must not resurrect the pre-freeze parallel-drain description.
   assert.doesNotMatch(runnerSource, /in\s+parallel up to MAX_PARALLEL/)
@@ -207,9 +212,15 @@ check('runner concurrency is frozen serial until per-task worktree isolation', (
   // the in-memory capacity gate and the queue scan.
   const capacityAt = runnerSource.indexOf('var capacity = MAX_PARALLEL - runningCount();')
   const capacityGateAt = runnerSource.indexOf('if (capacity <= 0) return;', capacityAt)
+  // Unscoped, the hold answers only "is the lease store provable"; it must
+  // still run before the queue scan, because an unprovable store may never
+  // admit a writer.
   const occupancyAt = runnerSource.indexOf('finalizations.foreignTaskSessionWriterIssue()', capacityGateAt)
   const queueScanAt = runnerSource.indexOf('requestsMod.scanRequests()', occupancyAt)
   assert.ok(capacityAt > 0 && capacityGateAt > capacityAt && occupancyAt > capacityGateAt && queueScanAt > occupancyAt)
+  // Per-TASK occupancy is decided at claim time, so a live writer for another
+  // stem no longer holds the whole drain.
+  assert.match(runnerSource, /finalizations\.foreignTaskSessionWriterIssue\(stem\)/)
   // Foreign-runner marker exclusion runs before this process publishes its own
   // marker, and an auth flip keeps the marker while our task children live.
   const foreignProbeAt = runnerSource.indexOf('foreignRunnerOwner()', runnerSource.indexOf('function tick()'))
@@ -236,32 +247,42 @@ check('runner concurrency is frozen serial until per-task worktree isolation', (
     assert.match(doc, /never inside `bash -c`, a\s+heredoc, or any\s+nested shell/i,
       surface + ' must keep the short-lived nested-shell warning beside the $PPID anchor')
   }
-  // Board-task writers are mutually exclusive across stems AND drainers at the
-  // lease layer — the cross-process half of the frozen serial cap.
+  // Board-task writers are exclusive PER STEM at the lease layer, and both
+  // halves of the cross-process rule must say the same thing: the site
+  // predicate and the guarded CLI mirror. Neither may keep the cross-stem
+  // freeze, or a second isolated run could never start.
   const finalizationsSource = readFileSync(join(root, 'orchestrator', 'site', 'server', 'finalizations.js'), 'utf8')
-  assert.match(finalizationsSource, /options\.kind === 'task-session' && row\.kind === 'task-session'/)
-  assert.match(finalizationsSource, /function foreignTaskSessionWriterIssue\(\)/)
+  assert.doesNotMatch(finalizationsSource, /options\.kind === 'task-session' && row\.kind === 'task-session'/)
+  assert.match(finalizationsSource, /if \(stem && row\.stem === stem\) return true;/)
+  assert.match(finalizationsSource, /function foreignTaskSessionWriterIssue\(stem\)/)
   const writerLeaseCli = readFileSync(join(root, 'orchestrator', 'tasks', 'writer-lease.mjs'), 'utf8')
-  assert.match(writerLeaseCli, /activeOwn\.kind === 'task-session' && row\.kind === 'task-session'/)
+  assert.doesNotMatch(writerLeaseCli, /activeOwn\.kind === 'task-session' && row\.kind === 'task-session'/)
+  assert.match(writerLeaseCli, /stem && \(row\.stem === stem \|\| row\.key === `task:\$\{stem\}`\)/)
   // The standby drainer refuses NEW claims while any board-task writer lease
   // is active, but keeps recovery of an already-claimed op ungated.
   const standbySource = readFileSync(join(root, 'orchestrator', 'site', 'scripts', 'standby-queue.mjs'), 'utf8')
   const standbyRecoveryClaimAt = standbySource.indexOf("boundary(directories, 'claim', { candidate: null")
   const standbyOccupancyAt = standbySource.indexOf('taskWriterOccupancyResult()', standbyRecoveryClaimAt)
-  const standbyFreshClaimAt = standbySource.indexOf("boundary(directories, 'claim', { candidate: names[0]", standbyOccupancyAt)
+  const standbyFreshClaimAt = standbySource.indexOf("boundary(directories, 'claim', { candidate: candidate", standbyOccupancyAt)
   assert.ok(standbyRecoveryClaimAt > 0 && standbyOccupancyAt > standbyRecoveryClaimAt && standbyFreshClaimAt > standbyOccupancyAt)
+  // Worktree isolation Phase 2: `run` requests are invisible to the standby
+  // in BOTH mirrors — the JS peek and the python boundary's oldest-first rule.
+  assert.match(standbySource, /run-requires-site-runner/)
+  const boundarySource = readFileSync(join(root, 'orchestrator', 'site', 'scripts', 'standby-queue-boundary.py'), 'utf8')
+  assert.match(boundarySource, /def _standby_claimable/)
+  assert.match(boundarySource, /value\.get\("action"\) == "run"/)
   // Frozen contract prose stays in lockstep with the code.
   const loopContract = readFileSync(join(root, 'orchestrator', 'contracts', 'orchestrator-loop.md'), 'utf8')
-  assert.match(loopContract, /`MAX_PARALLEL=1` \(frozen serial safety; no env override until per-task worktree isolation\)/)
+  assert.match(loopContract, /`MAX_PARALLEL=2` \(canary; source constant, no env override\)/)
   assert.doesNotMatch(loopContract, /clamp 1–16/)
   const runLoop = readFileSync(join(root, 'orchestrator', 'skills', 'task-orchestrator', 'references', 'run-loop.md'), 'utf8')
-  assert.match(runLoop, /frozen at `MAX_PARALLEL=1`/)
+  assert.match(runLoop, /canary value `MAX_PARALLEL=2`/)
   // Behavioral proof: the environment cannot raise the cap.
   const probe = spawnSync(process.execPath,
     ['-e', 'console.log(require(process.argv[1]).MAX_PARALLEL)', runnerPath],
     { env: { ...process.env, RUNNER_MAX_PARALLEL: '8' }, encoding: 'utf8' })
   assert.equal(probe.status, 0, probe.stderr)
-  assert.equal(probe.stdout.trim(), '1')
+  assert.equal(probe.stdout.trim(), '2')
 })
 
 check('site child receives only its exact in-memory writer delegation capability', () => {

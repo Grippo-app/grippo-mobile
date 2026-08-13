@@ -25,6 +25,9 @@ const FAILURE_CODES = Object.freeze([
   'runtime-validation-failed', 'source-revision-changed', 'validation-failed',
 ])
 const REASON_CODES = Object.freeze([
+  // Execution-context invalidation (pipeline improvement 01 §6.13): the
+  // candidate tree, the target revision or the generation itself moved.
+  'execution-changed', 'execution-context-unavailable',
   'checkpoint-stale', 'config-invalid', 'dependency-blocked', 'manual-retry',
   'phase-blocked', 'phase-failed', 'review-failed',
   'runtime-validation-failed', 'source-revision-changed', 'validation-failed',
@@ -32,12 +35,21 @@ const REASON_CODES = Object.freeze([
 const RETRY_KINDS = Object.freeze([
   'retry-phase', 'resume-run', 'restart-from-phase', 'restart-task', 'manual',
 ])
+// `executionPin` binds a phase receipt to the EXACT candidate tree and target
+// revision it was earned against (pipeline improvement 01, §6.13/§6.15): a
+// green gate never carries over to a different tree, a moved target or a
+// changed input generation. Phase-2 has no run without an exact execution
+// root, so null is not a checkpoint identity and is rejected cleanly.
 const FIELDS = Object.freeze([
   'schemaVersion', 'checkpointId', 'stem', 'runId', 'phase', 'attempt',
   'status', 'createdAt', 'taskState', 'taskSourceRevision',
   'projectSourceRevision', 'configHash', 'dependencySnapshotHash',
   'inputFingerprint', 'testPolicyHash', 'outputReceiptIds',
-  'priorPhaseReceiptIds', 'failureCode', 'retryPolicy', 'checkpointHash',
+  'priorPhaseReceiptIds', 'failureCode', 'retryPolicy', 'executionPin',
+  'checkpointHash',
+])
+const EXECUTION_PIN_FIELDS = Object.freeze([
+  'worktreeId', 'baseCommit', 'baseTree', 'executionTree', 'targetRef', 'targetCommit',
 ])
 const POLICY_FIELDS = Object.freeze(['kind', 'safePhase', 'reasonCode'])
 // `tests` is exact-retryable ONLY for infrastructure BLOCKED / the single
@@ -89,6 +101,21 @@ function hashInput(value) {
   return copy
 }
 
+function validateExecutionPin(pin) {
+  if (pin === null) return 'checkpoint execution pin is required'
+  if (!exactKeys(pin, EXECUTION_PIN_FIELDS)) return 'checkpoint execution pin fields are invalid'
+  if (!/^wt-[a-f0-9]{32}$/.test(String(pin.worktreeId || ''))) return 'checkpoint execution pin worktreeId is invalid'
+  for (const key of ['baseCommit', 'baseTree', 'executionTree', 'targetCommit']) {
+    if (!/^[a-f0-9]{40}$/.test(String(pin[key] || ''))) return `checkpoint execution pin ${key} is invalid`
+  }
+  if (typeof pin.targetRef !== 'string' || pin.targetRef.indexOf('refs/heads/') !== 0 ||
+      pin.targetRef.length > 220) return 'checkpoint execution pin targetRef is invalid'
+  // targetCommit records what the target WAS when the receipt was earned; a
+  // later move is detected by comparing against the live pin (freshness), not
+  // by refusing to record the receipt at all.
+  return null
+}
+
 function validate(value, expectedStem) {
   if (!exactKeys(value, FIELDS)) return 'checkpoint fields are invalid'
   if (value.schemaVersion !== SCHEMA_VERSION) return 'checkpoint schemaVersion is unsupported'
@@ -109,6 +136,13 @@ function validate(value, expectedStem) {
   if (value.failureCode !== null && !FAILURE_CODES.includes(value.failureCode)) return 'checkpoint failure code is invalid'
   if (value.status === 'failed' && value.failureCode === null) return 'failed checkpoint requires failureCode'
   if (value.status === 'completed' && value.failureCode !== null) return 'completed checkpoint forbids failureCode'
+  if (value.phase === 'ship' && value.status === 'completed') {
+    const summaries = value.priorPhaseReceiptIds.concat(value.outputReceiptIds)
+      .filter((id) => id.startsWith('test-summary:sha256:'))
+    if (summaries.length !== 1) return 'completed ship checkpoint requires exactly one test-summary receipt'
+  }
+  const pinIssue = validateExecutionPin(value.executionPin === undefined ? null : value.executionPin)
+  if (pinIssue) return pinIssue
   if (!exactKeys(value.retryPolicy, POLICY_FIELDS) ||
       !RETRY_KINDS.includes(value.retryPolicy.kind) ||
       value.retryPolicy.safePhase !== null && !journal.PHASES.includes(value.retryPolicy.safePhase) ||

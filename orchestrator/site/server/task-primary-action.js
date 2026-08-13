@@ -7,7 +7,7 @@ var crypto = require('crypto');
 
 var KINDS = Object.freeze([
   'prepare', 'submit-answers', 'run', 'continue-live', 'retry-phase',
-  'resume-finalization', 'review-result', 'validate-in-app',
+  'integrate', 'resume-finalization', 'review-result', 'validate-in-app',
   'resolve-blocker', 'open-run'
 ]);
 var SECONDARY_KINDS = Object.freeze(['copy-prompt', 'drop', 'reopen']);
@@ -50,6 +50,7 @@ function target(kind, context, blocker) {
       ['figma-design-invalid', 'figma-screens-missing', 'figma-review-required'].indexOf(blocker.kind) >= 0) {
     return { type: 'task', stem: stem, section: 'artifacts' };
   }
+  if (kind === 'integrate') return { type: 'task', stem: stem, section: 'overview' };
   if (kind === 'review-result') return { type: 'task', stem: stem, section: context.visualReview ? 'artifacts' : 'overview' };
   if (kind === 'submit-answers') return { type: 'task', stem: stem, section: 'questions' };
   if (kind === 'resolve-blocker') return { type: 'task', stem: stem, section: 'dependencies' };
@@ -101,6 +102,10 @@ function action(kind, behavior, context, winningBlocker, options) {
     liveSessionId: options.liveSessionId === undefined ? null : options.liveSessionId,
     sessionRevision: context.sessionRevision || null,
     finalizationRevision: context.finalizationRevision || null,
+    // Without this, two integration states that differ only in their phase
+    // would hash to the same action id and the stale one would resolve.
+    integrationRevision: context.integration
+      ? (context.integration.status || '') + ':' + (context.integration.phase || '') : null,
     enabled: enabled,
     disabledReasonCode: disabledReasonCode,
     requiresConfirmation: requiresConfirmation,
@@ -172,6 +177,13 @@ function resolve(context) {
     } else {
       kind = 'resolve-blocker'; behavior = 'open-details';
     }
+  } else if (context.integration && context.integration.actionable) {
+    // A sealed candidate is the next step ONLY once nothing more urgent is
+    // pending. A run that escalated with a durable question, or died leaving
+    // its lock behind, still seals whatever it produced — and the answer or
+    // recovery rail must stay in front of Integrate, or the task's real next
+    // step becomes unreachable from the card.
+    kind = 'integrate'; behavior = 'execute';
   } else if (context.retryCheckpoint) {
     kind = 'retry-phase'; behavior = 'execute';
   } else if (context.state === 'backlog') {

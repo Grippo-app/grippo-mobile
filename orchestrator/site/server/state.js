@@ -33,6 +33,8 @@ var contractMod = require('./api-contract');
 var backendIntegrationMod = require('./backend-integration');
 var sessionsMod = require('./sessions');
 var finalizationsMod = require('./finalizations');
+var integrationsMod = require('./integrations');
+var worktreeManagerMod = require('./worktree-manager');
 var shallowIntakeMod = require('./shallow-intake');
 var editMarkersMod = require('./edit-markers');
 var creationMarkersMod = require('./creation-markers');
@@ -645,6 +647,13 @@ function deriveState(observations) {
       // so a crash after todo -> done but before index regeneration remains
       // visible and recoverable on the Board.
       finalizations: finalizationsMod.list().map(finalizationsMod.publicProjection).filter(Boolean),
+      // Integration transactions (plan §10): a sealed candidate waiting for the
+      // owner's Integrate, or one mid-flight/needing recovery. Read from the
+      // WAL, so an interrupted transaction stays visible across a restart.
+      integrations: integrationsMod.projection().records,
+      // Sealed candidates awaiting the owner's Integrate (and the ones whose
+      // target moved and need a fresh run before they can be integrated).
+      integrationReady: worktreeManagerMod.readyForIntegration(),
       // Advisory-only, source-hash-fenced backlog previews. Missing/failed
       // previews never alter a task column or task-prep eligibility.
       shallowIntake: shallowIntakeMod.snapshot(),

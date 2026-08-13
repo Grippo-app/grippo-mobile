@@ -1,8 +1,10 @@
 // Shared helpers for orchestrator/figma tooling scripts. Plain Node, zero deps.
 // The golden invariant holds: nothing here calls Figma — these scripts only read/parse local files.
-import { mkdirSync, readFileSync, existsSync, readdirSync, realpathSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, existsSync, readdirSync, realpathSync, writeFileSync, lstatSync, renameSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
-import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { basename, delimiter, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import {
   outcomeAppendixStatus as sharedOutcomeAppendixStatus,
   parseFigmaEnabledConfig,
@@ -10,8 +12,92 @@ import {
 import artifactPathContract from './lib/artifact-path.cjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const FIGMA_DIR = resolve(HERE, '..')                     // orchestrator/figma
-export const PROJECT_ROOT = resolve(FIGMA_DIR, '..', '..') // repo root (figma -> orchestrator -> root)
+const require = createRequire(import.meta.url)
+// Where THIS copy of the scripts lives. Since worktree isolation a run executes
+// inside an isolated checkout that carries its own copy of the whole template,
+// so the location can no longer be trusted to name the repository that owns the
+// durable artifacts.
+const LOCATION_ROOT = resolve(HERE, '..', '..', '..')
+
+const EXECUTION_SIGNAL_KEYS = [
+  'ORCHESTRATOR_EXECUTION_MANIFEST', 'ORCHESTRATOR_EXECUTION_ROOT',
+  'ORCHESTRATOR_RUN_ID', 'ORCHESTRATOR_TASK_SNAPSHOT_FILE',
+  'ORCHESTRATOR_TASK_SNAPSHOT_HASH', 'ORCHESTRATOR_WORKTREE_ID',
+  'ORCHESTRATOR_WRITER_SESSION_ID', 'ORCHESTRATOR_WRITER_STEM',
+]
+function verifiedExecutionScope() {
+  if (!EXECUTION_SIGNAL_KEYS.some((key) => String(process.env[key] || '').length > 0)) return null
+  const manager = require(resolve(HERE, '..', '..', 'site', 'server', 'worktree-manager.js'))
+  const proved = manager.executionEnvironmentContext(process.env)
+  if (!proved || proved.ok !== true || !proved.context) {
+    throw new Error(`${proved && proved.code || 'EXECUTION_ENVIRONMENT_UNPROVEN'}: ${proved && proved.message || 'execution environment is not manager-issued'}`)
+  }
+  return Object.freeze({ ...proved.context })
+}
+export const EXECUTION_SCOPE = verifiedExecutionScope()
+const rawTaskSourceOverride = String(process.env.FIGMA_SCREEN_TASK_FILE || '')
+if (EXECUTION_SCOPE && rawTaskSourceOverride &&
+    resolve(rawTaskSourceOverride) !== EXECUTION_SCOPE.taskSnapshotFile) {
+  throw new Error('FIGMA_SCREEN_TASK_FILE must equal the manager-owned task snapshot during an execution run')
+}
+// Task Design input follows the same immutable snapshot as task-orchestrator.
+// The control task corpus may advance while a candidate is running; reading it
+// here would bind Figma gates to a different task generation.
+export const FIGMA_TASK_SOURCE_FILE = EXECUTION_SCOPE
+  ? EXECUTION_SCOPE.taskSnapshotFile
+  : rawTaskSourceOverride
+export const FIGMA_TASK_SOURCE_EXPLICIT = !EXECUTION_SCOPE && Boolean(rawTaskSourceOverride)
+
+// TWO roots, and the distinction is load-bearing (plan §12.2):
+//   PROJECT_ROOT   — the CONTROL root. Every durable artifact belongs to it:
+//                    caches, reports, screen caches, committed manifests and
+//                    mappings, ship receipts, the task corpus, project-config —
+//                    and the canonical branch key, which must name the TARGET
+//                    branch and never the temporary candidate branch a run
+//                    happens to sit on.
+//   EXECUTION_ROOT — where the PRODUCT under test lives. During a run that is
+//                    the isolated checkout carrying the candidate; every source
+//                    scan, build and screenshot reads from here.
+// Outside a run both collapse to the same directory, which is exactly the
+// control root, so nothing changes for a control-root invocation.
+export const PROJECT_ROOT = process.env.ORCHESTRATOR_PROJECT_ROOT
+  ? resolve(process.env.ORCHESTRATOR_PROJECT_ROOT)
+  : LOCATION_ROOT
+export const EXECUTION_ROOT = EXECUTION_SCOPE ? EXECUTION_SCOPE.executionRoot : PROJECT_ROOT
+// COMMITTED figma assets (schemas, thresholds, manifests, mappings) stay
+// location-derived on purpose. Inside an execution checkout they are the base
+// commit's own bytes — identical to the control root's, because a candidate may
+// never contain `orchestrator/**` — so reading them here is reading the exact
+// generation this run was pinned to. Only MUTABLE state (the cache below,
+// reports, screen caches, receipts) is control-anchored, since that must
+// survive the checkout being released.
+const FIGMA_DIR = EXECUTION_SCOPE
+  ? join(EXECUTION_ROOT, 'orchestrator', 'figma')
+  : resolve(HERE, '..')
+
+function fileBytesOrEmpty(file) {
+  let bytes = Buffer.alloc(0)
+  try { bytes = readFileSync(file) } catch (error) {
+    if (!error || error.code !== 'ENOENT') throw error
+  }
+  return bytes
+}
+function hashBytes(bytes) {
+  return 'sha256:' + createHash('sha256').update(bytes).digest('hex')
+}
+if (EXECUTION_SCOPE && hashBytes(fileBytesOrEmpty(join(FIGMA_DIR, 'manifests', 'current-generation.json'))) !==
+    EXECUTION_SCOPE.figmaGenerationHash) {
+  throw new Error('FIGMA_EXECUTION_GENERATION_MISMATCH: execution checkout does not contain the manifest-pinned Figma generation')
+}
+export const PROJECT_CONFIG_FILE = join(EXECUTION_ROOT, 'orchestrator', 'project-config.md')
+const EXECUTION_PROJECT_CONFIG_BYTES = EXECUTION_SCOPE ? fileBytesOrEmpty(PROJECT_CONFIG_FILE) : null
+export const PROJECT_CONFIG_HASH = EXECUTION_SCOPE
+  ? hashBytes(EXECUTION_PROJECT_CONFIG_BYTES)
+  : null
+if (EXECUTION_SCOPE && PROJECT_CONFIG_HASH !==
+    EXECUTION_SCOPE.projectConfigHash) {
+  throw new Error('PROJECT_CONFIG_EXECUTION_GENERATION_MISMATCH: execution checkout does not contain the manifest-pinned project config')
+}
 
 export function isDirectRun(metaUrl, argvPath = process.argv[1]) {
   if (!argvPath) return false
@@ -99,7 +185,19 @@ export function loadScreenshotThresholds() {
 // into their own cache subtrees. All committed roots (tokens/, manifests/,
 // token-schemas/, scripts/, skill/) stay under orchestrator/figma/.
 const DEFAULT_FIGMA_CACHE_DIR = join(PROJECT_ROOT, 'orchestrator', '.cache', 'figma')
-const FIGMA_CACHE_DIR = process.env.FIGMA_CACHE_ROOT ? resolve(process.env.FIGMA_CACHE_ROOT) : DEFAULT_FIGMA_CACHE_DIR
+function exactExecutionCacheOverride(key, fallback) {
+  const raw = process.env[key]
+  if (!raw) return fallback
+  const candidate = resolve(raw)
+  if (EXECUTION_SCOPE && candidate !== fallback) {
+    throw new Error(`${key} must equal the manager-owned control-cache path during an execution run`)
+  }
+  return candidate
+}
+const FIGMA_CACHE_DIR = exactExecutionCacheOverride('FIGMA_CACHE_ROOT', DEFAULT_FIGMA_CACHE_DIR)
+const DEFAULT_REPORTS_DIR = join(FIGMA_CACHE_DIR, 'reports')
+const FIGMA_REPORTS_DIR = exactExecutionCacheOverride('FIGMA_REPORTS_DIR', DEFAULT_REPORTS_DIR)
+const DEFAULT_SCREENS_DIR = join(FIGMA_CACHE_DIR, 'screens')
 export const FIGMA_CACHE_ROOT = FIGMA_CACHE_DIR
 export const figmaPath = (...parts) => {
   if (parts[0] === '.cache')  return join(FIGMA_CACHE_DIR, ...parts.slice(1))
@@ -108,12 +206,143 @@ export const figmaPath = (...parts) => {
 }
 
 export function figmaScreensRoot() {
-  const cacheRoot = process.env.FIGMA_SCREEN_CACHE_ROOT ? resolve(process.env.FIGMA_SCREEN_CACHE_ROOT) : ''
-  const specRoot = process.env.FIGMA_SPEC_SCREENS_DIR ? resolve(process.env.FIGMA_SPEC_SCREENS_DIR) : ''
+  const cacheRoot = process.env.FIGMA_SCREEN_CACHE_ROOT
+    ? exactExecutionCacheOverride('FIGMA_SCREEN_CACHE_ROOT', DEFAULT_SCREENS_DIR) : ''
+  const specRoot = process.env.FIGMA_SPEC_SCREENS_DIR
+    ? exactExecutionCacheOverride('FIGMA_SPEC_SCREENS_DIR', DEFAULT_SCREENS_DIR) : ''
   if (cacheRoot && specRoot && cacheRoot !== specRoot) {
     throw new Error(`FIGMA_SCREEN_CACHE_ROOT and FIGMA_SPEC_SCREENS_DIR point to different roots: ${cacheRoot} vs ${specRoot}`)
   }
-  return cacheRoot || specRoot || figmaPath('.cache', 'screens')
+  return cacheRoot || specRoot || DEFAULT_SCREENS_DIR
+}
+
+function containedPath(root, raw, label, { mustExist = true } = {}) {
+  const base = resolve(root)
+  const candidate = isAbsolute(String(raw || ''))
+    ? resolve(String(raw))
+    : resolve(base, String(raw || ''))
+  const rel = relative(base, candidate)
+  if (!raw || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+    throw new Error(`${label} must stay under ${base}`)
+  }
+  if (mustExist) {
+    const st = lstatSync(candidate)
+    if (st.isSymbolicLink() || !st.isFile() && !st.isDirectory() ||
+        st.isFile() && st.nlink !== 1) {
+      throw new Error(`${label} must name one regular single-link file or real directory`)
+    }
+    if (realpathSync(candidate) !== join(realpathSync(base), rel)) {
+      throw new Error(`${label} escapes its physical owner root`)
+    }
+  } else {
+    let ancestor = dirname(candidate)
+    while (!existsSync(ancestor) && ancestor !== dirname(ancestor)) ancestor = dirname(ancestor)
+    const ancestorRel = relative(PROJECT_ROOT, ancestor)
+    if (ancestorRel === '..' || ancestorRel.startsWith(`..${sep}`) || isAbsolute(ancestorRel) ||
+        realpathSync(ancestor) !== join(realpathSync(PROJECT_ROOT), ancestorRel)) {
+      throw new Error(`${label} has an unsafe output ancestor`)
+    }
+  }
+  return candidate
+}
+
+export function executionProductInputPath(raw, label = 'Figma product input') {
+  return EXECUTION_SCOPE ? containedPath(EXECUTION_ROOT, raw, label) : String(raw)
+}
+
+export function executionFigmaInputPath(raw, label = 'Figma runtime input') {
+  return EXECUTION_SCOPE ? containedPath(FIGMA_CACHE_DIR, raw, label) : String(raw)
+}
+
+// A path recorded inside a runtime report is evidence, never authority. Resolve
+// its display form against the only two task-owned input roots, then re-apply
+// physical containment at the consuming boundary. Committed project inputs
+// come from the execution checkout; mutable Figma inputs come from its exact
+// control cache. No other worktree or host/control product path is admissible.
+export function recordedFigmaInputPath(raw, label = 'Figma recorded input') {
+  const value = String(raw || '')
+  if (!value) return ''
+  const candidates = isAbsolute(value)
+    ? [resolve(value)]
+    : [resolve(EXECUTION_ROOT, value), resolve(PROJECT_ROOT, value), resolve(FIGMA_CACHE_DIR, value)]
+  const selected = candidates.find((candidate) => existsSync(candidate)) || candidates[0]
+  if (!EXECUTION_SCOPE) return selected
+  try { return executionProductInputPath(selected, label) } catch {}
+  try { return executionFigmaInputPath(selected, label) } catch {}
+  throw new Error(`${label} must stay under the manager-owned execution root or Figma cache`)
+}
+
+export function executionFigmaOutputPath(raw, label = 'Figma runtime output') {
+  return EXECUTION_SCOPE
+    ? containedPath(FIGMA_CACHE_DIR, raw, label, { mustExist: false })
+    : String(raw)
+}
+
+export function writeFigmaRuntimeFile(file, data, { maxBytes = 16 * 1024 * 1024 } = {}) {
+  const target = EXECUTION_SCOPE
+    ? executionFigmaOutputPath(file, 'Figma runtime publication')
+    : String(file)
+  const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data))
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 0 || bytes.length > maxBytes) {
+    throw new Error('Figma runtime publication exceeds its byte limit')
+  }
+  if (!EXECUTION_SCOPE) {
+    mkdirSync(dirname(target), { recursive: true })
+    const tmp = target + '.tmp'
+    writeFileSync(tmp, bytes)
+    renameSync(tmp, target)
+    return target
+  }
+  const fileGuards = require(resolve(HERE, '..', '..', 'site', 'server', 'file-guards.js'))
+  const directory = dirname(target)
+  if (!fileGuards.realDirectoryUnder(PROJECT_ROOT, directory, { create: true, mode: 0o700 })) {
+    throw new Error('Figma runtime publication directory is unsafe')
+  }
+  const published = fileGuards.atomicReplaceRegularFileResult(
+    PROJECT_ROOT, directory, target, bytes,
+    { create: true, directoryMode: 0o700, mode: 0o600, maxBytes },
+  )
+  if (!published.ok) throw new Error('Figma runtime publication failed')
+  return target
+}
+
+if (EXECUTION_SCOPE) {
+  const productPathLists = [
+    'FIGMA_APP_TOKEN_ROOTS', 'FIGMA_APP_TOKEN_FILES',
+    'FIGMA_SPEC_IMPL_ROOTS', 'FIGMA_SPEC_IMPL_FILES',
+    'FIGMA_CENSUS_CODE_ROOTS', 'FIGMA_STRING_RESOURCE_ROOTS',
+    'FIGMA_SECURITY_GREP_ROOTS', 'ROBORAZZI_OUTPUT_DIRS',
+  ]
+  for (const key of productPathLists) {
+    for (const value of String(process.env[key] || '').split(delimiter).filter(Boolean)) {
+      executionProductInputPath(value, key)
+    }
+  }
+  for (const key of ['FIGMA_OBSERVED_TOKEN_CATALOG', 'FIGMA_OBSERVED_TOKEN_SOURCE_INDEX',
+    'FIGMA_TOKEN_BINDING_SNAPSHOT', 'FIGMA_SPEC_SCHEMA']) {
+    if (process.env[key]) throw new Error(`${key} is a fixture/diagnostic override and is forbidden during an execution run`)
+  }
+  for (const key of ['FIGMA_APP_TOKENS_OUT', 'FIGMA_IMPL_MODEL_OUT', 'FIGMA_RESOLVED_SPEC_OUT']) {
+    if (process.env[key]) executionFigmaOutputPath(process.env[key], key)
+  }
+  for (const key of ['FIGMA_APP_TOKENS', 'FIGMA_IMPL_MODEL']) {
+    if (process.env[key]) executionFigmaInputPath(process.env[key], key)
+  }
+  if (process.env.ROBORAZZI_OUTPUT_DIR) {
+    executionProductInputPath(process.env.ROBORAZZI_OUTPUT_DIR, 'ROBORAZZI_OUTPUT_DIR')
+  }
+  if (process.env.SCREENSHOT_CAPTURE_MANIFEST) {
+    recordedFigmaInputPath(process.env.SCREENSHOT_CAPTURE_MANIFEST,
+      'SCREENSHOT_CAPTURE_MANIFEST')
+  }
+  if (process.env.FIGMA_PIXEL_REVIEW_DIR &&
+      resolve(process.env.FIGMA_PIXEL_REVIEW_DIR) !==
+        join(PROJECT_ROOT, 'orchestrator', 'tasks', 'evidence', 'pixel-review')) {
+    throw new Error('FIGMA_PIXEL_REVIEW_DIR must equal the control-plane review authority during an execution run')
+  }
+  if (process.env.FIGMA_ORACLE_MAX_AGE_DAYS) {
+    throw new Error('FIGMA_ORACLE_MAX_AGE_DAYS is a diagnostic override and is forbidden during an execution run')
+  }
 }
 
 export function parseCli({ allowedFlags = [], valueFlags = [], booleanFlags = [], usage = 'usage unavailable' } = {}) {
@@ -129,8 +358,23 @@ export function parseCli({ allowedFlags = [], valueFlags = [], booleanFlags = []
     if (!allowed.has(arg)) throw new Error(`unknown argument ${arg}\n${usage}`)
     flags.add(arg)
     if (value.has(arg)) {
-      const next = process.argv[++i]
+      let next = process.argv[++i]
       if (!next || next.startsWith('--')) throw new Error(`missing value for ${arg}\n${usage}`)
+      if (EXECUTION_SCOPE) {
+        if (arg.startsWith('--fixture-')) {
+          throw new Error(`${arg} is a fixture override and is forbidden during an execution run`)
+        }
+        if (['--root', '--file', '--code-root', '--impl-root', '--impl-file'].includes(arg)) {
+          next = executionProductInputPath(next, arg)
+        }
+        if (arg === '--verdict-file') next = executionProductInputPath(next, arg)
+        if (arg === '--impl-model') next = executionFigmaInputPath(next, arg)
+        if (arg === '--out') next = executionFigmaOutputPath(next, arg)
+        if (arg === '--screens-dir' &&
+            (isAbsolute(next) ? resolve(next) : resolve(EXECUTION_ROOT, next)) !== DEFAULT_SCREENS_DIR) {
+          throw new Error('--screens-dir must equal the manager-owned screen cache during an execution run')
+        }
+      }
       if (!values[arg]) values[arg] = []
       values[arg].push(next)
     } else if (!boolean.has(arg)) {
@@ -168,8 +412,7 @@ function assertPipelineRunId(raw, label = 'FIGMA_PIPELINE_RUN_ID') {
 }
 
 export function runIdPinPath(stem = 'run') {
-  const dir = process.env.FIGMA_REPORTS_DIR || figmaPath('reports')
-  return join(dir, `.run-id-${runStemSegment(stem)}`)
+  return join(FIGMA_REPORTS_DIR, `.run-id-${runStemSegment(stem)}`)
 }
 
 function readPinnedRunId(pinPath) {
@@ -182,8 +425,7 @@ function readPinnedRunId(pinPath) {
 }
 
 function writePinnedRunId(pinPath, id) {
-  mkdirSync(dirname(pinPath), { recursive: true })
-  writeFileSync(pinPath, id + '\n')
+  writeFigmaRuntimeFile(pinPath, id + '\n', { maxBytes: 1024 })
 }
 
 export function pipelineRunId(stem = 'run') {
@@ -277,6 +519,9 @@ export function loadBindings(stem) {
     for (const key of ['nodeId', 'implFile', 'composable', 'captureBasename', 'qualifiers']) {
       if (screen[key] !== undefined && (typeof screen[key] !== 'string' || !screen[key])) throw new Error(`bindings.json screens[${index}].${key} is invalid`)
     }
+    if (screen.implFile && EXECUTION_SCOPE) {
+      screen.implFile = executionProductInputPath(screen.implFile, `bindings.json screens[${index}].implFile`)
+    }
     if (screen.kind !== undefined && !['screen', 'dialog', 'component', 'overlay'].includes(screen.kind)) throw new Error(`bindings.json screens[${index}].kind is invalid`)
   }
   // Component rows are keyed by the durable design identity: two sets sharing
@@ -305,6 +550,10 @@ export function loadBindings(stem) {
         (implementation.sourcePath !== undefined && (typeof implementation.sourcePath !== 'string' || !implementation.sourcePath))) {
         throw new Error(`bindings.json components[${index}].implementations[${implIndex}] is invalid`)
       }
+      if (implementation.sourcePath && EXECUTION_SCOPE) {
+        implementation.sourcePath = executionProductInputPath(implementation.sourcePath,
+          `bindings.json components[${index}].implementations[${implIndex}].sourcePath`)
+      }
     }
   }
   return { screens: raw.screens, components }
@@ -328,9 +577,10 @@ export function bindingsManifestEntries(bindings, roboDirs, existsFn) {
 }
 
 export function readConfig(key) {
-  const cfg = join(PROJECT_ROOT, 'orchestrator', 'project-config.md')
-  if (!existsSync(cfg)) return undefined
-  const text = readFileSync(cfg, 'utf8')
+  if (!EXECUTION_SCOPE && !existsSync(PROJECT_CONFIG_FILE)) return undefined
+  const text = EXECUTION_SCOPE
+    ? EXECUTION_PROJECT_CONFIG_BYTES.toString('utf8')
+    : readFileSync(PROJECT_CONFIG_FILE, 'utf8')
   if (key === 'figmaEnabled') return parseFigmaEnabledConfig(text) ? 'true' : 'false'
   const escapedKey = String(key).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const m = text.match(new RegExp(`^${escapedKey}:[ \\t]*(.+?)[ \\t]*$`, 'm'))

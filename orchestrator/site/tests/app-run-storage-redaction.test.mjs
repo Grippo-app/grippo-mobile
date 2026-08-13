@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'app-run-storage-'));
+const executionRoot = root + '-execution';
 const cache = path.join(root, 'orchestrator', '.cache');
 fs.mkdirSync(cache, { recursive: true });
 process.env.ORCHESTRATOR_PROJECT_ROOT = root;
@@ -334,6 +335,45 @@ try {
   )), true, 'corrupt artifact authority must be preserved as recovery evidence');
   storage.writeJson(paths.APP_RUN_ARTIFACTS_DIR, manifest.artifactId, manifest);
 
+  // A task checkout is a sibling of the control root. The artifact authority
+  // must represent that exact generation without pretending its APK lives
+  // under the control root or accepting an arbitrary absolute path.
+  const executionApkRoot = path.join(
+    executionRoot, 'androidApp', 'build', 'outputs', 'apk', 'debug',
+  );
+  fs.mkdirSync(executionApkRoot, { recursive: true });
+  const executionApk = path.join(executionApkRoot, 'fixture.apk');
+  fs.writeFileSync(executionApk, Buffer.from('isolated-artifact'));
+  const executionArtifactHash = 'sha256:' + (await import('node:crypto')).createHash('sha256')
+    .update(fs.readFileSync(executionApk)).digest('hex');
+  const executionScope = {
+    worktreeId: 'wt-' + 'a'.repeat(32),
+    runId: '1700000000000-artifact',
+    executionRoot,
+    candidateTree: '3'.repeat(40),
+  };
+  const executionManifest = artifacts.create({
+    platform: 'android', variantId: 'debug', sourceRevision: sourceHash,
+    runConfigHash, execution: executionScope,
+    artifact: {
+      path: executionApk, hash: executionArtifactHash,
+      size: fs.statSync(executionApk).size,
+      applicationId: 'com.example.fixture', targetArchitectures: ['x86_64'],
+    },
+    tools: {},
+  });
+  assert.equal(executionManifest.worktreeId, executionScope.worktreeId);
+  assert.equal(executionManifest.executionRunId, executionScope.runId);
+  assert.equal(executionManifest.candidateTree, executionScope.candidateTree);
+  assert.equal(artifacts.verify(executionManifest, {
+    ...expected,
+    executionRoot,
+    worktreeId: executionScope.worktreeId,
+    executionRunId: executionScope.runId,
+    candidateTree: executionScope.candidateTree,
+    allowedBuildRoot: executionApkRoot,
+  }).ok, true);
+
   assert.equal(validation.MAX_ITEMS, 200);
   assert.equal(typeof validation.canonicalTask, 'function');
   assert.equal(validation.validateSaveBody({}), 'bad-validation-request');
@@ -477,4 +517,5 @@ try {
   assert.throws(() => ios.hashAppTree(app), /unsafe/);
 } finally {
   fs.rmSync(root, { recursive: true, force: true });
+  fs.rmSync(executionRoot, { recursive: true, force: true });
 }

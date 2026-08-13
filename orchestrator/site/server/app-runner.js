@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
 var paths = require('./paths');
@@ -11,6 +12,7 @@ var taskSourceContract = require('../../tasks/task-source-contract.cjs');
 var appRunConfig = require('./app-run-config');
 var discovery = require('./device-discovery');
 var processRunner = require('./app-run-process');
+var worktreeManager = require('./worktree-manager');
 var storage = require('./app-run-storage');
 var redaction = require('./app-run-redaction');
 var artifacts = require('./app-run-artifacts');
@@ -71,11 +73,13 @@ var JOB_ERROR_CODES = Object.freeze({
   'artifact-invalid': 1,
   'artifact-not-found': 1,
   'artifact-path-mismatch': 1,
+  'artifact-scope-mismatch': 1,
   'artifact-toolchain-mismatch': 1,
   'build-failed': 1,
   cancelled: 1,
   'device-create-failed': 1,
   'discovery-failed': 1,
+  'execution-binding-unavailable': 1,
   'install-failed': 1,
   'ios-boot-failed': 1,
   'ios-boot-timeout': 1,
@@ -115,7 +119,9 @@ var RUN_JOB_FIELDS_PRIVATE = Object.freeze([
   'schemaVersion', 'jobId', 'jobRevision', 'action', 'linkedJobId', 'platform',
   'targetId', 'targetStableHint', 'rawTargetIdentifier', 'deviceSummary',
   'variantId', 'buildMode', 'taskStem', 'surfaceId',
-  'requestedProjectSourceRevision', 'appProjectSourceRevision', 'runConfigHash',
+  'worktreeId', 'executionRoot', 'executionRunId', 'candidateTree', 'applicationId',
+  'requestedProjectSourceRevision', 'productSourceRevision',
+  'appProjectSourceRevision', 'runConfigHash',
   'phase', 'state', 'progress', 'stages', 'artifactId', 'sessionId',
   'startedAt', 'updatedAt', 'finishedAt', 'result', 'errorCode',
   'processIdentities', 'taskContextRevision', 'whenBusy',
@@ -130,6 +136,7 @@ var CREATE_JOB_FIELDS_PRIVATE = Object.freeze([
 var SESSION_FIELDS_PRIVATE = Object.freeze([
   'schemaVersion', 'sessionId', 'sessionRevision', 'jobId', 'state', 'platform',
   'targetId', 'targetStableHint', 'rawTargetIdentifier', 'deviceSummary', 'variantId',
+  'worktreeId', 'executionRoot', 'executionRunId', 'candidateTree',
   'artifactId', 'applicationId', 'requestedProjectSourceRevision',
   'appProjectSourceRevision', 'runConfigHash', 'launchedAt', 'updatedAt',
   'taskStem', 'surfaceId'
@@ -180,22 +187,52 @@ function exactInstant(value) {
   return typeof value === 'string' && Number.isFinite(Date.parse(value)) &&
     new Date(value).toISOString() === value;
 }
-function source(fresh) {
-  if (!fresh && runtime.sourceCache && Date.now() - runtime.sourceCache.createdMs < 1000) {
+// The revision of the sources a build would actually compile. It MUST be taken
+// from the tree the build uses: a task-bound job builds its own checkout, so
+// hashing the control root would compare an unrelated tree on admission, before
+// the build and after it, and stamp the artifact manifest with a revision the
+// artifact was never built from. The cache is keyed by root for the same
+// reason — a control-root value served for a candidate is the same bug.
+function source(fresh, root) {
+  // `null` is the caller saying "ownership could not be read". That is not the
+  // control root — reporting the control root's revision for a task whose tree
+  // we cannot identify is the misattribution this whole split exists to stop.
+  if (root === null) {
+    return {
+      available: false, revision: null, inputCount: 0, contentBytes: 0,
+      profile: 'app-build', profileVersion: null,
+      limitations: ['execution-binding-unavailable'],
+      reasonCode: 'execution-binding-unavailable',
+      detail: 'the worktree record store could not be read, so the product tree is unknown'
+    };
+  }
+  var productRoot = root === undefined ? paths.PROJECT_ROOT : root;
+  if (!fresh && runtime.sourceCache && runtime.sourceCache.root === productRoot &&
+      Date.now() - runtime.sourceCache.createdMs < 1000) {
     return runtime.sourceCache.value;
   }
   var config = appRunConfig.load();
-  var value = sourceRevision.compute(paths.PROJECT_ROOT, {
+  var value = sourceRevision.compute(productRoot, {
     profile: 'app-build',
     appRoots: appRunConfig.sourceRoots(config)
   });
-  runtime.sourceCache = { createdMs: Date.now(), value: value };
+  runtime.sourceCache = { createdMs: Date.now(), root: productRoot, value: value };
   return value;
 }
 
 function jobErrorCode(value) {
   if (value === null || value === undefined || value === '') return null;
   return JOB_ERROR_CODES[value] ? value : 'operation-failed';
+}
+
+function executionScopeFieldsValid(value) {
+  var unbound = value && value.worktreeId === null && value.executionRoot === null &&
+    value.executionRunId === null && value.candidateTree === null;
+  var bound = value && /^wt-[a-f0-9]{32}$/.test(String(value.worktreeId || '')) &&
+    path.isAbsolute(String(value.executionRoot || '')) &&
+    /^[0-9]{1,16}-[a-z0-9]{1,32}$/.test(String(value.executionRunId || '')) &&
+    /^[a-f0-9]{40}$/.test(String(value.candidateTree || ''));
+  return (unbound || bound) && !(value.taskStem === null && bound);
 }
 
 function assertStoredJobShape(job) {
@@ -247,6 +284,7 @@ function assertStoredJobShape(job) {
       ['fail', 'queue'].indexOf(job.whenBusy) < 0 ||
       (job.confirmedArtifactId !== null &&
         !/^artifact-[a-f0-9]{36}$/.test(String(job.confirmedArtifactId))) ||
+      !executionScopeFieldsValid(job) ||
       (job.result !== null && (!exactKeys(job.result,
         Object.prototype.hasOwnProperty.call(job.result, 'stopped')
           ? ['launched', 'rebuilt', 'pidObserved', 'stopped']
@@ -325,7 +363,7 @@ function publicJob(job) {
 
 function publicSession(session) {
   if (!session) return null;
-  var current = source();
+  var current = source(false, sessionProductRoot(session));
   return {
     schemaVersion: 1,
     sessionId: session.sessionId,
@@ -404,6 +442,12 @@ function assertSessionInvariant(session) {
     ? /^emulator-\d{1,10}$/.test(String(session.rawTargetIdentifier || ''))
     : /^[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}$/
       .test(String(session.rawTargetIdentifier || '')));
+  var unbound = session && session.worktreeId === null && session.executionRoot === null &&
+    session.executionRunId === null && session.candidateTree === null;
+  var bound = session && /^wt-[a-f0-9]{32}$/.test(String(session.worktreeId || '')) &&
+    path.isAbsolute(String(session.executionRoot || '')) &&
+    /^[0-9]{1,16}-[a-z0-9]{1,32}$/.test(String(session.executionRunId || '')) &&
+    /^[a-f0-9]{40}$/.test(String(session.candidateTree || ''));
   if (!session || !exactKeys(session, SESSION_FIELDS_PRIVATE) || session.schemaVersion !== 1 ||
       !/^session-[a-f0-9]{36}$/.test(String(session.sessionId || '')) ||
       !Number.isSafeInteger(session.sessionRevision) || session.sessionRevision < 1 ||
@@ -420,6 +464,7 @@ function assertSessionInvariant(session) {
       !/^sha256:[a-f0-9]{64}$/.test(String(session.requestedProjectSourceRevision || '')) ||
       !/^sha256:[a-f0-9]{64}$/.test(String(session.appProjectSourceRevision || '')) ||
       !/^sha256:[a-f0-9]{64}$/.test(String(session.runConfigHash || '')) ||
+      (!unbound && !bound) || (session.taskStem === null && !unbound) ||
       !Number.isFinite(Date.parse(session.launchedAt)) ||
       new Date(session.launchedAt).toISOString() !== session.launchedAt ||
       !Number.isFinite(Date.parse(session.updatedAt)) ||
@@ -570,7 +615,7 @@ function updateSourceWatcher() {
   runtime.sourceWatcher = setInterval(function () {
     var active = runtime.currentSessionId && runtime.sessions.get(runtime.currentSessionId);
     if (!active || active.state !== 'running') { updateSourceWatcher(); return; }
-    var current = source(true);
+    var current = source(true, sessionProductRoot(active));
     var state = current.available ? current.revision : 'unavailable:' + current.reasonCode;
     if (state !== runtime.sourceWatcherState) {
       runtime.sourceWatcherState = state;
@@ -702,7 +747,120 @@ function validLogRow(row, previousSequence) {
     !/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(row.text);
 }
 
-function newRunJob(body, config, target, linkedJobId, confirmedArtifactId) {
+// §14/§15/§26. The ONE place that answers "which tree is this job's product".
+// A job is either CONTROL-ROOT (no task, or a task that PROVABLY has no live
+// generation) or TASK-BOUND (worktreeId + executionRoot, both from the same
+// record). There is no third mode, and an unprovable binding is never resolved
+// by falling back to the control root: that would compile the shared tree and
+// stamp the artifact with a task's identity — the exact misattribution per-task
+// isolation exists to prevent. Every consumer below takes `productRoot` from
+// the job and never re-derives it.
+//   { ok: true,  binding }  binding === null means a control-root job
+//   { ok: false, error }    unprovable: refuse the job
+function jobExecutionBinding(taskStem) {
+  if (!taskStem) return { ok: true, binding: null };
+  var got;
+  try { got = worktreeManager.executionBindingFor(taskStem); }
+  catch (error) { return { ok: false, error: 'execution-binding-unavailable' }; }
+  if (!got.ok) return { ok: false, error: 'execution-binding-unavailable' };
+  return { ok: true, binding: got.binding };
+}
+
+// Re-prove the exact generation after the execution lease is acquired. A job
+// may have cached its binding before release claimed the record; the claim
+// changes it to non-materialized `releasing`, so that stale job must withdraw
+// every lease before it can spawn a build inside the checkout.
+function jobExecutionBindingCurrent(job) {
+  if (!job.taskStem) return true;
+  var current = jobExecutionBinding(job.taskStem);
+  if (!current.ok) return false;
+  var scope = executionScopeFor(job.taskStem, current.binding);
+  return scope.ok && executionScopeMatches(scope, job.worktreeId,
+    job.executionRoot, job.executionRunId, job.candidateTree);
+}
+
+function executionBindingMatches(binding, worktreeId, executionRoot, executionRunId) {
+  if (worktreeId === null && executionRoot === null && executionRunId === null) {
+    return binding === null;
+  }
+  return !!binding && binding.worktreeId === worktreeId &&
+    binding.executionRoot === executionRoot && binding.runId === executionRunId;
+}
+
+function executionScopeFor(taskStem, binding) {
+  if (!binding) return { ok: true, binding: null, candidateTree: null };
+  var pinned;
+  try { pinned = worktreeManager.executionPinFor(taskStem, binding.runId); }
+  catch (error) { return { ok: false, error: 'execution-binding-unavailable' }; }
+  if (!pinned || !pinned.ok || !pinned.pin ||
+      pinned.pin.worktreeId !== binding.worktreeId) {
+    return { ok: false, error: 'execution-binding-unavailable' };
+  }
+  return { ok: true, binding: binding, candidateTree: pinned.pin.executionTree };
+}
+
+function executionScopeMatches(scope, worktreeId, executionRoot, executionRunId, candidateTree) {
+  if (!scope || !scope.ok) return false;
+  return executionBindingMatches(scope.binding, worktreeId, executionRoot, executionRunId) &&
+    scope.candidateTree === candidateTree;
+}
+
+function storedExecutionScope(value) {
+  return {
+    ok: true,
+    binding: value.worktreeId === null ? null : {
+      worktreeId: value.worktreeId, executionRoot: value.executionRoot,
+      runId: value.executionRunId
+    },
+    candidateTree: value.candidateTree
+  };
+}
+
+// A launched app is evidence about the exact generation that built it. Looking
+// up only taskStem would let a later checkout silently become the source and
+// restart authority for the old installed app.
+function sessionExecutionBinding(session) {
+  if (!session) return { ok: false, error: 'execution-binding-unavailable' };
+  if (!session.taskStem) {
+    return executionScopeMatches({ ok: true, binding: null, candidateTree: null },
+      session.worktreeId, session.executionRoot, session.executionRunId,
+      session.candidateTree)
+      ? { ok: true, binding: null, candidateTree: null }
+      : { ok: false, error: 'execution-binding-unavailable' };
+  }
+  var current = jobExecutionBinding(session.taskStem);
+  if (!current.ok) return { ok: false, error: 'execution-binding-unavailable' };
+  var scope = executionScopeFor(session.taskStem, current.binding);
+  if (!executionScopeMatches(scope, session.worktreeId,
+      session.executionRoot, session.executionRunId, session.candidateTree)) {
+    return { ok: false, error: 'execution-binding-unavailable' };
+  }
+  return scope;
+}
+
+function sessionProductRoot(session) {
+  var current = sessionExecutionBinding(session);
+  if (!current.ok) return null;
+  return current.binding ? current.binding.executionRoot : paths.PROJECT_ROOT;
+}
+
+// The product root a job builds, installs and captures from. Total on a job
+// that passed jobExecutionBinding: task-bound jobs carry a non-empty
+// executionRoot, control-root jobs carry null and mean the control root.
+function jobProductRoot(job) {
+  return job && job.executionRoot ? job.executionRoot : paths.PROJECT_ROOT;
+}
+
+// The product root for a stem-scoped read (sessions, validation, the source
+// watcher). Null means ownership is unprovable — the caller must report
+// "unavailable", never substitute the control root.
+function stemProductRoot(taskStem) {
+  var execution = jobExecutionBinding(taskStem);
+  if (!execution.ok) return null;
+  return execution.binding ? execution.binding.executionRoot : paths.PROJECT_ROOT;
+}
+
+function newRunJob(body, config, target, linkedJobId, confirmedArtifactId, execution, productRevision) {
   var id = storage.randomId('job');
   var stages = RUN_STAGES.map(function (row) {
     return { id: row[0], label: row[1], status: 'queued', startedAt: null, durationMs: null, message: null };
@@ -718,7 +876,21 @@ function newRunJob(body, config, target, linkedJobId, confirmedArtifactId) {
     deviceSummary: target.displayName + (target.osVersion ? ' · ' + target.osVersion : ''),
     variantId: body.variantId, buildMode: body.buildMode,
     taskStem: body.taskStem, surfaceId: body.surfaceId,
+    // The execution binding this job runs against (plan §15): a task with a
+    // materialized generation builds, installs and captures from ITS OWN
+    // checkout, and the record pins which one so an artifact can never be
+    // attributed to the wrong tree. A job with no task, or a task with no live
+    // generation, is a control-root run and carries nulls.
+    worktreeId: execution.binding ? execution.binding.worktreeId : null,
+    executionRoot: execution.binding ? execution.binding.executionRoot : null,
+    executionRunId: execution.binding ? execution.binding.runId : null,
+    candidateTree: execution.candidateTree,
+    applicationId: config.project.applicationId,
     requestedProjectSourceRevision: body.expectedProjectSourceRevision,
+    // The revision of the tree THIS job compiles. For a task-bound job that is
+    // its own checkout, so build-time drift is measured against the sources the
+    // build actually reads instead of an unrelated tree.
+    productSourceRevision: productRevision,
     appProjectSourceRevision: null, runConfigHash: config.runConfigHash,
     phase: 'queued', state: 'queued', progress: 0, stages: stages,
     artifactId: null, sessionId: null, startedAt: stamp, updatedAt: stamp, finishedAt: null,
@@ -843,25 +1015,60 @@ function projectMutationBlocked() {
   }
 }
 
-function allowedBuildRoot(platform, variant, runConfigHash) {
+// The gradle wrapper that belongs to the job's own product tree. A task-bound
+// job must never drive the control root's wrapper against the candidate.
+function jobGradleWrapper(job) {
+  var root = job && job.executionRoot;
+  if (!root) return null;
+  var wrapper = path.join(root, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew');
+  try { return processRunner.resolveExecutable(wrapper, [wrapper]); }
+  catch (error) { return null; }
+}
+
+// §14: an explicit task-local build directory. Two checkouts that happen to
+// share a run config must not share one DerivedData tree, or their products
+// would overwrite each other while both claim to be built from their own
+// candidate.
+function derivedDataRoot(runConfigHash, worktreeId) {
+  var scope = runConfigHash.replace(/^sha256:/, '').slice(0, 24);
+  return worktreeId
+    ? path.join(paths.APP_RUN_DIR, 'derived-data', scope + '-' + String(worktreeId).slice(-12))
+    : path.join(paths.APP_RUN_DIR, 'derived-data', scope);
+}
+
+function allowedBuildRoot(platform, variant, runConfigHash, executionRoot, worktreeId) {
   if (platform === 'android') {
-    return path.join(paths.PROJECT_ROOT, variant.module, 'build', 'outputs', 'apk', variant.id);
+    return path.join(executionRoot, variant.module, 'build', 'outputs', 'apk', variant.id);
   }
-  return path.join(paths.APP_RUN_DIR, 'derived-data', runConfigHash.replace(/^sha256:/, '').slice(0, 24),
+  return path.join(derivedDataRoot(runConfigHash, worktreeId),
     'Build', 'Products', variant.configuration + '-iphonesimulator');
 }
 
-function artifactExpectation(body, config, target, variant, tools) {
+function artifactExpectation(body, config, target, variant, tools, execution) {
+  var binding = execution && execution.binding;
+  var executionRoot = binding ? binding.executionRoot : paths.PROJECT_ROOT;
+  var worktreeId = binding ? binding.worktreeId : null;
   return {
     platform: body.platform,
     variantId: body.variantId,
     applicationId: config.project.applicationId,
     runConfigHash: config.runConfigHash,
-    allowedBuildRoot: allowedBuildRoot(body.platform, variant, config.runConfigHash),
+    allowedBuildRoot: allowedBuildRoot(body.platform, variant, config.runConfigHash, executionRoot, worktreeId),
+    executionRoot: executionRoot,
+    worktreeId: worktreeId,
+    executionRunId: binding ? binding.runId : null,
+    candidateTree: execution ? execution.candidateTree : null,
     toolchainFingerprint: artifacts.toolchainFingerprint(body.platform, tools),
     targetArchitecture: target.architecture || null,
     runtimeKind: body.platform === 'ios' ? 'iphonesimulator' : null
   };
+}
+
+// A build root that does not exist yet is the normal state of a fresh
+// checkout, not evidence that anything is corrupt.
+function buildRootExists(root) {
+  try { return fs.statSync(root).isDirectory(); }
+  catch (error) { return false; }
 }
 
 function artifactIntegrityFailure(code) {
@@ -875,7 +1082,22 @@ function latchArtifactIntegrity(code, artifactId) {
   }
 }
 
-function olderBuildConfirmation(body, config, target, variant, tools) {
+function olderBuildConfirmation(body, config, target, variant, tools, expectedExecution) {
+  // The preflight and the run must agree about where the product is produced,
+  // or a task-bound job would be preflighted against the control root's APK.
+  // Same single decision the job itself uses; unprovable refuses here too.
+  var execution = jobExecutionBinding(body.taskStem);
+  if (!execution.ok) return { ok: false, status: 409, error: execution.error };
+  var binding = execution.binding;
+  var scope = executionScopeFor(body.taskStem, binding);
+  if (!scope.ok) return { ok: false, status: 409, error: scope.error };
+  if (expectedExecution !== undefined && !executionScopeMatches(scope,
+      expectedExecution.binding ? expectedExecution.binding.worktreeId : null,
+      expectedExecution.binding ? expectedExecution.binding.executionRoot : null,
+      expectedExecution.binding ? expectedExecution.binding.runId : null,
+      expectedExecution.candidateTree)) {
+    return { ok: false, status: 409, error: 'execution-binding-unavailable' };
+  }
   if (body.buildMode !== 'last-build') return { ok: true, artifactId: null };
   var manifest;
   try {
@@ -885,12 +1107,27 @@ function olderBuildConfirmation(body, config, target, variant, tools) {
     return { ok: false, status: 409, error: 'artifact-invalid' };
   }
   if (!manifest) return { ok: false, status: 409, error: 'artifact-not-found' };
-  var verified = artifacts.verify(manifest, artifactExpectation(body, config, target, variant, tools));
+  var verified = artifacts.verify(manifest,
+    artifactExpectation(body, config, target, variant, tools, scope));
   if (!verified.ok) {
-    latchArtifactIntegrity(verified.error, manifest.artifactId);
+    // A stored artifact built for a DIFFERENT tree is a stale reuse candidate,
+    // not evidence that app-run's own state is corrupt: the job simply has to
+    // rebuild. Latching integrity here would brick the panel for every task
+    // whose last build came from another root.
+    if (verified.error !== 'artifact-path-mismatch' &&
+        verified.error !== 'artifact-scope-mismatch') {
+      latchArtifactIntegrity(verified.error, manifest.artifactId);
+    }
     return Object.assign({ status: 409 }, verified);
   }
-  if (manifest.appProjectSourceRevision === body.expectedProjectSourceRevision) {
+  // An artifact is a fresh reuse candidate when it was built from the same
+  // tree this request would build — the PRODUCT tree, which for a task-bound
+  // request is its checkout, not whatever the client last saw.
+  var productNow = source(true, binding ? binding.executionRoot : paths.PROJECT_ROOT);
+  if (!productNow.available) {
+    return { ok: false, status: 409, error: productNow.reasonCode, detail: productNow.detail };
+  }
+  if (manifest.appProjectSourceRevision === productNow.revision) {
     return { ok: true, artifactId: manifest.artifactId };
   }
   if (body.confirmationToken) {
@@ -958,6 +1195,10 @@ function start(body, linkedJobId, preflight) {
   var config = resolved.snapshot.config;
   var variant = appRunConfig.resolveVariant(config, body.platform, body.variantId);
   if (!variant) return { ok: false, status: 400, error: 'variant-not-found' };
+  // The client's optimistic-concurrency token. It is the CONTROL root's
+  // revision because that is what device discovery showed the panel; it says
+  // "the project I saw is still the project you are about to act on". It is
+  // deliberately NOT the tree the build compiles — see productSourceRevision.
   var current = source(true);
   if (!current.available) return { ok: false, status: 409, error: current.reasonCode, detail: current.detail };
   if (current.revision !== body.expectedProjectSourceRevision) {
@@ -968,14 +1209,36 @@ function start(body, linkedJobId, preflight) {
     taskContext = validation.checklist(body.taskStem);
     if (!taskContext.ok) return { ok: false, status: 409, error: 'task-context-unavailable' };
   }
+  // Decide and pin the job's exact generation BEFORE artifact preflight. A
+  // preflight against another generation is not reusable authority.
+  var executionBinding = jobExecutionBinding(body.taskStem);
+  if (!executionBinding.ok) {
+    return { ok: false, status: 409, error: executionBinding.error };
+  }
+  var execution = executionScopeFor(body.taskStem, executionBinding.binding);
+  if (!execution.ok) return { ok: false, status: 409, error: execution.error };
   var confirmed = preflight && preflight.validated === true
     ? { ok: true, artifactId: preflight.artifactId || null }
-    : olderBuildConfirmation(body, config, resolved.target, variant, resolved.tools);
+    : olderBuildConfirmation(body, config, resolved.target, variant, resolved.tools, execution);
   if (!confirmed.ok) return confirmed;
   if (body.whenBusy === 'fail' && projectMutationBlocked()) {
     return { ok: false, status: 409, error: 'project-busy' };
   }
-  var job = newRunJob(body, config, resolved.target, linkedJobId, confirmed.artifactId);
+  if (preflight && Object.prototype.hasOwnProperty.call(preflight, 'executionBinding') &&
+      !executionScopeMatches(execution,
+        preflight.executionBinding.binding ? preflight.executionBinding.binding.worktreeId : null,
+        preflight.executionBinding.binding ? preflight.executionBinding.binding.executionRoot : null,
+        preflight.executionBinding.binding ? preflight.executionBinding.binding.runId : null,
+        preflight.executionBinding.candidateTree)) {
+    return { ok: false, status: 409, error: 'execution-binding-unavailable' };
+  }
+  var productSource = source(true,
+    execution.binding ? execution.binding.executionRoot : paths.PROJECT_ROOT);
+  if (!productSource.available) {
+    return { ok: false, status: 409, error: productSource.reasonCode, detail: productSource.detail };
+  }
+  var job = newRunJob(body, config, resolved.target, linkedJobId, confirmed.artifactId,
+    execution, productSource.revision);
   job.taskContextRevision = taskContext ? taskContext.taskSourceRevision : null;
   runtime.jobs.set(job.jobId, job);
   runtime.activeJobId = job.jobId;
@@ -1017,19 +1280,74 @@ function freshTarget(job) {
   };
 }
 
-function acquireLease(job) {
-  var admission;
-  try {
-    admission = finalizations.beginMutation({
-      kind: 'runtime-build', stem: null, sessionId: finalizations.createWriterSessionId(),
-      key: 'app-run:runtime-build', pendingChild: false, requireSoleWriter: true,
-      ttlMs: LEASE_TTL_MS
-    });
-  } catch (_) {
-    return { ok: false, error: 'writer-lease-unavailable' };
+// §15/§16. A job takes exactly the leases its effects justify:
+//   - the build lease, scoped to the tree it builds. A task-bound job builds in
+//     its own isolated checkout, so it names that worktree and stays compatible
+//     with a job in another one; a control-root job still demands sole-writer,
+//     because it mutates the tree everything else shares.
+//   - the DEVICE, because boot/install/launch/screenshot mutate device state
+//     that no worktree isolates.
+//   - the BUNDLE id, because two jobs installing the same application id on the
+//     same device would overwrite each other's install regardless of platform
+//     bookkeeping. The applicationId suffix is never altered for concurrency —
+//     that would change the behaviour under test.
+// Every one of these carries its identity in `key` and no stem, so conflicts are
+// exact-resource conflicts and nothing else.
+// The exclusion strength matches the isolation. A CONTROL-ROOT job builds the
+// tree everything else shares, so it keeps its single globally exclusive
+// runtime-build lease — which already excludes every device and every bundle,
+// because while it is held nothing else may run at all. A TASK-BOUND job builds
+// in its own checkout, so global exclusion would be exactly the blanket
+// serialization §16 forbids: it takes three narrow leases instead, and only the
+// device and the bundle can make two such jobs collide.
+function leaseRequests(job) {
+  if (!job.executionRoot || !job.worktreeId) {
+    return [{ kind: 'runtime-build', key: 'app-run:runtime-build', requireSoleWriter: true }];
   }
-  if (!admission.ok) return admission;
-  return { ok: true, handle: admission.handle };
+  var requests = [{ kind: 'execution-writer', key: 'execution:' + job.worktreeId, requireSoleWriter: false }];
+  if (job.targetStableHint) {
+    requests.push({ kind: 'resource-writer', key: 'device:' + job.platform + ':' + job.targetStableHint,
+      requireSoleWriter: false });
+  }
+  if (job.applicationId) {
+    requests.push({ kind: 'resource-writer', key: 'bundle:' + job.platform + ':' + job.applicationId,
+      requireSoleWriter: false });
+  }
+  return requests;
+}
+
+function acquireLease(job) {
+  var handles = [];
+  var requests = leaseRequests(job);
+  for (var i = 0; i < requests.length; i++) {
+    var admission;
+    try {
+      admission = finalizations.beginMutation({
+        kind: requests[i].kind, stem: null, sessionId: finalizations.createWriterSessionId(),
+        key: requests[i].key, pendingChild: false,
+        requireSoleWriter: requests[i].requireSoleWriter, ttlMs: LEASE_TTL_MS
+      });
+    } catch (_) {
+      releaseLeases(handles);
+      return { ok: false, error: 'writer-lease-unavailable' };
+    }
+    if (!admission.ok) {
+      // Partial acquisition is never left standing: a refused resource means
+      // the job does not run, so every lease it already took comes back.
+      releaseLeases(handles);
+      return admission;
+    }
+    handles.push(admission.handle);
+  }
+  // The FIRST handle stays the build lease every existing call site drives
+  // (pending-child fence, child pid binding, renewal); the rest are exclusions.
+  return { ok: true, handle: handles[0], handles: handles };
+}
+
+function releaseLeases(handles) {
+  (handles || []).forEach(function (handle) {
+    try { finalizations.endMutation(handle); } catch (_) {}
+  });
 }
 
 function phaseContext(job, resolved, controller, leaseState, lease) {
@@ -1044,6 +1362,12 @@ function phaseContext(job, resolved, controller, leaseState, lease) {
     tools: resolved.tools,
     commandRunner: runtime.commandRunner,
     signal: controller.signal,
+    // Where the product under test lives for THIS job (plan §14/§15). Absent an
+    // execution binding the job is a control-root run and the control root is
+    // the product.
+    executionRoot: jobProductRoot(job),
+    worktreeId: job.worktreeId || null,
+    gradlew: jobGradleWrapper(job),
     applicationId: resolved.config.project.applicationId,
     runConfigHash: resolved.config.runConfigHash,
     targetArchitecture: resolved.target.architecture || null,
@@ -1098,10 +1422,14 @@ function phaseContext(job, resolved, controller, leaseState, lease) {
   };
 }
 
-function beginRenewal(handle, controller, leaseState) {
+// Every lease the job holds is renewed. Renewing only the build lease would let
+// the device and bundle exclusions expire under a long build, so a second job
+// could claim the same device while this one is still installing on it.
+function beginRenewal(handles, controller, leaseState) {
+  var list = Array.isArray(handles) ? handles : [handles];
   return setInterval(function () {
     try {
-      writerLeases.renew(handle, LEASE_TTL_MS);
+      list.forEach(function (handle) { writerLeases.renew(handle, LEASE_TTL_MS); });
     } catch (_) {
       leaseState.healthy = false;
       try { controller.abort(); } catch (_) {}
@@ -1120,7 +1448,15 @@ async function waitForAdmission(job) {
   while (true) {
     if (job.state === 'cancelled') return null;
     var lease = acquireLease(job);
-    if (lease.ok) return lease.handle;
+    if (lease.ok) {
+      if (!jobExecutionBindingCurrent(job)) {
+        releaseLeases(lease.handles);
+        var staleBinding = new Error('Task execution binding changed before build admission');
+        staleBinding.code = 'execution-binding-unavailable';
+        throw staleBinding;
+      }
+      return { primary: lease.handle, all: lease.handles };
+    }
     if (lease.error !== 'finalization-active') {
       var unavailable = new Error('Project writer lease is unavailable');
       unavailable.code = lease.error === 'writer-lease-release-failed'
@@ -1149,6 +1485,7 @@ async function waitForAdmission(job) {
 }
 
 async function executeRun(job) {
+  var leaseHandles = [];
   var controller = new AbortController();
   runtime.controllers.set(job.jobId, controller);
   var lease = null, renewal = null;
@@ -1159,12 +1496,14 @@ async function executeRun(job) {
     var variant = appRunConfig.resolveVariant(resolved.config, job.platform, job.variantId);
     if (!variant) { var invalid = new Error('Selected variant is no longer configured'); invalid.code = 'variant-not-found'; throw invalid; }
     setStage(job, 'detecting', 'success', 'Environment and target resolved.');
-    lease = await waitForAdmission(job);
-    if (!lease) return;
+    var admission = await waitForAdmission(job);
+    if (!admission) return;
+    lease = admission.primary;
+    leaseHandles = admission.all;
     var leaseState = { healthy: true };
-    renewal = beginRenewal(lease, controller, leaseState);
-    var current = source(true);
-    if (!current.available || current.revision !== job.requestedProjectSourceRevision) {
+    renewal = beginRenewal(leaseHandles && leaseHandles.length ? leaseHandles : [lease], controller, leaseState);
+    var current = source(true, jobProductRoot(job));
+    if (!current.available || current.revision !== job.productSourceRevision) {
       var drift = new Error('Project changed before build started');
       drift.code = current.available ? 'source-changed' : current.reasonCode;
       throw drift;
@@ -1202,12 +1541,25 @@ async function executeRun(job) {
     if (manifest) {
       var verified = artifacts.verify(manifest, artifactExpectation({
         platform: job.platform, variantId: job.variantId
-      }, resolved.config, resolved.target, variant, resolved.tools));
-      var sourceMatches = manifest.appProjectSourceRevision === job.requestedProjectSourceRevision;
+      }, resolved.config, resolved.target, variant, resolved.tools,
+      storedExecutionScope(job)));
+      var sourceMatches = manifest.appProjectSourceRevision === job.productSourceRevision;
       var allowedOlder = job.confirmedArtifactId === manifest.artifactId;
       if (verified.ok && (sourceMatches || allowedOlder)) artifact = artifactFromManifest(manifest, verified);
       else {
         reuseFailure = verified.ok ? 'artifact-config-mismatch' : verified.error;
+        // A cached artifact that belongs to ANOTHER tree — or whose build root
+        // does not exist yet in a fresh checkout — is a stale reuse candidate.
+        // The job simply rebuilds; treating it as tampering would latch a
+        // permanent integrity failure the first time a task-bound run met an
+        // artifact from an earlier control-root build.
+        if (job.executionRoot && (reuseFailure === 'artifact-path-mismatch' ||
+            reuseFailure === 'artifact-scope-mismatch' ||
+            (reuseFailure === 'artifact-invalid' && !buildRootExists(
+              allowedBuildRoot(job.platform, variant, resolved.config.runConfigHash,
+                job.executionRoot, job.worktreeId))))) {
+          reuseFailure = 'artifact-config-mismatch';
+        }
         if (artifactIntegrityFailure(reuseFailure)) {
           latchArtifactIntegrity(reuseFailure, manifest.artifactId);
           var unsafeStoredArtifact = new Error('Stored application artifact failed its integrity proof');
@@ -1229,11 +1581,16 @@ async function executeRun(job) {
       if (job.platform === 'android') await android.build(context, variant, job.buildMode === 'rebuild');
       else derived = await ios.build(context, variant);
       context.ensureLease();
-      var postBuild = source(true);
-      if (!postBuild.available || postBuild.revision !== job.requestedProjectSourceRevision) {
+      var postBuild = source(true, jobProductRoot(job));
+      if (!postBuild.available || postBuild.revision !== job.productSourceRevision) {
         var buildDrift = new Error('Project inputs changed during build');
         buildDrift.code = postBuild.available ? 'source-changed' : postBuild.reasonCode;
         throw buildDrift;
+      }
+      if (!jobExecutionBindingCurrent(job)) {
+        var executionDrift = new Error('Execution candidate changed during build');
+        executionDrift.code = 'execution-binding-unavailable';
+        throw executionDrift;
       }
       built = true;
       setStage(job, 'building', 'success', 'Build completed.');
@@ -1242,8 +1599,13 @@ async function executeRun(job) {
         ? android.resolveArtifact(context, variant) : ios.resolveArtifact(context, variant, derived);
       try {
         manifest = artifacts.create({
-          platform: job.platform, variantId: job.variantId, sourceRevision: job.requestedProjectSourceRevision,
-          runConfigHash: resolved.config.runConfigHash, artifact: artifact, tools: resolved.tools
+          platform: job.platform, variantId: job.variantId, sourceRevision: job.productSourceRevision,
+          runConfigHash: resolved.config.runConfigHash,
+          execution: job.worktreeId === null ? null : {
+            worktreeId: job.worktreeId, runId: job.executionRunId,
+            executionRoot: job.executionRoot, candidateTree: job.candidateTree
+          },
+          artifact: artifact, tools: resolved.tools
         });
       } catch (artifactPublishError) {
         latchIntegrity('artifact-publish-failed', null);
@@ -1263,7 +1625,8 @@ async function executeRun(job) {
 
     var installVerification = artifacts.verify(manifest, artifactExpectation({
       platform: job.platform, variantId: job.variantId
-    }, resolved.config, resolved.target, variant, resolved.tools));
+    }, resolved.config, resolved.target, variant, resolved.tools,
+    storedExecutionScope(job)));
     if (!installVerification.ok) {
       latchArtifactIntegrity(installVerification.error, manifest.artifactId);
       var artifactChanged = new Error('Application artifact changed before installation');
@@ -1286,6 +1649,8 @@ async function executeRun(job) {
       state: 'running', platform: job.platform, targetId: job.targetId,
       targetStableHint: job.targetStableHint, rawTargetIdentifier: rawTarget,
       deviceSummary: job.deviceSummary, variantId: job.variantId,
+      worktreeId: job.worktreeId, executionRoot: job.executionRoot,
+      executionRunId: job.executionRunId, candidateTree: job.candidateTree,
       artifactId: manifest.artifactId, applicationId: resolved.config.project.applicationId,
       requestedProjectSourceRevision: job.requestedProjectSourceRevision,
       appProjectSourceRevision: manifest.appProjectSourceRevision,
@@ -1329,6 +1694,9 @@ async function executeRun(job) {
   } finally {
     runtime.controllers.delete(job.jobId);
     if (renewal) clearInterval(renewal);
+    // Resource exclusions come off AFTER the process tree is gone (§15): the
+    // teardown above has already aborted the controller and settled the child.
+    releaseLeases((leaseHandles || []).filter(function (handle) { return handle !== lease; }));
     if (lease) {
       try {
         if (writerLeases.release(lease) !== true) {
@@ -1436,6 +1804,10 @@ async function restart(body) {
   var found = resolveSession(body.sessionId, body.expectedSessionRevision);
   if (!found.ok) return found;
   var session = found.session;
+  var exactExecution = sessionExecutionBinding(session);
+  if (!exactExecution.ok) {
+    return { ok: false, status: 409, error: exactExecution.error };
+  }
   var targets;
   try { targets = discovery.discover(discoveryOptions()); }
   catch (_) { return { ok: false, status: 409, error: 'discovery-failed' }; }
@@ -1456,21 +1828,29 @@ async function restart(body) {
   if (!privateTarget || !variant) {
     return { ok: false, status: 409, error: privateTarget ? 'variant-not-found' : 'target-not-found' };
   }
-  var current = source(true);
-  if (!current.available) {
-    return { ok: false, status: 409, error: current.reasonCode, detail: current.detail };
+  var currentControl = source(true);
+  if (!currentControl.available) {
+    return { ok: false, status: 409, error: currentControl.reasonCode, detail: currentControl.detail };
   }
-  if (current.revision !== body.expectedProjectSourceRevision) {
-    return { ok: false, status: 409, error: 'source-changed', projectSourceRevision: current.revision };
+  if (currentControl.revision !== body.expectedProjectSourceRevision) {
+    return { ok: false, status: 409, error: 'source-changed', projectSourceRevision: currentControl.revision };
+  }
+  var currentProduct = source(true, exactExecution.binding
+    ? exactExecution.binding.executionRoot : paths.PROJECT_ROOT);
+  if (!currentProduct.available || currentProduct.revision !== session.appProjectSourceRevision) {
+    return { ok: false, status: 409, error: currentProduct.available
+      ? 'source-changed' : currentProduct.reasonCode, detail: currentProduct.detail };
   }
   var confirmed = olderBuildConfirmation({
     platform: session.platform,
     variantId: session.variantId,
     buildMode: body.buildMode,
+    taskStem: session.taskStem,
     expectedProjectSourceRevision: body.expectedProjectSourceRevision,
     confirmationToken: body.confirmationToken,
     discoveryRevision: body.discoveryRevision
-  }, config, privateTarget, variant, targets.private[session.platform].tools);
+  }, config, privateTarget, variant, targets.private[session.platform].tools,
+  exactExecution);
   if (!confirmed.ok) return confirmed;
 
   var stopped = await stop({
@@ -1482,15 +1862,23 @@ async function restart(body) {
   var refreshed;
   try { refreshed = discovery.discover(discoveryOptions({ refresh: true })); }
   catch (_) { return { ok: false, status: 409, error: 'discovery-failed' }; }
-  var refreshedSource = source(true);
+  var refreshedExecution = sessionExecutionBinding(session);
+  if (!refreshedExecution.ok) {
+    return { ok: false, status: 409, error: refreshedExecution.error };
+  }
+  var refreshedSource = source(true, refreshedExecution.binding
+    ? refreshedExecution.binding.executionRoot : paths.PROJECT_ROOT);
   if (!refreshedSource.available) {
     return { ok: false, status: 409, error: refreshedSource.reasonCode, detail: refreshedSource.detail };
   }
-  if (refreshedSource.revision !== body.expectedProjectSourceRevision ||
+  var refreshedControl = source(true);
+  if (!refreshedControl.available ||
+      refreshedControl.revision !== body.expectedProjectSourceRevision ||
+      refreshedSource.revision !== session.appProjectSourceRevision ||
       !refreshed.config.ok || refreshed.config.runConfigHash !== config.runConfigHash) {
     return {
       ok: false, status: 409, error: 'source-changed',
-      projectSourceRevision: refreshedSource.revision
+      projectSourceRevision: refreshedControl.revision
     };
   }
   var refreshedPlatform = refreshed.public.platforms.find(function (row) {
@@ -1517,7 +1905,8 @@ async function restart(body) {
     surfaceId: session.surfaceId, expectedProjectSourceRevision: body.expectedProjectSourceRevision,
     confirmationToken: null, whenBusy: 'queue',
     idempotencyKey: body.idempotencyKey
-  }, session.jobId, { validated: true, artifactId: confirmed.artifactId });
+  }, session.jobId, { validated: true, artifactId: confirmed.artifactId,
+    executionBinding: refreshedExecution });
 }
 
 function pngInfo(bytes) {
@@ -1898,7 +2287,7 @@ function validationGet(query) {
   if (!current.ok) return current;
   var session = query.sessionId ? runtime.sessions.get(query.sessionId) :
     (runtime.currentSessionId ? runtime.sessions.get(runtime.currentSessionId) : null);
-  var currentProject = source(true);
+  var currentProject = source(true, stemProductRoot(query.taskStem));
   var latest;
   try {
     latest = validation.history(query.taskStem, 1)[0] || null;
@@ -1928,7 +2317,10 @@ async function validationSave(body) {
   var result = await validation.save(body, {
     resolveSession: function (id, revision) { return resolveSession(id, revision); },
     screenshotOwned: screenshotOwned,
-    currentSourceRevision: function () { var current = source(true); return current.available ? current.revision : null; }
+    currentSourceRevision: function () {
+      var current = source(true, stemProductRoot(body.taskStem));
+      return current.available ? current.revision : null;
+    }
   });
   (result.retentionIssues || []).forEach(function (id) {
     latchIntegrity('validation-retention-failed', id);
@@ -2080,10 +2472,10 @@ function recover() {
       if (ACTIVE_STATES[job.state] || job.state === 'running') {
         var wasQueued = job.state === 'queued';
         var recoveredConfig = wasQueued ? appRunConfig.load() : null;
-        var recoveredSource = wasQueued ? source(true) : null;
+        var recoveredSource = wasQueued ? source(true, jobProductRoot(job)) : null;
         var queuedStillValid = wasQueued && recoveredConfig.ok && recoveredSource.available &&
           recoveredConfig.runConfigHash === job.runConfigHash &&
-          recoveredSource.revision === job.requestedProjectSourceRevision;
+          recoveredSource.revision === job.productSourceRevision;
         job.state = queuedStillValid ? 'queued' : 'interrupted';
         if (!queuedStillValid) {
           var interruptedStage = job.stages.find(function (stage) {

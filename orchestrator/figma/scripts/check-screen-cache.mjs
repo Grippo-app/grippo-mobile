@@ -12,7 +12,7 @@
 import { createRequire } from 'node:module'
 import { closeSync, existsSync, openSync, readSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, parseCli, PROJECT_ROOT } from './_util.mjs'
+import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, parseCli, PROJECT_ROOT, FIGMA_TASK_SOURCE_FILE, FIGMA_TASK_SOURCE_EXPLICIT } from './_util.mjs'
 import { assertTaskStem, compileSchema, fileHash, schemaIssues, writeReport } from './report-utils.mjs'
 import { chromeResidue } from './lib/oracle-chrome.mjs'
 import { readContainedSingleLinkFile } from '../runtime/file-safety.mjs'
@@ -40,7 +40,7 @@ const SCREEN_KEY_RE = /^[A-Za-z0-9_]+$/
 const USAGE = 'usage: node scripts/check-screen-cache.mjs <stem> [--gate|--advisory]'
 
 function taskFiles(stem) {
-  if (process.env.FIGMA_SCREEN_TASK_FILE) return [process.env.FIGMA_SCREEN_TASK_FILE]
+  if (FIGMA_TASK_SOURCE_FILE) return [FIGMA_TASK_SOURCE_FILE]
   return [
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'todo', `${stem}.md`),
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'backlog', `${stem}.md`),
@@ -51,7 +51,7 @@ function taskFiles(stem) {
 function loadDesign(files) {
   const bodies = []
   const readIssues = []
-  const explicit = !!process.env.FIGMA_SCREEN_TASK_FILE
+  const explicit = FIGMA_TASK_SOURCE_EXPLICIT
   for (const file of files) {
     try {
       bodies.push(readTaskMarkdown(file, { explicit }))

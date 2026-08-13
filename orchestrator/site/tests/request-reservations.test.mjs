@@ -2,6 +2,7 @@
 
 import assert from 'node:assert/strict'
 import { spawn, spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import {
   chmodSync, existsSync, linkSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync,
   rmSync, symlinkSync, unlinkSync, writeFileSync
@@ -52,6 +53,9 @@ process.env.RUNNER_DISABLED = '1'
 
 const require = createRequire(import.meta.url)
 const requests = require(modulePath)
+const taskActionReceipts = require('../server/task-action-receipts.js')
+const fileGuards = require('../server/file-guards.js')
+const paths = require('../server/paths.js')
 const taskSource = require('../../tasks/task-source-contract.cjs')
 const SOURCE_BLOCK = taskSource.render(taskSource.manualForIntent('request-reservations', 'manual', 'fixture:request-reservations'))
 const stem = 'TASK_9_atomic_request_handoff'
@@ -61,7 +65,7 @@ const taskSnapshot = taskCore.validateTaskState({ tasksDir, repoRoot: root, chec
 assert.equal(taskSnapshot.ok, true)
 writeFileSync(join(tasksDir, 'INDEX.json'), JSON.stringify(taskCore.deriveIndex(taskSnapshot._model, '2026-07-13T12:00:00Z'), null, 2) + '\n')
 const base = {
-  version: 2,
+  version: 3,
   action: 'prep',
   stem,
   expectedState: 'backlog',
@@ -207,6 +211,117 @@ try {
       { ...base, dedupKey: 'report:one' },
       { ...base, dedupKey: 'report:one', dedupReport: 'sha256:' + 'c'.repeat(64) }
     ]) assert.notEqual(requests.requestFingerprint(changed), fingerprint)
+  })
+
+  await check('queue scans reject raw invalid UTF-8 instead of normalizing executable prompt bytes', () => {
+    const id = '1700000000000-invalidutf8'
+    const valid = Buffer.from(JSON.stringify({ ...base, prompt: 'Prepare exact task X.' }) + '\n', 'utf8')
+    const markerAt = valid.indexOf(Buffer.from('X', 'utf8'))
+    assert.ok(markerAt >= 0)
+    valid[markerAt] = 0xff
+    const file = join(requestsDir, id + '.json')
+    writeFileSync(file, valid)
+    try {
+      const scanned = requests.scanRequests()
+      assert.equal(scanned.ok, false)
+      assert.equal(scanned.code, 'request-record-invalid')
+      const privateClaim = join(requestsDir, '.' + id + '.claim')
+      assert.equal(requests.transferFileNoClobber(file, privateClaim), true)
+      const claimed = requests.scanActiveClaims()
+      assert.equal(claimed.ok, false)
+      assert.equal(claimed.code, 'claim-record-invalid')
+      unlinkSync(privateClaim)
+    } finally {
+      try { unlinkSync(file) } catch (_) {}
+    }
+  })
+
+  await check('task-action receipt completion never overwrites a racing foreign generation', () => {
+    const request = { idempotencyKey: 'task-action-receipt-race', action: 'prepare', stem }
+    const reserved = taskActionReceipts.reserve(request)
+    assert.equal(reserved.ok, true)
+    const digest = createHash('sha256').update(request.idempotencyKey, 'utf8').digest('hex')
+    const file = join(paths.TASK_ACTION_RECEIPTS_DIR, digest + '.json')
+    const foreign = Buffer.from('foreign receipt generation\n')
+    const originalReplace = fileGuards.atomicReplaceRegularFileResult
+    const originalCas = fileGuards.compareAndSwapRegularFileUnder
+    let raced = false
+    function replaceWithForeign() {
+      if (raced) return
+      raced = true
+      writeFileSync(file, foreign)
+    }
+    fileGuards.atomicReplaceRegularFileResult = function (...args) {
+      replaceWithForeign()
+      return originalReplace.apply(this, args)
+    }
+    fileGuards.compareAndSwapRegularFileUnder = function (...args) {
+      replaceWithForeign()
+      return originalCas.apply(this, args)
+    }
+    try {
+      assert.equal(taskActionReceipts.complete(reserved.handle, { schemaVersion: 1, status: 'accepted' }), false)
+      assert.deepEqual(readFileSync(file), foreign)
+    } finally {
+      fileGuards.atomicReplaceRegularFileResult = originalReplace
+      fileGuards.compareAndSwapRegularFileUnder = originalCas
+      try { unlinkSync(file) } catch (_) {}
+    }
+  })
+
+  await check('task-action receipt completion never adopts a foreign post-CAS response', () => {
+    const request = { idempotencyKey: 'task-action-receipt-post-cas-race', action: 'prepare', stem }
+    const reserved = taskActionReceipts.reserve(request)
+    assert.equal(reserved.ok, true)
+    const digest = createHash('sha256').update(request.idempotencyKey, 'utf8').digest('hex')
+    const file = join(paths.TASK_ACTION_RECEIPTS_DIR, digest + '.json')
+    const originalCas = fileGuards.compareAndSwapRegularFileUnder
+    let replaced = false
+    fileGuards.compareAndSwapRegularFileUnder = function (...args) {
+      const result = originalCas.apply(this, args)
+      if (result && result.ok && !replaced) {
+        replaced = true
+        const foreign = JSON.parse(readFileSync(file, 'utf8'))
+        foreign.response.status = 'foreign-response'
+        writeFileSync(file, JSON.stringify(foreign) + '\n')
+      }
+      return result
+    }
+    try {
+      assert.equal(taskActionReceipts.complete(reserved.handle, {
+        schemaVersion: 1, status: 'accepted',
+      }), false)
+      assert.equal(JSON.parse(readFileSync(file, 'utf8')).response.status, 'foreign-response')
+    } finally {
+      fileGuards.compareAndSwapRegularFileUnder = originalCas
+      try { unlinkSync(file) } catch (_) {}
+    }
+  })
+
+  await check('task-action receipts reject raw invalid UTF-8 instead of normalizing replay data', () => {
+    const request = { idempotencyKey: 'task-action-receipt-invalid-utf8', action: 'prepare', stem }
+    const reserved = taskActionReceipts.reserve(request)
+    assert.equal(reserved.ok, true)
+    assert.equal(taskActionReceipts.complete(reserved.handle, {
+      schemaVersion: 1, status: 'accepted', detail: '\ufffd',
+    }), true)
+    const digest = createHash('sha256').update(request.idempotencyKey, 'utf8').digest('hex')
+    const file = join(paths.TASK_ACTION_RECEIPTS_DIR, digest + '.json')
+    try {
+      const canonical = readFileSync(file)
+      const replacement = Buffer.from('\ufffd', 'utf8')
+      const at = canonical.indexOf(replacement)
+      assert.ok(at >= 0)
+      writeFileSync(file, Buffer.concat([
+        canonical.subarray(0, at), Buffer.from([0xff]), canonical.subarray(at + replacement.length),
+      ]))
+      assert.equal(taskActionReceipts.read(request.idempotencyKey), null)
+      const replay = taskActionReceipts.reserve(request)
+      assert.equal(replay.ok, false)
+      assert.equal(replay.error, 'task-action-recovery-required')
+    } finally {
+      try { unlinkSync(file) } catch (_) {}
+    }
   })
 
   const firstId = '1700000000000-first'

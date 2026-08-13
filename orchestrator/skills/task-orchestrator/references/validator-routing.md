@@ -18,11 +18,12 @@ Once all builders in the plan have reported done, run **every applicable**
 validator in a single multi-Agent message.
 
 **Pass `TASK_STEM` to every spawned validator and reviewer.** They run in
-separate sessions and cannot see the orchestrator's shell var, yet several read
-the pre-task baseline files on their own. Prepend the literal token
-`TASK_STEM=<stem>.` to each prompt (e.g. `TASK_STEM=TASK_3_add_filter.`) so each
-spec reconstructs `/tmp/orchestrator_pre_task_sha_${TASK_STEM}.txt`; absent the
-token they fall back to `HEAD~1`/`HEAD`. Applies to `scope-leak-validator`,
+separate sessions and cannot see the orchestrator's shell var, and several of
+them reason about the diff. Prepend the literal token `TASK_STEM=<stem>.` to
+each prompt (e.g. `TASK_STEM=TASK_3_add_filter.`) so each spec can address the
+task's control-plane state. Every diff-sensitive spec diffs against `HEAD` —
+the sealed base commit of this execution root — never a `/tmp` baseline.
+Applies to `scope-leak-validator`,
 `mvi-contract-validator`, `build-validator`, `anti-pattern-scanner`,
 `acceptance-tracer`, `architecture-validator`, and the Step 5 / 5.5 reviewers.
 
@@ -67,23 +68,22 @@ routing: their hoisted tokens are reconciled by the gate's evidence alias
 resolution (a correct one PASSes like any declarative widget), so there is no
 canvas-specific WARN — a real token defect is a normal Blocker.
 
-### Footprint scoping (only when Step 3.5 found pre-existing uncommitted work)
+### Footprint scoping
 
-When the footprint in `/tmp/orchestrator_task_footprint_${TASK_STEM}.txt` is a
-strict subset of the whole-tree `git status`, three validators reason about *the
-diff* and would raise false positives on files this task never touched —
-`scope-leak-validator`, `anti-pattern-scanner`, `acceptance-tracer`. Brief each
-with the explicit current-task file list and instruct it to scope to those paths
-only.
+In an execution root the footprint is the whole diff against `HEAD`: the
+checkout starts at the exact target base commit, so nothing in it predates the
+task. Brief the diff-sensitive validators (`scope-leak-validator`,
+`anti-pattern-scanner`, `acceptance-tracer`) with `git status --porcelain`
+output when you want them scoped explicitly; there is no subset to compute and
+no baseline file to read.
 
 `build-validator` is a **split case**: its compile and assemble gates (Step 1 /
-Step 4.5) read **final** file state and are unaffected by the footprint, but its
-Step 2.5 deprecation extraction is **diff-scoped** (it diffs against
-`PRE_TASK_SHA`) — so pass the footprint to both build-validator invocations with
-the intersect instruction for the Step 2.5 filter only:
+Step 4.5) read **final** file state, while its Step 2.5 deprecation extraction
+is **diff-scoped** against `HEAD` — the sealed base — so neither invocation
+needs a footprint argument:
 
 ```
-Agent(subagent_type: "build-validator", prompt: "BUILD_MODE=compile. TASK_STEM=<stem>. Run Step 1 (compile path) and Step 2.5 (deprecation extraction) per your spec. Current-task footprint (intersect your Step 2.5 diff-filter with these paths before routing deprecation warnings; the compile gate is unaffected): <verbatim paths from /tmp/orchestrator_task_footprint_${TASK_STEM}.txt>.")
+Agent(subagent_type: "build-validator", prompt: "BUILD_MODE=compile. TASK_STEM=<stem>. Run Step 1 (compile path) and Step 2.5 (deprecation extraction) per your spec; diff against HEAD, which is this run's sealed base commit.")
 ```
 
 The read-final-state validators (`architecture-validator`,
@@ -227,9 +227,7 @@ dex packaging, lint, resource processing, the iOS XCFramework link, or
 Agent(subagent_type: "build-validator", prompt: "BUILD_MODE=assemble. TASK_STEM=<stem>. Run Step 1 (full XCFramework + assembleDebug), Step 2 (ancillary module assembles), Step 2.5 (deprecation extraction), Step 3 (xcodebuild :iosApp when iosEnabled=true), per your spec.")
 ```
 
-(Apply the same footprint/intersect instruction as Step 4 when pre-existing work
-exists — only the Step 2.5 filter is affected; the assemble gate reads final
-state.)
+(No footprint argument is needed: Step 2.5 diffs against `HEAD`, this run's sealed base commit, and the assemble gate reads final state.)
 
 If PASS → proceed to Step 4.6. If FAIL → the failure is in territory
 the compile gate does not cover (R8 keep-rule conflict, missing resource,
@@ -578,8 +576,9 @@ routes to a builder; never batch one to `### Caveats` or hold it.
 Trigger detection:
 
 ```bash
-PRE_TASK_SHA=$(cat /tmp/orchestrator_pre_task_sha_${TASK_STEM}.txt 2>/dev/null); [ -z "$PRE_TASK_SHA" ] && PRE_TASK_SHA=HEAD
-SECURITY_TOUCHED=$(git diff --name-only "$PRE_TASK_SHA" -- ':!*.md' ':!*.json' ':!*.lock' 2>/dev/null | \
+# HEAD is this execution root's sealed base commit: every difference from it
+# belongs to this task.
+SECURITY_TOUCHED=$(git diff --name-only HEAD -- ':!*.md' ':!*.json' ':!*.lock' 2>/dev/null | \
   grep -iE 'token|auth|credential|secret|password|cipher|crypt|jwt|oauth|keystore' | head -5)
 ```
 

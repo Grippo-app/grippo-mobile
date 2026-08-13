@@ -37,7 +37,8 @@ manifests/current-generation.json          atomic current pointer
 manifests/generations/<generation-id>.json committed generation manifests
 manifests/generation-artifacts/<id>/       immutable inventory/areas/normalized source
 orchestrator/.cache/api-contract/staging/  owned, disposable job staging
-orchestrator/.cache/api-contract/reports/  bounded probe/refresh/change/analysis/history reports
+orchestrator/.cache/api-contract/reports/  bounded control probe/refresh/change/analysis/history reports
+  executions/<worktreeId>/<runId>/         manager-proven task analysis/drift/coverage reports
 orchestrator/.cache/api-contract/mock/     bounded loopback-mock state, index, fixtures and request logs
 ```
 

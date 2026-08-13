@@ -8,17 +8,17 @@
       "frontmatterDescriptionSha256": "ab5854e560c349ae1bcd72769a17026cfd57a61951b6bc117784287097fdea26",
       "sourcePath": "orchestrator/skills/backend-contract-client/SKILL.md",
       "installPath": ".claude/skills/backend-contract-client/SKILL.md",
-      "sourceSha256": "21adbd6a9793d9ad19e68946ea215aada467d865e24082208661eb73af8695b8",
+      "sourceSha256": "9d41890a8997ede87752802bb5a08695fa559d63f4a26cf636f4e6b33356d564",
       "referenceSha256s": {
         "references/data-services-backend.md": "b78a736977f31b6799115f1adf9b10855a85b00f98ac649783ef9d7a87ab4694",
-        "references/drift.md": "4220c46086b748147183f73a24273553e0ce4227ed31598aeac385fe28c75d68",
+        "references/drift.md": "92f26749984073a1c31c026f9b4b957ff87dc312e22101dadc1e3b88c43ae0d0",
         "references/endpoint-inventory.md": "553c0b45b64b02d707263b6d21c8ff27abb86b6bdb239e1ffd6396808d9c931a",
         "references/index.md": "1cfd1716a9662969a62a6a1f0690c987e1d0a1e240dbb5939e1c96ab426d9c14",
         "references/overview.md": "2840e10e4311c6fc37bbd7f1ce01f91948f935e6882b945292e93b71443e5dbf",
         "references/postman.md": "6e7b9b298d2425c755cec19191f5cf731882d7dde021489cf3eca73c0be99344",
         "references/secrets-and-ci.md": "b1289709a8c2a127912704ed6f506a258d961ad84c7b9a2db29f51abf3e7e01f",
         "references/snapshot-pipeline.md": "5a9411afca5dc2d2b5e38d0827204b20f293899d6b61df0c42a4067063cd6695",
-        "references/tooling-sidecar.md": "29d7a0da9cc514cdcfc0f0c34fd2e2c0460d21027cf73a2f2c210d6666afec92"
+        "references/tooling-sidecar.md": "019a3af4c6ff326c83b1d134a0416f10e367491f02270ee0b8b7ffb35df62780"
       }
     },
     {
@@ -143,16 +143,16 @@
       "frontmatterDescriptionSha256": "cb862d92f683a063b21ba82705e492c0b2cbbd6c8dced490bc7944f66887ee43",
       "sourcePath": "orchestrator/skills/task-orchestrator/SKILL.md",
       "installPath": ".claude/skills/task-orchestrator/SKILL.md",
-      "sourceSha256": "8e5d1f334ee63677449ca09163db9034074535bf7d2b21e847d6ed1eee262bf7",
+      "sourceSha256": "968002bee5b1b62ae50169c98f896733801dd3266745885224dd1ff21e4497f8",
       "referenceSha256s": {
         "references/context-finder.md": "77c9e3a424c9c274bffae833ca023ec1fc6308c9ed7512d78bbbc8c20f0ee24f",
-        "references/index.md": "a85f1a0bd37e22583248b8908927eaa9739aa1a5a588eb43b48dea15a900bfb6",
-        "references/outcome-appendix.md": "6d592f3f6dc6f7a431f39be8bb0f1f5b2759428f5ce2bd5bd48a5e7f70076e55",
+        "references/index.md": "a16028b7b934965b48348fda722a7a1b7c5c4c1cf1cb0918f2363e3330907f5a",
+        "references/outcome-appendix.md": "a6058b8166c46580a44e4a60fceb207a47638038f11136cc7760fe80d1d03d19",
         "references/planner.md": "b28182c5aab1079c9697f64854134c028b6eceddefc50b8e0780353e5058f75c",
         "references/requirements-lookup.md": "bbaa28e2ba82edcf80fe65d9f4ad1e3329f9f60b56e617f734c373f8b5a43485",
-        "references/run-loop.md": "1959c8b7098b81ed70fecae05e97e45f7d23d4ff1732ad8f9d0b17f61f9e5649",
+        "references/run-loop.md": "24c3532e190f4524caf8311f966d60c17ba673f0f2fbb2a767818af208cd24e4",
         "references/task-drop.md": "7546f09cc4bd584d9c33be1a5510ffcf665fa792775db120da0ff0e8de05b86b",
-        "references/validator-routing.md": "3192ce113b7e39e0beb9e5d300c4ede4755894e8ecea39daf115da57076689b4"
+        "references/validator-routing.md": "24b453745ba85a103874b89a26bbd5617040dac6e0d8a77129dbc7667f83778f"
       }
     },
     {
@@ -168,7 +168,7 @@
         "references/figma-split.md": "1b72e10b32dd76bdae015106ba46acad13e7a92bda205bcd3ecbe252260ccd6b",
         "references/index.md": "b5faef788335e1f660fa7b03775e8b6aebdef0193991ef5c1cc11e62a0472ad4",
         "references/intake-classification.md": "dcd75b792675fd4193fdcfff6f314f5830dc052ba27e727018c7b71f799f0bd4",
-        "references/prep-flow.md": "edf683288a0dec7104d97f2c4a5e9db96587dc59d7ac70952933f95695d15613"
+        "references/prep-flow.md": "711d471980abdf61b23861be74e87af9d721393670a3c471b23ccf9d4dc40031"
       }
     },
     {
@@ -224,7 +224,7 @@
     {
       "sourcePath": "orchestrator/skills/_index/install-surfaces/commands/serve-queue.md",
       "installPath": ".claude/commands/serve-queue.md",
-      "sourceSha256": "a858622e8c3b079d2241a6b012fda770dead7adfe186cee82d3300a50c39370d"
+      "sourceSha256": "5f97f34b77fc2b9a6cd402b7a8dcfc4a2c673d7ff78feab555ee0262431d6943"
     },
     {
       "sourcePath": "orchestrator/skills/_index/install-surfaces/launch.json",
@@ -284,7 +284,7 @@
     {
       "sourcePath": "orchestrator/contracts/orchestrator-loop.md",
       "installPath": ".claude/contracts/orchestrator-loop.md",
-      "sourceSha256": "ea91ac235ca190b673ca643d2014249cb7b120770e6cc5c6ea698ae78af6991e"
+      "sourceSha256": "b208c2b5d243df97356b2c1eb8440fb7ea4ef692515ec52841efcda8af6a0f2d"
     },
     {
       "sourcePath": "orchestrator/contracts/outcome-shape.json",

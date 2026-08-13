@@ -127,6 +127,7 @@ const dictionary = Object.freeze({
     'appRun.reason.unknown-profile': 'Запрошенный профиль ревизии исходников не поддерживается.',
     'appRun.reason.unknown': 'Платформа недоступна по причине, которую нельзя безопасно классифицировать.',
     'appRun.error.project-busy': 'Проект обновляется. Поставьте запуск в очередь или повторите позже.',
+    'appRun.error.execution-binding-unavailable': 'Не удалось проверить привязку к изолированному выполнению задачи.',
     'appRun.error.task-context-unavailable': 'Связанная задача больше недоступна.',
     'appRun.error.task-context-changed': 'Связанная задача изменилась во время ожидания. Проверьте её и запустите снова.',
     'appRun.error.android-sdk-missing': 'Android SDK или Gradle wrapper недоступен.',

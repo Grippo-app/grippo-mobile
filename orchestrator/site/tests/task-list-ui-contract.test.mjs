@@ -1857,7 +1857,7 @@ test('board finalization controller renders safe recovery and preserves resume l
   assert.ok(recoverableBanner)
   assert.equal(recoverableBanner.textContent, 'board.finalization.explain')
   assert.ok(tree.some((node) => node.textContent ===
-    'node orchestrator/tasks/finalize-task.mjs TASK_7_Recover'))
+    'node orchestrator/tasks/task-worktree.mjs integrate --stem TASK_7_Recover'))
   assert.ok(tree.some((node) => node.textContent === 'error:FINALIZE'))
   const resumeButton = tree.find((node) => node.textContent === 'board.finalization.resume')
   assert.ok(resumeButton)
@@ -1927,7 +1927,7 @@ test('board finalization controller rejects unsafe CLI shapes and refreshes one 
     const tree = fakeTree(calls.contents.at(-1))
     const hasSafeCli = finalization.stem === 'TASK_3_Busy'
     assert.equal(tree.some((node) => String(node.textContent || '').startsWith(
-      'node orchestrator/tasks/finalize-task.mjs ')), hasSafeCli)
+      'node orchestrator/tasks/task-worktree.mjs integrate --stem ')), hasSafeCli)
     assert.equal(tree.some((node) => node.textContent === 'board.finalization.inspect'),
       !hasSafeCli)
     const banner = tree.find((node) => String(node.className || '').includes('banner--'))
@@ -3377,7 +3377,7 @@ test('board delegates root rendering, refresh timers, and details shell to one o
   assert.match(storeChange,
     /if \(!boardRenderController\.isComplete\(storeState\)\) \{\s*boardRenderController\.render\(\);\s*return;/)
   assert.match(storeChange,
-    /boardRefreshClock\.startClock\(\);[\s\S]*boardFinalizationController\.refreshOpen\(\);\s*boardTaskInbox\.load\(\);\s*boardRefreshClock\.scheduleRefresh\(\);/)
+    /boardRefreshClock\.startClock\(\);[\s\S]*boardFinalizationController\.refreshOpen\(\);\s*boardIntegrationController\.refreshOpen\(\);\s*boardTaskInbox\.load\(\);\s*boardRefreshClock\.scheduleRefresh\(\);/)
   assert.match(mount,
     /if \(!boardRenderController\.isComplete\(storeState\)\) \{\s*boardRenderController\.render\(\);\s*return;\s*\}/)
   assert.match(mount,
@@ -3664,7 +3664,7 @@ test('board delegates Inbox and finalization recovery to one current owner each'
   assert.match(healthWiring,
     /finalizations: boardFinalizationController\.list,\s*openFinalizationModal: boardFinalizationController\.open/)
   assert.match(storeChangeWiring,
-    /boardFinalizationController\.refreshOpen\(\);\s*boardTaskInbox\.load\(\);\s*boardRefreshClock\.scheduleRefresh\(\);/)
+    /boardFinalizationController\.refreshOpen\(\);\s*boardIntegrationController\.refreshOpen\(\);\s*boardTaskInbox\.load\(\);\s*boardRefreshClock\.scheduleRefresh\(\);/)
   assert.match(boardRenderControllerSource,
     /if \(!complete\) \{[\s\S]*dependencies\.inbox\.render\(false\);[\s\S]*return;[\s\S]*dependencies\.inbox\.render\(true\);/)
   assert.match(mountWiring, /var storeState = store\.get\(\);\s*boardTaskInbox\.load\(\);/)
@@ -5594,7 +5594,7 @@ test('board consumes the summary DTO and typed action endpoint instead of rebuil
     /loadSummary: function \(filters\) \{ return tasksApi\.loadTaskSummary\(filters\); \}/)
   assert.match(boardLoadResultsSource, /dependencies\.loadSummary\(filters\)/)
   assert.match(board,
-    /executeAction: function \(stem, action, confirmation\) \{\s*return tasksApi\.executeTaskAction\(stem, action, confirmation\);/)
+    /executeAction: function \(stem, action, confirmation\) \{[\s\S]{0,600}?return tasksApi\.executeTaskAction\(stem, action, confirmation\);/)
   assert.match(boardTaskActionControllerSource,
     /dependencies\.executeAction\(row\.stem, action, confirmation\)/)
   assert.match(boardTaskActionControllerSource,

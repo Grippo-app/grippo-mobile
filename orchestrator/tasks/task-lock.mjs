@@ -49,9 +49,13 @@ const STAGE_STATES = Object.freeze({
   'task-prep': Object.freeze(['backlog', 'pending']),
   orchestrator: Object.freeze(['todo']),
 });
+// A standby worker owns prep/answers capabilities only: since per-task
+// worktree isolation (pipeline improvement 01, Phase 2) a `run` executes
+// exclusively inside the site runner's provisioned worktree, so no standby
+// capability may ever take an orchestrator-stage lock.
 const STANDBY_KEYS_BY_STAGE = Object.freeze({
   'task-prep': Object.freeze(new Set(['standby:prep', 'standby:answers'])),
-  orchestrator: Object.freeze(new Set(['standby:run'])),
+  orchestrator: Object.freeze(new Set()),
 });
 const RECORD_FIELDS = Object.freeze(['owner', 'runId', 'sessionId', 'stage', 'startedAt', 'stem', 'version']);
 const OWNER_FIELDS = Object.freeze(['hostname', 'id', 'kind', 'pid', 'processStartId', 'startedAt']);
@@ -877,7 +881,69 @@ function standbyLeaseFence(args) {
   return Object.freeze({ leaseId: row.leaseId, sessionId: row.sessionId, key: row.key });
 }
 
-function confirmAcquisition(stem, stage, before, published, created, mutexLease, args, initialWriterFence) {
+function siteSessionFence(args, stage, sessionId, runId, ownerKind, ownerPid, ownerProcessStartId) {
+  if (ownerKind !== 'site') return null;
+  const stem = args['--stem'];
+  const leaseId = process.env.ORCHESTRATOR_WRITER_LEASE_ID;
+  const delegationToken = process.env.ORCHESTRATOR_WRITER_DELEGATION_TOKEN;
+  const envSessionId = process.env.ORCHESTRATOR_WRITER_SESSION_ID;
+  const envStem = process.env.ORCHESTRATOR_WRITER_STEM;
+  if (!writerLeases.LEASE_ID_RE.test(String(leaseId || '')) ||
+      !/^[a-f0-9]{48}$/.test(String(delegationToken || '')) ||
+      envSessionId !== sessionId || envStem !== stem) {
+    fail('SITE_WRITER_AUTHORITY_INVALID',
+      'site lock acquisition requires the exact inherited writer delegation capability', 4);
+  }
+  if (stage === 'orchestrator') {
+    if (process.env.ORCHESTRATOR_RUN_ID !== runId) {
+      fail('SITE_RUN_GENERATION_MISMATCH',
+        'site orchestrator lock runId does not match the manager-issued generation', 4);
+    }
+    if (!/^wt-[a-f0-9]{32}$/.test(String(process.env.ORCHESTRATOR_WORKTREE_ID || ''))) {
+      fail('SITE_RUN_GENERATION_MISMATCH',
+        'site orchestrator lock has no canonical manager-issued worktree generation', 4);
+    }
+  }
+  let scan;
+  try { scan = writerLeases.scan(WRITER_LEASES_DIR, WRITER_AUTHORITY_ROOT); }
+  catch (_) { fail('SITE_WRITER_AUTHORITY_INVALID', 'site writer authority could not be scanned', 4); }
+  if (!scan || !Array.isArray(scan.active) || !Array.isArray(scan.issues) || scan.issues.length) {
+    fail('SITE_WRITER_AUTHORITY_INVALID',
+      'site writer authority contains unreadable or retained recovery evidence', 4);
+  }
+  const expectedDelegationHash = sha256(Buffer.from(delegationToken, 'ascii'));
+  const callerStartId = writerLeases.captureProcessStartId(process.pid);
+  if (!writerLeases.PROCESS_START_ID_RE.test(String(callerStartId || ''))) {
+    fail('SITE_WRITER_AUTHORITY_INVALID', 'site lock caller process generation is unavailable', 4);
+  }
+  if (!validPid(ownerPid) || !writerLeases.PROCESS_START_ID_RE.test(String(ownerProcessStartId || ''))) {
+    fail('SITE_WRITER_AUTHORITY_INVALID', 'site lock owner process generation is unavailable', 4);
+  }
+  const matches = scan.active.filter((row) => row && row.leaseId === leaseId &&
+    row.kind === 'task-session' && row.stem === stem && row.sessionId === sessionId &&
+    row.key === `task:${stem}` && row.delegationHash === expectedDelegationHash &&
+    row.unverified === false && row.expiresAt === null && row.owner && row.owner.hostname === os.hostname() &&
+    writerLeases.processTreeProof(process.pid, callerStartId,
+      row.childPid, row.childProcessStartId).ok &&
+    writerLeases.processTreeProof(ownerPid, ownerProcessStartId,
+      row.childPid, row.childProcessStartId).ok);
+  if (matches.length !== 1) {
+    fail('SITE_WRITER_AUTHORITY_INVALID',
+      'site lock acquisition requires one exact active delegated writer generation', 4);
+  }
+  const own = matches[0];
+  const conflict = scan.active.find((row) => row && row.leaseId !== own.leaseId &&
+    (writerLeases.deterministicPublisherLease(row) || row.stem === stem || row.key === `task:${stem}`));
+  if (conflict) fail('SITE_WRITER_CONFLICT',
+    'another writer conflicts with the delegated site task generation', 4);
+  return Object.freeze({
+    leaseId: own.leaseId, sessionId: own.sessionId, childPid: own.childPid,
+    childProcessStartId: own.childProcessStartId, delegationHash: own.delegationHash
+  });
+}
+
+function confirmAcquisition(stem, stage, before, published, created, mutexLease, args,
+  initialWriterFence, initialSiteFence) {
   assertStemMutexHeld(mutexLease);
   let after;
   try {
@@ -895,6 +961,13 @@ function confirmAcquisition(stem, stage, before, published, created, mutexLease,
     const finalWriterFence = standbyLeaseFence(args);
     if (JSON.stringify(finalWriterFence) !== JSON.stringify(initialWriterFence)) {
       fail('STANDBY_WRITER_AUTHORITY_CHANGED', 'standby writer authority changed while task-lock ownership was being published', 4);
+    }
+    const finalSiteFence = siteSessionFence(args, stage, published.value.sessionId,
+      published.value.runId, published.value.owner.kind,
+      published.value.owner.pid, published.value.owner.processStartId);
+    if (JSON.stringify(finalSiteFence) !== JSON.stringify(initialSiteFence)) {
+      fail('SITE_WRITER_AUTHORITY_CHANGED',
+        'site writer authority changed while task-lock ownership was being published', 4);
     }
   } catch (error) {
     if (created) {
@@ -936,8 +1009,6 @@ function acquireLocked(args, mutexLease) {
   assertStemMutexHeld(mutexLease);
   const target = lockPath(stem);
   requireNoRetainedRelease(stem);
-  const initialWriterFence = standbyLeaseFence(args);
-  const state = validateStageState(stem, stage);
   const inheritedSession = process.env.ORCHESTRATOR_WRITER_SESSION_ID;
   const suppliedSession = args['--session-id'] || (SESSION_ID_RE.test(String(inheritedSession || '')) ? inheritedSession : null);
   const sessionId = suppliedSession || randomId('ws');
@@ -957,6 +1028,10 @@ function acquireLocked(args, mutexLease) {
       !writerLeases.PROCESS_START_ID_RE.test(String(ownerProcessStartId || ''))) {
     fail('LOCK_OWNER_GENERATION_UNAVAILABLE', 'owner process-start generation cannot be proven on this platform', 3);
   }
+  const initialWriterFence = standbyLeaseFence(args);
+  const initialSiteFence = siteSessionFence(args, stage, sessionId, runId, ownerKind,
+    ownerPid, ownerProcessStartId);
+  const state = validateStageState(stem, stage);
   const retryHash = args['--expected-hash'];
   if (retryHash) {
     let current;
@@ -978,7 +1053,8 @@ function acquireLocked(args, mutexLease) {
         startedAt: current.value.startedAt, lockHash: current.hash,
       });
     }
-    return confirmAcquisition(stem, stage, state, current, false, mutexLease, args, initialWriterFence);
+    return confirmAcquisition(stem, stage, state, current, false, mutexLease, args,
+      initialWriterFence, initialSiteFence);
   }
   const startedAt = now();
   const record = {
@@ -1039,7 +1115,8 @@ function acquireLocked(args, mutexLease) {
       publicationCode: error && error.code || 'LOCK_CHANGED',
     });
   }
-  return confirmAcquisition(stem, stage, state, published, true, mutexLease, args, initialWriterFence);
+  return confirmAcquisition(stem, stage, state, published, true, mutexLease, args,
+    initialWriterFence, initialSiteFence);
 }
 
 function verify(args) {

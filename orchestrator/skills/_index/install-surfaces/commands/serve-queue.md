@@ -5,7 +5,7 @@ description: Standby worker — drain the site's Run-in-Claude queue oldest-firs
 # /serve-queue — standby worker for the site's Run in Claude queue
 
 Run this command under `/loop` from the project root, in full-auto mode. The
-site publishes exact v2 request snapshots; this session executes only the
+site publishes exact v3 request snapshots; this session executes only the
 claimed `prompt`, verbatim. It does not reinterpret queue metadata and does not
 edit queue, claim, heartbeat, reservation, or receipt files itself.
 
@@ -80,6 +80,10 @@ Possible results:
   an orphan of a dead site process), or writer-lease state cannot be proven
   safe. No request was moved and nothing needs recovery; end the pass and let
   `/loop` retry later.
+- `blocked` with code `run-requires-site-runner`: the queue holds only `run`
+  requests. A `run` executes exclusively inside the site runner's
+  manager-provisioned worktree — the standby never claims runs, permanently.
+  The requests stay queued untouched for the site runner; end the pass.
 - `retained` or any other `blocked`: private evidence is ambiguous, invalid,
   foreign, or already offered to another drainer. Report the code and stop for
   explicit recovery. Never delete or restore it by age.
@@ -105,7 +109,7 @@ privately as evidence and is never executed.
 
 The claimed-file contract is exact: exactly `action,createdAt,dedupKey,dedupReport,expectedState,projectRoot,prompt,sourceRevision,stem,version`.
 The descriptor boundary uses `O_RDONLY|O_NOFOLLOW`, proves a stable regular
-inode and caps the file at 256 KiB. `version` is exactly `2`; `sourceRevision`
+inode and caps the file at 256 KiB. `version` is exactly `3`; `sourceRevision`
 is `sha256:` plus 64 lowercase hex characters; the stem matches
 `^TASK_([1-9][0-9]*)_[A-Za-z0-9_]+$`; and the prompt is bounded to 60,000 UTF-16 code units and 180,000 UTF-8 bytes.
 A mismatched root, or unsupported `createBacklog` action is permanently invalid:
@@ -190,10 +194,11 @@ files by hand.
 
 This guarded acquire is the canonical initial classification for every foreign
 finalization marker, the global finalization mutex, deterministic creation/edit
-recovery, and conflicting writer authority. Frozen serial safety: a
-`task-session` acquire is refused (`[WORKSPACE_WRITER_ACTIVE]`) while ANY other
-board-task writer lease is active — any stem, any drainer — not only a
-same-stem owner. Interpret it as follows:
+recovery, and conflicting writer authority. A `task-session` acquire is refused
+(`[WORKSPACE_WRITER_ACTIVE]`) while a board-task writer for the SAME stem — any
+drainer — or a global deterministic publisher is active. Standby adds its own
+wider gate on top: `standby-queue.mjs claim-next` refuses a new claim while ANY
+board-task writer lease is active. Interpret it as follows:
 
 - Exit `0` with the exact v1 receipt means the initial guard passed. Keep its
   full `leaseId,token,sessionId` privately and continue below.
@@ -241,12 +246,13 @@ acquire or release a second `task-session` lease.
 `--writer-lease-token`, plus `--owner-kind standby` and
 `--owner-id standby:<leaseId>`. It exact-verifies the active capability before
 and after no-clobber lock publication and never persists or returns the token.
-Transition helpers receive the same exact lease id/token;
-`finalize-task.mjs` receives `--writer-session-id <sessionId>`.
+Transition helpers receive the same exact lease id/token. The finalizer is
+never invoked from here: forward publication runs only inside the owner's
+integration transaction.
 
-The combined guard rejects ANY other foreign ACTIVE board-task
-(`task-session`) writer — any stem, any drainer, frozen serial safety — plus
-every global deterministic creation/edit publication lease.
+The combined guard rejects a foreign ACTIVE board-task (`task-session`) writer
+for the SAME stem — any drainer — plus every global deterministic creation/edit
+publication lease.
 Exit 2 means another writer or publication recovery refused the lease.
 The complete returned receipt (`version`, `leaseId`, `token`, `kind`,
 `stem`, `sessionId`, `expiresAt`) remains private. The selected skill may renew
@@ -451,14 +457,11 @@ node orchestrator/site/scripts/standby-queue.mjs consume \
 ```
 
 The durable consume receipt is published before detaching the claim. The helper
-first proves the exact writer generation released. For `prep`, `answers`,
-`drop`, and `reopen`, it also requires the canonical task-lock path and every
-release-recovery generation absent. For `run`, lock absence is an accepted
-terminal at-most-once settlement; that absence does not by itself assert
-successful completion. The other accepted shape is one canonical retained
-orchestrator lock whose standby owner id and session match the disclosure fence
-exactly (the BLOCKED continuation case); a foreign/replaced generation is
-retained fail-closed.
+first proves the exact writer generation released. Because standby never claims `run`,
+every standby-executed action (`prep`, `answers`, `drop`, or `reopen`)
+requires a proven-absent canonical task lock and every release-recovery
+generation absent. A retained, foreign, replaced, or otherwise unsettled lock
+is not a terminal shape and keeps the claim fail-closed.
 It then verifies exact inode/hash lineage, fsyncs the detach, deletes only that
 authorized private inode, and settles the WAL. A foreign/replaced/missing
 claim, active reservation, absent disclosure receipt, unsettled lock, or

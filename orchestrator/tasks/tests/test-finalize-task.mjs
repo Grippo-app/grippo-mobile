@@ -2,9 +2,9 @@
 
 import assert from 'node:assert/strict'
 import {
-  existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, unlinkSync, writeFileSync,
+  chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, unlinkSync, writeFileSync,
 } from 'node:fs'
-import { spawn, spawnSync } from 'node:child_process'
+import { execFileSync, spawn, spawnSync } from 'node:child_process'
 import { dirname, join, resolve } from 'node:path'
 import { hostname, tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -20,6 +20,8 @@ import { extractProjectComponents } from '../../figma/runtime/component-extracti
 import { canonicalHash } from '../../figma/runtime/canonical-json.mjs'
 import { materializeSourceHealth } from '../../figma/tokens/source-health.mjs'
 import writerLeases from '../writer-leases.cjs'
+import integrationContract from '../integration-record-contract.cjs'
+import worktreeContract from '../worktree-record-contract.cjs'
 
 const require = createRequire(import.meta.url)
 const taskState = require('../task-state-core.cjs')
@@ -362,10 +364,78 @@ function fixture(opts = {}) {
   return { root, stem, draft, env }
 }
 
+// Since worktree isolation Phase 4 the finalizer has no mode-less invocation:
+// it is one half of an integration transaction. Every mutating call in this
+// suite therefore drives the PREPARE half (phases outcome..verify, lock and
+// marker retained); assertComplete() below finishes the transaction for real.
+function withMode(args) {
+  const mutating = !args.some((arg) => arg === '--status' || arg === '--list-incomplete')
+  if (!mutating || args.some((arg) => arg === '--mode')) return args
+  return [args[0], '--mode', 'prepare', ...args.slice(1)]
+}
 function run(fx, args, extraEnv = {}) {
-  return spawnSync(process.execPath, [FINALIZER, ...args, ...(fx.fixtureArgs || [])], {
+  return spawnSync(process.execPath, [FINALIZER, ...withMode(args), ...(fx.fixtureArgs || [])], {
     cwd: fx.root, env: { ...fx.env, ...extraEnv }, encoding: 'utf8', timeout: 120000,
   })
+}
+// Publish a REAL canonical commit for the fixture and hand the finalizer the
+// integration proof, exactly as the integration owner does. The confirm half
+// re-derives everything from git and from the artifacts it published itself,
+// so this exercises the proof rather than bypassing it.
+function confirmTransaction(fx, options = {}) {
+  const git = (...args) => execFileSync('git', args, {
+    cwd: fx.root, encoding: 'utf8', env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+  })
+  if (!existsSync(join(fx.root, '.git'))) {
+    git('init', '-q', '-b', 'main')
+    git('config', 'user.email', 'fixture@test.invalid')
+    git('config', 'user.name', 'Fixture Owner')
+    git('config', 'commit.gpgsign', 'false')
+    git('config', 'core.hooksPath', join(fx.root, '.no-hooks'))
+    writeFileSync(join(fx.root, '.gitignore'), 'orchestrator/.cache/\nscripts/\noutcome.md\n')
+    git('commit', '-q', '--allow-empty', '-m', 'base')
+  }
+  const base = git('rev-parse', 'HEAD').trim()
+  const baseTree = git('rev-parse', 'HEAD^{tree}').trim()
+  if (typeof options.beforeCommit === 'function') options.beforeCommit()
+  git('add', '-A')
+  git('commit', '-q', '-m', 'TASK: fixture transaction')
+  const commit = git('rev-parse', 'HEAD').trim()
+  const commitTree = git('rev-parse', 'HEAD^{tree}').trim()
+  const preparedPaths = git('diff-tree', '--no-commit-id', '--name-only', '-r', '--no-renames', base, commit)
+    .trim().split('\n').filter(Boolean).sort()
+  const at = new Date().toISOString()
+  const proven = { intentAt: at, provenAt: at }
+  const phases = {}
+  for (const name of integrationContract.PHASES) phases[name] = { intentAt: null, provenAt: null }
+  for (const name of ['prepared', 'product-applying', 'product-applied', 'finalizer-preparing',
+    'finalizer-prepared', 'commit-publishing', 'commit-published']) phases[name] = { ...proven }
+  const record = {
+    version: 1, integrationId: 'ig-' + 'e'.repeat(32), stem: fx.stem,
+    runId: '1700000000000-r1', worktreeId: 'wt-' + 'f'.repeat(32),
+    phase: 'commit-published', status: 'active',
+    candidate: { commit: base, tree: baseTree, diffHash: 'sha256:' + '1'.repeat(64),
+      receiptHash: 'sha256:' + '2'.repeat(64) },
+    target: { ref: 'refs/heads/main', baseCommit: base, baseTree },
+    controlSnapshot: { headCommit: base, dirtyAllowedPaths: [] },
+    commitPin: { stagedTreeHash: worktreeContract.digest(commitTree),
+      messageHash: worktreeContract.digest('TASK: fixture transaction'),
+      expectedParent: base, publishedCommit: commit },
+    finalizerPrepared: preparedPaths.map((path) => ({ path, hash: fixtureHash(`prepared:${path}`) })), phases,
+    owner: { hostname: 'fixture', pid: process.pid, processStartId: null, startedAt: at },
+    createdAt: at, updatedAt: at, recordHash: 'sha256:' + '0'.repeat(64),
+  }
+  record.recordHash = integrationContract.recordHash(record)
+  integrationContract.validate(record)
+  const dir = join(fx.root, 'orchestrator/.cache/tasks/integrations')
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(join(dir, fx.stem + '.json'), JSON.stringify(record) + '\n')
+  if (typeof options.afterCommit === 'function') options.afterCommit({ commit, record })
+  const confirmed = run(fx, [fx.stem, '--mode', 'confirm', '--integration-id', record.integrationId,
+    '--integration-commit', commit, '--json'], options.extraEnv || {})
+  assert.equal(confirmed.status, options.expectStatus === undefined ? 0 : options.expectStatus,
+    confirmed.stderr + confirmed.stdout)
+  return { commit, record, result: confirmed }
 }
 function taskStateEvents(stderr) {
   return String(stderr || '').split(/\r?\n/)
@@ -373,7 +443,7 @@ function taskStateEvents(stderr) {
     .map((line) => JSON.parse(line.slice('[task-state] '.length)))
 }
 function runAsync(fx, args, extraEnv = {}) {
-  const child = spawn(process.execPath, [FINALIZER, ...args, ...(fx.fixtureArgs || [])], {
+  const child = spawn(process.execPath, [FINALIZER, ...withMode(args), ...(fx.fixtureArgs || [])], {
     cwd: fx.root, env: { ...fx.env, ...extraEnv }, stdio: ['ignore', 'pipe', 'pipe'],
   })
   let stdout = '', stderr = ''
@@ -390,10 +460,31 @@ async function waitUntil(predicate, message, timeoutMs = 5000) {
   }
   throw new Error(`timed out waiting for ${message}`)
 }
+// `unlock` and `cleanup` run only in the CONFIRM half, so their failpoints must
+// be driven there: prepare to completion, publish a real canonical commit, then
+// crash the confirm at the exact boundary and resume it against the SAME proof.
+function crashInConfirm(fx, failpoint, extraEnv = {}) {
+  const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft], extraEnv)
+  assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+  return confirmTransaction(fx, {
+    extraEnv: { ...extraEnv, FINALIZE_FAILPOINT: failpoint }, expectStatus: 97,
+  })
+}
+function resumeConfirm(fx, ctx, extraEnv = {}) {
+  return run(fx, [fx.stem, '--mode', 'confirm', '--integration-id', ctx.record.integrationId,
+    '--integration-commit', ctx.commit, '--json'], extraEnv)
+}
+
 function marker(fx) {
   return JSON.parse(readFileSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json'), 'utf8'))
 }
 function assertComplete(fx) {
+  // The prepare half has published everything but deliberately kept the lock
+  // and the marker; finish the transaction the way production does before
+  // asserting the terminal postconditions.
+  if (existsSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json'))) {
+    confirmTransaction(fx)
+  }
   assert.ok(existsSync(join(fx.root, 'orchestrator/tasks/done', fx.stem + '.md')))
   assert.ok(!existsSync(join(fx.root, 'orchestrator/tasks/todo', fx.stem + '.md')))
   assert.ok(!existsSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')))
@@ -420,7 +511,12 @@ await check('happy path owns Outcome, move, derived checks, unlock, and cleanup'
   try {
     const result = run(fx, [fx.stem, '--outcome-file', fx.draft, '--json'])
     assert.equal(result.status, 0, result.stderr + result.stdout)
-    assert.deepEqual(JSON.parse(result.stdout), { stem: fx.stem, completed: true, transactionId: JSON.parse(result.stdout).transactionId })
+    // Prepare hands ownership back without releasing anything: the marker now
+    // points at `unlock`, which only the confirm half may run.
+    assert.deepEqual(JSON.parse(result.stdout), {
+      stem: fx.stem, prepared: true, transactionId: JSON.parse(result.stdout).transactionId,
+      phase: 'unlock', doneRelative: `orchestrator/tasks/done/${fx.stem}.md`,
+    })
     const events = taskStateEvents(result.stderr)
     assert.ok(events.length >= 6, 'every canonical finalizer validation must be observable')
     for (const event of events) {
@@ -441,6 +537,78 @@ await check('happy path owns Outcome, move, derived checks, unlock, and cleanup'
     const again = run(fx, [fx.stem])
     assert.equal(again.status, 0, again.stderr + again.stdout)
     assert.match(again.stdout, /already fully finalized/)
+  } finally { rmSync(fx.root, { recursive: true, force: true }) }
+})
+
+await check('a successful prepare is physically reverified before a retry reports prepared', function () {
+  const fx = fixture()
+  try {
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+    const done = join(fx.root, 'orchestrator/tasks/done', fx.stem + '.md')
+    writeFileSync(done, readFileSync(done, 'utf8') + '\nforged after prepare\n')
+    const retried = run(fx, [fx.stem])
+    assert.equal(retried.status, 1, retried.stderr + retried.stdout)
+    assert.match(retried.stderr, /DONE_TASK_CHANGED/)
+    assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')))
+    assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')))
+  } finally { rmSync(fx.root, { recursive: true, force: true }) }
+})
+
+await check('confirm never ignores its integration proof after the marker is gone', function () {
+  const fx = fixture()
+  try {
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+    const confirmed = confirmTransaction(fx)
+    const replay = run(fx, [fx.stem, '--mode', 'confirm',
+      '--integration-id', confirmed.record.integrationId,
+      '--integration-commit', 'f'.repeat(40), '--json'])
+    assert.equal(replay.status, 4, replay.stderr + replay.stdout)
+    assert.match(replay.stderr, /INTEGRATION_PROOF_MISMATCH/)
+  } finally { rmSync(fx.root, { recursive: true, force: true }) }
+})
+
+await check('confirm compares every WAL-prepared artifact with the canonical commit', function () {
+  const fx = fixture()
+  try {
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+    const receipt = join(fx.root, 'orchestrator/tasks/evidence/figma-ship', fx.stem, 'extra.json')
+    const confirmed = confirmTransaction(fx, {
+      beforeCommit() {
+        mkdirSync(dirname(receipt), { recursive: true })
+        writeFileSync(receipt, '{"verified":true}\n')
+      },
+      afterCommit() { writeFileSync(receipt, '{"verified":false}\n') },
+      expectStatus: 4,
+    })
+    assert.match(confirmed.result.stderr, /INTEGRATION_ARTIFACT_MISMATCH/)
+    assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')))
+  } finally { rmSync(fx.root, { recursive: true, force: true }) }
+})
+
+await check('confirm never treats an unreadable commit path lookup as proven absence', function () {
+  const fx = fixture()
+  try {
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+    const bin = join(fx.root, 'git-wrapper')
+    const wrapper = join(bin, 'git')
+    const realGit = execFileSync('which', ['git'], { encoding: 'utf8' }).trim()
+    mkdirSync(bin)
+    writeFileSync(wrapper, '#!/usr/bin/env node\n' +
+      'const {spawnSync}=require("node:child_process");\n' +
+      'const args=process.argv.slice(2);\n' +
+      `if(args[0]==="ls-tree" && args[args.length-1]===${JSON.stringify(`orchestrator/tasks/todo/${fx.stem}.md`)})process.exit(71);\n` +
+      `const out=spawnSync(${JSON.stringify(realGit)},args,{stdio:"inherit"});\n` +
+      'process.exit(typeof out.status==="number"?out.status:72);\n')
+    chmodSync(wrapper, 0o755)
+    const confirmed = confirmTransaction(fx, {
+      extraEnv: { PATH: `${bin}:${fx.env.PATH}` }, expectStatus: 4,
+    })
+    assert.match(confirmed.result.stderr, /INTEGRATION_ARTIFACT_UNREADABLE/)
+    assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')))
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
 })
 
@@ -527,12 +695,31 @@ await check('the published tests row and the verified tests row are the same row
 for (const phase of phases) for (const boundary of ['after-intent', 'after-effect']) {
   await check(`crash recovery ${boundary}:${phase}`, function () {
     const fx = fixture()
+    // `unlock` and `cleanup` belong to the CONFIRM half of the transaction
+    // (they run only once a canonical commit exists), so their failpoints must
+    // be driven there — a prepare never reaches them at all.
+    const preparePhase = phases.indexOf(phase) <= phases.indexOf('verify')
+    const markerFile = join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')
     try {
-      const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: `${boundary}:${phase}` })
-      assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
-      assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')))
-      const resumed = run(fx, [fx.stem])
-      assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
+      if (preparePhase) {
+        const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: `${boundary}:${phase}` })
+        assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+        assert.ok(existsSync(markerFile))
+        const resumed = run(fx, [fx.stem])
+        assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
+      } else {
+        const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+        assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+        const crashed = confirmTransaction(fx, {
+          extraEnv: { FINALIZE_FAILPOINT: `${boundary}:${phase}` }, expectStatus: 97,
+        })
+        assert.ok(existsSync(markerFile), 'the marker survives a crash inside confirm')
+        // Resume the SAME confirm against the SAME published commit.
+        const resumed = run(fx, [fx.stem, '--mode', 'confirm',
+          '--integration-id', crashed.record.integrationId,
+          '--integration-commit', crashed.commit, '--json'])
+        assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
+      }
       assertComplete(fx)
     } finally { rmSync(fx.root, { recursive: true, force: true }) }
   })
@@ -723,6 +910,47 @@ await check('post-mutex writer handshake blocks foreign writers but admits the s
     assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
   } finally { rmSync(blocked.root, { recursive: true, force: true }) }
 
+  // The isolated classes are the ONLY exemption: an app-run's build lease names
+  // one checkout and its resource leases name one device/bundle, so none of
+  // them can reach the control tree this publication mutates. They are held
+  // across BOTH halves of the transaction, because an overlapping app-run is
+  // the steady state once tasks run in parallel.
+  const isolated = fixture()
+  try {
+    const dir = join(isolated.root, 'orchestrator/.cache/tasks/finalizations/.writers')
+    const held = [
+      { kind: 'execution-writer', key: 'execution:wt-0000000000000000000000000000000f' },
+      { kind: 'resource-writer', key: 'device:android:emulator-5554' },
+      { kind: 'resource-writer', key: 'bundle:android:com.example.app' },
+    ].map((request) => writerLeases.acquire(dir, Object.assign({
+      sessionId: writerLeases.createSessionId(), ownerPid: process.pid
+    }, request)))
+    const result = run(isolated, [isolated.stem, '--outcome-file', isolated.draft])
+    assert.equal(result.status, 0, result.stderr + result.stdout)
+    assertComplete(isolated)
+    held.forEach((lease) => writerLeases.release(lease))
+  } finally { rmSync(isolated.root, { recursive: true, force: true }) }
+
+  // A board-task writer for ANOTHER stem is NOT exempt. `task-session` is also
+  // what prep/answers/drop/reopen hold, and those execute in the control root
+  // and rewrite orchestrator/tasks/**; the lease carries no execution binding,
+  // so the stem differing proves nothing. Waving it through is how a
+  // transaction ends up half-applied with an active WAL.
+  const neighbour = fixture()
+  try {
+    const foreign = writerLeases.acquire(
+      join(neighbour.root, 'orchestrator/.cache/tasks/finalizations/.writers'), {
+        kind: 'task-session', stem: 'TASK_9_neighbour', key: 'task:TASK_9_neighbour',
+        sessionId: writerLeases.createSessionId(), ownerPid: process.pid
+      })
+    const refused = run(neighbour, [neighbour.stem, '--outcome-file', neighbour.draft])
+    assert.equal(refused.status, 1)
+    assert.match(refused.stderr, /WORKSPACE_WRITER_ACTIVE/)
+    assert.ok(existsSync(join(neighbour.root, 'orchestrator/tasks/todo', neighbour.stem + '.md')))
+    assert.ok(!existsSync(join(neighbour.root, 'orchestrator/.cache/tasks/finalizations', neighbour.stem + '.json')))
+    writerLeases.release(foreign)
+  } finally { rmSync(neighbour.root, { recursive: true, force: true }) }
+
   const owner = fixture()
   try {
     const ownerLease = writerLeases.acquire(join(owner.root, 'orchestrator/.cache/tasks/finalizations/.writers'), {
@@ -735,8 +963,11 @@ await check('post-mutex writer handshake blocks foreign writers but admits the s
       ORCHESTRATOR_WRITER_SESSION_ID: ownerLease.record.sessionId,
     })
     assert.equal(result.status, 0, result.stderr + result.stdout)
-    assertComplete(owner)
+    // The run's own writer lease settles when its session closes, long before
+    // the owner presses Integrate; the confirm half carries no session
+    // credential, so it must not be run underneath a live lease.
     writerLeases.release(ownerLease)
+    assertComplete(owner)
   } finally { rmSync(owner.root, { recursive: true, force: true }) }
 
   const ambiguous = fixture()
@@ -772,8 +1003,8 @@ await check('post-mutex writer handshake blocks foreign writers but admits the s
     writeTestEvidence(standby.root, standby.stem)
     const result = run(standby, [standby.stem, '--outcome-file', standby.draft, '--writer-session-id', lease.record.sessionId])
     assert.equal(result.status, 0, result.stderr + result.stdout)
-    assertComplete(standby)
     writerLeases.release(lease)
+    assertComplete(standby)
   } finally { rmSync(standby.root, { recursive: true, force: true }) }
 
   const unverified = fixture()
@@ -794,14 +1025,15 @@ await check('post-mutex writer handshake blocks foreign writers but admits the s
 })
 
 await check('changed lock is never removed', function () {
+  // Ownership-safe release lives in the CONFIRM half, so the tampering has to
+  // happen after a completed prepare and be judged by the confirm.
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-effect:verify' })
-    assert.equal(crashed.status, 97)
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
     const lp = join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')
     writeFileSync(lp, '{"stage":"new-owner"}\n')
-    const resumed = run(fx, [fx.stem])
-    assert.equal(resumed.status, 1)
+    confirmTransaction(fx, { expectStatus: 1 })
     assert.equal(marker(fx).lastError.code, 'LOCK_OWNERSHIP_CONFLICT')
     assert.match(readFileSync(lp, 'utf8'), /new-owner/)
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
@@ -810,10 +1042,9 @@ await check('changed lock is never removed', function () {
 await check('architecture gate is repeated immediately before unlock', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-effect:verify' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
-    const resumed = run(fx, [fx.stem], { FAKE_ARCH_FAIL: '1' })
-    assert.equal(resumed.status, 1, resumed.stderr + resumed.stdout)
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+    const resumed = confirmTransaction(fx, { extraEnv: { FAKE_ARCH_FAIL: '1' }, expectStatus: 1 }).result
     assert.match(resumed.stderr, /ARCH_CHECK_FAILED/)
     assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')),
       'derived-state failure must preserve the canonical task lock')
@@ -823,10 +1054,9 @@ await check('architecture gate is repeated immediately before unlock', function 
 await check('Figma done gate is repeated immediately before unlock', function () {
   const fx = fixture({ figma: true })
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-effect:verify' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
-    const resumed = run(fx, [fx.stem], { FAKE_VERIFY_FAIL: '1' })
-    assert.equal(resumed.status, 1, resumed.stderr + resumed.stdout)
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
+    const resumed = confirmTransaction(fx, { extraEnv: { FAKE_VERIFY_FAIL: '1' }, expectStatus: 1 }).result
     assert.match(resumed.stderr, /FIGMA_DONE_VERIFY_FAILED/)
     assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')))
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
@@ -835,12 +1065,12 @@ await check('Figma done gate is repeated immediately before unlock', function ()
 await check('a foreign lock detached in the unlock race is restored without clobbering and retained as proof', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-intent:unlock' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-intent:unlock')
+    const crashed = ctx.result
     const lock = join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json')
     rmSync(lock)
     writeFileSync(lock, '{"stage":"foreign-owner"}\n')
-    const resumed = run(fx, [fx.stem])
+    const resumed = resumeConfirm(fx, ctx)
     assert.equal(resumed.status, 1, resumed.stderr + resumed.stdout)
     assert.match(resumed.stderr, /LOCK_OWNERSHIP_CONFLICT/)
     assert.match(readFileSync(lock, 'utf8'), /foreign-owner/, 'foreign canonical lock must be restored')
@@ -853,15 +1083,15 @@ await check('a foreign lock detached in the unlock race is restored without clob
 await check('unlock never overwrites a racing no-clobber proof', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-intent:unlock' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-intent:unlock')
+    const crashed = ctx.result
     const m = marker(fx)
     const lockDir = join(fx.root, 'orchestrator/.cache/tasks/locks')
     const lock = join(lockDir, fx.stem + '.json')
     const original = readFileSync(lock, 'utf8')
     const proof = join(lockDir, `.finalize-${fx.stem}-${m.transactionId}.unlock.json`)
     writeFileSync(proof, '{"stage":"racing-proof-owner"}\n')
-    const resumed = run(fx, [fx.stem])
+    const resumed = resumeConfirm(fx, ctx)
     assert.equal(resumed.status, 1, resumed.stderr + resumed.stdout)
     assert.match(resumed.stderr, /LOCK_OWNERSHIP_CONFLICT/)
     assert.equal(readFileSync(lock, 'utf8'), original, 'captured canonical lock remains untouched')
@@ -872,11 +1102,10 @@ await check('unlock never overwrites a racing no-clobber proof', function () {
 await check('lock disappearance before the first unlock effect is a conflict', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-effect:verify' })
-    assert.equal(crashed.status, 97)
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
     rmSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json'))
-    const resumed = run(fx, [fx.stem])
-    assert.equal(resumed.status, 1)
+    const resumed = confirmTransaction(fx, { expectStatus: 1 }).result
     assert.match(resumed.stderr, /LOCK_DISAPPEARED/)
     assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')))
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
@@ -885,10 +1114,10 @@ await check('lock disappearance before the first unlock effect is a conflict', f
 await check('lock disappearance after unlock intent is still ambiguous and never auto-accepted', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-intent:unlock' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-intent:unlock')
+    const crashed = ctx.result
     rmSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json'))
-    const resumed = run(fx, [fx.stem])
+    const resumed = resumeConfirm(fx, ctx)
     assert.equal(resumed.status, 1)
     assert.match(resumed.stderr, /LOCK_DISAPPEARED/)
     assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')))
@@ -898,25 +1127,25 @@ await check('lock disappearance after unlock intent is still ambiguous and never
 await check('durable unlock detachment proof makes the owned rename recoverable but not forgeable by absence', function () {
   const recoverable = fixture()
   try {
-    const crashed = run(recoverable, [recoverable.stem, '--outcome-file', recoverable.draft], { FINALIZE_FAILPOINT: 'after-detach:unlock' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(recoverable, 'after-detach:unlock')
+    const crashed = ctx.result
     assert.ok(!existsSync(join(recoverable.root, 'orchestrator/.cache/tasks/locks', recoverable.stem + '.json')))
     const proofs = readFileNames(join(recoverable.root, 'orchestrator/.cache/tasks/locks')).filter((name) => name.endsWith('.unlock.json'))
     assert.equal(proofs.length, 1)
-    const resumed = run(recoverable, [recoverable.stem])
+    const resumed = resumeConfirm(recoverable, ctx)
     assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
     assertComplete(recoverable)
   } finally { rmSync(recoverable.root, { recursive: true, force: true }) }
 
   const missingProof = fixture()
   try {
-    const crashed = run(missingProof, [missingProof.stem, '--outcome-file', missingProof.draft], { FINALIZE_FAILPOINT: 'after-detach:unlock' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(missingProof, 'after-detach:unlock')
+    const crashed = ctx.result
     const proofDir = join(missingProof.root, 'orchestrator/.cache/tasks/locks')
     const proof = readFileNames(proofDir).find((name) => name.endsWith('.unlock.json'))
     assert.ok(proof)
     rmSync(join(proofDir, proof))
-    const resumed = run(missingProof, [missingProof.stem])
+    const resumed = resumeConfirm(missingProof, ctx)
     assert.equal(resumed.status, 1)
     assert.match(resumed.stderr, /LOCK_DISAPPEARED/)
   } finally { rmSync(missingProof.root, { recursive: true, force: true }) }
@@ -1006,28 +1235,43 @@ await check('a changed pre-ship intent discards only validated stale publication
 await check('completed cleanup marker is reverified and retained if a new lock appears', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-effect:cleanup' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-effect:cleanup')
+    const crashed = ctx.result
     const markerPath = join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')
     assert.equal(JSON.parse(readFileSync(markerPath, 'utf8')).status, 'completed')
     writeFileSync(join(fx.root, 'orchestrator/.cache/tasks/locks', fx.stem + '.json'), '{"stage":"new-owner"}\n')
-    const resumed = run(fx, [fx.stem])
+    const resumed = resumeConfirm(fx, ctx)
     assert.equal(resumed.status, 1)
     assert.match(resumed.stderr, /LOCK_REAPPEARED/)
     assert.ok(existsSync(markerPath), 'recovery authority must remain')
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
 })
 
+await check('completed cleanup marker still requires the exact integration proof on retry', function () {
+  const fx = fixture()
+  try {
+    const ctx = crashInConfirm(fx, 'after-effect:cleanup')
+    const markerPath = join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')
+    assert.equal(JSON.parse(readFileSync(markerPath, 'utf8')).status, 'completed')
+    const retried = run(fx, [fx.stem, '--mode', 'confirm',
+      '--integration-id', ctx.record.integrationId,
+      '--integration-commit', 'f'.repeat(40), '--json'])
+    assert.equal(retried.status, 4, retried.stderr + retried.stdout)
+    assert.match(retried.stderr, /INTEGRATION_PROOF_MISMATCH/)
+    assert.ok(existsSync(markerPath), 'recovery authority must remain after a foreign proof')
+  } finally { rmSync(fx.root, { recursive: true, force: true }) }
+})
+
 await check('cleanup remains durably completed after snapshots are deleted and retry finishes idempotently', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-snapshots:cleanup' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-snapshots:cleanup')
+    const crashed = ctx.result
     const markerPath = join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')
     assert.equal(JSON.parse(readFileSync(markerPath, 'utf8')).status, 'completed')
     assert.equal(readFileNames(dirname(markerPath)).filter((name) => name.startsWith(fx.stem + '.') && name.endsWith('.outcome.md')).length, 0)
 
-    const resumed = run(fx, [fx.stem])
+    const resumed = resumeConfirm(fx, ctx)
     assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
     assertComplete(fx)
     assert.equal(existsSync(markerPath), false)
@@ -1037,13 +1281,11 @@ await check('cleanup remains durably completed after snapshots are deleted and r
 await check('transaction publication proof survives crashes until completed cleanup verifies and removes it', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], {
-      FAKE_SHIP_PROOF: '1', FINALIZE_FAILPOINT: 'after-effect:cleanup',
-    })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-effect:cleanup', { FAKE_SHIP_PROOF: '1' })
+    const crashed = ctx.result
     const proof = readFileNames(join(fx.root, 'orchestrator/tasks/todo')).find((name) => name.endsWith('.ship'))
     assert.ok(proof, 'publication proof must remain while the completed marker is recovery authority')
-    const resumed = run(fx, [fx.stem], { FAKE_SHIP_PROOF: '1' })
+    const resumed = resumeConfirm(fx, ctx, { FAKE_SHIP_PROOF: '1' })
     assert.equal(resumed.status, 0, resumed.stderr + resumed.stdout)
     assertComplete(fx)
     assert.equal(readFileNames(join(fx.root, 'orchestrator/tasks/todo')).filter((name) => name.endsWith('.ship')).length, 0)
@@ -1053,13 +1295,17 @@ await check('transaction publication proof survives crashes until completed clea
 await check('cleanup rejects even metadata-only edits to the published done artifact', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-intent:cleanup' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-intent:cleanup')
+    const crashed = ctx.result
     const done = join(fx.root, 'orchestrator/tasks/done', fx.stem + '.md')
     writeFileSync(done, readFileSync(done, 'utf8') + '- Figma meta: forged metadata-only edit\n')
-    const resumed = run(fx, [fx.stem])
-    assert.equal(resumed.status, 1)
-    assert.match(resumed.stderr, /DONE_TASK_CHANGED/)
+    const resumed = resumeConfirm(fx, ctx)
+    // The confirm half proves the canonical commit BEFORE it re-checks its own
+    // artifacts, so a forged done file is caught as an integration artifact
+    // mismatch (exit 4) rather than reaching the cleanup comparison — either
+    // way the publication is refused and the recovery authority survives.
+    assert.equal(resumed.status, 4, resumed.stderr + resumed.stdout)
+    assert.match(resumed.stderr, /INTEGRATION_ARTIFACT_MISMATCH|DONE_TASK_CHANGED/)
     assert.ok(existsSync(join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')))
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
 })
@@ -1112,7 +1358,9 @@ await check('a late conflicting Outcome is rejected instead of silently ignored'
 
   const retained = fixture()
   try {
-    const crashed = run(retained, [retained.stem, '--outcome-file', retained.draft], { FINALIZE_FAILPOINT: 'after-effect:cleanup' })
+    // Crash right after ship inside the PREPARE half: that is where a late
+    // Outcome replacement is still syntactically possible and must be refused.
+    const crashed = run(retained, [retained.stem, '--outcome-file', retained.draft], { FINALIZE_FAILPOINT: 'after-effect:ship' })
     assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
     const conflicting = join(retained.root, 'conflicting-outcome.md')
     writeFileSync(conflicting, outcomeDraft.replace('2026-01-01T00:00:00Z', '2026-04-04T00:00:00Z'))
@@ -1227,9 +1475,14 @@ await check('oversized marker is rejected before parsing or replacement', functi
 await check('concurrent first mutex creators serialize on one stable inode and converge', async function () {
   const fx = fixture()
   try {
+    // The Outcome draft is installed exactly once, by the prepare that creates
+    // the marker — re-passing it to a resume is refused (OUTCOME_TOO_LATE), and
+    // the integration owner never does. So the racers are resumes.
+    const seeded = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-intent:outcome' })
+    assert.equal(seeded.status, 97, seeded.stderr + seeded.stdout)
     function launch() {
       return new Promise(function (resolveChild) {
-        const child = spawn(process.execPath, [FINALIZER, fx.stem, '--outcome-file', fx.draft], { cwd: fx.root, env: fx.env })
+        const child = spawn(process.execPath, [FINALIZER, fx.stem, '--mode', 'prepare'], { cwd: fx.root, env: fx.env })
         let stdout = '', stderr = ''
         child.stdout.on('data', (x) => { stdout += x })
         child.stderr.on('data', (x) => { stderr += x })
@@ -1433,15 +1686,16 @@ await check('finalization owner processStartId prevents live PID reuse from resu
 await check('decimal proofs above Number.MAX_SAFE_INTEGER remain lossless and do not alias live lock ownership', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-intent:outcome' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const prepared = run(fx, [fx.stem, '--outcome-file', fx.draft])
+    assert.equal(prepared.status, 0, prepared.stderr + prepared.stdout)
     const path = join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')
     const value = JSON.parse(readFileSync(path, 'utf8'))
     value.source.lock.dev = '9007199254740993'
     value.source.lock.ino = '9007199254740995'
     writeFileSync(path, JSON.stringify(value, null, 2) + '\n')
-    const resumed = run(fx, [fx.stem])
-    assert.equal(resumed.status, 1)
+    // Ownership-safe release is the confirm half's job, so that is where a
+    // lossless-but-foreign identity proof has to be refused.
+    const resumed = confirmTransaction(fx, { expectStatus: 1 }).result
     assert.match(resumed.stderr, /LOCK_OWNERSHIP_CONFLICT/)
     assert.doesNotMatch(resumed.stderr, /MARKER_INVALID/)
   } finally { rmSync(fx.root, { recursive: true, force: true }) }
@@ -1450,14 +1704,14 @@ await check('decimal proofs above Number.MAX_SAFE_INTEGER remain lossless and do
 await check('compare-at-delete preserves a foreign finalization-marker replacement', function () {
   const fx = fixture()
   try {
-    const crashed = run(fx, [fx.stem, '--outcome-file', fx.draft], { FINALIZE_FAILPOINT: 'after-effect:cleanup' })
-    assert.equal(crashed.status, 97, crashed.stderr + crashed.stdout)
+    const ctx = crashInConfirm(fx, 'after-effect:cleanup')
+    const crashed = ctx.result
     const target = join(fx.root, 'orchestrator/.cache/tasks/finalizations', fx.stem + '.json')
     const replacement = join(fx.root, 'foreign-marker.json')
     const sentinel = join(fx.root, 'delete-hook-fired')
     const foreign = '{"foreign":true}\n'
     writeFileSync(replacement, foreign)
-    const resumed = run(fx, [fx.stem], {
+    const resumed = resumeConfirm(fx, ctx, {
       FINALIZE_FS_TEST_STAGE: 'before-remove', FINALIZE_FS_TEST_TARGET: target,
       FINALIZE_FS_TEST_REPLACEMENT: replacement, FINALIZE_FS_TEST_ROOT: fx.root,
       FINALIZE_FS_TEST_SENTINEL: sentinel,

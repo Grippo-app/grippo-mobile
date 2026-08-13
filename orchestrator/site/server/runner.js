@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------------------
 // CLI runner — the queue drainer. The host-side counterpart to the standby
 // /loop worker: instead of a human keeping a Claude session open, the server
-// drains queued requests into INTERACTIVE sessions (server/sessions.js),
-// strictly serially (MAX_PARALLEL=1, frozen — see below). Each task gets the
+// drains queued requests into INTERACTIVE sessions (server/sessions.js), up to
+// MAX_PARALLEL at a time, each in its own task worktree — see below. Each task gets the
 // same answerable terminal as the wizard, so the user can watch it and reply
 // if Claude asks mid-run.
 //
@@ -14,6 +14,7 @@
 //     atomically CLAIM the oldest request(s) into a hidden sibling
 //     requests/.<id>.claim (no-clobber hard-link + source unlink, so every
 //     operation stays pinned to one directory inode and cannot double-run),
+//     bind that exact request generation to a provisioned task worktree,
 //     then sessions.start("task:<stem>")
 //     with the prompt as turn 1. The spawned prompt writes its own
 //     .cache/tasks/locks/<stem>.json, so task-summary can project the active run,
@@ -64,6 +65,7 @@ var taskIntegrity = require('./task-integrity');
 var shallowIntake = require('./shallow-intake');
 var childEnv = require('./child-env').childEnv;
 var writerLeases = require('../../tasks/writer-leases.cjs');
+var worktreeManager = require('./worktree-manager');
 
 var REQUESTS_DIR = paths.REQUESTS_DIR;
 var RUNS_DIR     = paths.RUNS_DIR;
@@ -85,15 +87,19 @@ var CLAIM_PROMPT_MAX_BYTES = requestsMod.REQUEST_PROMPT_MAX_BYTES;
 // Frozen serial safety. All task sessions share ONE working tree (cwd =
 // PROJECT_ROOT), so a second concurrent agent can compile a neighbour task's
 // bytes, pick up its files through an aggregate check, and attribute the
-// result to the wrong task. Until per-task git-worktree isolation lands
-// (pipeline improvement 01), the cap is hard-pinned to 1 with no environment
-// override — a knob that could silently raise it would defeat the guarantee.
-// Raising this back is only allowed atomically with the worktree-isolation
-// cut. Mirrors the frozen cap row in orchestrator/contracts/orchestrator-loop.md.
-var MAX_PARALLEL = 1;
+// result to the wrong task. Per-task git-worktree isolation (pipeline
+// improvement 01, Phases 1-5) removed that failure mode: every run owns a
+// separate checkout, seals its own candidate, and publishes only through the
+// serialized integration transaction. The cap is therefore raised to the
+// plan's CANARY value of 2 — still a source constant with no environment
+// override, because a knob that could silently raise it would defeat the
+// guarantee. Raising it further (the plan's eventual default of 4) is an
+// explicit owner decision after the canary. Mirrors the cap row in
+// orchestrator/contracts/orchestrator-loop.md.
+var MAX_PARALLEL = 2;
 if (process.env.RUNNER_MAX_PARALLEL !== undefined) {
   console.warn('[runner] RUNNER_MAX_PARALLEL is ignored: concurrency is ' +
-    'frozen at 1 until per-task worktree isolation lands.');
+    'a source constant, currently the canary value 2.');
 }
 
 var POLL_MS = 2000;
@@ -104,9 +110,10 @@ var started = false;     // guard against double init
 // Liveness marker so a standby /loop worker can detect an active runner and
 // stand down (avoids double-execution if both drain the same queue).
 var RUNNER_MARKER = path.join(RUNS_DIR, '.runner-alive');
-// Orphaned .claim files older than this are swept. Kept well above any plausible
-// claim→spawn latency (slow disk / cold `claude` start): too short and cleanup()
-// could requeue a claim that is actually mid-start.
+// Recovery grace for an orphaned private claim. Age never grants recovery
+// authority: cleanup runs only after this process has published its exact
+// runner marker, and a proven live foreign marker returns before cleanup. The
+// delay merely avoids immediate churn after a proven owner-generation handoff.
 var STALE_CLAIM_MS = 5 * 60 * 1000;
 var RETAIN_RUNS = 300;                 // cap on kept session transcript pairs
 var tickN = 0;
@@ -115,6 +122,7 @@ var queueScanWarningCode = null;        // unavailable scan log deduper
 var runnerMarkerFd = null;
 var authReadyLogged = null;
 var occupancyLoggedCode = null;         // durable-occupancy hold log deduper
+var provisionHoldLogged = null;         // worktree-provisioning hold log deduper
 var foreignRunnerLogged = null;         // foreign-runner stand-down log deduper
 // Start identity of THIS process, stamped into the marker so a later runner
 // can distinguish "that pid is still the runner that wrote this" from PID
@@ -282,19 +290,24 @@ function claimedRequestIssue(req, expectedProjectRoot) {
   return requestsMod.requestRecordIssue(req, expectedProjectRoot);
 }
 
-function discardClaim(id) {
-  return fileGuards.unlinkRegularFileUnder(
-    PROJECT_ROOT, REQUESTS_DIR, claimPathFor(id), { allowMissing: true }
+function discardClaim(id, generation) {
+  if (!generation) return false;
+  var removed = fileGuards.unlinkRegularFileMatchingResultUnder(
+    PROJECT_ROOT, REQUESTS_DIR, claimPathFor(id), CLAIM_FILE_MAX_BYTES,
+    { proof: generation.proof, bytes: generation.bytes }
   );
+  return !!(removed && removed.ok);
 }
 
 // Put a claimed request back into .cache/tasks/requests/ so the next tick
 // re-claims and runs it (used by the per-stem dedup and stale-claim sweep).
-// Returns true on success; the caller decides what to do on failure (the sweep
-// then unlinks so a permanently-stuck claim can't pile up).
-function requeueClaim(id) {
+// A failed transfer deliberately retains the private exact claim generation;
+// no cleanup path may unlink it without the same proof.
+function requeueClaim(id, generation) {
+  if (!generation) return false;
   return fileGuards.transferFileNoClobberSameDirectoryUnder(
-    PROJECT_ROOT, REQUESTS_DIR, claimPathFor(id), path.join(REQUESTS_DIR, id + '.json')
+    PROJECT_ROOT, REQUESTS_DIR, claimPathFor(id), path.join(REQUESTS_DIR, id + '.json'),
+    { proof: generation.proof }
   );
 }
 
@@ -326,7 +339,10 @@ function claim(id) {
     console.warn('[runner] retained malformed private claim for explicit recovery:', id, '(' + (e && e.message || e) + ')');
     return null;
   }
-  return obj;
+  return {
+    record: obj,
+    generation: { proof: bounded.stat, bytes: bounded.bytes }
+  };
 }
 
 // Set of stems with a lock file present under .cache/tasks/locks/ right now. cleanup() must
@@ -368,14 +384,17 @@ function cleanupClaims() {
           ) : null;
           var staleRecord = null;
           if (staleRead) {
-            try { staleRecord = JSON.parse(staleRead.bytes.toString('utf8')); } catch (parseError) {}
+            try {
+              staleRecord = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(staleRead.bytes));
+            } catch (parseError) {}
             if (requestsMod.requestRecordIssue(staleRecord, PROJECT_ROOT)) staleRecord = null;
           }
           var staleReservation = staleRecord ? requestsMod.inspectRequestReservation(staleRecord.stem) : null;
           var exactReservation = staleReservation && staleReservation.status === 'active' &&
             staleReservation.record.requestId === rid &&
             staleReservation.record.fingerprint === requestsMod.requestFingerprint(staleRecord);
-          if (rid && exactReservation && requeueClaim(rid)) {
+          var staleGeneration = staleRead ? { proof: staleRead.stat, bytes: staleRead.bytes } : null;
+          if (rid && exactReservation && requeueClaim(rid, staleGeneration)) {
             console.warn('[runner] restored stale claim to requests:', nm);
           } else {
             console.warn('[runner] retained stale private claim for explicit recovery:', nm);
@@ -546,7 +565,7 @@ function fenceClaimForExecution(id, req) {
   return { ok: false, retry: !persisted, persisted: persisted, reason: reason, result: result };
 }
 
-function restoreClaimForRetry(id, req) {
+function restoreClaimForRetry(id, req, generation) {
   var reservation = requestsMod.inspectRequestReservation(req.stem);
   if (reservation.status !== 'active' || reservation.record.requestId !== id ||
       reservation.record.fingerprint !== requestsMod.requestFingerprint(req)) {
@@ -556,7 +575,7 @@ function restoreClaimForRetry(id, req) {
     console.error('[runner] exact request reservation is no longer active; claim kept private:', id, reservation.code || reservation.status);
     return false;
   }
-  if (!requeueClaim(id)) {
+  if (!requeueClaim(id, generation)) {
     console.error('[runner] could not restore claim no-clobber; claim kept private:', id);
     return false;
   }
@@ -566,33 +585,33 @@ function restoreClaimForRetry(id, req) {
 // Terminal consumption order is tombstone -> exact reservation release ->
 // claim unlink. If withdrawal cannot be proven, keep/requeue the claim; never
 // discard the only recovery evidence and never execute its prompt.
-function consumeTerminalClaim(id, req, handle) {
+function consumeTerminalClaim(id, req, handle, generation) {
   if (requestsMod.releaseRequestReservation(handle)) {
-    if (!discardClaim(id)) console.error('[runner] terminal claim unlink failed; retained private without reservation:', id);
+    if (!discardClaim(id, generation)) console.error('[runner] terminal claim unlink failed; retained private without reservation:', id);
     return true;
   }
   var after = requestsMod.inspectRequestReservation(req.stem);
   if (after.status === 'active' && after.record.requestId === id &&
       after.record.fingerprint === requestsMod.requestFingerprint(req)) {
-    restoreClaimForRetry(id, req);
+    restoreClaimForRetry(id, req, generation);
   } else {
     console.error('[runner] reservation withdrawal unverified; terminal claim retained private:', id);
   }
   return false;
 }
 
-function settleRefusedHandoff(id, req, handle, handoff) {
+function settleRefusedHandoff(id, req, handle, handoff, generation) {
   if (handoff.fence && !handoff.fence.ok && !handoff.fence.retry) {
     var persisted = persistSuperseded(id, req, handoff.fence.reason, handoff.fence.result);
-    if (persisted) consumeTerminalClaim(id, req, handle);
-    else restoreClaimForRetry(id, req);
+    if (persisted) consumeTerminalClaim(id, req, handle, generation);
+    else restoreClaimForRetry(id, req, generation);
     return;
   }
   // Covers transient fence failure, pre-hook session refusal and the rare
   // synchronous stdin failure. Requeue is permitted only while the exact
   // reservation remains active; a completed/ambiguous withdrawal keeps the
   // claim private so automatic retry cannot duplicate a handed-off prompt.
-  restoreClaimForRetry(id, req);
+  restoreClaimForRetry(id, req, generation);
 }
 
 function supersedeIntakeAtExecution(req) {
@@ -666,13 +685,11 @@ function tick() {
   if ((tickN++ % 30) === 0) cleanup();        // ~once a minute at POLL_MS=2s
   var capacity = MAX_PARALLEL - runningCount();
   if (capacity <= 0) return;
-  // Durable occupancy hold (frozen serial safety): a board-task writer lease
-  // that is ACTIVE but not owned by this live process proves a shared-root
-  // writer this process cannot see in memory — an orphan child from an
-  // unclean site death, a standby /serve-queue execution, or another site
-  // process. beginMutation would refuse the spawn anyway; holding here avoids
-  // a claim→refuse→requeue bounce on every poll. Scan problems hold too:
-  // an unprovable writer state must never admit a second writer.
+  // Durable occupancy hold. Unscoped it answers ONE question: is the writer
+  // lease store provable at all? An unprovable store must never admit a
+  // writer, so that holds the whole drain. Per-TASK occupancy is checked at
+  // claim time below, because a live board-task writer for another stem is no
+  // longer a reason to hold this one: the two runs own disjoint checkouts.
   var occupancy = finalizations.foreignTaskSessionWriterIssue();
   if (occupancy) {
     if (occupancyLoggedCode !== occupancy.code) {
@@ -721,33 +738,45 @@ function tick() {
     }
   }
   for (var i = 0; i < ids.length && capacity > 0; i++) {
-    var id = ids[i];
+    const id = ids[i];
     if (gateSkip && gateSkip[id]) continue;   // held in queue until the net is wired
-    var req = claim(id);
-    if (!req) continue;                       // lost the race, or malformed bytes retained privately
+    const claimed = claim(id);
+    if (!claimed) continue;                   // lost the race, or malformed bytes retained privately
+    const req = claimed.record;
+    const claimGeneration = claimed.generation;
     var invalidClaim = claimedRequestIssue(req, PROJECT_ROOT);
     if (invalidClaim) {
       console.warn('[runner] retained invalid private claim for explicit recovery:', id, '(' + invalidClaim + ')');
       continue;
     }
-    var stem = req.stem;
+    const stem = req.stem;
+    // Per-task occupancy: a board-task writer for THIS stem that this process
+    // does not own is an orphan child, a standby execution, or another site
+    // process holding the same task. beginMutation would refuse the spawn
+    // anyway; holding here avoids a claim→refuse→requeue bounce.
+    var stemOccupancy = stem ? finalizations.foreignTaskSessionWriterIssue(stem) : null;
+    if (stemOccupancy) {
+      console.warn('[runner] ' + stem + ' held — ' + stemOccupancy.code + ': ' + stemOccupancy.message);
+      requeueClaim(id, claimGeneration); // best effort; failure deliberately leaves private
+      continue;
+    }
     // Require the exact HTTP reservation before any retry/terminal decision.
     // It remains durable through
     // every queue→claim move until the final under-lease handoff.
     var reservation = requestsMod.ensureRequestReservation(id, req);
     if (!reservation.ok) {
       console.warn('[runner] exact per-stem reservation unavailable; request retained:', id, reservation.code);
-      requeueClaim(id); // best effort; failure deliberately leaves private
+      requeueClaim(id, claimGeneration); // best effort; failure deliberately leaves private
       continue;
     }
-    var reservationHandle = reservation.handle;
+    const reservationHandle = reservation.handle;
     // A durable finalization marker supersedes every queued AI action for this
     // stem. Consume the stale request now; retaining it would re-run an already
     // shipped task immediately after marker cleanup.
     if (stem && finalizations.hasMarker(stem)) {
       console.warn('[runner] dropping stale queued action for task under finalization:', stem, req.action || 'unknown');
-      if (persistSuperseded(id, req, 'finalization-active', null)) consumeTerminalClaim(id, req, reservationHandle);
-      else restoreClaimForRetry(id, req);
+      if (persistSuperseded(id, req, 'finalization-active', null)) consumeTerminalClaim(id, req, reservationHandle, claimGeneration);
+      else restoreClaimForRetry(id, req, claimGeneration);
       continue;
     }
     // A finalizer owns the global publication mutex but may still be in the
@@ -755,19 +784,43 @@ function tick() {
     // not-yet-marked work until that deterministic transaction publishes its
     // marker or completes.
     if (finalizations.mutationBlocked(stem)) {
-      restoreClaimForRetry(id, req);
+      restoreClaimForRetry(id, req, claimGeneration);
       continue;
     }
     var executionFence = fenceClaimForExecution(id, req);
     if (!executionFence.ok) {
       if (executionFence.retry) {
         console.warn('[runner] task-state fence unavailable; request retained:', stem, executionFence.error || executionFence.reason || 'unknown');
-        restoreClaimForRetry(id, req);
+        restoreClaimForRetry(id, req, claimGeneration);
       } else {
         console.warn('[runner] superseded stale queued action:', stem, req.action, executionFence.reason);
-        consumeTerminalClaim(id, req, reservationHandle);
+        consumeTerminalClaim(id, req, reservationHandle, claimGeneration);
       }
       continue;
+    }
+    // Pipeline improvement 01, Phase 2 — mandatory execution isolation: a
+    // `run` claim provisions (or resumes) its manager-verified worktree
+    // BEFORE any spawn or warm-session delivery. A refused provision keeps
+    // the durable request queued — there is no shared-root fallback.
+    let executionContext = null;
+    if (req.action === 'run') {
+      var provisioned = worktreeManager.provision({
+        stem: stem, runId: id, requestId: id, sourceRevision: req.sourceRevision
+      });
+      if (!provisioned.ok) {
+        if (provisionHoldLogged !== provisioned.code) {
+          provisionHoldLogged = provisioned.code;
+          console.warn('[runner] run held — worktree provisioning refused: ' +
+            provisioned.code + (provisioned.message ? ' — ' + provisioned.message : ''));
+        }
+        restoreClaimForRetry(id, req, claimGeneration);
+        continue;
+      }
+      if (provisionHoldLogged !== null) {
+        provisionHoldLogged = null;
+        console.log('[runner] worktree provisioning recovered — run admission resumed.');
+      }
+      executionContext = { worktreeId: provisioned.worktreeId, runId: provisioned.runId };
     }
     // A session already running for this stem: if it's BUSY (mid-turn or paused
     // on a question), requeue — a second click must not double-run or hijack the
@@ -776,20 +829,20 @@ function tick() {
     // continuation the session-per-stem design intends — so an idle/zombie
     // session never bounces the request forever. send() re-stamps action/dedup
     // and returns false if the session raced busy/away — then requeue as before.
-    var handoff = { called: false, fence: null, released: false, settled: null };
-    var beforePrompt = function () {
+    const handoff = { called: false, fence: null, released: false, settled: null };
+    const beforePrompt = function () {
       handoff.called = true;
       handoff.fence = inspectClaimForExecution(req);
       if (!handoff.fence.ok) return false;
       handoff.released = requestsMod.releaseRequestReservation(reservationHandle);
       return handoff.released;
     };
-    var onPromptSettled = function (delivered, error) {
+    const onPromptSettled = function (delivered, error) {
       if (handoff.settled !== null) return;
       handoff.settled = delivered === true;
       if (handoff.settled) {
         supersedeIntakeAtExecution(req);
-        if (!discardClaim(id)) console.error('[runner] delivered prompt claim retained private:', id);
+        if (!discardClaim(id, claimGeneration)) console.error('[runner] delivered prompt claim retained private:', id);
       } else {
         console.error('[runner] prompt delivery remained ambiguous; claim retained private:', id,
           error && error.message || 'stdin settlement failed');
@@ -805,6 +858,7 @@ function tick() {
       if (!liveInfo.busy && noQuestionsCompatible) {
         if (sessions.send(liveInfo.key, req.prompt, {
           action: req.action,
+          executionContext: executionContext,
           noQuestions: req.action === 'prep',
           dedupKey: req.dedupKey,
           dedupReport: req.dedupReport,
@@ -816,20 +870,21 @@ function tick() {
           if (!handoff.called || !handoff.released) {
             console.error('[runner] session accepted prompt without an exact reservation handoff:', id);
             sessions.cancel(liveInfo.key);
-            settleRefusedHandoff(id, req, reservationHandle, handoff);
+            settleRefusedHandoff(id, req, reservationHandle, handoff, claimGeneration);
             continue;
           }
           capacity--;   // conservative: the reused session already held a slot, but never over-admit
           continue;
         }
       }
-      settleRefusedHandoff(id, req, reservationHandle, handoff);
+      settleRefusedHandoff(id, req, reservationHandle, handoff, claimGeneration);
       continue;
     }
     var key = 'task:' + stem;
     var st = sessions.start(key, {
       stem: stem,
       action: req.action,
+      executionContext: executionContext,
       noQuestions: req.action === 'prep',
       dedupKey: req.dedupKey,
       dedupReport: req.dedupReport,
@@ -843,7 +898,7 @@ function tick() {
       capacity--;
     } else {
       if (st && st.running) sessions.cancel(key);
-      settleRefusedHandoff(id, req, reservationHandle, handoff);
+      settleRefusedHandoff(id, req, reservationHandle, handoff, claimGeneration);
       console.warn('[runner] could not start session', key, st && st.error);
     }
   }
@@ -877,13 +932,14 @@ function init() {
       return;
     }
     enabled = true;
-    cleanup();
     // tick() owns both the auth-readiness decision and marker publication, so
-    // there is no startup window in which a logged-out CLI looks attached.
+    // there is no startup window in which a logged-out CLI looks attached. It
+    // also owns cleanup: startup must prove runner-marker exclusion before an
+    // aged private claim can be restored.
     tick();
     setInterval(tick, POLL_MS);
     console.log('[runner] enabled — authenticated CLI sessions drain queued tasks ' +
-      'serially (MAX_PARALLEL=1, frozen until per-task worktree isolation).');
+      'up to MAX_PARALLEL=' + MAX_PARALLEL + ', each in its own task worktree.');
   });
 }
 

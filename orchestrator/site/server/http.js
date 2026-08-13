@@ -50,6 +50,8 @@ var sessionsMod = require('./sessions');
 var staticMod   = require('./static');
 var gitMod      = require('./git');
 var finalizationsMod = require('./finalizations');
+var integrationsMod = require('./integrations');
+var worktreeManagerMod = require('./worktree-manager');
 var pixelReviewMod = require('./pixel-review');
 var backlogCreateMod = require('./backlog-create');
 var taskInboxMod = require('./task-inbox');
@@ -2400,26 +2402,180 @@ function handleFinalizationResume(req, res) {
       jsonResponse(res, 409, { error: 'task-session-busy' });
       return;
     }
-    var result = finalizationsMod.resume(stem, revision, etag);
-    if (!result.ok) {
-      jsonResponse(res, result.statusCode || 500, {
-        error: result.error || 'finalization-resume-failed',
-        current: finalizationsMod.publicProjection(result.current)
-      });
+    // The finalizer is no longer resumable on its own: a stranded marker is
+    // one phase of an integration transaction, and only the WAL knows whether
+    // the next step is prepare or confirm. The optimistic-concurrency token is
+    // still honoured so a stale Board tab cannot act on a moved marker.
+    var current = finalizationsMod.readOne(stem);
+    if (current.status === 'corrupt') {
+      jsonResponse(res, 409, { error: 'finalization-corrupt', detail: current.errorMessage });
+      return;
+    }
+    if (current.revision !== revision || current.etag !== etag) {
+      jsonResponse(res, 409, { error: 'finalization-changed', current: finalizationsMod.publicProjection(current) });
       return;
     }
     // Only after marker + optimistic-concurrency validation succeeds may we
     // close a warm idle session. A stale/forged token must have zero effects.
     if (liveInfo && !liveInfo.busy) try { sessionsMod.cancel(liveInfo.key); } catch (e0) {}
-    sse.pollLoop();
-    jsonResponse(res, 202, {
-      accepted: !!result.accepted,
-      alreadyRunning: !!result.alreadyRunning,
-      finalization: finalizationsMod.publicProjection(result.finalization),
-      state: deriveState()
+    var replied = false;
+    integrationsMod.resume(stem, function (result) {
+      if (replied) { sse.pollLoop(); return; }
+      replied = true;
+      sse.pollLoop();
+      if (!result.ok) {
+        jsonResponse(res, 409, { error: result.code === 'INTEGRATION_RECORD_ABSENT'
+          ? 'finalization-integration-owned' : (result.code || 'finalization-resume-failed'),
+          detail: result.message || '', integration: result.detail || null });
+        return;
+      }
+      jsonResponse(res, 202, {
+        accepted: true, alreadyRunning: false,
+        finalization: finalizationsMod.publicProjection(finalizationsMod.readOne(stem)),
+        integration: result.integration || null,
+        state: deriveState()
+      });
     });
   }, function (e) { jsonResponse(res, 400, { error: 'bad-json' }); })
   .catch(function (e) { jsonResponse(res, 500, { error: 'finalization-resume-failed' }); });
+}
+
+// --- Integration transaction (plan §10) ------------------------------------
+// Three endpoints, deliberately outside the queued task-action rail: an
+// integration runs while the task lock is still held, which the queue refuses
+// by design, and it is a repository-wide transaction rather than a per-task
+// request. Preview is read-only; start and resume drive the same WAL.
+
+// POST /api/integrations/preview { stem }
+function handleIntegrationPreview(req, res) {
+  readJsonBody(req).then(function (body) {
+    var stem = body && typeof body.stem === 'string' ? body.stem : '';
+    var result = integrationsMod.preview(stem);
+    if (!result.ok) { jsonResponse(res, 409, { error: result.code || 'integration-preview-failed', detail: result.message || '' }); return; }
+    jsonResponse(res, 200, result);
+  }, function () { jsonResponse(res, 400, { error: 'bad-json' }); })
+  .catch(function () { jsonResponse(res, 500, { error: 'integration-preview-failed' }); });
+}
+
+// POST /api/integrations/start { stem } and /api/integrations/resume { stem }
+function handleIntegrationRun(req, res, resuming) {
+  readJsonBody(req).then(function (body) {
+    var stem = body && typeof body.stem === 'string' ? body.stem : '';
+    // A live task session still owns the working state; integrating underneath
+    // it would race the run that produced the candidate.
+    var liveInfo = stem ? sessionsMod.runningInfoForStem(stem) : null;
+    if (liveInfo && liveInfo.busy) { jsonResponse(res, 409, { error: 'task-session-busy' }); return; }
+    // A warm-but-idle session for THIS stem still holds its board-task writer
+    // lease for the child's whole lifetime, and that lease blocks this task's
+    // own finalizer prepare. Close it first, exactly as the finalization
+    // recovery path does — only after the busy check, so a forged request has
+    // no effect. `cancel()` withdraws NOTHING synchronously: it SIGTERMs and
+    // deliberately retains the lease until process-tree death is proven, so
+    // driving the transaction in this same turn would read the lease it just
+    // asked to end and refuse every first click. Wait for the settlement the
+    // session owner publishes, then drive; if it will not settle, say so with a
+    // typed answer instead of blaming a workspace writer.
+    if (liveInfo && !liveInfo.busy) { try { sessionsMod.cancel(liveInfo.key); } catch (e0) {} }
+    // The wait is keyed on the LEASE, not on the session being "running".
+    // cancel() sets running=false and closing=true immediately, so a retry
+    // after `task-session-closing` finds no liveInfo at all — and keying the
+    // wait on liveInfo would skip it and refuse again on the very click that
+    // was supposed to succeed. When nothing is held the first probe returns
+    // instantly, so this costs a settled workspace nothing.
+    awaitTaskWriterSettlement(stem, function (settled) {
+      if (!settled) { jsonResponse(res, 409, { error: 'task-session-closing' }); return; }
+      driveIntegration(res, stem, resuming);
+    });
+  }, function () { jsonResponse(res, 400, { error: 'bad-json' }); })
+  .catch(function () { jsonResponse(res, 500, { error: 'integration-failed' }); });
+}
+
+// Poll the session owner's own lease state. Bounded: cancel escalates to
+// SIGKILL after ~2s and the tree-death proof follows, so a session that has not
+// let go by the deadline is reported rather than waited on forever.
+var INTEGRATION_SETTLE_DEADLINE_MS = 15000;
+var INTEGRATION_SETTLE_POLL_MS = 150;
+function awaitTaskWriterSettlement(stem, done) {
+  var deadline = Date.now() + INTEGRATION_SETTLE_DEADLINE_MS;
+  (function probe() {
+    var held;
+    try { held = sessionsMod.taskWriterLeaseHeldForStem(stem); }
+    catch (error) { done(false); return; }
+    if (!held) { done(true); return; }
+    if (Date.now() >= deadline) { done(false); return; }
+    var timer = setTimeout(probe, INTEGRATION_SETTLE_POLL_MS);
+    if (typeof timer.unref === 'function') timer.unref();
+  })();
+}
+
+function driveIntegration(res, stem, resuming) {
+  var driver = resuming ? integrationsMod.resume : integrationsMod.begin;
+  var replied = false;
+  driver(stem, function (result) {
+    if (replied) { sse.pollLoop(); return; }
+    replied = true;
+    sse.pollLoop();
+    if (!result.ok) {
+      jsonResponse(res, 409, {
+        error: result.code || 'integration-failed',
+        detail: result.message || '',
+        blockers: result.blockers || [],
+        integration: result.detail || result.record || null,
+        state: deriveState()
+      });
+      return;
+    }
+    jsonResponse(res, 200, {
+      completed: !!result.completed,
+      commit: result.commit || null,
+      integration: result.integration || null,
+      state: deriveState()
+    });
+  });
+}
+
+// POST /api/integrations/abandon { stem, integrationId }
+// The operator's exit from a transaction that stopped in a state it cannot
+// resolve. It repairs nothing and deletes nothing — it records that a human
+// read the record and decided this transaction ends here, which releases the
+// repository-wide mutex the record was holding.
+function handleIntegrationAbandon(req, res) {
+  readJsonBody(req).then(function (body) {
+    var stem = body && typeof body.stem === 'string' ? body.stem : '';
+    var integrationId = body && typeof body.integrationId === 'string' ? body.integrationId : '';
+    if (!stem || !integrationId) { jsonResponse(res, 400, { error: 'bad-request' }); return; }
+    var result = integrationsMod.abandon(stem, integrationId);
+    sse.pollLoop();
+    if (!result.ok) {
+      jsonResponse(res, 409, { error: result.code || 'integration-abandon-failed',
+        detail: result.message || '', integration: result.detail || null, state: deriveState() });
+      return;
+    }
+    jsonResponse(res, 200, { integration: result.integration, state: deriveState() });
+  }, function () { jsonResponse(res, 400, { error: 'bad-json' }); })
+  .catch(function () { jsonResponse(res, 500, { error: 'integration-abandon-failed' }); });
+}
+
+// POST /api/worktrees/release { stem }
+// Releases a generation whose run ended without reaching Integrate. Without it
+// the queued request bounces against PROVISION_GENERATION_ACTIVE forever and
+// the only way out is a shell.
+function handleWorktreeRelease(req, res) {
+  readJsonBody(req).then(function (body) {
+    var stem = body && typeof body.stem === 'string' ? body.stem : '';
+    if (!stem) { jsonResponse(res, 400, { error: 'bad-request' }); return; }
+    var live = sessionsMod.runningInfoForStem(stem);
+    if (live) { jsonResponse(res, 409, { error: 'task-session-busy' }); return; }
+    var result = worktreeManagerMod.releaseFor(stem);
+    sse.pollLoop();
+    if (!result.ok) {
+      jsonResponse(res, 409, { error: result.code || 'worktree-release-failed',
+        detail: result.message || '', state: deriveState() });
+      return;
+    }
+    jsonResponse(res, 200, { released: result.worktreeId, state: deriveState() });
+  }, function () { jsonResponse(res, 400, { error: 'bad-json' }); })
+  .catch(function () { jsonResponse(res, 500, { error: 'worktree-release-failed' }); });
 }
 
 // GET /api/git/status — read-only working-tree summary (branch + changed
@@ -2670,6 +2826,11 @@ function handleApi(req, res, url) {
   if (url.pathname === '/api/session/events' && req.method === 'GET')  { handleSessionEvents(req, res, url); return true; }
   if (url.pathname === '/api/session/list' && req.method === 'GET')    { handleSessionList(req, res);       return true; }
   if (url.pathname === '/api/finalizations/resume' && req.method === 'POST') { handleFinalizationResume(req, res); return true; }
+  if (url.pathname === '/api/integrations/preview' && req.method === 'POST') { handleIntegrationPreview(req, res); return true; }
+  if (url.pathname === '/api/integrations/start' && req.method === 'POST') { handleIntegrationRun(req, res, false); return true; }
+  if (url.pathname === '/api/integrations/resume' && req.method === 'POST') { handleIntegrationRun(req, res, true); return true; }
+  if (url.pathname === '/api/integrations/abandon' && req.method === 'POST') { handleIntegrationAbandon(req, res); return true; }
+  if (url.pathname === '/api/worktrees/release' && req.method === 'POST') { handleWorktreeRelease(req, res); return true; }
   if (url.pathname === '/api/git/status' && req.method === 'GET')      { handleGitStatus(req, res);        return true; }
   if (url.pathname === '/api/backend/integration' && req.method === 'GET') { handleBackendIntegration(req, res); return true; }
   if (url.pathname === '/api/backend/integration/reset' && req.method === 'POST') { handleBackendIntegrationReset(req, res); return true; }

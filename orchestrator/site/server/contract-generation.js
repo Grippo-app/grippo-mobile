@@ -39,6 +39,22 @@ var PUBLICATION_ERRORS = Object.freeze({
   'generation-publication-verification-failed': 'generation-publication-failed'
 });
 
+function readScope(projectRoot) {
+  var root = path.resolve(projectRoot);
+  var contractDir = path.join(root, 'orchestrator', 'api-contract');
+  var manifestsDir = path.join(contractDir, 'manifests');
+  return {
+    projectRoot: root,
+    manifestsDir: manifestsDir,
+    generationsDir: path.join(manifestsDir, 'generations'),
+    artifactsDir: path.join(manifestsDir, 'generation-artifacts'),
+    pointerFile: path.join(manifestsDir, 'current-generation.json'),
+    reportsDir: path.join(root, 'orchestrator', '.cache', 'api-contract', 'reports')
+  };
+}
+var CONTROL_READ_SCOPE = readScope(paths.PROJECT_ROOT);
+CONTROL_READ_SCOPE.reportsDir = path.join(paths.API_CONTRACT_CACHE_DIR, 'reports');
+
 function sha(bytes) { return 'sha256:' + crypto.createHash('sha256').update(bytes).digest('hex'); }
 function publicationError(error) {
   var code = error && typeof error.message === 'string' ? error.message : '';
@@ -58,16 +74,17 @@ function sameDirectoryGeneration(left, right) {
     left.dev === right.dev && left.ino === right.ino && left.mode === right.mode && left.nlink === right.nlink &&
     left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs;
 }
-function parentAnchored(file) {
-  var root = path.resolve(paths.PROJECT_ROOT), parent = path.resolve(path.dirname(file));
+function parentAnchored(file, readContext) {
+  var scope = readContext || CONTROL_READ_SCOPE;
+  var root = scope.projectRoot, parent = path.resolve(path.dirname(file));
   var rel = path.relative(root, parent);
   if (rel === '..' || rel.startsWith('..' + path.sep) || path.isAbsolute(rel)) return false;
   return fs.realpathSync(parent) === path.join(fs.realpathSync(root), rel);
 }
-function safeBytes(file, max, optional) {
+function safeBytes(file, max, optional, readContext) {
   var fd;
   try {
-    if (!parentAnchored(file)) throw new Error('artifact-parent-unsafe');
+    if (!parentAnchored(file, readContext)) throw new Error('artifact-parent-unsafe');
     var before = fs.lstatSync(file, { bigint: true });
     if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1n || before.size > BigInt(max)) throw new Error('artifact-file-unsafe');
     fd = fs.openSync(file, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
@@ -76,29 +93,33 @@ function safeBytes(file, max, optional) {
     var bytes = Buffer.alloc(Number(opened.size)), offset = 0;
     while (offset < bytes.length) { var count = fs.readSync(fd, bytes, offset, bytes.length - offset, offset); if (!count) throw new Error('short-read'); offset += count; }
     var afterFd = fs.fstatSync(fd, { bigint: true }), afterPath = fs.lstatSync(file, { bigint: true });
-    if (!sameFileGeneration(opened, afterFd) || !sameFileGeneration(opened, afterPath) || !parentAnchored(file)) throw new Error('artifact-file-raced');
+    if (!sameFileGeneration(opened, afterFd) || !sameFileGeneration(opened, afterPath) ||
+        !parentAnchored(file, readContext)) throw new Error('artifact-file-raced');
     return bytes;
   } catch (e) { if (optional && e && e.code === 'ENOENT') return null; throw e; }
   finally { if (fd !== undefined) try { fs.closeSync(fd); } catch (ignore) {} }
 }
-function safeDirectoryHasEntries(directory, maxEntries, accept) {
+function safeDirectoryHasEntries(directory, maxEntries, accept, readContext) {
   try {
-    if (!parentAnchored(directory)) throw new Error('artifact-directory-parent-unsafe');
+    if (!parentAnchored(directory, readContext)) throw new Error('artifact-directory-parent-unsafe');
     var before = fs.lstatSync(directory, { bigint: true });
     if (!before.isDirectory() || before.isSymbolicLink()) throw new Error('artifact-directory-unsafe');
     var names = fs.readdirSync(directory);
     if (names.length > maxEntries) throw new Error('artifact-directory-entry-limit');
     var after = fs.lstatSync(directory, { bigint: true });
-    if (!sameDirectoryGeneration(before, after) || !parentAnchored(directory)) throw new Error('artifact-directory-raced');
+    if (!sameDirectoryGeneration(before, after) || !parentAnchored(directory, readContext)) throw new Error('artifact-directory-raced');
     return accept ? names.some(accept) : names.length > 0;
   } catch (error) {
     if (error && error.code === 'ENOENT') return false;
     throw error;
   }
 }
-function generationEvidencePresent() {
-  return safeDirectoryHasEntries(GENERATIONS_DIR, 512, function (name) { return name !== '.gitkeep'; }) ||
-    safeDirectoryHasEntries(ARTIFACTS_DIR, 512, function (name) { return name !== '.gitkeep'; });
+function generationEvidencePresent(readContext) {
+  var scope = readContext || CONTROL_READ_SCOPE;
+  return safeDirectoryHasEntries(scope.generationsDir, 512,
+    function (name) { return name !== '.gitkeep'; }, scope) ||
+    safeDirectoryHasEntries(scope.artifactsDir, 512,
+      function (name) { return name !== '.gitkeep'; }, scope);
 }
 
 function cleanupTree(directory, budget, depth) {
@@ -176,14 +197,15 @@ function projectRelative(file) {
   if (!rel || rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) throw new Error('artifact-path-outside-project');
   return rel.split(path.sep).join('/');
 }
-function resolveArtifactPath(relativePath, generationId, persistence) {
+function resolveArtifactPath(relativePath, generationId, persistence, readContext) {
+  var scope = readContext || CONTROL_READ_SCOPE;
   if (typeof relativePath !== 'string' || !relativePath || relativePath.indexOf('\\') >= 0 || relativePath.split('/').some(function (part) { return !part || part === '.' || part === '..'; })) {
     throw new Error('artifact-path-invalid');
   }
-  var absolute = path.resolve(paths.PROJECT_ROOT, relativePath);
+  var absolute = path.resolve(scope.projectRoot, relativePath);
   var allowed = persistence === 'committed'
-    ? path.join(ARTIFACTS_DIR, generationId)
-    : path.join(paths.API_CONTRACT_CACHE_DIR, 'reports');
+    ? path.join(scope.artifactsDir, generationId)
+    : scope.reportsDir;
   if (!inside(allowed, absolute) || absolute === allowed) throw new Error('artifact-path-outside-generation');
   return absolute;
 }
@@ -197,7 +219,7 @@ function validatePointer(value) {
     GENERATION_RE.test(String(value.generationId || '')) && HASH_RE.test(String(value.manifestHash || '')) && validTimestamp(value.committedAt, false);
 }
 
-function validateManifestShape(value, expectedId) {
+function validateManifestShape(value, expectedId, readContext) {
   var fields = ['artifacts', 'committedAt', 'createdAt', 'currentHash', 'environmentId', 'generationId', 'previousHash',
     'schemaVersion', 'sourceFingerprint', 'sourceKind', 'state'];
   if (!exactKeys(value, fields) || value.schemaVersion !== 1 || value.generationId !== expectedId || !GENERATION_RE.test(value.generationId) ||
@@ -222,7 +244,7 @@ function validateManifestShape(value, expectedId) {
     if ((committedRole && (row.persistence !== 'committed' || row.required !== true)) ||
         (runtimeRole && (row.persistence !== 'runtime' || row.required !== false))) return false;
     seen[row.role] = 1; seenPath[row.path] = 1;
-    try { resolveArtifactPath(row.path, value.generationId, row.persistence); } catch (e) { return false; }
+    try { resolveArtifactPath(row.path, value.generationId, row.persistence, readContext); } catch (e) { return false; }
   }
   if (!seen.inventory ||
       (value.sourceKind === 'openapi' && (!seen['normalized-spec'] || seen['source-descriptor'])) ||
@@ -230,16 +252,18 @@ function validateManifestShape(value, expectedId) {
   return true;
 }
 
-function validateGeneration(pointer, manifest, manifestBytes) {
-  if (!validatePointer(pointer) || sha(manifestBytes) !== pointer.manifestHash || !validateManifestShape(manifest, pointer.generationId) ||
+function validateGeneration(pointer, manifest, manifestBytes, readContext) {
+  var scope = readContext || CONTROL_READ_SCOPE;
+  if (!validatePointer(pointer) || sha(manifestBytes) !== pointer.manifestHash ||
+      !validateManifestShape(manifest, pointer.generationId, scope) ||
       manifest.state !== 'committed' || manifest.committedAt !== pointer.committedAt) return { ok: false, error: 'generation-contract-invalid' };
   var artifacts = Object.create(null), inventory = null, optionalArtifactIssues = [];
   for (var i = 0; i < manifest.artifacts.length; i++) {
     var row = manifest.artifacts[i], absolute;
-    try { absolute = resolveArtifactPath(row.path, manifest.generationId, row.persistence); }
+    try { absolute = resolveArtifactPath(row.path, manifest.generationId, row.persistence, scope); }
     catch (e) { return { ok: false, error: 'generation-artifact-path-invalid' }; }
     var bytes;
-    try { bytes = safeBytes(absolute, Math.min(MAX_ARTIFACT, row.size), !row.required); }
+    try { bytes = safeBytes(absolute, Math.min(MAX_ARTIFACT, row.size), !row.required, scope); }
     catch (e2) {
       if (!row.required) {
         artifacts[row.role] = null;
@@ -270,20 +294,25 @@ function validateGeneration(pointer, manifest, manifestBytes) {
   if (areaCount !== inventoryAreas.length || inventoryAreas.join('\0') !== presentAreas.join('\0')) {
     return { ok: false, error: 'generation-area-set-invalid' };
   }
-  if (sha(safeBytes(artifacts.inventory, MAX_ARTIFACT, false)) !== manifest.currentHash) return { ok: false, error: 'generation-current-hash-invalid' };
+  if (sha(safeBytes(artifacts.inventory, MAX_ARTIFACT, false, scope)) !== manifest.currentHash) return { ok: false, error: 'generation-current-hash-invalid' };
   return { ok: true, mode: 'generation', pointer: pointer, manifest: manifest, artifacts: artifacts, inventory: inventory,
     snapshotHash: manifest.currentHash, environmentId: manifest.environmentId,
     optionalArtifactIssues: optionalArtifactIssues };
 }
 
-function current() {
+function currentFromScope(readContext, recoverEmptyResidue, expectedPointerHash) {
+  var scope = readContext || CONTROL_READ_SCOPE;
   var pointerBytes;
-  try { pointerBytes = safeBytes(POINTER_FILE, MAX_POINTER, true); }
+  try { pointerBytes = safeBytes(scope.pointerFile, MAX_POINTER, true, scope); }
   catch (e) { return { ok: false, mode: 'invalid', error: 'generation-pointer-invalid' }; }
+  if (expectedPointerHash !== undefined &&
+      sha(pointerBytes === null ? Buffer.alloc(0) : pointerBytes) !== expectedPointerHash) {
+    return { ok: false, mode: 'invalid', error: 'generation-pointer-pin-mismatch' };
+  }
   if (pointerBytes === null) {
     try {
-      recoverEmptyGenerationResidue();
-      if (generationEvidencePresent()) return { ok: false, mode: 'invalid', error: 'generation-pointer-missing' };
+      if (recoverEmptyResidue) recoverEmptyGenerationResidue();
+      if (generationEvidencePresent(scope)) return { ok: false, mode: 'invalid', error: 'generation-pointer-missing' };
     } catch (evidenceError) {
       return { ok: false, mode: 'invalid', error: 'generation-evidence-invalid' };
     }
@@ -293,10 +322,35 @@ function current() {
   try { pointer = parseObject(pointerBytes); }
   catch (e2) { return { ok: false, mode: 'invalid', error: 'generation-pointer-invalid' }; }
   if (!validatePointer(pointer)) return { ok: false, mode: 'invalid', error: 'generation-pointer-invalid' };
-  var manifestFile = path.join(GENERATIONS_DIR, pointer.generationId + '.json'), manifestBytes, manifest;
-  try { manifestBytes = safeBytes(manifestFile, MAX_MANIFEST, false); manifest = parseObject(manifestBytes); }
+  var manifestFile = path.join(scope.generationsDir, pointer.generationId + '.json'), manifestBytes, manifest;
+  try { manifestBytes = safeBytes(manifestFile, MAX_MANIFEST, false, scope); manifest = parseObject(manifestBytes); }
   catch (e3) { return { ok: false, mode: 'invalid', error: 'generation-manifest-invalid' }; }
-  return validateGeneration(pointer, manifest, manifestBytes);
+  return validateGeneration(pointer, manifest, manifestBytes, scope);
+}
+
+function current() {
+  return currentFromScope(CONTROL_READ_SCOPE, true);
+}
+
+// Task helpers need the committed generation that is physically present in
+// their immutable execution checkout, even when a control-plane refresh has
+// advanced after provisioning. This reader shares the exact validation
+// predicates above but has no cleanup/publication side effects.
+function currentAtProjectRoot(projectRoot, expectedPointerHash) {
+  if (expectedPointerHash !== undefined && !HASH_RE.test(String(expectedPointerHash || ''))) {
+    return { ok: false, mode: 'invalid', error: 'generation-pointer-pin-invalid' };
+  }
+  var scope;
+  try {
+    scope = readScope(projectRoot);
+    var rootStat = fs.lstatSync(scope.projectRoot);
+    if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) {
+      return { ok: false, mode: 'invalid', error: 'generation-project-root-invalid' };
+    }
+  } catch (error) {
+    return { ok: false, mode: 'invalid', error: 'generation-project-root-invalid' };
+  }
+  return currentFromScope(scope, false, expectedPointerHash);
 }
 
 function readArea(name) {
@@ -471,6 +525,7 @@ module.exports = {
   POINTER_FILE: POINTER_FILE,
   sha: sha,
   current: current,
+  currentAtProjectRoot: currentAtProjectRoot,
   readArea: readArea,
   createGenerationId: createGenerationId,
   publish: publish,

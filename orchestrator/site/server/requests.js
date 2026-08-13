@@ -32,9 +32,14 @@
 var fs     = require('fs');
 var path   = require('path');
 var crypto = require('crypto');
+var TextDecoder = require('util').TextDecoder;
 var paths  = require('./paths');
 var fileGuards = require('./file-guards');
 var taskCore = require('../../tasks/task-state-core.cjs');
+
+function parseJsonBytes(bytes) {
+  return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+}
 
 var REQUESTS_DIR = paths.REQUESTS_DIR;
 var REQUEST_RESERVATIONS_DIR = paths.REQUEST_RESERVATIONS_DIR;
@@ -51,7 +56,7 @@ var SUPERSEDED_DIR = paths.SUPERSEDED_DIR;
 // after an acknowledged dependent-impact snapshot; the prompt never performs a
 // raw task-file delete or standalone INDEX rewrite.
 var REQUEST_ACTIONS = new Set(['prep', 'answers', 'run', 'drop', 'reopen']);
-var REQUEST_VERSION = 2;
+var REQUEST_VERSION = 3;
 var REQUEST_STATES = new Set(['backlog', 'pending', 'todo', 'done', 'corrupt']);
 var REQUEST_REVISION_RE = /^sha256:[a-f0-9]{64}$/;
 var REQUEST_FIELDS = ['action', 'createdAt', 'dedupKey', 'dedupReport', 'expectedState', 'projectRoot', 'prompt', 'sourceRevision', 'stem', 'version'];
@@ -115,7 +120,7 @@ function canonicalStem(value) {
   return taskCore.STEM_RE.test(value);
 }
 
-// One exact v2 contract for queued snapshots, active-claim discovery and the
+// One exact v3 contract for queued snapshots, active-claim discovery and the
 // post-claim runner.  The runner remains the authority because it validates
 // bytes after atomic ownership, but pre-claim readers never let malformed or
 // hand-written records influence dedup/gating decisions.
@@ -283,7 +288,7 @@ function inspectRequestReservation(stem) {
     return { status: 'unsafe', code: entry.status === 'present' ? 'reservation-file-unsafe' : 'reservation-unreadable' };
   }
   var value;
-  try { value = JSON.parse(bounded.bytes.toString('utf8')); }
+  try { value = parseJsonBytes(bounded.bytes); }
   catch (error) { value = null; }
   var issue = requestReservationIssue(value, stem);
   if (issue) return { status: 'unsafe', code: 'reservation-invalid', detail: issue };
@@ -390,14 +395,19 @@ function releaseRequestReservation(handle) {
     paths.PROJECT_ROOT, REQUEST_RESERVATIONS_DIR, file, REQUEST_RESERVATION_MAX_BYTES,
     function (bounded) {
       var value;
-      try { value = JSON.parse(bounded.bytes.toString('utf8')); } catch (error) { return false; }
+      try { value = parseJsonBytes(bounded.bytes); } catch (error) { return false; }
       return !requestReservationIssue(value, handle.stem) && sameReservation(value, handle);
     }
   );
 }
 
 function readRequestRecordFile(file, expectedProjectRoot) {
-  var value = readBoundedJsonFile(file, REQUEST_RECORD_MAX_BYTES);
+  var bounded = readBoundedFile(file, REQUEST_RECORD_MAX_BYTES);
+  var value = null;
+  if (bounded) {
+    try { value = parseJsonBytes(bounded.bytes); }
+    catch (error) { value = null; }
+  }
   return requestRecordIssue(value, expectedProjectRoot || paths.PROJECT_ROOT) ? null : value;
 }
 
@@ -459,7 +469,7 @@ function scanRequests() {
     totalBytes += bounded.bytes.length;
     if (totalBytes > ADMISSION_TOTAL_BYTES_MAX) return { ok: false, code: 'request-byte-limit', rows: [] };
     var parsed;
-    try { parsed = JSON.parse(bounded.bytes.toString('utf8')); }
+    try { parsed = parseJsonBytes(bounded.bytes); }
     catch (parseError) {
       return { ok: false, code: 'request-record-invalid', rows: [] };
     }
@@ -632,7 +642,7 @@ function scanActiveClaims() {
     totalBytes += bounded.bytes.length;
     if (totalBytes > ADMISSION_TOTAL_BYTES_MAX) return { ok: false, code: 'claim-byte-limit', rows: [] };
     var value;
-    try { value = JSON.parse(bounded.bytes.toString('utf8')); }
+    try { value = parseJsonBytes(bounded.bytes); }
     catch (parseError) {
       return { ok: false, code: 'claim-record-invalid', rows: [] };
     }
@@ -660,7 +670,7 @@ function readBoundedFile(file, maxBytes) {
 function readBoundedJsonFile(file, maxBytes) {
   var bounded = readBoundedFile(file, maxBytes);
   if (!bounded) return null;
-  try { return JSON.parse(bounded.bytes.toString('utf8')); }
+  try { return parseJsonBytes(bounded.bytes); }
   catch (error) { return null; }
 }
 
@@ -742,7 +752,7 @@ function readSupersededFile(id) {
   var bounded = readBoundedFile(path.join(SUPERSEDED_DIR, id + '.json'), SUPERSEDED_MAX_BYTES);
   if (!bounded || !supersededModeSafe(bounded.stat, process.platform)) return null;
   var value;
-  try { value = JSON.parse(bounded.bytes.toString('utf8')); }
+  try { value = parseJsonBytes(bounded.bytes); }
   catch (error) { return null; }
   var canonical = canonicalSupersededBytes(value, id);
   if (!canonical || !bounded.bytes.equals(canonical)) return null;
@@ -788,7 +798,7 @@ function acceptExistingSuperseded(id, bytes, directory) {
   var bounded = readBoundedFile(target, SUPERSEDED_MAX_BYTES);
   if (!bounded || !supersededModeSafe(bounded.stat, process.platform) || !bounded.bytes.equals(bytes)) return false;
   var value;
-  try { value = JSON.parse(bounded.bytes.toString('utf8')); }
+  try { value = parseJsonBytes(bounded.bytes); }
   catch (error) { return false; }
   if (supersededRecordIssue(value, id)) return false;
   if (!pruneSuperseded(SUPERSEDED_RETAIN - 1, id, directory)) return false;
@@ -834,7 +844,7 @@ function readIntegrityRecord(directory, file, maxBytes, issueFn, expected) {
   var bounded = fileGuards.boundedRegularFileUnder(paths.PROJECT_ROOT, directory, file, maxBytes);
   if (!bounded || bounded.stat.nlink !== '1') return { issue: 'record is unsafe, unstable, or oversized' };
   var value;
-  try { value = JSON.parse(bounded.bytes.toString('utf8')); } catch (error) { value = null; }
+  try { value = parseJsonBytes(bounded.bytes); } catch (error) { value = null; }
   var invalid = issueFn(value, expected);
   return { bytes: bounded.bytes, value: value, issue: invalid };
 }

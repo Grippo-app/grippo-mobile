@@ -446,6 +446,12 @@ function projectRows(stableColumns, validation, snapshot, latestReader, validati
   });
   var locks = byStem(snapshot.progress && snapshot.progress.inProgress);
   var finalizations = byStem(snapshot.progress && snapshot.progress.finalizations);
+  // Integration state per stem. An existing WAL record is the more specific
+  // fact and wins over the mere readiness of a sealed candidate. `actionable`
+  // is the single question the primary action asks: is the owner's Integrate
+  // (or Resume integration) the next thing that can move this task?
+  var integrationRecords = byStem(snapshot.progress && snapshot.progress.integrations);
+  var integrationReadyRows = byStem(snapshot.progress && snapshot.progress.integrationReady);
   var requests = snapshot.progress && Array.isArray(snapshot.progress.requests) ? snapshot.progress.requests : [];
   var requestsByStem = byStem(requests);
   var sessions = snapshot.sessions || {};
@@ -454,6 +460,29 @@ function projectRows(stableColumns, validation, snapshot, latestReader, validati
   var columns = { backlog: [], pending: [], todo: [], done: [] };
   var limitations = Object.create(null);
 
+  function integrationProjection(record, ready) {
+    // A completed transaction is history: once the stem has a NEW sealed
+    // generation (a reopen and a fresh run), readiness is the live fact.
+    if (record && record.status === 'completed' && ready) record = null;
+    if (record) {
+      return {
+        state: record.status === 'completed' ? 'completed'
+          : record.status === 'recovery-required' ? 'recovery-required' : 'in-flight',
+        status: record.status, phase: record.phase,
+        publishedCommit: record.publishedCommit || null,
+        // A completed transaction is history; a mid-flight one is resumable;
+        // one needing recovery is shown but never one-click resumable.
+        actionable: record.status === 'active'
+      };
+    }
+    if (ready) {
+      return { state: ready.status === 'revalidation-required' ? 'revalidation-required' : 'ready',
+        status: ready.status, phase: null, publishedCommit: null,
+        actionable: ready.status === 'ready-for-integration' };
+    }
+    return null;
+  }
+
   COLUMNS.forEach(function (column) {
     stableColumns[column].forEach(function (row) {
       var dependencySummary = dependencyProjection(row, allRows, blockingStems);
@@ -461,6 +490,8 @@ function projectRows(stableColumns, validation, snapshot, latestReader, validati
       var session = sessions['task:' + row.stem] || null;
       var lock = locks[row.stem] || null;
       var finalization = finalizations[row.stem] || null;
+      var integration = integrationProjection(integrationRecords[row.stem] || null,
+        integrationReadyRows[row.stem] || null);
       var screens = screensMap[row.stem] || null;
       var latest;
       try { latest = latestReader(row.stem); }
@@ -560,6 +591,7 @@ function projectRows(stableColumns, validation, snapshot, latestReader, validati
         setupIncomplete: !!(snapshot.progress && snapshot.progress.setupDone === false),
         reviewerUnavailable: row.state === 'todo' && snapshot.reviewerConfig && snapshot.reviewerConfig.state === 'invalid',
         stoppedRun: stopped,
+        integration: integration,
         questionsPending: questionsPending,
         retryCheckpoint: checkpoint,
         validationPending: validationPending,
@@ -572,6 +604,7 @@ function projectRows(stableColumns, validation, snapshot, latestReader, validati
         sourceRevision: row.sourceRevision,
         blockers: blockers,
         finalization: finalization,
+        integration: integration,
         active: active,
         liveAwaiting: liveAwaiting,
         questionsPending: questionsPending,

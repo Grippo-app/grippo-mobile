@@ -4,10 +4,14 @@ var fs = require('fs');
 var path = require('path');
 var cp = require('child_process');
 var crypto = require('crypto');
+var isTestInjectionKey = require('./child-env').isTestInjectionKey;
 
 var WORKER = path.join(__dirname, 'file-guard-worker.js');
+var CANONICAL_PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
 var WORKER_INPUT_MAX = 64 * 1024 * 1024;
 var WORKER_OUTPUT_MAX = 96 * 1024 * 1024;
+var PUBLICATION_MAX_BYTES = 512 * 1024;
+var LARGE_PUBLICATION_MAX_BYTES = 4 * 1024 * 1024;
 var ORIGINAL_SPAWN_SYNC = cp.spawnSync;
 // Workers are root-bound. A small LRU pool avoids respawning on every project/cache switch.
 var persistentWorkers = Object.create(null);
@@ -171,12 +175,20 @@ function classifyGuardTransactionEvidenceForTarget(directory, target, entryName)
   return null;
 }
 
-function workerEnvironment() {
+function workerEnvironment(cwd) {
   var env = Object.assign({}, process.env);
   // The helper is a trusted local transaction engine, not another application
   // entry point. Do not let inherited preload/search hooks execute in it.
   delete env.NODE_OPTIONS;
   delete env.NODE_PATH;
+  // Fault injection belongs only to explicitly relocated test fixtures. A
+  // shell variable must never be able to turn a canonical durable operation
+  // into a simulated crash, swap, or unsupported-filesystem result.
+  if (path.resolve(cwd) === CANONICAL_PROJECT_ROOT) {
+    Object.keys(env).forEach(function (key) {
+      if (isTestInjectionKey(key)) delete env[key];
+    });
+  }
   return env;
 }
 
@@ -227,7 +239,7 @@ function startPersistentWorker(cwd) {
   var child;
   try {
     child = cp.spawn(process.execPath, [WORKER, '--serve'], {
-      cwd: cwd, stdio: ['pipe', 'pipe', 'ignore'], env: workerEnvironment(), windowsHide: true
+      cwd: cwd, stdio: ['pipe', 'pipe', 'ignore'], env: workerEnvironment(cwd), windowsHide: true
     });
     var inputHandle = child.stdin && child.stdin._handle;
     var outputHandle = child.stdout && child.stdout._handle;
@@ -303,7 +315,7 @@ function oneShotWorker(cwd, body, maxOutputBytes) {
   var result;
   try {
     result = cp.spawnSync(process.execPath, [WORKER], {
-      cwd: cwd, input: body, encoding: 'utf8', env: workerEnvironment(), windowsHide: true,
+      cwd: cwd, input: body, encoding: 'utf8', env: workerEnvironment(cwd), windowsHide: true,
       maxBuffer: maxOutputBytes
     });
   } catch (spawnError) { return null; }
@@ -498,10 +510,12 @@ function publishNoClobberRegularFileUnder(root, directory, target, bytes, option
   options = options || {};
   if (!directChild(directory, target)) return { ok: false, code: 'unsafe-path' };
   bytes = Buffer.isBuffer(bytes) ? bytes : Buffer.from(String(bytes == null ? '' : bytes), 'utf8');
-  // Keep the public publication API at its original 512 KiB contract. The
-  // worker's larger journal envelope is reserved for bounded append, whose
-  // complete replacement image can reach the one-megabyte event-log cap.
-  if (bytes.length > 512 * 1024 ||
+  // Large publication is an explicit capability for closed contracts such as
+  // the bounded candidate receipt. Ordinary callers retain the historical
+  // 512 KiB ceiling even if they accidentally pass a larger maxBytes value.
+  var publicationLimit = options.allowLargePayload === true
+    ? LARGE_PUBLICATION_MAX_BYTES : PUBLICATION_MAX_BYTES;
+  if (bytes.length > publicationLimit ||
       (Number.isSafeInteger(options.maxBytes) && options.maxBytes >= 0 && bytes.length > options.maxBytes)) {
     return { ok: false, code: 'too-large' };
   }
@@ -546,7 +560,9 @@ function compareAndSwapRegularFileUnder(root, directory, target, maxBytes, expec
   } else return { ok: false, code: 'invalid-expected' };
   var replacementBytes = Buffer.isBuffer(replacement)
     ? replacement : Buffer.from(String(replacement == null ? '' : replacement), 'utf8');
-  if (replacementBytes.length > maxBytes || replacementBytes.length > 512 * 1024) {
+  var publicationLimit = options.allowLargePayload === true
+    ? LARGE_PUBLICATION_MAX_BYTES : PUBLICATION_MAX_BYTES;
+  if (replacementBytes.length > maxBytes || replacementBytes.length > publicationLimit) {
     return { ok: false, code: 'too-large' };
   }
   var request = {
@@ -1059,23 +1075,29 @@ function tailRegularFileUnder(root, directory, file, maxBytes) {
   return Buffer.from(result.bytes, 'base64');
 }
 
-function transferFileNoClobberSameDirectoryUnder(root, directory, source, target) {
+function transferFileNoClobberSameDirectoryUnder(root, directory, source, target, expected) {
   if (!directChild(directory, source) || !directChild(directory, target) || source === target) return false;
   var sourceExpected = null;
-  try {
-    var observed = fs.lstatSync(source, { bigint: true });
-    // nlink=2 and even a foreign entry type can be a recovery state of a
-    // durable transaction.  Only a sole regular file grants authority to
-    // start; every other shape enters the worker with no new authority so an
-    // existing WAL may reconcile it safely.
-    if (observed.isFile() && !observed.isSymbolicLink() && observed.nlink === 1n) {
-      sourceExpected = exactStatShape(observed);
+  if (expected !== undefined) {
+    if (!expected || typeof expected !== 'object' || Array.isArray(expected)) return false;
+    sourceExpected = exactStatShape(expected.proof);
+    if (!sourceExpected || sourceExpected.type !== 'file' || sourceExpected.nlink !== '1') return false;
+  } else {
+    try {
+      var observed = fs.lstatSync(source, { bigint: true });
+      // nlink=2 and even a foreign entry type can be a recovery state of a
+      // durable transaction.  Only a sole regular file grants authority to
+      // start; every other shape enters the worker with no new authority so an
+      // existing WAL may reconcile it safely.
+      if (observed.isFile() && !observed.isSymbolicLink() && observed.nlink === 1n) {
+        sourceExpected = exactStatShape(observed);
+      }
+    } catch (sourceError) {
+      // A missing source may be the durable post-detach state of an earlier
+      // transfer.  Still enter the worker so it can reconcile its deterministic
+      // WAL; without a WAL it will fail closed.
+      if (!sourceError || sourceError.code !== 'ENOENT') return false;
     }
-  } catch (sourceError) {
-    // A missing source may be the durable post-detach state of an earlier
-    // transfer.  Still enter the worker so it can reconcile its deterministic
-    // WAL; without a WAL it will fail closed.
-    if (!sourceError || sourceError.code !== 'ENOENT') return false;
   }
   var result = callUnder(root, directory, {
     action: 'transfer-no-clobber', source: path.basename(source), target: path.basename(target),

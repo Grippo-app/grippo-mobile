@@ -6,14 +6,14 @@
 // "what does the snapshot offer that I have NOT built yet, and what have I built that has
 // drifted?" It walks the committed endpoint inventory and reconciles each endpoint against
 //   (a) the client's coverage — `<Product>Api.request(method=…, path=…)` calls, and
-//   (b) the drift report (.cache/api-contract/reports/drift.json), by area.
+//   (b) the current control/task report scope's drift.json, by area.
 //
 // State per endpoint (keyed on operationId — the durable single token, like figma's designComponentId):
 //   not in client coverage              -> "not-implemented" -> an "implement" task
 //   in client + its area has ERR/WARN   -> "drift"           -> an "actualize" task
 //   in client + its area clean          -> "implemented"     -> no task
 //
-// WRITES A PLAN ONLY (.cache/api-contract/reports/suggested-endpoints.json); it CREATES NO TASK and ENQUEUES
+// WRITES A PLAN ONLY (suggested-endpoints.json in that same report scope); it CREATES NO TASK and ENQUEUES
 // NOTHING. Delivery (plan entry -> backlog task) is the API panel's Coverage-tab button via the
 // deterministic idempotent backlog endpoint — the same rail the drift button uses. The contract:
 // auto-CREATE — yes (later, into backlog, on a click); auto-RUN — never.
@@ -23,13 +23,14 @@
 // no Api file yet) the client covers nothing, so EVERY endpoint is "not-implemented" — which is
 // correct and useful: the plan becomes the initial implementation backlog.
 import {
-  exists, readJson, contractPath, currentContractFiles, PROJECT_ROOT, readConfig, atomicWrite,
+  exists, readJson, contractPath, currentContractFiles, PROJECT_ROOT, EXECUTION_ROOT, readConfig, writeContractReport,
   info, ok, warnMsg, failMsg, summary,
 } from './_util.mjs'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 
-const rel = (p) => relative(PROJECT_ROOT, p)
+const controlRel = (p) => relative(PROJECT_ROOT, p)
+const productRel = (p) => relative(EXECUTION_ROOT, p)
 function readOptionalJson(path, label) {
   if (!exists(path)) return null
   try { return readJson(path) }
@@ -98,15 +99,15 @@ const sameShape = (a, b) => {
 function clientCoverage(apiClassName) {
   if (!apiClassName) return { calls: [], apiFile: null }
   const ktFiles = []
-  walk(PROJECT_ROOT, 0, ktFiles)
+  walk(EXECUTION_ROOT, 0, ktFiles)
   const apiFile = ktFiles.find((p) => {
-    const r = rel(p)
+    const r = productRel(p)
     return r.endsWith(`${sep}${apiClassName}.kt`) && r.split(sep).includes('data-services')
   })
   if (!apiFile) return { calls: [], apiFile: null }
   let calls = []
   try { calls = parseApiEndpoints(readFileSync(apiFile, 'utf8')) } catch {}
-  return { calls, apiFile: rel(apiFile) }
+  return { calls, apiFile: productRel(apiFile) }
 }
 
 // ---- task bodies (FIXED templates; snapshot data only inside fenced blocks) -----
@@ -191,7 +192,7 @@ function implementBody(ep, apiName) {
   ].join('\n')
 }
 
-function actualizeBody(ep, driftCount) {
+function actualizeBody(ep, driftCount, driftReportPath) {
   const area = safe(ep.area, 40)
   return [
     markerOf(ep.operationId),
@@ -208,7 +209,7 @@ function actualizeBody(ep, driftCount) {
     endpointSnapshot(ep),
     '```',
     '',
-    `- Data: \`orchestrator/.cache/api-contract/reports/drift.json\` — filter to \`area == "${area}"\`; refresh with \`cd orchestrator/api-contract && npm run contract:diff\`.`,
+    `- Data: \`${driftReportPath}\` — filter to \`area == "${area}"\`; refresh with \`cd orchestrator/api-contract && npm run contract:diff\`.`,
     `- Source of truth: run \`cd orchestrator/api-contract && npm run --silent contract:paths\`, then use \`<areasDir>/${area}.json\` (names/types/nullability/enums).`,
     '- Normative: the backend-contract-client skill (references/drift.md) + the data-layer skill (references/dtos-and-api.md).',
     '',
@@ -272,12 +273,13 @@ function openOperationIds(tasksDir) {
   }
   const INV = current.inventory
   const DRIFT = contractPath('reports', 'drift.json')
+  const driftReportPath = controlRel(DRIFT)
   const TASKS_DIR = join(PROJECT_ROOT, 'orchestrator', 'tasks')
   const OUT = contractPath('reports', 'suggested-endpoints.json')
 
   if (!INV || !exists(INV)) {
     info('no validated current snapshot — nothing to plan')
-    atomicWrite(OUT, { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'plan', summary: { notImplemented: 0, drift: 0, implemented: 0, total: 0 }, apiClassName: null, suggestions: [] })
+    writeContractReport(OUT, { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'plan', summary: { notImplemented: 0, drift: 0, implemented: 0, total: 0 }, apiClassName: null, suggestions: [] })
     process.exit(0)
   }
   let inventory
@@ -321,7 +323,7 @@ function openOperationIds(tasksDir) {
     const dc = driftByArea[ep.area] || 0
     if (dc > 0) {
       tally.drift++
-      suggestions.push({ ...base, state: 'drift', driftCount: dc, taskTitle: `Actualize ${ep.method} ${safe(ep.path, 120)} (area ${safe(ep.area, 40)} drift)`, taskBody: actualizeBody(ep, dc) })
+      suggestions.push({ ...base, state: 'drift', driftCount: dc, taskTitle: `Actualize ${ep.method} ${safe(ep.path, 120)} (area ${safe(ep.area, 40)} drift)`, taskBody: actualizeBody(ep, dc, driftReportPath) })
       ok(`${ep.method} ${ep.path} -> drift (${dc} in area ${ep.area})`)
       continue
     }
@@ -329,7 +331,7 @@ function openOperationIds(tasksDir) {
     suggestions.push({ ...base, state: 'implemented', driftCount: 0 })
   }
 
-  atomicWrite(OUT, { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'plan', apiClassName: apiClassName || null, summary: tally, suggestions })
-  info(`coverage plan: ${tally.notImplemented} to implement, ${tally.drift} to actualize, ${tally.implemented} clean (of ${tally.total}) -> ${rel(OUT)} — PLAN ONLY (creates no task; delivery is the Coverage-tab button)`)
+  writeContractReport(OUT, { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'plan', apiClassName: apiClassName || null, summary: tally, suggestions })
+  info(`coverage plan: ${tally.notImplemented} to implement, ${tally.drift} to actualize, ${tally.implemented} clean (of ${tally.total}) -> ${controlRel(OUT)} — PLAN ONLY (creates no task; delivery is the Coverage-tab button)`)
   process.exit(summary('contract:suggest'))
 })()

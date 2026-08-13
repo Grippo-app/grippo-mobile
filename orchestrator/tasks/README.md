@@ -132,10 +132,10 @@ private run context.
   and fails closed. A successful release/recovery echoes `state`,
   `sourceRevision`, and `snapshotHash`. Repeating a completed recovery is
   idempotent.
-- **orchestrator** is long-running. Its recoverable `finalize-task` transaction
-  is the only happy-path releaser and removes the lock only after done state,
-  INDEX, architecture, registry and ship evidence pass their final
-  postconditions. Intermediate `BLOCKED` results keep ownership. A bounded
+- **orchestrator** is long-running. The owner's integration transaction is the
+  only happy-path releaser: its `finalize-task --mode confirm` half removes the
+  lock only after the canonical commit is proven AND done state, INDEX,
+  architecture, registry and ship evidence pass their final postconditions. Intermediate `BLOCKED` results keep ownership. A bounded
   same-state todo editor or an explicitly aborted pre-finalization run may use
   ordinary exact release only while the fresh final receipt still proves
   `todo`; ordinary release never accepts `done`, so it cannot bypass finalizer
@@ -150,12 +150,16 @@ private run context.
   authorizes automatic deletion. Prove the owner/session dead or use its guided
   recovery. Clearing a lock cannot repair a task-column collision or turn an
   operation into success.
-- **Finalization recovery wins.** Once
+- **Integration recovery wins.** Once
   `.cache/tasks/finalizations/<STEM>.json`, its exact pre-WAL
   `.replace-reservation.json`, or its `.replace-wal.json`
-  replacement intent exists, use **Resume finalization** or
-  `node orchestrator/tasks/finalize-task.mjs <STEM>`. The finalizer compares the
-  exact captured lock identity and bytes before its ownership-safe release.
+  replacement intent exists, that marker is one phase of an integration
+  transaction: use **Resume integration** or
+  `node orchestrator/tasks/task-worktree.mjs integrate --stem <STEM>`. The
+  finalizer is never resumed on its own — only the integration write-ahead log
+  in `.cache/tasks/integrations/<STEM>.json` knows whether the next step is
+  `--mode prepare` or `--mode confirm`. It compares the exact captured lock
+  identity and bytes before its ownership-safe release.
 - **Finalize admission is conditional in `done`.** Canonical action
   `finalize` accepts ordinary `todo`; it accepts `done` only when the composite
   runtime snapshot contains exactly one active marker for the stem and that
@@ -169,7 +173,12 @@ The directory is created on demand (`mkdir -p`); a fresh clone has no `.cache/ta
 ## `.cache/tasks/finalizations/` — durable publication recovery
 
 `finalize-task.mjs` owns the complete Outcome → registry → sanctioned ship →
-INDEX → architecture → verification → unlock transition. Before every mutation
+INDEX → architecture → verification → unlock transition, split across the
+integration transaction's two halves: `--mode prepare` runs everything up to
+and including verification while KEEPING the lock and the marker, and
+`--mode confirm` proves the canonical commit before unlock and cleanup. There
+is no mode-less invocation: forward publication exists only inside a
+transaction (see `.cache/tasks/integrations/`). Before every mutation
 it atomically advances `<STEM>.json`; immutable
 `<STEM>.<snapshot-sha256>.outcome.md` files hold the exact intended task body.
 Marker advancement is itself journaled. A private, canonical
@@ -1032,7 +1041,10 @@ This step loops: you answer → Claude re-evaluates → either promotes or refin
 ### Step 5 — Accept the result
 
 1. Read the summary: files changed, which `### Automated` acceptance bullets were `verified`, which `### Manual` bullets are recorded as `manual` (those you must check on-device).
-2. If you're happy → `git commit` (the orchestrator never commits — that's always your call).
+2. Press **Integrate**. That single owner-authorized action applies the
+   sealed candidate, publishes the task and creates ONE canonical commit under
+   your own git identity — nothing is committed until you press it, and push
+   stays entirely yours.
 3. If something is off after shipping → use the board's explicit **Reopen**
    action (or ask Claude to reopen that exact stem), then re-run it. Never move
    the done file or strip Outcome by hand. If it is still in `todo/`, edit it

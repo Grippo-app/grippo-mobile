@@ -73,10 +73,20 @@ function validInvocation(exe, argv, cwd) {
       !path.isAbsolute(String(cwd || ''))) throw new Error('invalid typed process invocation');
   var verifiedExecutable = executable(exe);
   if (!verifiedExecutable || verifiedExecutable !== exe) throw new Error('typed process executable is no longer trusted');
+  // A typed process runs in the control root OR inside a manager-owned
+  // execution checkout. The worktree home is a SIBLING of the control root by
+  // design (§7.1), so anchoring on the control root alone would refuse every
+  // task-bound build. Both anchors are exact realpath containments — nothing
+  // else on the filesystem is admissible.
   var cwdReal = fs.realpathSync(cwd);
-  var projectReal = fs.realpathSync(paths.PROJECT_ROOT);
-  var rel = path.relative(projectReal, cwdReal);
-  if (rel === '..' || rel.indexOf('..' + path.sep) === 0 || path.isAbsolute(rel)) {
+  var anchors = [paths.PROJECT_ROOT, paths.WORKTREE_HOME].map(function (root) {
+    try { return fs.realpathSync(root); } catch (error) { return null; }
+  }).filter(Boolean);
+  var contained = anchors.some(function (root) {
+    var rel = path.relative(root, cwdReal);
+    return rel === '' || (rel !== '..' && rel.indexOf('..' + path.sep) !== 0 && !path.isAbsolute(rel));
+  });
+  if (!contained) {
     throw new Error('typed process cwd is outside the project root');
   }
   argv.forEach(function (arg) {

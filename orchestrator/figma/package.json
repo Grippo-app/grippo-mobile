@@ -42,6 +42,7 @@
     "figma:test:session-actions": "node ../site/tests/figma-session-actions.test.mjs && node ../site/tests/session-answer-gate.test.mjs",
     "figma:test:evidence": "node tests/evidence-bundle.test.mjs",
     "figma:test:evidence-final": "node tests/evidence-final.test.mjs",
+    "figma:test:execution-root-scope": "node tests/execution-root-scope.test.mjs",
     "figma:test:pipeline-dry-run": "node tests/pipeline-dry-run.test.mjs",
     "figma:test:schemas": "node tests/schema-contract.test.mjs",
     "figma:test:screenshots": "node tests/compare-screenshots.test.mjs",

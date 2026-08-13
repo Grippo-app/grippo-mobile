@@ -32,8 +32,8 @@
 // Exit codes: 0 = report written (even when overall=BLOCKER — authoring findings is the
 // CLI succeeding; the BUNDLE gates), 1 = invalid input / missing baseline / schema failure.
 import { existsSync, readFileSync } from 'node:fs'
-import { isAbsolute, join, resolve } from 'node:path'
-import { FIGMA_CACHE_ROOT, PROJECT_ROOT, cacheRelative, displayPath, figmaPath, parseCli, projectRelative } from './_util.mjs'
+import { join } from 'node:path'
+import { cacheRelative, displayPath, figmaPath, parseCli, projectRelative, recordedFigmaInputPath } from './_util.mjs'
 import { assertTaskStem, buildReport, compileSchema, fileHash, persistReport } from './report-utils.mjs'
 
 const USAGE = `usage: write-spec-report.mjs <stem>
@@ -61,11 +61,7 @@ function hashKey(abs) {
 }
 
 function resolveRecordedPath(p) {
-  const s = String(p || '')
-  if (!s) return ''
-  if (isAbsolute(s)) return s
-  const candidates = [resolve(PROJECT_ROOT, s), resolve(FIGMA_CACHE_ROOT, s)]
-  return candidates.find((c) => existsSync(c)) || candidates[0]
+  return recordedFigmaInputPath(p, 'spec-compare implementationModel')
 }
 
 function parseScreenArg(raw) {

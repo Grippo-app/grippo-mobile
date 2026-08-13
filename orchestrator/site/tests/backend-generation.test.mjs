@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, test } from 'node:test'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -107,6 +107,38 @@ test('generation pointer is last, fail-closed and keeps the prior generation on 
   assert.equal(wrongSet.ok, false)
   assert.equal(wrongSet.error, 'generation-area-set-invalid')
   assert.deepEqual(readFileSync(generation.POINTER_FILE), pointerBefore)
+})
+
+test('a read-only generation resolver can stay pinned to an execution checkout after control advances', () => {
+  const pinned = generation.current()
+  assert.equal(pinned.ok, true)
+  assert.equal(pinned.mode, 'generation')
+  const executionRoot = mkdtempSync(join(tmpdir(), 'backend-execution-generation-'))
+  try {
+    const executionContract = join(executionRoot, 'orchestrator', 'api-contract')
+    mkdirSync(join(executionRoot, 'orchestrator'), { recursive: true })
+    cpSync(contractDir, executionContract, { recursive: true })
+    const advanced = publish(pinned.snapshotHash)
+    assert.equal(advanced.ok, true)
+    assert.notEqual(advanced.generationId, pinned.manifest.generationId)
+    const executionPointer = join(executionContract, 'manifests', 'current-generation.json')
+    const pointerHash = generation.sha(readFileSync(executionPointer))
+    const execution = generation.currentAtProjectRoot(executionRoot, pointerHash)
+    assert.equal(execution.ok, true)
+    assert.equal(execution.mode, 'generation')
+    assert.equal(execution.manifest.generationId, pinned.manifest.generationId)
+    assert.ok(execution.artifacts.inventory.startsWith(executionRoot + '/'))
+    writeFileSync(executionPointer, Buffer.concat([readFileSync(executionPointer), Buffer.from('\n')]))
+    const changedPointer = generation.currentAtProjectRoot(executionRoot, pointerHash)
+    assert.equal(changedPointer.ok, false)
+    assert.equal(changedPointer.error, 'generation-pointer-pin-mismatch')
+    const diffSource = readFileSync(join(REPO, 'orchestrator', 'api-contract', 'scripts', 'diff.mjs'), 'utf8')
+    assert.match(diffSource,
+      /currentAtProjectRoot\(\s*EXECUTION_ROOT, EXECUTION_SCOPE \? EXECUTION_SCOPE\.apiGenerationHash : undefined\)/,
+      'contract:diff must preserve the manager-issued pointer pin through its pre-publication revalidation')
+  } finally {
+    rmSync(executionRoot, { recursive: true, force: true })
+  }
 })
 
 test('manifest role policy is fail-closed even when an attacker recomputes the pointer hash', () => {

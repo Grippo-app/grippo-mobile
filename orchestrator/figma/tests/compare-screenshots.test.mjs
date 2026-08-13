@@ -3,7 +3,7 @@
 // per-(screen, variant) verdict. Guards the densest gate logic (background mask, per-channel SSIM,
 // oracle-coverage SKIP, aspect guard, and strict nodeId identity binding) across primary/dark inputs.
 // Run: node orchestrator/figma/tests/compare-screenshots.test.mjs
-import { copyFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, symlinkSync } from 'node:fs'
 import { join, dirname, delimiter, relative } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -170,13 +170,18 @@ function currentSpec(name, raw) {
   }
 }
 
-async function run({ oracles, captures, args = [], manifest = null, manifestRaw = null, duplicateCapture = false, indexNodes = { Home: {} }, env: envOverrides = {}, oldArtifactRuns = [], artifactRootSuffix = null, specs = [], copyOracleAsCapture = false, noDefaultManifest = false, allowFailure = false, taskStem = 'TASK_1_fixture', pipelineRunId = 'compare-screenshots-test' }) {
+async function run({ oracles, captures, args = [], manifest = null, manifestRaw = null, duplicateCapture = false, indexNodes = { Home: {} }, env: envOverrides = {}, oldArtifactRuns = [], artifactRootSuffix = null, artifactRootSymlink = false, specs = [], copyOracleAsCapture = false, noDefaultManifest = false, allowFailure = false, taskStem = 'TASK_1_fixture', pipelineRunId = 'compare-screenshots-test' }) {
   const ws = mkdtempSync(join(tmpdir(), 'cmp-ss-'))
   let appliedDefaultManifest = false
   try {
-	    const sdir = join(ws, 'screens', taskStem), rdir = join(ws, 'robo'), reportDir = join(ws, 'reports'), rdir2 = join(ws, 'robo2'), cacheRoot = join(ws, 'figma-cache'), artifactRoot = join(cacheRoot, 'artifacts', 'screenshot')
-    mkdirSync(sdir, { recursive: true }); mkdirSync(rdir, { recursive: true }); mkdirSync(reportDir, { recursive: true })
+	    const sdir = join(ws, 'screens', taskStem), rdir = join(ws, 'robo'), reportDir = join(ws, 'reports'), rdir2 = join(ws, 'robo2'), cacheRoot = join(ws, 'figma-cache'), artifactRoot = join(cacheRoot, 'artifacts', 'screenshot'), externalArtifactRoot = join(ws, 'external-artifacts')
+    mkdirSync(sdir, { recursive: true }); mkdirSync(rdir, { recursive: true }); mkdirSync(reportDir, { recursive: true }); mkdirSync(cacheRoot, { recursive: true })
     if (duplicateCapture) mkdirSync(rdir2, { recursive: true })
+    if (artifactRootSymlink) {
+      mkdirSync(dirname(artifactRoot), { recursive: true })
+      mkdirSync(externalArtifactRoot, { recursive: true })
+      symlinkSync(externalArtifactRoot, artifactRoot)
+    }
     for (const oldRun of oldArtifactRuns) {
       const oldDir = join(artifactRoot, artifactSegment(taskStem), artifactSegment(oldRun))
       mkdirSync(oldDir, { recursive: true })
@@ -248,8 +253,10 @@ async function run({ oracles, captures, args = [], manifest = null, manifestRaw 
       status = e.status
       stdout = (e.stdout || '').toString()
     }
-    const report = JSON.parse(readFileSync(join(reportDir, `screenshot-${taskStem}.json`), 'utf8'))
-    return { stdout, report, artifactFiles: listFiles(artifactRoot), status }
+    const reportPath = join(reportDir, `screenshot-${taskStem}.json`)
+    const report = existsSync(reportPath) ? JSON.parse(readFileSync(reportPath, 'utf8')) : null
+    return { stdout, report, artifactFiles: listFiles(artifactRoot),
+      externalArtifactFiles: listFiles(externalArtifactRoot), status }
   } finally {
     rmSync(ws, { recursive: true, force: true })
   }
@@ -348,6 +355,12 @@ try {
 			  const missingFreshExit = await runExit({ oracles: [{ name: 'Home.png', ...P(CENTER) }], captures: [{ name: 'HomeScreenshot.png', ...P(CENTER) }], args: ['--gate'], env: { SCREENSHOT_CAPTURE_STARTED_AT: '' } })
 			  const outsideArtifactRootExit = await runExit({ oracles: [{ name: 'Home.png', ...P(CENTER) }], captures: [{ name: 'HomeScreenshot.png', ...P(CENTER) }], env: { FIGMA_COMPARE_ARTIFACTS_DIR: join(tmpdir(), 'outside-compare-artifacts') } })
 			  const nestedArtifactRootExit = await runExit({ oracles: [{ name: 'Home.png', ...P(CENTER) }], captures: [{ name: 'HomeScreenshot.png', ...P(CENTER) }], artifactRootSuffix: join('artifacts', 'screenshot', 'nested') })
+			  const artifactRootSymlinkResult = await run({
+			    oracles: [{ name: 'Home.png', ...P(CENTER) }],
+			    captures: [{ name: 'HomeScreenshot.png', ...P(CENTER) }],
+			    artifactRootSymlink: true,
+			    allowFailure: true,
+			  })
 			  const badRunIdExit = await runExit({ oracles: [{ name: 'Home.png', ...P(CENTER) }], captures: [{ name: 'HomeScreenshot.png', ...P(CENTER) }], env: { FIGMA_PIPELINE_RUN_ID: 'run/1' } })
 			  const emptyIndexExit = await runExit({ oracles: [], captures: [], args: ['--gate'], indexNodes: {} })
 		  const unreadableManifestExit = await runExit({ oracles: [{ name: 'Home.png', ...P(CENTER) }], captures: [{ name: 'HomeScreenshot.png', ...P(CENTER) }], args: ['--gate'], manifestRaw: '{not-json' })
@@ -1213,6 +1226,10 @@ try {
 			  check('--gate returns exit 2 without fresh capture evidence', () => assert.equal(missingFreshExit, 2))
 			  check('external FIGMA_COMPARE_ARTIFACTS_DIR is rejected before writing non-cache evidence', () => assert.equal(outsideArtifactRootExit, 1))
 			  check('nested FIGMA_COMPARE_ARTIFACTS_DIR is rejected so final paths stay canonical', () => assert.equal(nestedArtifactRootExit, 1))
+			  check('a symlinked canonical artifact root is refused before any external write', () => {
+			    assert.equal(artifactRootSymlinkResult.status, 1)
+			    assert.deepEqual(artifactRootSymlinkResult.externalArtifactFiles, [])
+			  })
 			  check('FIGMA_PIPELINE_RUN_ID with non-path-safe punctuation is rejected', () => assert.equal(badRunIdExit, 1))
 		  check('--gate returns exit 2 when index.nodes is empty', () => assert.equal(emptyIndexExit, 2))
 	  check('--gate returns exit 2 on unreadable manifest', () => assert.equal(unreadableManifestExit, 2))

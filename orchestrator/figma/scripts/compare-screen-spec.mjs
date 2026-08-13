@@ -15,7 +15,7 @@
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { delimiter, isAbsolute, join, resolve } from 'node:path'
-import { PROJECT_ROOT, displayPath, figmaPath, figmaScreensRoot, loadBindings, parseCli } from './_util.mjs'
+import { PROJECT_ROOT, displayPath, figmaPath, figmaScreensRoot, loadBindings, parseCli, EXECUTION_ROOT, executionProductInputPath, executionFigmaInputPath } from './_util.mjs'
 import { extractAppTokens } from './extract-app-tokens.mjs'
 import { classifyWidgetSource } from './lib/canvas-detect.mjs'
 import { loadResolvedSpecs } from './resolve-screen-spec.mjs'
@@ -57,7 +57,7 @@ function componentEvidenceSources({ specs, componentBindings }) {
   const found = new Map()   // absPath -> provenance note
   const add = (source, via) => {
     if (!source) return
-    const abs = isAbsolute(String(source)) ? resolve(String(source)) : resolve(PROJECT_ROOT, String(source))
+    const abs = isAbsolute(String(source)) ? resolve(String(source)) : resolve(EXECUTION_ROOT, String(source))
     if (!found.has(abs)) found.set(abs, via)
   }
   const wanted = new Map()   // durable set node id -> element sample
@@ -224,8 +224,8 @@ function missingTextEvidence(evidence, textStyle, theme) {
 function callInImplementationFile(call, implFile) {
   const callFile = call && call.file
   if (!callFile || !implFile) return false
-  const a = isAbsolute(callFile) ? resolve(callFile) : resolve(PROJECT_ROOT, callFile)
-  const b = isAbsolute(implFile) ? resolve(implFile) : resolve(PROJECT_ROOT, implFile)
+  const a = isAbsolute(callFile) ? resolve(callFile) : resolve(EXECUTION_ROOT, callFile)
+  const b = isAbsolute(implFile) ? resolve(implFile) : resolve(EXECUTION_ROOT, implFile)
   return a === b
 }
 
@@ -299,8 +299,8 @@ function dpComposable(target, values) {
   return [...reachable].some((s) => Math.abs(s - t) < 1e-6)
 }
 
-function loadEvidence({ files, roots }) {
-  const p = process.env.FIGMA_APP_TOKENS
+function loadEvidence({ files, roots, appTokensPath = '' }) {
+  const p = appTokensPath
   if (p && existsSync(p)) return JSON.parse(readFileSync(p, 'utf8'))
   // resolveAliases: recover hoisted-alias token usage (`val c = AppTokens.colors.group` … `c.leaf`)
   // that a Canvas/DrawScope widget is forced into — the exact-match token scan otherwise misses the
@@ -333,9 +333,14 @@ function parseScreenMap(entries) {
       continue
     }
     const screen = String(raw).slice(0, idx).trim()
-    const file = String(raw).slice(idx + 1).trim()
+    let file = String(raw).slice(idx + 1).trim()
     if (!screen || !file) {
       issues.push(issue('BLOCKER', 'SCREEN_MAP_INVALID', `screen map entry must include both screen and file, got ${JSON.stringify(raw)}`))
+      continue
+    }
+    try { file = executionProductInputPath(file, `screen map for ${screen}`) }
+    catch (error) {
+      issues.push(issue('BLOCKER', 'SCREEN_MAP_INVALID', error.message))
       continue
     }
     out.set(screen, file)
@@ -551,13 +556,19 @@ async function main() {
   const gate = runMode === 'gate'
   let files = [
     ...cli.valuesFor('--impl-file'),
-    ...(process.env.FIGMA_SPEC_IMPL_FILES ? process.env.FIGMA_SPEC_IMPL_FILES.split(delimiter).filter(Boolean) : []),
+    ...(process.env.FIGMA_SPEC_IMPL_FILES ? process.env.FIGMA_SPEC_IMPL_FILES.split(delimiter).filter(Boolean)
+      .map((value) => executionProductInputPath(value, 'FIGMA_SPEC_IMPL_FILES')) : []),
   ]
   const roots = [
     ...cli.valuesFor('--impl-root'),
-    ...(process.env.FIGMA_SPEC_IMPL_ROOTS ? process.env.FIGMA_SPEC_IMPL_ROOTS.split(delimiter).filter(Boolean) : []),
+    ...(process.env.FIGMA_SPEC_IMPL_ROOTS ? process.env.FIGMA_SPEC_IMPL_ROOTS.split(delimiter).filter(Boolean)
+      .map((value) => executionProductInputPath(value, 'FIGMA_SPEC_IMPL_ROOTS')) : []),
   ]
-  const implModelPath = cli.value('--impl-model') || process.env.FIGMA_IMPL_MODEL || ''
+  const implModelPath = cli.value('--impl-model') ||
+    (process.env.FIGMA_IMPL_MODEL
+      ? executionFigmaInputPath(process.env.FIGMA_IMPL_MODEL, 'FIGMA_IMPL_MODEL') : '')
+  const appTokensPath = process.env.FIGMA_APP_TOKENS
+    ? executionFigmaInputPath(process.env.FIGMA_APP_TOKENS, 'FIGMA_APP_TOKENS') : ''
   const screensRoot = figmaScreensRoot()
   const resolved = loadResolvedSpecs({ stem, screensRoot })
   const inputHashes = Object.assign({}, resolved.inputHashes)
@@ -626,7 +637,7 @@ async function main() {
     for (const b of taskBindings.screens) {
       if (b.composable) screenOwnerMap.set(b.screenName, b.composable)
       if (!b.implFile) continue
-      if (screenImplementationMap.has(b.screenName) && resolve(PROJECT_ROOT, screenImplementationMap.get(b.screenName)) !== resolve(PROJECT_ROOT, b.implFile)) {
+      if (screenImplementationMap.has(b.screenName) && resolve(EXECUTION_ROOT, screenImplementationMap.get(b.screenName)) !== resolve(EXECUTION_ROOT, b.implFile)) {
         issues.push(issue('BLOCKER', 'SCREEN_MAP_CONFLICT', `screen ${b.screenName} has conflicting implementation mappings`, { screen: b.screenName }))
       } else screenImplementationMap.set(b.screenName, b.implFile)
     }
@@ -652,7 +663,7 @@ async function main() {
   catch (error) { issues.push(issue('BLOCKER', 'COMPONENT_SOURCE_INVALID', `component binding source is unreadable: ${error.message}`)) }
   files = [...new Set([...files, ...componentSources.keys()])]
 
-  if (!files.length && !roots.length && !process.env.FIGMA_APP_TOKENS) issues.push(issue('BLOCKER', 'NO_IMPLEMENTATION_INPUT', 'pass --impl-file/--impl-root or FIGMA_APP_TOKENS'))
+  if (!files.length && !roots.length && !appTokensPath) issues.push(issue('BLOCKER', 'NO_IMPLEMENTATION_INPUT', 'pass --impl-file/--impl-root or FIGMA_APP_TOKENS'))
   for (const f of files) {
     const kind = pathKind(f)
     if (kind !== 'file') issues.push(issue('BLOCKER', 'IMPLEMENTATION_FILE_MISSING', `implementation file is not readable: ${f}`, { file: f }))
@@ -661,8 +672,8 @@ async function main() {
     const kind = pathKind(r)
     if (kind !== 'dir') issues.push(issue('BLOCKER', 'IMPLEMENTATION_ROOT_MISSING', `implementation root is not readable: ${r}`, { file: r }))
   }
-  if (process.env.FIGMA_APP_TOKENS && !existsSync(process.env.FIGMA_APP_TOKENS)) {
-    issues.push(issue('BLOCKER', 'APP_TOKENS_MISSING', `FIGMA_APP_TOKENS file is not readable: ${process.env.FIGMA_APP_TOKENS}`, { file: process.env.FIGMA_APP_TOKENS }))
+  if (appTokensPath && !existsSync(appTokensPath)) {
+    issues.push(issue('BLOCKER', 'APP_TOKENS_MISSING', `FIGMA_APP_TOKENS file is not readable: ${appTokensPath}`, { file: appTokensPath }))
   }
   let implementationModel = null
   if (implModelPath && !existsSync(implModelPath)) {
@@ -690,15 +701,15 @@ async function main() {
 
   let evidence = { tokens: {}, raw: {}, files: [] }
   try {
-    evidence = loadEvidence({ files, roots })
+    evidence = loadEvidence({ files, roots, appTokensPath })
   } catch (e) {
-    issues.push(issue('BLOCKER', 'APP_TOKENS_UNREADABLE', `FIGMA_APP_TOKENS evidence is unreadable: ${e.message}`, { file: process.env.FIGMA_APP_TOKENS || null }))
+    issues.push(issue('BLOCKER', 'APP_TOKENS_UNREADABLE', `FIGMA_APP_TOKENS evidence is unreadable: ${e.message}`, { file: appTokensPath || null }))
   }
   for (const f of files) inputHashes[f] = fileHash(f)
   for (const f of evidence.files || []) inputHashes[f] = fileHash(f)
-  if (process.env.FIGMA_APP_TOKENS) inputHashes[process.env.FIGMA_APP_TOKENS] = fileHash(process.env.FIGMA_APP_TOKENS)
+  if (appTokensPath) inputHashes[appTokensPath] = fileHash(appTokensPath)
   if (implModelPath) inputHashes[implModelPath] = fileHash(implModelPath)
-  if ((files.length || roots.length || process.env.FIGMA_APP_TOKENS) && evidenceCount(evidence) === 0) {
+  if ((files.length || roots.length || appTokensPath) && evidenceCount(evidence) === 0) {
     issues.push(issue('BLOCKER', 'NO_IMPLEMENTATION_EVIDENCE', 'implementation inputs produced no AppTokens/raw visual evidence'))
   }
 		  const comparisons = []
@@ -753,7 +764,7 @@ async function main() {
 	      screenMap: Object.fromEntries([...screenImplementationMap.entries()].map(([screen, file]) => [screen, displayPath(file)])),
 	      implementationModel: implModelPath ? displayPath(implModelPath) : null,
 	      componentEvidenceSources: Object.fromEntries([...componentSources.entries()].map(([abs, via]) => [displayPath(abs), via])),
-      appTokens: process.env.FIGMA_APP_TOKENS ? displayPath(process.env.FIGMA_APP_TOKENS) : null,
+      appTokens: appTokensPath ? displayPath(appTokensPath) : null,
     },
     inputHashes,
     overall,

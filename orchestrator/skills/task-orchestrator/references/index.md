@@ -18,7 +18,7 @@ Each numeric cap and frozen mechanic is pinned in the contracts under
 | Step 1a — inputs-resolver verdict (HIGH→BLOCK, MEDIUM→carry), signal scan + consumer-side miss handling | [`run-loop.md`](run-loop.md) §1a | (routed via `validation-gates`) |
 | Step 1b — screen-design pre-flight (cache / census / spec / evidence) | [`run-loop.md`](run-loop.md) §1b | — |
 | Step 2a — implementation-planner → file-level contract | [`planner.md`](planner.md) | [`planner-output.md`](../../../contracts/planner-output.md) |
-| Step 3 — builders + Step 3.5 diff-sanity / footprint isolation | [`run-loop.md`](run-loop.md) §3, §3.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) (footprint / `TASK_STEM`) |
+| Step 3 — builders + Step 3.5 diff-sanity (candidate diff) | [`run-loop.md`](run-loop.md) §3, §3.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) (footprint = candidate diff) |
 | Step 4 — validator wave, dedup `(file, rule_id)`, adjudication, rotation + outer-reentry caps | [`validator-routing.md`](validator-routing.md) §4 | [`validation-run.md`](../../../contracts/validation-run.md); [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 4.5 — assemble gate, 2-consecutive-FAIL cap | [`validator-routing.md`](validator-routing.md) §4.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 4.6 — runtime verify gate, 3-invocation cap | [`validator-routing.md`](validator-routing.md) §4.6 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
@@ -36,7 +36,7 @@ Each numeric cap and frozen mechanic is pinned in the contracts under
 |---|---|
 | [`run-loop.md`](run-loop.md) | Steps 0–6 spine: bootstrap, rollback, lock/journal, intake, pre-flight, screen pre-flight, planner hand-off, builders, diff-sanity, ship hand-off, escalation + durable question publication, parallelism, hard rules, move-back |
 | [`validator-routing.md`](validator-routing.md) | Steps 4 / 4.5 / 4.6 / 4.6b / 5 / 5.5: validator wave, dedup, adjudication, footprint-scoping, all caps, gate routing matrices, reviewer + security gates |
-| [`outcome-appendix.md`](outcome-appendix.md) | Step 6 chat summary + 6a–6d: Outcome draft shape + recoverable `finalize-task` transaction (components/tokens phases, move, INDEX/arch checks, lock release) |
+| [`outcome-appendix.md`](outcome-appendix.md) | Step 6 chat summary + 6a–6d: Outcome draft shape + the hand-off to the owner's Integrate transaction (product apply, finalizer prepare, one canonical commit, confirm, lock release) |
 | [`planner.md`](planner.md) | implementation-planner: canonical names, files, signatures, acceptance mapping, builder contracts, behavioral edge-cases, output shape |
 | [`context-finder.md`](context-finder.md) | context-finder: arch-map-first lookup, query recipes, figma component-binding match, MAP/REGISTRY/CONTRACT_MISS emit |
 | [`requirements-lookup.md`](requirements-lookup.md) | requirements-lookup: keyword → skill-reference map, cookbook-recipe table, output shape |
@@ -55,7 +55,7 @@ Each numeric cap and frozen mechanic is pinned in the contracts under
 | Step 4.6b screenshot | 3 invocations | per task |
 | Step 5.5 security review | 2 iterations | per task |
 | acceptance bullet repeatedly missing | 2 consecutive validator cycles | per task |
-| site runner concurrency | `MAX_PARALLEL=1` (frozen serial safety; no env override until per-task worktree isolation) | n/a |
+| site runner concurrency | `MAX_PARALLEL=2` (canary; source constant, no env override — each run owns its own task worktree) | n/a |
 
 ## Output contracts
 

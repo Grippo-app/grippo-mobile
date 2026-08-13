@@ -2,7 +2,7 @@
 
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, utimesSync as fsUtimes, writeFileSync } from 'node:fs'
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, utimesSync as fsUtimes, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -82,7 +82,7 @@ try {
 
   function enqueue(id, stem) {
     const record = {
-      version: 2, action: 'prep', stem, expectedState: 'backlog', sourceRevision: revision,
+      version: 3, action: 'prep', stem, expectedState: 'backlog', sourceRevision: revision,
       dedupKey: null, dedupReport: null, projectRoot: root,
       prompt: 'prepare ' + stem, createdAt: '2026-07-13T00:00:00.000Z',
     }
@@ -141,6 +141,82 @@ try {
     assert.equal(existsSync(join(dirs.requests, '.' + id + '.claim')), false)
   })
 
+  check('retry never republishes a same-bytes foreign claim generation', () => {
+    const id = '17000000003015-retryrace'
+    const stem = 'TASK_21_retry_generation'
+    enqueue(id, stem)
+    const originalStart = sessions.start
+    let originalIno = null
+    let foreignIno = null
+    sessions.start = function () {
+      const privateClaim = join(dirs.requests, '.' + id + '.claim')
+      const bytes = readFileSync(privateClaim)
+      originalIno = lstatSync(privateClaim).ino
+      unlinkSync(privateClaim)
+      writeFileSync(privateClaim, bytes, { mode: 0o600 })
+      foreignIno = lstatSync(privateClaim).ino
+      return { running: false, error: 'synthetic-refusal' }
+    }
+    try { runner.tick() } finally { sessions.start = originalStart }
+    assert.notEqual(String(originalIno), String(foreignIno))
+    assert.equal(existsSync(join(dirs.requests, id + '.json')), false)
+    assert.equal(existsSync(join(dirs.requests, '.' + id + '.claim')), true)
+    assert.equal(requests.inspectRequestReservation(stem).status, 'active')
+    unlinkSync(join(dirs.requests, '.' + id + '.claim'))
+    assert.equal(requests.releaseRequestReservation(requests.inspectRequestReservation(stem).record), true)
+  })
+
+  check('terminal settlement never deletes a same-bytes foreign claim generation', () => {
+    const id = '17000000003016-consumerace'
+    const stem = 'TASK_22_consume_generation'
+    enqueue(id, stem)
+    runner.tick()
+    const started = starts.at(-1)
+    assert.equal(started.accepted, true)
+    const privateClaim = join(dirs.requests, '.' + id + '.claim')
+    const bytes = readFileSync(privateClaim)
+    const originalIno = lstatSync(privateClaim).ino
+    unlinkSync(privateClaim)
+    writeFileSync(privateClaim, bytes, { mode: 0o600 })
+    const foreignIno = lstatSync(privateClaim).ino
+    assert.notEqual(String(originalIno), String(foreignIno))
+    started.meta.onPromptSettled(true, null)
+    assert.equal(existsSync(privateClaim), true)
+    assert.equal(requests.inspectRequestReservation(stem).status, 'missing')
+    assert.equal(starts.pop(), started)
+    unlinkSync(privateClaim)
+  })
+
+  check('a standby Site process cannot age-requeue a live foreign runner claim during init', () => {
+    const id = '17000000003017-liveclaim'
+    const stem = 'TASK_23_live_foreign_claim'
+    enqueue(id, stem)
+    const visible = join(dirs.requests, id + '.json')
+    const privateClaim = join(dirs.requests, '.' + id + '.claim')
+    assert.equal(requests.transferFileNoClobber(visible, privateClaim), true)
+    const aged = new Date(Date.now() - 10 * 60 * 1000)
+    fsUtimes(privateClaim, aged, aged)
+    const childSource = [
+      'const {EventEmitter}=require("node:events");',
+      'const cp=require("node:child_process");',
+      'cp.spawn=()=>{const c=new EventEmitter();c.kill=()=>true;queueMicrotask(()=>c.emit("close",0));return c};',
+      'global.setInterval=()=>({unref(){}});',
+      'const cli=require(process.argv[2]);cli.status=()=>({installed:true,loggedIn:true,authProblem:null});',
+      'const runner=require(process.argv[1]);runner.init();',
+      'setImmediate(()=>process.exit(0));'
+    ].join('')
+    const child = cp.spawnSync(process.execPath, [
+      '-e', childSource,
+      require.resolve('../server/runner.js'), require.resolve('../server/cli.js')
+    ], { env: process.env, encoding: 'utf8' })
+    assert.equal(child.status, 0, child.stderr)
+    assert.equal(existsSync(visible), false)
+    assert.equal(existsSync(privateClaim), true)
+    assert.equal(requests.inspectRequestReservation(stem).status, 'active')
+    unlinkSync(privateClaim)
+    assert.equal(requests.releaseRequestReservation(requests.inspectRequestReservation(stem).record), true)
+  })
+
   check('Prepare is not delivered into a warm child without the action-scoped policy', () => {
     const id = '1700000000302-policy'
     const stem = 'TASK_3_policy_boundary'
@@ -170,7 +246,7 @@ try {
 
   // --- Frozen serial safety (pipeline improvement 01, Phase 0) -------------
 
-  check('a live in-memory task child holds queued admission until the slot frees', () => {
+  check('queued admission waits until a capacity slot frees', () => {
     rmSync(join(dirs.requests, '1700000000303-malformed.json'), { force: true })
     // Deliberately-retained leftover from the warm-child policy check above —
     // drained here so serial-safety claim accounting stays exact.
@@ -179,9 +255,10 @@ try {
     const stem = 'TASK_4_capacity_hold'
     enqueue(id, stem)
     sessions.runningInfoForStem = () => null
-    sessions.taskRunningCount = () => 1
+    // Fill every slot the canary cap allows.
+    sessions.taskRunningCount = () => runner.MAX_PARALLEL
     runner.tick()
-    assert.equal(starts.length, 2, 'no admission while the single slot is occupied')
+    assert.equal(starts.length, 2, 'no admission while every capacity slot is occupied')
     assert.equal(existsSync(join(dirs.requests, id + '.json')), true)
     assert.equal(existsSync(join(dirs.requests, '.' + id + '.claim')), false)
     sessions.taskRunningCount = () => 0
@@ -190,7 +267,7 @@ try {
     starts[2].meta.onPromptSettled(true, null)
   })
 
-  check('a foreign live board-task writer lease holds the drain until it clears', () => {
+  check('a foreign live board-task writer lease holds ITS OWN task until it clears', () => {
     const writerLeases = require('../../tasks/writer-leases.cjs')
     const paths = require('../server/paths.js')
     const id = '1700000000305-occupied'
@@ -198,13 +275,16 @@ try {
     enqueue(id, stem)
     // A board-task writer owned by a live process that is NOT this server —
     // the durable shape left by a restart-orphaned child or a standby run.
+    // Since per-task worktree isolation the hold is stem-scoped: a writer for
+    // ANOTHER task no longer stalls this one, so the orphan must name THIS stem
+    // to hold it — that is exactly the restart-orphan / standby-run shape.
     const foreign = writerLeases.acquire(paths.WRITER_LEASES_DIR, {
-      kind: 'task-session', stem: 'TASK_9_orphan', key: 'task:TASK_9_orphan',
+      kind: 'task-session', stem: stem, key: 'task:' + stem,
       sessionId: writerLeases.createSessionId(), ownerPid: process.ppid,
       rootDir: paths.WRITER_AUTHORITY_ROOT
     })
     runner.tick()
-    assert.equal(starts.length, 3, 'durable foreign writer must hold admission')
+    assert.equal(starts.length, 3, 'durable foreign writer for this task must hold its admission')
     assert.equal(existsSync(join(dirs.requests, id + '.json')), true)
     assert.equal(existsSync(join(dirs.requests, '.' + id + '.claim')), false)
     writerLeases.release(foreign)
@@ -287,10 +367,20 @@ try {
       processStartId: writerLeases.captureProcessStartId(process.pid), projectRoot: root
     }) + '\n', { mode: 0o600 })
     runner.tick()
-    assert.equal(starts.length, 5, 'dead-owner marker is taken over and the queue drains')
+    assert.equal(starts.length, 6,
+      'dead-owner marker is taken over and every available queue slot drains')
     assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.pid)
     assert.equal(JSON.parse(readFileSync(marker, 'utf8')).version, 1)
+    assert.equal(starts[4].accepted, true)
+    assert.equal(starts[5].accepted, true)
+    assert.equal(existsSync(join(dirs.requests, id + '.json')), false)
+    assert.equal(existsSync(join(dirs.requests, nextId + '.json')), false)
+    assert.equal(existsSync(join(dirs.requests, '.' + id + '.claim')), true)
+    assert.equal(existsSync(join(dirs.requests, '.' + nextId + '.claim')), true)
     starts[4].meta.onPromptSettled(true, null)
+    starts[5].meta.onPromptSettled(true, null)
+    assert.equal(existsSync(join(dirs.requests, '.' + id + '.claim')), false)
+    assert.equal(existsSync(join(dirs.requests, '.' + nextId + '.claim')), false)
   })
 
   check('non-conforming runner-marker content is never parsed as an exact live owner', () => {
@@ -312,11 +402,11 @@ try {
       processStartId: foreignStartId, projectRoot: root, extra: true
     }) + '\n', { mode: 0o600 })
     runner.tick()
-    assert.equal(starts.length, 5, 'fresh non-conforming content stands the runner down')
+    assert.equal(starts.length, 6, 'fresh non-conforming content stands the runner down')
     const aged = new Date(Date.now() - 120000)
     fsUtimes(marker, aged, aged)
     runner.tick()
-    assert.equal(starts.length, 5, 'stale non-conforming content remains fail-closed')
+    assert.equal(starts.length, 6, 'stale non-conforming content remains fail-closed')
     assert.equal(JSON.parse(readFileSync(marker, 'utf8')).pid, process.ppid)
   })
 

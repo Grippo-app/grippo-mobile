@@ -57,8 +57,10 @@ export function createBoardFinalizationController(dependencies) {
       fallback.appendChild(dependencies.el('p', {
         text: dependencies.t('board.finalization.cli')
       }));
+      // The finalizer is never resumed on its own: it is one phase of an
+      // integration transaction, and only the WAL knows which phase is next.
       fallback.appendChild(dependencies.el('code', {
-        text: 'node orchestrator/tasks/finalize-task.mjs ' + finalization.stem
+        text: 'node orchestrator/tasks/task-worktree.mjs integrate --stem ' + finalization.stem
       }));
     } else {
       fallback.appendChild(dependencies.el('p', {

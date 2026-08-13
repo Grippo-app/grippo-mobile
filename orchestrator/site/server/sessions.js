@@ -69,8 +69,16 @@ var SESSION_SIDECARS_MAX = 1000;
 var SESSION_SIDECAR_MAX_BYTES = 64 * 1024;
 var SESSION_SIDECARS_TOTAL_MAX_BYTES = 8 * 1024 * 1024;
 var SESSION_EVENTS_MAX_BYTES = 32 * 1024 * 1024;
-var SESSION_SIDECAR_VERSION = 1;
-var SESSION_SIDECAR_FIELDS = ['action', 'awaitingTurn', 'canceled', 'dedupKey', 'dedupReport', 'endedAt', 'exitCode', 'key', 'minSeq', 'nextSeq', 'running', 'sessionId', 'startedAt', 'stem', 'version'];
+// v3 adds runId. A sidecar written by an older build has a different field
+// set and is rejected outright — the version is a hard constant, never a
+// behavioural fork, and a session sidecar is regenerable runtime state.
+var SESSION_SIDECAR_VERSION = 3;
+var EXECUTION_RUN_ID_RE = /^[0-9]{1,16}-[a-z0-9]{1,32}$/;
+// `worktreeId` IS the execution generation identity the plan calls
+// `executionGeneration`; a second name for it would be a second source of
+// truth. `candidateTree` is deliberately absent: nothing is sealed while a
+// session is alive, so the field could only ever be null here.
+var SESSION_SIDECAR_FIELDS = ['action', 'awaitingTurn', 'canceled', 'dedupKey', 'dedupReport', 'endedAt', 'exitCode', 'key', 'minSeq', 'nextSeq', 'running', 'runId', 'sessionId', 'startedAt', 'stem', 'version', 'worktreeId', 'executionRoot', 'baseCommit', 'candidateRef'].sort();
 var FINISHED_TTL_MS = 5 * 60 * 1000;  // keep finished sessions in memory this long
 // An 'awaiting' session (asked the user via needs_action, kept alive so the
 // answer continues the SAME run) holds a concurrency slot. If the user never
@@ -265,9 +273,9 @@ function sessionSidecarIssue(value, filename) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return 'sidecar must be an object';
   var keys = Object.keys(value).sort();
   if (keys.length !== SESSION_SIDECAR_FIELDS.length || keys.some(function (key, index) { return key !== SESSION_SIDECAR_FIELDS[index]; })) {
-    return 'sidecar fields must exactly match the version-1 contract';
+    return 'sidecar fields must exactly match the version-' + SESSION_SIDECAR_VERSION + ' contract';
   }
-  if (value.version !== SESSION_SIDECAR_VERSION) return 'sidecar version must be 1';
+  if (value.version !== SESSION_SIDECAR_VERSION) return 'sidecar version must be ' + SESSION_SIDECAR_VERSION;
   if (!validSessionKey(value.key)) return 'sidecar key is invalid';
   if (filename && filename !== safeKey(value.key) + '.session.json') return 'sidecar filename does not match its key';
   var expectedStem = value.key.indexOf('task:') === 0
@@ -294,6 +302,30 @@ function sessionSidecarIssue(value, filename) {
       !Number.isSafeInteger(value.nextSeq) || value.nextSeq < 0 ||
       !Number.isSafeInteger(value.minSeq) || value.minSeq < 0 || value.minSeq > value.nextSeq) {
     return 'sidecar session/sequence metadata is invalid';
+  }
+  // Execution binding (pipeline improvement 01, Phase 2): only a task `run`
+  // session may carry a worktree execution context, and it carries ALL four
+  // fields or none.
+  var executionFields = [value.worktreeId, value.runId, value.executionRoot, value.baseCommit, value.candidateRef];
+  var boundCount = executionFields.filter(function (field) { return field !== null; }).length;
+  if (boundCount !== 0 && boundCount !== 5) return 'sidecar execution binding must be complete or absent';
+  // A task `run` ALWAYS executes inside a worktree, so an unbound run sidecar
+  // is exactly the shared-root escape this phase deleted — never valid.
+  if (boundCount === 0 && value.key.indexOf('task:') === 0 && value.action === 'run') {
+    return 'a task run sidecar requires its execution binding';
+  }
+  if (boundCount === 5) {
+    if (!(value.key.indexOf('task:') === 0 && value.action === 'run')) {
+      return 'sidecar execution binding is only legal for task run sessions';
+    }
+    if (!/^wt-[a-f0-9]{32}$/.test(String(value.worktreeId)) ||
+        !EXECUTION_RUN_ID_RE.test(String(value.runId)) ||
+        typeof value.executionRoot !== 'string' || value.executionRoot[0] !== '/' ||
+        value.executionRoot.length > 4096 ||
+        !/^[a-f0-9]{40}$/.test(String(value.baseCommit)) ||
+        !nullableBoundedString(value.candidateRef, 240)) {
+      return 'sidecar execution binding is invalid';
+    }
   }
   return null;
 }
@@ -325,6 +357,11 @@ function writeSidecar(s) {
     startedAt: s.startedAt, endedAt: s.endedAt || null,
     exitCode: ((s.exitCode === null || s.exitCode === undefined) ? null : s.exitCode),
     canceled: !!s.canceled, sessionId: s.sessionId || null,
+    worktreeId: s.executionContext ? s.executionContext.worktreeId : null,
+    runId: s.executionContext ? (s.executionContext.runId || null) : null,
+    executionRoot: s.executionContext ? s.executionContext.executionRoot : null,
+    baseCommit: s.executionContext ? s.executionContext.baseCommit : null,
+    candidateRef: s.executionContext ? s.executionContext.candidateRef : null,
     // nextSeq lets statusOf() answer for a non-live session without reading the
     // whole .events.jsonl; minSeq is the lowest seq still available on disk
     // after ring-buffer pruning (the .events.jsonl is trimmed to MAX_EVENTS on
@@ -676,19 +713,13 @@ function screenshotGateApplies(stem, dependencies) {
 }
 
 function runGateError(stem) {
-  if (process.env.FIGMA_WIRING_GATE === '0') return null;
-  var cfg = projectCfg.parseConfigForm();
-  if (!cfg || cfg.figmaEnabled !== true) return null;
-  var w = gitMod.enforcementWiring();
-  if (w.wired) return null;
+  // The net policy itself lives in git.js, because the canonical commit asks
+  // the same question and the two answers must never disagree. Only the
+  // stem scoping is this caller's: a non-visual Run is not blocked by it.
+  var issue = gitMod.enforcementNetIssue();
+  if (!issue) return null;
   if (stem && !screenshotGateApplies(stem)) return null;
-  var state = w.inGit
-    ? 'core.hooksPath is ' + (w.hooksPath ? '\'' + w.hooksPath + '\'' : 'UNSET') + ', expected \'' + w.expected + '\''
-    : 'not a git work-tree (or git unavailable)';
-  return 'figma-net-unwired: ' + state + ' — the LOCAL screenshot-gate net (pre-commit verify-done) ' +
-    'is INACTIVE, so an uncompared UI task could ship to done/. Wire it: ' +
-    '`git config core.hooksPath ' + w.expected + '` (or run orchestrator/skills/install-skills.sh), ' +
-    'then Run again. Deliberate opt-out (self-managed hooks): FIGMA_WIRING_GATE=0.';
+  return issue + ' Then Run again.';
 }
 
 function writerKindFor(key, stem) {
@@ -710,6 +741,32 @@ function releaseTurnLease(s) {
   if (!released) s.writerLease = handle;
   return released;
 }
+// Pipeline improvement 01, Phase 3: when a worktree-bound run child exits,
+// seal whatever it produced into a candidate (§9.5). Sealing is the ONLY way
+// a receipt exists, and it must not depend on the child remembering to ask:
+// the manager owns the tree, so the manager records what is in it. Refusals
+// are logged and leave the generation exactly as it was — the run can be
+// re-driven, and nothing is ever discarded.
+function sealExecutionCandidate(s) {
+  if (!s || !s.executionContext || s.action !== 'run' || s.canceled || s.candidateSealScheduled) return;
+  s.candidateSealScheduled = true;
+  var worktreeId = s.executionContext.worktreeId;
+  setImmediate(function () {
+    var sealed;
+    try { sealed = require('./worktree-manager').seal({ worktreeId: worktreeId }); }
+    catch (error) { sealed = { ok: false, code: 'SEAL_UNAVAILABLE', message: error && error.message }; }
+    if (sealed && sealed.ok) {
+      console.log('[sessions] sealed candidate for ' + (s.stem || worktreeId) + ': ' +
+        sealed.entries + ' path(s), commit ' + String(sealed.candidateCommit).slice(0, 12));
+    } else if (sealed && sealed.code === 'SEAL_EMPTY_CANDIDATE') {
+      console.log('[sessions] no product changes to seal for ' + (s.stem || worktreeId) + '.');
+    } else {
+      console.warn('[sessions] candidate sealing refused for ' + (s.stem || worktreeId) + ': ' +
+        (sealed && sealed.code) + (sealed && sealed.message ? ' — ' + sealed.message : ''));
+    }
+  });
+}
+
 function signalSessionTree(child, signal) {
   if (!child || !child.pid) return false;
   if (process.platform !== 'win32') {
@@ -790,6 +847,11 @@ function settleTurnLeaseAfterClose(s) {
       if (s._stdinKillTimer != null) { clearTimeout(s._stdinKillTimer); s._stdinKillTimer = null; }
       if (releaseTurnLease(s)) {
         s.writerLeaseSettling = false;
+        // Parent exit/close alone is not a tree-death proof: a detached child
+        // may have closed inherited stdio and keep writing the candidate. Seal
+        // only after the exact process group is gone and its writer lease has
+        // been withdrawn successfully.
+        sealExecutionCandidate(s);
         dispatchReadyPublication(s);
         return;
       }
@@ -875,6 +937,44 @@ function start(key, meta) {
   }
   if (!ensureRunsDir()) {
     return { running: false, error: 'session-runtime-unsafe' };
+  }
+
+  // Pipeline improvement 01, Phase 2 — THE cutover assert: a task `run` turn
+  // NEVER executes in the shared control root. The runner provisions a
+  // manager-verified opaque generation before start(); anything else (HTTP
+  // callers, stale flows) is refused fail-closed and the queued request
+  // stays recoverable. Non-run actions must NOT carry a context.
+  var executionContext = null;
+  var opaqueExecutionContext = meta && meta.executionContext;
+  // Applies to fresh starts AND full-authority resumes alike: any mutating
+  // run child needs a verified worktree (§9.3 allows resume only under exact
+  // identity, which only the runner can supply).
+  var isTaskRunStart = key.indexOf('task:') === 0 && meta.action === 'run' &&
+    !conversationOnly && meta.runtimeOnly !== true;
+  if (isTaskRunStart && !opaqueExecutionContext) {
+    return { running: false, error: 'execution-context-required' };
+  }
+  if (opaqueExecutionContext && !isTaskRunStart) {
+    return { running: false, error: 'execution-context-not-allowed' };
+  }
+  if (opaqueExecutionContext) {
+    if (typeof opaqueExecutionContext !== 'object' || Array.isArray(opaqueExecutionContext) ||
+        Object.keys(opaqueExecutionContext).sort().join('\0') !== 'runId\0worktreeId' ||
+        typeof opaqueExecutionContext.worktreeId !== 'string' ||
+        typeof opaqueExecutionContext.runId !== 'string' ||
+        !EXECUTION_RUN_ID_RE.test(opaqueExecutionContext.runId)) {
+      return { running: false, error: 'execution-context-invalid' };
+    }
+    var resolvedExecution = require('./worktree-manager').sessionExecutionContext({
+      worktreeId: opaqueExecutionContext.worktreeId,
+      runId: opaqueExecutionContext.runId,
+      stem: finalizationStem,
+      sourceRevision: meta.sourceRevision
+    });
+    if (!resolvedExecution || !resolvedExecution.ok || !resolvedExecution.context) {
+      return { running: false, error: 'execution-context-invalid' };
+    }
+    executionContext = resolvedExecution.context;
   }
 
   var writerSessionId = finalizationsMod.createWriterSessionId();
@@ -980,8 +1080,48 @@ function start(key, meta) {
 	      sessionEnv.ORCHESTRATOR_WRITER_LEASE_ID = initialWriterLease.leaseId;
 	      sessionEnv.ORCHESTRATOR_WRITER_DELEGATION_TOKEN = initialWriterLease.delegationToken;
 	    }
+	    if (executionContext) {
+	      // cwd = the isolated worktree; ONE env var re-anchors every
+	      // control-plane helper (locks, leases, journal, checkpoints, task
+	      // corpus) at the control root — the worktree's own script copies then
+	      // write control state, never a second control plane inside the
+	      // checkout. The manifest/snapshot pins are read-only inputs.
+	      sessionEnv.ORCHESTRATOR_PROJECT_ROOT = PROJECT_ROOT;
+	      // Helpers invoked from the worktree resolve their roots from their OWN
+	      // location (the checkout copy) unless their exact knob is set. Pin every
+	      // control-plane root explicitly so lock/lease/journal/checkpoint/task
+	      // state always lands in the control plane, never in a second one inside
+	      // the checkout.
+	      sessionEnv.ORCHESTRATOR_TASKS_DIR = paths.TASKS_DIR;
+	      sessionEnv.ORCHESTRATOR_CACHE_DIR = paths.RUNTIME_CACHE_DIR;
+	      sessionEnv.ORCHESTRATOR_LOCKS_DIR = paths.LOCKS_DIR;
+	      sessionEnv.ORCHESTRATOR_TRANSITIONS_DIR = paths.TRANSITIONS_DIR;
+	      sessionEnv.ORCHESTRATOR_JOURNAL_DIR = paths.JOURNAL_DIR;
+	      sessionEnv.ORCHESTRATOR_CHECKPOINTS_DIR = paths.CHECKPOINTS_DIR;
+	      sessionEnv.ORCHESTRATOR_FINALIZATIONS_DIR = paths.FINALIZATIONS_DIR;
+	      sessionEnv.ORCHESTRATOR_WRITER_LEASES_DIR = paths.WRITER_LEASES_DIR;
+	      sessionEnv.ORCHESTRATOR_WRITER_AUTHORITY_ROOT = paths.WRITER_AUTHORITY_ROOT;
+	      sessionEnv.ORCHESTRATOR_TASK_CREATIONS_DIR = paths.TASK_CREATIONS_DIR;
+	      sessionEnv.ORCHESTRATOR_TASK_CREATIONS_AUTHORITY_ROOT = paths.TASK_CREATIONS_AUTHORITY_ROOT;
+	      sessionEnv.ORCHESTRATOR_TASK_EDITS_DIR = paths.TASK_EDITS_DIR;
+	      sessionEnv.ORCHESTRATOR_TASK_EDITS_AUTHORITY_ROOT = paths.TASK_EDITS_AUTHORITY_ROOT;
+	      sessionEnv.ORCHESTRATOR_TASK_INTAKE_DIR = paths.TASK_INTAKE_DIR;
+	      sessionEnv.ORCHESTRATOR_TASK_ACTION_RECEIPTS_DIR = paths.TASK_ACTION_RECEIPTS_DIR;
+	      sessionEnv.ORCHESTRATOR_TEST_CERTIFICATION_DIR = paths.TEST_CERTIFICATION_DIR;
+	      sessionEnv.ORCHESTRATOR_RUNS_DIR = paths.RUNS_DIR;
+	      sessionEnv.ORCHESTRATOR_EXECUTION_MANIFEST = executionContext.manifestFile;
+	      sessionEnv.ORCHESTRATOR_TASK_SNAPSHOT_FILE = executionContext.taskSnapshotFile;
+	      sessionEnv.ORCHESTRATOR_TASK_SNAPSHOT_HASH = executionContext.taskSnapshotHash;
+	      sessionEnv.ORCHESTRATOR_WORKTREE_ID = executionContext.worktreeId;
+	      // The task lock is part of this exact worktree generation. Without the
+	      // manager-issued run id the child would mint an unrelated lock id, and
+	      // finalization could never prove that the lock owns this candidate.
+	      sessionEnv.ORCHESTRATOR_RUN_ID = executionContext.runId;
+	      sessionEnv.ORCHESTRATOR_EXECUTION_ROOT = executionContext.executionRoot;
+	    }
 	    child = cp.spawn('claude', args,
-	      { cwd: PROJECT_ROOT, stdio: ['pipe', 'pipe', 'pipe'], env: sessionEnv, detached: process.platform !== 'win32' });
+	      { cwd: executionContext ? executionContext.executionRoot : PROJECT_ROOT,
+	        stdio: ['pipe', 'pipe', 'pipe'], env: sessionEnv, detached: process.platform !== 'win32' });
 	  } catch (e) {
     try { fs.closeSync(logFd); } catch (closeLogError) {}
     if (initialWriterLease) finalizationsMod.endMutation(initialWriterLease);
@@ -1014,6 +1154,7 @@ function start(key, meta) {
 
   var s = {
     key: key, stem: meta.stem || null, action: meta.action || null,
+    executionContext: executionContext,
     dedupKey: meta.dedupKey || null, dedupReport: meta.dedupReport || null,
     expectedState: meta.expectedState || null, sourceRevision: meta.sourceRevision || null,
     child: child, sessionId: null, running: true, awaitingTurn: false, canceled: false,
@@ -1025,6 +1166,7 @@ function start(key, meta) {
     _killTimer: null,       // setTimeout handle from maybeAutoClose fallback; cleared in cancel/exit
     idleTimer: null,        // awaiting-idle auto-close handle; cleared on answer (send) / cancel / exit
     writerTerminationPending: false, writerLeaseSettling: false, writerLeaseReaperTimer: null,
+    candidateSealScheduled: false,
     stdinFailureHandled: false, stdinWritePending: false, resultAwaitingStdinSettlement: false,
     turnResultSeen: false,
     turnPublicationId: null, readyPublicationId: null,
@@ -1120,6 +1262,7 @@ function start(key, meta) {
 
   var initialTurnMeta = typeof meta.beforePrompt === 'function' ? {
     action: meta.action,
+    executionContext: opaqueExecutionContext,
     noQuestions: meta.noQuestions === true,
     dedupKey: meta.dedupKey,
     dedupReport: meta.dedupReport,
@@ -1160,6 +1303,29 @@ function send(key, text, meta, initialPromptLease) {
   // into an already-running task session without calling start(), so the gate
   // must fire here too. false → the runner requeues the claim, same as busy.
   if (meta && meta.action === 'run' && runGateError(meta.stem || s.stem)) return false;
+  // Pipeline improvement 01, Phase 2 — the cutover assert applies to warm
+  // delivery too: an idle session may take a queued `run` only when it is
+  // ALREADY executing inside the exact worktree this run was provisioned for.
+  // A run must never reach a control-root child, and a worktree-bound child
+  // must never be handed control-plane work (its cwd/binding are wrong).
+  if (meta && meta.action === 'run') {
+    var deliveredOpaque = meta.executionContext || null;
+    if (!s.executionContext || !deliveredOpaque || typeof deliveredOpaque !== 'object' ||
+        Array.isArray(deliveredOpaque) ||
+        Object.keys(deliveredOpaque).sort().join('\0') !== 'runId\0worktreeId') return false;
+    var delivered = require('./worktree-manager').sessionExecutionContext({
+      worktreeId: deliveredOpaque.worktreeId, runId: deliveredOpaque.runId,
+      stem: meta.stem || s.stem, sourceRevision: meta.sourceRevision || s.sourceRevision
+    });
+    if (!delivered || !delivered.ok || !delivered.context ||
+        s.executionContext.worktreeId !== delivered.context.worktreeId ||
+        s.executionContext.runId !== delivered.context.runId ||
+        s.executionContext.executionRoot !== delivered.context.executionRoot ||
+        s.executionContext.manifestFile !== delivered.context.manifestFile ||
+        s.executionContext.taskSnapshotHash !== delivered.context.taskSnapshotHash) return false;
+  } else if (meta && typeof meta.action === 'string' && s.executionContext) {
+    return false;
+  }
   var reusedTaskLease = !leaseAlreadyHeld && !runtimeOnlyInitialPrompt && !conversationOnlyTurn &&
     s.key.indexOf('task:') === 0 && !!s.writerLease;
   var acquiredThisCall = false;
@@ -1906,6 +2072,22 @@ function runningKeyForStem(stem) {
 // finished; the close may be lock-deferred). The enqueue dedup and the runner
 // treat only a BUSY session as "in flight": an idle-warm one accepts the new
 // prompt as its next turn (send), so a lock-deferred session never wedges Run.
+// Does any session for this stem STILL hold its board-task writer lease?
+// `cancel()` deliberately withdraws nothing — SIGTERM is a request, and the
+// lease is retained until process-tree death is proven — so a caller that
+// cancels a warm session and then reads the lease store in the same turn always
+// sees the lease. Anything that must wait for the lease to clear polls this
+// instead of assuming the cancel took effect.
+function taskWriterLeaseHeldForStem(stem) {
+  if (!stem) return false;
+  var keys = Object.keys(sessions);
+  for (var i = 0; i < keys.length; i++) {
+    var s = sessions[keys[i]];
+    if (s && s.writerLease && s.stem === stem &&
+        s.key.indexOf('figma:') !== 0 && s.key.indexOf('contract:') !== 0) return true;
+  }
+  return false;
+}
 function runningInfoForStem(stem) {
   if (!stem) return null;
   var keys = Object.keys(sessions);
@@ -1950,7 +2132,7 @@ function reconcile() {
     var side;
     try { side = JSON.parse(read.bytes.toString('utf8')); }
     catch (e) { return; }
-    if (sessionSidecarIssue(side, names[i])) return;
+    if (!side || sessionSidecarIssue(side, names[i])) return;
     rows.push({ path: p, side: side });
   }
   if (listed.directory && listed.directory.exists && !runsDirectoryUnchanged(listed.directory)) return;
@@ -2049,6 +2231,7 @@ module.exports = {
   taskRunningCount: taskRunningCount,
   runningKeyForStem: runningKeyForStem,
   runningInfoForStem: runningInfoForStem,
+  taskWriterLeaseHeldForStem: taskWriterLeaseHeldForStem,
   runGateError: runGateError,
   screenshotGateApplies: screenshotGateApplies,
   validSessionKey: validSessionKey,

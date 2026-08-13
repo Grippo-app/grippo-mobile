@@ -17,7 +17,7 @@ never part of Gradle or the shipped application.
 | `manifests/generations/*.json` | committed | immutable generation manifests |
 | `manifests/generation-artifacts/<id>/` | committed | normalized spec/descriptor, inventory and areas |
 | `.cache/api-contract/staging/` | gitignored runtime | owned candidate generations |
-| `.cache/api-contract/reports/` | gitignored runtime | bounded probe/refresh/change/history reports |
+| `.cache/api-contract/reports/` | gitignored runtime | bounded control probe/refresh/change/analysis/history reports; task analysis uses `executions/<worktreeId>/<runId>/` |
 
 Root spec/inventory/area artifacts are not part of the contract. Readers use
 only the validated current generation pointer and report no snapshot when it is
@@ -39,6 +39,7 @@ JSON Schema validation and YAML for bounded OpenAPI YAML parsing.
 | `contract:refresh-postman` | typed sidecar | explicit Postman-only bootstrap |
 | `contract:paths` | no | resolve validated current artifact paths without guessing a generation id |
 | `contract:verify` | no | validate the generation-aware current snapshot |
+| `contract:analyze` | no | implementation/consumer analysis of the control product or manager-proven task checkout |
 | `contract:diff` | no | DTO/API drift report |
 | `contract:suggest` | no | optional endpoint coverage plan |
 

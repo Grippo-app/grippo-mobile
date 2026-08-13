@@ -223,15 +223,6 @@ function reservationMissing(record) {
   return requests.inspectRequestReservation(record.stem).status === 'missing';
 }
 
-function deterministicPublicationLease(row) {
-  return row && typeof row.key === 'string' && (
-    row.key === 'task:create-backlog' ||
-    row.key === 'task:recover-backlog-creations' ||
-    row.key === 'task:recover-backlog-edits' ||
-    row.key.startsWith('task:edit-backlog:')
-  );
-}
-
 function leaseReceiptShape(receipt) {
   return exactKeys(receipt, ['leaseId', 'token', 'sessionId']) &&
     writerLeases.LEASE_ID_RE.test(String(receipt.leaseId || '')) && TOKEN_RE.test(String(receipt.token || '')) &&
@@ -255,7 +246,7 @@ function exactActiveLease(record, receipt) {
   if (matches.length !== 1) fail('writer-lease-authority-lost');
   const own = matches[0];
   const conflict = scan.active.find((row) => row.leaseId !== own.leaseId &&
-    (deterministicPublicationLease(row) || row.stem === record.stem || row.key === `task:${record.stem}`));
+    (writerLeases.deterministicPublisherLease(row) || row.stem === record.stem || row.key === `task:${record.stem}`));
   if (conflict) fail('writer-lease-conflict');
   return own;
 }
@@ -285,22 +276,6 @@ function proveTaskLockAbsent(stem) {
   if (!lock || lock.validStem !== true || lock.present !== false) fail('task-lock-absence-unproven');
 }
 
-function taskLockRun(args) {
-  const env = { ...process.env };
-  delete env.NODE_OPTIONS;
-  delete env.NODE_PATH;
-  const result = childProcess.spawnSync(process.execPath, [TASK_LOCK, ...args], {
-    cwd: paths.PROJECT_ROOT,
-    env,
-    encoding: 'utf8',
-    timeout: 30_000,
-    maxBuffer: 4 * 1024 * 1024,
-    windowsHide: true,
-  });
-  let value = null;
-  try { value = result && result.status === 0 ? JSON.parse(result.stdout) : null; } catch {}
-  return { result, value, stderr: String(result && result.stderr || '') };
-}
 
 function expectedWithdrawnReservationFinding(item, record, requestId) {
   if (!item || item.code !== 'REQUEST_RESERVATION_RECORD_MISMATCH' || item.stem !== record.stem ||
@@ -490,11 +465,27 @@ function claimNext(passToken) {
     if (!listed || !listed.ok || !Array.isArray(listed.names)) fail('request-scan-incomplete');
     const names = listed.names.filter((name) => REQUEST_NAME_RE.test(name)).sort();
     if (!names.length) return { status: 'empty' };
+    // Pipeline improvement 01, Phase 2: `run` executes only inside the site
+    // runner's manager-provisioned worktree — the standby NEVER claims runs
+    // (fail-closed forever, owner decision). The peek is bounded and
+    // read-only; run requests stay untouched in the public queue for the
+    // site runner. Unreadable/malformed candidates fall through to the claim
+    // path, whose existing classification retains them safely.
+    let candidate = null;
+    for (const name of names) {
+      const peek = fileGuards.boundedRegularFileUnder(
+        paths.PROJECT_ROOT, paths.REQUESTS_DIR, path.join(paths.REQUESTS_DIR, name), 256 * 1024);
+      if (!peek) { candidate = name; break; }
+      let action = null;
+      try { action = JSON.parse(peek.bytes.toString('utf8')).action; } catch { candidate = name; break; }
+      if (action !== 'run') { candidate = name; break; }
+    }
+    if (candidate === null) return { status: 'blocked', code: 'run-requires-site-runner' };
     const finalRunnerExclusion = runnerExclusionResult(directories);
     if (finalRunnerExclusion) return finalRunnerExclusion;
     const occupancy = taskWriterOccupancyResult();
     if (occupancy) return occupancy;
-    claimed = boundary(directories, 'claim', { candidate: names[0], nonce: crypto.randomBytes(24).toString('hex') });
+    claimed = boundary(directories, 'claim', { candidate: candidate, nonce: crypto.randomBytes(24).toString('hex') });
   }
   if (claimed.status !== 'claimed') {
     if (claimed.status === 'retained' || claimed.status === 'blocked' || claimed.status === 'retry') {
@@ -604,35 +595,13 @@ function proveWriterReleaseBeforeConsume(record, fence, exact) {
 }
 
 function proveExecutedTaskLockSettlement(record, fence, requestId) {
-  if (record.action !== 'run') {
-    proveTaskLockAbsent(record.stem);
-    return;
-  }
-  const presence = locks.lockPresence(record.stem);
-  if (presence && presence.validStem === true && presence.present === false) return;
-  if (!presence || presence.validStem !== true || presence.present !== true || presence.recovery === true ||
-      presence.safe !== true || presence.readable !== true) fail('task-lock-settlement-unproven');
-  const inspected = taskLockRun(['inspect', '--stem', record.stem]);
-  const value = inspected.value;
-  const owner = value && value.owner;
-  if (!inspected.result || inspected.result.status !== 0 || !value || value.version !== 1 || value.ok !== true ||
-      value.stem !== record.stem || value.stage !== 'orchestrator' ||
-      !/^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/.test(String(value.runId || '')) ||
-      value.sessionId !== fence.sessionId || !SHA_RE.test(String(value.lockHash || '')) || !exactUtc(value.startedAt) ||
-      !owner || owner.kind !== 'standby' || owner.id !== `standby:${fence.leaseId}` ||
-      !Number.isSafeInteger(owner.pid) || owner.pid <= 0 || owner.hostname !== os.hostname() ||
-      owner.startedAt !== value.startedAt || !writerLeases.PROCESS_START_ID_RE.test(String(owner.processStartId || ''))) {
-    fail('task-lock-settlement-unproven');
-  }
-  let canonical;
-  try { canonical = taskIntegrity.validateAction('run', record.stem, 'standby-consume'); }
-  catch { fail('task-lock-settlement-unproven'); }
-  const blockers = taskIntegrity.actionAdmission(canonical).blockers;
-  const unexpected = blockers.filter((item) => !expectedWithdrawnReservationFinding(item, record, requestId));
-  if (!canonical || canonical.observedState !== 'todo' || canonical.sourceRevision !== record.sourceRevision ||
-      !SHA_RE.test(String(canonical.snapshotHash || '')) || unexpected.length) {
-    fail('task-lock-settlement-unproven');
-  }
+  // Since per-task worktree isolation (pipeline improvement 01, Phase 2) the
+  // standby never executes a `run`, so no standby execution can legitimately
+  // leave an orchestrator-stage lock behind: EVERY standby-executed action
+  // must settle with a proven-absent task lock before its request is consumed.
+  void fence;
+  void requestId;
+  proveTaskLockAbsent(record.stem);
 }
 
 function consume(handle, kind) {

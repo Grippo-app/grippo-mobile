@@ -38,7 +38,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { delimiter, dirname, join, resolve, isAbsolute } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { PROJECT_ROOT, bindingsManifestEntries, figmaPath, figmaScreensRoot, loadBindings, parseCli, pipelineRunId, readConfig, runIdPinPath, displayPath } from './_util.mjs'
+import { PROJECT_ROOT, bindingsManifestEntries, figmaPath, figmaScreensRoot, loadBindings, parseCli, pipelineRunId, readConfig, runIdPinPath, displayPath, EXECUTION_ROOT } from './_util.mjs'
 import { MAPPING_CONSULT_KEY, computeMappingConsultDigest } from './component-census.mjs'
 import { loadDesignComponentInventory, loadComponentMappings, loadPublishedComponentAnalysis } from './lib/design-components.mjs'
 import { assertTaskStem } from './report-utils.mjs'
@@ -87,7 +87,9 @@ const steps = []
 function runStep(label, cmd, args, extraEnv = {}, opts = {}) {
   console.log(`\n── ${label} ──`)
   const r = spawnSync(cmd, args, {
-    cwd: PROJECT_ROOT,
+    // Product builds and analysers run against the CANDIDATE: during a run that
+    // is the isolated checkout, outside one it is the control root itself.
+    cwd: EXECUTION_ROOT,
     stdio: 'inherit',
     env: { ...process.env, FIGMA_PIPELINE_RUN_ID: runId, ...extraEnv },
   })
@@ -218,7 +220,7 @@ if (stage === 'screenshot') {
   // 2. Record (unless the caller already did) — STARTED_AT is stamped BEFORE the record so
   //    gate mode can prove capture freshness; with --skip-record the caller must supply it.
   const modules = (cli.value('--modules') || '').split(',').map((m) => m.trim()).filter(Boolean)
-  const moduleDirs = modules.map((m) => join(PROJECT_ROOT, ...m.replace(/^:/, '').split(':'), 'build', 'outputs', 'roborazzi'))
+  const moduleDirs = modules.map((m) => join(EXECUTION_ROOT, ...m.replace(/^:/, '').split(':'), 'build', 'outputs', 'roborazzi'))
   let recording
   if (!cli.has('--skip-record')) {
     if (!modules.length) {
@@ -228,7 +230,7 @@ if (stage === 'screenshot') {
     process.env.SCREENSHOT_CAPTURE_STARTED_AT = String(Date.now())
     const recordTask = cli.value('--record-task') || DEFAULT_RECORD_TASK
     for (const m of modules) {
-      runStep(`./gradlew ${m}:${recordTask}`, join(PROJECT_ROOT, 'gradlew'), [`${m}:${recordTask}`])
+      runStep(`./gradlew ${m}:${recordTask}`, join(EXECUTION_ROOT, 'gradlew'), [`${m}:${recordTask}`])
     }
     recording = {
       mode: 'recorded',

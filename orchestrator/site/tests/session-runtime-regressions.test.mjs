@@ -63,14 +63,18 @@ async function checkAsync(name, fn) { await fn(); checks++; console.log(`ok ${ch
 try {
   const sessions = require('../server/sessions.js')
 
-  check('startup accepts only current sidecars and interrupts orphaned runs', () => {
+  check('startup interrupts current-schema orphaned runs', () => {
     const startedAt = '2026-07-14T10:37:50.329Z'
     const finishedAt = '2026-07-14T10:38:16.232Z'
+    // The CURRENT schema, whatever it is: this check is about interrupting an
+    // orphaned run, and a fixture pinned to a superseded version would be
+    // rejected for the wrong reason and prove nothing.
     const sidecar = (key, stem, running) => ({
-        version: 1,
+        version: 3,
         key, stem, action: null, dedupKey: null, dedupReport: null,
         running, awaitingTurn: running, startedAt, endedAt: running ? null : finishedAt,
         exitCode: running ? null : 0, canceled: false, sessionId: null, nextSeq: 3, minSeq: 0,
+        worktreeId: null, runId: null, executionRoot: null, baseCommit: null, candidateRef: null,
       })
     const fixtures = [
       ['task_TASK_1_current_finished.session.json', sidecar('task:TASK_1_current_finished', 'TASK_1_current_finished', false)],
@@ -83,15 +87,38 @@ try {
     const persisted = fixtures.map(([name]) => JSON.parse(readFileSync(join(runs, name), 'utf8')))
     const interrupted = persisted[1]
     persisted.forEach((value) => {
-      assert.equal(value.version, 1)
+      assert.equal(value.version, 3)
       assert.equal(Object.hasOwn(value, 'dedupKey'), true)
       assert.equal(Object.hasOwn(value, 'dedupReport'), true)
+      assert.equal(value.worktreeId, null)
+      assert.equal(value.executionRoot, null)
+      assert.equal(value.running, false)
+      assert.ok(value.endedAt)
     })
     assert.equal(interrupted.running, false)
     assert.equal(interrupted.awaitingTurn, false)
     assert.ok(interrupted.endedAt)
     assert.deepEqual(sessions.scanIntegrity().findings, [])
     fixtures.forEach(([name]) => rmSync(join(runs, name)))
+  })
+
+  check('startup rejects a superseded sidecar without rewriting it', () => {
+    const file = join(runs, 'task_TASK_2_superseded.session.json')
+    const bytes = JSON.stringify({
+      version: 1,
+      key: 'task:TASK_2_superseded', stem: 'TASK_2_superseded', action: null,
+      dedupKey: null, dedupReport: null, running: false, awaitingTurn: false,
+      startedAt: '2026-07-14T10:37:50.329Z', endedAt: '2026-07-14T10:38:16.232Z',
+      exitCode: 0, canceled: false, sessionId: null, nextSeq: 3, minSeq: 0,
+    }) + '\n'
+    writeFileSync(file, bytes)
+
+    sessions.init()
+
+    assert.equal(readFileSync(file, 'utf8'), bytes)
+    assert.equal(sessions.scanIntegrity().findings.some((finding) =>
+      finding.code === 'SESSION_SIDECAR_INVALID' && finding.paths.includes(file)), true)
+    rmSync(file)
   })
 
   check('startup leaves a malformed sidecar fail-closed', () => {

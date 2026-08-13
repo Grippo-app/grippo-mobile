@@ -10,14 +10,15 @@
 //   • Slice-internal reality checks (no DTOs needed): nullability-mismatch (INFO — observed
 //     payload evidence contradicts the declared contract,
 //     the defensive DTO is justified), enum-new-value (WARNING/INFO).
-// SUGGESTION-ONLY: writes .cache/api-contract/reports/drift.json + a stdout summary, NEVER edits code, exits 0 in all
+// SUGGESTION-ONLY: writes the current control/task report scope's drift.json + a stdout summary,
+// NEVER edits code, exits 0 in all
 // report-producing paths. No snapshot -> skipped (exit 0, no report). NEVER calls the backend.
 import {
-  exists, readJson, contractPath, currentContractFiles, PROJECT_ROOT, readConfig,
+  exists, readJson, contractPath, currentContractFiles, PROJECT_ROOT, EXECUTION_ROOT, EXECUTION_SCOPE, readConfig,
   info, ok, warnMsg, failMsg, summary,
 } from './_util.mjs'
 import { readdirSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
 
@@ -90,6 +91,7 @@ function writeDriftReport(report) {
     { create: true, directoryMode: 0o700, mode: 0o600, maxBytes: DRIFT_REPORT_MAX },
   )
   if (!result.ok) throw new Error('drift-report-write-failed')
+  return file
 }
 
 function isDtoFile(relPath) {
@@ -268,7 +270,7 @@ function typeMatches(specField, kotlinBase) {
   })
 
   // ---- 1) DTO files vs slices ----------------------------------------------------
-  const inputs = projectInputs.collect(PROJECT_ROOT, { includeText: true })
+  const inputs = projectInputs.collect(EXECUTION_ROOT, { includeText: true })
   if (!inputs.ok) {
     failMsg(`project input receipt unavailable: ${inputs.error}`)
     process.exit(summary('contract:diff'))
@@ -405,7 +407,8 @@ function typeMatches(specField, kotlinBase) {
   // ---- report ----------------------------------------------------------------------
   let committed = null
   if (current.mode === 'generation') {
-    committed = generation.current()
+    committed = generation.currentAtProjectRoot(
+      EXECUTION_ROOT, EXECUTION_SCOPE ? EXECUTION_SCOPE.apiGenerationHash : undefined)
     if (!committed.ok || committed.mode !== 'generation' ||
         committed.manifest.generationId !== current.committedGenerationId ||
         committed.snapshotHash !== current.snapshotHash ||
@@ -434,11 +437,11 @@ function typeMatches(specField, kotlinBase) {
     summary: tally,
     findings: boundedFindings,
   }
-  writeDriftReport(report)
+  const reportFile = writeDriftReport(report)
   for (const f of boundedFindings) {
     if (f.severity === 'WARNING') warnMsg(`${f.kind} — ${f.message}`)
     else console.log(`${SEV_TAG[f.severity]} ${f.kind} — ${f.message}`)
   }
-  ok(`drift report: ${tally.errors} error(s), ${tally.warnings} warning(s), ${tally.infos} info(s) -> .cache/api-contract/reports/drift.json (suggestion-only — a human/builder applies any fix)`)
+  ok(`drift report: ${tally.errors} error(s), ${tally.warnings} warning(s), ${tally.infos} info(s) -> ${relative(PROJECT_ROOT, reportFile)} (suggestion-only — a human/builder applies any fix)`)
   process.exit(summary('contract:diff')) // exit 0 — findings live in the report, not the exit code
 })()

@@ -11,6 +11,7 @@ var paths = require('./paths');
 var fileGuards = require('./file-guards');
 var taskIntegrity = require('./task-integrity');
 var projectSourceRevision = require('../../tasks/project-source-revision.cjs');
+var worktreeManager = require('./worktree-manager');
 var contract = require('../../tasks/task-checkpoint-contract.cjs');
 var testPolicy = require('../../tasks/task-test-policy-contract.cjs');
 var receiptRegistry = require('../../tasks/task-receipt-registry.cjs');
@@ -101,7 +102,7 @@ function read(stem, checkpointId) {
   var directory = checkpointDirectory(stem, false);
   if (!directory) return null;
   var value = readJson(directory, checkpointId + '.json', contract.MAX_BYTES);
-  if (!value || contract.validate(value, stem)) return null;
+  if (!value || value.checkpointId !== checkpointId || contract.validate(value, stem)) return null;
   var indexed = index.entries.find(function (entry) { return entry.checkpointId === checkpointId; });
   if (!indexed || indexed.checkpointHash !== value.checkpointHash ||
       indexed.status !== value.status || indexed.createdAt !== value.createdAt) return null;
@@ -216,7 +217,27 @@ function dependencyHash(dependencies) {
   return contract.hash(Array.isArray(dependencies) ? dependencies.slice().sort() : []);
 }
 
+// The live execution pin for a stem: the exact worktree generation, its base
+// and the CURRENT tree of the checkout.
+//   { ok: true, pin }        proven
+//   { ok: true, pin: null }  proven: no execution root (after the Phase-2
+//                            cutover only non-run flows can be in that state)
+//   { ok: false, code }      unprovable — NEVER collapse this into pin:null.
+//                            A receipt stored without a pin is exempt from the
+//                            §6.13 gate for the rest of its life, so a momentary
+//                            unreadable record store or an uncomputable tree
+//                            would mint a permanently uninvalidatable green gate.
+function currentExecutionPin(stem, runId) {
+  try { return worktreeManager.executionPinFor(stem, runId); }
+  catch (error) {
+    return { ok: false, code: 'EXECUTION_PIN_UNAVAILABLE',
+      message: String(error && error.message || error).slice(0, 200) };
+  }
+}
+
 function inputFingerprint(value) {
+  // The execution pin is part of the input identity: a receipt earned against
+  // a different candidate tree or target revision is a different receipt.
   return contract.hash({
     schemaVersion: contract.SCHEMA_VERSION,
     stem: value.stem,
@@ -226,7 +247,8 @@ function inputFingerprint(value) {
     configHash: value.configHash,
     dependencySnapshotHash: value.dependencySnapshotHash,
     testPolicyHash: value.testPolicyHash,
-    priorPhaseReceiptIds: value.priorPhaseReceiptIds
+    priorPhaseReceiptIds: value.priorPhaseReceiptIds,
+    executionPin: value.executionPin || null
   });
 }
 
@@ -284,7 +306,8 @@ function defaultReceiptVerifier(value) {
         result.receipt.taskStem !== value.stem || result.receipt.runId !== value.runId ||
         result.receipt.policyHash !== value.testPolicyHash) return false;
     if (result.kind === 'test-summary') {
-      return result.receipt.verdict === 'PASS' &&
+      return (result.receipt.verdict === 'PASS' ||
+          value.phase === 'ship' && value.status === 'completed' && result.receipt.verdict === 'SKIPPED') &&
         result.receipt.snapshotVerification === 'current';
     }
     return true;
@@ -337,8 +360,27 @@ function create(stem, input, dependencies) {
     priorPhaseReceiptIds: input.priorPhaseReceiptIds.slice(),
     failureCode: input.failureCode,
     retryPolicy: Object.assign({}, input.retryPolicy),
+    // Bind the receipt to the exact candidate tree and target revision it was
+    // earned against (pipeline improvement 01 §6.13): a green gate never
+    // survives a changed tree, a moved target, or a new generation. Filled in
+    // below, because an unprovable pin REFUSES rather than storing null.
+    executionPin: null,
     checkpointHash: 'sha256:' + '0'.repeat(64)
   };
+  if (dependencies.executionPin === undefined) {
+    var pinned = currentExecutionPin(stem, input.runId);
+    // Every other unprovable input in this function refuses
+    // ('checkpoint-input-revision-unavailable', 'test-policy-unavailable').
+    // The execution pin is the one that must NOT be the exception: null here is
+    // not "no gate applies", it is "this receipt can never be invalidated".
+    if (!pinned.ok || pinned.pin === null) {
+      return { ok: false, error: 'execution-context-unavailable',
+        detail: String(pinned.message || pinned.code || '').slice(0, 300) };
+    }
+    value.executionPin = pinned.pin;
+  } else {
+    value.executionPin = dependencies.executionPin;
+  }
   value.inputFingerprint = inputFingerprint(value);
   try { value = contract.seal(value); }
   catch (error) { return { ok: false, error: 'checkpoint-invalid', detail: String(error.message).slice(0, 300) }; }
@@ -349,6 +391,30 @@ function freshness(value, dependencies) {
   dependencies = dependencies || {};
   if (!value || contract.validate(value, value && value.stem)) {
     return { current: false, reasonCode: 'checkpoint-invalid', limitations: [] };
+  }
+  var currentRunId = Object.prototype.hasOwnProperty.call(dependencies, 'activeRunId')
+    ? dependencies.activeRunId : activeRunId(value.stem);
+  if (currentRunId !== value.runId) {
+    return { current: false, reasonCode: 'run-owner-changed', limitations: [] };
+  }
+  // Pipeline improvement 01 §6.13/§6.15: a receipt earned inside an execution
+  // root is current ONLY while that generation, its candidate tree and its
+  // target revision are unchanged. A pin that cannot be recomputed is not a
+  // pass — an unprovable execution context invalidates the receipt.
+  var recordedPin = value.executionPin || null;
+  if (recordedPin !== null) {
+    var livePin;
+    if (dependencies.executionPin === undefined) {
+      var live = currentExecutionPin(value.stem, value.runId);
+      if (!live.ok) return { current: false, reasonCode: 'execution-context-unavailable', limitations: [] };
+      livePin = live.pin;
+    } else {
+      livePin = dependencies.executionPin;
+    }
+    if (!livePin) return { current: false, reasonCode: 'execution-context-unavailable', limitations: [] };
+    var pinFields = ['worktreeId', 'baseCommit', 'baseTree', 'executionTree', 'targetRef', 'targetCommit'];
+    var pinChanged = pinFields.some(function (field) { return livePin[field] !== recordedPin[field]; });
+    if (pinChanged) return { current: false, reasonCode: 'execution-changed', limitations: [] };
   }
   var snapshot = dependencies.taskSnapshot || canonicalTaskSnapshot(value.stem);
   if (!snapshot) return { current: false, reasonCode: 'task-integrity', limitations: [] };
@@ -454,6 +520,33 @@ function summary(stem) {
     partial: index.invalid,
     limitations: index.invalid ? ['checkpoint-index-invalid'] : []
   };
+}
+
+// The candidate sealer's sole gate authority (§28.4). A receipt is publishable
+// only when this exact run has a completed `ship` checkpoint whose execution
+// pin is still the live candidate tree/target and whose task, project, config,
+// test-policy and referenced evidence are all fresh. Merely writing an
+// executionPin into a checkpoint is decorative unless the sealing boundary
+// actually consumes it.
+function sealingGate(stem, runId, executionPin, dependencies) {
+  var index = readIndex(stem);
+  if (index.invalid) return { ok: false, code: 'SEAL_GATE_STORE_INVALID', message: 'the checkpoint store is invalid' };
+  var candidates = index.entries.map(function (entry) { return read(stem, entry.checkpointId); })
+    .filter(function (value) {
+      return value && value.runId === runId && value.phase === 'ship' && value.status === 'completed';
+    });
+  if (!candidates.length) {
+    return { ok: false, code: 'SEAL_GATE_ABSENT', message: 'the run has no completed ship checkpoint' };
+  }
+  var checkedDependencies = Object.assign({}, dependencies || {}, { executionPin: executionPin });
+  for (var i = 0; i < candidates.length; i++) {
+    var state = freshness(candidates[i], checkedDependencies);
+    if (state.current) return { ok: true, checkpoint: candidates[i] };
+  }
+  var latestState = freshness(candidates[0], checkedDependencies);
+  return { ok: false, code: 'SEAL_GATE_STALE',
+    message: 'the completed ship checkpoint is stale: ' + latestState.reasonCode,
+    reasonCode: latestState.reasonCode };
 }
 
 function retryCandidate(stem, checkpointId, options) {
@@ -586,6 +679,7 @@ module.exports = Object.freeze({
   freshness: freshness,
   list: list,
   summary: summary,
+  sealingGate: sealingGate,
   retryCandidate: retryCandidate,
   retryStatus: retryStatus,
   preview: preview,

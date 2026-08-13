@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync, mkdirSync, renameSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
-import { displayPath, figmaPath, loadScreenshotThresholds, pipelineRunId } from './_util.mjs'
+import { displayPath, figmaPath, loadScreenshotThresholds, pipelineRunId, writeFigmaRuntimeFile } from './_util.mjs'
 
 export function assertTaskStem(raw, label = 'taskStem') {
   const match = typeof raw === 'string' && raw.length <= 120
@@ -92,10 +92,7 @@ export function buildReport({ name, taskStem, mode, inputs = {}, inputHashes = {
 }
 
 export function persistReport({ report, reportPath }) {
-  mkdirSync(dirname(reportPath), { recursive: true })
-  const tmp = reportPath + '.tmp'
-  writeFileSync(tmp, JSON.stringify(report, null, 2) + '\n')
-  renameSync(tmp, reportPath)
+  writeFigmaRuntimeFile(reportPath, JSON.stringify(report, null, 2) + '\n')
   return { report, reportPath }
 }
 

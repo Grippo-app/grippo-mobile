@@ -132,11 +132,11 @@ export const leafSuiteNames = Object.freeze([
 
 export const expectedOwnershipSummary = Object.freeze({
   api: 7,
-  'app-run': 10,
-  site: 28,
+  'app-run': 11,
+  site: 35,
   tooling: 1,
-  tasks: 15,
-  figma: 60,
+  tasks: 16,
+  figma: 61,
   'crash-recovery:task-state': 13,
   'crash-recovery:intake': 13,
   'crash-recovery:runtime': 8,

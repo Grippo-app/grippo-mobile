@@ -580,10 +580,14 @@ function evidenceHashDrift(bundleData, reports) {
 function trustedInputFile(inputPath) {
   var p = String(inputPath || '');
   if (!p) return null;
+  // Since worktree isolation a gate records product inputs by their absolute
+  // path inside the EXECUTION checkout, which lives beside the control root.
+  // That checkout is manager-owned, so it is a trusted input root — without it
+  // every product input of every report reads back as untrusted.
   var candidates = path.isAbsolute(p)
     ? [p]
     : [path.resolve(paths.PROJECT_ROOT, p), path.resolve(paths.FIGMA_CACHE_DIR, p)];
-  var roots = [paths.PROJECT_ROOT, paths.FIGMA_CACHE_DIR];
+  var roots = [paths.PROJECT_ROOT, paths.FIGMA_CACHE_DIR, paths.WORKTREE_HOME];
   for (var i = 0; i < candidates.length; i++) {
     for (var j = 0; j < roots.length; j++) {
       var safe = fileGuards.realFileUnder(roots[j], candidates[i], { maxBytes: INPUT_HASH_MAX_BYTES });

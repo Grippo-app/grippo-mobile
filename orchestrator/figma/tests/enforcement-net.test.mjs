@@ -43,9 +43,11 @@ let pass = 0, fail = 0
 const check = (name, fn) => { try { fn(); pass++; console.log(`${C.green}PASS${C.reset} ${name}`) } catch (e) { fail++; console.log(`${C.red}FAIL${C.reset} ${name}\n     ${e.message}`) } }
 
 // ─── Section A — run-gate ────────────────────────────────────────────────────
-// The server modules are CommonJS; stub the two inputs (git probe + project
-// config) through the shared require cache BEFORE sessions.js captures them,
-// then drive runGateError/start/send against controlled wiring states.
+// The server modules are CommonJS; stub the centralized git-owned policy
+// through the shared require cache BEFORE sessions.js captures it, then drive
+// runGateError/start/send against controlled wiring/config states. sessions.js
+// no longer reads enforcementWiring() itself, so stubbing only that retired
+// dependency boundary would accidentally exercise the operator's real repo.
 const require2 = createRequire(import.meta.url)
 // Mirror the production bootstrap order in a private project root. sessions.js
 // deliberately fails closed while the finalization authority is absent; the
@@ -66,6 +68,16 @@ const EXPECTED = 'orchestrator/skills/checks/hooks'
 let wiring = { inGit: true, hooksPath: '', expected: EXPECTED, wired: false }
 let cfg = { figmaEnabled: true }
 require2.cache[gitPath].exports.enforcementWiring = () => wiring
+require2.cache[gitPath].exports.enforcementNetIssue = () => {
+  if (process.env.FIGMA_WIRING_GATE === '0' || !cfg || cfg.figmaEnabled !== true || wiring.wired) return null
+  const state = wiring.inGit
+    ? `core.hooksPath is ${wiring.hooksPath ? `'${wiring.hooksPath}'` : 'UNSET'}, expected '${wiring.expected}'`
+    : 'not a git work-tree (or git unavailable)'
+  return 'figma-net-unwired: ' + state + ' — the LOCAL screenshot-gate net (pre-commit verify-done) ' +
+    'is INACTIVE, so an uncompared UI task could ship to done/. Wire it: ' +
+    '`git config core.hooksPath ' + wiring.expected + '` (or run orchestrator/skills/install-skills.sh). ' +
+    'Deliberate opt-out (self-managed hooks): FIGMA_WIRING_GATE=0.'
+}
 require2.cache[cfgPath].exports.parseConfigForm = () => cfg
 // The gate is intentionally scoped to tasks with visual evidence. Supply one
 // exact canonical todo row without constructing a mutable task corpus: this

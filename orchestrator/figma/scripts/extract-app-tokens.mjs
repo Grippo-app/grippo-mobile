@@ -10,10 +10,10 @@
 //   FIGMA_APP_TOKEN_FILES — path-delimited explicit files
 //   FIGMA_APP_TOKENS_OUT  — output path
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync, renameSync } from 'node:fs'
-import { dirname, join, delimiter } from 'node:path'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join, delimiter } from 'node:path'
 import { TextDecoder } from 'node:util'
-import { figmaPath, isDirectRun, PROJECT_ROOT } from './_util.mjs'
+import { figmaPath, isDirectRun, PROJECT_ROOT, EXECUTION_ROOT, executionProductInputPath, executionFigmaOutputPath, writeFigmaRuntimeFile } from './_util.mjs'
 
 const SOURCE_EXT = /\.(kt|kts)$/i
 const SKIP_DIRS = new Set(['.git', '.gradle', '.idea', 'build', 'node_modules', 'orchestrator'])
@@ -252,24 +252,22 @@ export function extractAppTokens({ roots = [], files = [], resolveAliases = fals
 }
 
 function atomicWrite(path, data) {
-  mkdirSync(dirname(path), { recursive: true })
-  const tmp = path + '.tmp'
-  writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n')
-  renameSync(tmp, path)
+  writeFigmaRuntimeFile(path, JSON.stringify(data, null, 2) + '\n')
 }
 
 if (isDirectRun(import.meta.url)) {
   const roots = [
     ...valuesAfter('--root'),
     ...(process.env.FIGMA_APP_TOKEN_ROOTS ? process.env.FIGMA_APP_TOKEN_ROOTS.split(delimiter).filter(Boolean) : []),
-  ]
+  ].map((value) => executionProductInputPath(value, 'App token root'))
   const files = [
     ...valuesAfter('--file'),
     ...(process.env.FIGMA_APP_TOKEN_FILES ? process.env.FIGMA_APP_TOKEN_FILES.split(delimiter).filter(Boolean) : []),
-  ]
+  ].map((value) => executionProductInputPath(value, 'App token file'))
   const outFlag = valuesAfter('--out')[0]
-  const out = outFlag || process.env.FIGMA_APP_TOKENS_OUT || figmaPath('reports', 'app-tokens.json')
-  const scanRoots = roots.length ? roots : (files.length ? [] : [PROJECT_ROOT])
+  const out = executionFigmaOutputPath(
+    outFlag || process.env.FIGMA_APP_TOKENS_OUT || figmaPath('reports', 'app-tokens.json'))
+  const scanRoots = roots.length ? roots : (files.length ? [] : [EXECUTION_ROOT])
   // W6-4: a pre-extracted evidence file consumed via FIGMA_APP_TOKENS bypasses the spec
   // gate's own alias resolution (loadEvidence resolves only when IT extracts), so a canvas
   // hoisted alias silently false-BLOCKed on that input path. `--resolve-aliases` bakes the

@@ -198,14 +198,6 @@ function publicationMarkerIssue(options = {}) {
   return editMarkerContract.blockingIssue(EDITS_DIR, null, false, WRITER_AUTHORITY_ROOT)
 }
 
-function deterministicPublicationLease(row) {
-  return row && (row.kind === 'runtime-build' || typeof row.key === 'string' && (
-    row.key === 'task:create-backlog' ||
-    row.key === 'task:recover-backlog-creations' ||
-    row.key === 'task:recover-backlog-edits' ||
-    row.key.startsWith('task:edit-backlog:')
-  ))
-}
 function delegationHash(token) {
   return `sha256:${createHash('sha256').update(String(token), 'ascii').digest('hex')}`
 }
@@ -227,17 +219,14 @@ function activeWriterIssue(own) {
     message: 'the newly published writer lease is not active'
   }
   const stem = activeOwn.stem
-  const ownIsGlobal = deterministicPublicationLease(activeOwn)
-  // Frozen serial safety (pipeline improvement 01, Phase 0): board-task
-  // writers are mutually exclusive across stems AND drainers. A guarded
-  // task-session acquire therefore loses the publish-then-scan handshake
-  // against ANY other live board-task writer — a site runner session, another
-  // standby execution, or an orphan surviving a dead site process — mirroring
-  // the site's beginMutation predicate. Relaxing this back to per-stem is
-  // allowed only atomically with per-task worktree isolation.
+  const ownIsGlobal = writerLeases.deterministicPublisherLease(activeOwn)
+  // Per-stem board-task exclusivity, mirroring the site's beginMutation
+  // predicate exactly. The cross-stem freeze that Phase 0 installed is lifted
+  // together with per-task worktree isolation (Phases 1-5): two runs own
+  // disjoint checkouts, so only a writer for the SAME stem — or a global
+  // deterministic publisher — can conflict.
   const conflict = scan.active.find((row) => row.leaseId !== activeOwn.leaseId && (
-    ownIsGlobal || deterministicPublicationLease(row) ||
-    (activeOwn.kind === 'task-session' && row.kind === 'task-session') ||
+    ownIsGlobal || writerLeases.deterministicPublisherLease(row) ||
     (stem && (row.stem === stem || row.key === `task:${stem}`))
   ))
   return conflict ? {
@@ -454,7 +443,7 @@ try {
     if (matches.length !== 1) die(`lease receipt verification refused: expected one exact active bounded task-session lease, found ${matches.length}`, 2)
     const own = matches[0]
     const conflict = scan.active.find((row) => row.leaseId !== own.leaseId &&
-      (deterministicPublicationLease(row) || row.stem === stem || row.key === `task:${stem}`))
+      (writerLeases.deterministicPublisherLease(row) || row.stem === stem || row.key === `task:${stem}`))
     if (conflict) die(`lease receipt verification refused: another active writer owns ${stem} (${conflict.leaseId})`, 2)
     if (parsed['--guard-finalization']) {
       const issue = finalizationGuardIssue()
@@ -473,6 +462,15 @@ try {
     if (!writerLeases.SESSION_ID_RE.test(sessionId) || !taskSource.safeTaskStem(stem)) {
       die('verify-session requires a valid --session-id and --stem')
     }
+    const leaseId = process.env.ORCHESTRATOR_WRITER_LEASE_ID || ''
+    const delegationToken = process.env.ORCHESTRATOR_WRITER_DELEGATION_TOKEN || ''
+    if (!writerLeases.LEASE_ID_RE.test(leaseId) || !/^[a-f0-9]{48}$/.test(delegationToken)) {
+      die('session verification refused: exact inherited delegation capability is unavailable', 2)
+    }
+    const callerStartId = writerLeases.captureProcessStartId(process.pid)
+    if (!writerLeases.PROCESS_START_ID_RE.test(String(callerStartId || ''))) {
+      die('session verification refused: caller process generation is unavailable', 2)
+    }
     const scan = scanWriterState('site-session')
     if (scan.issues.length) die(`session verification refused [${scan.issues[0].code || 'WRITER_LEASE_INVALID'}]: ${scan.issues[0].message}`, 2)
     // This command authenticates only a site-started Claude turn. Direct CLI
@@ -481,15 +479,18 @@ try {
     // Site leases are non-expiring, attached to the already-spawned child, and
     // use the canonical task key. Their lifecycle is instead closed by the
     // site's result/process-tree handling.
-    const matches = scan.active.filter((row) => row.kind === 'task-session' && row.stem === stem &&
+    const matches = scan.active.filter((row) => row.leaseId === leaseId &&
+      row.delegationHash === delegationHash(delegationToken) &&
+      row.kind === 'task-session' && row.stem === stem &&
       row.sessionId === sessionId && row.unverified === false && row.expiresAt === null &&
       Number.isInteger(row.childPid) && row.childPid > 0 && row.key === `task:${stem}` &&
       row.owner && row.owner.hostname === hostname() &&
-      writerLeases.processIdentityMatches(row.childPid, row.childProcessStartId))
-    if (matches.length !== 1) die(`session verification refused: expected one active attached site lease, found ${matches.length}`, 2)
+      writerLeases.processTreeProof(process.pid, callerStartId,
+        row.childPid, row.childProcessStartId).ok)
+    if (matches.length !== 1) die(`session verification refused: expected one exact delegated active site lease, found ${matches.length}`, 2)
     const own = matches[0]
     const conflict = scan.active.find((row) => row.leaseId !== own.leaseId &&
-      (deterministicPublicationLease(row) || row.stem === stem || row.key === `task:${stem}`))
+      (writerLeases.deterministicPublisherLease(row) || row.stem === stem || row.key === `task:${stem}`))
     if (conflict) {
       die(`session verification refused: another active writer owns ${stem} (${conflict.leaseId})`, 2)
     }

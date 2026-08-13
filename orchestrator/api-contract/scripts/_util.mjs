@@ -3,16 +3,38 @@
 import { readFileSync, existsSync, writeFileSync, renameSync, mkdirSync, lstatSync, realpathSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
-import { dirname, join, relative, resolve, sep } from 'node:path'
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { createRequire } from 'node:module'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const SIDECAR_DIR = resolve(HERE, '..')                        // orchestrator/api-contract (code root)
 export const contractCodePath = (...parts) => join(SIDECAR_DIR, ...parts)
+const require = createRequire(import.meta.url)
+const reportScope = require(resolve(SIDECAR_DIR, 'report-scope.cjs'))
+const EXECUTION_SIGNAL_KEYS = [
+  'ORCHESTRATOR_EXECUTION_MANIFEST', 'ORCHESTRATOR_EXECUTION_ROOT',
+  'ORCHESTRATOR_RUN_ID', 'ORCHESTRATOR_TASK_SNAPSHOT_FILE',
+  'ORCHESTRATOR_TASK_SNAPSHOT_HASH', 'ORCHESTRATOR_WORKTREE_ID',
+  'ORCHESTRATOR_WRITER_SESSION_ID', 'ORCHESTRATOR_WRITER_STEM',
+]
+function verifiedExecutionScope() {
+  if (!EXECUTION_SIGNAL_KEYS.some((key) => String(process.env[key] || '').length > 0)) return null
+  const manager = require(resolve(HERE, '..', '..', 'site', 'server', 'worktree-manager.js'))
+  const proved = manager.executionEnvironmentContext(process.env)
+  if (!proved || proved.ok !== true || !proved.context) {
+    throw new Error(`${proved && proved.code || 'EXECUTION_ENVIRONMENT_UNPROVEN'}: ${proved && proved.message || 'execution environment is not manager-issued'}`)
+  }
+  return Object.freeze({ ...proved.context })
+}
+export const EXECUTION_SCOPE = verifiedExecutionScope()
 export const PROJECT_ROOT = resolve(process.env.ORCHESTRATOR_PROJECT_ROOT || resolve(SIDECAR_DIR, '..', '..'))
-const PROJECT_CONTRACT_DIR = join(PROJECT_ROOT, 'orchestrator', 'api-contract')
-const RUNTIME_CACHE_ROOT = resolve(process.env.ORCHESTRATOR_CACHE_DIR ||
-  join(PROJECT_ROOT, 'orchestrator', '.cache'))
+export const EXECUTION_ROOT = EXECUTION_SCOPE ? EXECUTION_SCOPE.executionRoot : PROJECT_ROOT
+const PROJECT_CONTRACT_DIR = join(EXECUTION_ROOT, 'orchestrator', 'api-contract')
+const DEFAULT_RUNTIME_CACHE_ROOT = join(PROJECT_ROOT, 'orchestrator', '.cache')
+const RUNTIME_CACHE_ROOT = resolve(process.env.ORCHESTRATOR_CACHE_DIR || DEFAULT_RUNTIME_CACHE_ROOT)
+if (EXECUTION_SCOPE && RUNTIME_CACHE_ROOT !== DEFAULT_RUNTIME_CACHE_ROOT) {
+  throw new Error('ORCHESTRATOR_CACHE_DIR must equal the manager-owned control cache during an execution run')
+}
 const STAGING_ROOT = join(RUNTIME_CACHE_ROOT, 'api-contract', 'staging')
 function ownedStagingDir(raw, leaf) {
   const candidate = resolve(raw)
@@ -36,6 +58,9 @@ function ownedStagingDir(raw, leaf) {
 }
 const DATA_OVERRIDE = process.env.ORCHESTRATOR_API_CONTRACT_DATA_DIR
 const CACHE_OVERRIDE = process.env.ORCHESTRATOR_API_CONTRACT_CACHE_DIR
+if (EXECUTION_SCOPE && (DATA_OVERRIDE || CACHE_OVERRIDE)) {
+  throw new Error('api-contract refresh staging is forbidden inside a task execution checkout')
+}
 if (Boolean(DATA_OVERRIDE) !== Boolean(CACHE_OVERRIDE)) {
   throw new Error('api-contract staging data/cache overrides must be supplied together')
 }
@@ -48,6 +73,27 @@ if (STAGING_DATA && STAGING_DATA.jobId !== STAGING_CACHE.jobId) {
 // root. This override is set only on the exact spawned child and keeps probe
 // mode physically incapable of touching committed manifests.
 const CONTRACT_DATA_DIR = STAGING_DATA ? STAGING_DATA.path : PROJECT_CONTRACT_DIR
+
+function fileBytesOrEmpty(file) {
+  let bytes = Buffer.alloc(0)
+  try { bytes = readFileSync(file) } catch (error) {
+    if (!error || error.code !== 'ENOENT') throw error
+  }
+  return bytes
+}
+function hashBytes(bytes) {
+  return 'sha256:' + createHash('sha256').update(bytes).digest('hex')
+}
+if (EXECUTION_SCOPE && hashBytes(fileBytesOrEmpty(join(PROJECT_CONTRACT_DIR, 'manifests', 'current-generation.json'))) !==
+    EXECUTION_SCOPE.apiGenerationHash) {
+  throw new Error('API_EXECUTION_GENERATION_MISMATCH: execution checkout does not contain the manifest-pinned API generation')
+}
+const PROJECT_CONFIG_FILE = join(EXECUTION_ROOT, 'orchestrator', 'project-config.md')
+const EXECUTION_PROJECT_CONFIG_BYTES = EXECUTION_SCOPE ? fileBytesOrEmpty(PROJECT_CONFIG_FILE) : null
+if (EXECUTION_SCOPE && hashBytes(EXECUTION_PROJECT_CONFIG_BYTES) !==
+    EXECUTION_SCOPE.projectConfigHash) {
+  throw new Error('PROJECT_CONFIG_EXECUTION_GENERATION_MISMATCH: execution checkout does not contain the manifest-pinned project config')
+}
 
 const C = { reset: '\x1b[0m', red: '\x1b[31m', yellow: '\x1b[33m', green: '\x1b[32m', dim: '\x1b[2m' }
 let pass = 0, warn = 0, fail = 0
@@ -95,9 +141,10 @@ export function redactUrl(value) {
 const CONTRACT_CACHE_DIR = STAGING_CACHE
   ? STAGING_CACHE.path
   : join(RUNTIME_CACHE_ROOT, 'api-contract')
+export const REPORTS_DIR = reportScope.directory(CONTRACT_CACHE_DIR, EXECUTION_SCOPE)
 export const contractPath = (...parts) => {
   if (parts[0] === '.cache')  return join(CONTRACT_CACHE_DIR, ...parts.slice(1))
-  if (parts[0] === 'reports') return join(CONTRACT_CACHE_DIR, 'reports', ...parts.slice(1))
+  if (parts[0] === 'reports') return join(REPORTS_DIR, ...parts.slice(1))
   return join(CONTRACT_DATA_DIR, ...parts)
 }
 
@@ -108,6 +155,28 @@ export function atomicWrite(path, data) {
   const tmp = path + '.tmp'
   writeFileSync(tmp, typeof data === 'string' ? data : JSON.stringify(data, null, 2) + '\n')
   renameSync(tmp, path)
+}
+
+export function writeContractReport(file, data) {
+  const target = resolve(file)
+  const rel = relative(REPORTS_DIR, target)
+  if (!rel || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+    throw new Error('api-contract report target escapes the current report scope')
+  }
+  const bytes = Buffer.isBuffer(data)
+    ? data
+    : Buffer.from(typeof data === 'string' ? data : JSON.stringify(data, null, 2) + '\n')
+  const fileGuards = require(resolve(HERE, '..', '..', 'site', 'server', 'file-guards.js'))
+  const directory = dirname(target)
+  if (bytes.length > 16 * 1024 * 1024 ||
+      !fileGuards.realDirectoryUnder(PROJECT_ROOT, directory, { create: true, mode: 0o700 })) {
+    throw new Error('api-contract report directory is unsafe')
+  }
+  const published = fileGuards.atomicReplaceRegularFileResult(
+    PROJECT_ROOT, directory, target, bytes,
+    { create: true, directoryMode: 0o700, mode: 0o600, maxBytes: 16 * 1024 * 1024 },
+  )
+  if (!published.ok) throw new Error('api-contract report publication failed')
 }
 
 export const sha256 = (text) => 'sha256:' + createHash('sha256').update(text).digest('hex')
@@ -125,9 +194,11 @@ export const synthOperationId = (method, path) =>
 // Read a frontmatter scalar from orchestrator/project-config.md without a YAML dep.
 // undefined = key absent; null = still the <placeholder>; otherwise the trimmed value.
 export function readConfig(key) {
-  const cfg = join(PROJECT_ROOT, 'orchestrator', 'project-config.md')
-  if (!existsSync(cfg)) return undefined
-  const m = readFileSync(cfg, 'utf8').match(new RegExp(`^${key}:\\s*(.+)$`, 'm'))
+  if (!EXECUTION_SCOPE && !existsSync(PROJECT_CONFIG_FILE)) return undefined
+  const text = EXECUTION_SCOPE
+    ? EXECUTION_PROJECT_CONFIG_BYTES.toString('utf8')
+    : readFileSync(PROJECT_CONFIG_FILE, 'utf8')
+  const m = text.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'))
   if (!m) return undefined
   const v = m[1].trim()
   return v.startsWith('<') ? null : v
@@ -143,9 +214,10 @@ export function currentContractFiles() {
       snapshotHash: null, committedGenerationId: null, environmentId: null, invalid: false }
   }
   try {
-    const require = createRequire(import.meta.url)
     const reader = require(resolve(HERE, '..', '..', 'site', 'server', 'contract-generation.js'))
-    const current = reader.current()
+    const current = EXECUTION_SCOPE
+      ? reader.currentAtProjectRoot(EXECUTION_ROOT, EXECUTION_SCOPE.apiGenerationHash)
+      : reader.current()
     if (!current.ok) return { mode: 'invalid', inventory: null, areasDir: null, spec: null,
       snapshotHash: null, committedGenerationId: null, environmentId: null,
       invalid: true, error: current.error }

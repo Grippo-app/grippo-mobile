@@ -30,6 +30,12 @@ function run(args, extraEnv = {}) {
     },
   })
 }
+function siteEnv(handle) {
+  return {
+    ORCHESTRATOR_WRITER_LEASE_ID: handle.leaseId,
+    ORCHESTRATOR_WRITER_DELEGATION_TOKEN: handle.delegationToken,
+  }
+}
 function acquireArgs() {
   return [
     'acquire', '--kind', 'task-session', '--stem', 'TASK_1_direct_guard',
@@ -96,19 +102,24 @@ try {
     assert.deepEqual(writerLeases.scan(writers).active.map((row) => row.leaseId), [owner.leaseId],
       'losing CLI process must withdraw only its own lease')
 
-    // Frozen serial safety (pipeline improvement 01, Phase 0): board-task
-    // writers are mutually exclusive across stems and drainers, so a guarded
-    // cross-stem task-session acquire loses the handshake too.
+    // With per-task worktree isolation complete (Phases 1-5) board-task writers
+    // are exclusive PER STEM, so a guarded cross-stem acquire is ADMITTED: the
+    // two runs own disjoint checkouts. The guarded CLI mirrors the site
+    // predicate exactly, which is what keeps standby and the site in agreement.
     const parallel = run([
       'acquire', '--guard-finalization', '--kind', 'task-session',
       '--stem', 'TASK_18_cli_parallel', '--key', 'standby:run',
       '--owner-pid', String(process.pid), '--ttl-ms', '60000',
     ])
-    assert.equal(parallel.status, 2, parallel.stderr + parallel.stdout)
-    assert.equal(parallel.stdout, '')
-    assert.match(parallel.stderr, /WORKSPACE_WRITER_ACTIVE/)
-    assert.deepEqual(writerLeases.scan(writers).active.map((row) => row.leaseId), [owner.leaseId],
-      'a cross-stem board-task writer must withdraw only its own lease')
+    assert.equal(parallel.status, 0, parallel.stderr + parallel.stdout)
+    const parallelReceipt = JSON.parse(parallel.stdout)
+    assert.equal(writerLeases.scan(writers).active.length, 2,
+      'a different stem must be admitted beside a live board-task writer')
+    // Released directly: releaseLease() asserts an empty store, and the owner
+    // lease is deliberately still held here.
+    const parallelReleased = run(['release', '--lease-id', parallelReceipt.leaseId, '--token', parallelReceipt.token])
+    assert.equal(parallelReleased.status, 0, parallelReleased.stderr + parallelReleased.stdout)
+    assert.deepEqual(writerLeases.scan(writers).active.map((row) => row.leaseId), [owner.leaseId])
 
     refused = run([
       'acquire', '--guard-finalization', '--kind', 'standby-writer',
@@ -305,13 +316,21 @@ try {
     const sessionId = writerLeases.createSessionId()
     const handle = writerLeases.acquire(writers, {
       kind: 'task-session', stem: 'TASK_8_inherited', key: 'task:TASK_8_inherited',
-      sessionId, ownerPid: process.pid, childPid: process.pid,
+      sessionId, ownerPid: process.pid, pendingChild: true,
     })
+    writerLeases.updateChildPid(handle, process.pid)
     const before = writerSnapshot()
+    const copiedPublicTuple = run([
+      'verify-session', '--session-id', sessionId, '--stem', 'TASK_8_inherited',
+    ])
+    assert.equal(copiedPublicTuple.status, 2, copiedPublicTuple.stderr + copiedPublicTuple.stdout)
+    assert.equal(copiedPublicTuple.stdout, '')
+    assert.match(copiedPublicTuple.stderr, /delegation|capability|authority/i)
+    assert.deepEqual(writerSnapshot(), before, 'public identifiers alone must remain read-only and unauthorized')
     const result = run([
       'verify-session', '--guard-finalization', '--session-id', sessionId,
       '--stem', 'TASK_8_inherited',
-    ])
+    ], siteEnv(handle))
     assert.equal(result.status, 0, result.stderr + result.stdout)
     assert.deepEqual(JSON.parse(result.stdout), {
       verified: true, sessionId, stem: 'TASK_8_inherited', leaseId: handle.leaseId,
@@ -325,10 +344,10 @@ try {
     const duplicateSnapshot = writerSnapshot()
     const ambiguous = run([
       'verify-session', '--session-id', sessionId, '--stem', 'TASK_8_inherited',
-    ])
+    ], siteEnv(handle))
     assert.equal(ambiguous.status, 2, ambiguous.stderr + ambiguous.stdout)
     assert.equal(ambiguous.stdout, '')
-    assert.match(ambiguous.stderr, /expected one active attached site lease, found 2/)
+    assert.match(ambiguous.stderr, /another active writer owns TASK_8_inherited/)
     assert.deepEqual(writerSnapshot(), duplicateSnapshot, 'ambiguous credentials must fail without mutation')
     writerLeases.release(duplicate)
     assert.deepEqual(writerSnapshot(), before)
@@ -337,10 +356,10 @@ try {
       ['verify-session', '--session-id', writerLeases.createSessionId(), '--stem', 'TASK_8_inherited'],
       ['verify-session', '--session-id', sessionId, '--stem', 'TASK_9_wrong_stem'],
     ]) {
-      const refused = run(args)
+      const refused = run(args, siteEnv(handle))
       assert.equal(refused.status, 2, refused.stderr + refused.stdout)
       assert.equal(refused.stdout, '')
-      assert.match(refused.stderr, /expected one active attached site lease, found 0/)
+      assert.match(refused.stderr, /expected one exact delegated active site lease, found 0/)
       assert.deepEqual(writerSnapshot(), before, 'a stale/mismatched inherited credential must not mutate leases')
     }
     writerLeases.release(handle)
@@ -351,15 +370,16 @@ try {
     const sessionId = writerLeases.createSessionId()
     const own = writerLeases.acquire(writers, {
       kind: 'task-session', stem, key: `task:${stem}`,
-      sessionId, ownerPid: process.pid, childPid: process.pid,
+      sessionId, ownerPid: process.pid, pendingChild: true,
     })
+    writerLeases.updateChildPid(own, process.pid)
 
     const sameStem = writerLeases.acquire(writers, {
       kind: 'task-session', stem, key: 'direct:foreign-same-stem',
       sessionId: writerLeases.createSessionId(), ownerPid: process.pid, childPid: process.pid,
     })
     let before = writerSnapshot()
-    let result = run(['verify-session', '--session-id', sessionId, '--stem', stem])
+    let result = run(['verify-session', '--session-id', sessionId, '--stem', stem], siteEnv(own))
     assert.equal(result.status, 2, result.stderr + result.stdout)
     assert.equal(result.stdout, '')
     assert.match(result.stderr, /another active writer owns TASK_14_exclusive/)
@@ -371,7 +391,7 @@ try {
       sessionId: writerLeases.createSessionId(), ownerPid: process.pid, childPid: process.pid,
     })
     before = writerSnapshot()
-    result = run(['verify-session', '--session-id', sessionId, '--stem', stem])
+    result = run(['verify-session', '--session-id', sessionId, '--stem', stem], siteEnv(own))
     assert.equal(result.status, 2, result.stderr + result.stdout)
     assert.equal(result.stdout, '')
     assert.match(result.stderr, /another active writer owns TASK_14_exclusive/)
@@ -383,7 +403,7 @@ try {
       sessionId: writerLeases.createSessionId(), ownerPid: process.pid, childPid: process.pid,
     })
     before = writerSnapshot()
-    result = run(['verify-session', '--session-id', sessionId, '--stem', stem])
+    result = run(['verify-session', '--session-id', sessionId, '--stem', stem], siteEnv(own))
     assert.equal(result.status, 0, result.stderr + result.stdout)
     assert.deepEqual(JSON.parse(result.stdout), { verified: true, sessionId, stem, leaseId: own.leaseId })
     assert.deepEqual(writerSnapshot(), before,
@@ -399,23 +419,24 @@ try {
       sessionId, ownerPid: process.pid, pendingChild: true,
     })
     let before = writerSnapshot()
-    let result = run(['verify-session', '--session-id', sessionId, '--stem', 'TASK_10_unverified'])
+    let result = run(['verify-session', '--session-id', sessionId, '--stem', 'TASK_10_unverified'], siteEnv(pending))
     assert.equal(result.status, 2, result.stderr + result.stdout)
     assert.equal(result.stdout, '')
-    assert.match(result.stderr, /expected one active attached site lease, found 0/)
+    assert.match(result.stderr, /expected one exact delegated active site lease, found 0/)
     assert.deepEqual(writerSnapshot(), before)
     writerLeases.release(pending)
 
     const verified = writerLeases.acquire(writers, {
       kind: 'task-session', stem: 'TASK_11_guarded', key: 'task:TASK_11_guarded',
-      sessionId, ownerPid: process.pid, childPid: process.pid,
+      sessionId, ownerPid: process.pid, pendingChild: true,
     })
+    writerLeases.updateChildPid(verified, process.pid)
     writeFileSync(join(state, 'TASK_11_recovery.json'), '{}\n')
     before = writerSnapshot()
     result = run([
       'verify-session', '--guard-finalization', '--session-id', sessionId,
       '--stem', 'TASK_11_guarded',
-    ])
+    ], siteEnv(verified))
     assert.equal(result.status, 2, result.stderr + result.stdout)
     assert.equal(result.stdout, '')
     assert.match(result.stderr, /FINALIZATION_MARKER_ACTIVE/)
@@ -438,7 +459,7 @@ try {
       const result = run(['verify-session', '--session-id', sessionId, '--stem', fixture.stem])
       assert.equal(result.status, 2, result.stderr + result.stdout)
       assert.equal(result.stdout, '')
-      assert.match(result.stderr, /expected one active attached site lease, found 0/)
+      assert.match(result.stderr, /exact inherited delegation capability is unavailable/)
       assert.deepEqual(writerSnapshot(), before, 'refusal must not mutate the direct-shaped lease')
       writerLeases.release(handle)
     }
@@ -524,7 +545,7 @@ try {
       'verify-session', '--session-id', site.record.sessionId, '--stem', site.record.stem,
     ])
     assert.equal(refused.status, 2, refused.stderr + refused.stdout)
-    assert.match(refused.stderr, /expected one active attached site lease, found 0/)
+    assert.match(refused.stderr, /exact inherited delegation capability is unavailable/)
     writerLeases.release(site)
 
     const incomplete = writerLeases.acquire(writers, {

@@ -9,10 +9,10 @@
 //   FIGMA_SCREEN_CACHE_ROOT or FIGMA_SPEC_SCREENS_DIR — override screens cache root (must match if both are set)
 //   FIGMA_CACHE_ROOT         — override consolidated figma cache root for isolated fixtures
 
-import { existsSync, readdirSync, readFileSync, renameSync, writeFileSync, lstatSync, realpathSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, lstatSync, realpathSync } from 'node:fs'
 import { basename, dirname, extname, isAbsolute, join, resolve, sep } from 'node:path'
 import { createRequire } from 'node:module'
-import { FIGMA_CACHE_ROOT, PROJECT_ROOT, artifactSegment, displayPath, figmaPath, figmaScreensRoot, loadScreenshotThresholds, parseCli, pipelineRunId, readConfig, runIdPinPath } from './_util.mjs'
+import { FIGMA_CACHE_ROOT, PROJECT_ROOT, artifactSegment, displayPath, figmaPath, figmaScreensRoot, loadScreenshotThresholds, parseCli, pipelineRunId, readConfig, recordedFigmaInputPath, runIdPinPath, writeFigmaRuntimeFile, EXECUTION_ROOT, FIGMA_TASK_SOURCE_FILE, FIGMA_TASK_SOURCE_EXPLICIT } from './_util.mjs'
 import { assertTaskStem, compileSchema, fileHash, schemaIssues, writeReport } from './report-utils.mjs'
 import { buildFigmaMeta } from './figma-meta.mjs'
 import { buildTaskObservationReceipt } from '../tokens/task-observation-receipt.mjs'
@@ -434,14 +434,7 @@ function publicReport(r) {
 }
 
 function resolveInputPath(path) {
-  const p = String(path || '')
-  if (!p) return ''
-  if (isAbsolute(p)) return p
-  const candidates = [
-    resolve(PROJECT_ROOT, p),
-    resolve(FIGMA_CACHE_ROOT, p),
-  ]
-  return candidates.find((candidate) => existsSync(candidate)) || candidates[0]
+  return recordedFigmaInputPath(path, 'Figma report input')
 }
 
 // `virtual:` inputHashes keys are recompute-only pins (not file paths): the value is a
@@ -507,7 +500,7 @@ function virtualInputIssues(report, key, expected, componentOptions) {
     // discovers the physical product root and requires every current capture-bearing test
     // and resource root to be represented by that subset. This preserves useful fixture and
     // multi-root scans without allowing FIGMA_CENSUS_CODE_ROOTS/--code-root to omit a module.
-    const canonical = captureConfigDiscovery({ codeRoots: [PROJECT_ROOT], screensDir: witness.screensDir, supportedLocales })
+    const canonical = captureConfigDiscovery({ codeRoots: [EXECUTION_ROOT], screensDir: witness.screensDir, supportedLocales })
     for (const error of canonical.errors) {
       issues.push(issue('BLOCKER', 'CAPTURE_DISCOVERY_CANONICAL_UNREADABLE', `canonical product capture-config discovery is incomplete: ${displayPath(error.path)} (${error.code})`, { file: displayPath(error.path), reportName: report.name }))
     }
@@ -543,7 +536,13 @@ function reportFreshnessIssues(report, stage, componentOptions) {
       issues.push(...virtualInputIssues(report, path, expected, componentOptions))
       continue
     }
-    const publicInput = displayPath(resolveInputPath(path))
+    let abs
+    try { abs = resolveInputPath(path) }
+    catch (error) {
+      issues.push(issue('BLOCKER', 'REPORT_INPUT_PATH_UNSAFE', `${report.name} report input is outside the current execution/cache scope: ${error.message}`, { file: basename(String(path)), reportName: report.name }))
+      continue
+    }
+    const publicInput = displayPath(abs)
     if (expected === null) {
       issues.push(issue(stage === 'final' ? 'BLOCKER' : 'WARN', 'REPORT_INPUT_MISSING', `${report.name} report input ${publicInput} was missing when the report was written`, { file: publicInput, reportName: report.name }))
       continue
@@ -552,7 +551,6 @@ function reportFreshnessIssues(report, stage, componentOptions) {
       issues.push(issue('BLOCKER', 'REPORT_INPUT_HASH_INVALID', `${report.name} report input ${publicInput} has invalid hash ${JSON.stringify(expected)}`, { file: publicInput, reportName: report.name }))
       continue
     }
-    const abs = resolveInputPath(path)
     const actual = fileHash(abs)
     if (actual !== expected) {
       issues.push(issue('BLOCKER', 'REPORT_INPUT_HASH_MISMATCH', `${report.name} report input ${displayPath(abs)} hash changed`, { file: displayPath(abs), reportName: report.name, expectedHash: expected, actualHash: actual }))
@@ -726,8 +724,8 @@ function reportArtifactIssues(report, stage) {
 // edits. done/ is consulted only when no open-state task body exists, so a
 // post-ship diagnostic re-run reads the exact body that was published.
 function currentDesignSourceHash(stem) {
-  const explicit = !!process.env.FIGMA_SCREEN_TASK_FILE
-  const files = explicit ? [process.env.FIGMA_SCREEN_TASK_FILE] : [
+  const explicit = FIGMA_TASK_SOURCE_EXPLICIT
+  const files = FIGMA_TASK_SOURCE_FILE ? [FIGMA_TASK_SOURCE_FILE] : [
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'todo', `${stem}.md`),
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'backlog', `${stem}.md`),
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'pending', `${stem}.questions.md`),
@@ -753,8 +751,8 @@ function currentDesignSourceHash(stem) {
 // sidecar fold an extra body into the digest that verify-done could never reproduce → a
 // false "## Design edited after certification" block on a legitimately-shipped task.
 function primaryBodyDesignHash(stem) {
-  const explicit = !!process.env.FIGMA_SCREEN_TASK_FILE
-  const candidates = explicit ? [process.env.FIGMA_SCREEN_TASK_FILE] : [
+  const explicit = FIGMA_TASK_SOURCE_EXPLICIT
+  const candidates = FIGMA_TASK_SOURCE_FILE ? [FIGMA_TASK_SOURCE_FILE] : [
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'todo', `${stem}.md`),
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'done', `${stem}.md`),
     join(PROJECT_ROOT, 'orchestrator', 'tasks', 'backlog', `${stem}.md`),
@@ -793,7 +791,8 @@ function modelHashCoveredByInputHashes(report, model) {
   const modelBase = basename(String(model && model.path || ''))
   return Object.entries(hashes).some(([p, h]) => {
     if (h !== model.hash) return false
-    const resolved = resolveInputPath(p)
+    let resolved
+    try { resolved = resolveInputPath(p) } catch { return false }
     return basename(resolved) === modelBase || displayPath(resolved) === model.path || p === model.path
   })
 }
@@ -941,12 +940,14 @@ async function main() {
   if (fresh) {
     issues.push(...designConsistencyIssues(reports, stem, stage))
     const specCompare = reports.find((r) => r.name === 'spec-compare')
-	    const model = specCompare && specCompare.data && specCompare.data.implementationModel
-	    if (model && model.path && model.hash) {
-	      const modelPath = resolveInputPath(model.path)
-	      const modelHash = fileHash(modelPath)
-	      if (modelHash !== model.hash && !modelHashCoveredByInputHashes(specCompare, model)) issues.push(issue('BLOCKER', 'IMPLEMENTATION_MODEL_HASH_MISMATCH', 'spec-compare implementationModel hash does not match file', { file: displayPath(modelPath) || basename(modelPath) }))
-	    }
+    const model = specCompare && specCompare.data && specCompare.data.implementationModel
+    if (model && model.path && model.hash) {
+      let modelPath = ''
+      try { modelPath = resolveInputPath(model.path) }
+      catch (error) { issues.push(issue('BLOCKER', 'IMPLEMENTATION_MODEL_PATH_UNSAFE', `spec-compare implementationModel is outside the current execution/cache scope: ${error.message}`, { file: basename(String(model.path)), reportName: 'spec-compare' })) }
+      const modelHash = modelPath ? fileHash(modelPath) : null
+      if (modelPath && modelHash !== model.hash && !modelHashCoveredByInputHashes(specCompare, model)) issues.push(issue('BLOCKER', 'IMPLEMENTATION_MODEL_HASH_MISMATCH', 'spec-compare implementationModel hash does not match file', { file: displayPath(modelPath) || basename(modelPath) }))
+    }
   }
   // Same completeness invariant as the screenshot coverage check below, but for the
   // declarative spec-vs-code report: every normalized spec element must have a
@@ -1043,8 +1044,9 @@ async function main() {
         if (!rec) { pixelReview.pending.push(pendingEntry); continue }
         const arts = row.artifactSet && row.artifactSet.artifacts
         const artPath = (slot) => (arts && arts[slot] && (arts[slot].path || arts[slot].file)) || null
-        const figmaAbs = artPath('figma') ? resolveInputPath(artPath('figma')) : null
-        const actualAbs = artPath('actual') ? resolveInputPath(artPath('actual')) : null
+        let figmaAbs = null, actualAbs = null
+        try { figmaAbs = artPath('figma') ? resolveInputPath(artPath('figma')) : null } catch {}
+        try { actualAbs = artPath('actual') ? resolveInputPath(artPath('actual')) : null } catch {}
         const bindingsOk = rec.pipelineRunId === shot.data.pipelineRunId
           && rec.reportHash === shot.hash
           && !!figmaAbs && fileHash(figmaAbs) === rec.figmaHash
@@ -1212,8 +1214,7 @@ async function main() {
 	      // routes the agent to the compare/pull fix path instead of the real disk/permission
 	      // failure, so the error is surfaced here at its cause.
 	      try {
-	        writeFileSync(`${digestPath}.tmp`, digest + '\n')
-	        renameSync(`${digestPath}.tmp`, digestPath)
+	        writeFigmaRuntimeFile(digestPath, digest + '\n', { maxBytes: 1024 })
 	      } catch (e) {
 	        console.error(`FATAL: failed to persist figma-meta digest ${displayPath(digestPath) || basename(digestPath)}: ${e.message}`)
 	        process.exit(1)

@@ -10,9 +10,9 @@
 //   FIGMA_SPEC_IMPL_ROOTS       — path-delimited Kotlin source roots
 //   FIGMA_IMPL_MODEL_OUT        — output path
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, statSync, writeFileSync } from 'node:fs'
-import { delimiter, dirname, join, relative, resolve } from 'node:path'
-import { parseCli, PROJECT_ROOT } from './_util.mjs'
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { delimiter, join, relative, resolve } from 'node:path'
+import { parseCli, PROJECT_ROOT, EXECUTION_ROOT, executionProductInputPath, executionFigmaOutputPath, writeFigmaRuntimeFile } from './_util.mjs'
 import { extractAppTokensFromText } from './extract-app-tokens.mjs'
 import { sha256Text } from './report-utils.mjs'
 import { parseKotlinSource, parserInfo } from './compose-model/parser-tree-sitter.mjs'
@@ -88,7 +88,7 @@ function issue(severity, issueKind, message, extra = {}) {
 }
 
 function projectPath(path) {
-  const rel = relative(PROJECT_ROOT, resolve(path))
+  const rel = relative(EXECUTION_ROOT, resolve(path))
   return rel && !rel.startsWith('..') ? rel : resolve(path)
 }
 
@@ -577,10 +577,7 @@ function callResolvedByComposable(call, composables) {
 }
 
 function atomicWrite(path, data) {
-  mkdirSync(dirname(path), { recursive: true })
-  const tmp = path + '.tmp'
-  writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n')
-  renameSync(tmp, path)
+  writeFigmaRuntimeFile(path, JSON.stringify(data, null, 2) + '\n')
 }
 
 async function main() {
@@ -598,13 +595,16 @@ async function main() {
 
   const roots = [
     ...cli.valuesFor('--root'),
-    ...(process.env.FIGMA_SPEC_IMPL_ROOTS ? process.env.FIGMA_SPEC_IMPL_ROOTS.split(delimiter).filter(Boolean) : []),
+    ...(process.env.FIGMA_SPEC_IMPL_ROOTS ? process.env.FIGMA_SPEC_IMPL_ROOTS.split(delimiter).filter(Boolean)
+      .map((value) => executionProductInputPath(value, 'FIGMA_SPEC_IMPL_ROOTS')) : []),
   ]
   const files = [
     ...cli.valuesFor('--file'),
-    ...(process.env.FIGMA_SPEC_IMPL_FILES ? process.env.FIGMA_SPEC_IMPL_FILES.split(delimiter).filter(Boolean) : []),
+    ...(process.env.FIGMA_SPEC_IMPL_FILES ? process.env.FIGMA_SPEC_IMPL_FILES.split(delimiter).filter(Boolean)
+      .map((value) => executionProductInputPath(value, 'FIGMA_SPEC_IMPL_FILES')) : []),
   ]
-  const out = cli.value('--out') || process.env.FIGMA_IMPL_MODEL_OUT || ''
+  const out = cli.value('--out') || (process.env.FIGMA_IMPL_MODEL_OUT
+    ? executionFigmaOutputPath(process.env.FIGMA_IMPL_MODEL_OUT, 'FIGMA_IMPL_MODEL_OUT') : '')
   if (!out) {
     console.error(USAGE)
     process.exit(1)

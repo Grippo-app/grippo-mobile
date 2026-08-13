@@ -8,6 +8,7 @@
 var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
+var TextDecoder = require('util').TextDecoder;
 var paths = require('./paths');
 var fileGuards = require('./file-guards');
 var primaryAction = require('./task-primary-action');
@@ -17,6 +18,10 @@ var MAX_FILES = 1000;
 var MAX_BYTES = 16 * 1024;
 var NAME_RE = /^[a-f0-9]{64}\.json$/;
 var GUARD_PRIVATE_RE = /^(?:\.guard-txn-[a-f0-9]{64}(?:\.json(?:\.stage)?|\.decision\.json(?:\.stage)?|\.receipt\.json(?:\.stage)?)|\.guard-(?:transfer|publish)-[a-f0-9]{64}(?:\.json(?:\.stage)?|\.link\.json(?:\.stage)?|\.receipt\.json(?:\.stage)?)|\.guard-(?:(?:transfer-)?capture|publish-data|cas-old)-[a-f0-9]{32})$/;
+
+function parseJsonBytes(bytes) {
+  return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+}
 
 function hash(value) {
   return 'sha256:' + crypto.createHash('sha256').update(String(value), 'utf8').digest('hex');
@@ -41,19 +46,33 @@ function recordIssue(value, expectedKeyHash) {
   return null;
 }
 
-function read(key) {
+function readHeld(key) {
   var keyHash = hash(key);
   var file = fileFor(key);
   var bounded = fileGuards.boundedRegularFileUnder(paths.PROJECT_ROOT, DIR, file, MAX_BYTES);
   if (!bounded) return null;
   var value;
-  try { value = JSON.parse(bounded.bytes.toString('utf8')); } catch (_) { return null; }
-  return recordIssue(value, keyHash) ? null : value;
+  try { value = parseJsonBytes(bounded.bytes); } catch (_) { return null; }
+  return recordIssue(value, keyHash) ? null : {
+    value: value, bytes: bounded.bytes, proof: bounded.stat
+  };
+}
+
+function read(key) {
+  var held = readHeld(key);
+  return held ? held.value : null;
 }
 
 function bytes(value) {
   var result = Buffer.from(primaryAction.canonical(value) + '\n', 'utf8');
   return result.length <= MAX_BYTES ? result : null;
+}
+
+function sameProof(left, right) {
+  return !!left && !!right &&
+    ['dev', 'ino', 'modeExact', 'sizeExact', 'mtimeNs', 'ctimeNs', 'nlink'].every(function (field) {
+      return String(left[field]) === String(right[field]);
+    });
 }
 
 function directoryReady() {
@@ -145,7 +164,8 @@ function reserve(request) {
 
 function complete(handle, response) {
   if (!handle) return true;
-  var current = read(handle.key);
+  var held = readHeld(handle.key);
+  var current = held && held.value;
   if (!current || current.state !== 'pending' || current.nonce !== handle.nonce ||
       current.keyHash !== handle.keyHash || current.bodyHash !== handle.bodyHash) return false;
   var next = Object.assign({}, current, {
@@ -154,14 +174,14 @@ function complete(handle, response) {
   });
   var payload = bytes(next);
   if (!payload) return false;
-  var replaced = fileGuards.atomicReplaceRegularFileResult(
-    paths.PROJECT_ROOT, DIR, fileFor(handle.key), payload,
-    { create: false, mode: 0o600, maxBytes: MAX_BYTES }
-  );
+  var replaced = fileGuards.compareAndSwapRegularFileUnder(
+    paths.PROJECT_ROOT, DIR, fileFor(handle.key), MAX_BYTES,
+    { proof: held.proof, bytes: held.bytes }, payload, { mode: 0o600 });
   if (!replaced || !replaced.ok) return false;
-  var proven = read(handle.key);
-  return !!(proven && proven.state === 'completed' && proven.nonce === handle.nonce &&
-    proven.bodyHash === handle.bodyHash);
+  var proven = readHeld(handle.key);
+  return !!(proven && proven.bytes.equals(payload) && sameProof(proven.proof, replaced.stat) &&
+    proven.value.state === 'completed' && proven.value.nonce === handle.nonce &&
+    proven.value.bodyHash === handle.bodyHash);
 }
 
 function release(handle) {
@@ -170,7 +190,7 @@ function release(handle) {
     paths.PROJECT_ROOT, DIR, fileFor(handle.key), MAX_BYTES,
     function (bounded) {
       var value;
-      try { value = JSON.parse(bounded.bytes.toString('utf8')); } catch (_) { return false; }
+      try { value = parseJsonBytes(bounded.bytes); } catch (_) { return false; }
       return !recordIssue(value, handle.keyHash) && value.state === 'pending' &&
         value.nonce === handle.nonce && value.bodyHash === handle.bodyHash;
     }

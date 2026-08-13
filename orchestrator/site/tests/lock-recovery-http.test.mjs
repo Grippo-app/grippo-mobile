@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict'
-import { spawn, spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { spawn } from 'node:child_process'
 import { createServer } from 'node:http'
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { hostname, tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO = join(HERE, '..', '..', '..')
-const TASK_LOCK = join(REPO, 'orchestrator', 'tasks', 'task-lock.mjs')
 const OUTCOME_SHAPE = join(REPO, 'orchestrator', 'contracts', 'outcome-shape.json')
 const root = mkdtempSync(join(tmpdir(), 'lock-recovery-http-'))
 const scratch = mkdtempSync(join(tmpdir(), 'lock-recovery-http-scratch-'))
@@ -62,19 +62,6 @@ process.env.TASK_FS_TEST_ROOT = root
 process.env.RUNNER_DISABLED = '1'
 process.env.FIGMA_WIRING_GATE = '0'
 
-function taskLockEnv() {
-  return {
-    ...process.env,
-    ORCHESTRATOR_WRITER_AUTHORITY_ROOT: root,
-  }
-}
-
-function runTaskLock(args) {
-  return spawnSync(process.execPath, [TASK_LOCK, ...args], {
-    cwd: root, env: taskLockEnv(), encoding: 'utf8', timeout: 15000,
-  })
-}
-
 async function waitUntil(fn, message) {
   const deadline = Date.now() + 10000
   while (Date.now() < deadline) {
@@ -88,14 +75,29 @@ async function waitUntil(fn, message) {
 const owner = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' })
 await waitUntil(() => writerLeases.PROCESS_START_ID_RE.test(writerLeases.captureProcessStartId(owner.pid)),
   'owner identity did not become observable')
-const acquiredRun = runTaskLock([
-  'acquire', '--stem', stem, '--stage', 'orchestrator',
-  '--run-id', 'run-lock-recovery-http-0001',
-  '--session-id', 'ws-lock-recovery-http-session-0001',
-  '--owner-kind', 'site', '--owner-id', 'site:http-fixture', '--owner-pid', String(owner.pid),
-])
-assert.equal(acquiredRun.status, 0, acquiredRun.stderr || acquiredRun.stdout)
-const acquired = JSON.parse(acquiredRun.stdout)
+const startedAt = new Date().toISOString()
+const lockRecord = {
+  version: 1,
+  stem,
+  stage: 'orchestrator',
+  runId: 'run-lock-recovery-http-0001',
+  sessionId: 'ws-lock-recovery-http-session-0001',
+  startedAt,
+  owner: {
+    kind: 'site',
+    id: 'site:http-fixture',
+    pid: owner.pid,
+    processStartId: writerLeases.captureProcessStartId(owner.pid),
+    hostname: hostname(),
+    startedAt,
+  },
+}
+const lockBytes = Buffer.from(JSON.stringify(lockRecord, null, 2) + '\n', 'utf8')
+writeFileSync(join(cache, 'locks', stem + '.json'), lockBytes, { flag: 'wx', mode: 0o600 })
+const acquired = {
+  ...lockRecord,
+  lockHash: 'sha256:' + createHash('sha256').update(lockBytes).digest('hex'),
+}
 owner.kill('SIGTERM')
 await new Promise((resolve) => owner.once('close', resolve))
 

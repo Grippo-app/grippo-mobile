@@ -24,8 +24,8 @@
 //
 // Usage: node scripts/component-census.mjs <TASK_STEM>
 //          [--screens-dir <dir>] [--code-root <dir>] [--out <file>]   (fixture overrides)
-import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, isDirectRun, ok, warnMsg, failMsg, info, summary, PROJECT_ROOT, parseCli, loadBindings } from './_util.mjs'
-import { accessSync, constants, readdirSync, readFileSync, realpathSync, renameSync, statSync, writeFileSync } from 'node:fs'
+import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, isDirectRun, ok, warnMsg, failMsg, info, summary, PROJECT_ROOT, parseCli, loadBindings, EXECUTION_ROOT, executionProductInputPath, EXECUTION_SCOPE, writeFigmaRuntimeFile } from './_util.mjs'
+import { accessSync, constants, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { basename, delimiter, isAbsolute, join, resolve } from 'node:path'
 import { assertTaskStem, fileHash, sha256Text, writeReport } from './report-utils.mjs'
 import { maskKotlinTrivia } from './extract-app-tokens.mjs'
@@ -48,7 +48,7 @@ export const MAPPING_CONSULT_KEY = 'virtual:component-mappings-consulted'
 function sourceReadableState(sourcePath) {
   const declared = String(sourcePath || '').trim()
   if (!declared) return 'absent'
-  const path = isAbsolute(declared) ? resolve(declared) : resolve(PROJECT_ROOT, declared)
+  const path = isAbsolute(declared) ? resolve(declared) : resolve(EXECUTION_ROOT, declared)
   let stat
   try { stat = statSync(path) } catch { return 'missing' }
   if (!stat.isFile()) return 'not-file'
@@ -145,6 +145,7 @@ function collectKotlinFiles(root, out, visited = new Set()) {
     let isDirectory = d.isDirectory()
     let isFile = d.isFile()
     if (d.isSymbolicLink()) {
+      if (EXECUTION_SCOPE) continue
       try { const target = statSync(path); isDirectory = target.isDirectory(); isFile = target.isFile() } catch { continue }
     }
     if (isDirectory) collectKotlinFiles(path, out, visited)
@@ -234,7 +235,10 @@ function scanComposableIndex(roots, { warn = warnMsg } = {}) {
   const codeRootArg = cli.value('--code-root')
   const codeRoots = codeRootArg
     ? [codeRootArg]
-    : (process.env.FIGMA_CENSUS_CODE_ROOTS ? process.env.FIGMA_CENSUS_CODE_ROOTS.split(delimiter).filter(Boolean) : [PROJECT_ROOT])
+    : (process.env.FIGMA_CENSUS_CODE_ROOTS
+      ? process.env.FIGMA_CENSUS_CODE_ROOTS.split(delimiter).filter(Boolean)
+        .map((value) => executionProductInputPath(value, 'FIGMA_CENSUS_CODE_ROOTS'))
+      : [EXECUTION_ROOT])
   let composableIndex = null   // built lazily on the first MISSING row
 
   // Aggregate instances per OWNING DESIGN IDENTITY across all screens. Two
@@ -443,9 +447,7 @@ function scanComposableIndex(roots, { warn = warnMsg } = {}) {
     }
     if (changed) {
       raw.components = [...byDesignId.values()].sort((a, b) => compareText(a.designComponentId, b.designComponentId))
-      const tmp = `${bindingsPath}.tmp-census`
-      writeFileSync(tmp, JSON.stringify(raw, null, 2) + '\n')
-      renameSync(tmp, bindingsPath)
+      writeFigmaRuntimeFile(bindingsPath, JSON.stringify(raw, null, 2) + '\n')
       info(`bindings: ${raw.components.length} component binding(s) upserted -> ${displayPath(bindingsPath)}`)
     }
   }

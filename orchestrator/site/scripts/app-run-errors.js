@@ -42,6 +42,7 @@ var KNOWN = Object.freeze({
   'device-preview-expired': 1,
   'device-preview-stale': 1,
   'discovery-failed': 1,
+  'execution-binding-unavailable': 1,
   'fetch-failed': 1,
   'idempotency-conflict': 1,
   'install-failed': 1,

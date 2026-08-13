@@ -42,8 +42,71 @@ var KINDS = {
   'api-mock-lifecycle': 1,
   'api-change-review': 1,
   'architecture-generate': 1,
-  'runtime-build': 1
+  'runtime-build': 1,
+  // Worktree-isolation classes (pipeline improvement 01, §16). Each carries its
+  // whole identity in `key` and never a stem, so they conflict ONLY on an exact
+  // resource — which is what lets two isolated executions coexist while still
+  // making two jobs that touch the same device, or install the same bundle id,
+  // mutually exclusive.
+  //   execution-writer   key 'execution:<worktreeId>'
+  //   resource-writer    key 'device:<platform>:<hint>' | 'bundle:<platform>:<id>'
+  // §16 also names an `integration-writer` class. It is deliberately NOT a
+  // lease here: the integration transaction serializes on its own write-ahead
+  // record, which is strictly stronger — it survives process death carrying the
+  // phase evidence a lease cannot, and a second mechanism for the same
+  // exclusion would be two sources of truth for one invariant.
+  'execution-writer': 1,
+  'resource-writer': 1
 };
+// Kinds whose owner spawns a detached process GROUP. Their leases survive
+// until the whole tree is provably gone, and they are reclaimed by the same
+// proof — so this set had to become ONE definition: it was written out three
+// times, and a class added to two of them silently loses both protections.
+function groupLeaderKind(kind) {
+  return kind === 'task-session' || kind === 'workspace-session' ||
+    kind === 'runtime-build' || kind === 'execution-writer';
+}
+// Kinds whose effects are PROVABLY confined to one isolated checkout named in
+// their own key, or to a device/bundle, and therefore never reach the shared
+// control tree. §16 makes finalization prepare incompatible with control
+// writers, so this is the exemption that stops an app-run from refusing every
+// publication it happens to overlap. A CONTROL-ROOT app-run job is deliberately
+// not in this set: it builds the tree everything shares and takes the globally
+// exclusive `runtime-build` lease instead.
+//
+// `task-session` is deliberately NOT here, and putting it here would be a bug
+// rather than an optimization. It is the lease kind for `prep`, `answers`,
+// `drop` and `reopen` as much as for `run`, and §9.1 gives a worktree ONLY to
+// `run`; the others execute with cwd = the control root and rewrite
+// orchestrator/tasks/{backlog,pending,todo}/*.md and INDEX.json. The lease
+// record carries no execution binding, so the kind cannot prove isolation and
+// exempting it by stem would wave a real control writer through mid-
+// transaction. Kept as ONE definition for the same reason as groupLeaderKind.
+function isolatedWriterKind(kind) {
+  return kind === 'execution-writer' || kind === 'resource-writer';
+}
+// The GLOBAL deterministic publishers: writers that republish shared task and
+// INDEX state, or that sweep across every shipped task. While one is live no
+// other writer may proceed, and one may only start when it is the sole writer.
+// This was written out TWICE — the site's arbiter and the guarded CLI acquire —
+// and the two lists had already diverged on `figma:ship-drift-artifacts`, so
+// the CLI admitted a writer the site refuses. Same lesson as groupLeaderKind:
+// one definition, or the copies drift and each loses a protection the other has.
+function deterministicPublisherLease(row) {
+  return !!row && (row.kind === 'runtime-build' || typeof row.key === 'string' && (
+    row.key === 'task:create-backlog' ||
+    row.key === 'task:recover-backlog-creations' ||
+    row.key === 'task:recover-backlog-edits' ||
+    row.key.indexOf('task:edit-backlog:') === 0 ||
+    row.key === 'figma:ship-drift-artifacts'
+  ));
+}
+
+// The exact key an app-run job holds while it builds inside `worktreeId`
+// (app-runner leaseRequests). §16: "execution A is incompatible with cleanup
+// A" — the ONE case where an isolated lease must still block, because the
+// cleanup destroys the very checkout the lease names.
+function executionLeaseKeyFor(worktreeId) { return 'execution:' + String(worktreeId); }
 var MAX_PROCESS_BYTES = 16 * 1024;
 var MAX_ANCESTRY_DEPTH = 64;
 var MAX_ANCESTRY_MS = 3000;
@@ -746,8 +809,7 @@ function generationGone(record) {
   if (record.childPid === null) return !(record.unverified && record.unverifiedReason === PENDING_CHILD_REASON);
   var childState = processInstanceState(record.childPid, record.childProcessStartId, cache);
   if (childState !== 'dead' && childState !== 'reused') return false;
-  if ((record.kind === 'task-session' || record.kind === 'workspace-session' ||
-      record.kind === 'runtime-build') && childState !== 'reused' &&
+  if (groupLeaderKind(record.kind) && childState !== 'reused' &&
       processGroupAlive(record.childPid)) return false;
   return true;
 }
@@ -1433,8 +1495,7 @@ function active(record, localHost, nowMs, processCache) {
     // leaders. Other writer kinds do not carry a durable promise that childPid
     // is also the PGID, so they remain fail-closed instead of treating an
     // ESRCH group probe as proof that every possible descendant is gone.
-    if (record.kind !== 'task-session' && record.kind !== 'workspace-session' &&
-        record.kind !== 'runtime-build') return true;
+    if (!groupLeaderKind(record.kind)) return true;
     // A different start identity proves PID/PGID reuse. The original group had
     // to disappear before that numeric ID could become a new process leader.
     return childState !== 'reused' && processGroupAlive(record.childPid);
@@ -1447,8 +1508,7 @@ function active(record, localHost, nowMs, processCache) {
   // leaders. If the site and leader crash but a tool descendant survives, the
   // positive child PID is no longer live; probing its original PGID keeps the
   // durable lease active until the entire inherited writer tree is gone.
-  if ((record.kind === 'task-session' || record.kind === 'workspace-session' ||
-      record.kind === 'runtime-build') &&
+  if (groupLeaderKind(record.kind) &&
       childState !== 'reused' && processGroupAlive(record.childPid)) return true;
   return record.expiresAt !== null && Date.parse(record.expiresAt) > nowMs;
 }
@@ -1542,6 +1602,9 @@ module.exports = {
   processIdentityMatches: processIdentityMatches,
   processTreeProof: processTreeProof,
   validateRecord: validateRecord,
+  isolatedWriterKind: isolatedWriterKind,
+  deterministicPublisherLease: deterministicPublisherLease,
+  executionLeaseKeyFor: executionLeaseKeyFor,
   acquire: acquire,
   updateChildPid: updateChildPid,
   markUnverified: markUnverified,

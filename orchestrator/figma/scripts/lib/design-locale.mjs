@@ -19,7 +19,7 @@
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import { delimiter, join, resolve, sep } from 'node:path'
 import { TextDecoder } from 'node:util'
-import { PROJECT_ROOT, readConfig } from '../_util.mjs'
+import { PROJECT_ROOT, readConfig, EXECUTION_ROOT, EXECUTION_SCOPE, executionProductInputPath } from '../_util.mjs'
 
 // Languages whose derived qualifier must also carry `ldrtl` (fidelity-gate §3).
 export const RTL_LANGUAGES = new Set(['ar', 'he', 'fa', 'ur'])
@@ -198,7 +198,7 @@ export function detectDesignLocale({ specs = [], resourceRoots = [], supportedLo
 // `src/main/res/` dir, skipping VCS/build/tooling trees. FIGMA_STRING_RESOURCE_ROOTS
 // (path-delimited) overrides the walk — fixtures only.
 const ROOT_SCAN_SKIP = new Set(['.git', '.gradle', '.idea', '.cache', 'build', 'node_modules', 'orchestrator'])
-export function deriveResourceRoots(rootDirs = [PROJECT_ROOT]) {
+export function deriveResourceRoots(rootDirs = [EXECUTION_ROOT]) {
   const env = process.env.FIGMA_STRING_RESOURCE_ROOTS
   const physical = (path) => { try { return realpathSync(path) } catch { return resolve(path) } }
   const uniquePaths = (paths) => {
@@ -209,7 +209,8 @@ export function deriveResourceRoots(rootDirs = [PROJECT_ROOT]) {
     }
     return [...byPhysical.values()]
   }
-  if (env) return uniquePaths(env.split(delimiter))
+  if (env) return uniquePaths(env.split(delimiter)
+    .map((value) => executionProductInputPath(value, 'FIGMA_STRING_RESOURCE_ROOTS')))
   const out = []
   const visited = new Set()
   const walk = (dir, depth) => {
@@ -224,6 +225,7 @@ export function deriveResourceRoots(rootDirs = [PROJECT_ROOT]) {
       const p = join(dir, d.name)
       let isDirectory = d.isDirectory()
       if (d.isSymbolicLink()) {
+        if (EXECUTION_SCOPE) continue
         try { isDirectory = statSync(p).isDirectory() } catch { isDirectory = false }
       }
       if (!isDirectory) continue
@@ -240,7 +242,7 @@ export function deriveResourceRoots(rootDirs = [PROJECT_ROOT]) {
 // FIGMA_SUPPORTED_LOCALES (comma-separated) overrides — fixtures only. A readable
 // config with no key uses the contractual `en` default; a missing, unreadable,
 // or invalid-UTF-8 config is not equivalent to that state and fails closed.
-export function readSupportedLocales(projectRoot = PROJECT_ROOT) {
+export function readSupportedLocales(projectRoot = EXECUTION_ROOT) {
   const env = process.env.FIGMA_SUPPORTED_LOCALES
   const validate = (values) => {
     const locales = values.map((s) => String(s).trim()).filter(Boolean)

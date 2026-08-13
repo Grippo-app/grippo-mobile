@@ -93,6 +93,27 @@ var TASK_EDITS_AUTHORITY_ROOT = path.resolve(process.env.ORCHESTRATOR_TASK_EDITS
     (process.env.ORCHESTRATOR_TASK_EDITS_DIR ? path.dirname(TASK_EDITS_DIR) : PROJECT_ROOT)));
 var TASK_INTAKE_DIR    = process.env.ORCHESTRATOR_TASK_INTAKE_DIR || path.join(RUNTIME_CACHE_DIR, 'tasks', 'intake');
 var TRANSITIONS_DIR    = process.env.ORCHESTRATOR_TRANSITIONS_DIR || path.join(path.dirname(LOCKS_DIR), 'transitions');
+// Per-task worktree isolation (pipeline improvement 01). Control-plane RECORD
+// roots live in the runtime cache like every other durable runtime record;
+// the worktree TREES themselves must never live under the cache (a generic
+// cache cleanup would strand shared Git metadata), so their home is a hidden
+// sibling of the project root. The home override is trusted server
+// configuration only — never a request/prompt-supplied value.
+var WORKTREE_RECORDS_DIR = process.env.ORCHESTRATOR_WORKTREE_RECORDS_DIR ||
+  path.join(RUNTIME_CACHE_DIR, 'tasks', 'worktrees');       // manager-owned worktree lifecycle records
+var INTEGRATIONS_DIR = process.env.ORCHESTRATOR_INTEGRATIONS_DIR ||
+  path.join(RUNTIME_CACHE_DIR, 'tasks', 'integrations');    // integration WAL markers
+// Same operator-override rule as the writer authority root: normal runtime
+// fences every record component below PROJECT_ROOT; an explicitly relocated
+// records directory anchors at its supplied parent.
+var WORKTREE_RECORDS_AUTHORITY_ROOT = path.resolve(process.env.ORCHESTRATOR_WORKTREE_RECORDS_AUTHORITY_ROOT ||
+  (process.env.ORCHESTRATOR_PROJECT_ROOT ? PROJECT_ROOT :
+    (process.env.ORCHESTRATOR_WORKTREE_RECORDS_DIR ? path.dirname(WORKTREE_RECORDS_DIR) : PROJECT_ROOT)));
+// Execution worktree HOME: hidden sibling of the project root (§7.1). Never
+// inside orchestrator/.cache; components are verified by the manager with
+// lstat/realpath/inode identity before any use.
+var WORKTREE_HOME = path.resolve(process.env.ORCHESTRATOR_WORKTREE_HOME ||
+  path.join(path.dirname(PROJECT_ROOT), '.orchestrator-worktrees'));
 var APP_RUN_DIR        = process.env.ORCHESTRATOR_APP_RUN_DIR || path.join(RUNTIME_CACHE_DIR, 'runtime', 'app-run');
 var APP_RUN_JOBS_DIR   = path.join(APP_RUN_DIR, 'jobs');
 var APP_RUN_SESSIONS_DIR = path.join(APP_RUN_DIR, 'sessions');
@@ -104,6 +125,7 @@ var APP_RUN_INDEX_FILE = path.join(APP_RUN_DIR, 'index.json');
 
 module.exports = {
   ORCHESTRATOR_DIR: ORCHESTRATOR_DIR,
+  RUNTIME_CACHE_DIR: RUNTIME_CACHE_DIR,
   PROJECT_ORCHESTRATOR_DIR: PROJECT_ORCHESTRATOR_DIR,
   PROJECT_CONFIG_FILE: PROJECT_CONFIG_FILE,
   API_CONTRACT_DIR: API_CONTRACT_DIR,
@@ -146,5 +168,9 @@ module.exports = {
   APP_RUN_INDEX_FILE: APP_RUN_INDEX_FILE,
   FINALIZATIONS_DIR: FINALIZATIONS_DIR,
   WRITER_LEASES_DIR: WRITER_LEASES_DIR,
-  WRITER_AUTHORITY_ROOT: WRITER_AUTHORITY_ROOT
+  WRITER_AUTHORITY_ROOT: WRITER_AUTHORITY_ROOT,
+  WORKTREE_RECORDS_DIR: WORKTREE_RECORDS_DIR,
+  WORKTREE_RECORDS_AUTHORITY_ROOT: WORKTREE_RECORDS_AUTHORITY_ROOT,
+  INTEGRATIONS_DIR: INTEGRATIONS_DIR,
+  WORKTREE_HOME: WORKTREE_HOME
 };

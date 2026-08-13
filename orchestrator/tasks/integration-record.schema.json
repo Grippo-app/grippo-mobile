@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bootstrapper-orchestrator.local/contracts/integration-record.schema.json",
+  "title": "Integration transaction record (write-ahead log)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate",
+    "commitPin",
+    "controlSnapshot",
+    "createdAt",
+    "finalizerPrepared",
+    "integrationId",
+    "owner",
+    "phase",
+    "phases",
+    "recordHash",
+    "runId",
+    "status",
+    "stem",
+    "target",
+    "updatedAt",
+    "version",
+    "worktreeId"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "abandoned",
+        "active",
+        "completed",
+        "recovery-required"
+      ]
+    },
+    "phase": {
+      "enum": [
+        "commit-published",
+        "commit-publishing",
+        "completed",
+        "finalizer-confirming",
+        "finalizer-prepared",
+        "finalizer-preparing",
+        "prepared",
+        "product-applied",
+        "product-applying"
+      ]
+    }
+  }
+}

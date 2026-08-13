@@ -184,6 +184,7 @@ function ownerScanners(creationProjection, creationError) {
     ['edit-markers', require('./edit-markers').scanIntegrity],
     ['shallow-intake', require('./shallow-intake').scanIntegrity],
     ['finalizations', require('./finalizations').scanIntegrity],
+    ['integrations', require('./integrations').scanIntegrity],
     ['transitions', transitionScan]
   ];
 }

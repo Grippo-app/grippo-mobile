@@ -193,7 +193,7 @@ try {
     assert.equal(recovered.edits.recoveredCount, 1)
   })
 
-  await check('same-stem orphan ownership is excluded and board-task writers stay serial across stems', () => {
+  await check('same-stem orphan ownership is excluded while a different stem is admitted', () => {
     const foreign = writerLeases.acquire(writers, {
       kind: 'task-session', stem: 'TASK_1_recovery_base', key: 'task:TASK_1_recovery_base',
       ownerPid: process.pid, childPid: process.pid
@@ -205,16 +205,16 @@ try {
       })
       assert.equal(same.ok, false)
       assert.equal(writerLeases.scan(writers).active.length, 1)
-      // Frozen serial safety (pipeline improvement 01, Phase 0): a different
-      // stem no longer wins admission either — board-task writers are
-      // mutually exclusive until per-task worktree isolation lands.
+      // With per-task worktree isolation complete (Phases 1-5) a DIFFERENT stem
+      // is admitted: the two runs own disjoint checkouts, so an orphan holding
+      // one task can no longer stall every other task.
       const other = finalizations.beginMutation({
         kind: 'task-session', stem: 'TASK_99_parallel', key: 'task:TASK_99_parallel',
         sessionId: finalizations.createWriterSessionId()
       })
-      assert.equal(other.ok, false)
-      assert.equal(writerLeases.scan(writers).active.length, 1,
-        'the refused cross-stem acquisition must withdraw its own lease')
+      assert.equal(other.ok, true, 'a different stem must not be blocked by a foreign orphan')
+      assert.equal(writerLeases.scan(writers).active.length, 2)
+      finalizations.endMutation(other.handle)
     } finally { writerLeases.release(foreign) }
   })
 

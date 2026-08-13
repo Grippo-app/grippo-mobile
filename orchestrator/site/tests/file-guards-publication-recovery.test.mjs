@@ -517,6 +517,14 @@ try {
     assert.equal(oversizedResult.ok, false)
     assert.equal(oversizedResult.code, 'too-large')
     assert.equal(existsSync(oversized), false)
+
+    const optedIn = join(directory, 'publish-large-opt-in.json')
+    const optedInResult = guards.publishNoClobberRegularFileUnder(
+      root, directory, optedIn, tooLarge,
+      { maxBytes: tooLarge.length, mode: 0o600, allowLargePayload: true })
+    assert.equal(optedInResult.ok, true)
+    assert.deepEqual(readFileSync(optedIn), tooLarge)
+    unlinkSync(optedIn)
     assert.deepEqual(guardEntries(), [])
   })
 

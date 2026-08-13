@@ -38,6 +38,7 @@ import {
   evidenceIssueLabel,
   knownEvidenceIssueCode,
 } from '../scripts/figma/evidence-issue-presenter.js'
+import { createBoardIntegrationController } from '../scripts/board/board-integration-controller.js'
 
 const SITE = fileURLToPath(new URL('../', import.meta.url))
 const require = createRequire(import.meta.url)
@@ -76,6 +77,45 @@ function response(body, status = 200) {
     headers: { 'content-type': 'application/json' },
   })
 }
+
+test('a reopened sealed generation starts a new integration instead of resuming completed history', async () => {
+  const nodes = []
+  function el(tag, attrs = {}, children = []) {
+    const listeners = Object.create(null)
+    const node = {
+      tag, children: [], hidden: false, disabled: false, ...attrs,
+      appendChild(child) { this.children.push(child); return child },
+      replaceChildren(...next) { this.children = next },
+      addEventListener(kind, listener) { listeners[kind] = listener },
+      click() { if (listeners.click) listeners.click() },
+    }
+    for (const child of children || []) node.appendChild(child)
+    nodes.push(node)
+    return node
+  }
+  let resuming = null
+  const controller = createBoardIntegrationController({
+    getSnapshot: () => ({ progress: { integrations: [{ stem: 'TASK_7_probe', status: 'completed' }] } }),
+    el,
+    t: (key) => key,
+    modal: { open() {}, close() {}, createCloseButton: () => el('button') },
+    setOpenStem() {}, getOpenStem: () => null, hasActiveModal: () => true,
+    preview: async () => ({ state: 'ready', blockers: [], candidate: null, integration: null }),
+    run: async (_stem, shouldResume) => { resuming = shouldResume; return { commit: 'a'.repeat(40) } },
+    abandon: async () => ({}), release: async () => ({}),
+    toast() {}, reloadStore() {}, requestError: (error) => String(error && error.code || error),
+  })
+  controller.open('TASK_7_probe')
+  await Promise.resolve()
+  const confirm = nodes.find((node) => node.class === 'btn btn--primary')
+  assert.ok(confirm)
+  assert.equal(confirm.disabled, false)
+  confirm.click()
+  await Promise.resolve()
+  assert.equal(resuming, false, 'completed WAL history must not select the resume endpoint for a new candidate')
+  assert.notEqual(i18n.t('board.requestError.INTEGRATION_RECORD_CONFLICT'),
+    'board.requestError.INTEGRATION_RECORD_CONFLICT')
+})
 
 test('strict JSON transport distinguishes network, protocol, HTTP, and typed domain failures', async () => {
   await withFetch(() => { throw new TypeError('private synchronous detail') }, async () => {
@@ -586,6 +626,7 @@ test('Board response-contract failures have exact localized messages', () => {
     'dedup-key-conflict',
     'dedup-key-active',
     'task-session-busy',
+    'task-session-closing',
     'finalization-corrupt',
     'finalization-changed',
     'finalization-unavailable',

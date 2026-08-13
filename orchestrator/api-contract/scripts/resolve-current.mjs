@@ -11,11 +11,11 @@ if (process.env.ORCHESTRATOR_API_CONTRACT_DATA_DIR) {
   process.exit(2)
 }
 
-const { currentContractFiles, PROJECT_ROOT } = await import('./_util.mjs')
+const { currentContractFiles, EXECUTION_ROOT } = await import('./_util.mjs')
 
 function projectRelative(file) {
   if (!file) return null
-  const rel = relative(PROJECT_ROOT, file)
+  const rel = relative(EXECUTION_ROOT, file)
   if (!rel || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
     throw new Error('resolved contract artifact escapes the project root')
   }

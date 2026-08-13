@@ -7,7 +7,7 @@ import {
   existsSync, linkSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync,
   unlinkSync, watch, writeFileSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { hostname, tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -244,13 +244,27 @@ function acquireArgs(project, stage = 'task-prep', suffix = 'a') {
   ];
 }
 
-function siteAcquireArgs(project, ownerPid, stage = 'task-prep', suffix = 'site') {
-  return [
-    'acquire', '--stem', project.stem, '--stage', stage,
-    '--run-id', `run-lock-fixture-${suffix}`,
-    '--session-id', `ws-lock-fixture-session-${suffix.padEnd(16, 'x')}`,
-    '--owner-kind', 'site', '--owner-id', `site:${suffix}`, '--owner-pid', String(ownerPid),
-  ];
+function publishSiteLockFixture(project, ownerPid, suffix = 'site') {
+  const startedAt = new Date().toISOString();
+  const record = {
+    version: 1,
+    stem: project.stem,
+    stage: 'orchestrator',
+    runId: `run-lock-fixture-${suffix}`,
+    sessionId: `ws-lock-fixture-session-${suffix.padEnd(16, 'x')}`,
+    startedAt,
+    owner: {
+      kind: 'site',
+      id: `site:${suffix}`,
+      pid: ownerPid,
+      processStartId: writerLeases.captureProcessStartId(ownerPid),
+      hostname: hostname(),
+      startedAt,
+    },
+  };
+  const bytes = Buffer.from(`${JSON.stringify(record, null, 2)}\n`, 'utf8');
+  writeFileSync(project.lock, bytes, { flag: 'wx', mode: 0o600 });
+  return { ...record, lockHash: `sha256:${createHash('sha256').update(bytes).digest('hex')}` };
 }
 
 function acquireRecoveryLease(project) {
@@ -271,6 +285,27 @@ function recoveryEnv(project, lease) {
     ORCHESTRATOR_WRITER_STEM: project.stem,
     ORCHESTRATOR_WRITER_LEASE_ID: lease.leaseId,
     ORCHESTRATOR_WRITER_LEASE_TOKEN: lease.token,
+  };
+}
+
+function acquireSiteSessionLease(project) {
+  const lease = writerLeases.acquire(project.writers, {
+    rootDir: project.root, kind: 'task-session', stem: project.stem,
+    key: `task:${project.stem}`, ownerPid: process.pid, pendingChild: true,
+    sessionId: writerLeases.createSessionId(),
+  });
+  writerLeases.updateChildPid(lease, process.pid);
+  return lease;
+}
+
+function siteRunEnv(project, lease, runId) {
+  return {
+    ORCHESTRATOR_WRITER_SESSION_ID: lease.record.sessionId,
+    ORCHESTRATOR_WRITER_STEM: project.stem,
+    ORCHESTRATOR_WRITER_LEASE_ID: lease.leaseId,
+    ORCHESTRATOR_WRITER_DELEGATION_TOKEN: lease.delegationToken,
+    ORCHESTRATOR_RUN_ID: runId,
+    ORCHESTRATOR_WORKTREE_ID: `wt-${'ab'.repeat(16)}`,
   };
 }
 
@@ -1092,6 +1127,34 @@ await check('verify is never an identity-free inspect alias', () => {
   assert.equal(inspected.stem, project.stem);
 });
 
+await check('site orchestrator lock acquisition requires the exact delegated run generation', () => {
+  const project = makeProject('todo', 69);
+  const lease = acquireSiteSessionLease(project);
+  const runId = '1700000000000-sitegeneration';
+  const args = [
+    'acquire', '--stem', project.stem, '--stage', 'orchestrator',
+    '--run-id', runId, '--session-id', lease.record.sessionId,
+    '--owner-kind', 'site', '--owner-id', 'site:delegated-run',
+    '--owner-pid', String(process.pid),
+  ];
+  try {
+    const publicOnly = siteRunEnv(project, lease, runId);
+    delete publicOnly.ORCHESTRATOR_WRITER_DELEGATION_TOKEN;
+    parseFailure(run(project, args, publicOnly), 4, 'SITE_WRITER_AUTHORITY_INVALID');
+    assert.equal(existsSync(project.lock), false);
+
+    const wrongRun = siteRunEnv(project, lease, '1700000000000-foreigngeneration');
+    parseFailure(run(project, args, wrongRun), 4, 'SITE_RUN_GENERATION_MISMATCH');
+    assert.equal(existsSync(project.lock), false);
+
+    const acquired = parseSuccess(run(project, args, siteRunEnv(project, lease, runId)));
+    assert.equal(acquired.runId, runId);
+    assert.equal(acquired.sessionId, lease.record.sessionId);
+  } finally {
+    assert.equal(writerLeases.release(lease), true);
+  }
+});
+
 await check('dead Site owner recovery is two-phase, hash-bound, writer-fenced, and exact', async () => {
   const project = makeProject('todo', 70);
   const owner = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
@@ -1101,7 +1164,7 @@ await check('dead Site owner recovery is two-phase, hash-bound, writer-fenced, a
       try { return writerLeases.PROCESS_START_ID_RE.test(writerLeases.captureProcessStartId(owner.pid)); }
       catch (_) { return false; }
     }, 'fixture owner process identity was not observable');
-    const acquired = parseSuccess(run(project, siteAcquireArgs(project, owner.pid, 'orchestrator', 'dead-owner')));
+    const acquired = publishSiteLockFixture(project, owner.pid, 'dead-owner');
     owner.kill('SIGTERM');
     await new Promise((resolve) => owner.once('close', resolve));
 
@@ -1153,7 +1216,7 @@ await check('dead-owner recovery survives an unpublished workspace INDEX', async
       try { return writerLeases.PROCESS_START_ID_RE.test(writerLeases.captureProcessStartId(owner.pid)); }
       catch (_) { return false; }
     }, 'fixture owner process identity was not observable');
-    const acquired = parseSuccess(run(project, siteAcquireArgs(project, owner.pid, 'orchestrator', 'stale-index')));
+    const acquired = publishSiteLockFixture(project, owner.pid, 'stale-index');
 
     // The run held the lock on a healthy workspace; the INDEX drifts afterwards.
     // Keep the canonical schema and empty only the columns.
@@ -1199,7 +1262,7 @@ await check('dead-owner recovery survives an unpublished workspace INDEX', async
 
 await check('owner recovery preserves live, foreign-kind, and writer-active locks', async () => {
   const live = makeProject('todo', 71);
-  const liveLock = parseSuccess(run(live, siteAcquireArgs(live, process.pid, 'orchestrator', 'live-owner')));
+  const liveLock = publishSiteLockFixture(live, process.pid, 'live-owner');
   let status = parseSuccess(run(live, ['owner-status', '--stem', live.stem]));
   assert.equal(status.recoverable, false);
   assert.equal(status.reason, 'owner-active');
@@ -1229,7 +1292,7 @@ await check('owner recovery preserves live, foreign-kind, and writer-active lock
       try { return writerLeases.PROCESS_START_ID_RE.test(writerLeases.captureProcessStartId(owner.pid)); }
       catch (_) { return false; }
     }, 'writer-conflict owner identity was not observable');
-    parseSuccess(run(writer, siteAcquireArgs(writer, owner.pid, 'orchestrator', 'writer-conflict')));
+    publishSiteLockFixture(writer, owner.pid, 'writer-conflict');
     owner.kill('SIGTERM');
     await new Promise((resolve) => owner.once('close', resolve));
     conflict = writerLeases.acquire(writer.writers, {

@@ -21,7 +21,7 @@
 //   FIGMA_CENSUS_CODE_ROOTS  — path-delimited code roots (default: the product repo root)
 import { readdirSync, readFileSync } from 'node:fs'
 import { delimiter, join } from 'node:path'
-import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, isDirectRun, ok, warnMsg, failMsg, info, summary, PROJECT_ROOT } from './_util.mjs'
+import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, isDirectRun, ok, warnMsg, failMsg, info, summary, PROJECT_ROOT, EXECUTION_ROOT, executionProductInputPath } from './_util.mjs'
 import { assertTaskStem, fileHash, writeReport } from './report-utils.mjs'
 
 function arg(flag) {
@@ -56,8 +56,11 @@ function collectSourceFiles(root, out) {
 
   const codeRootArg = arg('--code-root')
   const codeRoots = codeRootArg
-    ? [codeRootArg]
-    : (process.env.FIGMA_CENSUS_CODE_ROOTS ? process.env.FIGMA_CENSUS_CODE_ROOTS.split(delimiter).filter(Boolean) : [PROJECT_ROOT])
+    ? [executionProductInputPath(codeRootArg, '--code-root')]
+    : (process.env.FIGMA_CENSUS_CODE_ROOTS
+      ? process.env.FIGMA_CENSUS_CODE_ROOTS.split(delimiter).filter(Boolean)
+        .map((value) => executionProductInputPath(value, 'FIGMA_CENSUS_CODE_ROOTS'))
+      : [EXECUTION_ROOT])
 
   // 1. Collect every recorded design text across the stem's specs (both themes).
   const specFiles = readdirSync(screensDir).filter((f) => f.endsWith('.spec.json')).sort()

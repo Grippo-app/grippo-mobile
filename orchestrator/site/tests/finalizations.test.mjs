@@ -5,7 +5,7 @@ import { createServer } from 'node:http'
 import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 
@@ -84,6 +84,7 @@ process.env.FINALIZE_TASK_SCRIPT = fakeFinalizer
 const require = createRequire(import.meta.url)
 const finalizations = require('../server/finalizations.js')
 const taskStateCore = require('../../tasks/task-state-core.cjs')
+const writerLeases = require('../../tasks/writer-leases.cjs')
 
 let checks = 0
 function check(name, fn) {
@@ -113,6 +114,24 @@ try {
     assert.equal(JSON.stringify(good).includes('must-not-leak'), false)
     assert.equal(finalizations.mutationBlocked(null), true, 'global mutations must fail closed on any durable marker')
     assert.equal(finalizations.mutationBlocked('TASK_999_unrelated'), true, 'a marker must block unrelated task writers because derived artifacts are shared')
+  })
+
+  await check('startup reconciles only writer generations whose exact local owner is proven gone', function () {
+    const writers = join(dir, '.writers')
+    const script = `
+      const leases = require(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'tasks', 'writer-leases.cjs'))});
+      leases.acquire(${JSON.stringify(writers)}, { kind: 'task-session', stem: 'TASK_91_stale_writer',
+        sessionId: leases.createSessionId(), key: 'worktree-provision:TASK_91_stale_writer',
+        ownerPid: process.pid, pendingChild: false, rootDir: ${JSON.stringify(root)} });
+    `
+    const child = spawnSync(process.execPath, ['-e', script], { encoding: 'utf8' })
+    assert.equal(child.status, 0, child.stderr)
+    assert.equal(writerLeases.scan(writers, root).stale.length, 1)
+    finalizations.init()
+    const after = writerLeases.scan(writers, root)
+    assert.deepEqual(after.issues, [])
+    assert.deepEqual(after.stale, [])
+    assert.deepEqual(after.active, [])
   })
 
   await check('corrupt and symlink markers are surfaced, not skipped', function () {
@@ -295,21 +314,23 @@ try {
     rmSync(mutex, { force: true })
   })
 
-  await check('stale concurrency token is rejected and valid resume deduplicates', async function () {
-    const current = finalizations.readOne(stem)
-    const stale = finalizations.resume(stem, current.revision - 1, current.etag)
-    assert.equal(stale.statusCode, 409)
-    assert.equal(stale.error, 'finalization-changed')
-    const accepted = finalizations.resume(stem, current.revision, current.etag)
+  await check('the finalizer runs only inside an integration transaction and never twice at once', async function () {
+    // Since worktree isolation Phase 4 the finalizer has no standalone run: the
+    // integration write-ahead log supplies the mode, so a call without one is
+    // refused outright rather than starting an unowned publication.
+    const unowned = finalizations.runFinalizer(stem, {})
+    assert.equal(unowned.statusCode, 409)
+    assert.equal(unowned.error, 'finalization-integration-owned')
+    const accepted = finalizations.runFinalizer(stem, { extraArgs: ['--mode', 'prepare'] })
     assert.equal(accepted.accepted, true)
-    const duplicate = finalizations.resume(stem, current.revision, current.etag)
+    const duplicate = finalizations.runFinalizer(stem, { extraArgs: ['--mode', 'prepare'] })
     assert.equal(duplicate.alreadyRunning, true)
     const otherStem = 'TASK_12_other_recovery'
     writeMarker(validMarker(1, otherStem))
     const other = finalizations.readOne(otherStem)
     assert.equal(other.recoverable, false)
     assert.equal(other.errorCode, 'FINALIZATION_SERVER_BUSY')
-    const globallyBusy = finalizations.resume(otherStem, other.revision, other.etag)
+    const globallyBusy = finalizations.runFinalizer(otherStem, { extraArgs: ['--mode', 'prepare'] })
     assert.equal(globallyBusy.statusCode, 409)
     assert.equal(globallyBusy.error, 'finalization-busy')
   })
@@ -423,7 +444,10 @@ try {
     assert.match(doc, /sole prompt disclosure\s+boundary/)
     assert.match(doc, /writer-lease\.mjs acquire/)
     assert.match(doc, /writer-lease\.mjs release/)
-    assert.match(doc, /--writer-session-id <sessionId>/)
+    // Phase 4: the standby prompt no longer hands the finalizer a session id —
+    // forward publication runs only inside the owner's integration transaction.
+    assert.match(doc, /forward publication runs only inside the owner's\s+integration transaction/)
+    assert.doesNotMatch(doc, /finalize-task\.mjs` receives `--writer-session-id/)
   })
 
   await check('session writer lease closes the finalizer check-to-spawn race and releases on result', function () {
@@ -490,7 +514,7 @@ setImmediate(() => {
     assert.equal(result.status, 0, result.stderr + result.stdout)
   })
 
-  await check('board-task writer leases are mutually exclusive across stems and drainers (frozen serial safety)', function () {
+  await check('board-task writer leases are exclusive per stem, so two isolated runs coexist', function () {
     const script = String.raw`
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -511,15 +535,24 @@ const foreign = leases.acquire(writers, {
   kind: 'task-session', stem: 'TASK_1_first', key: 'task:TASK_1_first',
   sessionId: leases.createSessionId(), ownerPid: process.ppid
 });
-// 1. A second board-task acquisition for a DIFFERENT stem is refused and its
-//    just-published lease is withdrawn (publish-then-scan handshake).
-const refused = finalizationsApi.beginMutation({
+// 1. A second board-task acquisition for a DIFFERENT stem is ADMITTED: the two
+//    runs own disjoint checkouts, so neither can see the other's files.
+const second = finalizationsApi.beginMutation({
   kind: 'task-session', stem: 'TASK_2_second',
   sessionId: leases.createSessionId(), key: 'task:TASK_2_second'
 });
-assert.equal(refused.ok, false);
-assert.equal(refused.error, 'finalization-active');
-assert.equal(leases.scan(writers).active.length, 1, 'refused acquisition must withdraw its own lease');
+assert.equal(second.ok, true, 'a different stem must be admitted alongside a live board-task writer');
+assert.equal(leases.scan(writers).active.length, 2);
+// ...while a second acquisition for the SAME stem is still refused and
+// withdraws its own lease (publish-then-scan handshake).
+const sameStem = finalizationsApi.beginMutation({
+  kind: 'task-session', stem: 'TASK_1_first',
+  sessionId: leases.createSessionId(), key: 'task:TASK_1_first'
+});
+assert.equal(sameStem.ok, false, 'one task stays single-writer');
+assert.equal(sameStem.error, 'finalization-active');
+assert.equal(leases.scan(writers).active.length, 2, 'refused acquisition must withdraw its own lease');
+finalizationsApi.endMutation(second.handle);
 // 2. Control-plane writers keep the narrower per-stem/key rules.
 const workspace = finalizationsApi.beginMutation({
   kind: 'workspace-session', stem: null,
@@ -527,21 +560,26 @@ const workspace = finalizationsApi.beginMutation({
 });
 assert.equal(workspace.ok, true, 'workspace-session writers stay compatible with a live board-task writer');
 finalizationsApi.endMutation(workspace.handle);
-// 3. The runner's durable occupancy probe reports the foreign writer, and
-//    clears once it is released.
-const occupied = finalizationsApi.foreignTaskSessionWriterIssue();
-assert.ok(occupied, 'foreign live board-task lease must occupy the serial slot');
+// 3. The runner's durable occupancy probe is STEM-SCOPED: it reports the
+//    foreign writer for its own stem, ignores it for another, and holds the
+//    whole drain only when the lease store itself is unprovable.
+const occupied = finalizationsApi.foreignTaskSessionWriterIssue('TASK_1_first');
+assert.ok(occupied, 'a foreign live board-task lease must hold its own task');
 assert.equal(occupied.code, 'TASK_WRITER_ACTIVE');
 assert.match(occupied.message, /TASK_1_first/);
+assert.equal(finalizationsApi.foreignTaskSessionWriterIssue('TASK_9_other'), null,
+  'another task must not be held by an unrelated board-task writer');
+assert.equal(finalizationsApi.foreignTaskSessionWriterIssue(), null,
+  'a provable lease store never holds the drain by itself');
 leases.release(foreign);
-assert.equal(finalizationsApi.foreignTaskSessionWriterIssue(), null);
+assert.equal(finalizationsApi.foreignTaskSessionWriterIssue('TASK_1_first'), null);
 // 4. A lease owned by THIS live process is not "foreign": the in-memory
 //    running count already accounts for it.
 const own = leases.acquire(writers, {
   kind: 'task-session', stem: 'TASK_3_own', key: 'task:TASK_3_own',
   sessionId: leases.createSessionId(), ownerPid: process.pid
 });
-assert.equal(finalizationsApi.foreignTaskSessionWriterIssue(), null,
+assert.equal(finalizationsApi.foreignTaskSessionWriterIssue('TASK_3_own'), null,
   'a lease owned by this live process must not hold the drain');
 leases.release(own);
 fs.rmSync(state, { recursive: true, force: true });
@@ -885,7 +923,9 @@ writeFileSync(process.env.FINALIZATION_CAPTURE, JSON.stringify({
   writerSessionId: process.env.ORCHESTRATOR_WRITER_SESSION_ID || null,
   writerStem: process.env.ORCHESTRATOR_WRITER_STEM || null,
   failpoint: process.env.FINALIZE_FAILPOINT || null,
-  replaceTodo: process.env.FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT || null
+  replaceTodo: process.env.FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT || null,
+  fsCrashStage: process.env.FINALIZE_FS_TEST_CRASH_STAGE || null,
+  taskSwapPath: process.env.TASK_FS_TEST_SWAP_PATH || null
 }))
 console.error('fixture child exploded')
 process.exit(7)
@@ -902,10 +942,11 @@ process.exit(7)
     // finalizer a crash failpoint or a todo-replacement source file.
     process.env.FINALIZE_FAILPOINT = 'after-intent:outcome'
     process.env.FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT = join(root, 'attacker-todo.md')
+    process.env.FINALIZE_FS_TEST_CRASH_STAGE = 'after-replace'
+    process.env.TASK_FS_TEST_SWAP_PATH = join(root, 'attacker-task-root')
     process.env.FINALIZATION_TIMEOUT_MS = '5000'
     try {
-      const current = finalizations.readOne(envStem)
-      assert.equal(finalizations.resume(envStem, current.revision, current.etag).accepted, true)
+      assert.equal(finalizations.runFinalizer(envStem, { extraArgs: ['--mode', 'prepare'] }).accepted, true)
       await waitFor(() => !finalizations.readOne(envStem).recoveryRunning)
       const captured = JSON.parse(readFileSync(capture, 'utf8'))
       assert.deepEqual(captured, {
@@ -915,7 +956,9 @@ process.exit(7)
         writerSessionId: null,
         writerStem: null,
         failpoint: null,
-        replaceTodo: null
+        replaceTodo: null,
+        fsCrashStage: null,
+        taskSwapPath: null
       })
       const failed = finalizations.readOne(envStem)
       assert.equal(failed.errorCode, 'FINALIZATION_PROCESS_FAILED')
@@ -931,7 +974,61 @@ process.exit(7)
       delete process.env.ORCHESTRATOR_WRITER_STEM
       delete process.env.FINALIZE_FAILPOINT
       delete process.env.FINALIZE_TEST_REPLACE_TODO_BEFORE_OUTCOME_COMMIT
+      delete process.env.FINALIZE_FS_TEST_CRASH_STAGE
+      delete process.env.TASK_FS_TEST_SWAP_PATH
     }
+  })
+
+  await check('canonical Site ignores the Unix-only Windows Job test switch', function () {
+    const canonicalRoot = fileURLToPath(new URL('../../..', import.meta.url))
+    const canonicalEnv = { ...process.env }
+    for (const key of Object.keys(canonicalEnv)) {
+      if (/^ORCHESTRATOR_(?:.*_DIR|STATE_FILE)$/.test(key)) delete canonicalEnv[key]
+    }
+    canonicalEnv.ORCHESTRATOR_PROJECT_ROOT = canonicalRoot
+    canonicalEnv.FINALIZATION_TEST_WINDOWS_JOB = '1'
+    const script = String.raw`
+const assert = require('node:assert/strict');
+const events = require('node:events');
+const fs = require('node:fs');
+const path = require('node:path');
+const stream = require('node:stream');
+const cp = require('node:child_process');
+const fixture = fs.mkdtempSync(path.join(process.cwd(), 'orchestrator/.cache/.finalization-test-env-'));
+process.env.ORCHESTRATOR_CACHE_DIR = fixture;
+fs.mkdirSync(path.join(fixture, 'tasks', 'finalizations'), { recursive: true, mode: 0o700 });
+let command = null;
+let child = null;
+class FakeChild extends events.EventEmitter {
+  constructor() {
+    super();
+    this.pid = null;
+    this.stdout = new stream.PassThrough();
+    this.stderr = new stream.PassThrough();
+    this.stdin = new stream.PassThrough();
+  }
+  kill() { return true; }
+}
+try {
+  const finalizations = require('./orchestrator/site/server/finalizations.js');
+  cp.spawn = function (executable) {
+    command = executable;
+    child = new FakeChild();
+    return child;
+  };
+  const started = finalizations.runFinalizer('TASK_999_test_mode_fence', { extraArgs: ['--mode', 'prepare'] });
+  assert.equal(started.accepted, true, JSON.stringify(started));
+  assert.equal(command, process.execPath, 'test switch changed canonical process supervision');
+  child.emit('close', 1, null);
+} finally {
+  fs.rmSync(fixture, { recursive: true, force: true });
+}
+`
+    const result = spawnSync(process.execPath, ['-e', script], {
+      cwd: canonicalRoot, encoding: 'utf8', timeout: 10000,
+      env: canonicalEnv,
+    })
+    assert.equal(result.status, 0, result.stderr + result.stdout)
   })
 
   await check('Windows recovery wrapper requires an authenticated drained proof before ownership release', async function () {
@@ -963,7 +1060,7 @@ child.on('close', (code) => {
     process.env.FINALIZATION_TIMEOUT_MS = '5000'
     try {
       const current = finalizations.readOne(jobStem)
-      assert.equal(finalizations.resume(jobStem, current.revision, current.etag).accepted, true)
+      assert.equal(finalizations.runFinalizer(jobStem, { extraArgs: ['--mode', 'prepare'] }).accepted, true)
       await waitFor(() => !finalizations.readOne(jobStem).recoveryRunning)
       assert.equal(finalizations.readOne(jobStem).recoverable, true)
     } finally {
@@ -992,7 +1089,7 @@ const assert = require('node:assert/strict');
 const finalizations = require('./orchestrator/site/server/finalizations.js');
 const stem = process.env.PROBE_STEM;
 const current = finalizations.readOne(stem);
-assert.equal(finalizations.resume(stem, current.revision, current.etag).accepted, true);
+assert.equal(finalizations.runFinalizer(stem, { extraArgs: ['--mode', 'prepare'] }).accepted, true);
 setTimeout(() => {
   const after = finalizations.readOne(stem);
   assert.equal(after.recoveryRunning, true, 'wrapper exit without DRAINED must retain ownership');
@@ -1035,7 +1132,7 @@ const assert = require('node:assert/strict');
 const finalizations = require('./orchestrator/site/server/finalizations.js');
 const stem = process.env.PROBE_STEM;
 const current = finalizations.readOne(stem);
-assert.equal(finalizations.resume(stem, current.revision, current.etag).accepted, true);
+assert.equal(finalizations.runFinalizer(stem, { extraArgs: ['--mode', 'prepare'] }).accepted, true);
 setTimeout(() => {
   const after = finalizations.readOne(stem);
   assert.equal(after.recoveryRunning, true, 'EPIPE without authenticated DRAINED must retain recovery ownership');
@@ -1092,7 +1189,7 @@ cp.spawn = function (_command, _args, options) {
 const finalizations = require('./orchestrator/site/server/finalizations.js');
 const stem = process.env.PROBE_STEM;
 const current = finalizations.readOne(stem);
-assert.equal(finalizations.resume(stem, current.revision, current.etag).accepted, true);
+assert.equal(finalizations.runFinalizer(stem, { extraArgs: ['--mode', 'prepare'] }).accepted, true);
 child.stderr.write('WINDOWS_JOB_READY ' + nonce + ' ' + child.pid + '\n');
 setTimeout(() => {
   assert.equal(errorDelivered, true, 'timeout must exercise the asynchronous EPIPE callback');
@@ -1149,7 +1246,7 @@ setInterval(() => {}, 1000)
     try {
       const current = finalizations.readOne(timeoutStem)
       const timeoutStartedAt = Date.now()
-      assert.equal(finalizations.resume(timeoutStem, current.revision, current.etag).accepted, true)
+      assert.equal(finalizations.runFinalizer(timeoutStem, { extraArgs: ['--mode', 'prepare'] }).accepted, true)
       await waitFor(() => {
         try {
           const rawPid = readFileSync(grandchildPidFile, 'utf8').trim()
@@ -1231,7 +1328,7 @@ function token() { const c = finalizations.readOne(stem); return { revision: c.r
 function resumeOwnership() {
   const t = token();
   assert.equal(t.recoverable, true, 'fixture marker must be recoverable');
-  assert.equal(finalizations.resume(stem, t.revision, t.etag).accepted, true, 'resume takes in-memory ownership');
+  assert.equal(finalizations.runFinalizer(stem, { extraArgs: ['--mode', 'prepare'] }).accepted, true, 'resume takes in-memory ownership');
 }
 // Strand a record the way markTreeUnverified does: the parent 'close' fires
 // while the group is still alive, so endedAt is stamped and the record is

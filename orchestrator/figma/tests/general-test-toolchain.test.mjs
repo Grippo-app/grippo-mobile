@@ -51,6 +51,24 @@ function assertDisposableFixture(fixture) {
     'generated compatibility builds must live outside the caller repository');
 }
 
+const WRAPPER_ARGS = ['wrapper', '--gradle-version', '9.1.0', '--no-daemon'];
+const WRAPPER_URL_FAILURE = 'Test of distribution url https://services.gradle.org/distributions/gradle-9.1.0-bin.zip failed';
+function bootstrapPinnedGradleWrapper(run) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      return run('gradle', WRAPPER_ARGS);
+    } catch (error) {
+      // Gradle validates the immutable distribution URL with a 10-second HEAD
+      // request before it writes the wrapper. The endpoint can reset that HEAD
+      // while the same redirect chain and artifact are healthy. Retry only this
+      // exact transport refusal; every other wrapper/configuration failure stays
+      // immediate, and three consecutive URL refusals still fail the gate.
+      if (!String(error && error.message || error).includes(WRAPPER_URL_FAILURE) || attempt === 3) throw error;
+    }
+  }
+  throw new Error('unreachable wrapper bootstrap state');
+}
+
 check('version catalog reference pins the exact proven stack', () => {
   const techStack = read('orchestrator/skills/platform-build-toolkit/references/tech-stack.md');
   for (const pin of [
@@ -160,7 +178,7 @@ function generatedFixture() {
   try {
     write('settings.gradle.kts', 'rootProject.name = "wrapper-bootstrap"\n');
     write('build.gradle.kts', '\n');
-    run('gradle', ['wrapper', '--gradle-version', '9.1.0', '--no-daemon']);
+    bootstrapPinnedGradleWrapper(run);
 
     write('settings.gradle.kts', `
 pluginManagement { repositories { google(); gradlePluginPortal(); mavenCentral() } }
@@ -567,7 +585,7 @@ class MigrationProbeTest {
   try {
     write('settings.gradle.kts', 'rootProject.name = "wrapper-bootstrap"\n');
     write('build.gradle.kts', '\n');
-    run('gradle', ['wrapper', '--gradle-version', '9.1.0', '--no-daemon']);
+    bootstrapPinnedGradleWrapper(run);
 
     write('settings.gradle.kts', `
 pluginManagement { repositories { google(); gradlePluginPortal(); mavenCentral() } }

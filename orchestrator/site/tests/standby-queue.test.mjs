@@ -199,7 +199,7 @@ function run(fx, args, extraEnv = {}, input = undefined) {
 
 function requestRecord(fx, patch = {}) {
   return {
-    version: 2,
+    version: 3,
     action: 'prep',
     stem: 'TASK_1_demo',
     expectedState: 'backlog',
@@ -446,6 +446,7 @@ test('non-conforming marker content never ages into takeover authority', () => {
   const fx = fixture();
   fs.mkdirSync(fx.runs, { recursive: true, mode: 0o700 });
   const marker = path.join(fx.runs, '.runner-alive');
+  // A pre-processStartId marker: non-conforming CONTENT, not a structural fault.
   const legacy = JSON.stringify({ at: new Date().toISOString(), pid: 123, projectRoot: fx.root }) + '\n';
   fs.writeFileSync(marker, legacy, { mode: 0o600 });
   const fresh = run(fx, ['begin-pass']);
@@ -726,14 +727,21 @@ test('disclosure receipt is durable before one-shot exact prompt output', () => 
 });
 
 test('all canonical queue actions share the complete execution-to-consume fence contract', () => {
+  // Worktree isolation Phase 2: `run` executes only inside the site runner's
+  // provisioned worktree, so the standby's execution-to-consume contract now
+  // covers the four control-plane actions; the run is refused outright.
   const cases = [
     ['prep', 'backlog'],
     ['answers', 'pending'],
-    ['run', 'todo'],
     ['drop', 'backlog'],
     ['reopen', 'done'],
   ];
-  assert.deepEqual([...requestContract.REQUEST_ACTIONS].sort(), cases.map(([action]) => action).sort());
+  assert.deepEqual([...requestContract.REQUEST_ACTIONS].sort(),
+    cases.map(([action]) => action).concat('run').sort());
+  const refusedRun = fixture();
+  setFixtureState(refusedRun, 'todo');
+  putRequest(refusedRun, '1000000000000-first', { action: 'run', expectedState: 'todo' });
+  assert.deepEqual(claimNext(refusedRun).json, { status: 'blocked', code: 'run-requires-site-runner' });
   for (const [action, state] of cases) {
     const fx = fixture();
     setFixtureState(fx, state);
@@ -820,62 +828,57 @@ test('executed prep consume requires canonical task-lock release settlement', ()
   assert.equal(run(fx, ['consume', '--handle', claimed.handle, '--kind', 'executed']).json?.status, 'consumed');
 });
 
-test('executed run consume accepts only absent or exact standby-owned retained lock', () => {
-  const fx = fixture();
-  setFixtureState(fx, 'todo');
-  const record = requestRecord(fx, { action: 'run', expectedState: 'todo' });
-  putRequest(fx, '1000000000000-first', { action: 'run', expectedState: 'todo' });
-  const claimed = claim(fx);
-  const lease = acquireLease(fx, record);
-  const reservation = reserve(fx, claimed.handle);
-  assert.equal(prepare(fx, claimed.handle, lease).json?.status, 'execution-prepared');
-  release(fx, reservation);
-  assert.equal(disclose(fx, claimed.handle, lease).status, 0);
-  const taskLock = acquireStandbyTaskLock(fx, record, lease, 'run-retained');
-  releaseLease(fx, lease);
-  const consumed = run(fx, ['consume', '--handle', claimed.handle, '--kind', 'executed']);
-  assert.deepEqual(consumed.json, { status: 'consumed', id: claimed.request.id, kind: 'executed' });
-  releaseTaskLock(fx, taskLock);
+test('run requests are invisible to the standby: never claimed, never blocking younger work', () => {
+  // The oldest-first rule skips `run` in BOTH mirrors (the JS peek and the
+  // python boundary), so an older run must not wedge younger non-run work —
+  // and a run-only queue is honestly blocked for the site runner.
+  const fairness = fixture();
+  setFixtureState(fairness, 'todo');
+  const olderRun = putRequest(fairness, '1000000000000-first', { action: 'run', expectedState: 'todo' });
+  const newerDrop = putRequest(fairness, '2000000000000-second', { action: 'drop', expectedState: 'todo' });
+  const claimed = run(fairness, ['claim-next', '--pass-token', beginPass(fairness).passToken]);
+  assert.equal(claimed.json?.status, 'claimed', JSON.stringify(claimed.json));
+  assert.equal(claimed.json?.request?.action, 'drop', 'younger non-run work drains past the older run');
+  assert.equal(fs.existsSync(olderRun.file), true, 'the run request stays queued untouched');
+  assert.equal(fs.existsSync(newerDrop.file), false, 'the claimed request moved out of the public queue');
+
+  const runOnly = fixture();
+  setFixtureState(runOnly, 'todo');
+  const only = putRequest(runOnly, '1000000000000-first', { action: 'run', expectedState: 'todo' });
+  const blocked = run(runOnly, ['claim-next', '--pass-token', beginPass(runOnly).passToken]);
+  assert.deepEqual(blocked.json, { status: 'blocked', code: 'run-requires-site-runner' });
+  assert.equal(fs.existsSync(only.file), true, 'a run-only queue is left entirely to the site runner');
+  assert.equal(fs.readdirSync(runOnly.runs).filter((name) => name.startsWith('.standby-')).length, 0);
 });
 
-test('executed run consume rejects a foreign replacement lock generation', () => {
-  const fx = fixture();
-  setFixtureState(fx, 'todo');
-  const record = requestRecord(fx, { action: 'run', expectedState: 'todo' });
-  putRequest(fx, '1000000000000-first', { action: 'run', expectedState: 'todo' });
-  const claimed = claim(fx);
-  const lease = acquireLease(fx, record);
-  const reservation = reserve(fx, claimed.handle);
-  assert.equal(prepare(fx, claimed.handle, lease).json?.status, 'execution-prepared');
-  release(fx, reservation);
-  assert.equal(disclose(fx, claimed.handle, lease).status, 0);
-  const owned = acquireStandbyTaskLock(fx, record, lease, 'run-owned');
-  releaseTaskLock(fx, owned);
-  releaseLease(fx, lease);
-  const foreign = acquireDirectTaskLock(fx, record.stem);
-  const rejected = run(fx, ['consume', '--handle', claimed.handle, '--kind', 'executed']);
-  assert.deepEqual(rejected.json, { status: 'error', code: 'task-lock-settlement-unproven' });
-  assert.equal(fs.existsSync(path.join(privateOperation(fx), 'request.claim')), true);
-  releaseTaskLock(fx, foreign);
-});
+test('executed consume requires a proven-absent task lock for every standby action', () => {
+  // Worktree isolation Phase 2 deleted the standby `run` path and with it the
+  // orchestrator-stage retained-lock tolerance: any standby execution that
+  // leaves a task lock behind cannot consume its request.
+  const clean = fixture();
+  setFixtureState(clean, 'pending');
+  const cleanRecord = requestRecord(clean, { action: 'answers', expectedState: 'pending' });
+  putRequest(clean, '1000000000000-first', { action: 'answers', expectedState: 'pending' });
+  const cleanClaim = claim(clean);
+  assert.equal(prepareAndDisclose(clean, cleanClaim.handle, cleanRecord), cleanRecord.prompt);
+  assert.deepEqual(run(clean, ['consume', '--handle', cleanClaim.handle, '--kind', 'executed']).json,
+    { status: 'consumed', id: '1000000000000-first', kind: 'executed' });
 
-test('executed run consume rejects exact retained lock after durable task-state drift', () => {
-  const fx = fixture();
-  setFixtureState(fx, 'todo');
-  const record = requestRecord(fx, { action: 'run', expectedState: 'todo' });
-  putRequest(fx, '1000000000000-first', { action: 'run', expectedState: 'todo' });
-  const claimed = claim(fx);
-  const lease = acquireLease(fx, record);
-  const reservation = reserve(fx, claimed.handle);
-  assert.equal(prepare(fx, claimed.handle, lease).json?.status, 'execution-prepared');
-  release(fx, reservation);
-  assert.equal(disclose(fx, claimed.handle, lease).status, 0);
-  acquireStandbyTaskLock(fx, record, lease, 'run-drift');
-  setFixtureState(fx, 'done');
-  releaseLease(fx, lease);
-  const rejected = run(fx, ['consume', '--handle', claimed.handle, '--kind', 'executed']);
-  assert.deepEqual(rejected.json, { status: 'error', code: 'task-lock-settlement-unproven' });
-  assert.equal(fs.existsSync(path.join(privateOperation(fx), 'request.claim')), true);
+  const retained = fixture();
+  setFixtureState(retained, 'pending');
+  const retainedRecord = requestRecord(retained, { action: 'answers', expectedState: 'pending' });
+  putRequest(retained, '1000000000000-first', { action: 'answers', expectedState: 'pending' });
+  const retainedClaim = claim(retained);
+  const lease = acquireLease(retained, retainedRecord);
+  const reservation = reserve(retained, retainedClaim.handle);
+  assert.equal(prepare(retained, retainedClaim.handle, lease).json?.status, 'execution-prepared');
+  release(retained, reservation);
+  assert.equal(disclose(retained, retainedClaim.handle, lease).status, 0);
+  const taskLock = acquireStandbyTaskLock(retained, retainedRecord, lease, 'retained');
+  releaseLease(retained, lease);
+  assert.deepEqual(run(retained, ['consume', '--handle', retainedClaim.handle, '--kind', 'executed']).json,
+    { status: 'error', code: 'task-lock-absence-unproven' });
+  releaseTaskLock(retained, taskLock);
 });
 
 test('mechanical execution fence rejects absent and changed exact task state', () => {

@@ -40,21 +40,74 @@ Set `RUNNER_DISABLED=1` to start the server without the background queue runner
 (no prep/answers/run/drop task sessions are spawned by `runner.js`). Deterministic
 backlog creation still works without Claude; its separate shallow advisory
 intake may report preview unavailable when no model runtime is available. Task
-sessions run strictly one at a time: all of them share one working tree, so the
-concurrency cap is frozen at `MAX_PARALLEL=1` in `server/runner.js` (no
-environment override) until per-task worktree isolation lands. The cap is also
-enforced against durable evidence, not only this process's memory: the runner
-holds the queue while any board-task (`task-session`) writer lease is active
-outside this live process (an orphan child of a dead site process, a standby
+sessions may overlap: each owns an isolated git worktree, so the concurrency cap
+is the canary value `MAX_PARALLEL=2` in `server/runner.js` (a source constant,
+no environment override; raising it to the eventual default is an explicit
+owner decision). The cap is also enforced against durable evidence, not only
+this process's memory: the runner holds a TASK while a board-task
+(`task-session`) writer lease for that exact stem is active outside this live
+process (an orphan child of a dead site process, a standby
 `/serve-queue` execution, another site process), stands down while a fresh
 `.runner-alive` marker is owned by a different live process, and keeps its own
 marker fresh through a CLI auth flip while one of its children still owns a
 board-task writer lease (non-writer children — skills installs, read-only
 terminals — do not block a standby takeover).
-`task-session` writer leases are mutually exclusive across stems and drainers
-at acquire time (`finalizations.beginMutation` and the guarded
-`writer-lease.mjs acquire`), which is what makes the serial guarantee hold
-across process boundaries.
+`task-session` writer leases are mutually exclusive PER STEM at acquire time
+(`finalizations.beginMutation` and the guarded `writer-lease.mjs acquire`),
+which is what keeps one task single-writer across process boundaries while two
+different tasks run side by side. What still serializes globally lives
+elsewhere: the repository-wide integration mutex, the finalization marker and
+mutex, and the device/bundle resource leases. PUBLICATION is stricter than
+admission on purpose — Integrate and the finalizer's prepare half both refuse
+while any control writer is active, and the only exemption is the class whose
+own lease key proves its effects stay elsewhere (`execution:<worktreeId>`,
+`device:…`, `bundle:…`). A board-task lease is never exempt by stem:
+`task-session` is also what `prep`/`answers`/`drop`/`reopen` hold, and those
+run in the control root. Conversely, the generation cannot be RELEASED while an
+app-run still holds `execution:<worktreeId>` — its build output is gitignored,
+so `git worktree remove` would happily delete the checkout underneath it.
+Release closes the opposite cached-binding race too: it scans on both sides of
+the durable `releasing` claim, and a job re-proves its exact generation after
+acquiring the lease. Cleanup never recursively deletes installed prefixes;
+unforced Git removal preserves every tracked change and unproven byte. Candidate
+ref deletion is one atomic transaction with a durable
+`refs/orchestrator/releases/<worktreeId>` marker, so startup can replay a real
+process death without confusing its own delete with a foreign delete or
+same-commit ref recreation. A substituted path/ref or unsafe receipt is kept
+and reported, never removed.
+Since worktree isolation Phase 2, a `run` claim
+first provisions (or resumes) a manager-owned git worktree
+(`server/worktree-manager.js` + `server/git-mutations.js`): the claude child
+spawns with cwd = the isolated execution root while
+`ORCHESTRATOR_PROJECT_ROOT` re-anchors every control-plane helper at the
+control root, and the task text travels as an immutable content-addressed
+snapshot. A refused provision keeps the request queued — there is no
+shared-root run path, and the standby worker never claims `run` requests at
+all.
+
+Since Phase 4 a run never publishes. At child exit the manager accepts the
+candidate only with a current completed `ship` checkpoint for the exact
+non-null execution generation, tree and input revisions, carrying exactly one
+verified current test-summary receipt for that run. Sealing is a recoverable WAL: claim the
+worktree record by CAS, create the candidate object, publish its exact receipt
+before moving the temporary ref, move that ref by CAS, then publish
+`ready-for-integration`. Startup resumes an interrupted `sealing` generation
+from those physical bytes; an unprovable prefix becomes explicitly
+`recovery-required`, never a dead `sealing` owner, and two sealers cannot
+publish competing receipts. The
+task then waits for the owner's explicit **Integrate**. That action runs the whole
+publication as one serialized transaction under a write-ahead log
+(`server/integrations.js`): apply the exact candidate diff into the control
+root, run `finalize-task.mjs --mode prepare` (which publishes `done/`,
+`INDEX.json`, the architecture map and the mapping registries but keeps the
+task lock and the recovery marker), create ONE canonical commit on the exact
+target base with the user's own configured git identity and every repository
+hook run, then `--mode confirm` re-proves that commit before the lock is
+released and the worktree is cleaned up. Endpoints:
+`POST /api/integrations/preview|start|resume`; the CLI equivalent is
+`node orchestrator/tasks/task-worktree.mjs integrate --stem <STEM>`. A crash at
+any boundary leaves the transaction resumable — never rolled back, and never
+completed without its commit.
 
 At every server start, the runner stays closed until deterministic create/edit
 publication recovery, exact writer-lease reconciliation, and one fresh composite
@@ -235,10 +288,11 @@ auto-reconnects per the server-advertised `retry: 1500`. The Board's
   `.cache/tasks/intake/`). It also owns the bounded orchestration-only write
   `tasks/backlog/<stem>.md` + canonical `tasks/INDEX.json` for deterministic
   create/edit, plus the narrow compare-and-swap update of
-  `project-config.md` for allowlisted Figma/Reviewer settings. The server never
-  edits product source files
-  (`.kt`/`.kts`/`.swift`/Gradle/Xcode project files/etc.) and never runs
-  Gradle. It does, however, spawn the `claude` CLI as a child process
+  `project-config.md` for allowlisted Figma/Reviewer settings. The server writes
+  product source files in exactly ONE place: the §10 integration transaction,
+  which applies a sealed candidate's exact diff into the control worktree after
+  the owner presses **Integrate** — it authors nothing, and every byte comes
+  from a reviewed candidate. It never runs Gradle. It does, however, spawn the `claude` CLI as a child process
   (the task runner, `server/runner.js`) to drain the Run-in-Claude
   queue — that child is what actually edits product files and runs builds. The
   shallow-intake child receives bounded task/active-card context and can only
@@ -308,7 +362,20 @@ auto-reconnects per the server-advertised `retry: 1500`. The Board's
   `backend-environments.js`, `backend-credentials.js`, `backend-integration.js`, `contract-session-actions.js`,
   `contract-job.js`, `contract-history.js`, `contract-generation.js`,
   `arch.js`, `sessions.js`, `runner.js`,
-  `worker.js`, `git.js`, `status.js`, `timing.js`, plus `tasks-log.js`
+  `worker.js`, `git.js`, `status.js`, `timing.js`,
+  `worktree-manager.js` (per-task worktree discovery + provisioning:
+  repository identity, §18 environment prechecks, owned/foreign/unsafe
+  inventory, and the §9.2 provision/resume/release lifecycle for run
+  execution roots — pipeline improvement 01),
+  `git-mutations.js` (THE single Git mutation owner: namespaced worktree/
+  branch creation, unforced owned removal, atomic release-marker/ref deletion,
+  candidate sealing, the
+  §10 candidate apply and the ONE canonical integration commit — argv-only,
+  receipted, no force, no `--no-verify`),
+  `integrations.js` (the §10 integration transaction: preconditions, the
+  nine-phase write-ahead log in `orchestrator/.cache/tasks/integrations/`,
+  crash resume from physical state, the repository-wide integration mutex and
+  the Board projection — pipeline improvement 01), plus `tasks-log.js`
   (the per-task pipeline journal reader). Each server module is
   `require`/`module.exports` only. `scripts/package.json` is only the zero-dependency
   ESM boundary that lets the server import the browser's canonical Figma prompt

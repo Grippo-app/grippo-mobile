@@ -24,6 +24,7 @@ const dictionary = Object.freeze({
     'api.error.task-integrity': 'Створення завдання заблоковано до виправлення цілісності завдань.',
     'api.error.stale-task-state': 'Завдання змінилися під час підготовки запиту. Оновіть стан і повторіть спробу.',
     'api.error.finalization-active': 'Створення завдання заблоковано, доки триває відновлення надійної фіналізації.',
+    'api.error.execution-scope-unavailable': 'Не вдалося перевірити ізольовану область виконання завдання. Перезавантажте подання API.',
     'api.error.generation-contract-invalid': 'Прийняте покоління контракту порушує контракт маніфесту.',
     'api.error.generation-artifact-path-invalid': 'Артефакт покоління контракту містить небезпечний або некоректний шлях.',
     'api.error.generation-artifact-invalid': 'Обов’язковий артефакт покоління контракту неможливо безпечно прочитати.',

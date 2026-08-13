@@ -44,12 +44,12 @@
 //   FIGMA_SCREEN_CACHE_ROOT or FIGMA_SPEC_SCREENS_DIR — override screens cache root (must match if both are set)
 //   FIGMA_CENSUS_CODE_ROOTS  — path-delimited effective roots (default: the product repo root).
 //     Narrowing is useful for fixtures/diagnostics, but final evidence separately compares this
-//     witness with a canonical PROJECT_ROOT discovery and blocks omitted capture/resource scope.
+//     witness with a canonical EXECUTION_ROOT discovery and blocks omitted capture/resource scope.
 //   FIGMA_DESIGN_LOCALE / FIGMA_SUPPORTED_LOCALES / FIGMA_STRING_RESOURCE_ROOTS — per-run
 //     overrides of the design-locale inputs (fixtures/diagnostics only; see lib/design-locale.mjs)
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { delimiter, join } from 'node:path'
-import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, isDirectRun, loadBindings, ok, warnMsg, failMsg, info, summary, PROJECT_ROOT, parseCli } from './_util.mjs'
+import { displayPath, exists, readJson, figmaPath, figmaScreensRoot, isDirectRun, loadBindings, ok, warnMsg, failMsg, info, summary, parseCli, EXECUTION_ROOT, executionProductInputPath, PROJECT_CONFIG_FILE, PROJECT_CONFIG_HASH } from './_util.mjs'
 import { assertTaskStem, fileHash, writeReport } from './report-utils.mjs'
 import { deriveResourceRoots, languageOf, readSupportedLocales, resolveDesignLocale } from './lib/design-locale.mjs'
 import { CAPTURE_CONFIG_DISCOVERY_KEY, captureConfigDiscovery } from './lib/capture-config-discovery.mjs'
@@ -249,7 +249,10 @@ function parseTests(masked, raw) {
   const codeRootArg = cli.value('--code-root')
   const codeRoots = codeRootArg
     ? [codeRootArg]
-    : (process.env.FIGMA_CENSUS_CODE_ROOTS ? process.env.FIGMA_CENSUS_CODE_ROOTS.split(delimiter).filter(Boolean) : [PROJECT_ROOT])
+    : (process.env.FIGMA_CENSUS_CODE_ROOTS
+      ? process.env.FIGMA_CENSUS_CODE_ROOTS.split(delimiter).filter(Boolean)
+        .map((value) => executionProductInputPath(value, 'FIGMA_CENSUS_CODE_ROOTS'))
+      : [EXECUTION_ROOT])
 
   // 1. Desired geometry per (screen, theme) from the specs' frameSizeDp.
   const specFiles = readdirSync(screensDir).filter((f) => f.endsWith('.spec.json')).sort()
@@ -373,8 +376,9 @@ function parseTests(masked, raw) {
     : resolveDesignLocale({ specs: specsForLocale, resourceRoots: deriveResourceRoots(codeRoots), supportedLocales })
   const localePlan = locale.language ? { language: locale.language, rtl: locale.rtl } : null
   const localeEnvOverrides = ['FIGMA_DESIGN_LOCALE', 'FIGMA_SUPPORTED_LOCALES', 'FIGMA_STRING_RESOURCE_ROOTS'].filter((k) => process.env[k])
-  const projectConfigPath = join(PROJECT_ROOT, 'orchestrator', 'project-config.md')
-  if (exists(projectConfigPath)) inputHashes[projectConfigPath] = fileHash(projectConfigPath)
+  if (exists(PROJECT_CONFIG_FILE)) {
+    inputHashes[PROJECT_CONFIG_FILE] = PROJECT_CONFIG_HASH || fileHash(PROJECT_CONFIG_FILE)
+  }
   for (const f of locale.resourceFiles || []) {
     if (exists(f)) inputHashes[f] = fileHash(f)
   }

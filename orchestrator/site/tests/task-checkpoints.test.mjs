@@ -15,6 +15,14 @@ const schema = JSON.parse(readFileSync(new URL('../../tasks/task-checkpoint.sche
 const STEM = 'TASK_71_checkpoint_contract'
 const HASH_A = 'sha256:' + 'a'.repeat(64)
 const HASH_B = 'sha256:' + 'b'.repeat(64)
+const EXECUTION_PIN = Object.freeze({
+  worktreeId: 'wt-' + '1'.repeat(32),
+  baseCommit: '1'.repeat(40),
+  baseTree: '2'.repeat(40),
+  executionTree: '3'.repeat(40),
+  targetRef: 'refs/heads/main',
+  targetCommit: '1'.repeat(40),
+})
 
 function sealed(patch = {}) {
   return contract.seal({
@@ -36,6 +44,7 @@ function sealed(patch = {}) {
     outputReceiptIds: [],
     priorPhaseReceiptIds: [],
     failureCode: 'review-failed',
+    executionPin: EXECUTION_PIN,
     retryPolicy: { kind: 'retry-phase', safePhase: 'review', reasonCode: 'review-failed' },
     checkpointHash: 'sha256:' + '0'.repeat(64),
     ...patch,
@@ -46,6 +55,8 @@ test('checkpoint schema and semantic contract are exact, hashed and phase-safe',
   assert.equal(schema.additionalProperties, false)
   assert.equal(schema.properties.schemaVersion.const, 1)
   assert.ok(schema.required.includes('testPolicyHash'), 'the current protocol binds the machine test-policy hash')
+  assert.equal(schema.properties.executionPin.type, 'object',
+    'a run checkpoint must never carry an execution-pin exemption')
   assert.ok(schema.properties.phase.enum.includes('tests'))
   assert.ok(schema.$defs.phase.enum.includes('tests'),
     'retryPolicy.safePhase must accept the activated tests phase too')
@@ -59,6 +70,7 @@ test('checkpoint schema and semantic contract are exact, hashed and phase-safe',
   delete incomplete.testPolicyHash
   assert.match(contract.validate(incomplete, STEM), /fields/)
   assert.match(contract.validate({ ...value, schemaVersion: 2 }, STEM), /schemaVersion/)
+  assert.throws(() => sealed({ executionPin: null }), /execution pin/)
   // `tests` is exact-retryable (diagnostic/BLOCKED only) and restarting PAST
   // it demands the sealed PASS summary receipt among the priors.
   assert.equal(contract.validate(sealed({
@@ -103,6 +115,11 @@ test('checkpoint schema and semantic contract are exact, hashed and phase-safe',
     failureCode: null,
     retryPolicy: { kind: 'resume-run', safePhase: 'planner', reasonCode: 'review-failed' },
   }), /planner input receipt/)
+  assert.throws(() => sealed({
+    phase: 'ship', status: 'completed', failureCode: null,
+    outputReceiptIds: [], priorPhaseReceiptIds: [],
+    retryPolicy: { kind: 'restart-task', safePhase: null, reasonCode: 'manual-retry' },
+  }), /test-summary/)
 })
 
 test('checkpoint producer exposes no migration or cleanup command', () => {
@@ -125,12 +142,16 @@ test('checkpoint storage, freshness, retry preview and one-use confirmation fail
     const fs = require('node:fs')
     const path = require('node:path')
     const checkpoints = require(${JSON.stringify(modulePath)})
+    const checkpointContract = require(${JSON.stringify(join(REPO, 'orchestrator', 'tasks', 'task-checkpoint-contract.cjs'))})
     const stem = ${JSON.stringify(STEM)}
     const taskSnapshot = { state: 'todo', sourceRevision: ${JSON.stringify(HASH_A)}, dependencies: [] }
     const projectRevision = { available: true, revision: ${JSON.stringify(HASH_B)}, limitations: [] }
     const configHash = 'sha256:' + 'c'.repeat(64)
+    const executionPin = { worktreeId: 'wt-' + '1'.repeat(32),
+      baseCommit: '1'.repeat(40), baseTree: '2'.repeat(40), executionTree: '3'.repeat(40),
+      targetRef: 'refs/heads/main', targetCommit: '1'.repeat(40) }
     const common = { taskSnapshot, projectRevision, configHash, activeRunId: 'run-71',
-      receiptVerifier: () => true }
+      receiptVerifier: () => true, executionPin }
 
     const created = checkpoints.create(stem, {
       runId: 'run-71',
@@ -149,10 +170,24 @@ test('checkpoint storage, freshness, retry preview and one-use confirmation fail
     assert.equal(checkpoints.summary(stem).count, 1)
     assert.match(checkpoints.summary(stem).revision, /^sha256:[a-f0-9]{64}$/)
     assert.equal(checkpoints.freshness(value, common).current, true)
+    assert.equal(checkpoints.freshness(value, { ...common, activeRunId: 'foreign-run' }).reasonCode,
+      'run-owner-changed', 'checkpoint freshness must keep proving the exact active task-lock generation')
 
     const checkpointPath = path.join(process.env.ORCHESTRATOR_CHECKPOINTS_DIR, stem,
       value.checkpointId + '.json')
     const currentBytes = fs.readFileSync(checkpointPath)
+    const indexPath = path.join(process.env.ORCHESTRATOR_CHECKPOINTS_DIR, stem, 'index.json')
+    const currentIndexBytes = fs.readFileSync(indexPath)
+    const substituted = checkpointContract.seal({ ...value,
+      checkpointId: 'cp-' + '2'.repeat(32), checkpointHash: 'sha256:' + '0'.repeat(64) })
+    fs.writeFileSync(checkpointPath, checkpointContract.canonical(substituted) + '\\n')
+    const substitutedIndex = JSON.parse(currentIndexBytes)
+    substitutedIndex.entries[0].checkpointHash = substituted.checkpointHash
+    fs.writeFileSync(indexPath, checkpointContract.canonical(substitutedIndex) + '\\n')
+    assert.equal(checkpoints.read(stem, value.checkpointId), null,
+      'checkpoint bytes must identify the generation named by their canonical file and index entry')
+    fs.writeFileSync(checkpointPath, currentBytes)
+    fs.writeFileSync(indexPath, currentIndexBytes)
     fs.writeFileSync(checkpointPath, JSON.stringify({ ...value, schemaVersion: 2 }))
     const incompatibleBytes = fs.readFileSync(checkpointPath)
     assert.equal(checkpoints.read(stem, value.checkpointId), null)
@@ -247,6 +282,21 @@ test('checkpoint storage, freshness, retry preview and one-use confirmation fail
       failureCode: 'review-failed',
       retryPolicy: { kind: 'retry-phase', safePhase: 'review', reasonCode: 'review-failed' }
     }, common).error, 'checkpoint-owner-unverified')
+
+    const ship = checkpoints.create(stem, {
+      runId: 'run-71', phase: 'ship', attempt: 1, status: 'completed',
+      outputReceiptIds: [], priorPhaseReceiptIds: ['test-summary:sha256:' + '6'.repeat(64)], failureCode: null,
+      retryPolicy: { kind: 'restart-task', safePhase: null, reasonCode: 'manual-retry' }
+    }, common)
+    assert.equal(ship.ok, true)
+    assert.equal(checkpoints.sealingGate(stem, 'run-71', executionPin, common).ok, true,
+      'a current completed ship checkpoint authorizes only its exact candidate pin')
+    const movedPin = { ...executionPin, executionTree: '4'.repeat(40) }
+    const staleGate = checkpoints.sealingGate(stem, 'run-71', movedPin, common)
+    assert.equal(staleGate.ok, false)
+    assert.equal(staleGate.code, 'SEAL_GATE_STALE')
+    assert.equal(staleGate.reasonCode, 'execution-changed')
+    assert.equal(checkpoints.sealingGate(stem, 'foreign-run', executionPin, common).code, 'SEAL_GATE_ABSENT')
 
     fs.writeFileSync(checkpointPath, Buffer.alloc(65 * 1024, 0x20))
     assert.equal(checkpoints.read(stem, value.checkpointId), null)
@@ -347,7 +397,10 @@ test('restart past tests accepts only a current PASS summary for the same checkp
     const taskSnapshot = { state: 'todo', sourceRevision: ${JSON.stringify(HASH_A)}, dependencies: [] }
     const projectRevision = { available: true, revision: ${JSON.stringify(HASH_B)}, limitations: [] }
     const common = { taskSnapshot, projectRevision, configHash: H('c'), activeRunId: 'run-71',
-      testPolicyHash: policy.policyHash }
+      testPolicyHash: policy.policyHash, executionPin: {
+        worktreeId: 'wt-' + '1'.repeat(32), baseCommit: '1'.repeat(40), baseTree: '2'.repeat(40),
+        executionTree: '3'.repeat(40), targetRef: 'refs/heads/main', targetCommit: '1'.repeat(40)
+      } }
     for (const [name, document] of Object.entries({ 'policy.json': policy, 'source-snapshot.json': source,
       'planned-impact.json': planned, 'observed-impact.json': observed })) {
       fs.writeFileSync(path.join(runDir, name), JSON.stringify(document))

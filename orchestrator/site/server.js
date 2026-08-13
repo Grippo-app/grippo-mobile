@@ -16,10 +16,10 @@
  * CLI runner (server/runner.js): when the `claude` CLI is on PATH, the server
  * drains the request queue via interactive stream-json Claude CLI sessions
  * (`claude -p --input-format stream-json --output-format stream-json …` with
- * stdin turns — see server/sessions.js), serially, so tasks run without a
- * human keeping a Claude session open. Concurrency is frozen at one task at a
- * time (MAX_PARALLEL=1 in server/runner.js) until per-task worktree isolation
- * lands; there is no environment override. Env:
+ * stdin turns — see server/sessions.js), so tasks run without a human keeping a
+ * Claude session open. Concurrency is the source constant MAX_PARALLEL in
+ * server/runner.js (canary value 2; each run owns its own task worktree); there
+ * is no environment override. Env:
  *   RUNNER_DISABLED=1        — turn the runner off (fall back to the /loop worker)
  *
  * Run from the project root (the parent of orchestrator/):
@@ -67,6 +67,7 @@ var designTokenSources = require('./server/design-token-sources');
 var designComponentCompare = require('./server/design-component-compare');
 var sessions = require('./server/sessions');
 var finalizations = require('./server/finalizations');
+var worktreeManager = require('./server/worktree-manager');
 var backlogCreate = require('./server/backlog-create');
 var shallowIntake = require('./server/shallow-intake');
 var contractJob = require('./server/contract-job');
@@ -110,6 +111,49 @@ server.on('error', function (e) {
 });
 
 server.listen(PORT, '127.0.0.1', function () {
+  // Resume cleanup before sealing and before the runner can admit work. The
+  // release owner advances only exact `releasing` generations; its durable
+  // ref marker makes every physical prefix replayable without guessing.
+  try {
+    var releaseRecovery = worktreeManager.recoverInterruptedReleases();
+    if (!releaseRecovery.ok) {
+      releaseRecovery.blocked.forEach(function (row) {
+        console.warn('[site] worktree release recovery:', row.code + ' — ' + (row.message || row.worktreeId));
+      });
+    } else if (releaseRecovery.recovered.length) {
+      console.log('[site] recovered ' + releaseRecovery.recovered.length + ' interrupted worktree release(s)');
+    }
+  } catch (releaseRecoveryError) {
+    console.warn('[site] worktree release recovery failed:', releaseRecoveryError && releaseRecoveryError.message);
+  }
+  // Then resume the sealing WAL. The recovery owner advances only exact
+  // `sealing` generations and leaves every unsafe one blocked.
+  try {
+    var sealRecovery = worktreeManager.recoverInterruptedSeals();
+    if (!sealRecovery.ok) {
+      sealRecovery.blocked.forEach(function (row) {
+        console.warn('[site] candidate seal recovery:', row.code + ' — ' + (row.message || row.worktreeId));
+      });
+    } else if (sealRecovery.recovered.length) {
+      console.log('[site] recovered ' + sealRecovery.recovered.length + ' interrupted candidate seal(s)');
+    }
+  } catch (sealRecoveryError) {
+    console.warn('[site] candidate seal recovery failed:', sealRecoveryError && sealRecoveryError.message);
+  }
+  setImmediate(function () {
+    try {
+      var worktreeDiscovery = worktreeManager.discover();
+      worktreeDiscovery.findings.forEach(function (findingRow) {
+        console.warn('[site] worktree discovery:', findingRow.code + ' — ' + findingRow.message);
+      });
+      if (!worktreeDiscovery.findings.length) {
+        console.log('[site] worktree discovery: clean (' + worktreeDiscovery.worktrees.length +
+          ' worktree(s), ' + worktreeDiscovery.records.worktrees.active.length + ' record(s))');
+      }
+    } catch (discoveryError) {
+      console.warn('[site] worktree discovery failed:', discoveryError && discoveryError.message);
+    }
+  });
   var latestRecoveryOutcome = null;
   var startupConsumersReady = false;
   var lastStartupBarrierWarning = null;

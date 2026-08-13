@@ -742,5 +742,33 @@ function authorizeFinalization(taskStem) {
       !marker.figma || typeof marker.figma.enabled !== 'boolean' || !/^sha256:[a-f0-9]{64}$/.test(String(marker.figma.configHash || ''))) {
     fail('finalization marker does not authorize this process/transaction in the running ship phase')
   }
+  authorizeIntegration(taskStem, stateDir)
   return marker
+}
+// A task reaches done/ ONLY inside an integration transaction (plan §25): the
+// canonical commit that will carry this publication has to already be intended,
+// or the move would create a done task with no commit behind it. This is the
+// narrow gate — the move itself — so it cannot be bypassed by any caller that
+// reaches the publication another way.
+function authorizeIntegration(taskStem, stateDir) {
+  const dir = process.env.FINALIZE_INTEGRATIONS_DIR || join(dirname(stateDir), 'integrations')
+  const path = join(dir, `${taskStem}.json`)
+  let st
+  try { st = lstatSync(path) } catch (e) {
+    if (e && e.code === 'ENOENT') {
+      fail(`${taskStem} has no integration record; a task reaches done/ only through an integration transaction`)
+    }
+    fail(`cannot inspect integration record: ${e.message}`)
+  }
+  if (st.isSymbolicLink() || !st.isFile() || st.size > 256 * 1024) {
+    fail('integration record must be a regular file no larger than 256 KiB')
+  }
+  let record
+  try { record = JSON.parse(readFileSync(path, 'utf8')) } catch (e) { fail(`integration record is corrupt: ${e.message}`) }
+  if (!record || record.version !== 1 || record.stem !== taskStem || record.status !== 'active' ||
+      !record.phases || !record.phases['finalizer-preparing'] ||
+      record.phases['finalizer-preparing'].intentAt === null ||
+      !record.phases['product-applied'] || record.phases['product-applied'].provenAt === null) {
+    fail(`${taskStem} integration is not in its finalizer-preparing phase; refusing to publish done/`)
+  }
 }

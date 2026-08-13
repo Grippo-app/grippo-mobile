@@ -55,7 +55,7 @@ function copyDesignReaderRuntime(targetTree) {
   if (!existsSync(targetNodeModules)) symlinkSync(join(HERE, '..', 'node_modules'), targetNodeModules, 'dir')
   const targetSiteServer = join(targetTree, 'orchestrator', 'site', 'server')
   mkdirSync(targetSiteServer, { recursive: true })
-  for (const file of ['figma-generation.js', 'file-guards.js', 'file-guard-worker.js', 'paths.js']) {
+  for (const file of ['child-env.js', 'figma-generation.js', 'file-guards.js', 'file-guard-worker.js', 'paths.js']) {
     cpSync(join(HERE, '..', '..', 'site', 'server', file), join(targetSiteServer, file))
   }
 }
@@ -1434,6 +1434,21 @@ try {
 	  writeFileSync(join(shipScreensRoot, SHIP_STEM, 'HomeScreen.spec.json'), JSON.stringify(currentSpec('HomeScreen'), null, 2) + '\n')
 	  writeCurrentScreenIndex(join(shipScreensRoot, SHIP_STEM), SHIP_STEM, 'HomeScreen')
 	  const finalizationStateDir = join(tree, 'orchestrator', '.cache', 'tasks', 'finalizations')
+	  const integrationsDir = join(tree, 'orchestrator', '.cache', 'tasks', 'integrations')
+	  // Since worktree isolation Phase 4 a task reaches done/ ONLY inside an
+	  // integration transaction: ship-done re-reads the WAL and refuses unless the
+	  // stem is in its finalizer-preparing phase. The fixture publishes the same
+	  // minimal record shape the transaction owner writes.
+	  const writeIntegrationRecord = (taskStem) => {
+	    mkdirSync(integrationsDir, { recursive: true })
+	    writeFileSync(join(integrationsDir, `${taskStem}.json`), JSON.stringify({
+	      version: 1, stem: taskStem, status: 'active', phase: 'finalizer-preparing',
+	      phases: {
+	        'product-applied': { intentAt: '2026-01-01T00:00:00.000Z', provenAt: '2026-01-01T00:00:00.000Z' },
+	        'finalizer-preparing': { intentAt: '2026-01-01T00:00:01.000Z', provenAt: null },
+	      },
+	    }) + '\n')
+	  }
 	  const shipEnv = (runId, receiptsRoot = shipReceiptsRoot) => {
 	    const transactionId = `fin-fixture-${runId}`
 	    mkdirSync(finalizationStateDir, { recursive: true })
@@ -1450,6 +1465,7 @@ try {
 	        figma: { enabled: true, configHash: `sha256:${createHash('sha256').update(readFileSync(join(tree, 'orchestrator', 'project-config.md'))).digest('hex')}` },
 	        phases: { ship: { state: 'running' } },
 	      }) + '\n')
+	      writeIntegrationRecord(taskStem)
 	    }
 	    return {
 	      ...process.env,
@@ -1460,6 +1476,7 @@ try {
 	      FIGMA_SHIP_RECEIPTS_DIR: receiptsRoot,
 	      FIGMA_PIPELINE_RUN_ID: runId,
 	      FINALIZE_STATE_DIR: finalizationStateDir,
+	      FINALIZE_INTEGRATIONS_DIR: integrationsDir,
 	      FINALIZE_TRANSACTION_ID: transactionId,
 	    }
 	  }

@@ -55,6 +55,28 @@ function readHead(gitDirectory) {
   return parseHead(boundedRegularText(path.join(gitDirectory, 'HEAD'), '.git/HEAD'));
 }
 
+function canonicalTargetBranchKey(root, branchKey) {
+  if (branchKey.indexOf('refs/heads/orchestrator/task/') !== 0) return branchKey;
+  var manager;
+  try {
+    manager = require(path.join(__dirname, '..', '..', 'site', 'server', 'worktree-manager.js'));
+  } catch (error) {
+    throw unsafe('verified execution scope is unavailable for a manager candidate branch', '.git/HEAD');
+  }
+  var verified = manager.executionEnvironmentContext(process.env);
+  var context = verified && verified.ok ? verified.context : null;
+  var sameRoot = false;
+  try {
+    sameRoot = context && fs.realpathSync(root) === fs.realpathSync(context.executionRoot);
+  } catch (error) { sameRoot = false; }
+  if (!context || !sameRoot || context.candidateRef !== branchKey ||
+      typeof context.targetRef !== 'string' ||
+      context.targetRef.indexOf('refs/heads/orchestrator/task/') === 0) {
+    throw unsafe('manager candidate branch has no exact verified canonical target scope', '.git/HEAD');
+  }
+  return context.targetRef;
+}
+
 function projectBranchKey(projectRoot) {
   var root = path.resolve(projectRoot);
   var gitPath = path.join(root, '.git');
@@ -64,7 +86,7 @@ function projectBranchKey(projectRoot) {
     throw unsafe('.git unreadable: ' + (error && (error.code || error.message)), '.git');
   }
   if (stat.isSymbolicLink()) throw unsafe('.git is a symlink', '.git');
-  if (stat.isDirectory()) return readHead(gitPath);
+  if (stat.isDirectory()) return canonicalTargetBranchKey(root, readHead(gitPath));
   if (!stat.isFile() || String(stat.nlink) !== '1' || stat.size > GIT_META_MAX) {
     throw unsafe('.git is not a bounded single-link directory or worktree pointer', '.git');
   }
@@ -72,7 +94,7 @@ function projectBranchKey(projectRoot) {
   var match = /^gitdir:\s+([^\u0000-\u001f]+)$/.exec(pointer);
   if (!match || !match[1].trim()) throw unsafe('.git worktree pointer is malformed', '.git');
   var target = path.isAbsolute(match[1]) ? path.resolve(match[1]) : path.resolve(root, match[1]);
-  return readHead(target);
+  return canonicalTargetBranchKey(root, readHead(target));
 }
 
 module.exports = { projectBranchKey: projectBranchKey };

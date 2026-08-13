@@ -71,7 +71,7 @@ try {
   }
   const fixtureSiteServer = join(tree, 'orchestrator', 'site', 'server')
   mkdirSync(fixtureSiteServer, { recursive: true })
-  for (const file of ['figma-generation.js', 'file-guards.js', 'file-guard-worker.js', 'paths.js']) {
+  for (const file of ['child-env.js', 'figma-generation.js', 'file-guards.js', 'file-guard-worker.js', 'paths.js']) {
     cpSync(join(SOURCE_SCRIPTS, '..', '..', 'site', 'server', file), join(fixtureSiteServer, file))
   }
   cpSync(join(SOURCE_SCRIPTS, '..', 'screenshot-thresholds.json'), join(fixtureFigma, 'screenshot-thresholds.json'))

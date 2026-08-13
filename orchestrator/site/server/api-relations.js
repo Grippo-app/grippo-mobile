@@ -14,6 +14,7 @@ var taskSource = require('./task-source');
 var arch = require('./arch');
 var fileGuards = require('./file-guards');
 var projectInputs = require('./api-project-inputs');
+var reportScope = require('../../api-contract/report-scope.cjs');
 
 var REPORTS_DIR = path.join(paths.API_CONTRACT_CACHE_DIR, 'reports');
 var REPORT_MAX = 16 * 1024 * 1024;
@@ -280,11 +281,12 @@ function validArea(value, expectedArea) {
     });
   });
 }
-function readOptional(name) {
-  var file = path.join(REPORTS_DIR, name);
+function readOptional(name, reportsDir) {
+  var directory = reportsDir || REPORTS_DIR;
+  var file = path.join(directory, name);
   try {
     var hit = fileGuards.boundedRegularFileUnder(
-      paths.PROJECT_ROOT, REPORTS_DIR, file, REPORT_MAX
+      paths.PROJECT_ROOT, directory, file, REPORT_MAX
     );
     if (!hit || !hit.stat || String(hit.stat.nlink) !== '1') {
       return { state: 'missing', value: null, hash: null };
@@ -300,13 +302,50 @@ function readOptional(name) {
       : { state: 'invalid', value: null, hash: null };
   }
 }
-function currentInputs(force) {
-  if (!force && inputCache.value && Date.now() - inputCache.at < 1000) return inputCache.value;
+// Relation/coverage analysis reads the PRODUCT, so for a task-bound scope that
+// is the isolated checkout carrying the candidate (plan §12.3). The cache is
+// keyed by the root it was collected from, or a stale control-root scan would
+// be served for a candidate and vice versa.
+function currentInputs(force, scopeRoot) {
+  var root = scopeRoot || paths.PROJECT_ROOT;
+  if (!force && inputCache.value && inputCache.root === root && Date.now() - inputCache.at < 1000) {
+    return inputCache.value;
+  }
   inputCache = {
-    at: Date.now(),
-    value: projectInputs.collect(paths.PROJECT_ROOT, { includeText: false })
+    at: Date.now(), root: root,
+    value: projectInputs.collect(root, { includeText: false })
   };
   return inputCache.value;
+}
+
+// The product root a stem's analysis must read: its execution checkout when it
+// has a live generation, the control root when it provably has none. Null when
+// ownership cannot be read — the caller must refuse rather than analyse the
+// wrong tree and label the result with this stem.
+function analysisScopeFor(stem) {
+  if (!stem) return {
+    root: paths.PROJECT_ROOT,
+    reportsDir: REPORTS_DIR,
+    current: generation.current()
+  };
+  var got;
+  try { got = require('./worktree-manager').executionBindingFor(stem); }
+  catch (error) { return null; }
+  if (!got.ok) return null;
+  if (!got.binding) return {
+    root: paths.PROJECT_ROOT,
+    reportsDir: REPORTS_DIR,
+    current: generation.current()
+  };
+  var reportsDir;
+  try { reportsDir = reportScope.directory(paths.API_CONTRACT_CACHE_DIR, got.binding); }
+  catch (error2) { return null; }
+  return {
+    root: got.binding.executionRoot,
+    reportsDir: reportsDir,
+    current: generation.currentAtProjectRoot(
+      got.binding.executionRoot, got.binding.apiGenerationHash)
+  };
 }
 function activeEnvironment(integration) {
   integration = integration || backendIntegration.get();
@@ -565,8 +604,8 @@ function validDrift(report) {
       report.summary[key] === counts[key];
   });
 }
-function driftState(current, inputs) {
-  var raw = readOptional('drift.json');
+function driftState(current, inputs, reportsDir) {
+  var raw = readOptional('drift.json', reportsDir);
   if (raw.state !== 'present') return {
     state: raw.state, current: false, value: null,
     limitation: raw.state === 'invalid' ? 'drift-report-invalid' : 'drift-report-missing'
@@ -643,7 +682,7 @@ function validChangeSet(value) {
     value.summary.total === value.changes.length;
   return summaryValid;
 }
-function changeState(current) {
+function changeState(current, authorityRoot) {
   var role = current.artifacts['change-report'];
   var manifestRow = current.manifest.artifacts.find(function (row) {
     return row.role === 'change-report';
@@ -656,7 +695,8 @@ function changeState(current) {
   };
   try {
     var hit = fileGuards.boundedRegularFileUnder(
-      paths.PROJECT_ROOT, path.dirname(role), role, Math.min(REPORT_MAX, manifestRow.size)
+      authorityRoot || paths.PROJECT_ROOT, path.dirname(role), role,
+      Math.min(REPORT_MAX, manifestRow.size)
     );
     if (!hit || !hit.stat || String(hit.stat.nlink) !== '1' ||
         hit.bytes.length !== manifestRow.size ||
@@ -680,9 +720,20 @@ function changeState(current) {
 }
 function snapshot(options) {
   options = options || {};
-  var current = generation.current();
   var integration = backendIntegration.get();
   var active = activeEnvironment(integration);
+  // Resolve the product root, API pointer pin and runtime-report namespace as
+  // one generation. Mixing a candidate root with the latest control pointer
+  // labels another generation's evidence as this task's analysis.
+  var scope = analysisScopeFor(options.stem);
+  if (scope === null) {
+    return {
+      ok: false, status: 409, error: 'execution-scope-unavailable',
+      current: null, integration: integration, activeEnvironment: active,
+      limitations: ['execution-scope-unavailable']
+    };
+  }
+  var current = scope.current;
   if (!current.ok) {
     return {
       ok: false, status: 409, error: current.error,
@@ -707,10 +758,10 @@ function snapshot(options) {
       limitations: ['contract-generation-invalid']
     };
   }
-  var inputs = currentInputs(options.freshInputs === true);
+  var inputs = currentInputs(options.freshInputs === true, scope.root);
   var limitations = [];
   if (!inputs.ok) limitations.push(inputs.error || 'project-input-revision-unavailable');
-  var implementationRaw = readOptional('implementation-map.json');
+  var implementationRaw = readOptional('implementation-map.json', scope.reportsDir);
   var implementationCurrent = implementationRaw.state === 'present' &&
     reportMetaMatches(implementationRaw.value, current, inputs) &&
     validImplementation(implementationRaw.value, current.inventory);
@@ -727,7 +778,7 @@ function snapshot(options) {
       limitations.push('implementation-analysis-partial');
     }
   }
-  var consumerRaw = readOptional('consumer-map.json');
+  var consumerRaw = readOptional('consumer-map.json', scope.reportsDir);
   var architecture = arch.readValidated();
   var consumersCurrent = consumerRaw.state === 'present' &&
     reportMetaMatches(consumerRaw.value, current, inputs) &&
@@ -748,8 +799,8 @@ function snapshot(options) {
       limitations.push('consumer-analysis-partial');
     }
   }
-  var drift = driftState(current, inputs);
-  var changes = changeState(current);
+  var drift = driftState(current, inputs, scope.reportsDir);
+  var changes = changeState(current, scope.root);
   if (drift.limitation) limitations.push(drift.limitation);
   if (drift.current) limitations = limitations.concat(reportLimitations(drift.value));
   if (changes.limitation) limitations.push(changes.limitation);

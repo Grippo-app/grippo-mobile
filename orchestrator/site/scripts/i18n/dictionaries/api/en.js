@@ -25,6 +25,7 @@ const dictionary = Object.freeze({
     'api.error.task-integrity': 'Task creation is blocked until task integrity is repaired.',
     'api.error.stale-task-state': 'Tasks changed while the request was being prepared. Refresh and try again.',
     'api.error.finalization-active': 'Task creation is blocked while durable finalization recovery is active.',
+    'api.error.execution-scope-unavailable': 'The isolated task execution scope cannot be verified. Reload the API view.',
     'api.error.generation-contract-invalid': 'The accepted contract generation violates its manifest contract.',
     'api.error.generation-artifact-path-invalid': 'A contract generation artifact has an unsafe or invalid path.',
     'api.error.generation-artifact-invalid': 'A required contract generation artifact cannot be read safely.',

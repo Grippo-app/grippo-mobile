@@ -311,6 +311,103 @@ try {
     }
   })
 
+  await check('Figma terminal clears a foreign draft and enables input before revealing the switched context', async () => {
+    class FakeElement {
+      constructor(tagName, onReveal) {
+        this.tagName = String(tagName).toUpperCase()
+        this.children = []
+        this.parentNode = null
+        this.attributes = new Map()
+        this.listeners = Object.create(null)
+        this.className = ''
+        this.textContent = ''
+        this.value = ''
+        this.disabled = false
+        this._hidden = false
+        this.onReveal = onReveal
+      }
+      get firstChild() { return this.children[0] || null }
+      get hidden() { return this._hidden }
+      set hidden(value) {
+        this._hidden = !!value
+        if (!this._hidden && this.className === 'terminal') this.onReveal(this)
+      }
+      appendChild(child) {
+        if (child.parentNode) child.parentNode.removeChild(child)
+        this.children.push(child)
+        child.parentNode = this
+        return child
+      }
+      removeChild(child) {
+        const index = this.children.indexOf(child)
+        if (index >= 0) this.children.splice(index, 1)
+        child.parentNode = null
+        return child
+      }
+      addEventListener(name, handler) { this.listeners[name] = handler }
+      setAttribute(name, value) { this.attributes.set(name, String(value)) }
+      removeAttribute(name) { this.attributes.delete(name) }
+      querySelectorAll() { return [] }
+      focus() { fakeDocument.activeElement = this }
+    }
+    const findClass = (root, className) => {
+      if (root.className === className) return root
+      for (const child of root.children || []) {
+        const found = findClass(child, className)
+        if (found) return found
+      }
+      return null
+    }
+
+    const originalDocument = globalThis.document
+    const originalWindow = globalThis.window
+    const revealStates = []
+    const onReveal = (overlay) => {
+      const input = findClass(overlay, 'input terminal__input')
+      revealStates.push({ value: input && input.value, hidden: input && input.hidden, disabled: input && input.disabled })
+    }
+    const fakeDocument = {
+      body: null,
+      activeElement: null,
+      createElement: (tagName) => new FakeElement(tagName, onReveal),
+      createTextNode: (text) => Object.assign(new FakeElement('#text', onReveal), { textContent: text }),
+      addEventListener() {},
+      removeEventListener() {},
+    }
+    fakeDocument.body = fakeDocument.createElement('body')
+    fakeDocument.activeElement = fakeDocument.createElement('button')
+    globalThis.document = fakeDocument
+    globalThis.window = { addEventListener() {}, removeEventListener() {} }
+
+    const { tasksApi } = await import('../scripts/data/tasks-api.js')
+    const originalSessionEvents = tasksApi.sessionEvents
+    let terminalUi = null
+    try {
+      tasksApi.sessionEvents = () => new Promise(() => {})
+      ;({ terminal: terminalUi } = await import('../scripts/terminal.js?figma-session-switch-test'))
+
+      terminalUi.open('figma:whoami')
+      const overlay = findClass(fakeDocument.body, 'terminal')
+      const input = findClass(overlay, 'input terminal__input')
+      const transcript = findClass(overlay, 'terminal__body')
+      input.value = 'draft for the first Figma context'
+      transcript.appendChild(fakeDocument.createElement('div'))
+
+      terminalUi.open('figma:screens:TASK_2_second')
+
+      assert.equal(input.value, '')
+      assert.equal(transcript.children.length, 0)
+      assert.deepEqual(revealStates.at(-1), { value: '', hidden: false, disabled: false })
+    } finally {
+      if (terminalUi) terminalUi.close()
+      tasksApi.sessionEvents = originalSessionEvents
+      if (originalDocument === undefined) delete globalThis.document
+      else globalThis.document = originalDocument
+      if (originalWindow === undefined) delete globalThis.window
+      else globalThis.window = originalWindow
+    }
+  })
+
   figma.sessionAdmission = () => null
   const statuses = Object.create(null)
   const starts = []

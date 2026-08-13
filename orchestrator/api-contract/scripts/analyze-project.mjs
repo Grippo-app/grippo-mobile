@@ -1,18 +1,20 @@
 // Deterministic, generation-bound API implementation/consumer analyzer.
 // It never calls a backend and never executes project code. The only outputs
-// are bounded runtime reports under orchestrator/.cache/api-contract/reports/.
+// are bounded runtime reports under the current control/task report scope.
 
 import { createHash } from 'node:crypto'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  EXECUTION_ROOT, EXECUTION_SCOPE, PROJECT_ROOT as CONTROL_ROOT,
+  REPORTS_DIR, writeContractReport,
+} from './_util.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const SIDECAR_DIR = resolve(HERE, '..')
 const CODE_PROJECT_ROOT = resolve(SIDECAR_DIR, '..', '..')
-const PROJECT_ROOT = resolve(process.env.ORCHESTRATOR_PROJECT_ROOT || CODE_PROJECT_ROOT)
 const require = createRequire(import.meta.url)
-const paths = require(join(CODE_PROJECT_ROOT, 'orchestrator', 'site', 'server', 'paths.js'))
 const generation = require(join(CODE_PROJECT_ROOT, 'orchestrator', 'site', 'server', 'contract-generation.js'))
 const fileGuards = require(join(CODE_PROJECT_ROOT, 'orchestrator', 'site', 'server', 'file-guards.js'))
 const projectInputs = require(join(CODE_PROJECT_ROOT, 'orchestrator', 'site', 'server', 'api-project-inputs.js'))
@@ -366,10 +368,10 @@ function implementationFor(endpoint, records, routes, indexes) {
 }
 
 function architectureSnapshot() {
-  const file = join(PROJECT_ROOT, 'orchestrator', '.arch-map.json')
+  const file = join(CONTROL_ROOT, 'orchestrator', '.arch-map.json')
   try {
     const hit = fileGuards.boundedRegularFileUnder(
-      PROJECT_ROOT, join(PROJECT_ROOT, 'orchestrator'), file,
+      CONTROL_ROOT, join(CONTROL_ROOT, 'orchestrator'), file,
       architectureContract.MAX_MAP_BYTES,
     )
     if (!hit || !hit.stat || String(hit.stat.nlink) !== '1') {
@@ -480,25 +482,20 @@ function consumerEvidenceIndex(records, mappings, architecture) {
 }
 
 function writeReport(name, value) {
-  const directory = join(paths.API_CONTRACT_CACHE_DIR, 'reports')
-  const file = join(directory, name)
+  const file = join(REPORTS_DIR, name)
   const bytes = Buffer.from(JSON.stringify(value, null, 2) + '\n')
   if (bytes.length > REPORT_MAX) fail('analyzer-report-size-limit', name)
-  if (!fileGuards.realDirectoryUnder(PROJECT_ROOT, directory, { create: true, mode: 0o700 })) {
-    fail('analyzer-report-directory-unsafe', name)
-  }
-  const result = fileGuards.atomicReplaceRegularFileResult(
-    PROJECT_ROOT, directory, file, bytes,
-    { create: true, directoryMode: 0o700, mode: 0o600, maxBytes: REPORT_MAX },
-  )
-  if (!result.ok) fail('analyzer-report-write-failed', result.code)
+  try { writeContractReport(file, bytes) }
+  catch (error) { fail('analyzer-report-write-failed', error.message) }
 }
 
 function analyzeProject() {
-  const current = generation.current()
+  const current = EXECUTION_SCOPE
+    ? generation.currentAtProjectRoot(EXECUTION_ROOT, EXECUTION_SCOPE.apiGenerationHash)
+    : generation.current()
   if (!current.ok) fail(current.error || 'generation-invalid')
   if (current.mode !== 'generation' || !current.inventory) fail('contract-missing')
-  const scan = projectInputs.collect(PROJECT_ROOT, { includeText: true })
+  const scan = projectInputs.collect(EXECUTION_ROOT, { includeText: true })
   if (!scan.ok) fail(scan.error || 'analyzer-input-unavailable', scan.detail)
   const supportedRecords = scan.records.filter((record) =>
     projectInputs.SOURCE_EXTENSIONS[extname(record.path).toLowerCase()])
