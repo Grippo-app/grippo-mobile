@@ -1464,7 +1464,13 @@ function startConversationOnly(key, text) {
   var prior = statusOf(key);
   var st = start(key, {
     stem: prior.stem || (key.indexOf('task:') === 0 ? key.slice('task:'.length) : null),
-    action: prior.action || null,
+    // This continuation has no mutation authority and no execution binding.
+    // Retaining a finished task's `run` action here makes the persisted v3
+    // sidecar self-contradictory: every task run action requires the complete
+    // worktree binding, while conversation-only continuations deliberately
+    // carry none. Clear the action at the authority boundary instead of
+    // misrepresenting a read-only follow-up as another task run.
+    action: null,
     prompt: text,
     resume: prior.sessionId || null,
     preserveTranscript: true,
