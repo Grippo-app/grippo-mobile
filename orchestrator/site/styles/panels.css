@@ -4446,6 +4446,17 @@ a.board-screens__shot:hover { border-color: var(--accent); }
   gap: 2px;
   align-items: flex-end;
 }
+.site-status-row--stacked {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+.site-status-row--stacked .site-status-row-value {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  align-items: stretch;
+}
 .site-status-warn { color: var(--banner-warn-fg); }
 .site-status-hint { color: var(--muted); font-size: 0.72rem; }
 .site-status-act { font-weight: 600; }
@@ -4555,6 +4566,7 @@ a.board-screens__shot:hover { border-color: var(--accent); }
   max-width: 270px;
   text-align: left;
 }
+.site-status-row--stacked .cli-login { max-width: none; }
 .cli-login__link {
   color: var(--accent);
   font-size: 0.75rem;
@@ -4566,7 +4578,7 @@ a.board-screens__shot:hover { border-color: var(--accent); }
   background: var(--code-bg);
   font-size: 0.78rem;
 }
-.cli-login__actions { display: flex; gap: 6px; }
+.cli-login__actions { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* CLI subscription-usage block (cli-status.js buildUsage) — one slim bar per
    reported window, shown in the CLI header popover. */

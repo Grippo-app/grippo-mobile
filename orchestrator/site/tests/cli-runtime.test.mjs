@@ -73,6 +73,30 @@ try {
     assert.equal(cli.jobs().login, null)
   })
 
+  check('interactive login removes only the captured OAuth URL trailer from a browser code paste', () => {
+    const status = cli.login()
+    assert.equal(status.running, true, status.error)
+    const child = spawned.filter((item) => item.command === 'claude' && item.args[0] === 'auth').at(-1)
+    assert.ok(child)
+    const url = 'https://claude.com/cai/oauth/authorize?code=true&client_id=fixture'
+    child.stdout.emit('data', Buffer.from(`Open ${url}\n`))
+    assert.equal(cli.loginSubmitCode(`authorization#state\u0007${url}`), true)
+    assert.deepEqual(child.stdinWrites, ['authorization#state\n'])
+    child.emit('exit', 0)
+  })
+
+  check('interactive login still rejects control characters with an unrelated trailer', () => {
+    const status = cli.login()
+    assert.equal(status.running, true, status.error)
+    const child = spawned.filter((item) => item.command === 'claude' && item.args[0] === 'auth').at(-1)
+    assert.ok(child)
+    child.stdout.emit('data', Buffer.from('Open https://claude.com/cai/oauth/authorize?code=true\n'))
+    assert.equal(cli.loginSubmitCode('authorization#state\u0007https://example.test/oauth/authorize?code=true'), false)
+    assert.equal(cli.loginSubmitCode('authorization#state\nsecond-line'), false)
+    assert.deepEqual(child.stdinWrites, [])
+    child.emit('exit', 0)
+  })
+
   check('job-log projection reads only the bounded 64 KiB tail', () => {
     const prefix = 'prefix-that-must-drop\n'
     const tail = 'z'.repeat(64 * 1024)

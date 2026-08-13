@@ -214,6 +214,9 @@ body {
     right: 8px;
     width: auto;
     max-width: none;
+    max-height: calc(100dvh - 50px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 }
 
@@ -561,3 +564,5 @@ h4 {
     animation-iteration-count: 1 !important;
   }
 }
+/* AUDIT_TEMP_TEXT_SCALE */
+html { font-size: 200%; }

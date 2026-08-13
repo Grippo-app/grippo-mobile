@@ -197,6 +197,21 @@ test('compact and repeatable fields have explicit accessible names', () => {
   assert.match(composer, /placeholder: t\('board\.create\.dataPlaceholder'\), 'aria-label': t\('board\.create\.dataField'\)/)
 })
 
+test('CLI login form owns the full popover width in every locale', () => {
+  const cli = readFileSync(join(SITE, 'scripts', 'cli-status.js'), 'utf8')
+  assert.match(cli,
+    /row\('cli\.loginLabel', \[buildLoginBox\(loginJob\)\], \{ stacked: true \}\)/)
+  assert.match(panelsCss,
+    /\.site-status-row--stacked\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s)
+  assert.match(panelsCss,
+    /\.site-status-row--stacked \.site-status-row-value\s*\{[^}]*align-items:\s*stretch/s)
+  assert.match(panelsCss,
+    /\.site-status-row--stacked \.cli-login\s*\{[^}]*max-width:\s*none/s)
+  const mobileStatusPopover = [...baseCss.matchAll(/\.status-strip \.site-status-pop\s*\{([^}]*)\}/gs)].at(-1)[1]
+  assert.match(mobileStatusPopover, /max-height:\s*calc\(100dvh - 50px\)/)
+  assert.match(mobileStatusPopover, /overflow-y:\s*auto/)
+})
+
 test('live refreshes preserve editable control drafts and focus', () => {
   const design = readFileSync(join(SITE, 'scripts', 'panels', 'design.js'), 'utf8')
   assert.match(design, /render\(\{ preserveToolbar: !tabChanged && !scopeChanged \}\)/)

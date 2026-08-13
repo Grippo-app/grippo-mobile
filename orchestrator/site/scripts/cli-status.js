@@ -98,8 +98,8 @@ function setOpen(next) {
   else popovers.close(closeSelf);
 }
 
-function row(labelKey, valueNodes) {
-  return el('div', { class: 'site-status-row' }, [
+function row(labelKey, valueNodes, opts) {
+  return el('div', { class: 'site-status-row' + (opts && opts.stacked ? ' site-status-row--stacked' : '') }, [
     el('span', { class: 'site-status-row-label', text: t(labelKey) }),
     el('span', { class: 'site-status-row-value' }, valueNodes)
   ]);
@@ -289,7 +289,7 @@ function buildPop(cli) {
   var loginJob = cli.jobs && cli.jobs.login;
   if (!cli.loggedIn) {
     if (loginJob && loginJob.running) {
-      nodes.push(row('cli.loginLabel', [buildLoginBox(loginJob)]));
+      nodes.push(row('cli.loginLabel', [buildLoginBox(loginJob)], { stacked: true }));
     } else {
       nodes.push(row('cli.loginLabel', [
         el('span', { class: 'site-status-act site-status-act--worker-offline', text: t('cli.notLoggedIn') }),
@@ -304,7 +304,7 @@ function buildPop(cli) {
   // clears the dead credentials first, then the same interactive flow).
   if (cli.authProblem) {
     if (loginJob && loginJob.running) {
-      nodes.push(row('cli.loginLabel', [buildLoginBox(loginJob)]));
+      nodes.push(row('cli.loginLabel', [buildLoginBox(loginJob)], { stacked: true }));
     } else {
       var why = cli.authProblem === 'revoked'
         ? t('cli.authRevoked')

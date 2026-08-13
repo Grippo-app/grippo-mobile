@@ -515,6 +515,16 @@ function startLoginChild() {
 function loginSubmitCode(code) {
   if (!loginChild || !loginChild.stdin || !loginChild.stdin.writable) return false;
   var c = String(code).trim();
+  // Claude's browser copy can append the exact authorization URL after a BEL
+  // separator (`code#state\x07https://...`). Strip only the URL captured from
+  // this login generation. Any other control-bearing paste still fails closed,
+  // so this cannot become a generic line/control-character sanitizer.
+  var trailerSeparator = c.indexOf('\x07');
+  if (trailerSeparator >= 0) {
+    if (!loginUrl || c.indexOf('\x07', trailerSeparator + 1) >= 0 ||
+        c.slice(trailerSeparator + 1) !== loginUrl) return false;
+    c = c.slice(0, trailerSeparator);
+  }
   if (c.length > 512) return false;
   // Reject control chars (newline/CR/etc.) so a crafted paste can't inject extra
   // lines into the CLI's stdin. OAuth codes are a single line of printable text.
