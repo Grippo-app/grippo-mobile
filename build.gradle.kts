@@ -19,8 +19,7 @@ plugins {
 apply(from = "secure/secure.gradle.kts")
 
 detekt {
-    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-    buildUponDefaultConfig = false
+    buildUponDefaultConfig = true
     parallel = true
     autoCorrect = false
     source.setFrom(
@@ -38,10 +37,6 @@ detekt {
             "ui-screen-features",
         )
     )
-}
-
-dependencies {
-    detektPlugins(projects.tooling.detektRules)
 }
 
 tasks.withType<Detekt>().configureEach {
