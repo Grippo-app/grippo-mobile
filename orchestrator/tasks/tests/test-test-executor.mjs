@@ -763,6 +763,37 @@ await check('canonical request resolves task-worktree execution through the mana
   }, { environment, manager }), (error) => error && error.code === 'EXECUTION_ROOT_MISMATCH');
 });
 
+await check('task-worktree certification snapshots every materialized candidate path', () => {
+  const root = fixture({ xml: GREEN_XML });
+  assert.equal(spawnSync('git', ['init', '-q'], { cwd: root }).status, 0);
+  assert.equal(spawnSync('git', ['add', '.'], { cwd: root }).status, 0);
+  assert.equal(spawnSync('git', ['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+    'commit', '-qm', 'base'], { cwd: root }).status, 0);
+  writeFileSync(join(root, 'gradlew'), '#!/bin/sh\necho changed\n');
+  writeFileSync(join(root, 'new-source.kt'), 'class NewSource\n');
+
+  const empty = snapshotContract.captureSnapshot({ root, paths: [] });
+  assert.throws(() => requestEntrypoint.validateSourceCoverage(
+    { executionRootKind: 'task-worktree' }, empty, root
+  ), (error) => error && error.code === 'SOURCE_MANIFEST_INCOMPLETE');
+
+  const partial = snapshotContract.captureSnapshot({ root, paths: ['gradlew'] });
+  assert.throws(() => requestEntrypoint.validateSourceCoverage(
+    { executionRootKind: 'task-worktree' }, partial, root
+  ), (error) => error && error.code === 'SOURCE_MANIFEST_INCOMPLETE');
+
+  const complete = snapshotContract.captureSnapshot({ root, paths: ['gradlew', 'new-source.kt'] });
+  assert.deepEqual(requestEntrypoint.validateSourceCoverage(
+    { executionRootKind: 'task-worktree' }, complete, root
+  ), ['gradlew', 'new-source.kt']);
+
+  rmSync(join(root, 'new-source.kt'));
+  rmSync(join(root, 'gradlew'));
+  assert.throws(() => requestEntrypoint.validateSourceCoverage(
+    { executionRootKind: 'task-worktree' }, partial, root
+  ), (error) => error && error.code === 'SOURCE_SNAPSHOT_DELETION_UNSUPPORTED');
+});
+
 for (const root of roots) rmSync(root, { recursive: true, force: true });
 
 if (failures.length > 0) {

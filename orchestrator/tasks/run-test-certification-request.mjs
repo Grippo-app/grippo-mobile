@@ -38,6 +38,7 @@ const ROOT_AGGREGATES = Object.freeze({
   screenshot: ':allScreenshotTests',
   full: ':allConfiguredTests'
 });
+const GIT_STATUS_MAX_BYTES = 32 * 1024 * 1024;
 
 class TestCertificationRequestError extends Error {
   constructor(code, message) {
@@ -177,6 +178,83 @@ function resolveExecutionRoot(controlRoot, request, options = {}) {
   return canonicalRoot(context.executionRoot);
 }
 
+// A task-worktree certification proves the candidate that is actually going
+// to be sealed, not an arbitrary caller-selected subset of files. The content
+// snapshot contract intentionally accepts an explicit path list, so bind that
+// list here to every materialized worktree change before any command or
+// structural receipt can be emitted.
+function taskWorktreeChangedPaths(executionRoot) {
+  const env = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (!key.startsWith('GIT_')) env[key] = value;
+  }
+  env.GIT_TERMINAL_PROMPT = '0';
+  env.GIT_OPTIONAL_LOCKS = '0';
+  env.LC_ALL = 'C';
+  const result = spawnSync('git', [
+    'status', '--porcelain=v1', '-z', '--untracked-files=all', '--ignore-submodules=all'
+  ], {
+    cwd: executionRoot,
+    env,
+    encoding: 'buffer',
+    timeout: 30000,
+    maxBuffer: GIT_STATUS_MAX_BYTES
+  });
+  if (result.error || result.signal || result.status !== 0 || !Buffer.isBuffer(result.stdout)) {
+    fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory is unavailable');
+  }
+  const decoded = result.stdout.toString('utf8');
+  if (!Buffer.from(decoded, 'utf8').equals(result.stdout)) {
+    fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory contains non-UTF-8 paths');
+  }
+  const records = decoded.split('\0');
+  if (records[records.length - 1] !== '') {
+    fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory is truncated');
+  }
+  records.pop();
+  const changed = [];
+  for (let index = 0; index < records.length; index++) {
+    const record = records[index];
+    if (record.length < 4 || record[2] !== ' ') {
+      fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory has invalid porcelain bytes');
+    }
+    const status = record.slice(0, 2);
+    const relative = record.slice(3);
+    if (!relative) fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change path is empty');
+    if (/[RC]/.test(status)) {
+      // Porcelain -z follows a rename/copy with the source path. A content
+      // snapshot cannot represent the removed side of that transition.
+      if (index + 1 >= records.length) {
+        fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree rename inventory is truncated');
+      }
+      index++;
+      fail('SOURCE_SNAPSHOT_DELETION_UNSUPPORTED',
+        'renamed/copied paths need an explicit deletion-aware source contract');
+    }
+    if (status.includes('D')) {
+      fail('SOURCE_SNAPSHOT_DELETION_UNSUPPORTED',
+        'deleted paths need an explicit deletion-aware source contract');
+    }
+    if (status.includes('U') || status === 'AA' || status === 'DD') {
+      fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree has unresolved paths');
+    }
+    changed.push(relative);
+  }
+  return sortedUnique(changed);
+}
+
+function validateSourceCoverage(request, sourceManifest, executionRoot) {
+  if (request.executionRootKind !== 'task-worktree') return [];
+  const changed = taskWorktreeChangedPaths(executionRoot);
+  const captured = new Set(sourceManifest.entries.map((entry) => entry.path));
+  const missing = changed.filter((relative) => !captured.has(relative));
+  if (missing.length > 0) {
+    fail('SOURCE_MANIFEST_INCOMPLETE',
+      'source snapshot omits task-worktree changes: ' + missing.slice(0, 20).join(', '));
+  }
+  return changed;
+}
+
 function validateExecutionPlan(request, observed, inventory, policy) {
   if (inventory.inventoryHash !== observed.capabilityInventoryHash) {
     fail('INVENTORY_MISMATCH', 'observed impact binds a different capability inventory');
@@ -238,7 +316,7 @@ function validateExecutionPlan(request, observed, inventory, policy) {
   return allowed;
 }
 
-export { resolveExecutionRoot, validateExecutionPlan };
+export { resolveExecutionRoot, validateExecutionPlan, validateSourceCoverage };
 
 async function runCertificationRequest({ productRoot, request }) {
   const root = canonicalRoot(productRoot);
@@ -253,6 +331,7 @@ async function runCertificationRequest({ productRoot, request }) {
   }
   const policy = policyContract.validatePolicy(safeJson(root, 'orchestrator/tasks/test-policy.json', 'policy'));
   const sourceManifest = snapshotContract.validateManifest(safeJson(root, validRequest.sourceManifestPath, 'sourceManifest'));
+  validateSourceCoverage(validRequest, sourceManifest, executionRoot);
   const plannedImpact = impactContract.validateImpact(safeJson(root, validRequest.plannedImpactPath, 'plannedImpact'), { policy });
   const observedImpact = impactContract.validateImpact(safeJson(root, validRequest.observedImpactPath, 'observedImpact'), { policy });
   impactContract.checkWidening(plannedImpact, observedImpact, { policy });
