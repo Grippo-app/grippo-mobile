@@ -42,7 +42,7 @@
     "orchestrator/figma/scripts/ship-done.mjs": "b9bd0b904c81e2de35a11ef85949d58b00c082ea552ca5a7ed5d167c98f92d26",
     "orchestrator/figma/scripts/ship-drift-contract.cjs": "f8ad256c53b4010721da9edf0853bb6064f01d3624ea096f96f0bbeedccd4c05",
     "orchestrator/figma/scripts/sweep-done-drift.mjs": "fc6e2bc426fa52fbf3e5c7199579299ca6c2f0143158c88befcb325bba12dbd3",
-    "orchestrator/figma/scripts/verify-done.mjs": "2e9380edfae0eda982b62e7fbdb697be02d58f2a599a164372da030f52c00491",
+    "orchestrator/figma/scripts/verify-done.mjs": "38e5ebbfd4860eb4b46912f0da735c0712b82c8f042db38df80a33e18bc6d4f2",
     "orchestrator/figma/scripts/write-spec-report.mjs": "e4167ca6a6fb0c335f928259266be04622241111fa2c97e299860aec31b3e5bc",
     "orchestrator/skills/checks/hooks/pre-commit": "83da806a150492a877b31a6cad8bae5d2c7cad1834ce215fe31d310b6e850548",
     "orchestrator/tests/check-syntax.mjs": "8afbdaa562ce030686ec7dfc0cec028cd519a2ddf2d54da259ee265e8926d74d",

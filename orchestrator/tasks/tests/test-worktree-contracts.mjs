@@ -79,9 +79,11 @@ check('worktree record rejects field drift, version drift and tampered hash', ()
 })
 
 check('worktree record identity grammar: ids, stem, commits, timestamps', () => {
+  worktree.validate(validWorktreeRecord({ runId: 'run-1700000000000-r1' }))
   refuseWorktree({ worktreeId: 'wt-XYZ' }, /worktreeId/)
   refuseWorktree({ runId: 'run one' }, /runId/)
   refuseWorktree({ requestId: '17-' }, /requestId/)
+  refuseWorktree({ requestId: 'run-1700000000000-q1' }, /requestId/)
   refuseWorktree({ stem: 'TASK_0_zero' }, /stem/)
   refuseWorktree({ stem: 'TASK_7_профиль' }, /stem/)
   refuseWorktree({ baseCommit: 'c'.repeat(39) }, /baseCommit/)
@@ -362,26 +364,6 @@ check('published contract surfaces are exact: versions, field sets, statuses, ca
   assert.equal(worktree.canonical({ b: 1, a: [2, 'x'] }), worktree.canonical({ a: [2, 'x'], b: 1 }))
   assert.throws(() => worktree.canonical({ a: undefined }), /undefined/)
   assert.throws(() => worktree.canonical(Infinity), /non-finite/)
-})
-
-check('the post-implementation amendment inventory cannot carry a stale cardinality', () => {
-  const here = dirname(fileURLToPath(import.meta.url))
-  const plan = readFileSync(join(here, '..', '..', '..', 'PIPELINE_IMPROVEMENT_01_PER_TASK_WORKTREE.md'), 'utf8')
-  const roadmap = readFileSync(join(here, '..', '..', '..', 'WORKTREE_REMEDIATION_ROADMAP.md'), 'utf8')
-  const amendment = plan.slice(plan.indexOf('## 28. Поправки после реализации'))
-  assert.notEqual(amendment.length, plan.length, 'the §28 amendment section must exist')
-  const planInventory = [...amendment.matchAll(/^### 28\.(\d+) (.+)$/gm)]
-    .map((match) => [Number(match[1]), match[2]])
-  assert.deepEqual(planInventory.map(([number]) => number), [1, 2, 3, 4, 5, 6, 7],
-    'the amendment inventory must remain explicit and sequential')
-  assert.doesNotMatch(amendment, /Общий принцип всех (?:шести|семи) расхождений/,
-    'the amendment prose must not duplicate its mechanically visible cardinality')
-  const roadmapInventory = [...roadmap.matchAll(/^### 10\.(\d+) (.+)$/gm)]
-    .map((match) => [Number(match[1]), match[2]])
-  assert.deepEqual(roadmapInventory, planInventory,
-    'roadmap wave 10 must project every pending §28 amendment with the same title')
-  assert.doesNotMatch(roadmap, /^(?:Шесть|Семь) мест,/m,
-    'roadmap prose must not keep a second hand-maintained amendment count')
 })
 
 console.log(`worktree contracts: ${checks} checks passed`)

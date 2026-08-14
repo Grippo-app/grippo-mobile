@@ -57,7 +57,12 @@ var RELEASABLE_STATUSES = new Set(['ready', 'ready-for-integration',
 var HASH_RE = /^sha256:[a-f0-9]{64}$/;
 var STEM_RE = /^TASK_([1-9][0-9]{0,15})_[A-Za-z0-9_]{1,120}$/;
 var WORKTREE_ID_RE = /^wt-[a-f0-9]{32}$/;
-var RUN_ID_RE = /^[0-9]{1,16}-[a-z0-9]{1,32}$/;
+// Request ids name HTTP queue records. Execution ids name a worktree/lock/test
+// generation and use the certification namespace. Accept the legacy unprefixed
+// execution form for already-published records, while keeping request ids
+// strictly in their original namespace.
+var REQUEST_ID_RE = /^[0-9]{1,16}-[a-z0-9]{1,32}$/;
+var RUN_ID_RE = /^(?:run-)?[0-9]{1,16}-[a-z0-9]{1,32}$/;
 var COMMIT_RE = /^[a-f0-9]{40}$/; // SHA-1 object format only; SHA-256 repos are a typed unsupported state upstream
 var PROCESS_START_ID_RE = /^psid-v1:[a-z0-9-]+:[a-f0-9]{16,128}$/;
 var UNSIGNED_DECIMAL_RE = /^(?:0|[1-9][0-9]{0,19})$/;
@@ -151,7 +156,7 @@ function validate(record) {
   if (record.version !== VERSION) fail('worktree record version must be ' + VERSION);
   if (typeof record.worktreeId !== 'string' || !WORKTREE_ID_RE.test(record.worktreeId)) fail('worktreeId is not canonical');
   if (typeof record.runId !== 'string' || !RUN_ID_RE.test(record.runId)) fail('runId is not canonical');
-  if (typeof record.requestId !== 'string' || !RUN_ID_RE.test(record.requestId)) fail('requestId is not canonical');
+  if (typeof record.requestId !== 'string' || !REQUEST_ID_RE.test(record.requestId)) fail('requestId is not canonical');
   if (typeof record.stem !== 'string' || !STEM_RE.test(record.stem)) fail('stem is not canonical');
   if (typeof record.status !== 'string' || !STATUSES.has(record.status)) fail('status is not a known lifecycle state');
   exactHash(record.controlProjectId, 'controlProjectId');
@@ -231,6 +236,7 @@ module.exports = {
   RELEASABLE_STATUSES: RELEASABLE_STATUSES,
   WORKTREE_ID_RE: WORKTREE_ID_RE,
   RUN_ID_RE: RUN_ID_RE,
+  REQUEST_ID_RE: REQUEST_ID_RE,
   CANDIDATE_REF_RE: CANDIDATE_REF_RE,
   targetRefValid: targetRefValid,
   COMMIT_RE: COMMIT_RE,

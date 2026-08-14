@@ -27,7 +27,7 @@
 //
 // Manifest reverse closure:
 //   (18) production scripts and top-level test-infrastructure modules must all be pinned.
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, unlinkSync, chmodSync, readFileSync, existsSync } from 'node:fs'
+import { cpSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, unlinkSync, chmodSync, readFileSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -214,6 +214,27 @@ check('manifest: production scripts and top-level test infrastructure fail close
       ),
       []
     )
+  } finally {
+    rmSync(ws, { recursive: true, force: true })
+  }
+})
+
+check('verify-done: a non-Figma checkout needs neither Ajv nor Figma schemas', () => {
+  const ws = mkdtempSync(join(tmpdir(), 'verify-done-non-figma-'))
+  try {
+    const scripts = join(ws, 'orchestrator', 'figma', 'scripts')
+    cpSync(join(ORCH, 'figma', 'scripts'), scripts, { recursive: true })
+    mkdirSync(join(ws, 'orchestrator', 'tasks', 'done'), { recursive: true })
+    writeFileSync(join(ws, 'orchestrator', 'project-config.md'), 'figmaEnabled: false\n')
+    assert.equal(existsSync(join(ws, 'orchestrator', 'figma', 'node_modules')), false)
+    assert.equal(existsSync(join(ws, 'orchestrator', 'figma', 'schemas')), false)
+    const result = spawnSync('node', [join(scripts, 'verify-done.mjs')], {
+      cwd: ws,
+      env: { ...process.env, ORCHESTRATOR_PROJECT_ROOT: ws },
+      encoding: 'utf8',
+    })
+    assert.equal(result.status, 0, String(result.stdout) + String(result.stderr))
+    assert.match(String(result.stdout), /0 violation\(s\)/)
   } finally {
     rmSync(ws, { recursive: true, force: true })
   }

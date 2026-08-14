@@ -84,6 +84,16 @@ var SESSION_SIDECAR_MAX_BYTES = 64 * 1024;
 // the exact byte ceiling corresponding to the existing character contract.
 var CLAIM_PROMPT_MAX_BYTES = requestsMod.REQUEST_PROMPT_MAX_BYTES;
 
+// Queue ids intentionally stay in the HTTP/request grammar, but execution
+// generations cross the task-lock and test-certification boundary. That
+// boundary's canonical identity grammar is `run-<generation>` (README and
+// every certification schema). Keep the two namespaces explicit instead of
+// passing a request id through as a run id.
+function executionRunIdForRequest(requestId) {
+  if (!ID_RE.test(String(requestId || ''))) return null;
+  return 'run-' + requestId;
+}
+
 // Frozen serial safety. All task sessions share ONE working tree (cwd =
 // PROJECT_ROOT), so a second concurrent agent can compile a neighbour task's
 // bytes, pick up its files through an aggregate check, and attribute the
@@ -804,8 +814,14 @@ function tick() {
     // the durable request queued — there is no shared-root fallback.
     let executionContext = null;
     if (req.action === 'run') {
+      var executionRunId = executionRunIdForRequest(id);
+      if (executionRunId === null) {
+        console.warn('[runner] run held — request id cannot form a canonical execution generation:', id);
+        restoreClaimForRetry(id, req, claimGeneration);
+        continue;
+      }
       var provisioned = worktreeManager.provision({
-        stem: stem, runId: id, requestId: id, sourceRevision: req.sourceRevision
+        stem: stem, runId: executionRunId, requestId: id, sourceRevision: req.sourceRevision
       });
       if (!provisioned.ok) {
         if (provisionHoldLogged !== provisioned.code) {
@@ -950,6 +966,7 @@ module.exports = {
   runningCount: runningCount,
   runInfoForStem: runInfoForStem,
   runIdForDedupKey: runIdForDedupKey,
+  executionRunIdForRequest: executionRunIdForRequest,
   claimedRequestIssue: claimedRequestIssue,
   inspectClaimForExecution: inspectClaimForExecution,
   fenceClaimForExecution: fenceClaimForExecution,

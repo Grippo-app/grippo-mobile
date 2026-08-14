@@ -38,6 +38,7 @@ const ROOT_AGGREGATES = Object.freeze({
   screenshot: ':allScreenshotTests',
   full: ':allConfiguredTests'
 });
+const GIT_STATUS_MAX_BYTES = 32 * 1024 * 1024;
 
 class TestCertificationRequestError extends Error {
   constructor(code, message) {
@@ -160,6 +161,100 @@ function verifyLock(productRoot, identity) {
   }
 }
 
+function resolveExecutionRoot(controlRoot, request, options = {}) {
+  if (request.executionRootKind !== 'task-worktree') return controlRoot;
+  const environment = options.environment || process.env;
+  const manager = options.manager || require('../site/server/worktree-manager.js');
+  const resolved = manager.executionEnvironmentContext(environment);
+  if (!resolved || resolved.ok !== true || !resolved.context) {
+    fail('EXECUTION_ROOT_UNPROVEN', String(resolved && resolved.message ||
+      'task-worktree execution environment could not be proven').slice(0, 500));
+  }
+  const context = resolved.context;
+  if (environment.ORCHESTRATOR_WRITER_STEM !== request.identity.taskStem ||
+      context.runId !== request.identity.runId || context.controlRoot !== controlRoot) {
+    fail('EXECUTION_ROOT_MISMATCH', 'task-worktree binding differs from the certification identity');
+  }
+  return canonicalRoot(context.executionRoot);
+}
+
+// A task-worktree certification proves the candidate that is actually going
+// to be sealed, not an arbitrary caller-selected subset of files. The content
+// snapshot contract intentionally accepts an explicit path list, so bind that
+// list here to every materialized worktree change before any command or
+// structural receipt can be emitted.
+function taskWorktreeChangedPaths(executionRoot) {
+  const env = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (!key.startsWith('GIT_')) env[key] = value;
+  }
+  env.GIT_TERMINAL_PROMPT = '0';
+  env.GIT_OPTIONAL_LOCKS = '0';
+  env.LC_ALL = 'C';
+  const result = spawnSync('git', [
+    'status', '--porcelain=v1', '-z', '--untracked-files=all', '--ignore-submodules=all'
+  ], {
+    cwd: executionRoot,
+    env,
+    encoding: 'buffer',
+    timeout: 30000,
+    maxBuffer: GIT_STATUS_MAX_BYTES
+  });
+  if (result.error || result.signal || result.status !== 0 || !Buffer.isBuffer(result.stdout)) {
+    fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory is unavailable');
+  }
+  const decoded = result.stdout.toString('utf8');
+  if (!Buffer.from(decoded, 'utf8').equals(result.stdout)) {
+    fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory contains non-UTF-8 paths');
+  }
+  const records = decoded.split('\0');
+  if (records[records.length - 1] !== '') {
+    fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory is truncated');
+  }
+  records.pop();
+  const changed = [];
+  for (let index = 0; index < records.length; index++) {
+    const record = records[index];
+    if (record.length < 4 || record[2] !== ' ') {
+      fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change inventory has invalid porcelain bytes');
+    }
+    const status = record.slice(0, 2);
+    const relative = record.slice(3);
+    if (!relative) fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree change path is empty');
+    if (/[RC]/.test(status)) {
+      // Porcelain -z follows a rename/copy with the source path. A content
+      // snapshot cannot represent the removed side of that transition.
+      if (index + 1 >= records.length) {
+        fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree rename inventory is truncated');
+      }
+      index++;
+      fail('SOURCE_SNAPSHOT_DELETION_UNSUPPORTED',
+        'renamed/copied paths need an explicit deletion-aware source contract');
+    }
+    if (status.includes('D')) {
+      fail('SOURCE_SNAPSHOT_DELETION_UNSUPPORTED',
+        'deleted paths need an explicit deletion-aware source contract');
+    }
+    if (status.includes('U') || status === 'AA' || status === 'DD') {
+      fail('SOURCE_COVERAGE_UNPROVEN', 'task-worktree has unresolved paths');
+    }
+    changed.push(relative);
+  }
+  return sortedUnique(changed);
+}
+
+function validateSourceCoverage(request, sourceManifest, executionRoot) {
+  if (request.executionRootKind !== 'task-worktree') return [];
+  const changed = taskWorktreeChangedPaths(executionRoot);
+  const captured = new Set(sourceManifest.entries.map((entry) => entry.path));
+  const missing = changed.filter((relative) => !captured.has(relative));
+  if (missing.length > 0) {
+    fail('SOURCE_MANIFEST_INCOMPLETE',
+      'source snapshot omits task-worktree changes: ' + missing.slice(0, 20).join(', '));
+  }
+  return changed;
+}
+
 function validateExecutionPlan(request, observed, inventory, policy) {
   if (inventory.inventoryHash !== observed.capabilityInventoryHash) {
     fail('INVENTORY_MISMATCH', 'observed impact binds a different capability inventory');
@@ -209,16 +304,25 @@ function validateExecutionPlan(request, observed, inventory, policy) {
   if (observed.testNotApplicable !== null && request.commands.length > 0) {
     fail('PLAN_INCOMPLETE', 'typed N/A cannot execute command receipts');
   }
-  if (observed.testNotApplicable === null && request.commands.length === 0) {
+  const structuralOnly = observed.testNotApplicable === null &&
+    request.commands.length === 0 &&
+    observed.requiredSuites.length === 0 &&
+    requiredLanes.length > 0 &&
+    requiredLanes.every((lane) => lane === 'structural') &&
+    request.structuralGateIds.length > 0;
+  if (observed.testNotApplicable === null && request.commands.length === 0 && !structuralOnly) {
     fail('PLAN_INCOMPLETE', 'executable impact requires command receipts');
   }
   return allowed;
 }
 
+export { resolveExecutionRoot, validateExecutionPlan, validateSourceCoverage };
+
 async function runCertificationRequest({ productRoot, request }) {
   const root = canonicalRoot(productRoot);
   const validRequest = validateRequest(request);
   verifyLock(root, validRequest.identity);
+  const executionRoot = resolveExecutionRoot(root, validRequest);
   const taskRelative = 'orchestrator/tasks/todo/' + validRequest.identity.taskStem + '.md';
   const actualTaskInputHash = taskInputContract.taskInputHashOf(
     safeBytes(root, taskRelative, 'canonical task input', 8 * 1024 * 1024));
@@ -227,6 +331,7 @@ async function runCertificationRequest({ productRoot, request }) {
   }
   const policy = policyContract.validatePolicy(safeJson(root, 'orchestrator/tasks/test-policy.json', 'policy'));
   const sourceManifest = snapshotContract.validateManifest(safeJson(root, validRequest.sourceManifestPath, 'sourceManifest'));
+  validateSourceCoverage(validRequest, sourceManifest, executionRoot);
   const plannedImpact = impactContract.validateImpact(safeJson(root, validRequest.plannedImpactPath, 'plannedImpact'), { policy });
   const observedImpact = impactContract.validateImpact(safeJson(root, validRequest.observedImpactPath, 'observedImpact'), { policy });
   impactContract.checkWidening(plannedImpact, observedImpact, { policy });
@@ -249,7 +354,8 @@ async function runCertificationRequest({ productRoot, request }) {
   for (let index = 0; index < validRequest.commands.length; index++) {
     const command = validRequest.commands[index];
     await certifyCommand({
-      certificationRoot, productRoot: root, taskPaths: command.taskPaths, allowedTaskPaths,
+      certificationRoot, certificationOwnerRoot: root, productRoot: executionRoot,
+      taskPaths: command.taskPaths, allowedTaskPaths,
       suite: command.suite, tier: command.tier, lane: command.lane, identity, hashes,
       toolchain: validRequest.toolchain, reportInputs: command.reportInputs,
       timeoutMs: command.timeoutMs, continueOnFailure: command.continueOnFailure,
@@ -259,12 +365,13 @@ async function runCertificationRequest({ productRoot, request }) {
   }
   for (let index = 0; index < validRequest.structuralGateIds.length; index++) {
     await certifyStructuralGate({
-      certificationRoot, productRoot: root, gateId: validRequest.structuralGateIds[index], identity, hashes,
+      certificationRoot, certificationOwnerRoot: root, productRoot: executionRoot,
+      gateId: validRequest.structuralGateIds[index], identity, hashes,
       ordinal: String(index).padStart(3, '0')
     });
   }
   return aggregateAndSeal({
-    certificationRoot, productRoot: root, identity,
+    certificationRoot, certificationOwnerRoot: root, productRoot: executionRoot, identity,
     taskInputHash: validRequest.taskInputHash, sourceManifest, policy, plannedImpact, observedImpact
   });
 }

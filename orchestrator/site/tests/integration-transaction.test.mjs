@@ -355,6 +355,28 @@ try {
       .includes('## Outcome'))
   })
 
+  check('an untracked task source is consumed without inventing a todo deletion', () => {
+    const { root, out } = runScenario(`
+      const todo = P.join(ROOT, 'orchestrator/tasks/todo', STEM + '.md');
+      const source = fs.readFileSync(todo, 'utf8');
+      git(ROOT, 'rm', '-q', 'orchestrator/tasks/todo/' + STEM + '.md');
+      git(ROOT, 'commit', '-q', '-m', 'keep generated task sources outside the base tree');
+      fs.writeFileSync(todo, source);
+      writeLock();
+      sealed(productWork);
+      integrations.begin(STEM, (result) => done({
+        ok: result.ok, code: result.code || null, message: result.message || null,
+        status: integrations.readOne(STEM).record.status,
+      }));
+    `)
+    assert.equal(out.ok, true, JSON.stringify(out))
+    assert.equal(out.status, 'completed')
+    const names = git(root, 'show', '--name-status', '--no-renames', '--format=', 'HEAD')
+    assert.match(names, /A\torchestrator\/tasks\/done\/TASK_7_probe\.md/)
+    assert.doesNotMatch(names, /D\torchestrator\/tasks\/todo\/TASK_7_probe\.md/)
+    assert.equal(git(root, 'status', '--porcelain').trim(), '')
+  })
+
   check('completed cleanup never follows a raced finalizations-directory symlink', () => {
     const { out } = runScenario(`
       writeLock();
@@ -773,6 +795,33 @@ try {
     assert.equal(git(root, 'rev-list', '--count', 'HEAD').trim(), '2', 'exactly one canonical commit')
     assert.equal(git(root, 'status', '--porcelain').trim(), '')
     assert.equal(git(root, 'show', '--name-only', '--format=', 'HEAD').includes('orchestrator/tasks/done/TASK_7_probe.md'), true)
+  })
+
+  check('manual recovery re-pins a physically complete pre-commit prepared tree', () => {
+    const { root, out } = runScenario([
+      { code: SETUP, env: { STUB_KILL_DRIVER_AFTER: 'prepare' }, mayDie: true },
+      { code: `
+        const contract = require(${JSON.stringify(join(repoRoot, 'orchestrator/tasks/integration-record-contract.cjs'))});
+        const file = P.join(paths.INTEGRATIONS_DIR, STEM + '.json');
+        const record = JSON.parse(fs.readFileSync(file, 'utf8'));
+        const at = new Date().toISOString();
+        record.phases['finalizer-preparing'].provenAt = at;
+        record.phases['finalizer-prepared'].intentAt = at;
+        record.phase = 'finalizer-prepared';
+        record.status = 'recovery-required';
+        record.recordHash = contract.recordHash(record);
+        fs.writeFileSync(file, JSON.stringify(record) + '\\n');
+        integrations.resume(STEM, (result) => {
+          const after = integrations.readOne(STEM);
+          done({ ok: result.ok, code: result.code || null, message: result.message || null,
+            status: after.ok ? after.record.status : null });
+        });
+      ` },
+    ])
+    assert.equal(out.ok, true, JSON.stringify(out))
+    assert.equal(out.status, 'completed')
+    assert.equal(git(root, 'rev-list', '--count', 'HEAD').trim(), '2')
+    assert.equal(git(root, 'status', '--porcelain').trim(), '')
   })
 
   check('kill -9 after the finalizer confirmed resumes without a second commit', () => {
