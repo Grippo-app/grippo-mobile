@@ -6,6 +6,7 @@ dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.compose.gradle.plugin)
+    implementation(libs.compose.multiplatform.gradle.plugin)
     implementation(libs.ksp.plugin.api)
 }
 
@@ -38,6 +39,34 @@ gradlePlugin {
         register("ios.swiftpackage.convention") {
             id = "ios.swiftpackage.convention"
             implementationClass = "IosSwiftPackageConventionPlugin"
+        }
+        register("kmp.test.convention") {
+            id = "kmp.test.convention"
+            implementationClass = "KmpTestConventionPlugin"
+        }
+        register("coroutines.test.convention") {
+            id = "coroutines.test.convention"
+            implementationClass = "CoroutinesTestConventionPlugin"
+        }
+        register("flow.test.convention") {
+            id = "flow.test.convention"
+            implementationClass = "FlowTestConventionPlugin"
+        }
+        register("network.test.convention") {
+            id = "network.test.convention"
+            implementationClass = "NetworkTestConventionPlugin"
+        }
+        register("di.test.convention") {
+            id = "di.test.convention"
+            implementationClass = "DiTestConventionPlugin"
+        }
+        register("room.test.convention") {
+            id = "room.test.convention"
+            implementationClass = "RoomTestConventionPlugin"
+        }
+        register("compose.ui.test.convention") {
+            id = "compose.ui.test.convention"
+            implementationClass = "ComposeUiTestConventionPlugin"
         }
     }
 }

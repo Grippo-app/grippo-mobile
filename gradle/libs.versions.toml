@@ -25,6 +25,14 @@ firebase-bom = "34.13.0"
 google-services-plugin = "4.4.4"
 firebase-crashlytics-plugin = "3.0.7"
 detekt = "1.23.7"
+turbine = "1.2.1"
+robolectric = "4.16"
+junit4 = "4.13.2"
+androidx-test-runner = "1.7.0"
+androidx-test-core = "1.7.0"
+# Android artifact line CMP `compose-plugin` 1.10.3 resolves to (observed via
+# dependency resolution, not guessed). Moves in lockstep with `compose-plugin`.
+compose-ui-test-manifest = "1.10.5"
 
 [libraries]
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -47,6 +55,7 @@ google-identity-googleid = { module = "com.google.android.libraries.identity.goo
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-multiplatform-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-plugin" }
 ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 
 #Firebase
@@ -94,6 +103,21 @@ koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref =
 #Detekt
 detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
+
+# General test foundation (mandatory-test pipeline; wired ONLY through the
+# opt-in `kmp.test.convention` + capability conventions — never added to a
+# module by hand and never reachable from production configurations)
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose-ui-test-manifest" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

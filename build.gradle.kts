@@ -50,3 +50,49 @@ tasks.withType<Detekt>().configureEach {
     }
     exclude("**/build/**", "**/schemas/**", "**/compose-metrics/**", "**/compose-reports/**", "**/.kotlin/**")
 }
+
+// why: cross-project task aggregation kept config-cache safe via subprojects.map { p -> p.tasks.matching { ... } }
+
+tasks.register("allHostTests") {
+    group = "verification"
+    description = "Runs every test-bearing module's Android host tests."
+    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "hostTests" } })
+}
+
+tasks.register("allIosSimulatorTests") {
+    group = "verification"
+    description = "Runs every eligible module's Kotlin/Native tests on the iOS simulator."
+    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "iosSimulatorTests" } })
+}
+
+tasks.register("allAndroidDeviceTests") {
+    group = "verification"
+    description = "Runs every device-enabled module's instrumented tests on connected devices."
+    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "androidDeviceTests" } })
+}
+
+tasks.register("allScreenshotTests") {
+    group = "verification"
+    description = "Verifies every screenshot module's Roborazzi captures."
+    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "verifyRoborazziAndroidHostTest" } })
+}
+
+tasks.register("allConfiguredTests") {
+    group = "verification"
+    description = "Runs every configured test lane (host, iOS simulator, device, screenshots)."
+    dependsOn("allHostTests", "allIosSimulatorTests", "allAndroidDeviceTests", "allScreenshotTests")
+}
+
+tasks.register("testCapabilityInventory") {
+    group = "verification"
+    description = "Aggregates per-module test capability fragments into build/test-capability/inventory.json."
+    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "testCapabilityEntry" } })
+    val fragments = files(subprojects.map { p -> p.layout.buildDirectory.file("test-capability/entry.json") })
+    inputs.files(fragments).skipWhenEmpty()
+    val out = layout.buildDirectory.file("test-capability/inventory.json")
+    outputs.file(out)
+    doLast {
+        val entries = fragments.files.filter { it.exists() }.map { it.readText() }.sorted()
+        out.get().asFile.writeText(entries.joinToString(",\n", "[", "]\n"))
+    }
+}

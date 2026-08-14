@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-13T19:32:46Z",
+  "generatedAt": "2026-08-14T03:12:11Z",
   "backlog": [],
   "pending": [],
   "todo": [
@@ -24,5 +24,25 @@
       "round": null
     }
   ],
-  "done": []
+  "done": [
+    {
+      "stem": "TASK_2_install_canonical_test_foundation",
+      "title": "Install canonical test foundation",
+      "state": "done",
+      "sourceRevision": "sha256:47ff2d59ec979b841938577160840589c40ab3bf77d8b721b846769bf421e26f",
+      "createdAt": "2026-08-14T03:12:09Z",
+      "doneAt": "2026-08-14T03:12:09Z",
+      "origin": {
+        "kind": "follow-up",
+        "type": "test-foundation-prerequisite",
+        "ref": "TASK_1_dobavit_home_screen",
+        "fingerprint": "sha256:4f398d463e79025d9dd65fa2c4a8727f36c605ab35ce1e5c553fdde84543947b"
+      },
+      "dependsOn": [],
+      "splitFrom": "TASK_1_dobavit_home_screen",
+      "outcomeStatus": "completed-with-caveats",
+      "questionsCount": null,
+      "round": null
+    }
+  ]
 }
