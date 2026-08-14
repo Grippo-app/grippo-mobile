@@ -96,6 +96,7 @@
     <string name="change_btn">Змінити</string>
     <string name="continue_btn">Продовжити</string>
     <string name="exercises">Вправи</string>
+    <string name="exercises_empty">Поки що немає вправ</string>
     <string name="add_exercise_btn">Додати вправу</string>
     <string name="save_btn">Зберегти</string>
     <string name="update_btn">Оновити</string>
@@ -291,6 +292,7 @@
     <string name="start_training_exercises_count">%1$s вправ</string>
     <string name="menu">Меню</string>
     <string name="calendar">Календар</string>
+    <string name="home">Головна</string>
 
     <string name="best_tonnage">Найкращий тоннаж</string>
     <string name="best_weight">Найкраща вага</string>

@@ -33,7 +33,7 @@ public class RootViewModel(
     }
 
     override fun toHome() {
-        navigateTo(RootDirection.Home)
+        navigateTo(RootDirection.Main)
         state.value.deeplink?.let { parseDeeplink(it)?.let { dir -> navigateTo(dir) } }
         update { it.copy(deeplink = null) }
     }

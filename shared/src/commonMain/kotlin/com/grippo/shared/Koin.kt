@@ -16,6 +16,7 @@ import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
+import com.grippo.main.MainFeatureModule
 import com.grippo.dialog.api.DialogModule
 import com.grippo.services.apple.auth.AppleAuthModule
 import com.grippo.services.backend.BackendModule
@@ -71,6 +72,7 @@ public object Koin {
             LocalSettingsFeatureModule().module,
             HttpModule().module,
             ImageLoaderModule().module,
+            MainFeatureModule().module,
         )
     }
 }

@@ -1,16 +1,17 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-14T10:21:04Z",
+  "generatedAt": "2026-08-14T17:58:06Z",
   "backlog": [],
   "pending": [],
-  "todo": [
+  "todo": [],
+  "done": [
     {
       "stem": "TASK_1_dobavit_home_screen",
       "title": "Добавить Home screen",
-      "state": "todo",
-      "sourceRevision": "sha256:19186ae26f76cdfeedd9678005b6a6601f31de4d63072d6f4a3ae773c82ddff1",
-      "createdAt": "2026-08-14T10:21:03Z",
-      "doneAt": null,
+      "state": "done",
+      "sourceRevision": "sha256:7859b80254e06dadc1baec84dcd8b51f105a6a5acae159617cafffa4577598f0",
+      "createdAt": "2026-08-14T17:58:04Z",
+      "doneAt": "2026-08-14T17:58:04Z",
       "origin": {
         "kind": "manual",
         "type": "manual",
@@ -19,12 +20,10 @@
       },
       "dependsOn": [],
       "splitFrom": null,
-      "outcomeStatus": null,
+      "outcomeStatus": "completed-with-caveats",
       "questionsCount": null,
       "round": null
-    }
-  ],
-  "done": [
+    },
     {
       "stem": "TASK_2_install_canonical_test_foundation",
       "title": "Install canonical test foundation",

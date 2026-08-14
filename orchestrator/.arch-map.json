@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-13T21:28:44Z",
-  "generatedAtRevision": "sha256:17aeda388167b65703f5ad4c903db020243aff35880768e1cfd65a55b4eb57c0",
-  "structuralHash": "sha256:9a4a4d756b2d9f29049cadae851ff453dfd5ca46de66e956e95646d247c05535",
+  "generatedAt": "2026-08-14T17:58:43Z",
+  "generatedAtRevision": "sha256:985a58dfd7ac4497daa7b180a4456bc0d19e8131cd4796afcfb36ea6d34359f1",
+  "structuralHash": "sha256:e73c3612a9b34dc5acfb6b8f3364636cd1eb3f6c7d656406feae65b32b16d052",
   "generatorVersion": "architecture",
   "analysis": {
     "status": "partial",
@@ -20,10 +20,10 @@
     ],
     "coverage": {
       "schemaVersion": 1,
-      "gradleFiles": 86,
+      "gradleFiles": 88,
       "dependencyExpressions": 0,
       "unsupportedDependencyExpressions": 0,
-      "kotlinFiles": 1365,
+      "kotlinFiles": 1382,
       "parserErrors": 0,
       "excludedModules": 0,
       "supportedPersistencePatterns": [
@@ -35,9 +35,9 @@
     }
   },
   "summary": {
-    "modules": 86,
-    "features": 16,
-    "screens": 6,
+    "modules": 88,
+    "features": 18,
+    "screens": 8,
     "dataSources": 22,
     "databaseEntities": null,
     "findingsBySeverity": {
@@ -225,6 +225,17 @@
       }
     },
     {
+      "id": "component:ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt~ExercisesComponent",
+      "kind": "component",
+      "name": "ExercisesComponent",
+      "path": "ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "className": "ExercisesComponent"
+      }
+    },
+    {
       "id": "component:ui-screen-features/home/src/commonMain/kotlin/com/grippo/home/HomeRootComponent.kt~HomeRootComponent",
       "kind": "component",
       "name": "HomeRootComponent",
@@ -244,6 +255,17 @@
       "layer": "ui",
       "metadata": {
         "className": "HomeComponent"
+      }
+    },
+    {
+      "id": "component:ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt~MainComponent",
+      "kind": "component",
+      "name": "MainComponent",
+      "path": "ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "className": "MainComponent"
       }
     },
     {
@@ -605,6 +627,18 @@
       }
     },
     {
+      "id": "feature:exercises",
+      "kind": "feature",
+      "name": "exercises",
+      "path": "ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "ownershipId": "exercises",
+        "interfaceClass": null
+      }
+    },
+    {
       "id": "feature:goal",
       "kind": "feature",
       "name": "goal",
@@ -638,6 +672,18 @@
       "metadata": {
         "ownershipId": "local-settings",
         "interfaceClass": "LocalSettingsFeature"
+      }
+    },
+    {
+      "id": "feature:main",
+      "kind": "feature",
+      "name": "main",
+      "path": "ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "ownershipId": "main",
+        "interfaceClass": null
       }
     },
     {
@@ -1883,6 +1929,20 @@
       }
     },
     {
+      "id": "module:ui-screen-features/exercises",
+      "kind": "module",
+      "name": ":ui-screen-features:exercises",
+      "path": "ui-screen-features/exercises/build.gradle.kts",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "gradlePath": ":ui-screen-features:exercises",
+        "sourceSets": [
+          "commonMain"
+        ]
+      }
+    },
+    {
       "id": "module:ui-screen-features/home",
       "kind": "module",
       "name": ":ui-screen-features:home",
@@ -1891,6 +1951,20 @@
       "layer": "ui",
       "metadata": {
         "gradlePath": ":ui-screen-features:home",
+        "sourceSets": [
+          "commonMain"
+        ]
+      }
+    },
+    {
+      "id": "module:ui-screen-features/main",
+      "kind": "module",
+      "name": ":ui-screen-features:main",
+      "path": "ui-screen-features/main/build.gradle.kts",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "gradlePath": ":ui-screen-features:main",
         "sourceSets": [
           "commonMain"
         ]
@@ -2121,6 +2195,18 @@
       }
     },
     {
+      "id": "screen:exercises",
+      "kind": "screen",
+      "name": "Exercises",
+      "path": "ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "routes": [],
+        "rootSuffix": false
+      }
+    },
+    {
       "id": "screen:home",
       "kind": "screen",
       "name": "Home",
@@ -2132,6 +2218,18 @@
           "Home"
         ],
         "rootSuffix": true
+      }
+    },
+    {
+      "id": "screen:main",
+      "kind": "screen",
+      "name": "Main",
+      "path": "ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt",
+      "platform": "shared",
+      "layer": "ui",
+      "metadata": {
+        "routes": [],
+        "rootSuffix": false
       }
     },
     {
@@ -3147,12 +3245,36 @@
       }
     },
     {
+      "id": "edge:owns/2df2091fc8991744db01d7945d2bb423",
+      "from": "feature:main",
+      "to": "screen:main",
+      "kind": "owns",
+      "evidence": {
+        "sourcePath": "ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt",
+        "line": 1,
+        "analyzer": "screen-convention-v1",
+        "confidence": "derived"
+      }
+    },
+    {
       "id": "edge:owns/3f1e41c29b70f72b362c161e1ecc5a44",
       "from": "feature:authorization",
       "to": "screen:authorization",
       "kind": "owns",
       "evidence": {
         "sourcePath": "ui-screen-features/authorization/src/commonMain/kotlin/com/grippo/authorization/AuthComponent.kt",
+        "line": 1,
+        "analyzer": "screen-convention-v1",
+        "confidence": "derived"
+      }
+    },
+    {
+      "id": "edge:owns/4ebfefe6c180a81c253a161db1cad3ad",
+      "from": "feature:exercises",
+      "to": "screen:exercises",
+      "kind": "owns",
+      "evidence": {
+        "sourcePath": "ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt",
         "line": 1,
         "analyzer": "screen-convention-v1",
         "confidence": "derived"
@@ -3327,6 +3449,18 @@
       }
     },
     {
+      "id": "edge:renders/3b859f498111b83c76170eab46a85777",
+      "from": "screen:main",
+      "to": "component:ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt~MainComponent",
+      "kind": "renders",
+      "evidence": {
+        "sourcePath": "ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt",
+        "line": 24,
+        "analyzer": "kotlin-component-v1",
+        "confidence": "exact"
+      }
+    },
+    {
       "id": "edge:renders/47a9d809674117bb842b1df91cd55fa6",
       "from": "screen:training",
       "to": "component:ui-screen-features/training/src/commonMain/kotlin/com/grippo/training/exercise/TrainingExerciseComponent.kt~TrainingExerciseComponent",
@@ -3483,6 +3617,18 @@
       }
     },
     {
+      "id": "edge:renders/aee91ddd2052097b4eba3f9fb51fb303",
+      "from": "screen:exercises",
+      "to": "component:ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt~ExercisesComponent",
+      "kind": "renders",
+      "evidence": {
+        "sourcePath": "ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt",
+        "line": 9,
+        "analyzer": "kotlin-component-v1",
+        "confidence": "exact"
+      }
+    },
+    {
       "id": "edge:renders/b2192c4a15e335a3eb7bc34aa3fc4a07",
       "from": "screen:profile",
       "to": "component:ui-screen-features/profile/src/commonMain/kotlin/com/grippo/profile/goal/ProfileGoalComponent.kt~ProfileGoalComponent",
@@ -3579,6 +3725,18 @@
       }
     },
     {
+      "id": "edge:renders/e16f7da27d68ee8d4fca51ce3adda82e",
+      "from": "screen:exercises",
+      "to": "module:ui-screen-features/exercises",
+      "kind": "renders",
+      "evidence": {
+        "sourcePath": "ui-screen-features/exercises/src/commonMain/kotlin/com/grippo/exercises/ExercisesComponent.kt",
+        "line": 1,
+        "analyzer": "screen-convention-v1",
+        "confidence": "derived"
+      }
+    },
+    {
       "id": "edge:renders/e3279d5bc8045748721bd2991aef31d0",
       "from": "screen:authorization",
       "to": "component:h-0a693a1277d2f295ff26f4651c94e0bf",
@@ -3612,6 +3770,18 @@
         "line": 9,
         "analyzer": "kotlin-component-v1",
         "confidence": "exact"
+      }
+    },
+    {
+      "id": "edge:renders/f23a1352e93065889e060ca106af733d",
+      "from": "screen:main",
+      "to": "module:ui-screen-features/main",
+      "kind": "renders",
+      "evidence": {
+        "sourcePath": "ui-screen-features/main/src/commonMain/kotlin/com/grippo/main/MainComponent.kt",
+        "line": 1,
+        "analyzer": "screen-convention-v1",
+        "confidence": "derived"
       }
     },
     {
