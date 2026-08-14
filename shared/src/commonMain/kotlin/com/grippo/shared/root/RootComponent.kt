@@ -17,9 +17,10 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.core.AppTheme
-import com.grippo.main.MainComponent
+import com.grippo.home.HomeRootComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
+import com.grippo.screen.api.HomeRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.RootRouter.Auth
@@ -71,7 +72,7 @@ public class RootComponent(
     }
 
     public fun handleDeeplink(deeplink: String) {
-        if (childStack.value.active.configuration is RootRouter.Main) {
+        if (childStack.value.active.configuration is RootRouter.Home) {
             viewModel.applyDeeplink(deeplink)
         } else {
             viewModel.enqueueDeeplink(deeplink)
@@ -79,14 +80,61 @@ public class RootComponent(
     }
 
     override suspend fun eventListener(direction: RootDirection) {
-        // Login only replaces to Auth when we are not already on the Authorization
-        // child — preserves the prior active-guard semantics.
-        if (direction == RootDirection.Login && childStack.value.active.instance is Authorization) return
-        when (val nav = direction.toNav()) {
-            is RootNav.Push -> navigation.push(nav.router)
-            is RootNav.ReplaceAll -> navigation.replaceAll(nav.router)
-            RootNav.Pop -> navigation.pop()
-            RootNav.Close -> close.invoke()
+        when (direction) {
+            RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
+                navigation.replaceAll(Auth(AuthRouter.AuthProcess))
+            }
+
+            RootDirection.Home -> navigation.replaceAll(
+                RootRouter.Home
+            )
+
+            RootDirection.Profile -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Body)
+            )
+
+            RootDirection.Debug -> navigation.push(
+                RootRouter.Debug
+            )
+
+            is RootDirection.Training -> navigation.push(
+                RootRouter.Training(direction.stage)
+            )
+
+            RootDirection.WeightHistory -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Body)
+            )
+
+            RootDirection.MissingEquipment -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Equipments)
+            )
+
+            RootDirection.ExcludedMuscles -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Muscles)
+            )
+
+            RootDirection.Experience -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Experience)
+            )
+
+            RootDirection.Settings -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Settings)
+            )
+
+            RootDirection.Social -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Social)
+            )
+
+            RootDirection.Goal -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Goal)
+            )
+
+            RootDirection.Trainings -> navigation.push(
+                RootRouter.Trainings
+            )
+
+            RootDirection.Back -> navigation.pop()
+            RootDirection.Close -> close.invoke()
         }
     }
 
@@ -101,20 +149,21 @@ public class RootComponent(
                 ),
             )
 
-            RootRouter.Main -> Child.Main(
-                MainComponent(
+            RootRouter.Home -> Child.Home(
+                HomeRootComponent(
                     componentContext = context,
-                    toTraining = viewModel::toTraining,
-                    toWeightHistory = viewModel::toWeightHistory,
+                    initial = HomeRouter.Home,
+                    toBody = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toExperience = viewModel::toExperience,
                     toDebug = viewModel::toDebug,
+                    toTraining = viewModel::toTraining,
                     toTrainings = viewModel::toTrainings,
                     toSettings = viewModel::toSettings,
                     toSocial = viewModel::toSocial,
                     toGoal = viewModel::toGoal,
-                    close = viewModel::onClose,
+                    close = viewModel::onClose
                 )
             )
 
@@ -177,7 +226,7 @@ public class RootComponent(
         public data class Trainings(override val component: TrainingsRootComponent) :
             Child(component)
 
-        public data class Main(override val component: MainComponent) :
+        public data class Home(override val component: HomeRootComponent) :
             Child(component)
 
         public data class Profile(override val component: ProfileComponent) :

@@ -114,15 +114,6 @@ public object DarkColor : AppColor {
         override val selector = AppPalette.Common.White
     }
 
-    override val bottomBar: AppColor.BottomBarColors = object : AppColor.BottomBarColors {
-        override val background = AppPalette.NeutralDark.N150
-        override val itemActive = AppPalette.Common.White
-        override val itemInactive = AppPalette.NeutralDark.N600
-        override val actionBackground1 = AppPalette.Blue.P500
-        override val actionBackground2 = AppPalette.Blue.P600
-        override val actionIcon = AppPalette.Common.White
-    }
-
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
         override val confettiColor1 = AppPalette.Unique.Green
         override val confettiColor2 = AppPalette.Unique.Orange

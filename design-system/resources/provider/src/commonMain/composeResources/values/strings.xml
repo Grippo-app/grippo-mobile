@@ -96,7 +96,6 @@
     <string name="change_btn">Change</string>
     <string name="continue_btn">Continue</string>
     <string name="exercises">Exercises</string>
-    <string name="exercises_empty">No exercises yet</string>
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
     <string name="update_btn">Update</string>
@@ -294,7 +293,6 @@
     <string name="start_training_exercises_count">%1$s exercises</string>
     <string name="menu">Menu</string>
     <string name="calendar">Calendar</string>
-    <string name="home">Home</string>
 
     <string name="best_tonnage">Best tonnage</string>
     <string name="best_weight">Best weight</string>

@@ -79,7 +79,6 @@ public data object AppDp {
     val training: Training = Training
     val accent: Accent = Accent
     val pagerIndicator: PagerIndicator = PagerIndicator
-    val bottomBar: BottomBar = BottomBar
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -526,15 +525,6 @@ public data object AppDp {
         val dotSize: Dp = 6.dp
         val dotSizeActive: Dp = 18.dp
         val dotSpacing: Dp = 6.dp
-    }
-
-    public data object BottomBar {
-        val height: Dp = size.large
-        val horizontalPadding: Dp = padding.large
-        val itemSpacing: Dp = padding.extraSmall
-        val itemIcon: Dp = icon.large
-        val actionSize: Dp = size.large
-        val actionIcon: Dp = icon.xLarge
     }
 
     public data object Loader {
