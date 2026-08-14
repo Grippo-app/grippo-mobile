@@ -25,6 +25,16 @@ public interface AppColor {
     public val static: Static
     public val context: ContextColors
     public val selectableCardColors: SelectableCardColors
+    public val bottomBar: BottomBarColors
+
+    public interface BottomBarColors {
+        public val background: Color
+        public val itemActive: Color
+        public val itemInactive: Color
+        public val actionBackground1: Color
+        public val actionBackground2: Color
+        public val actionIcon: Color
+    }
 
     public interface DividerColors {
         public val default: Color

@@ -4,6 +4,7 @@ plugins {
     id("ios.swiftpackage.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
+    id("flow.test.convention")
 }
 
 kotlin {
@@ -69,6 +70,7 @@ kotlin {
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)
         implementation(projects.uiScreenFeatures.home)
+        implementation(projects.uiScreenFeatures.main)
 
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiDialogFeatures.weightPicker)
