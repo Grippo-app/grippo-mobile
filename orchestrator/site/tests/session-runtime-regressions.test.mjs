@@ -141,6 +141,33 @@ try {
     assert.equal(sessions.writerLeaseKeyFor('figma:screens:TASK_1_x'), 'figma:screens:TASK_1_x')
   })
 
+  check('an exact generation-bound Outcome draft bypasses the fresh-lock auto-close defer', () => {
+    const stem = 'TASK_9_ready_handoff'
+    const worktreeId = 'wt-' + 'a'.repeat(32)
+    const lock = join(cache, 'locks', stem + '.json')
+    const activity = join(runs, 'task_' + stem + '.session.json')
+    const draft = join(cache, 'finalizations', stem + '.' + worktreeId + '.draft.md')
+    const session = {
+      key: 'task:' + stem,
+      stem,
+      action: 'run',
+      executionContext: { worktreeId },
+    }
+    writeFileSync(lock, '{}\n')
+    writeFileSync(activity, '{}\n')
+
+    assert.equal(sessions.freshLockBlocksAutoClose(session), true,
+      'a fresh task lock still defers an intermediate run turn')
+    writeFileSync(join(cache, 'finalizations', stem + '.wt-' + 'b'.repeat(32) + '.draft.md'), 'foreign\n')
+    assert.equal(sessions.freshLockBlocksAutoClose(session), true,
+      'another generation cannot close this run')
+    writeFileSync(draft, '---\n\n## Outcome\n')
+    assert.equal(sessions.completionHandoffReady(session), true)
+    assert.equal(sessions.freshLockBlocksAutoClose(session), false,
+      'the exact handoff must let the manager close and seal the child')
+    assert.equal(sessions.completionHandoffReady({ ...session, action: 'prepare' }), false)
+  })
+
   check('Figma session keys are an exact action allowlist (retired token sessions rejected)', () => {
     for (const key of [
       'figma:whoami', 'figma:fileaccess', 'figma:sync-tokens', 'figma:sync-components',

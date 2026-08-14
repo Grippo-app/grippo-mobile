@@ -1685,6 +1685,26 @@ function hasFreshLock(s) {
   return (Date.now() - t) < STALE_LOCK_MS;   // fresh → defer; stale → reap as today
 }
 
+// A generation-bound Outcome draft is the run's durable handoff to the site
+// manager. Its presence means this turn is no longer an intermediate phase:
+// the child must exit so the writer lease can settle and the manager can seal
+// the candidate while the task lock remains held for integration. A bare or
+// foreign-generation draft never bypasses the fresh-lock defer.
+function completionHandoffReady(s) {
+  if (!s || s.action !== 'run' || !s.stem || !s.executionContext ||
+      s.key !== 'task:' + s.stem) return false;
+  var worktreeId = s.executionContext.worktreeId;
+  if (!/^wt-[a-f0-9]{32}$/.test(String(worktreeId || '')) || !locks.lockPathFor(s.stem)) return false;
+  var draft = path.join(paths.FINALIZATIONS_DIR, s.stem + '.' + worktreeId + '.draft.md');
+  var entry = fileGuards.inspectEntryUnder(PROJECT_ROOT, paths.FINALIZATIONS_DIR, draft);
+  return !!entry && entry.status === 'present' && !!entry.stat &&
+    entry.stat.isFile() && !entry.stat.isSymbolicLink();
+}
+
+function freshLockBlocksAutoClose(s) {
+  return hasFreshLock(s) && !completionHandoffReady(s);
+}
+
 // A task session that finished a turn WITHOUT asking the user anything is done —
 // behave like `claude -p`: end stdin so the process exits and frees its slot. If
 // it DID ask (needs_action this turn), keep it alive so the user can answer in
@@ -1698,7 +1718,7 @@ function maybeAutoClose(s) {
   // permanent (nothing else ever calls maybeAutoClose again) and the session
   // zombies at running:true after the turn already finished. The recheck loop
   // closes as soon as the lock is removed or its activity goes stale.
-  if (hasFreshLock(s)) { scheduleLockRecheck(s); return; }
+  if (freshLockBlocksAutoClose(s)) { scheduleLockRecheck(s); return; }
   // Grace window: a needs_action can arrive just after `result` in some protocol
   // orderings. Wait briefly, then re-check — if the session was replaced, ended,
   // started a new turn, asked for input, or is already closing, abort.
@@ -1709,7 +1729,7 @@ function maybeAutoClose(s) {
     // window. A fresh lock now means the task is in flight — defer with the same
     // recheck arm as the sync check above (a bare return here was the second,
     // independent path into the permanent-zombie state).
-    if (hasFreshLock(s)) { scheduleLockRecheck(s); return; }
+    if (freshLockBlocksAutoClose(s)) { scheduleLockRecheck(s); return; }
     // Committed to close: release the cap slot and stop deduping against this
     // (now winding-down) session immediately, instead of waiting up to ~4s for
     // the child's exit — so a fresh Run for the same stem isn't dropped as a dup.
@@ -2243,6 +2263,8 @@ module.exports = {
   validSessionKey: validSessionKey,
   writerLeaseKeyFor: writerLeaseKeyFor,
   writerLeaseRequiresSoleWriter: writerLeaseRequiresSoleWriter,
+  completionHandoffReady: completionHandoffReady,
+  freshLockBlocksAutoClose: freshLockBlocksAutoClose,
   scanIntegrity: scanIntegrity,
   configureTurnPublication: configureTurnPublication
 };
