@@ -10,7 +10,7 @@ function clearQuestionError(field) {
   });
 }
 
-export function taskQuestions(work, t, options) {
+export function taskQuestions(work, t) {
   const root = el('section', {
     class: 'task-details__current-work task-details__questions',
     attrs: { 'data-task-section': 'questions', 'aria-labelledby': 'task-details-questions-title' }
@@ -20,12 +20,6 @@ export function taskQuestions(work, t, options) {
     class: 'task-details__section-title',
     text: t('taskDetails.questions.title')
   }));
-  // A durable escalation question can outlive the run that asked it. When the
-  // stopped run still holds its lock, answering has to wait for the canonical
-  // recovery, so say that here instead of leaving a form with a foreign CTA.
-  if (options && options.notice) {
-    root.appendChild(el('p', { class: 'banner banner--warn', text: t(options.notice) }));
-  }
   const payload = work && work.questions;
   if (!payload || !payload.valid) {
     root.appendChild(el('p', {

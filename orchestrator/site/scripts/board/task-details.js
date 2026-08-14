@@ -1,5 +1,11 @@
 import { dom } from '../dom.js';
+import { taskActionPane } from './task-action-pane.js';
 import { taskOverview } from './task-overview.js';
+import {
+  initialTaskDetailsSection,
+  normalizeTaskDetailsSection,
+  taskDetailsSections
+} from './task-details-sections.js';
 import { renderTaskActivity } from './task-activity.js';
 import { renderTaskArtifacts } from './task-artifacts.js';
 import { renderTaskAdvanced } from './task-advanced.js';
@@ -7,10 +13,11 @@ import { taskActionBar, taskDetailsOverflow } from './task-action-bar.js';
 import { runTaskRetry } from './task-retry.js';
 
 const el = dom.el;
-const SECTIONS = ['overview', 'activity', 'artifacts', 'advanced'];
 
 export function createTaskDetails(details, options) {
   let overview = null;
+  let actionPane = null;
+  const sections = taskDetailsSections(details);
   const root = el('div', {
     class: 'board-modal__body task-details',
     attrs: { 'data-task-details-stem': details.identity.stem, 'data-task-details-revision': details.revision }
@@ -42,16 +49,16 @@ export function createTaskDetails(details, options) {
     onAction: function (kind, action) {
       let input = null;
       if (kind === 'copy-prompt' && details.primaryAction &&
-          details.primaryAction.kind === 'submit-answers' && overview && overview.questions) {
-        const answers = overview.questions.read();
+          details.primaryAction.kind === 'submit-answers' && actionPane && actionPane.questions) {
+        const answers = actionPane.questions.read();
         if (!answers) {
           options.onError({ kind: 'task-answer-invalid' });
           return;
         }
         input = {
           answers: answers,
-          questionRound: overview.questions.round,
-          expectedQuestionsRevision: overview.questions.revision
+          questionRound: actionPane.questions.round,
+          expectedQuestionsRevision: actionPane.questions.revision
         };
       }
       options.onOverflowAction(kind, action, input);
@@ -61,6 +68,7 @@ export function createTaskDetails(details, options) {
   root.appendChild(header);
 
   overview = taskOverview(details, options);
+  actionPane = taskActionPane(details, options);
   const operationalFacts = overview.node.querySelector('.task-details__facts');
   if (operationalFacts) header.appendChild(operationalFacts);
   const panes = {
@@ -78,7 +86,8 @@ export function createTaskDetails(details, options) {
       attrs: { role: 'status', 'aria-live': 'polite' }
     })
   };
-  const loaded = { overview: true, activity: false, artifacts: false, advanced: false };
+  if (actionPane) panes.action = actionPane.node;
+  const loaded = { action: !!actionPane, overview: true, activity: false, artifacts: false, advanced: false };
   const loading = { activity: false, artifacts: false, advanced: false };
   const pages = { activity: null, artifacts: null, advanced: null };
   const tabs = el('div', {
@@ -215,9 +224,11 @@ export function createTaskDetails(details, options) {
     });
   }
 
+  let selectedSection = 'overview';
   function select(section, focus) {
-    if (SECTIONS.indexOf(section) < 0) section = 'overview';
-    SECTIONS.forEach(function (name) {
+    section = normalizeTaskDetailsSection(details, section);
+    selectedSection = section;
+    sections.forEach(function (name) {
       const on = name === section;
       panes[name].hidden = !on;
       panes[name].setAttribute('aria-hidden', on ? 'false' : 'true');
@@ -230,7 +241,7 @@ export function createTaskDetails(details, options) {
     load(section);
   }
 
-  SECTIONS.forEach(function (section, index) {
+  sections.forEach(function (section, index) {
     const tab = el('button', {
       type: 'button',
       class: 'board-modal__tab',
@@ -248,9 +259,9 @@ export function createTaskDetails(details, options) {
     tab.addEventListener('keydown', function (event) {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return;
       event.preventDefault();
-      let target = event.key === 'Home' ? 0 : event.key === 'End' ? SECTIONS.length - 1 :
-        (index + (event.key === 'ArrowRight' ? 1 : -1) + SECTIONS.length) % SECTIONS.length;
-      select(SECTIONS[target], true);
+      let target = event.key === 'Home' ? 0 : event.key === 'End' ? sections.length - 1 :
+        (index + (event.key === 'ArrowRight' ? 1 : -1) + sections.length) % sections.length;
+      select(sections[target], true);
     });
     tabs.appendChild(tab);
     panes[section].classList.add('board-modal__tabpane', 'task-details__pane');
@@ -285,11 +296,14 @@ export function createTaskDetails(details, options) {
     }
     let input = {};
     if (action.kind === 'submit-answers') {
-      if (!overview.questions) return;
+      if (!actionPane || !actionPane.questions) {
+        options.onError({ kind: 'task-answer-invalid' });
+        return;
+      }
       input = {
-        answers: overview.questions.read(),
-        questionRound: overview.questions.round,
-        expectedQuestionsRevision: overview.questions.revision
+        answers: actionPane.questions.read(),
+        questionRound: actionPane.questions.round,
+        expectedQuestionsRevision: actionPane.questions.revision
       };
       if (!input.answers) {
         options.onError({ kind: 'task-answer-invalid' });
@@ -297,8 +311,11 @@ export function createTaskDetails(details, options) {
       }
     }
     if (action.kind === 'continue-live') {
-      if (!overview.liveAnswer) return;
-      input = overview.liveAnswer.read();
+      if (!actionPane || !actionPane.liveAnswer) {
+        options.onError({ kind: 'task-answer-invalid' });
+        return;
+      }
+      input = actionPane.liveAnswer.read();
       if (!input) {
         options.onError({ kind: 'task-answer-invalid' });
         return;
@@ -321,13 +338,35 @@ export function createTaskDetails(details, options) {
     onPrimary: primary,
     onClose: options.onClose
   }));
-  select(options.preferredSection || 'overview', false);
+  selectedSection = initialTaskDetailsSection(details, options.preferredSection);
+  select(selectedSection, false);
+  function focusCurrentWork() {
+    const target = root.querySelector('[data-task-section="questions"] input, [data-task-section="questions"] textarea');
+    if (!target || selectedSection !== 'action') return;
+    try { target.focus({ preventScroll: true }); }
+    catch (_) { target.focus(); }
+  }
+  function focusPreferred(preferredSection) {
+    if ((preferredSection == null || preferredSection === 'questions' || preferredSection === 'action') &&
+        selectedSection === 'action') {
+      focusCurrentWork();
+      return;
+    }
+    const targetSection = preferredSection === 'dependencies' ? 'dependencies' : null;
+    if (!targetSection) return;
+    const target = root.querySelector('[data-task-section="' + targetSection + '"]');
+    if (!target) return;
+    target.scrollIntoView({ block: 'start' });
+    try { target.focus({ preventScroll: true }); }
+    catch (_) { target.focus(); }
+  }
   return {
     node: root,
-    select: select,
-    focusCurrentWork: function () {
-      const target = root.querySelector('[data-task-section="questions"] input, [data-task-section="questions"] textarea');
-      if (target) target.focus();
-    }
+    select: function (section, focus) {
+      selectedSection = normalizeTaskDetailsSection(details, section);
+      select(selectedSection, focus);
+    },
+    focusCurrentWork: focusCurrentWork,
+    focusPreferred: focusPreferred
   };
 }

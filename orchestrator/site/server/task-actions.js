@@ -186,7 +186,10 @@ function inspect(request, dependencies) {
     };
   }
 
-  if (current.behavior !== 'execute') {
+  // retry-phase begins in Details because the browser must preview the exact
+  // checkpoint and obtain its one-shot confirmation token there. After that
+  // modal-only input is present, the same server-owned action is executable.
+  if (current.behavior !== 'execute' && current.kind !== 'retry-phase') {
     return { ok: false, status: 400, error: 'action-navigation-only', currentAction: current };
   }
   if (current.kind === 'drop') {

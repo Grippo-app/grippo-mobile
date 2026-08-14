@@ -60,6 +60,7 @@ const card = readFileSync(join(scripts, 'board', 'task-card.js'), 'utf8')
 const blocker = readFileSync(join(scripts, 'board', 'task-blocker.js'), 'utf8')
 const originBadge = readFileSync(join(scripts, 'board', 'task-origin-badge.js'), 'utf8')
 const action = readFileSync(join(scripts, 'board', 'task-card-action.js'), 'utf8')
+const taskActionCopy = readFileSync(join(scripts, 'board', 'task-action-copy.js'), 'utf8')
 const taskDetails = readFileSync(join(scripts, 'board', 'task-details.js'), 'utf8')
 const taskActionBar = readFileSync(join(scripts, 'board', 'task-action-bar.js'), 'utf8')
 const overflow = readFileSync(join(scripts, 'board', 'task-overflow.js'), 'utf8')
@@ -389,13 +390,15 @@ test('task card exposes one primary CTA at most and keeps status metadata non-in
   assert.doesNotMatch(blocker, /title: blocker\.summary/)
   assert.match(card, /board\.signalStatus\./)
   assert.match(card, /row\.dependencySummary && row\.dependencySummary\.count > 0/)
-  assert.match(action, /board\.action\.disabled\./)
+  assert.match(action, /taskActionDisabledReason\(action, t\)/)
+  assert.match(taskActionCopy, /board\.action\.disabled\./)
   assert.match(action, /attrs\['aria-label'\] = label \+ '\. ' \+ disabledReason/)
   assert.match(action, /opensTerminal \? 'btn--terminal' : 'btn--primary'/)
   assert.match(action, /action && action\.behavior === 'open-terminal'/)
   assert.match(components, /\.btn--terminal\s*\{[\s\S]*?border-color:\s*var\(--accent\);[\s\S]*?color:\s*var\(--accent\);/)
   assert.match(taskActionBar, /action\.behavior === 'open-terminal' \? 'btn btn--terminal'/)
   assert.match(board, /onOpenTarget: function \(target\)/)
+  assert.match(board, /viewRef\.value\.focusPreferred\(target && target\.section \|\| null\)/)
 })
 
 test('pre-Setup creation uses a separate inbox and preserves an open composer across state refreshes', () => {
@@ -1558,7 +1561,7 @@ test('board task-target deep links reject unsafe values without poisoning later 
   ])
 
   for (const [index, section] of [
-    'overview', 'activity', 'artifacts', 'advanced', 'questions', 'dependencies', 'validation',
+    'action', 'overview', 'activity', 'artifacts', 'advanced', 'questions', 'dependencies', 'validation',
   ].entries()) {
     const stem = 'TASK_' + String(20 + index) + '_AllowedTab'
     hash = '#board?task=' + stem + '&tab=' + section
@@ -2616,7 +2619,7 @@ test('board task-details shell preserves loading, target mapping, and stale erro
     node.className === 'board-modal__title' && node.textContent === 'TASK_4_Fallback'))
 
   for (const [section, expected] of [
-    ['questions', 'overview'], ['dependencies', 'overview'], ['validation', 'overview'],
+    ['action', 'action'], ['questions', 'action'], ['dependencies', 'overview'], ['validation', 'action'],
     ['artifacts', 'artifacts'], ['advanced', 'advanced'], ['overview', 'overview'],
     ['unknown', 'overview'], [null, 'overview'],
   ]) assert.equal(shell.sectionForTarget({ section }), expected)
@@ -5615,8 +5618,8 @@ test('board consumes the summary DTO and typed action endpoint instead of rebuil
     /dependencies\.openCard\(\s*found\.folder,\s*found\.item\.stem,\s*found\.item,\s*target\.section \|\| null/)
   assert.match(board, /import \{ createTaskDetails \} from '\.\.\/board\/task-details\.js'/)
   assert.match(board, /function openTaskDetails\(stem, preferredSection, fallbackItem, deepTarget\)/)
-  assert.match(board, /openTaskDetails\(stem, section \|\| 'overview', item, deepTarget \|\| null\)/)
-  assert.match(taskDetails, /const SECTIONS = \['overview', 'activity', 'artifacts', 'advanced'\]/)
+  assert.match(board, /openTaskDetails\(stem, section \|\| null, item, deepTarget \|\| null\)/)
+  assert.match(taskDetails, /const sections = taskDetailsSections\(details\)/)
   assert.equal((taskActionBar.match(/data-task-details-primary/g) || []).length, 1)
   assert.doesNotMatch(board, /enqueueRequest\('(drop|reopen)'/)
   assert.doesNotMatch(board, /function (drop|reopen)Prompt/)

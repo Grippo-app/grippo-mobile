@@ -9,7 +9,7 @@ var crypto = require('crypto');
 var KINDS = Object.freeze([
   'dependency-incomplete', 'dependency-missing', 'dependency-cycle',
   'task-integrity', 'finalization-required', 'finalization-corrupt',
-  'awaiting-answer', 'figma-design-invalid', 'figma-screens-missing',
+  'generation-outdated', 'awaiting-answer', 'figma-design-invalid', 'figma-screens-missing',
   'figma-review-required',
   'setup-incomplete', 'reviewer-unavailable', 'runner-unavailable',
   'stopped-run', 'validation-required', 'unknown-recovery'
@@ -20,6 +20,7 @@ var PRIORITY = Object.freeze({
   'dependency-cycle': 3,
   'unknown-recovery': 4,
   'finalization-required': 10,
+  'generation-outdated': 11,
   'awaiting-answer': 20,
   'dependency-missing': 30,
   'dependency-incomplete': 31,
@@ -87,6 +88,12 @@ function fromContext(context) {
         fin.recoveryRunning ? 'Completion recovery is already running.' : 'Resume the durable completion transaction.',
         { source: 'finalization', recoverable: fin.recoverable === true }));
     }
+  }
+
+  if (context.integration && context.integration.state === 'revalidation-required') {
+    out.push(blocker(stem, 'generation-outdated', 'blocking', 'The previous run is outdated',
+      'Release the outdated run before continuing this task.',
+      { source: 'worktree', recoverable: true }));
   }
 
   // Two rails reach this blocker: a live session that paused mid-turn, and a

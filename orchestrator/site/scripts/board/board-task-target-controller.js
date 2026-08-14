@@ -2,6 +2,7 @@ import { findTaskInColumns } from './task-summary-projection.js';
 
 var TASK_STEM_PATTERN = /^TASK_[1-9][0-9]*_[A-Za-z0-9_]+$/;
 var TASK_SECTIONS = Object.freeze([
+  'action',
   'overview',
   'activity',
   'artifacts',

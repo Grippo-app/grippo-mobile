@@ -7,8 +7,7 @@
 // grammar intra-document:
 //   PASS    — snapshot current, every required lane executed, every required
 //             suite passed, every anchor verified, no zero-test/flaky entries,
-//             full suite passed when required, and executable command evidence
-//             or the explicitly structural-only bootstrap evidence shape;
+//             full suite passed when required, at least one command receipt;
 //   SKIPPED — a proven typed N/A: no lanes/suites/anchors/command receipts,
 //             at least one structural receipt;
 //   BLOCKED/FAIL — must carry the matching reason codes.
@@ -193,14 +192,7 @@ function validateSummary(summary) {
     if (summary.fullSuiteResult !== null && summary.fullSuiteResult !== 'passed') {
       fail('VERDICT_INCONSISTENT', 'PASS cannot retain a failed or blocked full-suite result');
     }
-    const structuralOnly = summary.commandReceiptHashes.length === 0 &&
-      summary.requiredLanes.length > 0 &&
-      summary.requiredLanes.every((lane) => lane === 'structural') &&
-      summary.requiredSuites.length === 0 &&
-      summary.structuralReceiptHashes.length > 0;
-    if (summary.commandReceiptHashes.length === 0 && !structuralOnly) {
-      fail('VERDICT_INCONSISTENT', 'PASS requires command receipts or structural-only bootstrap evidence');
-    }
+    if (summary.commandReceiptHashes.length === 0) fail('VERDICT_INCONSISTENT', 'PASS requires command receipts');
   }
   if (summary.verdict === 'SKIPPED') {
     if (summary.commandReceiptHashes.length > 0 || summary.anchorEvidence.length > 0 ||

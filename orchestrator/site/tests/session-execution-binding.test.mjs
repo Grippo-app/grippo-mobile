@@ -87,7 +87,7 @@ try {
 
   const resolvedContext = {
     worktreeId: 'wt-' + 'ab'.repeat(16),
-    runId: 'run-1700000000000-r1',
+    runId: '1700000000000-r1',
     executionRoot: execRoot,
     manifestFile: join(cache, 'worktrees', '.manifests', 'wt.json'),
     taskSnapshotFile: join(cache, 'worktrees', '.snapshots', 'abc.md'),

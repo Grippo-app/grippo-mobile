@@ -396,6 +396,23 @@ test('primary action precedence is deterministic', () => {
     finalization: { recoverable: true, recoveryRunning: true },
     blockers: [{ kind: 'finalization-required', severity: 'blocking', id: 'fin' }],
   }).kind, 'resolve-blocker')
+  const revalidation = primaryAction.resolve({
+    ...base,
+    integration: { state: 'revalidation-required', actionable: false },
+    active: true,
+    questionsPending: true,
+    terminalAvailable: false,
+    blockers: [{ kind: 'awaiting-answer', severity: 'blocking', id: 'answer' }],
+  })
+  assert.equal(revalidation.kind, 'integrate')
+  assert.equal(revalidation.labelKey, 'board.action.release_generation')
+  assert.equal(revalidation.attentionRequired, true)
+  assert.equal(primaryAction.resolve({
+    ...base,
+    integration: { state: 'revalidation-required', actionable: false },
+    active: true,
+    terminalAvailable: true,
+  }).kind, 'open-run', 'a live terminal remains the owner until its session settles')
   assert.equal(primaryAction.resolve({ ...base, active: true }).kind, 'open-run')
   assert.equal(primaryAction.resolve({ ...base, liveAwaiting: true }).kind, 'continue-live')
   assert.equal(primaryAction.resolve({ ...base, active: true, liveAwaiting: true }).kind, 'continue-live')
@@ -405,6 +422,10 @@ test('primary action precedence is deterministic', () => {
     { type: 'task', stem: base.stem, section: 'questions' })
   assert.equal(primaryAction.resolve({ ...base, visualReview: true }).kind, 'review-result')
   assert.equal(primaryAction.resolve({ ...base, retryCheckpoint: { id: 'cp-1', phase: 'review' } }).kind, 'retry-phase')
+  assert.equal(primaryAction.resolve({ ...base, retryCheckpoint: { id: 'cp-1', phase: 'review' } }).target.section, 'action')
+  assert.equal(primaryAction.resolve({
+    ...base, finalization: { recoverable: true, recoveryRunning: false },
+  }).target.section, 'action')
   const stoppedRetry = primaryAction.resolve({
     ...base,
     retryCheckpoint: { id: 'cp-1', phase: 'review' },
@@ -465,9 +486,12 @@ test('the complete primary CTA matrix has stable kinds, labels, behaviors and ta
     [{ ...base, active: true }, 'open-run', 'open-terminal', 'terminal', 'board.action.open_terminal'],
     [{ ...base, liveAwaiting: true, liveSessionId: 'session-7',
       sessionRevision: REV, sessionInputReady: true },
-    'continue-live', 'execute', 'task', 'board.action.continue_live'],
-    [{ ...base, retryCheckpoint: { id: 'cp-1', phase: 'review' } }, 'retry-phase', 'execute', 'task'],
-    [{ ...base, finalization: { recoverable: true, recoveryRunning: false } }, 'resume-finalization', 'execute', 'task'],
+    'continue-live', 'open-details', 'task', 'board.action.continue_live'],
+    [{ ...base, retryCheckpoint: { id: 'cp-1', phase: 'review' } }, 'retry-phase', 'open-details', 'task'],
+    [{ ...base, finalization: { recoverable: true, recoveryRunning: false } }, 'resume-finalization', 'open-details', 'task'],
+    [{ ...base, integration: { state: 'revalidation-required', actionable: false },
+      terminalAvailable: false },
+    'integrate', 'execute', 'task', 'board.action.release_generation'],
     [{ ...base, active: true, finalization: { recoverable: true, recoveryRunning: true }, blockers: [
       { id: 'fin', kind: 'finalization-required', severity: 'blocking' },
     ] }, 'resolve-blocker', 'open-details', 'task', 'board.action.open_recovery'],
@@ -475,7 +499,7 @@ test('the complete primary CTA matrix has stable kinds, labels, behaviors and ta
     [{ ...base, state: 'pending', blockers: [{ id: 'answer', kind: 'awaiting-answer', severity: 'blocking' }] }, 'submit-answers', 'open-details', 'task'],
     [{ ...base, liveSessionId: 'session-7', sessionRevision: REV, sessionInputReady: true,
       blockers: [{ id: 'answer', kind: 'awaiting-answer', severity: 'blocking' }] },
-    'continue-live', 'execute', 'task', 'board.action.continue_live'],
+    'continue-live', 'open-details', 'task', 'board.action.continue_live'],
     [{ ...base, blockers: [{ id: 'dep', kind: 'dependency-incomplete', severity: 'blocking', relatedTaskStem: 'TASK_4_done' }] }, 'resolve-blocker', 'open-details', 'task', 'board.action.review_dependencies'],
     [{ ...base, blockers: [{ id: 'integrity', kind: 'task-integrity', severity: 'blocking' }], active: true }, 'resolve-blocker', 'open-details', 'task', 'board.action.open_diagnostics'],
   ]
@@ -486,10 +510,31 @@ test('the complete primary CTA matrix has stable kinds, labels, behaviors and ta
     assert.equal(action.behavior, behavior)
     assert.equal(action.target.type, targetType)
     assert.deepEqual(Object.keys(action).sort(), [
-      'actionRevision', 'behavior', 'checkpointId', 'disabledReasonCode', 'enabled',
+      'actionRevision', 'attentionRequired', 'behavior', 'checkpointId', 'disabledReasonCode', 'enabled',
       'expectedSessionRevision', 'expectedSourceRevision', 'expectedState', 'id',
       'kind', 'labelKey', 'liveSessionId', 'requiresConfirmation', 'target',
     ].sort())
+  }
+  assert.equal(primaryAction.resolve(base).attentionRequired, false)
+  assert.equal(primaryAction.resolve({ ...base, state: 'done' }).attentionRequired, false)
+  const retry = primaryAction.resolve({ ...base, retryCheckpoint: { id: 'cp-1', phase: 'review' } })
+  const finalization = primaryAction.resolve({
+    ...base, finalization: { recoverable: true, recoveryRunning: false },
+  })
+  const live = primaryAction.resolve({
+    ...base, liveAwaiting: true, liveSessionId: 'session-7',
+    sessionRevision: REV, sessionInputReady: true,
+  })
+  const pending = primaryAction.resolve({ ...base, state: 'pending' })
+  const revalidation = primaryAction.resolve({
+    ...base, integration: { state: 'revalidation-required', actionable: false },
+    terminalAvailable: false,
+  })
+  assert.deepEqual(retry.target, { type: 'task', stem: base.stem, section: 'action' })
+  assert.deepEqual(finalization.target, { type: 'task', stem: base.stem, section: 'action' })
+  assert.deepEqual(live.target, { type: 'task', stem: base.stem, section: 'questions' })
+  for (const action of [retry, finalization, live, pending, revalidation]) {
+    assert.equal(action.attentionRequired, true)
   }
 })
 
@@ -705,6 +750,31 @@ test('a durable in-body question raises the answer rail without any live session
   assert.equal(card.runtimeStatus.active, false)
 })
 
+test('a superseded execution generation exposes release before a queued durable answer', () => {
+  const deps = questionFixture()
+  deps.snapshot.progress.integrationReady = [{
+    stem: 'TASK_3_ready',
+    worktreeId: 'wt-' + 'a'.repeat(32),
+    runId: 'run-' + 'b'.repeat(32),
+    status: 'revalidation-required',
+    targetRef: 'refs/heads/main',
+  }]
+  deps.snapshot.progress.requests = [{
+    id: '1786689056733-6c1f4fe6cad638e5',
+    stem: 'TASK_3_ready',
+    action: 'run',
+    createdAt: AT,
+  }]
+  const card = taskSummary.single('TASK_3_ready', deps).task
+  assert.equal(card.runtimeStatus.state, 'queued')
+  assert.equal(card.runtimeStatus.active, true)
+  assert.equal(card.primaryBlocker.kind, 'generation-outdated')
+  assert.equal(card.blockers.some((item) => item.kind === 'awaiting-answer'), true)
+  assert.equal(card.primaryAction.kind, 'integrate')
+  assert.equal(card.primaryAction.behavior, 'execute')
+  assert.equal(card.primaryAction.labelKey, 'board.action.release_generation')
+})
+
 test('an answered in-body question stops blocking the card', () => {
   const summary = taskSummary.build({ limit: 100 }, questionFixture({ answered: true }))
   const card = flatten(summary).find((item) => item.stem === 'TASK_3_ready')
@@ -756,7 +826,8 @@ test('a live paused session still outranks the durable question rail', () => {
     liveSessionId: 'sess-1', sessionRevision: REV, sessionInputReady: true,
   })
   assert.equal(resolved.kind, 'continue-live')
-  assert.equal(resolved.behavior, 'execute')
+  assert.equal(resolved.behavior, 'open-details')
+  assert.equal(resolved.attentionRequired, true)
 })
 
 test('every blocker kind is normalized, bounded, allowlisted and priority-sorted', () => {
@@ -766,6 +837,7 @@ test('every blocker kind is normalized, bounded, allowlisted and priority-sorted
     { findings: [{ code: 'DEPENDENCY_CYCLE', severity: 'error', stem }] },
     { finalization: { status: 'recoverable', recoverable: true, recoveryRunning: false } },
     { finalization: { status: 'corrupt', recoverable: false, recoveryRunning: false } },
+    { integration: { state: 'revalidation-required' } },
     { liveAwaiting: true },
     { dependencySummary: { items: [{ stem: 'TASK_90_missing', missing: true, satisfied: false }] } },
     { dependencySummary: { items: [{ stem: 'TASK_91_waiting', title: 'Waiting', missing: false, satisfied: false }] } },
@@ -934,7 +1006,8 @@ test('live awaiting sessions and running finalization recovery keep secondary mu
   assert.equal(item.runtimeStatus.active, true)
   assert.equal(item.primaryAction.kind, 'continue-live')
   assert.equal(item.primaryAction.labelKey, 'board.action.continue_live')
-  assert.equal(item.primaryAction.behavior, 'execute')
+  assert.equal(item.primaryAction.behavior, 'open-details')
+  assert.equal(item.primaryAction.attentionRequired, true)
   assert.deepEqual(item.primaryAction.target, {
     type: 'task', stem: 'TASK_3_ready', section: 'questions',
   })

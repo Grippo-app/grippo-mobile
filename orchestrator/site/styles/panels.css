@@ -306,6 +306,28 @@
   gap: 12px;
 }
 
+.task-details__action {
+  display: grid;
+  gap: 12px;
+}
+
+.task-details__action-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.task-details__action-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+}
+
+.task-details__action-hint {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
 .task-details__questions {
   display: grid;
   gap: 12px;

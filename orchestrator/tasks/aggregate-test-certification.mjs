@@ -200,13 +200,11 @@ function publishContext(runRoot, name, document) {
 
 export function aggregateAndSeal(options) {
   const {
-    certificationRoot, certificationOwnerRoot, productRoot, identity, taskInputHash,
+    certificationRoot, productRoot, identity, taskInputHash,
     sourceManifest, policy, plannedImpact, observedImpact
   } = options;
-  const evidenceOwnerRoot = certificationOwnerRoot || productRoot;
   const canonicalProductRoot = realDirectory(productRoot);
-  const canonicalCertificationOwnerRoot = realDirectory(evidenceOwnerRoot);
-  const canonicalCertificationRoot = realDirectory(certificationRoot, canonicalCertificationOwnerRoot);
+  const canonicalCertificationRoot = realDirectory(certificationRoot, canonicalProductRoot);
   const taskRoot = realDirectory(path.join(canonicalCertificationRoot, identity.taskStem), canonicalCertificationRoot);
   const runRoot = realDirectory(path.join(taskRoot, identity.runId), taskRoot);
   const planned = impactContract.validateImpact(plannedImpact, { policy });
@@ -240,13 +238,6 @@ export function aggregateAndSeal(options) {
   const evaluations = commands.map((receipt) => receiptContract.evaluateCommandReceipt(receipt, { testsRequired: true }));
   const successful = evaluations.filter((evaluation) => evaluation.passed).map((evaluation) => evaluation.receipt);
   const requiredLanes = sortedUnique(observed.behaviors.flatMap((behavior) => behavior.requiredLanes));
-  const structuralOnly = observed.testNotApplicable === null &&
-    commands.length === 0 &&
-    observed.requiredSuites.length === 0 &&
-    requiredLanes.length > 0 &&
-    requiredLanes.every((lane) => lane === 'structural');
-  const bootstrapReceipts = structural.filter((receipt) =>
-    receipt.gateId === 'bootstrap-foundation-fixture' && receipt.result === 'passed');
   const executedLanes = sortedUnique([
     ...successful.map((receipt) => receipt.lane),
     ...(structural.some((receipt) => receipt.gateId === 'bootstrap-foundation-fixture' && receipt.result === 'passed')
@@ -254,14 +245,6 @@ export function aggregateAndSeal(options) {
   ]);
   const passedSuites = sortedUnique(successful.map((receipt) => receipt.suite));
   const anchorEvidence = observed.behaviors.map((behavior) => {
-    if (structuralOnly && behavior.requiredLanes.every((lane) => lane === 'structural')) {
-      return {
-        anchor: behavior.anchor,
-        testIdentities: [...behavior.observedTestCases],
-        receiptHashes: sortedUnique(bootstrapReceipts.map((receipt) => receipt.receiptHash)),
-        verified: bootstrapReceipts.length === 1
-      };
-    }
     const proving = successful.filter((receipt) =>
       behavior.observedTestCases.some((identityValue) => receipt.discoveredTestIdentities.includes(identityValue)));
     const provenIdentities = sortedUnique(behavior.observedTestCases.filter((identityValue) =>
@@ -314,7 +297,7 @@ export function aggregateAndSeal(options) {
   } else if (commandFailed) {
     verdict = 'FAIL';
     verdictReasons = ['command-receipt-failed'];
-  } else if (!snapshotCurrent || (!structuralOnly && commands.length === 0) || !lanesComplete || !suitesComplete ||
+  } else if (!snapshotCurrent || commands.length === 0 || !lanesComplete || !suitesComplete ||
       !anchorsComplete || !fullSuiteComplete || !failBeforeComplete || !coverageComplete || !structuralExact) {
     verdict = 'BLOCKED';
     verdictReasons = [!snapshotCurrent ? 'source-snapshot-stale' : 'missing-required-test-evidence'];

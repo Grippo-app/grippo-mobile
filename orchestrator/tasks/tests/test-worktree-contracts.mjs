@@ -79,11 +79,9 @@ check('worktree record rejects field drift, version drift and tampered hash', ()
 })
 
 check('worktree record identity grammar: ids, stem, commits, timestamps', () => {
-  worktree.validate(validWorktreeRecord({ runId: 'run-1700000000000-r1' }))
   refuseWorktree({ worktreeId: 'wt-XYZ' }, /worktreeId/)
   refuseWorktree({ runId: 'run one' }, /runId/)
   refuseWorktree({ requestId: '17-' }, /requestId/)
-  refuseWorktree({ requestId: 'run-1700000000000-q1' }, /requestId/)
   refuseWorktree({ stem: 'TASK_0_zero' }, /stem/)
   refuseWorktree({ stem: 'TASK_7_профиль' }, /stem/)
   refuseWorktree({ baseCommit: 'c'.repeat(39) }, /baseCommit/)

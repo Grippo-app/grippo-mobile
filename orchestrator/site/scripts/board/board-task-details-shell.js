@@ -24,9 +24,9 @@ export function createBoardTaskDetailsShell(dependencies) {
 
   function sectionForTarget(target) {
     var section = target && target.section;
-    if (section === 'questions' || section === 'dependencies' || section === 'validation') {
-      return 'overview';
-    }
+    if (section === 'questions' || section === 'validation') return 'action';
+    if (section === 'dependencies') return 'overview';
+    if (section === 'action') return 'action';
     if (section === 'artifacts') return 'artifacts';
     if (section === 'advanced') return 'advanced';
     return 'overview';

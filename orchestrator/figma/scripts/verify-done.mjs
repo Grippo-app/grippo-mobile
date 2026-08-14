@@ -35,12 +35,16 @@ import { existsSync, lstatSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
 import { PROJECT_ROOT, figmaScreensRoot, readConfig, outcomeAppendixStatus } from './_util.mjs'
+import { componentProvenanceEntries } from './lib/design-components.mjs'
 import { parseFigmaMeta, isShippableOverall, caveatsHaveContent } from './figma-meta.mjs'
 import { assertTaskStem, fileHash } from './report-utils.mjs'
 import { inspectOutcomeFigmaMeta, outcomeShapeError } from './outcome-shape.mjs'
+import { validateCommittedTaskObservationReceipt } from '../tokens/task-observation-receipt.mjs'
+import { validateTaskIngestionIntent } from '../tokens/task-ingestion-intent.mjs'
 
 const require = createRequire(import.meta.url)
 const { hasPullableDesign, hasMalformedDesign, parseDesignSources, uiTaskWithoutDesign, auditedNoneCount } = require('./design-parser.cjs')
+const shipDriftContract = require('./ship-drift-contract.cjs')
 const CANONICAL_FINAL_REPORTS = ['screen-cache', 'check-spec', 'capture-config', 'census', 'spec', 'spec-compare', 'screenshot']
 
 const argv = process.argv.slice(2)
@@ -71,21 +75,6 @@ const doneDir = join(PROJECT_ROOT, 'orchestrator', 'tasks', 'done')
 if (!existsSync(doneDir)) { console.log('verify-done: no done/ dir — nothing to audit'); process.exit(0) }
 
 const figmaEnabled = readConfig('figmaEnabled') === 'true'
-let inventoryComponents = []
-let validateCommittedTaskObservationReceipt = null
-let validateTaskIngestionIntent = null
-let shipDriftContract = null
-if (figmaEnabled) {
-  const [components, observationReceipt, ingestionIntent] = await Promise.all([
-    import('./lib/design-components.mjs'),
-    import('../tokens/task-observation-receipt.mjs'),
-    import('../tokens/task-ingestion-intent.mjs'),
-  ])
-  inventoryComponents = components.componentProvenanceEntries()
-  validateCommittedTaskObservationReceipt = observationReceipt.validateCommittedTaskObservationReceipt
-  validateTaskIngestionIntent = ingestionIntent.validateTaskIngestionIntent
-  shipDriftContract = require('./ship-drift-contract.cjs')
-}
 // Committed ship receipts (written by ship-done.mjs before every UI move) — the ONE re-bind
 // source (present in a fresh CI clone); same env-override pattern as the other gate scripts'
 // FIGMA_SUGGEST_EVIDENCE_DIR.
@@ -104,6 +93,7 @@ let audited = 0
 let nonUiAudited = 0
 const violations = []
 const notes = []   // advisory (B1 filename-tier) — printed after the loop, never affects exit
+const inventoryComponents = componentProvenanceEntries()   // committed provenance (mapping registry + inventories), read once for the loop
 // W3-6 visibility: retired Figma anchors release the provenance backstop for their sources —
 // the audit must SAY so (a silent release would look like a hole). Advisory, never affects exit.
 const retiredComponents = inventoryComponents.filter((e) => e && e.figmaNodeRetired && typeof e.figmaNodeRetired === 'object' && String(e.figmaNodeRetired.reason || '').trim())

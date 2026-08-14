@@ -1,4 +1,5 @@
 import { dom } from '../dom.js';
+import { taskActionDisabledReason } from './task-action-copy.js';
 
 const el = dom.el;
 
@@ -6,12 +7,19 @@ export function taskActionBar(details, options) {
   const root = el('div', { class: 'board-modal__actions task-details__action-bar' });
   const action = details.primaryAction;
   if (action) {
+    const disabledReason = taskActionDisabledReason(action, options.t);
+    const label = options.t(action.labelKey);
+    const attrs = { 'data-task-details-primary': action.kind };
+    if (disabledReason) {
+      attrs.title = disabledReason;
+      attrs['aria-label'] = label + '. ' + disabledReason;
+    }
     const primary = el('button', {
       type: 'button',
       class: action.behavior === 'open-terminal' ? 'btn btn--terminal' : 'btn btn--primary',
-      text: options.t(action.labelKey),
+      text: label,
       disabled: action.enabled === false,
-      attrs: { 'data-task-details-primary': action.kind }
+      attrs: attrs
     });
     primary.addEventListener('click', function () {
       if (action.enabled === false) return;

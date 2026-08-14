@@ -33,13 +33,37 @@ test('Ukrainian is wired through the client toggle and persisted language allowl
 
 test('EN, RU, and UK dictionaries have exact key and placeholder parity', () => {
   const enKeys = Object.keys(dictionaries.en).sort()
-  assert.equal(enKeys.length, 3674)
+  assert.equal(enKeys.length, 3680)
   for (const locale of ['ru', 'uk']) {
     assert.deepEqual(Object.keys(dictionaries[locale]).sort(), enKeys, locale + ' keys')
     for (const key of enKeys) {
       assert.deepEqual(placeholders(dictionaries[locale][key]), placeholders(dictionaries.en[key]), locale + ':' + key)
     }
   }
+})
+
+test('task attention surface has complete action-oriented copy in every locale', () => {
+  const expected = {
+    en: 'Next step',
+    ru: 'Следующий шаг',
+    uk: 'Наступний крок',
+  }
+  for (const locale of ['en', 'ru', 'uk']) {
+    assert.equal(dictionaries[locale]['taskDetails.tab.action'], expected[locale])
+    assert.match(dictionaries[locale]['taskDetails.action.primaryHint'], /\{action\}/)
+    assert.ok(dictionaries[locale]['taskDetails.action.questionsDeferred'].length > 60)
+    assert.ok(dictionaries[locale]['taskDetails.questions.stoppedRun'].length > 60)
+    assert.doesNotMatch(dictionaries[locale]['taskDetails.questions.stoppedRun'], /Advanced|Дополнительно|Розширено/)
+  }
+})
+
+test('superseded task generations have an explicit release action in every locale', () => {
+  assert.equal(dictionaries.en['board.action.release_generation'], 'Release outdated run')
+  assert.equal(dictionaries.ru['board.action.release_generation'], 'Освободить устаревший прогон')
+  assert.equal(dictionaries.uk['board.action.release_generation'], 'Звільнити застарілий прогін')
+  assert.equal(dictionaries.en['board.blocker.generation_outdated'], 'Previous run is outdated')
+  assert.equal(dictionaries.ru['board.blocker.generation_outdated'], 'Предыдущий прогон устарел')
+  assert.equal(dictionaries.uk['board.blocker.generation_outdated'], 'Попередній прогін застарів')
 })
 
 test('API filter defaults lead with their facet name in every locale', () => {

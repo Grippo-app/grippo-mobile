@@ -379,13 +379,12 @@ function dispositionsFromOutput(taskLines, taskPaths) {
 
 export async function certifyCommand(options) {
   const {
-    certificationRoot, certificationOwnerRoot, productRoot, gradlewPath, taskPaths, allowedTaskPaths,
+    certificationRoot, productRoot, gradlewPath, taskPaths, allowedTaskPaths,
     suite, lane, identity, hashes, toolchain, reportInputs = [],
     timeoutMs = 30 * 60 * 1000, tier = 'certification-direct', executionRootKind = 'shared-serial',
     continueOnFailure = false, ordinal = '000', testsRequired = true,
     parentEnv = process.env
   } = options;
-  const evidenceOwnerRoot = certificationOwnerRoot || productRoot;
   if (!EXECUTION_TIERS.includes(tier)) fail('EXECUTION_TIER_INVALID', 'unknown execution tier: ' + String(tier));
   if (!ORDINAL_RE.test(String(ordinal))) fail('IDENTITY_INVALID', 'ordinal grammar');
   const validatedReportInputs = validateReportInputs(reportInputs);
@@ -396,7 +395,6 @@ export async function certifyCommand(options) {
     if (!allowedTaskPaths.includes(taskPath)) fail('ALLOWLIST_VIOLATION', 'task path outside the allowlist: ' + taskPath);
   }
   const canonicalRoot = canonicalProductRoot(productRoot);
-  const canonicalCertificationOwnerRoot = canonicalProductRoot(evidenceOwnerRoot);
   const expectedGradlew = path.join(canonicalRoot, 'gradlew');
   const gradlew = path.resolve(gradlewPath || expectedGradlew);
   if (gradlew !== expectedGradlew) fail('ALLOWLIST_VIOLATION', 'gradlew must be the product-root wrapper');
@@ -405,10 +403,8 @@ export async function certifyCommand(options) {
     fail('ALLOWLIST_VIOLATION', 'gradlew is not an executable single-link regular file');
   }
 
-  const certificationTarget = canonicalChildPath(
-    evidenceOwnerRoot, canonicalCertificationOwnerRoot, certificationRoot, 'CERTIFICATION_PATH_UNSAFE');
-  const root = runRoot(
-    certificationTarget, identity.taskStem, identity.runId, canonicalCertificationOwnerRoot);
+  const certificationTarget = canonicalChildPath(productRoot, canonicalRoot, certificationRoot, 'CERTIFICATION_PATH_UNSAFE');
+  const root = runRoot(certificationTarget, identity.taskStem, identity.runId, canonicalRoot);
   const canonicalCertificationRoot = fs.realpathSync.native(certificationTarget);
   const baselineReports = captureReportGenerations({ productRoot: canonicalRoot, reportInputs: validatedReportInputs });
   const env = sanitizedEnv(parentEnv);
@@ -630,17 +626,13 @@ function structuralInvocation(gateId, canonicalRoot, taskStem) {
 
 export async function certifyStructuralGate(options) {
   const {
-    certificationRoot, certificationOwnerRoot, productRoot, gateId, identity, hashes,
+    certificationRoot, productRoot, gateId, identity, hashes,
     timeoutMs = 5 * 60 * 1000, ordinal = '000', parentEnv = process.env
   } = options;
-  const evidenceOwnerRoot = certificationOwnerRoot || productRoot;
   if (!ORDINAL_RE.test(String(ordinal))) fail('IDENTITY_INVALID', 'ordinal grammar');
   const canonicalRoot = canonicalProductRoot(productRoot);
-  const canonicalCertificationOwnerRoot = canonicalProductRoot(evidenceOwnerRoot);
-  const certificationTarget = canonicalChildPath(
-    evidenceOwnerRoot, canonicalCertificationOwnerRoot, certificationRoot, 'CERTIFICATION_PATH_UNSAFE');
-  const root = runRoot(
-    certificationTarget, identity.taskStem, identity.runId, canonicalCertificationOwnerRoot);
+  const certificationTarget = canonicalChildPath(productRoot, canonicalRoot, certificationRoot, 'CERTIFICATION_PATH_UNSAFE');
+  const root = runRoot(certificationTarget, identity.taskStem, identity.runId, canonicalRoot);
   const canonicalCertificationRoot = fs.realpathSync.native(certificationTarget);
   const invocation = structuralInvocation(gateId, canonicalRoot, identity.taskStem);
   const env = sanitizedEnv(parentEnv);

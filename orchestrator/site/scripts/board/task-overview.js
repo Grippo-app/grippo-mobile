@@ -1,5 +1,4 @@
 import { dom } from '../dom.js';
-import { taskQuestions } from './task-questions.js';
 import { taskActivitySummaryText } from './task-activity.js';
 
 const el = dom.el;
@@ -345,53 +344,6 @@ export function taskOverview(details, options) {
 
   const intake = intakeWork(details, options);
   if (intake) root.appendChild(intake);
-  let questions = null;
-  if (details.currentWork && details.currentWork.kind === 'questions') {
-    questions = taskQuestions(details.currentWork, t, {
-      notice: (details.blockers || []).some(function (item) { return item && item.kind === 'stopped-run'; })
-        ? 'taskDetails.questions.stoppedRun' : null
-    });
-    root.appendChild(questions.node);
-  }
-  let liveAnswer = null;
-  if (details.currentWork && details.currentWork.kind === 'awaiting-user') {
-    const section = el('section', {
-      class: 'task-details__current-work task-details__questions',
-      attrs: { 'data-task-section': 'questions', 'aria-labelledby': 'task-details-live-answer-title' }
-    });
-    section.appendChild(el('h3', {
-      id: 'task-details-live-answer-title',
-      class: 'task-details__section-title',
-      text: t('taskDetails.liveAnswer.title')
-    }));
-    section.appendChild(el('p', {
-      class: 'task-details__meta',
-      text: t('taskDetails.liveAnswer.hint')
-    }));
-    const input = el('textarea', {
-      class: 'input task-details__question-text',
-      attrs: {
-        rows: '4',
-        'data-task-live-answer': 'true',
-        placeholder: t('taskDetails.liveAnswer.placeholder'),
-        'aria-label': t('taskDetails.liveAnswer.label')
-      }
-    });
-    section.appendChild(input);
-    root.appendChild(section);
-    liveAnswer = {
-      node: section,
-      read: function () {
-        const text = input.value.trim();
-        return text ? {
-          answers: [{ questionId: 1, optionIds: [], text: text }],
-          liveSessionId: details.currentWork.sessionId,
-          expectedSessionRevision: details.currentWork.sessionRevision
-        } : null;
-      }
-    };
-  }
-
   if (details.blockers && details.blockers.length) {
     const blockers = el('section', { class: 'task-details__section' });
     blockers.appendChild(el('h3', {
@@ -460,5 +412,5 @@ export function taskOverview(details, options) {
     dependencies.appendChild(dependencyList);
   }
   root.appendChild(dependencies);
-  return { node: root, questions: questions, liveAnswer: liveAnswer };
+  return { node: root };
 }

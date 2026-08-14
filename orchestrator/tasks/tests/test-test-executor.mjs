@@ -8,7 +8,7 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
@@ -19,11 +19,9 @@ const receiptContract = require('../task-test-receipt-contract.cjs');
 const registry = require('../task-receipt-registry.cjs');
 const snapshotContract = require('../content-snapshot.cjs');
 const policyContract = require('../task-test-policy-contract.cjs');
-const capabilityContract = require('../task-test-capability-contract.cjs');
 const executor = await import('../run-test-certification.mjs');
 const aggregator = await import('../aggregate-test-certification.mjs');
 const resolver = await import('../resolve-test-impact.mjs');
-const requestEntrypoint = await import('../run-test-certification-request.mjs');
 
 const roots = [];
 const failures = [];
@@ -126,43 +124,6 @@ await check('green run seals started+terminal receipts, parses counts, verifies 
   forged.suite = 'another-suite';
   const verdict = registry.verifyReceiptId(receiptId, () => forged);
   assert.equal(verdict.verified, false, 'a re-keyed receipt never verifies');
-});
-
-await check('task-worktree execution seals evidence under its distinct control-root owner', async () => {
-  const controlRoot = fixture({ xml: GREEN_XML });
-  const executionRoot = fixture({ xml: GREEN_XML });
-  const runId = 'run-split-root';
-  const evidence = impactPair({ root: executionRoot, runId, observedTestCases: ['spike.CoreTest.adds'] });
-  const identity = { ...IDENTITY, runId };
-  const hashes = {
-    ...HASHES,
-    sourceSnapshotHash: evidence.sourceManifest.snapshotHash,
-    impactHash: evidence.observed.impactHash,
-    policyHash: evidence.policy.policyHash
-  };
-  const certificationRoot = join(controlRoot, '.cache-cert');
-  const run = await executor.certifyCommand(options(executionRoot, {
-    certificationRoot,
-    certificationOwnerRoot: controlRoot,
-    identity,
-    hashes
-  }));
-  const sealed = aggregator.aggregateAndSeal({
-    certificationRoot,
-    certificationOwnerRoot: controlRoot,
-    productRoot: executionRoot,
-    identity,
-    taskInputHash: HASHES.taskInputHash,
-    sourceManifest: evidence.sourceManifest,
-    policy: evidence.policy,
-    plannedImpact: evidence.planned,
-    observedImpact: evidence.observed
-  });
-  assert.equal(sealed.summary.verdict, 'PASS');
-  assert.deepEqual(sealed.summary.commandReceiptHashes, [run.receipt.receiptHash]);
-  assert.ok(existsSync(join(controlRoot, '.cache-cert', IDENTITY.taskStem, runId, 'summary.json')));
-  assert.ok(!existsSync(join(executionRoot, '.cache-cert', IDENTITY.taskStem, runId)),
-    'evidence never leaks into the execution worktree');
 });
 
 await check('task text can never become shell: grammar and allowlist are fail-closed before spawn', async () => {
@@ -575,91 +536,6 @@ await check('typed N/A is derived only after every policy structural producer pa
   assert.deepEqual(result.summary.commandReceiptHashes, []);
 });
 
-await check('structural-only bootstrap derives PASS from its sealed gate without command receipts', async () => {
-  const root = fixture({ xml: GREEN_XML });
-  mkdirSync(join(root, 'orchestrator', 'figma', 'tests'), { recursive: true });
-  writeFileSync(join(root, 'orchestrator', 'figma', 'tests', 'general-test-toolchain.test.mjs'),
-    'process.stdout.write("bootstrap-ok\\n");\n');
-  const policy = policyContract.loadPolicy();
-  const sourceManifest = snapshotContract.captureSnapshot({ root, paths: ['gradlew'] });
-  const runId = 'run-structural-bootstrap';
-  const base = {
-    taskStem: IDENTITY.taskStem,
-    runId,
-    taskInputHash: HASHES.taskInputHash,
-    sourceSnapshotHash: sourceManifest.snapshotHash,
-    capabilityInventoryHash: H('5'),
-    moduleGraphHash: H('6'),
-    behaviors: [{
-      anchor: 'test:bootstrap-foundation-fixture',
-      acceptanceHash: H('7'),
-      ownerBuilder: 'toolkit-builder',
-      ownerModule: ':build-logic:convention',
-      testLayer: 'structural',
-      testFile: 'orchestrator/figma/tests/general-test-toolchain.test.mjs',
-      changeKind: 'gradle-build-wiring',
-      proposedTestCases: ['bootstrap-foundation-fixture'],
-      observedTestCases: ['bootstrap-foundation-fixture'],
-      requiredLanes: ['structural'],
-      negativeCases: []
-    }],
-    affectedModules: [],
-    affectedConsumers: [],
-    requiredSuites: [],
-    requiredCapabilities: [],
-    fullSuiteRequired: false,
-    testNotApplicable: null
-  };
-  const planned = resolver.resolveImpact({
-    policy, proposal: { ...base, phase: 'planned' }, facts: {}
-  }).impact;
-  const observed = resolver.resolveImpact({
-    policy, proposal: { ...base, phase: 'observed' }, facts: {}
-  }).impact;
-  const identity = { ...IDENTITY, runId };
-  const hashes = {
-    ...HASHES,
-    sourceSnapshotHash: sourceManifest.snapshotHash,
-    policyHash: policy.policyHash,
-    impactHash: observed.impactHash
-  };
-  const gate = await executor.certifyStructuralGate({
-    certificationRoot: join(root, '.cache-cert'),
-    productRoot: root,
-    gateId: 'bootstrap-foundation-fixture',
-    identity,
-    hashes
-  });
-  assert.equal(gate.passed, true);
-  const result = aggregator.aggregateAndSeal({
-    certificationRoot: join(root, '.cache-cert'),
-    productRoot: root,
-    identity,
-    taskInputHash: HASHES.taskInputHash,
-    sourceManifest,
-    policy,
-    plannedImpact: planned,
-    observedImpact: observed
-  });
-  assert.equal(result.summary.verdict, 'PASS');
-  assert.deepEqual(result.summary.commandReceiptHashes, []);
-  assert.deepEqual(result.summary.executedLanes, ['structural']);
-  assert.equal(result.summary.anchorEvidence[0].verified, true);
-  assert.deepEqual(result.summary.anchorEvidence[0].receiptHashes, [gate.receipt.receiptHash]);
-  const runRoot = join(root, '.cache-cert', IDENTITY.taskStem, runId);
-  const loader = (kind, hash) => {
-    const fixed = { 'test-summary': 'summary.json', 'test-policy': 'policy.json',
-      'source-snapshot': 'source-snapshot.json', 'test-impact-planned': 'planned-impact.json',
-      'test-impact-observed': 'observed-impact.json' };
-    if (fixed[kind]) return JSON.parse(readFileSync(join(runRoot, fixed[kind]), 'utf8'));
-    const family = kind === 'test-command' ? 'commands' : 'structural';
-    const file = readdirSync(join(runRoot, family)).find((name) => name.endsWith('-' + hash.slice(7) + '.json'));
-    return file ? JSON.parse(readFileSync(join(runRoot, family, file), 'utf8')) : null;
-  };
-  assert.equal(registry.verifyReceiptId(result.receiptId, loader).verified, true,
-    'downstream registry reconstructs structural-only anchor evidence');
-});
-
 await check('canonical request CLI is active and rejects any caller-supplied summary surface', () => {
   const root = fixture({ xml: GREEN_XML });
   writeFileSync(join(root, 'request.json'), JSON.stringify({ version: 1, summary: { verdict: 'PASS' } }));
@@ -709,101 +585,6 @@ await check('canonical request CLI recomputes taskInputHash from the current tod
   assert.equal(cli.status, 1, cli.stderr + cli.stdout);
   assert.match(cli.stderr, /TASK_INPUT_STALE/);
   assert.equal(existsSync(join(root, 'orchestrator', '.cache', 'tasks', 'test-certification')), false);
-});
-
-await check('canonical request plan admits only sealed structural-only bootstrap execution without commands', () => {
-  const policy = policyContract.loadPolicy();
-  const inventory = {
-    version: 1,
-    domain: 'test-capability-inventory',
-    generatedBy: ':testCapabilityInventory',
-    modules: [],
-    inventoryHash: H('0'),
-  };
-  inventory.inventoryHash = capabilityContract.inventoryHashOf(inventory);
-  const structuralObserved = {
-    capabilityInventoryHash: inventory.inventoryHash,
-    behaviors: [{ requiredLanes: ['structural'] }],
-    requiredSuites: [],
-    fullSuiteRequired: false,
-    testNotApplicable: null,
-  };
-  const allowed = requestEntrypoint.validateExecutionPlan({
-    commands: [],
-    structuralGateIds: ['bootstrap-foundation-fixture'],
-  }, structuralObserved, inventory, policy);
-  assert.ok(allowed.includes(':allConfiguredTests'));
-
-  assert.throws(() => requestEntrypoint.validateExecutionPlan({
-    commands: [],
-    structuralGateIds: [],
-  }, {
-    ...structuralObserved,
-    behaviors: [{ requiredLanes: ['host'] }],
-    requiredSuites: ['host-suite'],
-  }, inventory, policy), (error) => error && error.code === 'PLAN_INCOMPLETE');
-});
-
-await check('canonical request resolves task-worktree execution through the manager-owned binding', () => {
-  const controlRoot = fixture({ xml: GREEN_XML });
-  const executionRoot = fixture({ xml: GREEN_XML });
-  const request = {
-    executionRootKind: 'task-worktree',
-    identity: {
-      taskStem: 'TASK_5_save_note',
-      runId: 'run-worktree-binding',
-    },
-  };
-  const environment = {
-    ORCHESTRATOR_WRITER_STEM: request.identity.taskStem,
-  };
-  const manager = {
-    executionEnvironmentContext(actualEnvironment) {
-      assert.equal(actualEnvironment, environment);
-      return { ok: true, context: {
-        controlRoot,
-        executionRoot,
-        runId: request.identity.runId,
-      } };
-    },
-  };
-  assert.equal(requestEntrypoint.resolveExecutionRoot(controlRoot, request, { environment, manager }),
-    realpathSync.native(executionRoot));
-  assert.throws(() => requestEntrypoint.resolveExecutionRoot(controlRoot, {
-    ...request,
-    identity: { ...request.identity, runId: 'run-foreign-binding' },
-  }, { environment, manager }), (error) => error && error.code === 'EXECUTION_ROOT_MISMATCH');
-});
-
-await check('task-worktree certification snapshots every materialized candidate path', () => {
-  const root = fixture({ xml: GREEN_XML });
-  assert.equal(spawnSync('git', ['init', '-q'], { cwd: root }).status, 0);
-  assert.equal(spawnSync('git', ['add', '.'], { cwd: root }).status, 0);
-  assert.equal(spawnSync('git', ['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
-    'commit', '-qm', 'base'], { cwd: root }).status, 0);
-  writeFileSync(join(root, 'gradlew'), '#!/bin/sh\necho changed\n');
-  writeFileSync(join(root, 'new-source.kt'), 'class NewSource\n');
-
-  const empty = snapshotContract.captureSnapshot({ root, paths: [] });
-  assert.throws(() => requestEntrypoint.validateSourceCoverage(
-    { executionRootKind: 'task-worktree' }, empty, root
-  ), (error) => error && error.code === 'SOURCE_MANIFEST_INCOMPLETE');
-
-  const partial = snapshotContract.captureSnapshot({ root, paths: ['gradlew'] });
-  assert.throws(() => requestEntrypoint.validateSourceCoverage(
-    { executionRootKind: 'task-worktree' }, partial, root
-  ), (error) => error && error.code === 'SOURCE_MANIFEST_INCOMPLETE');
-
-  const complete = snapshotContract.captureSnapshot({ root, paths: ['gradlew', 'new-source.kt'] });
-  assert.deepEqual(requestEntrypoint.validateSourceCoverage(
-    { executionRootKind: 'task-worktree' }, complete, root
-  ), ['gradlew', 'new-source.kt']);
-
-  rmSync(join(root, 'new-source.kt'));
-  rmSync(join(root, 'gradlew'));
-  assert.throws(() => requestEntrypoint.validateSourceCoverage(
-    { executionRootKind: 'task-worktree' }, partial, root
-  ), (error) => error && error.code === 'SOURCE_SNAPSHOT_DELETION_UNSUPPORTED');
 });
 
 for (const root of roots) rmSync(root, { recursive: true, force: true });

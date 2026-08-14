@@ -774,20 +774,13 @@ function advance(stem, done) {
   // transaction would publish an Outcome or a task source the owner has edited
   // since it was inspected. Pinning them and never comparing made the pin
   // decorative, which is worse than not having it.
-  // These pins protect the hand-off TO the finalizer. Once its intent is
-  // durable, prepare owns these paths: it consumes the task source and
-  // regenerates INDEX.json. Comparing them to the pre-prepare bytes after that
-  // effect mistakes the transaction's own output for a foreign edit. The
-  // prepared artifacts are narrowed and hash-pinned separately in phase 5.
-  if (record.phases['finalizer-preparing'].intentAt === null) {
-    var dirtyDrift = record.controlSnapshot.dirtyAllowedPaths.filter(function (pin) {
-      return hashOfWorkingFile(pin.path) !== pin.hash;
-    });
-    if (dirtyDrift.length) {
-      return done(refuse('INTEGRATION_DIRTY_INPUT_CHANGED',
-        'an uncommitted path this transaction was allowed to keep has changed since it began',
-        projectRecord(record), dirtyDrift.map(function (pin) { return pin.path; })));
-    }
+  var dirtyDrift = record.controlSnapshot.dirtyAllowedPaths.filter(function (pin) {
+    return hashOfWorkingFile(pin.path) !== pin.hash;
+  });
+  if (dirtyDrift.length) {
+    return done(refuse('INTEGRATION_DIRTY_INPUT_CHANGED',
+      'an uncommitted path this transaction was allowed to keep has changed since it began',
+      projectRecord(record), dirtyDrift.map(function (pin) { return pin.path; })));
   }
 
   // ---- phase 2/3: the candidate product diff lands in the control root ----
@@ -860,12 +853,8 @@ function advance(stem, done) {
     }
     var pinnedPaths = pins.pins.map(function (pin) { return pin.path; });
     var donePath = 'orchestrator/tasks/done/' + stem + '.md';
-    // A newly-created task source can be untracked at the candidate base. In
-    // that case prepare still consumes the working todo file, but there is no
-    // todo entry in the candidate tree to delete. The done artifact is always
-    // required; a tracked todo deletion, when one exists, is already part of
-    // the exact candidate-to-prepared pin set.
-    if (pinnedPaths.indexOf(donePath) < 0) {
+    var todoPath = TASKS_TODO_PREFIX + stem + '.md';
+    if (pinnedPaths.indexOf(donePath) < 0 || pinnedPaths.indexOf(todoPath) < 0) {
       return done(recoveryRequired(record,
         'the finalizer did not publish ' + donePath + ' as a transaction artifact'));
     }
@@ -1149,41 +1138,14 @@ function hashOfWorkingFile(relative) {
   } catch (error) { return null; }
 }
 
-// Manual recovery is intentionally narrow: before any canonical commit exists,
-// a phase-5 classifier bug can be reconciled from the physical prepared tree.
-// Every artifact is re-derived, restricted to the finalizer-owned set and
-// hash-pinned before the WAL is allowed to become active again.
-function reconcilePreparedRecovery(record) {
-  if (record.phase !== 'finalizer-prepared' || record.finalizerPrepared !== null ||
-      record.commitPin.publishedCommit !== null ||
-      record.phases['finalizer-preparing'].provenAt === null ||
-      record.phases['finalizer-prepared'].intentAt === null ||
-      record.phases['finalizer-prepared'].provenAt !== null ||
-      record.phases['commit-publishing'].intentAt !== null) return null;
-  var markerState = finalizationMarker(record.stem);
-  if (!markerState.ok || markerState.marker === null) return null;
-  var receipt = worktreeManager.candidateReceipt(record.worktreeId);
-  if (!receipt || !candidateReceiptMatches(record, receipt)) return null;
-  var pins = preparedPathPins(record.stem, record.candidate.tree);
-  if (!pins.ok) return null;
-  var donePath = 'orchestrator/tasks/done/' + record.stem + '.md';
-  if (!pins.pins.some(function (pin) { return pin.path === donePath; })) return null;
-  record.finalizerPrepared = pins.pins;
-  record.status = 'active';
-  return markProven(record, 'finalizer-prepared');
-}
-
 // Continue an interrupted transaction. Identical to begin() for an existing
 // record: every phase re-proves itself physically before anything moves.
 function resume(stem, done) {
   var existing = readOne(stem);
   if (!existing.ok) return done(refuse(existing.code, existing.message || 'no integration to resume'));
   if (existing.record.status === 'recovery-required') {
-    var reconciled = reconcilePreparedRecovery(existing.record);
-    if (!reconciled || !reconciled.ok) {
-      return done(refuse('INTEGRATION_RECOVERY_REQUIRED', 'this integration needs manual recovery',
-        projectRecord(existing.record)));
-    }
+    return done(refuse('INTEGRATION_RECOVERY_REQUIRED', 'this integration needs manual recovery',
+      projectRecord(existing.record)));
   }
   return advance(stem, done);
 }

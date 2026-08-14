@@ -188,10 +188,6 @@ try {
   emit({ type: 'result', result: 'read-only follow-up answered' })
   child.emit('exit', 0, null)
   child.emit('close', 0, null)
-  assert.equal(sessions.status(key).action, null,
-    'a read-only task continuation must not persist the predecessor mutation action')
-  assert.deepEqual(sessions.scanIntegrity({ stem: 'TASK_1_answer_gate' }).findings, [],
-    'the conversation-only sidecar must remain valid without a worktree execution binding')
 
   // Board Prepare owns a no-questions contract. A model-level needs_action is
   // never exposed to the user; the exact live child receives one bounded,

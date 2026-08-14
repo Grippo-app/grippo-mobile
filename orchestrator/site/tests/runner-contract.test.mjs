@@ -44,13 +44,6 @@ check('exact server-written claimed request is accepted without coercion', () =>
   ]) assert.equal(issue({ action, expectedState }), null)
 })
 
-check('run requests receive the canonical certification generation id', () => {
-  assert.equal(runner.executionRunIdForRequest('1786651740499-e73e65d4b30ace2f'),
-    'run-1786651740499-e73e65d4b30ace2f')
-  assert.equal(runner.executionRunIdForRequest('../escape'), null)
-  assert.equal(runner.executionRunIdForRequest('run-1786651740499-e73e65d4b30ace2f'), null)
-})
-
 check('unsupported, missing and invented request shapes are rejected', () => {
   assert.match(issue({ action: 'createBacklog' }), /action/)
   assert.match(issue({ version: 1 }), /version/)

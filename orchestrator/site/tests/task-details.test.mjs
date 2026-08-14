@@ -2,6 +2,11 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { test } from 'node:test'
+import {
+  initialTaskDetailsSection,
+  normalizeTaskDetailsSection,
+  taskDetailsSections,
+} from '../scripts/board/task-details-sections.js'
 
 const require = createRequire(import.meta.url)
 const taskDetails = require('../server/task-details.js')
@@ -26,6 +31,8 @@ const API_PACKAGE = apiWorkPackage.create('mixed:details-contract', [
 ])
 const detailsUiSource = readFileSync(new URL('../scripts/board/task-details.js', import.meta.url), 'utf8')
 const overviewUiSource = readFileSync(new URL('../scripts/board/task-overview.js', import.meta.url), 'utf8')
+const actionPaneUiSource = readFileSync(new URL('../scripts/board/task-action-pane.js', import.meta.url), 'utf8')
+const actionCopyUiSource = readFileSync(new URL('../scripts/board/task-action-copy.js', import.meta.url), 'utf8')
 const questionsUiSource = readFileSync(new URL('../scripts/board/task-questions.js', import.meta.url), 'utf8')
 const actionBarUiSource = readFileSync(new URL('../scripts/board/task-action-bar.js', import.meta.url), 'utf8')
 const artifactsUiSource = readFileSync(new URL('../scripts/board/task-artifacts.js', import.meta.url), 'utf8')
@@ -278,6 +285,43 @@ test('question validation clears stale inline errors as soon as a valid answer i
   assert.match(questionsUiSource, /custom\.value\.trim\(\)[\s\S]*?clearQuestionError\(field\)/)
   assert.match(questionsUiSource, /if \(input\.checked\) \{[\s\S]*?clearQuestionError\(field\)/)
   assert.match(questionsUiSource, /if \(input\.value\.trim\(\)\) clearQuestionError\(field\)/)
+})
+
+test('attention-required task details lead with one server-owned action surface', () => {
+  const ordinary = { primaryAction: { attentionRequired: false } }
+  const attention = { primaryAction: { attentionRequired: true } }
+  assert.deepEqual(taskDetailsSections(ordinary), [
+    'overview', 'activity', 'artifacts', 'advanced',
+  ])
+  assert.deepEqual(taskDetailsSections(attention), [
+    'action', 'overview', 'activity', 'artifacts', 'advanced',
+  ])
+  assert.equal(initialTaskDetailsSection(attention, null), 'action')
+  assert.equal(initialTaskDetailsSection(attention, 'questions'), 'action')
+  assert.equal(initialTaskDetailsSection(attention, 'validation'), 'action')
+  assert.equal(initialTaskDetailsSection(attention, 'overview'), 'overview')
+  assert.equal(initialTaskDetailsSection(attention, 'dependencies'), 'overview')
+  assert.equal(initialTaskDetailsSection(attention, 'artifacts'), 'artifacts')
+  assert.equal(initialTaskDetailsSection(ordinary, 'action'), 'overview')
+  assert.equal(normalizeTaskDetailsSection(attention, 'questions'), 'action')
+  assert.equal(normalizeTaskDetailsSection(attention, 'dependencies'), 'overview')
+  assert.equal(normalizeTaskDetailsSection(ordinary, 'action'), 'overview')
+})
+
+test('question and live-answer forms have one action-pane owner', () => {
+  assert.match(detailsUiSource,
+    /import \{ taskActionPane \} from '\.\/task-action-pane\.js'/)
+  assert.match(detailsUiSource, /const sections = taskDetailsSections\(details\)/)
+  assert.match(detailsUiSource, /initialTaskDetailsSection\(details, options\.preferredSection\)/)
+  assert.doesNotMatch(overviewUiSource, /taskQuestions|currentWork\.kind === 'questions'|currentWork\.kind === 'awaiting-user'/)
+  assert.match(actionPaneUiSource,
+    /action\.kind === 'submit-answers'[\s\S]*?work\.kind === 'questions'/)
+  assert.match(actionPaneUiSource,
+    /action\.kind === 'continue-live'[\s\S]*?work\.kind === 'awaiting-user'/)
+  assert.match(actionPaneUiSource, /taskDetails\.action\.questionsDeferred/)
+  assert.match(actionPaneUiSource, /taskDetails\.questions\.stoppedRun/)
+  assert.match(actionBarUiSource, /taskActionDisabledReason\(action, options\.t\)/)
+  assert.match(actionCopyUiSource, /board\.action\.disabled\./)
 })
 
 test('requested and delivered projections stay structured and bounded', () => {
@@ -750,6 +794,41 @@ test('typed live continuation rejects stale session generations and never builds
   assert.equal(taskActions.inspect({ ...request, prompt: 'forbidden' }, dependencies).status, 400)
   assert.equal(taskActions.inspect({ ...request, idempotencyKey: null }, dependencies).status, 400)
   assert.equal(taskActions.inspect({ ...request, action: 'unknown' }, dependencies).status, 400)
+})
+
+test('details-only retry remains executable after its checkpoint preview supplies modal input', () => {
+  const checkpointId = 'cp-' + '7'.repeat(32)
+  const action = primaryAction.resolve({
+    stem: STEM,
+    state: 'todo',
+    sourceRevision: REV,
+    blockers: [],
+    retryCheckpoint: { id: checkpointId, phase: 'review' },
+  })
+  assert.equal(action.kind, 'retry-phase')
+  assert.equal(action.behavior, 'open-details')
+  assert.deepEqual(action.target, { type: 'task', stem: STEM, section: 'action' })
+  const result = taskActions.inspect({
+    stem: STEM,
+    actionId: action.id,
+    actionRevision: action.actionRevision,
+    action: action.kind,
+    expectedState: action.expectedState,
+    expectedSourceRevision: action.expectedSourceRevision,
+    checkpointId,
+    confirmation: null,
+    confirmationToken: 'one-shot-preview-token',
+    answers: null,
+    questionRound: null,
+    expectedQuestionsRevision: null,
+    liveSessionId: null,
+    expectedSessionRevision: null,
+    idempotencyKey: 'retry-details-7',
+  }, {
+    summary: { revision: REV, task: { primaryAction: action, secondaryActions: [] } },
+  })
+  assert.equal(result.status, 409)
+  assert.equal(result.error, 'checkpoint-stale')
 })
 
 function todoQuestionSource(answer = '') {

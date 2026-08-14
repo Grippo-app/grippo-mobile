@@ -30,6 +30,9 @@ function target(kind, context, blocker) {
     return { type: 'terminal', key: 'task:' + stem };
   }
   if (kind === 'continue-live') return { type: 'task', stem: stem, section: 'questions' };
+  if (kind === 'retry-phase' || kind === 'resume-finalization') {
+    return { type: 'task', stem: stem, section: 'action' };
+  }
   if (kind === 'validate-in-app') return context.appValidationTarget ||
     { type: 'task', stem: stem, section: 'validation' };
   if (kind === 'resolve-blocker' && blocker &&
@@ -85,6 +88,7 @@ function action(kind, behavior, context, winningBlocker, options) {
   var enabled = options.enabled !== false;
   var disabledReasonCode = enabled ? null : options.disabledReasonCode || 'action-unavailable';
   var requiresConfirmation = options.requiresConfirmation === true;
+  var attentionRequired = options.attentionRequired === true;
   var resolvedLabelKey = options.labelKey || labelKey(kind, context);
   var checkpointId = options.checkpointId === undefined
     ? context.retryCheckpoint && context.retryCheckpoint.id || null
@@ -109,6 +113,7 @@ function action(kind, behavior, context, winningBlocker, options) {
     enabled: enabled,
     disabledReasonCode: disabledReasonCode,
     requiresConfirmation: requiresConfirmation,
+    attentionRequired: attentionRequired,
     labelKey: resolvedLabelKey
   };
   var actionRevision = hash(revisionSeed);
@@ -119,6 +124,7 @@ function action(kind, behavior, context, winningBlocker, options) {
     enabled: enabled,
     disabledReasonCode: disabledReasonCode,
     behavior: behavior,
+    attentionRequired: attentionRequired,
     target: actionTarget,
     requiresConfirmation: requiresConfirmation,
     expectedState: context.state,
@@ -144,15 +150,24 @@ function resolve(context) {
   if (integrity) {
     kind = 'resolve-blocker'; behavior = 'open-details'; winningBlocker = integrity;
   } else if (context.finalization && context.finalization.recoverable && !context.finalization.recoveryRunning) {
-    kind = 'resume-finalization'; behavior = 'execute';
+    kind = 'resume-finalization'; behavior = 'open-details';
   } else if (context.finalization && context.finalization.recoveryRunning) {
     kind = 'resolve-blocker'; behavior = 'open-details';
     winningBlocker = blockers.find(function (item) { return item.kind === 'finalization-required'; }) || blocking;
+  } else if (context.integration && context.integration.state === 'revalidation-required' &&
+      context.terminalAvailable !== true) {
+    // A superseded candidate makes every queued Run deterministically
+    // unstartable: provision() refuses it until the owner explicitly releases
+    // the old generation. Surface that existing confirmation rail even when a
+    // durable question or its queued answer is present. The queue keeps the
+    // submitted answer, so releasing the generation lets the same request
+    // continue instead of stranding its reservation behind another answer CTA.
+    kind = 'integrate'; behavior = 'execute';
   } else if (context.active && !context.liveAwaiting &&
       !(context.questionsPending && context.terminalAvailable === false)) {
     kind = 'open-run'; behavior = 'open-terminal';
   } else if (context.liveAwaiting) {
-    kind = 'continue-live'; behavior = 'execute';
+    kind = 'continue-live'; behavior = 'open-details';
   } else if (context.visualReview) {
     kind = 'review-result'; behavior = 'open-details';
   } else if (blocking) {
@@ -172,7 +187,7 @@ function resolve(context) {
         // sidecar and the in-body section share this one rail.
         kind = context.questionsPending || context.state === 'pending'
           ? 'submit-answers' : 'continue-live';
-        behavior = kind === 'continue-live' ? 'execute' : 'open-details';
+        behavior = 'open-details';
       }
     } else {
       kind = 'resolve-blocker'; behavior = 'open-details';
@@ -185,7 +200,7 @@ function resolve(context) {
     // step becomes unreachable from the card.
     kind = 'integrate'; behavior = 'execute';
   } else if (context.retryCheckpoint) {
-    kind = 'retry-phase'; behavior = 'execute';
+    kind = 'retry-phase'; behavior = 'open-details';
   } else if (context.state === 'backlog') {
     kind = 'prepare'; behavior = 'execute';
   } else if (context.state === 'pending') {
@@ -204,8 +219,18 @@ function resolve(context) {
   // ordinary Run starts the same mutation class directly), so only genuinely
   // destructive secondary actions keep confirmation flows.
   var options = { requiresConfirmation: false };
+  options.attentionRequired = kind !== 'open-run' && (
+    !!blocking ||
+    ['submit-answers', 'continue-live', 'retry-phase', 'resume-finalization'].indexOf(kind) >= 0 ||
+    kind === 'integrate' && context.integration &&
+      context.integration.state === 'revalidation-required'
+  );
   if (kind === 'open-run') {
     options.labelKey = 'board.action.open_terminal';
+  }
+  if (kind === 'integrate' && context.integration &&
+      context.integration.state === 'revalidation-required') {
+    options.labelKey = 'board.action.release_generation';
   }
   if (kind === 'continue-live') {
     options.labelKey = 'board.action.continue_live';

@@ -1,4 +1,5 @@
 import { dom } from '../dom.js';
+import { taskActionDisabledReason } from './task-action-copy.js';
 
 var el = dom.el;
 
@@ -11,9 +12,7 @@ export function taskCardAction(row, options) {
     ? action.labelKey
     : 'board.action.' + (action && action.kind ? action.kind.replace(/-/g, '_') : 'unavailable');
   var label = t(labelKey, params);
-  var disabledReasonKey = 'board.action.disabled.' + String(action && action.disabledReasonCode || 'action-unavailable').replace(/-/g, '_');
-  var disabledReason = action && action.enabled === false ? t(disabledReasonKey) : '';
-  if (disabledReason === disabledReasonKey) disabledReason = t('board.action.disabled.action_unavailable');
+  var disabledReason = taskActionDisabledReason(action, t);
   var attrs = {
     'data-task-control': 'primary',
     'data-action-kind': action && action.kind || 'unavailable',

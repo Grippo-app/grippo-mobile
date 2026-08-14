@@ -1190,14 +1190,21 @@ import { appRunControl } from '../app-run-control.js';
           boardTaskNavigationController.openTarget(target, details);
           return true;
         }
-        if (viewRef.value) viewRef.value.select(boardTaskDetailsShell.sectionForTarget(target), true);
+        if (viewRef.value) {
+          viewRef.value.select(boardTaskDetailsShell.sectionForTarget(target), true);
+          setTimeout(function () {
+            if (viewRef.value) viewRef.value.focusPreferred(target && target.section || null);
+          }, 0);
+        }
         return true;
       }
 
       function execute(action, button, input) {
         input = input || {};
-        if (action.kind !== 'submit-answers' && action.kind !== 'retry-phase' &&
-            action.behavior !== 'execute') {
+        var detailsExecutionKinds = [
+          'submit-answers', 'continue-live', 'retry-phase', 'resume-finalization'
+        ];
+        if (detailsExecutionKinds.indexOf(action.kind) < 0 && action.behavior !== 'execute') {
           navigation(action);
           return Promise.resolve({ navigation: true });
         }
@@ -1346,7 +1353,7 @@ import { appRunControl } from '../app-run-control.js';
 
       var view = createTaskDetails(details, {
         t: t,
-        preferredSection: preferredSection || 'overview',
+        preferredSection: preferredSection || null,
         formatTimestamp: boardFormatters.timestampLabel,
         errorText: function (error) { return boardRequestError(error); },
         loadActivity: function (cursor) { return tasksApi.loadTaskActivity(stem, {
@@ -1436,7 +1443,7 @@ import { appRunControl } from '../app-run-control.js';
         title.id = 'board-modal-title';
         panel.setAttribute('aria-labelledby', title.id);
       }
-      if (preferredSection === 'questions') setTimeout(view.focusCurrentWork, 0);
+      setTimeout(function () { view.focusPreferred(preferredSection || null); }, 0);
     }, function (error) {
       boardTaskDetailsShell.showLoadError({
         modalToken: modalToken,
@@ -1462,7 +1469,7 @@ import { appRunControl } from '../app-run-control.js';
 
   function openCardModal(folder, stem, item, section, deepTarget) {
     if (['backlog', 'pending', 'todo', 'done'].indexOf(folder) < 0) return;
-    openTaskDetails(stem, section || 'overview', item, deepTarget || null);
+    openTaskDetails(stem, section || null, item, deepTarget || null);
     // Record the open card's identity AFTER the per-folder opener (each calls
     // boardModal.open → boardModal.close, which nulls openCard). Lets the controller restore
     // focus by stem when an SSE rebuild detached the originating card, and lets
