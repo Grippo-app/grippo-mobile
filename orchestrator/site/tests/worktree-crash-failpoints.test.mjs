@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
+const recordContract = require('../../tasks/worktree-record-contract.cjs')
 
 let checks = 0
 function check(name, fn) { return fn().then(() => { checks++; console.log(`ok ${checks} - ${name}`) }) }
@@ -283,6 +284,22 @@ function prepareRelease(fx) {
   return JSON.parse(execFileSync(process.execPath, ['-e', script], {
     env: childEnv(fx), cwd: fx.root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
   }))
+}
+
+function renumberRecordedVolume(fx, made) {
+  const recordFile = join(fx.root, 'orchestrator', '.cache', 'tasks', 'worktrees', made.worktreeId + '.json')
+  const record = JSON.parse(readFileSync(recordFile, 'utf8'))
+  const remountedDev = String(BigInt(record.executionRoot.dev) + 1n)
+  record.controlRoot.dev = remountedDev
+  record.gitCommonDirIdentity.dev = remountedDev
+  record.executionRoot.dev = remountedDev
+  record.controlProjectId = recordContract.digest({
+    path: record.gitCommonDirIdentity.path,
+    dev: record.gitCommonDirIdentity.dev,
+    ino: record.gitCommonDirIdentity.ino,
+  })
+  record.recordHash = recordContract.recordHash(record)
+  writeFileSync(recordFile, JSON.stringify(record) + '\n')
 }
 
 function killDuringRelease(fx, made, boundary) {
@@ -653,6 +670,25 @@ try {
     assert.equal(readFileSync(join(pathMade.executionRoot, 'foreign.txt'), 'utf8'), 'must survive\n')
     assert.equal(pathRecovery.candidate, git(pathFx.root, 'rev-parse', 'HEAD').trim(),
       'the candidate ref is untouched when the recorded path was replaced')
+  })
+
+  await check('release accepts only a coherent filesystem-device remount with the full Git binding', async () => {
+    const fx = fixture()
+    const made = prepareRelease(fx)
+    renumberRecordedVolume(fx, made)
+    const script = `
+      const manager = require(${JSON.stringify(join(repoRoot, 'orchestrator/site/server/worktree-manager.js'))});
+      process.stdout.write(JSON.stringify(manager.release(${JSON.stringify(made.worktreeId)})));
+    `
+    const released = JSON.parse(execFileSync(process.execPath, ['-e', script], {
+      env: childEnv(fx), cwd: fx.root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+    }))
+    assert.equal(released.ok, true, JSON.stringify(released))
+    assert.equal(existsSync(made.executionRoot), false)
+    assert.throws(() => git(fx.root, 'rev-parse', '-q', '--verify', made.candidateRef))
+    const record = JSON.parse(readFileSync(join(fx.root, 'orchestrator', '.cache', 'tasks',
+      'worktrees', made.worktreeId + '.json'), 'utf8'))
+    assert.equal(record.status, 'released')
   })
 
   await check('two release owners racing on one generation perform cleanup once', async () => {

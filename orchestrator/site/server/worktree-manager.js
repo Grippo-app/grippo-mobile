@@ -1335,6 +1335,45 @@ function ownedReleaseCommits(record, receipt) {
   return commits;
 }
 
+// Darwin may renumber one mounted APFS volume across a reboot. A durable
+// generation then keeps the exact same paths and inodes, while every st_dev in
+// its record changes together. Treat that one coherent remount as release-only
+// ownership proof after re-deriving the complete Git binding. This never makes
+// the generation resumable, and a replaced directory (new inode), a moved
+// repository, or a redirected .git pointer still fails closed.
+function remountedReleaseIdentityProven(record, liveExecution) {
+  if (!record || !record.controlRoot || !record.gitCommonDirIdentity ||
+      !record.executionRoot || !liveExecution) return false;
+  var recorded = [record.controlRoot, record.gitCommonDirIdentity, record.executionRoot];
+  var liveControl = identityOf(record.controlRoot.path);
+  var liveCommon = identityOf(record.gitCommonDirIdentity.path);
+  var current = [liveControl, liveCommon, liveExecution];
+  if (current.some(function (identity, index) {
+    return !identity || identity.path !== recorded[index].path ||
+      identity.ino !== recorded[index].ino;
+  })) return false;
+  var recordedDevices = new Set(recorded.map(function (identity) { return identity.dev; }));
+  var currentDevices = new Set(current.map(function (identity) { return identity.dev; }));
+  if (recordedDevices.size !== 1 || currentDevices.size !== 1 ||
+      recorded[0].dev === liveControl.dev) return false;
+
+  var controlRepo = repositoryIdentity(record.controlRoot.path);
+  var executionRepo = repositoryIdentity(record.executionRoot.path);
+  if (!controlRepo.ok || !executionRepo.ok ||
+      !sameIdentity(controlRepo.gitCommonDirIdentity, liveCommon) ||
+      !sameIdentity(controlRepo.toplevel, liveControl) ||
+      !sameIdentity(executionRepo.gitCommonDirIdentity, liveCommon) ||
+      !sameIdentity(executionRepo.toplevel, liveExecution)) return false;
+  var ownHead = runGit(['symbolic-ref', '-q', 'HEAD'], record.executionRoot.path);
+  if (!ownHead.ok || ownHead.stdout.trim() !== record.candidateRef) return false;
+  var listed = runGit(['worktree', 'list', '--porcelain', '-z'], record.controlRoot.path);
+  if (!listed.ok) return false;
+  var entries = parseWorktreeList(listed.stdout);
+  return entries.some(function (entry) {
+    return entry.path === liveExecution.path && entry.branch === record.candidateRef;
+  });
+}
+
 function release(worktreeId) {
   var records = readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
     worktreeContract, 'WORKTREE_RECORD');
@@ -1393,7 +1432,8 @@ function release(worktreeId) {
     }
     if (record.executionRoot !== null) {
       var live = identityOf(record.executionRoot.path);
-      if (live && sameIdentity(live, record.executionRoot)) {
+      if (live && (sameIdentity(live, record.executionRoot) ||
+          remountedReleaseIdentityProven(record, live))) {
         var removed = gitMutations.removeOwnedWorktree({ targetPath: record.executionRoot.path });
         if (!removed.ok) return settleRelease(item, 'recovery-required', removed);
       } else if (fileExists(record.executionRoot.path)) {
