@@ -118,6 +118,13 @@ function verifySummaryEvidence(summary, loadReceipt) {
   const evaluations = commands.map((receipt) => receiptContract.evaluateCommandReceipt(receipt, { testsRequired: true }));
   const successful = evaluations.filter((evaluation) => evaluation.passed).map((evaluation) => evaluation.receipt);
   const requiredLanes = sortedUnique(observed.behaviors.flatMap((behavior) => behavior.requiredLanes));
+  const structuralOnly = observed.testNotApplicable === null &&
+    commands.length === 0 &&
+    observed.requiredSuites.length === 0 &&
+    requiredLanes.length > 0 &&
+    requiredLanes.every((lane) => lane === 'structural');
+  const bootstrapReceipts = structural.filter((receipt) =>
+    receipt.gateId === 'bootstrap-foundation-fixture' && receipt.result === 'passed');
   const executedLanes = sortedUnique([
     ...successful.map((receipt) => receipt.lane),
     ...(structural.some((receipt) => receipt.gateId === 'bootstrap-foundation-fixture' && receipt.result === 'passed')
@@ -125,6 +132,18 @@ function verifySummaryEvidence(summary, loadReceipt) {
   ]);
   const passedSuites = sortedUnique(successful.map((receipt) => receipt.suite));
   const anchorEvidence = observed.behaviors.map((behavior) => {
+    // Structural-only bootstrap tasks intentionally have no command receipts.
+    // Reconstruct their anchor proof from the same sealed structural receipt
+    // that aggregate-test-certification.mjs uses, otherwise a freshly sealed
+    // PASS summary immediately becomes receipt-stale at the checkpoint gate.
+    if (structuralOnly && behavior.requiredLanes.every((lane) => lane === 'structural')) {
+      return {
+        anchor: behavior.anchor,
+        testIdentities: [...behavior.observedTestCases],
+        receiptHashes: sortedUnique(bootstrapReceipts.map((receipt) => receipt.receiptHash)),
+        verified: bootstrapReceipts.length === 1
+      };
+    }
     const proving = successful.filter((receipt) =>
       behavior.observedTestCases.some((identity) => receipt.discoveredTestIdentities.includes(identity)));
     const identities = sortedUnique(behavior.observedTestCases.filter((identity) =>
@@ -184,7 +203,7 @@ function verifySummaryEvidence(summary, loadReceipt) {
   } else if (commandFailed) {
     expectedVerdict = 'FAIL';
     expectedReasons = ['command-receipt-failed'];
-  } else if (!snapshotCurrent || commands.length === 0 || !lanesComplete || !suitesComplete ||
+  } else if (!snapshotCurrent || (!structuralOnly && commands.length === 0) || !lanesComplete || !suitesComplete ||
       !anchorsComplete || !fullSuiteComplete || !failBeforeComplete || !coverageComplete || !structuralExact) {
     expectedVerdict = 'BLOCKED';
     expectedReasons = [!snapshotCurrent ? 'source-snapshot-stale' : 'missing-required-test-evidence'];

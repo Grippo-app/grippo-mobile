@@ -646,6 +646,18 @@ await check('structural-only bootstrap derives PASS from its sealed gate without
   assert.deepEqual(result.summary.executedLanes, ['structural']);
   assert.equal(result.summary.anchorEvidence[0].verified, true);
   assert.deepEqual(result.summary.anchorEvidence[0].receiptHashes, [gate.receipt.receiptHash]);
+  const runRoot = join(root, '.cache-cert', IDENTITY.taskStem, runId);
+  const loader = (kind, hash) => {
+    const fixed = { 'test-summary': 'summary.json', 'test-policy': 'policy.json',
+      'source-snapshot': 'source-snapshot.json', 'test-impact-planned': 'planned-impact.json',
+      'test-impact-observed': 'observed-impact.json' };
+    if (fixed[kind]) return JSON.parse(readFileSync(join(runRoot, fixed[kind]), 'utf8'));
+    const family = kind === 'test-command' ? 'commands' : 'structural';
+    const file = readdirSync(join(runRoot, family)).find((name) => name.endsWith('-' + hash.slice(7) + '.json'));
+    return file ? JSON.parse(readFileSync(join(runRoot, family, file), 'utf8')) : null;
+  };
+  assert.equal(registry.verifyReceiptId(result.receiptId, loader).verified, true,
+    'downstream registry reconstructs structural-only anchor evidence');
 });
 
 await check('canonical request CLI is active and rejects any caller-supplied summary surface', () => {
