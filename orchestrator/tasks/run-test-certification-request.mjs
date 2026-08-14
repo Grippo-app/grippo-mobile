@@ -275,7 +275,8 @@ async function runCertificationRequest({ productRoot, request }) {
   for (let index = 0; index < validRequest.commands.length; index++) {
     const command = validRequest.commands[index];
     await certifyCommand({
-      certificationRoot, productRoot: executionRoot, taskPaths: command.taskPaths, allowedTaskPaths,
+      certificationRoot, certificationOwnerRoot: root, productRoot: executionRoot,
+      taskPaths: command.taskPaths, allowedTaskPaths,
       suite: command.suite, tier: command.tier, lane: command.lane, identity, hashes,
       toolchain: validRequest.toolchain, reportInputs: command.reportInputs,
       timeoutMs: command.timeoutMs, continueOnFailure: command.continueOnFailure,
@@ -285,12 +286,13 @@ async function runCertificationRequest({ productRoot, request }) {
   }
   for (let index = 0; index < validRequest.structuralGateIds.length; index++) {
     await certifyStructuralGate({
-      certificationRoot, productRoot: executionRoot, gateId: validRequest.structuralGateIds[index], identity, hashes,
+      certificationRoot, certificationOwnerRoot: root, productRoot: executionRoot,
+      gateId: validRequest.structuralGateIds[index], identity, hashes,
       ordinal: String(index).padStart(3, '0')
     });
   }
   return aggregateAndSeal({
-    certificationRoot, productRoot: executionRoot, identity,
+    certificationRoot, certificationOwnerRoot: root, productRoot: executionRoot, identity,
     taskInputHash: validRequest.taskInputHash, sourceManifest, policy, plannedImpact, observedImpact
   });
 }
