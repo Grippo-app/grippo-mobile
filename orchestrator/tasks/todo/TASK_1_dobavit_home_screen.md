@@ -53,3 +53,19 @@ Rebuild the app's post-authentication navigation into a persistent bottom-bar sh
 - no changes to build-logic/** convention plugins
 - no schema migration (Database.kt version, migrations/*) — separate task
 - no TODO/FIXME markers left in code the task claims as done
+
+## Questions
+
+### Q1 — This task touches test-policy escalation surfaces but its Out-of-scope excludes automated tests; how must the mandatory test-certification gate be satisfied?
+
+- (a) **Add navigation tests (expand scope)** — write behavioral/contract tests on the TASK_2 foundation (RootRouter serialization round-trip, RootDirection to RootRouter mapping, MainComponent tab-retention/back-stack) and update the stale Out-of-scope bullet; certification then passes normally.
+- (b) **Owner descope of the tests gate** — keep tests out of scope and run descope-task.mjs so the `tests` gate is recorded N/A for this task; navigation behavior stays manual-only.
+- (c) **Re-prep TASK_1** — return it to task-prep to reconcile the stale "no test source set" premise and produce a fresh test contract.
+
+**Recommended**: (a) — TASK_2 (install canonical test foundation) was split from TASK_1 to install exactly this foundation, and the change adds real navigation runtime behavior on escalated surfaces (shared public API, shared composition root, navigation-root/deeplink parser, settings module graph) for which the machine test policy requires behavioral-test evidence; a `test-not-applicable` claim is invalid here and the `tests` finalization gate cannot pass with zero test cases.
+
+**Type**: choice
+**Options**: a, b, c
+
+#### Answer
+
