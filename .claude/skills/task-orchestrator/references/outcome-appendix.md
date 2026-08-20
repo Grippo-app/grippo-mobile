@@ -1,8 +1,12 @@
 # Ship — Step 6: chat summary + `## Outcome` appendix (6a–6d)
 
-When every gate is green, do all of this **in the same turn**: post the chat
-summary → 6a write an Outcome draft → 6b–6d record that the run is ready for
-integration. A run NEVER publishes: it cannot reach the control root at all, and
+When every gate is green, do all of this **in the same turn**: prove the current
+sealed test-summary → compose and strict-validate the Outcome bytes → create the
+completed `ship` checkpoint for the exact execution generation → publish the
+generation-bound Outcome draft → post the chat summary and end the turn. The
+draft's exact final name is the durable handoff, so it is exposed only after the
+three preceding evidence fences pass. A run NEVER publishes: it cannot reach
+the control root at all, and
 `finalize-task.mjs` is driven only by the integration transaction the owner
 starts with Integrate. That transaction owns the atomic Outcome install,
 component/token binding phases, sanctioned move, derived artifacts,
@@ -70,9 +74,9 @@ conversational, the appendix is a structured trailer on the task file):
 
 Omit `### Manual verify hint` entirely unless the verify gate is `deferred`.
 
-## Step 6a — Write the outcome appendix
+## Step 6a — Validate and hand off the outcome appendix
 
-Write the `## Outcome` trailer as a draft in the CONTROL cache at
+The final handoff is the `## Outcome` trailer as a draft in the CONTROL cache at
 `$ORCHESTRATOR_FINALIZATIONS_DIR/<stem>.$ORCHESTRATOR_WORKTREE_ID.draft.md`
 (both variables are pinned in your environment; the same path inside your
 execution checkout is a different, throwaway directory and the transaction will
@@ -88,7 +92,15 @@ Figma-enabled UI task before finalization.** `ship-done` injects only the machin
 digest line and will not rewrite the appendix structure or line endings. If a required subsection
 has nothing, write exactly one bullet `- none` — except `### Runtime verify`,
 which always records its exact `Gate:` and `Result:` pair. Never skip a required
-heading or leave a required subsection empty.
+heading or leave a required subsection empty. Do not create that exact final
+path yet: first compose the bytes in a private temporary file outside the
+candidate tree and complete the mandatory fences below.
+
+Set `$OUTCOME_TMP` to a newly created mode-`0600`, single-link regular temporary
+file outside both the execution and control trees (for example, a fresh
+`mktemp` result). Never reuse a caller-supplied path, symlink, hardlink or prior
+attempt's temp file. Write only the intended appendix bytes there; the exact
+generation-bound final path must remain absent until fence 3 succeeds.
 
 ```markdown
 
@@ -223,14 +235,63 @@ Every bullet is one physical line. Free-form caveat text is bounded to 120
 characters; build/runtime notes use their explicitly bounded grammar, and
 execution-log bullets use the dedicated ≤6-line contract above.
 
-**Self-check the draft parses, BEFORE Step 6b (the hand-off).** Confirm all six
-required `### ` headings exactly — `Build gates`, `Runtime verify`, `Acceptance
-trace`, `Caveats`, `Follow-ups`, `Files touched` (PascalCase; add the seventh
-`### Execution log` whenever the Figma UI gate applies) — plus a `**Status**` line and a `**Reviewer**` line with the
-exact key casing. A missing/mis-cased heading/key silently flips the badge to
-`malformed`. `finalize-task` and its nested `ship-done` interlock both enforce
-this mechanically (exit 1 with the exact malformed reason) — but self-check
-first: the interlock catching it costs a re-run.
+### Mandatory completion fences and publication order
+
+1. Retain the exact current Step-4.4 `test-summary:<sha256>` receipt. Its sealed
+   summary MUST be for this task and `runId`, MUST report
+   `snapshotVerification: current`, and its verdict MUST be `PASS` or the one
+   typed, policy-allowed `SKIPPED`. Recompute it after every later tree change;
+   prose or a prior generation's receipt is not evidence. The execution pin is
+   owned by the checkpoint in fence 3, not by the test-summary schema.
+2. Run the canonical strict parser against the intended bytes in the private
+   temporary file — visual heading checks are insufficient:
+
+   ```bash
+   node --input-type=module -e '
+   import { readFileSync } from "node:fs";
+   import { outcomeShapeError } from "./orchestrator/figma/scripts/outcome-shape.mjs";
+   const error = outcomeShapeError(readFileSync(process.argv[1], "utf8"));
+   if (error) { console.error(error); process.exit(1); }
+   ' "$OUTCOME_TMP"
+   ```
+
+   Any non-null parser result blocks completion. Repair and validate the bytes;
+   never downgrade a strict outcome-shape error to a Caveat.
+3. Set `$TEST_SUMMARY_RECEIPT` to the exact current receipt id and
+   `$SHIP_ATTEMPT` to the exact current positive ship attempt. Create the
+   terminal checkpoint with this complete stdin payload (no omitted or extra
+   keys):
+
+   ```bash
+   node orchestrator/tasks/task-checkpoint.mjs create --stem "$TASK_STEM" <<EOF
+   {"runId":"$ORCHESTRATOR_RUN_ID","phase":"ship","attempt":$SHIP_ATTEMPT,"status":"completed","outputReceiptIds":[],"priorPhaseReceiptIds":["$TEST_SUMMARY_RECEIPT"],"failureCode":null,"retryPolicy":{"kind":"restart-task","safePhase":null,"reasonCode":null}}
+   EOF
+   ```
+
+   `$TEST_SUMMARY_RECEIPT` MUST be exactly one `test-summary:sha256:<64-hex>`
+   id for this run. Empty stdin, an undefined variable, malformed JSON, a
+   second summary, or any other receipt set must fail closed. Capture the one
+   JSON response and require `ok:true`; then verify `response.checkpoint`
+   repeats that `runId` and has a non-null `executionPin` whose
+   `worktreeId`, `baseCommit`, `baseTree`, `executionTree`, `targetRef` and
+   `targetCommit` all equal the current manager-resolved generation. Missing,
+   stale or foreign fields mean no handoff; candidate sealing is required to
+   fail closed without this checkpoint.
+4. Only after 1–3 pass, publish the already-validated bytes as one sole regular
+   file at the exact generation-bound final path. A bare `<stem>.draft.md`, a
+   different worktree id, a symlink, hardlink, oversized file or unsafe path is
+   not a completion signal. Re-run the same canonical parser against the exact
+   final file. If that final read differs or fails, do not claim completion.
+   Detach only the exact single-link generation and bytes you just published;
+   if exact ownership cannot be re-proven, preserve the observed entry and
+   report recovery-required instead of unlinking a symlink, replacement or
+   foreign generation. Remove the owned private temp after the final read.
+5. Emit the terminal ship journal event with the checkpoint id, post the chat
+   summary, and end the turn without any further candidate-tree mutation.
+
+The manager independently re-proves all of this at sealing/integration. These
+run-side fences prevent the exact draft signal from becoming visible before the
+evidence it promises exists.
 
 **Done is immutable** — do not edit the appendix after it lands in `done/`. To
 fix a wrong outcome, use the explicit move-back procedure (see
@@ -246,8 +307,11 @@ there is no finalizer call in this step, and there is no `ship-done`,
 
 What you do instead:
 
-1. leave the Outcome draft from Step 6a in the control cache;
-2. end the turn with the report below.
+1. prove the current test-summary and completed exact-generation `ship`
+   checkpoint, then leave the strict-valid exact Outcome draft from Step 6a in
+   the control cache;
+2. end the turn with the report below. Without all three, leave no exact draft
+   and do not claim completion.
 
 The site manager then seals your working tree into ONE candidate commit on the
 manager-owned branch, publishes a candidate receipt, and moves the generation to
