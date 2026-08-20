@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "generationId": "gen-20260820T220721Z-52399604c249",
+  "environmentId": "prod",
+  "sourceKind": "openapi",
+  "sourceFingerprint": "sha256:b8853f1d1d1b8e1a708cecf313c11eb3c5e0dbcbb434fa2c6ba7f28faa9bbfac",
+  "previousHash": "sha256:800706b60e4b93fbadd00282f4c5359e67059400a7a4c0e62118af1e70cf03c6",
+  "currentHash": "sha256:5283748836bdbda6cc752a4ddb87c75267102fed2120a55cae1d6c3a76b77254",
+  "state": "committed",
+  "createdAt": "2026-08-20T22:07:21.100Z",
+  "committedAt": "2026-08-20T22:07:21.804Z",
+  "artifacts": [
+    {
+      "role": "normalized-spec",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/spec/openapi.json",
+      "schemaVersion": 1,
+      "size": 76753,
+      "hash": "sha256:ee6af786faa6de20e1ea4d959619c4552d159084af8af289da05fa6b0024e275",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "inventory",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/endpoint-inventory.json",
+      "schemaVersion": 1,
+      "size": 31890,
+      "hash": "sha256:5283748836bdbda6cc752a4ddb87c75267102fed2120a55cae1d6c3a76b77254",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:admin",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/admin.json",
+      "schemaVersion": 1,
+      "size": 41228,
+      "hash": "sha256:c4ef973a7ba9abffa001eda410f053ce5658bee27f3d91d2b6bbc03fad10a1f9",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:auth",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/auth.json",
+      "schemaVersion": 1,
+      "size": 8203,
+      "hash": "sha256:024923a683a759bc588414be4e6680ee7b47c77878125cdf050b5c5ba7362a86",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:equipments",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/equipments.json",
+      "schemaVersion": 1,
+      "size": 66,
+      "hash": "sha256:195bf225a64e0311a3febf9ffeda2107f885aa19405d45c25755208cfabae09b",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:exercise-examples",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/exercise-examples.json",
+      "schemaVersion": 1,
+      "size": 10933,
+      "hash": "sha256:d7bd112bf1b9366af34a1124ca2ef27908671e2d4df594d36304680a5b9fb532",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:exercise-metrics",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/exercise-metrics.json",
+      "schemaVersion": 1,
+      "size": 22693,
+      "hash": "sha256:faa24b1ef4bf318f1b989f34bd169a65e9b1cbd4d544befe49b2a28f5e1d9920",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:muscles",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/muscles.json",
+      "schemaVersion": 1,
+      "size": 63,
+      "hash": "sha256:b2d12f3ad80caec67b921170d5bf39734d48c879360399122887a104755cf841",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:push-tokens",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/push-tokens.json",
+      "schemaVersion": 1,
+      "size": 901,
+      "hash": "sha256:12b927dbda236ae0cc8e3552b8504aa38537c2e451e904776c01e70ac806053e",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:trainings",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/trainings.json",
+      "schemaVersion": 1,
+      "size": 14513,
+      "hash": "sha256:0c694af23ce96e20fc2bc9bba86d8a596bee6cf745e5a56a659e97fc618d1b93",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:users",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/users.json",
+      "schemaVersion": 1,
+      "size": 30639,
+      "hash": "sha256:6a47f291e1227d3e5425df364580a15255ec69555d37714a4f411b5790f3b5e6",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "area:weight-history",
+      "path": "orchestrator/api-contract/manifests/generation-artifacts/gen-20260820T220721Z-52399604c249/areas/weight-history.json",
+      "schemaVersion": 1,
+      "size": 910,
+      "hash": "sha256:39125397556196baa6eb4caa3409bc6963f25c32e1149aa9fc962bc23620114f",
+      "persistence": "committed",
+      "required": true
+    },
+    {
+      "role": "change-report",
+      "path": "orchestrator/.cache/api-contract/reports/change-set-92ba2723443e533c9bb92a96.json",
+      "schemaVersion": 2,
+      "size": 671,
+      "hash": "sha256:5f9ebc8c9494a29eb9f907081a48a0e6cb5712ce2289e0fdd3a6d1e11e6fc472",
+      "persistence": "runtime",
+      "required": false
+    },
+    {
+      "role": "refresh-report",
+      "path": "orchestrator/.cache/api-contract/reports/refresh-job-c76da3846cde81fab912025e5351e190.json",
+      "schemaVersion": 1,
+      "size": 748,
+      "hash": "sha256:0136e64ca34d180a607dce3a5d4467259ef1a7d566ba63d52f05b47a8e284669",
+      "persistence": "runtime",
+      "required": false
+    }
+  ]
+}

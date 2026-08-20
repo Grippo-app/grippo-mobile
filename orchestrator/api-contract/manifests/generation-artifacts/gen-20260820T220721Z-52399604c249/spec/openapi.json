@@ -1,0 +1,2989 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "Login by email and password",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "Register a new user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email already taken / validation error"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "operationId": "AuthController_google",
+        "summary": "Login/Register with Google ID token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Google login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Google token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/apple": {
+      "post": {
+        "operationId": "AuthController_apple",
+        "summary": "Login/Register with Apple authorization code",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppleLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Apple login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Apple token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "summary": "Refresh access token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "refreshToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired refresh token"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UsersController_getUser",
+        "summary": "Get current user profile by token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User profile returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_createProfile",
+        "summary": "Create user profile after registration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User profile created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Profile already exists"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_deleteAccount",
+        "summary": "Delete current user account",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Account deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/experience": {
+      "post": {
+        "operationId": "UsersController_updateExperience",
+        "summary": "Update user experience level",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExperienceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Experience updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Profile does not exist"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/height": {
+      "post": {
+        "operationId": "UsersController_updateHeight",
+        "summary": "Update user height",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHeightRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Height updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Profile does not exist"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/excluded-muscles": {
+      "get": {
+        "operationId": "UsersController_getExcludedMuscles",
+        "summary": "Get all excluded muscles for current user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Excluded muscles fetched"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_updateExcludedMuscles",
+        "summary": "Replace excluded muscles with provided list",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExcludedIdsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Excluded muscles updated"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/excluded-equipments": {
+      "get": {
+        "operationId": "UsersController_getExcludedEquipments",
+        "summary": "Get all excluded equipments for current user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Excluded equipments fetched"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_updateExcludedEquipments",
+        "summary": "Replace excluded equipments with provided list",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExcludedIdsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Excluded equipments updated"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/goal": {
+      "post": {
+        "operationId": "UsersController_setGoal",
+        "summary": "Set or update goal profile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Goal set/updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User profile not created yet"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_getGoal",
+        "summary": "Get current goal profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Goal returned or null if not set",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User profile not created yet"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/trainings": {
+      "get": {
+        "operationId": "TrainingsController_getTrainings",
+        "summary": "Get all trainings in date range for current user",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "example": "2026-04-30T10:17:55.672Z",
+            "description": "Start date (ISO)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "example": "2026-04-30T10:17:55.672Z",
+            "description": "End date (ISO)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trainings returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingsEntity"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "trainings"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "TrainingsController_createTraining",
+        "summary": "Create a new training for current user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Training created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingCreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data provided"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "trainings"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "TrainingsController_updateTraining",
+        "summary": "Update an existing training for current user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54",
+            "description": "Training ID to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Training updated successfully"
+          },
+          "400": {
+            "description": "Invalid data provided"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training not found or access denied"
+          }
+        },
+        "tags": [
+          "trainings"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/trainings/{id}": {
+      "get": {
+        "operationId": "TrainingsController_getTrainingById",
+        "summary": "Get training details by ID for current user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Training details returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingsEntity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "trainings"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "TrainingsController_deleteTraining",
+        "summary": "Delete a training by ID for current user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Training deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training not found or access denied"
+          }
+        },
+        "tags": [
+          "trainings"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/exercise-examples": {
+      "get": {
+        "operationId": "ExerciseExampleController_getExerciseExamples",
+        "summary": "List exercise examples with per-user stats (usageCount, lastUsed)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExerciseExampleWithStatsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "exercise-examples"
+        ],
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/exercise-examples/{id}": {
+      "get": {
+        "operationId": "ExerciseExampleController_getExerciseExampleById",
+        "summary": "Get exercise example by ID with per-user stats (usageCount, lastUsed)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Exercise example ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exercise example returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseExampleWithStatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Exercise example not found"
+          }
+        },
+        "tags": [
+          "exercise-examples"
+        ],
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/muscles": {
+      "get": {
+        "operationId": "MusclesController_getMuscles",
+        "summary": "Get public muscle list (unauthorized access allowed)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returned public muscle list"
+          }
+        },
+        "tags": [
+          "muscles"
+        ]
+      }
+    },
+    "/weight-history": {
+      "get": {
+        "operationId": "WeightHistoryController_getWeightHistory",
+        "summary": "Get full weight history for current user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Weight history fetched successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "weight-history"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "WeightHistoryController_setWeightHistory",
+        "summary": "Add new weight entry for current user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightHistoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Weight entry added"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "weight-history"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/weight-history/{id}": {
+      "delete": {
+        "operationId": "WeightHistoryController_removeWeightHistory",
+        "summary": "Remove weight entry by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Weight entry deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "weight-history"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/exercise-metrics/exercise-example/{id}/achievements": {
+      "get": {
+        "operationId": "ExerciseMetricsController_getAchievements",
+        "summary": "Get aggregated achievements for the exercise example",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseAchievementsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "exercise-metrics"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/exercise-metrics/exercise-example/{id}/recent": {
+      "get": {
+        "operationId": "ExerciseMetricsController_getRecentExercises",
+        "summary": "Get most recent exercises for the exercise example",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of recent exercises with iterations. Default limit is 10."
+          }
+        },
+        "tags": [
+          "exercise-metrics"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/equipments": {
+      "get": {
+        "operationId": "EquipmentsController_getEquipments",
+        "summary": "Get public equipment list (unauthorized access allowed)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returned public equipment list"
+          }
+        },
+        "tags": [
+          "equipments"
+        ]
+      }
+    },
+    "/admin/exercise-examples": {
+      "post": {
+        "operationId": "AdminController_createExerciseExample",
+        "summary": "Create a new exercise example (admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExerciseExampleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exercise example created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseExampleCreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data provided"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "AdminController_updateExerciseExample",
+        "summary": "Update an existing exercise example (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54",
+            "description": "Exercise example ID to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExerciseExampleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Exercise example updated successfully"
+          },
+          "400": {
+            "description": "Invalid data provided"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Exercise example not found"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/exercise-examples/{id}": {
+      "delete": {
+        "operationId": "AdminController_deleteExerciseExample",
+        "summary": "Delete an exercise example (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Exercise example ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Exercise example deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Exercise example not found"
+          },
+          "409": {
+            "description": "Example is referenced by exercises"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users/make-admin": {
+      "post": {
+        "operationId": "AdminController_makeAdmin",
+        "summary": "Promote user to admin role",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignAdminRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User promoted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload or email already used"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "AdminController_getUsers",
+        "summary": "List all users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Users retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminUserResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users/{id}/role": {
+      "put": {
+        "operationId": "AdminController_setUserRole",
+        "summary": "Set user role",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSetRoleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User role updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users/{id}/goal": {
+      "get": {
+        "operationId": "AdminController_getUserGoal",
+        "summary": "Get goal of any user (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Goal returned, or null if user has no profile/goal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users/{id}/trainings": {
+      "get": {
+        "operationId": "AdminController_getUserTrainings",
+        "summary": "Get trainings of any user in date range (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "example": "2026-04-30T10:17:55.711Z",
+            "description": "Start date (ISO)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "example": "2026-04-30T10:17:55.711Z",
+            "description": "End date (ISO)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trainings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingsEntity"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users/{id}/weight-history": {
+      "get": {
+        "operationId": "AdminController_getUserWeightHistory",
+        "summary": "Get full weight history of any user (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Weight history (ordered DESC)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeightHistoryEntity"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/admin/users/{id}": {
+      "delete": {
+        "operationId": "AdminController_deleteUser",
+        "summary": "Remove user by admin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID (UUID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/push-tokens": {
+      "post": {
+        "operationId": "PushTokensController_savePushToken",
+        "summary": "Register or update a push token for the current device",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Push token saved"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "push-tokens"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "PushTokensController_deletePushTokens",
+        "summary": "Delete all push tokens for the current user",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Push tokens deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "push-tokens"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "🏋️ Grippo API",
+    "description": "📘 Full documentation for Grippo API endpoints.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "/",
+      "description": "Local server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Enter JWT token"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "grippo@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "qwerty123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "string",
+            "description": "User ID"
+          },
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "Access JWT token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "Refresh JWT token"
+          }
+        },
+        "required": [
+          "id",
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "grippo@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "qwerty123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "GoogleLoginRequest": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRmN2M1",
+            "description": "Google ID token"
+          }
+        },
+        "required": [
+          "idToken"
+        ]
+      },
+      "AppleLoginRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "c2FtcGxlX2F1dGhjb2Rl",
+            "description": "Apple authorization code"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "UserProfileResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "72a0317f-e321-4da7-9869-91bf23d655bb"
+          },
+          "name": {
+            "type": "string",
+            "example": "Max"
+          },
+          "height": {
+            "type": "number",
+            "example": 175
+          },
+          "experience": {
+            "type": "string",
+            "example": "pro",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "pro"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "example": 82.5,
+            "description": "Last recorded weight in kilograms",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "height",
+          "experience",
+          "weight"
+        ]
+      },
+      "UserTrainingStatsResponse": {
+        "type": "object",
+        "properties": {
+          "trainingsCount": {
+            "type": "number",
+            "example": 24
+          },
+          "totalDuration": {
+            "type": "number",
+            "example": 1080,
+            "description": "Total training duration in the same unit as training.duration"
+          },
+          "totalVolume": {
+            "type": "number",
+            "example": 15432.5
+          },
+          "totalRepetitions": {
+            "type": "number",
+            "example": 6321
+          }
+        },
+        "required": [
+          "trainingsCount",
+          "totalDuration",
+          "totalVolume",
+          "totalRepetitions"
+        ]
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "role": {
+            "type": "string",
+            "example": "default",
+            "enum": [
+              "default",
+              "admin"
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.611Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.611Z"
+          },
+          "profile": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserProfileResponse"
+              }
+            ]
+          },
+          "stats": {
+            "$ref": "#/components/schemas/UserTrainingStatsResponse"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "createdAt",
+          "updatedAt",
+          "profile",
+          "stats"
+        ]
+      },
+      "CreateUserProfileRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Max"
+          },
+          "weight": {
+            "type": "number",
+            "example": 82.5,
+            "description": "Weight in kilograms (e.g., 82.5)"
+          },
+          "height": {
+            "type": "number",
+            "example": 175,
+            "description": "175 = 175cm"
+          },
+          "experience": {
+            "type": "enum",
+            "example": "pro",
+            "description": "User experience"
+          },
+          "excludeMuscleIds": {
+            "type": "array",
+            "example": [
+              "2e0faf2b-31a5-4c63-ac15-454be132796f"
+            ],
+            "description": "Excluded muscle ids"
+          },
+          "excludeEquipmentIds": {
+            "type": "array",
+            "example": [
+              "b17ae8af-2d78-4e77-b45b-39253c28247a"
+            ],
+            "description": "Excluded equipment ids"
+          }
+        },
+        "required": [
+          "name",
+          "weight",
+          "height",
+          "experience"
+        ]
+      },
+      "UpdateExperienceRequest": {
+        "type": "object",
+        "properties": {
+          "experience": {
+            "type": "string",
+            "example": "pro",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              "pro"
+            ],
+            "description": "New experience level for the user profile"
+          }
+        },
+        "required": [
+          "experience"
+        ]
+      },
+      "UpdateHeightRequest": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "number",
+            "example": 175,
+            "description": "New height in centimeters"
+          }
+        },
+        "required": [
+          "height"
+        ]
+      },
+      "UpdateExcludedIdsDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "description": "List of IDs to exclude",
+            "example": [
+              "a3f4b7c2-2db5-4e99-a95b-11db59f1b191"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "GoalRequest": {
+        "type": "object",
+        "properties": {
+          "primaryGoal": {
+            "type": "string",
+            "example": "build_muscle",
+            "enum": [
+              "build_muscle",
+              "get_stronger",
+              "lose_fat",
+              "return_to_training",
+              "maintain",
+              "general_fitness"
+            ]
+          },
+          "secondaryGoal": {
+            "type": "string",
+            "example": "get_stronger",
+            "enum": [
+              "build_muscle",
+              "get_stronger",
+              "lose_fat",
+              "return_to_training",
+              "maintain",
+              "general_fitness",
+              "consistency"
+            ],
+            "nullable": true
+          },
+          "target": {
+            "type": "string",
+            "example": "2026-04-30T10:17:55.621Z",
+            "nullable": true
+          },
+          "personalizations": {
+            "type": "array",
+            "example": [
+              "low_frequency",
+              "sport_grappling",
+              "lower_back_care"
+            ],
+            "default": [],
+            "items": {
+              "type": "string",
+              "enum": [
+                "low_frequency",
+                "moderate_frequency",
+                "high_frequency",
+                "weekdays_only",
+                "weekends_only",
+                "flexible_schedule",
+                "unpredictable_schedule",
+                "minutes_up_to_45",
+                "minutes_45_to_90",
+                "minutes_90_plus",
+                "flexible_duration",
+                "high_stress_lifestyle",
+                "poor_sleep_pattern",
+                "low_energy_tendency",
+                "sedentary_job",
+                "physically_active_job",
+                "returning_after_break",
+                "recovering_from_injury",
+                "limited_range_of_motion",
+                "fatigue_management",
+                "recovery_focus",
+                "mobility_focus",
+                "neck_care",
+                "lower_back_care",
+                "upper_back_care",
+                "shoulder_care",
+                "elbow_care",
+                "wrist_care",
+                "hip_care",
+                "knee_care",
+                "ankle_care",
+                "hypertension",
+                "diabetes",
+                "asthma",
+                "osteoporosis",
+                "arthritis",
+                "herniated_disc",
+                "chronic_pain",
+                "pregnancy",
+                "postpartum",
+                "avoid_high_intensity",
+                "avoid_heavy_loading",
+                "avoid_high_impact",
+                "avoid_deep_squats",
+                "avoid_lunges",
+                "avoid_overhead_work",
+                "avoid_heavy_spinal_loading",
+                "avoid_spinal_flexion",
+                "avoid_twisting",
+                "avoid_floor_work",
+                "avoid_inversions",
+                "avoid_valsalva",
+                "needs_supported_movements",
+                "sport_powerlifting",
+                "sport_bodybuilding",
+                "sport_olympic_weightlifting",
+                "sport_crossfit",
+                "sport_calisthenics",
+                "sport_running",
+                "sport_cycling",
+                "sport_swimming",
+                "sport_grappling",
+                "sport_striking",
+                "sport_team_ball_sports",
+                "sport_racquet_sports",
+                "sport_climbing",
+                "sport_winter_board_sports",
+                "sport_yoga_or_pilates",
+                "focus_chest",
+                "focus_back",
+                "focus_shoulders",
+                "focus_rear_delts",
+                "focus_arms",
+                "focus_forearms_and_grip",
+                "focus_abs_and_core",
+                "focus_legs",
+                "focus_glutes",
+                "focus_quadriceps",
+                "focus_hamstrings",
+                "focus_calves",
+                "improve_cardio",
+                "improve_muscular_endurance",
+                "improve_explosive_power",
+                "improve_speed",
+                "improve_flexibility",
+                "improve_balance",
+                "improve_grip_strength",
+                "improve_core_stability",
+                "simple_plan",
+                "lower_volume",
+                "higher_volume",
+                "gradual_progression",
+                "aggressive_progression",
+                "prefer_full_body",
+                "prefer_upper_lower",
+                "prefer_push_pull_legs",
+                "prefer_split_routine",
+                "prefer_straight_sets",
+                "prefer_supersets",
+                "prefer_circuits",
+                "prefer_heavy_compounds",
+                "prefer_free_weights",
+                "prefer_machines",
+                "prefer_cables",
+                "prefer_bodyweight",
+                "phase_bulking",
+                "phase_cutting",
+                "phase_maintenance",
+                "phase_deload",
+                "phase_competition_prep"
+              ]
+            }
+          }
+        },
+        "required": [
+          "primaryGoal"
+        ]
+      },
+      "GoalResponse": {
+        "type": "object",
+        "properties": {
+          "primaryGoal": {
+            "type": "string",
+            "example": "build_muscle",
+            "enum": [
+              "build_muscle",
+              "get_stronger",
+              "lose_fat",
+              "return_to_training",
+              "maintain",
+              "general_fitness"
+            ]
+          },
+          "secondaryGoal": {
+            "type": "string",
+            "example": "get_stronger",
+            "enum": [
+              "build_muscle",
+              "get_stronger",
+              "lose_fat",
+              "return_to_training",
+              "maintain",
+              "general_fitness",
+              "consistency"
+            ],
+            "nullable": true
+          },
+          "target": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.623Z",
+            "nullable": true
+          },
+          "personalizations": {
+            "type": "array",
+            "example": [
+              "minutes_45_to_90"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "low_frequency",
+                "moderate_frequency",
+                "high_frequency",
+                "weekdays_only",
+                "weekends_only",
+                "flexible_schedule",
+                "unpredictable_schedule",
+                "minutes_up_to_45",
+                "minutes_45_to_90",
+                "minutes_90_plus",
+                "flexible_duration",
+                "high_stress_lifestyle",
+                "poor_sleep_pattern",
+                "low_energy_tendency",
+                "sedentary_job",
+                "physically_active_job",
+                "returning_after_break",
+                "recovering_from_injury",
+                "limited_range_of_motion",
+                "fatigue_management",
+                "recovery_focus",
+                "mobility_focus",
+                "neck_care",
+                "lower_back_care",
+                "upper_back_care",
+                "shoulder_care",
+                "elbow_care",
+                "wrist_care",
+                "hip_care",
+                "knee_care",
+                "ankle_care",
+                "hypertension",
+                "diabetes",
+                "asthma",
+                "osteoporosis",
+                "arthritis",
+                "herniated_disc",
+                "chronic_pain",
+                "pregnancy",
+                "postpartum",
+                "avoid_high_intensity",
+                "avoid_heavy_loading",
+                "avoid_high_impact",
+                "avoid_deep_squats",
+                "avoid_lunges",
+                "avoid_overhead_work",
+                "avoid_heavy_spinal_loading",
+                "avoid_spinal_flexion",
+                "avoid_twisting",
+                "avoid_floor_work",
+                "avoid_inversions",
+                "avoid_valsalva",
+                "needs_supported_movements",
+                "sport_powerlifting",
+                "sport_bodybuilding",
+                "sport_olympic_weightlifting",
+                "sport_crossfit",
+                "sport_calisthenics",
+                "sport_running",
+                "sport_cycling",
+                "sport_swimming",
+                "sport_grappling",
+                "sport_striking",
+                "sport_team_ball_sports",
+                "sport_racquet_sports",
+                "sport_climbing",
+                "sport_winter_board_sports",
+                "sport_yoga_or_pilates",
+                "focus_chest",
+                "focus_back",
+                "focus_shoulders",
+                "focus_rear_delts",
+                "focus_arms",
+                "focus_forearms_and_grip",
+                "focus_abs_and_core",
+                "focus_legs",
+                "focus_glutes",
+                "focus_quadriceps",
+                "focus_hamstrings",
+                "focus_calves",
+                "improve_cardio",
+                "improve_muscular_endurance",
+                "improve_explosive_power",
+                "improve_speed",
+                "improve_flexibility",
+                "improve_balance",
+                "improve_grip_strength",
+                "improve_core_stability",
+                "simple_plan",
+                "lower_volume",
+                "higher_volume",
+                "gradual_progression",
+                "aggressive_progression",
+                "prefer_full_body",
+                "prefer_upper_lower",
+                "prefer_push_pull_legs",
+                "prefer_split_routine",
+                "prefer_straight_sets",
+                "prefer_supersets",
+                "prefer_circuits",
+                "prefer_heavy_compounds",
+                "prefer_free_weights",
+                "prefer_machines",
+                "prefer_cables",
+                "prefer_bodyweight",
+                "phase_bulking",
+                "phase_cutting",
+                "phase_maintenance",
+                "phase_deload",
+                "phase_competition_prep"
+              ]
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "example": 0.9,
+            "minimum": 0,
+            "maximum": 1
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.623Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.623Z"
+          },
+          "lastConfirmedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.623Z",
+            "nullable": true
+          }
+        },
+        "required": [
+          "primaryGoal",
+          "secondaryGoal",
+          "target",
+          "personalizations",
+          "confidence",
+          "createdAt",
+          "updatedAt",
+          "lastConfirmedAt"
+        ]
+      },
+      "TrainingsEntity": {
+        "type": "object",
+        "properties": {}
+      },
+      "ExercisesEntity": {
+        "type": "object",
+        "properties": {}
+      },
+      "ExerciseComponentsExternalWeightDto": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "required"
+        ]
+      },
+      "ExerciseComponentsBodyWeightDto": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "example": true
+          },
+          "multiplier": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "required",
+          "multiplier"
+        ]
+      },
+      "ExerciseComponentsExtraWeightDto": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "required"
+        ]
+      },
+      "ExerciseComponentsAssistWeightDto": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "required"
+        ]
+      },
+      "ExerciseComponentsDto": {
+        "type": "object",
+        "properties": {
+          "externalWeight": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsExternalWeightDto"
+              }
+            ],
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsExternalWeightDto"
+              }
+            ]
+          },
+          "bodyWeight": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsBodyWeightDto"
+              }
+            ],
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsBodyWeightDto"
+              }
+            ]
+          },
+          "extraWeight": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsExtraWeightDto"
+              }
+            ],
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsExtraWeightDto"
+              }
+            ]
+          },
+          "assistWeight": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsAssistWeightDto"
+              }
+            ],
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExerciseComponentsAssistWeightDto"
+              }
+            ]
+          }
+        }
+      },
+      "ExerciseExamplesEntity": {
+        "type": "object",
+        "properties": {
+          "components": {
+            "$ref": "#/components/schemas/ExerciseComponentsDto"
+          }
+        },
+        "required": [
+          "components"
+        ]
+      },
+      "ExerciseIterationRequest": {
+        "type": "object",
+        "properties": {
+          "assistWeight": {
+            "type": "number",
+            "example": 20,
+            "nullable": true
+          },
+          "externalWeight": {
+            "type": "number",
+            "example": 100.5,
+            "nullable": true
+          },
+          "extraWeight": {
+            "type": "number",
+            "example": 10,
+            "nullable": true
+          },
+          "bodyWeight": {
+            "type": "number",
+            "example": 82.5,
+            "nullable": true
+          },
+          "bodyMultiplier": {
+            "type": "number",
+            "example": 1,
+            "nullable": true
+          },
+          "repetitions": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "repetitions"
+        ]
+      },
+      "TrainingExerciseRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "bench press"
+          },
+          "volume": {
+            "type": "number",
+            "example": 2000.5,
+            "description": "Volume in kg (1 decimal)"
+          },
+          "repetitions": {
+            "type": "number",
+            "example": 50
+          },
+          "intensity": {
+            "type": "number",
+            "example": 60,
+            "description": "Intensity % (2 decimals allowed)"
+          },
+          "iterations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseIterationRequest"
+            }
+          },
+          "exerciseExampleId": {
+            "type": "string",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54",
+            "description": "Exercise example ID"
+          }
+        },
+        "required": [
+          "name",
+          "volume",
+          "repetitions",
+          "intensity",
+          "iterations"
+        ]
+      },
+      "TrainingsRequest": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "number",
+            "example": 25,
+            "description": "Duration in minutes"
+          },
+          "volume": {
+            "type": "number",
+            "example": 20000.5,
+            "description": "Total volume in kg (1 decimal)"
+          },
+          "repetitions": {
+            "type": "number",
+            "example": 150
+          },
+          "intensity": {
+            "type": "number",
+            "example": 60,
+            "description": "Intensity % (2 decimals allowed)"
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingExerciseRequest"
+            }
+          }
+        },
+        "required": [
+          "duration",
+          "volume",
+          "repetitions",
+          "intensity",
+          "exercises"
+        ]
+      },
+      "TrainingCreateResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54",
+            "description": "Training ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ExerciseExampleResponseDto": {
+        "type": "object",
+        "properties": {
+          "components": {
+            "$ref": "#/components/schemas/ExerciseComponentsDto"
+          }
+        },
+        "required": [
+          "components"
+        ]
+      },
+      "ExerciseExampleWithStatsResponse": {
+        "type": "object",
+        "properties": {
+          "entity": {
+            "$ref": "#/components/schemas/ExerciseExampleResponseDto"
+          },
+          "usageCount": {
+            "type": "number",
+            "example": 12
+          },
+          "lastUsed": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "example": "2026-04-30T10:17:55.680Z"
+          }
+        },
+        "required": [
+          "entity",
+          "usageCount",
+          "lastUsed"
+        ]
+      },
+      "WeightHistoryRequest": {
+        "type": "object",
+        "properties": {
+          "weight": {
+            "type": "number",
+            "example": 88
+          }
+        },
+        "required": [
+          "weight"
+        ]
+      },
+      "BestWeightResponseDto": {
+        "type": "object",
+        "properties": {
+          "iterationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "exerciseExampleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "weight": {
+            "type": "number",
+            "example": 100
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "iterationId",
+          "exerciseId",
+          "exerciseExampleId",
+          "weight",
+          "createdAt"
+        ]
+      },
+      "BestTonnageResponseDto": {
+        "type": "object",
+        "properties": {
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "exerciseExampleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "tonnage": {
+            "type": "number",
+            "example": 1000,
+            "description": "Total lifted weight"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "exerciseId",
+          "exerciseExampleId",
+          "tonnage",
+          "createdAt"
+        ]
+      },
+      "BestRepetitionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "iterationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "exerciseExampleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "repetitions": {
+            "type": "number",
+            "example": 12
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "iterationId",
+          "exerciseId",
+          "exerciseExampleId",
+          "repetitions",
+          "createdAt"
+        ]
+      },
+      "PeakIntensityResponseDto": {
+        "type": "object",
+        "properties": {
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "exerciseExampleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "intensity": {
+            "type": "number",
+            "example": 0.85
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "exerciseId",
+          "exerciseExampleId",
+          "intensity",
+          "createdAt"
+        ]
+      },
+      "LifetimeVolumeResponseDto": {
+        "type": "object",
+        "properties": {
+          "exerciseExampleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "totalVolume": {
+            "type": "number",
+            "example": 12500
+          },
+          "sessionsCount": {
+            "type": "number",
+            "example": 24
+          },
+          "firstPerformedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "lastPerformedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "exerciseExampleId",
+          "totalVolume",
+          "sessionsCount",
+          "firstPerformedAt",
+          "lastPerformedAt"
+        ]
+      },
+      "ExerciseAchievementsResponseDto": {
+        "type": "object",
+        "properties": {
+          "bestWeight": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BestWeightResponseDto"
+              }
+            ]
+          },
+          "bestTonnage": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BestTonnageResponseDto"
+              }
+            ]
+          },
+          "maxRepetitions": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BestRepetitionsResponseDto"
+              }
+            ]
+          },
+          "peakIntensity": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PeakIntensityResponseDto"
+              }
+            ]
+          },
+          "lifetimeVolume": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LifetimeVolumeResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "bestWeight",
+          "bestTonnage",
+          "maxRepetitions",
+          "peakIntensity",
+          "lifetimeVolume"
+        ]
+      },
+      "ExerciseExampleLocalizedTextDto": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ua",
+              "ru"
+            ],
+            "example": "en"
+          },
+          "value": {
+            "type": "string",
+            "example": "Bench press"
+          }
+        },
+        "required": [
+          "language"
+        ]
+      },
+      "ExerciseExampleBundleRequest": {
+        "type": "object",
+        "properties": {
+          "muscleId": {
+            "type": "string",
+            "example": "3a975ded-af6b-4dd2-9a0e-6e3554e8e6dd"
+          },
+          "percentage": {
+            "type": "int",
+            "example": 20,
+            "description": "percentage"
+          }
+        },
+        "required": [
+          "muscleId",
+          "percentage"
+        ]
+      },
+      "ExerciseExampleEquipmentRefsRequest": {
+        "type": "object",
+        "properties": {
+          "equipmentId": {
+            "type": "string",
+            "example": "9896a0c5-0de2-42de-a274-0e3695b1accf"
+          }
+        },
+        "required": [
+          "equipmentId"
+        ]
+      },
+      "ExerciseExampleRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "example": [
+              {
+                "language": "en",
+                "value": "Bench press"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseExampleLocalizedTextDto"
+            }
+          },
+          "description": {
+            "example": [
+              {
+                "language": "en",
+                "value": "The bench press is a compound strength-training..."
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseExampleLocalizedTextDto"
+            }
+          },
+          "weightType": {
+            "type": "string",
+            "example": "fixed"
+          },
+          "category": {
+            "type": "string",
+            "example": "compound"
+          },
+          "experience": {
+            "type": "string",
+            "example": "pro"
+          },
+          "forceType": {
+            "type": "string",
+            "example": "push"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://static.vecteezy.com/system/resources/thumbnails/022/653/711/small/treadmill-in-modern-gym-toned-image-3d-rendering-generative-ai-free-photo.jpg"
+          },
+          "exerciseExampleBundles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseExampleBundleRequest"
+            }
+          },
+          "equipmentRefs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseExampleEquipmentRefsRequest"
+            }
+          },
+          "components": {
+            "$ref": "#/components/schemas/ExerciseComponentsDto"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "weightType",
+          "category",
+          "experience",
+          "forceType",
+          "imageUrl",
+          "exerciseExampleBundles",
+          "equipmentRefs",
+          "components"
+        ]
+      },
+      "ExerciseExampleCreateResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54",
+            "description": "Exercise example ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "AssignAdminRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AdminUserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "3b828d2f-797f-4a45-9d1d-1d3efe38fb54"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "profileId": {
+            "type": "string",
+            "example": "72a0317f-e321-4da7-9869-91bf23d655bb",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "example": "default",
+            "enum": [
+              "default",
+              "admin"
+            ]
+          },
+          "authTypes": {
+            "type": "array",
+            "example": [
+              "Email"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "Google",
+                "Apple",
+                "Email"
+              ]
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.611Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.611Z"
+          },
+          "lastActivity": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-04-30T10:17:55.611Z",
+            "nullable": true
+          },
+          "workoutsCount": {
+            "type": "number",
+            "example": 12
+          },
+          "profile": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserProfileResponse"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "profileId",
+          "role",
+          "authTypes",
+          "createdAt",
+          "updatedAt",
+          "lastActivity",
+          "workoutsCount",
+          "profile"
+        ]
+      },
+      "AdminSetRoleRequest": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "example": "admin",
+            "enum": [
+              "default",
+              "admin"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "WeightHistoryEntity": {
+        "type": "object",
+        "properties": {}
+      },
+      "PushTokenRequest": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "fcm-token-abc123"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      }
+    }
+  }
+}
