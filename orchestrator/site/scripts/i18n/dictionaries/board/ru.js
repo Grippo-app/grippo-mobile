@@ -351,6 +351,7 @@ const dictionary = Object.freeze({
     'board.action.disabled.action_active':       'Недоступно, пока у задачи есть активный прогон.',
     'board.action.disabled.task_integrity':      'Недоступно, пока не устранена проблема целостности или восстановления.',
     'board.action.disabled.terminal_not_started':'Действие уже в очереди; терминал появится после запуска runner.',
+    'board.action.disabled.session_input_unavailable': 'Текущая сессия не готова принять ответ. Обновите задачу; если запуск уже остановился, появится действие восстановления.',
     'board.action.disabled.action_unavailable':  'Действие недоступно в текущем состоянии задачи.',
 
     'board.overflow.label':       'Дополнительные действия задачи',

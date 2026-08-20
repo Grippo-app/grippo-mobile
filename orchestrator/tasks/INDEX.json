@@ -1,47 +1,8 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-14T17:58:06Z",
+  "generatedAt": "1970-01-01T00:00:00Z",
   "backlog": [],
   "pending": [],
   "todo": [],
-  "done": [
-    {
-      "stem": "TASK_1_dobavit_home_screen",
-      "title": "Добавить Home screen",
-      "state": "done",
-      "sourceRevision": "sha256:7859b80254e06dadc1baec84dcd8b51f105a6a5acae159617cafffa4577598f0",
-      "createdAt": "2026-08-14T17:58:04Z",
-      "doneAt": "2026-08-14T17:58:04Z",
-      "origin": {
-        "kind": "manual",
-        "type": "manual",
-        "ref": "intent-774d0cb4711b71f842de8cb8c18550af71f4875f74655f96e46a77670f4f0522",
-        "fingerprint": "sha256:91b0e627b643525918b0a20a179d18dc1f2053f2320580702793e846d22f74a5"
-      },
-      "dependsOn": [],
-      "splitFrom": null,
-      "outcomeStatus": "completed-with-caveats",
-      "questionsCount": null,
-      "round": null
-    },
-    {
-      "stem": "TASK_2_install_canonical_test_foundation",
-      "title": "Install canonical test foundation",
-      "state": "done",
-      "sourceRevision": "sha256:47ff2d59ec979b841938577160840589c40ab3bf77d8b721b846769bf421e26f",
-      "createdAt": "2026-08-14T03:12:09Z",
-      "doneAt": "2026-08-14T03:12:09Z",
-      "origin": {
-        "kind": "follow-up",
-        "type": "test-foundation-prerequisite",
-        "ref": "TASK_1_dobavit_home_screen",
-        "fingerprint": "sha256:4f398d463e79025d9dd65fa2c4a8727f36c605ab35ce1e5c553fdde84543947b"
-      },
-      "dependsOn": [],
-      "splitFrom": "TASK_1_dobavit_home_screen",
-      "outcomeStatus": "completed-with-caveats",
-      "questionsCount": null,
-      "round": null
-    }
-  ]
+  "done": []
 }

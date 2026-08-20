@@ -143,14 +143,14 @@
       "frontmatterDescriptionSha256": "cb862d92f683a063b21ba82705e492c0b2cbbd6c8dced490bc7944f66887ee43",
       "sourcePath": "orchestrator/skills/task-orchestrator/SKILL.md",
       "installPath": ".claude/skills/task-orchestrator/SKILL.md",
-      "sourceSha256": "968002bee5b1b62ae50169c98f896733801dd3266745885224dd1ff21e4497f8",
+      "sourceSha256": "bdf84e9ce1f9949a83a86d6fa657a6ceac148e4c704ddd1f382bf7d29bcc5e56",
       "referenceSha256s": {
         "references/context-finder.md": "77c9e3a424c9c274bffae833ca023ec1fc6308c9ed7512d78bbbc8c20f0ee24f",
         "references/index.md": "a16028b7b934965b48348fda722a7a1b7c5c4c1cf1cb0918f2363e3330907f5a",
-        "references/outcome-appendix.md": "a6058b8166c46580a44e4a60fceb207a47638038f11136cc7760fe80d1d03d19",
+        "references/outcome-appendix.md": "92ce1578892feecc51792f142204cc77f1757da7757beda78348fe223bc36b4a",
         "references/planner.md": "b28182c5aab1079c9697f64854134c028b6eceddefc50b8e0780353e5058f75c",
         "references/requirements-lookup.md": "bbaa28e2ba82edcf80fe65d9f4ad1e3329f9f60b56e617f734c373f8b5a43485",
-        "references/run-loop.md": "24c3532e190f4524caf8311f966d60c17ba673f0f2fbb2a767818af208cd24e4",
+        "references/run-loop.md": "10646026dd36ca1990ef647ff54a58cd59787002911aa10bbc5d82b8b2ea8c52",
         "references/task-drop.md": "7546f09cc4bd584d9c33be1a5510ffcf665fa792775db120da0ff0e8de05b86b",
         "references/validator-routing.md": "24b453745ba85a103874b89a26bbd5617040dac6e0d8a77129dbc7667f83778f"
       }

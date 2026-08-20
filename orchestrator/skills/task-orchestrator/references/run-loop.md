@@ -96,8 +96,11 @@ the run mode is BLOCKED: report
 `BLOCKED[execution-root]: run requires a manager-provisioned worktree` and
 make no mutation. There is no shared-root run path.
 
-A run NEVER publishes. When every gate is green you write the Outcome draft
-into the control cache and end the turn; the manager seals your tree into one
+A run NEVER publishes. When every gate is green, Step 6 first proves the current
+sealed test-summary, strict-validates the intended Outcome bytes, and creates a
+completed `ship` checkpoint for the exact run/worktree/execution tree. Only then
+do you expose the exact generation-bound Outcome draft in the control cache and
+end the turn; the manager seals your tree into one
 candidate commit and the Board raises **Integrate**. The owner's Integrate runs
 the whole publication — product apply, finalizer prepare, ONE canonical commit,
 finalizer confirm — in the control root. There is no publication command you
@@ -405,8 +408,26 @@ to start.
 
 **Checkpoint receipt after a terminal phase.** A retryable journal row is only
 an index into a separately validated immutable checkpoint. Immediately after a
-phase resolves, and before emitting the matching `phase-end`/`stop`, pass the
-closed JSON input below on stdin:
+phase resolves, and before emitting the matching `phase-end`/`stop`, pipe one
+closed JSON object of exactly this shape on stdin:
+
+```json
+{
+  "runId": "<exact verified lock runId>",
+  "phase": "<current phase>",
+  "attempt": 1,
+  "status": "completed|failed|blocked",
+  "outputReceiptIds": [],
+  "priorPhaseReceiptIds": [],
+  "failureCode": null,
+  "retryPolicy": { "kind": "manual", "safePhase": null, "reasonCode": null }
+}
+```
+
+Replace values according to the rules below; do not add keys or omit empty/null
+fields. `attempt` is the exact current positive attempt, never a guessed or
+defaulted value. Empty stdin, prose, a filename argument, or an inferred journal
+row is a hard refusal. The consumer command is:
 
 ```bash
 node orchestrator/tasks/task-checkpoint.mjs create --stem "$TASK_STEM"
@@ -418,9 +439,10 @@ Use the exact `runId` from the verified task-lock receipt; `status` is
 `completed|failed|blocked`; receipt arrays contain only canonical durable IDs
 actually produced/consumed by the phase (otherwise `[]`). A completed `ship`
 checkpoint is the exception: it MUST consume exactly one current sealed
-`test-summary:<sha256>` receipt for the same run and exact non-null execution
-pin; without it candidate sealing refuses. A failed status needs an allowlisted
-failure code. The retry policy is conservative:
+`test-summary:<sha256>` receipt for the same run, and the checkpoint itself MUST
+carry the exact non-null execution pin; without either, candidate sealing
+refuses. A failed status needs an allowlisted failure code. The retry policy is
+conservative:
 
 - exact `retry-phase` is limited to preflight, validators, assemble,
   runtime/screenshot gates, review, security review, and design-pull, with
@@ -480,7 +502,8 @@ produced by another board task — add an optional `DEPENDS-ON: TASK_<…>` line
        Critical/Major → goto 4; Minor/Style/Info → batch or ### Caveats
 5.5 conditional security-review (only if diff touches auth/token/credential).
        no severity threshold; cap: 2 iterations
-6.  finish same turn: summary → 6a Outcome draft into the control cache → 6b–6d
+6.  finish same turn: current sealed test-summary → strict Outcome validation →
+       exact completed ship checkpoint → generation-bound Outcome draft → 6b–6d
        hand off — the manager seals the candidate, the owner's Integrate runs
        product apply → finalizer prepare → one canonical commit → confirm
 ```
@@ -790,15 +813,26 @@ runs exactly once per Step-4 entry; the existing Step-4 outer re-entry cap
 
 ## Step 6 — Finalize (same turn)
 
-When every gate is green, post the chat summary and write the Outcome draft into
-the control cache — **both in one turn** — then end the turn. The chat summary
-block and the structured `## Outcome` draft (Steps 6a–6d) are covered in
+When every gate is green, finish the current evidence chain and post the chat
+summary in **one turn**: retain the current sealed Step-4.4 test-summary, strict-
+validate the intended Outcome bytes, publish a completed `ship` checkpoint
+bound to the exact current `runId`, worktree, base, execution tree and target,
+then expose the exact generation-bound Outcome draft and end the turn. The chat
+summary and the structured `## Outcome` handoff (Steps 6a–6d) are covered in
 [`outcome-appendix.md`](outcome-appendix.md).
+
+The final draft is the manager's completion signal, so ordering is mandatory:
+do not place `<stem>.$ORCHESTRATOR_WORKTREE_ID.draft.md` at its final path before
+the current test-summary, strict parser result and completed ship checkpoint all
+exist. If any one is absent, stale, foreign or malformed, the turn is still
+intermediate: keep the fresh lock, leave no exact draft, and route or report the
+typed blocker. A bare draft or a draft for another worktree is never a fallback.
 
 Publication is not yours: the integration transaction owns the todo-file
 mutation, the move to `done/`, the derived artifacts, the canonical commit and
-the lock. Ending the turn WITHOUT the draft is what strands a task — work done,
-candidate sealed, but nothing for Integrate to publish.
+the lock. Ending a successful turn without the draft strands the handoff;
+ending it with a draft before the three evidence fences above fabricates
+completion. Both are contract violations.
 
 ## Escalation triggers
 

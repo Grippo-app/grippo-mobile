@@ -7,7 +7,7 @@
 
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -66,7 +66,8 @@ cp.spawn = function (command, args, options) {
     if (typeof done === 'function') queueMicrotask(() => done(null))
     return true
   }
-  child.stdin.end = () => {}
+  child.stdinEnded = false
+  child.stdin.end = () => { child.stdin.writable = false; child.stdinEnded = true }
   child.stdout = new EventEmitter(); child.stderr = new EventEmitter()
   child.kill = (signal) => {
     child.pid = null
@@ -180,13 +181,70 @@ try {
       sourceRevision: 'sha256:' + 'b'.repeat(64),
     })
     assert.equal(started.running, true, started.error)
+    assert.equal(sessions.taskWriterLeaseHeldForStem('TASK_8_probe'), true)
     lastChild.emit('exit', 0, null)
     lastChild.emit('close')
-    await new Promise((resolve) => setTimeout(resolve, 15))
     assert.equal(seals, 0, 'a detached writer can still change the candidate tree')
     syntheticGroupLive = false
-    await new Promise((resolve) => setTimeout(resolve, 30))
+    await new Promise((resolve) => setTimeout(resolve, 80))
+    assert.equal(sessions.taskWriterLeaseHeldForStem('TASK_8_probe'), false,
+      'the exact lease is withdrawn after process-group death')
     assert.equal(seals, 1, 'seal starts only after process-tree death and exact lease release')
+  })
+
+  await check('an exact Outcome handoff closes immediately and seals only after close plus group-death proof', async () => {
+    const stem = 'TASK_9_probe'
+    let seals = 0
+    let leaseHeldAtSeal = null
+    worktreeManager.seal = () => {
+      seals++
+      leaseHeldAtSeal = sessions.taskWriterLeaseHeldForStem(stem)
+      return { ok: true, entries: 1, candidateCommit: 'd'.repeat(40) }
+    }
+    worktreeManager.sessionExecutionContext = ({ worktreeId, runId, stem: requestedStem, sourceRevision }) => {
+      if (worktreeId !== context.worktreeId || runId !== context.runId || requestedStem !== stem ||
+          sourceRevision !== 'sha256:' + 'b'.repeat(64)) {
+        return { ok: false, code: 'SESSION_EXECUTION_BINDING_INVALID' }
+      }
+      return { ok: true, context: { ...resolvedContext, candidateRef: resolvedContext.candidateRef.replace('TASK_7', 'TASK_9') } }
+    }
+    writeFileSync(join(cache, 'locks', stem + '.json'), '{}\n')
+    writeFileSync(join(cache, 'finalizations', stem + '.' + context.worktreeId + '.draft.md'), [
+      '---', '', '## Outcome', '**Status**: completed',
+      '**Completed at**: 2026-08-15T00:00:00.000Z', '**Reviewer**: codex',
+      '**Review iterations**: 1', '', '### Build gates', '- `tests` — pass', '',
+      '### Runtime verify', '- Gate: skipped (no runtime-observable change)',
+      '- Result: n/a — no runtime behavior', '', '### Acceptance trace', '- none', '',
+      '### Caveats', '- none', '', '### Follow-ups', '- none', '',
+      '### Files touched', '- none', '',
+    ].join('\n'))
+
+    syntheticGroupLive = true
+    const started = sessions.start('task:' + stem, {
+      stem, action: 'run', prompt: 'do it', executionContext: context,
+      sourceRevision: 'sha256:' + 'b'.repeat(64),
+    })
+    assert.equal(started.running, true, started.error)
+    lastChild.stdout.emit('data', Buffer.from(JSON.stringify({
+      type: 'result', subtype: 'success', is_error: false, result: 'done',
+    }) + '\n'))
+    const runChild = lastChild
+    assert.equal(runChild.stdinEnded, true,
+      'the exact terminal handoff closes before queued continuation timers can reuse the mutating child')
+    assert.equal(sessions.taskWriterLeaseHeldForStem(stem), true,
+      'the writer lease stays held until process-tree death is proven')
+
+    runChild.emit('exit', 0, null)
+    assert.equal(seals, 0, 'parent exit alone cannot seal while its process group remains alive')
+    syntheticGroupLive = false
+    await new Promise((resolve) => setTimeout(resolve, 80))
+    assert.equal(seals, 0,
+      'exit plus group death cannot drop the inherited-stdio close fence')
+    runChild.emit('close')
+    await new Promise((resolve) => setTimeout(resolve, 80))
+    assert.equal(seals, 1, 'close plus process-group death settles the exact writer generation')
+    assert.equal(leaseHeldAtSeal, false, 'the exact writer lease is released before sealing')
+    assert.equal(sessions.taskWriterLeaseHeldForStem(stem), false)
   })
 
   await check('the sidecar validator enforces a complete-or-absent execution binding', () => {

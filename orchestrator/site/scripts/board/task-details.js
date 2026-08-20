@@ -70,7 +70,10 @@ export function createTaskDetails(details, options) {
   overview = taskOverview(details, options);
   actionPane = taskActionPane(details, options);
   const operationalFacts = overview.node.querySelector('.task-details__facts');
-  if (operationalFacts) header.appendChild(operationalFacts);
+  // When the task needs action, preserve the scarce modal height for that
+  // action. The same facts remain first in Overview instead of pushing the
+  // question/recovery content below the fold on short mobile viewports.
+  if (operationalFacts && !actionPane) header.appendChild(operationalFacts);
   const panes = {
     overview: overview.node,
     activity: el('div', {
@@ -341,8 +344,11 @@ export function createTaskDetails(details, options) {
   selectedSection = initialTaskDetailsSection(details, options.preferredSection);
   select(selectedSection, false);
   function focusCurrentWork() {
-    const target = root.querySelector('[data-task-section="questions"] input, [data-task-section="questions"] textarea');
-    if (!target || selectedSection !== 'action') return;
+    if (selectedSection !== 'action' || !actionPane) return;
+    const paneWrap = root.querySelector('.task-details__panes');
+    if (paneWrap && paneWrap.clientHeight < 96) root.classList.add('task-details--reflow');
+    const target = root.querySelector('[data-task-section="questions"] input, [data-task-section="questions"] textarea') || actionPane.node;
+    target.scrollIntoView({ block: 'nearest' });
     try { target.focus({ preventScroll: true }); }
     catch (_) { target.focus(); }
   }

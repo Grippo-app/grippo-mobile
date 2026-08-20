@@ -2,7 +2,10 @@
 
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  linkSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, symlinkSync, unlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { PassThrough } from 'node:stream'
@@ -158,10 +161,49 @@ try {
 
     assert.equal(sessions.freshLockBlocksAutoClose(session), true,
       'a fresh task lock still defers an intermediate run turn')
+    writeFileSync(join(cache, 'finalizations', stem + '.draft.md'), 'bare\n')
+    assert.equal(sessions.freshLockBlocksAutoClose(session), true,
+      'a bare draft cannot close a generation-bound run')
     writeFileSync(join(cache, 'finalizations', stem + '.wt-' + 'b'.repeat(32) + '.draft.md'), 'foreign\n')
     assert.equal(sessions.freshLockBlocksAutoClose(session), true,
       'another generation cannot close this run')
-    writeFileSync(draft, '---\n\n## Outcome\n')
+
+    const unsafeSource = join(cache, 'finalizations', stem + '.unsafe-source.md')
+    writeFileSync(unsafeSource, 'unsafe\n')
+    symlinkSync(unsafeSource, draft)
+    assert.equal(sessions.completionHandoffReady(session), false,
+      'a symlink cannot impersonate the exact handoff')
+    unlinkSync(draft)
+    linkSync(unsafeSource, draft)
+    assert.equal(sessions.completionHandoffReady(session), false,
+      'a multiply-linked regular file is not an ownership-safe handoff')
+    unlinkSync(draft)
+    unlinkSync(unsafeSource)
+
+    const finalizations = join(cache, 'finalizations')
+    const heldFinalizations = join(cache, 'finalizations-held')
+    const redirectedFinalizations = mkdtempSync(join(tmpdir(), 'session-unsafe-finalizations-'))
+    renameSync(finalizations, heldFinalizations)
+    try {
+      symlinkSync(redirectedFinalizations, finalizations)
+      writeFileSync(join(redirectedFinalizations, stem + '.' + worktreeId + '.draft.md'), 'redirected\n')
+      assert.equal(sessions.completionHandoffReady(session), false,
+        'an unsafe finalizations ancestor cannot redirect the exact handoff path')
+    } finally {
+      rmSync(finalizations, { force: true })
+      renameSync(heldFinalizations, finalizations)
+      rmSync(redirectedFinalizations, { recursive: true, force: true })
+    }
+
+    writeFileSync(draft, [
+      '---', '', '## Outcome', '**Status**: completed',
+      '**Completed at**: 2026-08-14T00:00:00.000Z', '**Reviewer**: codex',
+      '**Review iterations**: 1', '', '### Build gates', '- `tests` — pass', '',
+      '### Runtime verify', '- Gate: skipped (no runtime-observable change)',
+      '- Result: n/a — no runtime behavior', '', '### Acceptance trace', '- none', '',
+      '### Caveats', '- none', '', '### Follow-ups', '- none', '',
+      '### Files touched', '- none', '',
+    ].join('\n'))
     assert.equal(sessions.completionHandoffReady(session), true)
     assert.equal(sessions.freshLockBlocksAutoClose(session), false,
       'the exact handoff must let the manager close and seal the child')

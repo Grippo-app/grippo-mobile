@@ -92,8 +92,11 @@ the caller-owned generation. The
    an attempt starts; an invocation failure closes that attempt as failed.
 5.5. **Security review** (conditional; diff touches
     token/auth/credential paths). **No severity threshold** — any finding routes.
-6. **Finish (same turn):** summary → 6a Outcome draft into the control cache →
-    6b–6d hand-off. The manager seals the candidate; the owner's **Integrate**
+6. **Finish (same turn):** current sealed test-summary → strict Outcome-shape
+    validation → completed `ship` checkpoint bound to the exact run/worktree/
+    execution tree → generation-bound Outcome draft in the control cache →
+    6b–6d hand-off. Missing or stale evidence is not completion and MUST NOT
+    leave the exact draft. The manager seals the candidate; the owner's **Integrate**
     runs the whole publication (product apply → finalizer prepare → ONE canonical
     commit → finalizer confirm → lock release). A run never publishes.
 

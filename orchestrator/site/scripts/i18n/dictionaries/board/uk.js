@@ -351,6 +351,7 @@ const dictionary = Object.freeze({
     'board.action.disabled.action_active':       'Недоступно, поки завдання має активний прогін.',
     'board.action.disabled.task_integrity':      'Недоступно, доки не вирішено проблему цілісності або відновлення.',
     'board.action.disabled.terminal_not_started':'Дія вже в черзі; термінал з’явиться після запуску runner.',
+    'board.action.disabled.session_input_unavailable': 'Поточна сесія не готова прийняти відповідь. Оновіть завдання; якщо запуск уже зупинився, з’явиться дія відновлення.',
     'board.action.disabled.action_unavailable':  'Дія недоступна у поточному стані завдання.',
 
     'board.overflow.label':       'Додаткові дії задачі',

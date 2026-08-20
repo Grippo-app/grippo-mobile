@@ -306,6 +306,24 @@ test('attention-required task details lead with one server-owned action surface'
   assert.equal(normalizeTaskDetailsSection(attention, 'questions'), 'action')
   assert.equal(normalizeTaskDetailsSection(attention, 'dependencies'), 'overview')
   assert.equal(normalizeTaskDetailsSection(ordinary, 'action'), 'overview')
+  assert.match(detailsUiSource,
+    /if \(operationalFacts && !actionPane\) header\.appendChild\(operationalFacts\)/)
+  assert.match(detailsUiSource,
+    /target\.scrollIntoView\(\{ block: 'nearest' \}\);[\s\S]*?target\.focus\(\{ preventScroll: true \}\)/)
+  assert.match(detailsUiSource,
+    /const paneWrap = root\.querySelector\('\.task-details__panes'\);[\s\S]*?paneWrap\.clientHeight < 96[\s\S]*?root\.classList\.add\('task-details--reflow'\)/)
+  assert.doesNotMatch(detailsUiSource,
+    /else root\.classList\.remove\('task-details--reflow'\)/)
+  assert.match(detailsUiSource,
+    /root\.querySelector\('\[data-task-section="questions"\] input, \[data-task-section="questions"\] textarea'\) \|\| actionPane\.node/)
+  assert.match(actionPaneUiSource,
+    /'data-task-section': 'action',\s*tabindex: '-1'/)
+  assert.match(panelsCssSource,
+    /\.task-details--reflow\s*\{[\s\S]*?overflow-y:\s*auto;[\s\S]*?scroll-padding-bottom:\s*6rem;/)
+  assert.match(panelsCssSource,
+    /\.task-details--reflow \.task-details__panes\s*\{[\s\S]*?flex:\s*0 0 auto;[\s\S]*?overflow:\s*visible;/)
+  assert.match(panelsCssSource,
+    /\.task-details__action-bar \.board-modal__close-btn\s*\{[\s\S]*?flex:\s*0 0 auto;[\s\S]*?white-space:\s*nowrap;/)
 })
 
 test('question and live-answer forms have one action-pane owner', () => {

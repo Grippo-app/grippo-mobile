@@ -69,6 +69,9 @@ var SESSION_SIDECARS_MAX = 1000;
 var SESSION_SIDECAR_MAX_BYTES = 64 * 1024;
 var SESSION_SIDECARS_TOTAL_MAX_BYTES = 8 * 1024 * 1024;
 var SESSION_EVENTS_MAX_BYTES = 32 * 1024 * 1024;
+// Keep the auto-close handoff guard aligned with integrations.js: an Outcome
+// larger than the integration transaction can consume is not a handoff.
+var OUTCOME_DRAFT_MAX_BYTES = 256 * 1024;
 // v3 adds runId. A sidecar written by an older build has a different field
 // set and is rejected outright — the version is a hard constant, never a
 // behavioural fork, and a session sidecar is regenerable runtime state.
@@ -767,11 +770,16 @@ function sealExecutionCandidate(s) {
   });
 }
 
+function signalSessionProcessGroup(child, signal) {
+  if (!child || !child.pid || process.platform === 'win32') return false;
+  try { process.kill(-child.pid, signal); return true; }
+  catch (e) { return false; }
+}
 function signalSessionTree(child, signal) {
   if (!child || !child.pid) return false;
   if (process.platform !== 'win32') {
-    try { process.kill(-child.pid, signal); return true; }
-    catch (e) { try { child.kill(signal); return true; } catch (e2) { return false; } }
+    if (signalSessionProcessGroup(child, signal)) return true;
+    try { child.kill(signal); return true; } catch (e2) { return false; }
   }
   try { child.kill(signal); return true; } catch (e3) { return false; }
 }
@@ -1203,6 +1211,11 @@ function start(key, meta) {
     if (s.writerLease && (!s.turnResultSeen || s.awaitingTurn || s.stdinWritePending || s.writerTerminationPending)) {
       retainTurnLease(s, 'Claude session parent exited before its mutating turn produced a result; process-tree death is pending proof');
     }
+    // Parent exit is not the stdio `close` fence: a process that escaped the
+    // group can still own an inherited descriptor. Kill only the original
+    // group here (never fall back to the already-exited leader PID), then let
+    // `close` start settlement and require ESRCH before releasing ownership.
+    signalSessionProcessGroup(s.child, 'SIGKILL');
     if (sessions[key] !== s) return;
     if (s.canceled) return;   // cancel() already set endedAt, closed logFd, and wrote the sidecar — don't duplicate
     s.closing = true;
@@ -1246,10 +1259,10 @@ function start(key, meta) {
     if (s.logFd != null) { try { fs.closeSync(s.logFd); } catch (e2) {} s.logFd = null; }
     writeSidecar(s);
   });
-  // `exit` proves only the Claude parent died. `close` also waits for inherited
-  // stdio, then the POSIX process-group probe proves descendants are gone. On
-  // Windows there is no equivalent for these interactive sessions, so an
-  // abnormal turn is retained durably fail-closed instead of guessed safe.
+  // `close` is the settlement trigger: it proves inherited stdio is drained,
+  // and settleTurnLeaseAfterClose additionally proves the POSIX process group
+  // is gone. On Windows there is no equivalent group proof, so ownership is
+  // retained durably fail-closed.
   child.on('close', function () {
     settleTurnLeaseAfterClose(s);
     scheduleTerminalInputDrain(s.key, 0);
@@ -1696,13 +1709,32 @@ function completionHandoffReady(s) {
   var worktreeId = s.executionContext.worktreeId;
   if (!/^wt-[a-f0-9]{32}$/.test(String(worktreeId || '')) || !locks.lockPathFor(s.stem)) return false;
   var draft = path.join(paths.FINALIZATIONS_DIR, s.stem + '.' + worktreeId + '.draft.md');
-  var entry = fileGuards.inspectEntryUnder(PROJECT_ROOT, paths.FINALIZATIONS_DIR, draft);
-  return !!entry && entry.status === 'present' && !!entry.stat &&
-    entry.stat.isFile() && !entry.stat.isSymbolicLink();
+  // This is an ownership signal, not a permissive existence check. The
+  // anchored worker rejects traversal, symlinks, hardlinks, oversized files,
+  // unstable inode/path races and unsafe ancestors before returning bytes.
+  return !!fileGuards.boundedRegularFileUnder(
+    PROJECT_ROOT, paths.FINALIZATIONS_DIR, draft, OUTCOME_DRAFT_MAX_BYTES);
 }
 
 function freshLockBlocksAutoClose(s) {
   return hasFreshLock(s) && !completionHandoffReady(s);
+}
+
+function commitAutoClose(s) {
+  if (!s || s.closing) return;
+  s.closing = true;
+  try { if (s.child && s.child.stdin && s.child.stdin.writable) s.child.stdin.end(); } catch (e) {}
+  // Fallback kill so a process that ignores stdin EOF cannot pin a slot forever.
+  // Registered unconditionally after the try/catch so a throw in stdin.end()
+  // cannot skip it.
+  s._killTimer = setTimeout(function () {
+    if (sessions[s.key] === s && s.running && s.child) {
+      signalSessionTree(s.child, 'SIGTERM');
+      setTimeout(function () {
+        if (sessions[s.key] === s && s.running && s.child) signalSessionTree(s.child, 'SIGKILL');
+      }, 2000);
+    }
+  }, 4000);
 }
 
 // A task session that finished a turn WITHOUT asking the user anything is done —
@@ -1711,7 +1743,13 @@ function freshLockBlocksAutoClose(s) {
 // the terminal. "setup" is exempt (it persists across wizard steps). Best-effort
 // with a fallback kill so a process that ignores stdin EOF can't pin a slot.
 function maybeAutoClose(s) {
-  if (s.key === 'setup' || s.askedThisTurn || !s.running || s.closing) return;
+  if (s.key === 'setup' || !s.running || s.closing) return;
+  // The exact draft is the terminal generation handoff. Commit to closing in
+  // this same stdout callback so a zero-delay queued-input drain cannot reuse
+  // the mutating child after the handoff boundary.
+  var handoffReady = completionHandoffReady(s);
+  if (handoffReady) { commitAutoClose(s); return; }
+  if (s.askedThisTurn) return;
   // A fresh, held lock means the task is still mid-pipeline (the turn ended
   // between phases). Defer the close — keep the session alive so the user can
   // continue it in the terminal — but ARM A RECHECK: without it the deferral is
@@ -1723,31 +1761,19 @@ function maybeAutoClose(s) {
   // orderings. Wait briefly, then re-check — if the session was replaced, ended,
   // started a new turn, asked for input, or is already closing, abort.
   setTimeout(function () {
-    if (sessions[s.key] !== s || !s.running || s.awaitingTurn || s.askedThisTurn || s.closing) return;
+    if (sessions[s.key] !== s || !s.running || s.awaitingTurn || s.closing) return;
+    var delayedHandoffReady = completionHandoffReady(s);
+    if (delayedHandoffReady) { commitAutoClose(s); return; }
+    if (s.askedThisTurn) return;
     // Re-check the lock here too (mirrors the askedThisTurn re-check above): the
     // next pipeline phase may have grabbed/refreshed the lock during this grace
     // window. A fresh lock now means the task is in flight — defer with the same
     // recheck arm as the sync check above (a bare return here was the second,
     // independent path into the permanent-zombie state).
     if (freshLockBlocksAutoClose(s)) { scheduleLockRecheck(s); return; }
-    // Committed to close: release the cap slot and stop deduping against this
-    // (now winding-down) session immediately, instead of waiting up to ~4s for
-    // the child's exit — so a fresh Run for the same stem isn't dropped as a dup.
-    s.closing = true;
-    try { if (s.child && s.child.stdin && s.child.stdin.writable) s.child.stdin.end(); } catch (e) {}
-    // Fallback kill so a process that ignores stdin EOF can't pin a slot forever.
-    // Registered unconditionally after the try/catch so a throw in stdin.end() can't skip it.
-    s._killTimer = setTimeout(function () {
-      if (sessions[s.key] === s && s.running && s.child) {
-        try { s.child.kill('SIGTERM'); } catch (e) {}
-        // SIGKILL escalation: a `claude` child that ignores SIGTERM would orphan,
-        // burn the plan, and pin a MAX_PARALLEL slot. Re-check the same guard so a
-        // child that already exited (slot freed, session replaced) isn't signaled.
-        setTimeout(function () {
-          if (sessions[s.key] === s && s.running && s.child) { try { s.child.kill('SIGKILL'); } catch (e) {} }
-        }, 2000);
-      }
-    }, 4000);
+    // Committed to close: stop deduping against this winding-down session
+    // immediately instead of waiting for the child's exit.
+    commitAutoClose(s);
   }, 800);
 }
 
@@ -1786,12 +1812,12 @@ function scheduleAwaitingIdleClose(s) {
     try { if (s.child && s.child.stdin && s.child.stdin.writable) s.child.stdin.end(); } catch (e) {}
     s._killTimer = setTimeout(function () {
       if (sessions[s.key] === s && s.running && s.child) {
-        try { s.child.kill('SIGTERM'); } catch (e) {}
+        signalSessionTree(s.child, 'SIGTERM');
         // SIGKILL escalation: a `claude` child that ignores SIGTERM would orphan,
         // burn the plan, and pin a MAX_PARALLEL slot. Re-check the same guard so a
         // child that already exited (slot freed, session replaced) isn't signaled.
         setTimeout(function () {
-          if (sessions[s.key] === s && s.running && s.child) { try { s.child.kill('SIGKILL'); } catch (e) {} }
+          if (sessions[s.key] === s && s.running && s.child) signalSessionTree(s.child, 'SIGKILL');
         }, 2000);
       }
     }, 4000);

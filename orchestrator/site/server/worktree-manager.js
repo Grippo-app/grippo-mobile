@@ -62,6 +62,7 @@ var GIT_TIMEOUT_MS = 10 * 1000;
 // a spawn-level overflow still fails closed as GIT_UNAVAILABLE.
 var GIT_MAX_BUFFER = 48 * 1024 * 1024;
 var MAX_RECORD_FILES = 1000;
+var MAX_RECORD_TRANSACTIONS = 100;
 var MAX_WORKTREE_ENTRIES = 200;
 var MAX_TRACKED_PATH_BYTES = 32 * 1024 * 1024; // ls-files scan bound
 // Absolute free-space floor (owner decision: 2 GiB, expressed absolutely —
@@ -308,6 +309,15 @@ function readRecords(dir, authorityRoot, contract, label) {
     out.unavailable = (listed && listed.code) || 'unreadable';
     return out;
   }
+  // Publication/CAS WAL belongs to file-guards, not to either record schema.
+  // A read-only projection must neither parse those JSON files as records nor
+  // look through an unfinished transaction: the public name may be between
+  // its old capture and replacement. Mutating lifecycle entry points reconcile
+  // the exact durable protocol first; observers remain strictly fail-closed.
+  if (listed.names.some(function (name) { return name.indexOf('.guard-') === 0; })) {
+    out.unavailable = 'guard-transaction-pending';
+    return out;
+  }
   listed.names.filter(function (name) { return /^[A-Za-z0-9._-]{1,200}\.json$/.test(name); }).sort()
     .forEach(function (name) {
       var bounded = fileGuards.boundedRegularFileUnder(authorityRoot, dir, path.join(dir, name), contract.MAX_BYTES);
@@ -326,6 +336,19 @@ function readRecords(dir, authorityRoot, contract, label) {
       }
     });
   return out;
+}
+
+function readWorktreeRecordsForMutation() {
+  var recovered = fileGuards.reconcileGuardTransactionsUnder(
+    paths.WORKTREE_RECORDS_AUTHORITY_ROOT, paths.WORKTREE_RECORDS_DIR,
+    { maxEntries: MAX_RECORD_FILES, maxTransactions: MAX_RECORD_TRANSACTIONS });
+  if (!recovered || !recovered.ok || recovered.pending !== 0) {
+    return { active: [], invalid: [], unavailable: recovered &&
+      (recovered.code || Object.keys(recovered.codes || {}).sort().join(',')) ||
+      'guard-transaction-recovery-unavailable' };
+  }
+  return readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
+    worktreeContract, 'WORKTREE_RECORD');
 }
 
 // The complete binding a MANAGED classification requires (beyond the raw
@@ -872,10 +895,10 @@ function provisionUnderLease(options) {
     return provisionFail('PROVISION_ENVIRONMENT_BLOCKED',
       blockers.map(function (row) { return row.code; }).join(',') || prechecks.identity.code);
   }
-  var records = readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
-    worktreeContract, 'WORKTREE_RECORD');
+  var records = readWorktreeRecordsForMutation();
   if (records.unavailable || records.invalid.length) {
-    return provisionFail('PROVISION_RECORDS_UNSAFE', 'worktree record store is not readable');
+    return provisionFail('PROVISION_RECORDS_UNSAFE', 'worktree record store is not readable: ' +
+      (records.unavailable || records.invalid[0].code));
   }
   // One active generation per task (plan §1). A live READY generation is
   // resumable (a re-Run of the same task reuses its worktree, §9.3); every
@@ -1335,27 +1358,39 @@ function ownedReleaseCommits(record, receipt) {
   return commits;
 }
 
-// Darwin may renumber one mounted APFS volume across a reboot. A durable
-// generation then keeps the exact same paths and inodes, while every st_dev in
-// its record changes together. Treat that one coherent remount as release-only
-// ownership proof after re-deriving the complete Git binding. This never makes
-// the generation resumable, and a replaced directory (new inode), a moved
-// repository, or a redirected .git pointer still fails closed.
-function remountedReleaseIdentityProven(record, liveExecution) {
+// A reconnected filesystem may renumber both st_dev and inode values. Raw
+// identity drift is accepted for RELEASE ONLY after re-deriving a stronger
+// manager namespace + Git administrative binding. This never makes the
+// generation resumable, and an arbitrary replacement directory, moved path,
+// redirected .git pointer, foreign ref or foreign commit still fails closed.
+function remountedReleaseIdentityProven(record, liveExecution, expectedCommit) {
   if (!record || !record.controlRoot || !record.gitCommonDirIdentity ||
-      !record.executionRoot || !liveExecution) return false;
+      !record.executionRoot || !liveExecution || !/^[a-f0-9]{40}$/.test(String(expectedCommit || ''))) return false;
   var recorded = [record.controlRoot, record.gitCommonDirIdentity, record.executionRoot];
   var liveControl = identityOf(record.controlRoot.path);
   var liveCommon = identityOf(record.gitCommonDirIdentity.path);
   var current = [liveControl, liveCommon, liveExecution];
   if (current.some(function (identity, index) {
-    return !identity || identity.path !== recorded[index].path ||
-      identity.ino !== recorded[index].ino;
+    return !identity || identity.path !== recorded[index].path;
   })) return false;
-  var recordedDevices = new Set(recorded.map(function (identity) { return identity.dev; }));
-  var currentDevices = new Set(current.map(function (identity) { return identity.dev; }));
-  if (recordedDevices.size !== 1 || currentDevices.size !== 1 ||
-      recorded[0].dev === liveControl.dev) return false;
+
+  var home;
+  try { home = fs.realpathSync.native(paths.WORKTREE_HOME).normalize('NFC'); }
+  catch (error) { return false; }
+  var expectedPath = path.join(home,
+    record.controlProjectId.slice('sha256:'.length, 'sha256:'.length + 16), record.worktreeId).normalize('NFC');
+  if (record.executionRoot.path !== expectedPath || liveExecution.path !== expectedPath) return false;
+
+  if (sameIdentity(liveExecution, record.executionRoot)) return false;
+  var controlStable = sameIdentity(liveControl, record.controlRoot);
+  var commonStable = sameIdentity(liveCommon, record.gitCommonDirIdentity);
+  // The checkout may live on its own mounted volume while the control repo is
+  // stable. If the repository volume also drifted, both of its authority
+  // anchors must move coherently; a mixed control/common replacement is never
+  // accepted as a remount.
+  if (controlStable !== commonStable) return false;
+  if (!controlStable && (record.controlRoot.dev !== record.gitCommonDirIdentity.dev ||
+      liveControl.dev !== liveCommon.dev)) return false;
 
   var controlRepo = repositoryIdentity(record.controlRoot.path);
   var executionRepo = repositoryIdentity(record.executionRoot.path);
@@ -1366,17 +1401,19 @@ function remountedReleaseIdentityProven(record, liveExecution) {
       !sameIdentity(executionRepo.toplevel, liveExecution)) return false;
   var ownHead = runGit(['symbolic-ref', '-q', 'HEAD'], record.executionRoot.path);
   if (!ownHead.ok || ownHead.stdout.trim() !== record.candidateRef) return false;
+  var ownCommit = runGit(['rev-parse', 'HEAD'], record.executionRoot.path);
+  if (!ownCommit.ok || ownCommit.stdout.trim() !== expectedCommit) return false;
   var listed = runGit(['worktree', 'list', '--porcelain', '-z'], record.controlRoot.path);
   if (!listed.ok) return false;
   var entries = parseWorktreeList(listed.stdout);
   return entries.some(function (entry) {
-    return entry.path === liveExecution.path && entry.branch === record.candidateRef;
+    return entry.path === liveExecution.path && entry.branch === record.candidateRef &&
+      entry.head === expectedCommit;
   });
 }
 
 function release(worktreeId) {
-  var records = readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
-    worktreeContract, 'WORKTREE_RECORD');
+  var records = readWorktreeRecordsForMutation();
   if (records.unavailable || records.invalid.length) return provisionFail('RELEASE_RECORDS_UNSAFE', 'record store unreadable');
   var item = records.active.find(function (row) { return row.record.worktreeId === worktreeId; });
   if (!item) return provisionFail('RELEASE_RECORD_ABSENT', worktreeId + ' has no record');
@@ -1433,7 +1470,7 @@ function release(worktreeId) {
     if (record.executionRoot !== null) {
       var live = identityOf(record.executionRoot.path);
       if (live && (sameIdentity(live, record.executionRoot) ||
-          remountedReleaseIdentityProven(record, live))) {
+          remountedReleaseIdentityProven(record, live, expectedReleaseCommit))) {
         var removed = gitMutations.removeOwnedWorktree({ targetPath: record.executionRoot.path });
         if (!removed.ok) return settleRelease(item, 'recovery-required', removed);
       } else if (fileExists(record.executionRoot.path)) {
@@ -1465,8 +1502,7 @@ function release(worktreeId) {
 }
 
 function recoverInterruptedReleases() {
-  var records = readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
-    worktreeContract, 'WORKTREE_RECORD');
+  var records = readWorktreeRecordsForMutation();
   if (records.unavailable || records.invalid.length) {
     return { ok: false, recovered: [], blocked: [{ code: 'RELEASE_RECORDS_UNSAFE' }] };
   }
@@ -1573,8 +1609,7 @@ function settleSealFailure(item, status, result) {
 // Git bytes, and only one exact record generation may own the transition.
 function seal(options) {
   var worktreeId = options && options.worktreeId;
-  var records = readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
-    worktreeContract, 'WORKTREE_RECORD');
+  var records = readWorktreeRecordsForMutation();
   if (records.unavailable || records.invalid.length) return provisionFail('SEAL_RECORDS_UNSAFE', 'record store unreadable');
   var item = records.active.find(function (row) { return row.record.worktreeId === worktreeId; });
   if (!item) return provisionFail('SEAL_RECORD_ABSENT', String(worktreeId) + ' has no record');
@@ -1796,8 +1831,7 @@ function seal(options) {
 }
 
 function recoverInterruptedSeals() {
-  var records = readRecords(paths.WORKTREE_RECORDS_DIR, paths.WORKTREE_RECORDS_AUTHORITY_ROOT,
-    worktreeContract, 'WORKTREE_RECORD');
+  var records = readWorktreeRecordsForMutation();
   if (records.unavailable || records.invalid.length) {
     return { ok: false, recovered: [], blocked: [{ code: 'SEAL_RECORDS_UNSAFE' }] };
   }

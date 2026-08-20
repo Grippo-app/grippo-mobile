@@ -351,6 +351,7 @@ const dictionary = Object.freeze({
     'board.action.disabled.action_active':       'Unavailable while this task has an active run.',
     'board.action.disabled.task_integrity':      'Unavailable until the task integrity or recovery issue is resolved.',
     'board.action.disabled.terminal_not_started':'The action is queued; the terminal will be available after a runner starts it.',
+    'board.action.disabled.session_input_unavailable': 'This live session is not ready for an answer. Refresh the task; if the run has stopped, a recovery action will appear.',
     'board.action.disabled.action_unavailable':  'This action is not available in the current task state.',
 
     'board.overflow.label':       'More task actions',

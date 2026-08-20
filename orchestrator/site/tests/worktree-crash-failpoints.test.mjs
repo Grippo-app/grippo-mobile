@@ -109,8 +109,39 @@ function raceSameStemProvision(fx) {
   })
 }
 
-// Provision in a real child process and SIGKILL it after `delayMs`. Returns
-// once the child is gone, whatever it managed to do.
+function processGroupGone(processGroup) {
+  try { process.kill(-processGroup, 0); return false }
+  catch (error) {
+    if (error && error.code === 'ESRCH') return true
+    // EPERM proves neither absence nor ownership. Keep waiting fail-closed,
+    // exactly like the production session reaper's process-group probe.
+    if (error && error.code === 'EPERM') return false
+    throw error
+  }
+}
+
+function waitForProcessGroupDeath(processGroup, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs
+  return new Promise((resolve, reject) => {
+    const probe = () => {
+      try {
+        if (processGroupGone(processGroup)) { resolve(); return }
+      } catch (error) { reject(error); return }
+      if (Date.now() >= deadline) {
+        reject(new Error(`process group ${processGroup} survived its crash boundary`))
+        return
+      }
+      setTimeout(probe, 10)
+    }
+    probe()
+  })
+}
+
+// Provision in a real detached process group and SIGKILL the complete group
+// after `delayMs`. The file-guard transaction helper belongs to that group:
+// observing the store after only the leader exits can race a still-running CAS
+// and is not a completed crash boundary. Return only after ESRCH proves that no
+// descendant can still mutate the fixture.
 function killDuringProvision(fx, delayMs) {
   const script = `
     const manager = require(${JSON.stringify(join(repoRoot, 'orchestrator/site/server/worktree-manager.js'))});
@@ -119,12 +150,22 @@ function killDuringProvision(fx, delayMs) {
       sourceRevision: taskIntegrity.validateAction('run', 'TASK_7_probe', 'fixture').sourceRevision });
     process.stdout.write(JSON.stringify({ ok: out.ok === true, worktreeId: out.worktreeId || null }));
   `
-  return new Promise((resolve) => {
-    const child = spawn(process.execPath, ['-e', script], { env: childEnv(fx), cwd: fx.root, stdio: ['ignore', 'pipe', 'pipe'] })
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, ['-e', script], {
+      env: childEnv(fx), cwd: fx.root, stdio: ['ignore', 'pipe', 'pipe'], detached: true,
+    })
     let stdout = ''
     child.stdout.on('data', (b) => { stdout += b })
-    const timer = setTimeout(() => { try { child.kill('SIGKILL') } catch (error) {} }, delayMs)
-    child.on('close', (code, signal) => { clearTimeout(timer); resolve({ code, signal, stdout }) })
+    const timer = setTimeout(() => {
+      try { process.kill(-child.pid, 'SIGKILL') }
+      catch (error) { if (!error || error.code !== 'ESRCH') reject(error) }
+    }, delayMs)
+    child.on('exit', () => clearTimeout(timer))
+    child.on('close', (code, signal) => {
+      clearTimeout(timer)
+      waitForProcessGroupDeath(child.pid).then(
+        () => resolve({ code, signal, stdout, processGroupGone: true }), reject)
+    })
   })
 }
 
@@ -145,12 +186,13 @@ function inspect(fx) {
         JSON.parse(fs_.readFileSync(P_.join(recDir, n), 'utf8')));
     } catch (error) { raw = []; }
     const before = manager.activeRecordFor('TASK_7_probe');
-    const projection = manager.discover();
+    const beforeProjection = manager.discover();
     // Crash retry is the same admitted queue generation. A different request
     // must never adopt an unfinished create-intent.
     const second = manager.provision({ stem: 'TASK_7_probe', runId: '1700000000001-r1', requestId: '1700000000001-q1',
       sourceRevision: taskIntegrity.validateAction('run', 'TASK_7_probe', 'fixture').sourceRevision });
     const after = manager.activeRecordFor('TASK_7_probe');
+    const projection = manager.discover();
     let rawAfter = [];
     try {
       rawAfter = fs_.readdirSync(recDir).filter((n) => /^wt-[a-f0-9]{32}[.]json$/.test(n)).map((n) =>
@@ -163,8 +205,9 @@ function inspect(fx) {
       rawId: raw.length ? raw[0].worktreeId : null,
       beforeStatus: before.record ? before.record.status : null,
       beforeId: before.record ? before.record.worktreeId : null,
+      beforeBlockers: beforeProjection.findings.filter((f) => f.severity === 'blocker').map((f) => f.code || f.message),
       blockers: projection.findings.filter((f) => f.severity === 'blocker').map((f) => f.code || f.message),
-      secondOk: second.ok === true, secondCode: second.code || null,
+      secondOk: second.ok === true, secondCode: second.code || null, secondMessage: second.message || null,
       secondId: second.worktreeId || null,
       afterOk: after.ok, afterStatus: after.record ? after.record.status : null,
       afterId: after.record ? after.record.worktreeId : null,
@@ -290,14 +333,10 @@ function renumberRecordedVolume(fx, made) {
   const recordFile = join(fx.root, 'orchestrator', '.cache', 'tasks', 'worktrees', made.worktreeId + '.json')
   const record = JSON.parse(readFileSync(recordFile, 'utf8'))
   const remountedDev = String(BigInt(record.executionRoot.dev) + 1n)
-  record.controlRoot.dev = remountedDev
-  record.gitCommonDirIdentity.dev = remountedDev
   record.executionRoot.dev = remountedDev
-  record.controlProjectId = recordContract.digest({
-    path: record.gitCommonDirIdentity.path,
-    dev: record.gitCommonDirIdentity.dev,
-    ino: record.gitCommonDirIdentity.ino,
-  })
+  record.executionRoot.ino = String(BigInt(record.executionRoot.ino) + 1000n)
+  // controlProjectId is the durable pre-remount namespace key and therefore
+  // does not change when the live filesystem reports new dev/inode numbers.
   record.recordHash = recordContract.recordHash(record)
   writeFileSync(recordFile, JSON.stringify(record) + '\n')
 }
@@ -500,12 +539,19 @@ try {
     for (const delayMs of delays) {
       const fx = fixture()
       const killed = await killDuringProvision(fx, delayMs)
+      assert.equal(killed.processGroupGone, true,
+        `delay ${delayMs}ms: the provisioning process group must be dead before recovery`)
       const state = inspect(fx)
 
-      assert.equal(state.beforeOk, true,
-        `delay ${delayMs}ms: the ownership store must stay readable after a kill`)
-      assert.deepEqual(state.blockers, [],
-        `delay ${delayMs}ms: a crashed provisioning must leave no unclassifiable state, got ${JSON.stringify(state.blockers)}`)
+      if (!state.beforeOk) {
+        assert.equal(state.beforeBlockers.includes('WORKTREE_RECORDS_UNAVAILABLE'), true,
+          `delay ${delayMs}ms: an interrupted guard transaction must fail closed before recovery: ${JSON.stringify(state)}`)
+      }
+      assert.deepEqual(state.blockers,
+        state.secondCode === 'PROVISION_RECOVERY_REQUIRED' ? ['WORKTREE_RECOVERY_REQUIRED'] : [],
+        `delay ${delayMs}ms: retry must end in one classified durable state, got ${JSON.stringify(state)}`)
+      assert.equal(state.afterOk, true,
+        `delay ${delayMs}ms: the ownership store must be readable after bounded recovery: ${JSON.stringify(state)}`)
 
       if (state.rawCount === 0) {
         // Proven absent: nothing was published, so a fresh generation is minted.
@@ -672,7 +718,7 @@ try {
       'the candidate ref is untouched when the recorded path was replaced')
   })
 
-  await check('release accepts only a coherent filesystem-device remount with the full Git binding', async () => {
+  await check('release accepts an execution-volume remount only with the full manager and Git binding', async () => {
     const fx = fixture()
     const made = prepareRelease(fx)
     renumberRecordedVolume(fx, made)
@@ -689,6 +735,24 @@ try {
     const record = JSON.parse(readFileSync(join(fx.root, 'orchestrator', '.cache', 'tasks',
       'worktrees', made.worktreeId + '.json'), 'utf8'))
     assert.equal(record.status, 'released')
+
+    const foreignFx = fixture()
+    const foreignMade = prepareRelease(foreignFx)
+    renumberRecordedVolume(foreignFx, foreignMade)
+    git(foreignMade.executionRoot, 'switch', '-c', 'foreign/remount-lookalike')
+    const refused = JSON.parse(execFileSync(process.execPath, ['-e', `
+      const manager = require(${JSON.stringify(join(repoRoot, 'orchestrator/site/server/worktree-manager.js'))});
+      process.stdout.write(JSON.stringify(manager.release(${JSON.stringify(foreignMade.worktreeId)})));
+    `], {
+      env: childEnv(foreignFx), cwd: foreignFx.root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+    }))
+    assert.equal(refused.ok, false)
+    assert.equal(refused.code, 'RELEASE_PATH_REPLACED',
+      'inode drift never relaxes the exact candidate-branch binding')
+    assert.equal(existsSync(foreignMade.executionRoot), true,
+      'a Git-bound lookalike at the manager path is preserved')
+    assert.equal(git(foreignFx.root, 'rev-parse', foreignMade.candidateRef).trim(),
+      git(foreignFx.root, 'rev-parse', 'HEAD').trim(), 'the manager-owned candidate ref is untouched')
   })
 
   await check('two release owners racing on one generation perform cleanup once', async () => {

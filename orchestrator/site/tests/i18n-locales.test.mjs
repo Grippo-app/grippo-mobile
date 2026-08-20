@@ -33,7 +33,7 @@ test('Ukrainian is wired through the client toggle and persisted language allowl
 
 test('EN, RU, and UK dictionaries have exact key and placeholder parity', () => {
   const enKeys = Object.keys(dictionaries.en).sort()
-  assert.equal(enKeys.length, 3680)
+  assert.equal(enKeys.length, 3681)
   for (const locale of ['ru', 'uk']) {
     assert.deepEqual(Object.keys(dictionaries[locale]).sort(), enKeys, locale + ' keys')
     for (const key of enKeys) {
@@ -54,6 +54,7 @@ test('task attention surface has complete action-oriented copy in every locale',
     assert.ok(dictionaries[locale]['taskDetails.action.questionsDeferred'].length > 60)
     assert.ok(dictionaries[locale]['taskDetails.questions.stoppedRun'].length > 60)
     assert.doesNotMatch(dictionaries[locale]['taskDetails.questions.stoppedRun'], /Advanced|Дополнительно|Розширено/)
+    assert.match(dictionaries[locale]['board.action.disabled.session_input_unavailable'], /refresh|Обновите|оновіть/i)
   }
 })
 

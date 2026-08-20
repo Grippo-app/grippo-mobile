@@ -3454,6 +3454,30 @@
   .task-details__action-bar [data-task-details-primary] {
     flex-grow: 2;
   }
+
+  .task-details__action-bar .board-modal__close-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .task-details--reflow {
+    overflow-y: auto;
+    scroll-padding-bottom: 6rem;
+  }
+
+  .task-details--reflow .task-details__header {
+    position: static;
+  }
+
+  .task-details--reflow .task-details__panes {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .task-details--reflow .task-details__pane {
+    height: auto;
+    overflow: visible;
+  }
 }
 
 /* The async-filled wrapper for the "Pull Figma screens" button. `display:

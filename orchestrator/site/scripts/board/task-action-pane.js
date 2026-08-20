@@ -104,7 +104,7 @@ export function taskActionPane(details, options) {
   const t = options.t;
   const root = el('div', {
     class: 'task-details__action',
-    attrs: { 'data-task-section': 'action' }
+    attrs: { 'data-task-section': 'action', tabindex: '-1' }
   });
   let questions = null;
   let live = null;
