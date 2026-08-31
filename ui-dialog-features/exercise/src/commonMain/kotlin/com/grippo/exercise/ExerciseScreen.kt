@@ -1,28 +1,12 @@
 package com.grippo.exercise
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.stubExercise
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.example.ExerciseExampleImage
-import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.metrics.volume.TrainingTotalSection
-import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_details_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -30,68 +14,9 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun ExerciseScreen(
     state: ExerciseState,
     loaders: ImmutableSet<ExerciseLoader>,
-    contract: ExerciseContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    contract: ExerciseContract,
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    val exercise = state.exercise ?: return@BaseComposeScreen
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    ExerciseExampleImage(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        value = exercise.exerciseExample.imageUrl,
-        style = ExerciseExampleImageStyle.LARGE
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = exercise.exerciseExample.name,
-        style = AppTokens.typography.h1(),
-        color = AppTokens.colors.text.primary,
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    TrainingTotalSection(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        value = exercise.total,
-    )
-
-    if (exercise.iterations.isNotEmpty()) {
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        IterationsCard(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            value = exercise.iterations
-        )
-    }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-
-    Button(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        onClick = contract::onExampleDetailsClick,
-        style = ButtonStyle.Secondary,
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.exercise_details_btn)
-        )
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

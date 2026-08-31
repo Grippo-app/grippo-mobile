@@ -1,13 +1,10 @@
 package com.grippo.core.state.metrics.performance
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExampleValueState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.spotlight_good_frequency_action
 import com.grippo.design.resources.provider.spotlight_good_frequency_context
@@ -80,16 +77,6 @@ public data class ExerciseSpotlightState(
             val latestSessionVolume: Float,
             val bestSessionVolume: Float,
         ) : Details
-    }
-
-    @Composable
-    public fun color(): Color {
-        return when (kind) {
-            Kind.ProgressWin -> AppTokens.colors.semantic.success
-            Kind.NeedsAttention -> AppTokens.colors.semantic.error
-            Kind.GoodFrequency -> AppTokens.colors.semantic.info
-            Kind.NearBest -> AppTokens.colors.semantic.success
-        }
     }
 
     public fun chipLabel(): UiText {

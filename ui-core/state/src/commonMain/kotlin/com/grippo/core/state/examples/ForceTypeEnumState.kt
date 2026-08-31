@@ -1,10 +1,7 @@
 package com.grippo.core.state.examples
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.UiText
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.force_type_hinge
 import com.grippo.design.resources.provider.force_type_pull
@@ -19,15 +16,6 @@ public enum class ForceTypeEnumState {
     HINGE;
 
     public fun title(): UiText = TITLES.getValue(this)
-
-    @Composable
-    public fun color(): Color {
-        return when (this) {
-            PULL -> AppTokens.colors.example.forceType.pull
-            PUSH -> AppTokens.colors.example.forceType.push
-            HINGE -> AppTokens.colors.example.forceType.hinge
-        }
-    }
 
     public companion object {
         private val TITLES: Map<ForceTypeEnumState, UiText> = entries.associateWith {

@@ -2,10 +2,6 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
@@ -81,29 +77,6 @@ public sealed class DensityFormatState : FormatState<Float> {
         val kg = AppTokens.strings.res(Res.string.kg)
         val minutes = AppTokens.strings.res(Res.string.minutes_short)
         return "${value?.short() ?: "-"}$kg/$minutes"
-    }
-
-    @Composable
-    public fun shortAnnotated(): AnnotatedString {
-        val kg = AppTokens.strings.res(Res.string.kg)
-        val minutes = AppTokens.strings.res(Res.string.minutes_short)
-        val tertiary = AppTokens.colors.text.tertiary
-        val display = value?.short()
-        return buildAnnotatedString {
-            if (display != null) {
-                append(display)
-                append(kg)
-                append("/")
-                append(minutes)
-            } else {
-                withStyle(SpanStyle(color = tertiary)) {
-                    append("-")
-                    append(kg)
-                    append("/")
-                    append(minutes)
-                }
-            }
-        }
     }
 
     private fun Float.short(): String {

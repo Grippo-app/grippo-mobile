@@ -2,9 +2,7 @@ package com.grippo.shared.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetValue
@@ -22,7 +20,6 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.design.components.toolbar.BottomSheetToolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
@@ -48,8 +45,6 @@ internal fun DialogScreen(
         stack = state.stack,
         phase = state.phase,
         component = contentComponent,
-        onBack = { contract.onDismiss(null) },
-        onClose = contract::onClose,
         onDismiss = { contract.onRelease(child.configuration) },
         onDismissComplete = { contract.onRelease(child.configuration) }
     )
@@ -61,8 +56,6 @@ private fun BottomSheet(
     stack: ImmutableList<DialogEntry>,
     phase: SheetPhase,
     component: DialogContentComponent,
-    onBack: () -> Unit,
-    onClose: () -> Unit,
     onDismiss: () -> Unit,
     onDismissComplete: () -> Unit
 ) {
@@ -73,7 +66,6 @@ private fun BottomSheet(
     // Keep the latest value for lambdas captured once
     val isSwipeRef = rememberUpdatedState(isSwipeDismissEnabled)
 
-    val showBackButton = stack.size > 1
     val programmaticDismiss = phase == SheetPhase.Dismissing
 
     val programmaticDismissRef = rememberUpdatedState(programmaticDismiss)
@@ -135,24 +127,12 @@ private fun BottomSheet(
         onDismissRequest = { if (isSwipeRef.value) onDismiss() }, // latest flag
         sheetState = sheetState,
         contentWindowInsets = { WindowInsets() },
-        scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(
             shouldDismissOnBackPress = isSwipeDismissEnabled, // recomposes with new flag
         ),
         containerColor = AppTokens.colors.background.dialog,
         dragHandle = null,
-        shape = RoundedCornerShape(
-            topStart = AppTokens.dp.bottomSheet.radius,
-            topEnd = AppTokens.dp.bottomSheet.radius
-        ),
     ) {
-        BottomSheetToolbar(
-            modifier = Modifier.fillMaxWidth(),
-            onBack = onBack,
-            onClose = onClose,
-            allowBack = showBackButton
-        )
-
         Column(
             modifier = Modifier.weight(weight = 1f, fill = false),
             content = { component.Render() }

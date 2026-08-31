@@ -2,10 +2,6 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
@@ -105,24 +101,6 @@ public sealed class VolumeFormatState : FormatState<Float> {
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
         return "${value?.short() ?: "-"}$kg"
-    }
-
-    @Composable
-    public fun shortAnnotated(): AnnotatedString {
-        val kg = AppTokens.strings.res(Res.string.kg)
-        val tertiary = AppTokens.colors.text.tertiary
-        val display = value?.short()
-        return buildAnnotatedString {
-            if (display != null) {
-                append(display)
-                append(kg)
-            } else {
-                withStyle(SpanStyle(color = tertiary)) {
-                    append("-")
-                    append(kg)
-                }
-            }
-        }
     }
 
     private fun Float.short(): String {

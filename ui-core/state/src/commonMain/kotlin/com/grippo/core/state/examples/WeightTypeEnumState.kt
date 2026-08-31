@@ -1,10 +1,7 @@
 package com.grippo.core.state.examples
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.UiText
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.weight_type_body_weight
 import com.grippo.design.resources.provider.weight_type_fixed
@@ -19,15 +16,6 @@ public enum class WeightTypeEnumState {
     BODY_WEIGHT;
 
     public fun title(): UiText = TITLES.getValue(this)
-
-    @Composable
-    public fun color(): Color {
-        return when (this) {
-            FREE -> AppTokens.colors.example.weightType.free
-            FIXED -> AppTokens.colors.example.weightType.fixed
-            BODY_WEIGHT -> AppTokens.colors.example.weightType.bodyWeight
-        }
-    }
 
     public companion object {
         private val TITLES: Map<WeightTypeEnumState, UiText> = entries.associateWith {

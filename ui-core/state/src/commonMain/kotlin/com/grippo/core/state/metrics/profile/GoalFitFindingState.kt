@@ -2,7 +2,6 @@ package com.grippo.core.state.metrics.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.core.AppTokens
@@ -34,12 +33,6 @@ public data class GoalFitFindingState(
     val targetMax: Float?,
     val context: ImmutableList<String> = persistentListOf(),
 ) {
-    @Composable
-    public fun valueColor(): Color = severity.valueColor()
-
-    @Composable
-    public fun dotColor(): Color = severity.dotColor()
-
     /** Combined "actual · target X" line for the row's right column. */
     @Composable
     public fun valueTargetText(): String {

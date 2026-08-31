@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
-import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_details_reason_almost_done_detail
@@ -84,14 +83,7 @@ public data class TrainingGoalDetailsDialogState(
             Negative,
 
             /** Neutral, informational - muted. */
-            Neutral;
-
-            public fun goalInsightSeverity(): GoalInsightSeverity = when (this) {
-                Positive -> GoalInsightSeverity.Positive
-                Warning -> GoalInsightSeverity.Warning
-                Negative -> GoalInsightSeverity.Negative
-                Neutral -> GoalInsightSeverity.Neutral
-            }
+            Neutral
         }
     }
 

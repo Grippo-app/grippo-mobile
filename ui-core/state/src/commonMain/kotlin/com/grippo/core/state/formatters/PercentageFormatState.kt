@@ -2,10 +2,6 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.percent
@@ -70,23 +66,5 @@ public sealed class PercentageFormatState : FormatState<Int> {
     public fun short(): String {
         val percent = AppTokens.strings.res(Res.string.percent)
         return "${value ?: "-"}$percent"
-    }
-
-    @Composable
-    public fun shortAnnotated(): AnnotatedString {
-        val percent = AppTokens.strings.res(Res.string.percent)
-        val tertiary = AppTokens.colors.text.tertiary
-        val display = value
-        return buildAnnotatedString {
-            if (display != null) {
-                append(display.toString())
-                append(percent)
-            } else {
-                withStyle(SpanStyle(color = tertiary)) {
-                    append("-")
-                    append(percent)
-                }
-            }
-        }
     }
 }

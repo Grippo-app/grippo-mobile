@@ -2,7 +2,6 @@ package com.grippo.core.state.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
@@ -34,12 +33,6 @@ public sealed class SocialMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Instagram
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color1
     }
 
     public data object TikTok : SocialMenu() {
@@ -52,12 +45,6 @@ public sealed class SocialMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Tiktok
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color4
     }
 
     public data object YouTube : SocialMenu() {
@@ -70,12 +57,6 @@ public sealed class SocialMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Youtube
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.semantic.error
     }
 
     public data object Threads : SocialMenu() {
@@ -88,12 +69,6 @@ public sealed class SocialMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Threads
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.text.primary
     }
 
     public companion object {

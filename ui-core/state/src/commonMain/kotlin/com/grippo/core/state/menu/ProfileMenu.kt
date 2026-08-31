@@ -2,7 +2,6 @@ package com.grippo.core.state.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
@@ -31,12 +30,6 @@ public sealed class ProfileMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Body
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.body
     }
 
     public data object Experience : ProfileMenu() {
@@ -46,12 +39,6 @@ public sealed class ProfileMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Medal
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.experience
     }
 
     public data object Muscles : ProfileMenu() {
@@ -61,12 +48,6 @@ public sealed class ProfileMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Muscle
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.muscle
     }
 
     public data object Equipment : ProfileMenu() {
@@ -75,12 +56,6 @@ public sealed class ProfileMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Kettlebell
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.equipment
     }
 
     public data object Goal : ProfileMenu() {
@@ -90,12 +65,6 @@ public sealed class ProfileMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Trophy
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.goal
     }
 
     public companion object {

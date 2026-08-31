@@ -1,39 +1,13 @@
 package com.grippo.authorization.registration.credential
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonState
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.inputs.InputEmail
-import com.grippo.design.components.inputs.InputPassword
-import com.grippo.design.components.toolbar.Leading
-import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.create_account_btn
-import com.grippo.design.resources.provider.registration_credential_description
-import com.grippo.design.resources.provider.registration_credential_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -41,96 +15,9 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun CredentialScreen(
     state: CredentialState,
     loaders: ImmutableSet<CredentialLoader>,
-    contract: CredentialContract
-) = BaseComposeScreen(
-    ScreenBackground.Color(
-        value = AppTokens.colors.background.screen
-    )
-) {
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        leading = Leading.Back(contract::onBack),
-        style = ToolbarStyle.Transparent
-    )
+    contract: CredentialContract,
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-            .imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_credential_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_credential_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        InputEmail(
-            value = state.email,
-            onValueChange = contract::onEmailChange
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        InputPassword(
-            value = state.password,
-            onValueChange = contract::onPasswordChange
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.password.hint(),
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.text.tertiary,
-            textAlign = TextAlign.End
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        val buttonState = remember(loaders, state.email, state.password) {
-            when {
-                loaders.contains(CredentialLoader.RegisterButton) -> ButtonState.Loading
-                state.email is EmailFormatState.Invalid -> ButtonState.Disabled
-                state.email is EmailFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.create_account_btn),
-            ),
-            state = buttonState,
-            style = ButtonStyle.Primary,
-            onClick = contract::onNextClick
-        )
-
-        Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
-
-        Spacer(Modifier.navigationBarsPadding())
-    }
 }
 
 @AppPreview

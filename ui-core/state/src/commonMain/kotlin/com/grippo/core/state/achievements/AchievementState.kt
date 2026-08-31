@@ -2,12 +2,10 @@ package com.grippo.core.state.achievements
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.best_tonnage
 import com.grippo.design.resources.provider.best_weight
@@ -99,15 +97,6 @@ public sealed interface AchievementState {
         is LifetimeVolume -> TEXT_LIFETIME_VOLUME
         is MaxRepetitions -> TEXT_MAX_REPETITIONS
         is PeakIntensity -> TEXT_PEAK_INTENSITY
-    }
-
-    @Composable
-    public fun color(): Color = when (this) {
-        is BestTonnage -> AppTokens.colors.context.volume
-        is BestWeight -> AppTokens.colors.context.volume
-        is LifetimeVolume -> AppTokens.colors.context.volume
-        is MaxRepetitions -> AppTokens.colors.context.repetitions
-        is PeakIntensity -> AppTokens.colors.context.intensity
     }
 
     @Composable

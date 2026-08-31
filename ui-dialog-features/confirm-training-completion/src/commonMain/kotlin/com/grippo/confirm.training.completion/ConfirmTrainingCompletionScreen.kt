@@ -1,34 +1,12 @@
 package com.grippo.confirm.training.completion
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DurationFormatState
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonState
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.inputs.InputDuration
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.cancel_btn
-import com.grippo.design.resources.provider.confirm_btn
-import com.grippo.design.resources.provider.confirm_training_completion_hint
-import com.grippo.design.resources.provider.confirm_training_completion_subtitle
-import com.grippo.design.resources.provider.confirm_training_completion_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlin.time.Duration.Companion.minutes
@@ -37,95 +15,9 @@ import kotlin.time.Duration.Companion.minutes
 internal fun ConfirmTrainingCompletionScreen(
     state: ConfirmTrainingCompletionState,
     loaders: ImmutableSet<ConfirmTrainingCompletionLoader>,
-    contract: ConfirmTrainingCompletionContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    contract: ConfirmTrainingCompletionContract,
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.confirm_training_completion_title),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.confirm_training_completion_subtitle),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.confirm_training_completion_hint),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.tertiary,
-        textAlign = TextAlign.Start
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-    InputDuration(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        value = state.duration,
-        onClick = contract::onDurationInputClick
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    Row(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(
-            AppTokens.dp.contentPadding.content
-        )
-    ) {
-        Button(
-            modifier = Modifier.weight(1f),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.cancel_btn),
-            ),
-            style = ButtonStyle.Secondary,
-            onClick = contract::onBack
-        )
-
-        val buttonState = remember(loaders, state.duration) {
-            when (state.duration) {
-                is DurationFormatState.Invalid -> ButtonState.Disabled
-                is DurationFormatState.Empty -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier.weight(1f),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.confirm_btn),
-            ),
-            state = buttonState,
-            style = ButtonStyle.Primary,
-            onClick = contract::onConfirm
-        )
-    }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

@@ -1,48 +1,15 @@
 package com.grippo.exercise.example.exerciseexample
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.achievements.stubAchievements
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
-import com.grippo.design.components.achievement.AchievementsCard
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.chart.internal.BarChartXAxisLabels
-import com.grippo.design.components.equipment.EquipmentsCard
-import com.grippo.design.components.example.ExampleDescriptionText
-import com.grippo.design.components.example.ExampleTypeSection
-import com.grippo.design.components.example.ExerciseExampleImage
-import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
-import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
-import com.grippo.design.components.metrics.performance.EstimatedOneRepMaxCard
-import com.grippo.design.components.metrics.volume.VolumeMetricChart
-import com.grippo.design.components.training.ExerciseCard
-import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.achievements
-import com.grippo.design.resources.provider.history
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -50,187 +17,9 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
-    contract: ExerciseExampleContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    contract: ExerciseExampleContract,
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    val basePadding = PaddingValues(top = AppTokens.dp.dialog.top)
-
-    BottomOverlayContainer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        contentPadding = basePadding,
-        overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
-            Column(
-                modifier = containerModifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(resolvedPadding),
-            ) {
-                val example = state.example ?: return@Column
-
-                ExerciseExampleImage(
-                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    value = example.value.imageUrl,
-                    style = ExerciseExampleImageStyle.LARGE
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                        .fillMaxWidth(),
-                    text = example.value.name,
-                    style = AppTokens.typography.h1(),
-                    color = AppTokens.colors.text.primary,
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-                ExampleTypeSection(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                        .fillMaxWidth(),
-                    value = example.value
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                ExampleDescriptionText(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                        .fillMaxWidth(),
-                    text = example.value.description,
-                )
-
-                if (example.equipments.isNotEmpty()) {
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    EquipmentsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = example.equipments,
-                        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    )
-                }
-
-                state.muscleLoad
-                    ?.takeIf { it.perGroup.entries.isNotEmpty() }
-                    ?.let { summary ->
-
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                        MuscleLoading(
-                            modifier = Modifier
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                .fillMaxWidth(),
-                            summary = summary,
-                            mode = MuscleLoadingMode.PerGroup,
-                        )
-                    }
-
-                if (state.achievements.isNotEmpty()) {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        text = AppTokens.strings.res(Res.string.achievements),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary,
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                    AchievementsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.achievements,
-                        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    )
-
-                    if (state.estimatedOneRepMax != null) {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                        EstimatedOneRepMaxCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                            state = state.estimatedOneRepMax,
-                        )
-                    }
-                }
-
-                if (state.recent.isNotEmpty()) {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        text = AppTokens.strings.res(Res.string.history),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary,
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                    state.exerciseVolume
-                        ?.takeIf { it.entries.isNotEmpty() }
-                        ?.let { data ->
-                            VolumeMetricChart(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                                value = data,
-                                xAxisLabels = BarChartXAxisLabels.WithoutLabels
-                            )
-
-                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-                        }
-
-                    state.recent.forEachIndexed { index, item ->
-                        key(item.id) {
-                            ExerciseCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                                value = item,
-                                style = ExerciseCardStyle.Small,
-                            )
-                        }
-
-                        if (index < state.recent.lastIndex) {
-                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-                        }
-                    }
-                }
-            }
-        },
-        bottom = {
-            when (val mode = state.mode) {
-                ExerciseExampleModeState.Default -> Unit
-                is ExerciseExampleModeState.Action -> {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        content = ButtonContent.Text(text = mode.title),
-                        style = ButtonStyle.Secondary,
-                        onClick = contract::onAction,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
-    )
 }
 
 @AppPreview

@@ -2,7 +2,6 @@ package com.grippo.core.state.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
@@ -27,12 +26,6 @@ public sealed class SettingsMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Tune
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.icon.secondary
     }
 
     public data object Social : SettingsMenu() {
@@ -42,12 +35,6 @@ public sealed class SettingsMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.ChatAlt
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.brand.color5
     }
 
     public data object Debug : SettingsMenu() {
@@ -57,12 +44,6 @@ public sealed class SettingsMenu : PickerMenuItem {
 
         @Composable
         override fun icon(): ImageVector = AppTokens.icons.Bug
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.semantic.error
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.semantic.error
     }
 
     public companion object {

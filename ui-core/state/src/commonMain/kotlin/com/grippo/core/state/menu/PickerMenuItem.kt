@@ -2,7 +2,6 @@ package com.grippo.core.state.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 
@@ -14,10 +13,4 @@ public sealed interface PickerMenuItem {
 
     @Composable
     public fun icon(): ImageVector
-
-    @Composable
-    public fun textColor(): Color
-
-    @Composable
-    public fun iconColor(): Color
 }
