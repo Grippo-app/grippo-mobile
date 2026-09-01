@@ -278,7 +278,6 @@ test('user-facing presenters localize exact domain codes and never expose diagno
     boardRequestError({ kind: 'unregistered-code', detail: secret }),
     apiErrorMessage({ kind: 'task-integrity', detail: secret }),
     apiErrorMessage({ kind: 'generation-artifact-hash-mismatch', detail: secret }),
-    apiErrorMessage({ kind: 'contract-drift-invalid', detail: secret }),
     archmapErrorMessage({ kind: 'invalid-response', detail: secret }),
     runErrorMessage({ kind: 'session-start-refused', detail: secret }),
     reviewerErrorMessage({ kind: 'reviewer-unavailable', detail: secret }, 'status'),
@@ -685,6 +684,7 @@ test('every statically produced Figma evidence issue is classified and localized
 test('every statically produced immediate Figma API error has localized copy', () => {
   const files = [
     'server/figma.js',
+    'server/figma-feature-gate.js',
     'server/figma-test-job.js',
     'server/figma-sync.js',
     'server/figma-sync-history.js',

@@ -728,7 +728,7 @@ The Source field order and blank lines are exact; duplicate/extra fields or
 prose are invalid. Allowed Kind/Type pairs are registry-owned by
 `task-source-contract.cjs`: Manual (`manual`, `architecture-finding`), Figma
 (`design-finding`, `figma-drift`, `figma-missing-component`,
-`figma-component-split`), API (`api-missing`, `api-change`, `api-mismatch`,
+`figma-component-split`), API (`api-change`, `api-mismatch`,
 `api-work-package`) and
 Follow-up (`outcome-follow-up`, `reviewer-follow-up`, `task-split`). Source
 describes why the task exists; `## Origin` remains separate structural lineage.

@@ -2,6 +2,11 @@
 
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
+import {
+  figmaConnectorState,
+  figmaFeaturePresentation,
+  figmaFeatureState
+} from '../scripts/figma-status-model.js'
 
 const require = createRequire(import.meta.url)
 const figma = require('../server/figma.js')
@@ -118,6 +123,28 @@ check('Figma MCP session admission is fail-closed but keeps local rebundle avail
   assert.equal(sessionAdmissionFor('figma:derive', connected, null).error, 'figma-account-unverified')
   assert.equal(sessionAdmissionFor('figma:derive', { ...connected, global: { present: true } }, { handle: 'A' }).error, 'figma-connector-conflict')
   assert.equal(sessionAdmissionFor('figma:whoami', { state: 'needs-auth', local: { present: true }, global: { present: false } }, null).error, 'figma-connector-not-ready')
+})
+
+check('project feature state overrides connector state and suppresses impossible re-checks', () => {
+  for (const state of ['disabled', 'restart-required', 'invalid']) {
+    const view = figmaFeaturePresentation({ state })
+    assert.equal(view.overridesConnector, true)
+    assert.equal(view.displayState, state)
+    assert.equal(view.labelKey, 'figma.pill.' + state)
+    assert.equal(view.canRecheck, false)
+  }
+  assert.equal(figmaFeaturePresentation({ state: 'enabled' }).overridesConnector, false)
+  assert.equal(figmaFeatureState({ state: 'future:/private/path' }), 'invalid')
+  assert.equal(figmaFeatureState(null), null)
+})
+
+check('connector and feature state allowlists reject inherited object properties', () => {
+  for (const inherited of ['toString', 'constructor', '__proto__', 'hasOwnProperty']) {
+    assert.equal(figmaFeatureState({ state: inherited }), 'invalid')
+    assert.equal(figmaConnectorState({ state: inherited }), 'unknown')
+  }
+  assert.equal(figmaConnectorState({ state: 'connected' }), 'connected')
+  assert.equal(figmaConnectorState(null), 'unknown')
 })
 
 console.log(`figma-status-classification: ${checks} checks passed`)

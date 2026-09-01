@@ -12,7 +12,7 @@ var SCHEMA_VERSION = 1;
 var MAX_SOURCES = 2048;
 var PACKAGE_ID_RE = /^pkg-[a-f0-9]{24}$/;
 var GROUP_KEY_RE = /^(?:area|model|operation|change-set|mixed):[a-z0-9][a-z0-9-]{0,63}$/;
-var SOURCE_ID_RE = /^(?:api:missing:[A-Za-z0-9][A-Za-z0-9._:-]{0,199}|api:change:chg-[a-f0-9]{24}|api:mismatch:mismatch-[a-f0-9]{24})$/;
+var SOURCE_ID_RE = /^(?:api:change:chg-[a-f0-9]{24}|api:mismatch:mismatch-[a-f0-9]{24})$/;
 var FIELDS = ['groupKey', 'packageId', 'schemaVersion', 'sourceIds'];
 
 function exact(value, keys) {

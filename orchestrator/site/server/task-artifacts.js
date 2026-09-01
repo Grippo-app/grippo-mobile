@@ -158,7 +158,7 @@ function sourceArtifacts(source, row, rows, limitations, providedApiFacts) {
     return item.kind === 'api' && item.type !== 'api-work-package';
   });
   var typedSourceIds = apiItems.map(function (item) { return item.ref; }).filter(function (sourceId) {
-    return /^(?:api:missing:[A-Za-z0-9][A-Za-z0-9._:-]{0,199}|api:change:chg-[a-f0-9]{24}|api:mismatch:mismatch-[a-f0-9]{24})$/.test(sourceId);
+    return /^(?:api:change:chg-[a-f0-9]{24}|api:mismatch:mismatch-[a-f0-9]{24})$/.test(sourceId);
   });
   if (typedSourceIds.length !== apiItems.length) limitations.push('api-task-source-invalid');
   var facts = providedApiFacts;

@@ -27,7 +27,7 @@ const REV = 'sha256:' + 'a'.repeat(64)
 const BODY_REV = 'sha256:' + 'b'.repeat(64)
 const API_PACKAGE = apiWorkPackage.create('mixed:details-contract', [
   'api:change:chg-' + '1'.repeat(24),
-  'api:missing:details.get',
+  'api:mismatch:mismatch-' + '1'.repeat(24),
 ])
 const detailsUiSource = readFileSync(new URL('../scripts/board/task-details.js', import.meta.url), 'utf8')
 const overviewUiSource = readFileSync(new URL('../scripts/board/task-overview.js', import.meta.url), 'utf8')
@@ -541,13 +541,12 @@ test('artifact aggregation exposes normalized groups without paths or image byte
 
 test('API work-package source facts resolve only against typed current catalog rows', () => {
   const changeId = 'api:change:chg-' + '1'.repeat(24)
-  const missingId = 'api:missing:details.get'
+  const mismatchId = 'api:mismatch:mismatch-' + '1'.repeat(24)
   const endpoint = {
     operationId: 'details.get',
     method: 'GET',
     path: '/v1/details',
     area: 'details',
-    sources: { missing: missingId },
   }
   const facts = apiCatalog._test.taskSourceFactsFromCatalog({
     rows: [endpoint],
@@ -557,15 +556,19 @@ test('API work-package source facts resolve only against typed current catalog r
       operationId: 'details.get',
       afterSummary: 'Details response changed',
     }],
-    mismatches: [],
-  }, [changeId, missingId, 'api:mismatch:mismatch-' + '2'.repeat(24)])
+    mismatches: [{
+      sourceId: mismatchId,
+      operationId: 'details.get',
+      message: 'Details response differs',
+    }],
+  }, [changeId, mismatchId, 'api:mismatch:mismatch-' + '2'.repeat(24)])
   assert.deepEqual(facts.map((item) => ({
     sourceId: item.sourceId,
     status: item.status,
     label: item.label,
   })), [
     { sourceId: changeId, status: 'current', label: 'GET /v1/details' },
-    { sourceId: missingId, status: 'current', label: 'GET /v1/details' },
+    { sourceId: mismatchId, status: 'current', label: 'GET /v1/details' },
     {
       sourceId: 'api:mismatch:mismatch-' + '2'.repeat(24),
       status: 'unavailable',
@@ -583,7 +586,7 @@ test('artifact aggregation includes typed journal gates and bounded app build jo
       ok: true,
       items: API_PACKAGE.sourceIds.map((sourceId) => ({
         sourceId,
-        type: sourceId.startsWith('api:change:') ? 'api-change' : 'api-missing',
+        type: sourceId.startsWith('api:change:') ? 'api-change' : 'api-mismatch',
         status: 'unavailable',
         label: sourceId,
         operationId: null,

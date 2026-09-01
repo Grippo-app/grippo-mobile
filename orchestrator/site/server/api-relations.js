@@ -15,6 +15,7 @@ var arch = require('./arch');
 var fileGuards = require('./file-guards');
 var projectInputs = require('./api-project-inputs');
 var reportScope = require('../../api-contract/report-scope.cjs');
+var runtimeReportContract = require('../../api-contract/runtime-report-contract.cjs');
 
 var REPORTS_DIR = path.join(paths.API_CONTRACT_CACHE_DIR, 'reports');
 var REPORT_MAX = 16 * 1024 * 1024;
@@ -391,17 +392,17 @@ function validImplementation(report, inventory) {
       !Number.isFinite(Date.parse(report.generatedAt)) ||
       !boundedLines(report.limitations, 50, 100) ||
       !exact(report.coverage, [
-        'analyzedFiles', 'implemented', 'missing', 'partial', 'total', 'unknown'
+        'analyzedFiles', 'implemented', 'partial', 'total', 'unknown'
       ]) ||
-      !['analyzedFiles', 'implemented', 'missing', 'partial', 'total', 'unknown']
+      !['analyzedFiles', 'implemented', 'partial', 'total', 'unknown']
         .every(function (key) {
           return Number.isSafeInteger(report.coverage[key]) &&
             report.coverage[key] >= 0 &&
             report.coverage[key] <= (key === 'analyzedFiles' ? 20000 : 10000);
         }) ||
       report.coverage.total !== inventory.endpoints.length ||
-      report.coverage.implemented + report.coverage.missing +
-        report.coverage.partial + report.coverage.unknown !== report.coverage.total ||
+      report.coverage.implemented + report.coverage.partial +
+        report.coverage.unknown !== report.coverage.total ||
       !exact(report.receipt, [
         'directoryCount', 'fileCount', 'files', 'totalBytes'
       ]) ||
@@ -423,7 +424,7 @@ function validImplementation(report, inventory) {
     receiptBytes += row.size;
     return receiptBytes <= 64 * 1024 * 1024;
   }) || receiptBytes !== report.receipt.totalBytes) return false;
-  var states = { implemented: 0, missing: 0, partial: 0, unknown: 0 };
+  var states = { implemented: 0, partial: 0, unknown: 0 };
   if (!exactOperationCoverage(report.operations, inventory, function (row) {
     if (!exact(row, [
       'confidence', 'evidence', 'file', 'operationId', 'state', 'symbol'
@@ -436,7 +437,7 @@ function validImplementation(report, inventory) {
         !boundedLines(row.evidence, 10, 300) ||
         row.state === 'implemented' &&
           (row.file === null || ['exact', 'derived'].indexOf(row.confidence) < 0) ||
-        (row.state === 'missing' || row.state === 'unknown') &&
+        row.state === 'unknown' &&
           (row.file !== null || row.symbol !== null || row.confidence !== null)) return false;
     states[row.state]++;
     return true;
@@ -518,9 +519,6 @@ function operationMap(rows) {
   return out;
 }
 function sourceId(kind, id) {
-  if (kind === 'missing') {
-    return 'api:missing:missing-' + sha(String(id)).slice(7, 31);
-  }
   var prefixes = {
     change: 'api:change:',
     mismatch: 'api:mismatch:'
@@ -567,42 +565,7 @@ function mismatchId(finding, occurrence) {
   return 'mismatch-' + sha(JSON.stringify(stable)).slice(7, 31);
 }
 function validDrift(report) {
-  if (!exact(report, [
-    'analyzerVersion', 'checkedAt', 'committedGenerationId', 'contractHash',
-    'environmentId', 'findings', 'limitations', 'projectCodeRevision',
-    'schemaVersion', 'specHash', 'summary'
-  ]) || report.schemaVersion !== 1 ||
-      !Number.isFinite(Date.parse(report.checkedAt)) ||
-      !GENERATION_RE.test(String(report.committedGenerationId || '')) ||
-      !HASH_RE.test(String(report.contractHash || '')) ||
-      !HASH_RE.test(String(report.projectCodeRevision || '')) ||
-      (report.specHash !== null && !HASH_RE.test(String(report.specHash || ''))) ||
-      !boundedLine(report.environmentId, 100) ||
-      !boundedLine(report.analyzerVersion, 100) ||
-      !boundedLines(report.limitations, 50, 100) ||
-      !exact(report.summary, ['errors', 'infos', 'warnings']) ||
-      !Array.isArray(report.findings) || report.findings.length > 10000) return false;
-  var counts = { errors: 0, warnings: 0, infos: 0 };
-  if (!report.findings.every(function (finding) {
-    if (!exact(finding, [
-      'area', 'dtoFile', 'field', 'kind', 'message', 'operationId',
-      'schemaRef', 'severity', 'suggestion'
-    ]) || ['ERROR', 'WARNING', 'INFO'].indexOf(finding.severity) < 0 ||
-        !boundedLine(finding.kind, 100) || !boundedLine(finding.message, 1000) ||
-        (finding.area !== null && !boundedLine(finding.area, 100)) ||
-        (finding.schemaRef !== null && !boundedLine(finding.schemaRef, 200)) ||
-        (finding.operationId !== null && !boundedLine(finding.operationId, 200)) ||
-        (finding.field !== null && !boundedLine(finding.field, 200)) ||
-        (finding.dtoFile !== null && safePath(finding.dtoFile) !== finding.dtoFile) ||
-        (finding.suggestion !== null && !boundedLine(finding.suggestion, 1000))) return false;
-    counts[finding.severity === 'ERROR'
-      ? 'errors' : finding.severity === 'WARNING' ? 'warnings' : 'infos']++;
-    return true;
-  })) return false;
-  return Object.keys(counts).every(function (key) {
-    return Number.isSafeInteger(report.summary[key]) &&
-      report.summary[key] === counts[key];
-  });
+  return runtimeReportContract.validDrift(report);
 }
 function driftState(current, inputs, reportsDir) {
   var raw = readOptional('drift.json', reportsDir);

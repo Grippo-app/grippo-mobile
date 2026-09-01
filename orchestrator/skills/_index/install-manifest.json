@@ -11,7 +11,7 @@
       "sourceSha256": "9d41890a8997ede87752802bb5a08695fa559d63f4a26cf636f4e6b33356d564",
       "referenceSha256s": {
         "references/data-services-backend.md": "b78a736977f31b6799115f1adf9b10855a85b00f98ac649783ef9d7a87ab4694",
-        "references/drift.md": "92f26749984073a1c31c026f9b4b957ff87dc312e22101dadc1e3b88c43ae0d0",
+        "references/drift.md": "47a88f0c727eda9b7f214ad6768c49b04cf49f70135486f64aa9791de6e472ab",
         "references/endpoint-inventory.md": "553c0b45b64b02d707263b6d21c8ff27abb86b6bdb239e1ffd6396808d9c931a",
         "references/index.md": "1cfd1716a9662969a62a6a1f0690c987e1d0a1e240dbb5939e1c96ab426d9c14",
         "references/overview.md": "2840e10e4311c6fc37bbd7f1ce01f91948f935e6882b945292e93b71443e5dbf",

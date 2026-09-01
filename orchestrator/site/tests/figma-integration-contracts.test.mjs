@@ -15,7 +15,7 @@ import '../scripts/i18n/en.js'
 import figmaEn from '../scripts/i18n/dictionaries/figma-integration/en.js'
 import figmaRu from '../scripts/i18n/dictionaries/figma-integration/ru.js'
 import figmaUk from '../scripts/i18n/dictionaries/figma-integration/uk.js'
-import { figmaActionError } from '../scripts/panels/figma.js'
+import { figmaActionError, focusFigmaEnableResult } from '../scripts/panels/figma.js'
 import { createHistoryPagination } from '../scripts/figma/history-view.js'
 
 const require = createRequire(import.meta.url)
@@ -466,6 +466,32 @@ check('Figma clear UX keeps destructive confirmation and typed errors inside its
   assert.match(css, /\.integration-clear-progress\s*\{[\s\S]*?background:\s*var\(--info-soft\)/)
   assert.match(api, /\/api\/figma\/integration\/reset/)
   assert.doesNotMatch(panel, /window\.confirm\(t\('figma\.clear/)
+})
+
+check('Figma feature transition announces its terminal state and transfers keyboard focus', () => {
+  const view = readFileSync(join(REPO, 'orchestrator', 'site', 'scripts', 'figma', 'integration-view.js'), 'utf8')
+  const panel = readFileSync(join(REPO, 'orchestrator', 'site', 'scripts', 'panels', 'figma.js'), 'utf8')
+  const header = readFileSync(join(REPO, 'orchestrator', 'site', 'scripts', 'figma-status.js'), 'utf8')
+  assert.match(view, /'aria-live': 'polite'/)
+  assert.match(view, /'aria-atomic': 'true'/)
+  assert.match(view, /role: 'status'/)
+  assert.match(view, /stateTitle\.focus\(\)/)
+  assert.match(view, /focusPrimary/)
+  assert.match(view, /class: 'panel-title', text: t\('figma\.title'\), attrs: \{ tabindex: '-1' \}/)
+  assert.match(panel, /focusFigmaEnableResult/)
+  assert.match(header, /setAttribute\('aria-label', els\.label\.textContent\)/)
+  assert.doesNotMatch(header, /setAttribute\('aria-label', t\('figma\.toggle'\)\)/)
+
+  const calls = []
+  const views = {
+    feature: { focusAction: () => calls.push('feature') },
+    integration: { focusPrimary: () => calls.push('integration') }
+  }
+  assert.equal(focusFigmaEnableResult({ state: 'restart-required' }, null, views), 'feature')
+  assert.deepEqual(calls, ['feature'])
+  calls.length = 0
+  assert.equal(focusFigmaEnableResult({ state: 'enabled' }, { status: 'ready' }, views), 'integration')
+  assert.deepEqual(calls, ['integration'])
 })
 
 console.log(`figma integration contracts: ${checks} checks passed`)

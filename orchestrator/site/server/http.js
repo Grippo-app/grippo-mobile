@@ -328,11 +328,29 @@ function handleFigmaIntegration(req, res) {
   jsonResponse(res, 200, { integration: figmaIntegrationMod.get() });
 }
 
+function handleFigmaEnable(req, res) {
+  readJsonBody(req).then(function (body) {
+    return sse.serializeStateWrite(function () {
+      return figmaFeatureGateMod.enable(body);
+    });
+  }, function (error) {
+    return { ok: false, status: error.httpStatus || 400, error: 'bad-json' };
+  }).then(function (result) {
+    if (result.ok) {
+      sse.broadcast('figma-feature', { changed: true });
+      sse.pollLoop();
+    }
+    figmaJobResponse(res, result);
+  }, function () {
+    jsonResponse(res, 500, { ok: false, error: 'internal' });
+  });
+}
+
 function handleFigmaIntegrationReset(req, res) {
   readJsonBody(req).then(function (body) {
     return sse.serializeStateWrite(function () { return figmaIntegrationMod.reset(body); });
-  }, function () {
-    return { ok: false, status: 400, error: 'bad-json' };
+  }, function (error) {
+    return { ok: false, status: error.httpStatus || 400, error: 'bad-json' };
   }).then(function (result) {
     if (result.ok) { sse.broadcast('figma-integration', { changed: true }); sse.pollLoop(); }
     figmaJobResponse(res, result);
@@ -342,7 +360,153 @@ function handleFigmaIntegrationReset(req, res) {
 }
 
 function figmaJobResponse(res, result) {
-  jsonResponse(res, result && result.status || (result && result.ok ? 200 : 500), result || { ok: false, error: 'internal' });
+  var projected = publicFigmaResult(result);
+  jsonResponse(res, projected.status, projected);
+}
+
+function figmaPublicScalar(value) {
+  return value === null || typeof value === 'string' || typeof value === 'boolean' ||
+    typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function figmaPublicFields(value, keys) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  var out = {};
+  keys.forEach(function (key) {
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      out[key] = figmaPublicScalar(value[key]);
+    }
+  });
+  return out;
+}
+
+function publicFigmaGroup(value) {
+  return figmaPublicFields(value, ['group', 'status', 'updated', 'unchanged', 'warnings']);
+}
+
+function publicFigmaJob(value) {
+  var out = figmaPublicFields(value, [
+    'id', 'revision', 'state', 'phase', 'progress', 'reasonCode',
+    'startedAt', 'finishedAt', 'committedGenerationId', 'result',
+    'errorCode', 'comparisonDomain'
+  ]);
+  if (!out) return null;
+  if (Array.isArray(value.groups)) {
+    out.groups = value.groups.slice(0, 200).map(publicFigmaGroup).filter(Boolean);
+  }
+  return out;
+}
+
+function publicFigmaCandidate(value) {
+  return figmaPublicFields(value, [
+    'id', 'state', 'fileName', 'maskedKey', 'reasonCode', 'checkedAt', 'expiresAt'
+  ]);
+}
+
+function publicFigmaPlan(value) {
+  var out = figmaPublicFields(value, [
+    'id', 'fingerprint', 'scope', 'mode', 'estimatedReads',
+    'comparisonDomain', 'createdAt', 'expiresAt'
+  ]);
+  if (!out) return null;
+  out.groups = Array.isArray(value.groups)
+    ? value.groups.slice(0, 20).map(figmaPublicScalar).filter(function (row) { return row !== null; }) : [];
+  out.warnings = Array.isArray(value.warnings) ? value.warnings.slice(0, 50).map(function (warning) {
+    return figmaPublicFields(warning, ['code']);
+  }).filter(Boolean) : [];
+  return out;
+}
+
+function publicFigmaSyncSummary(value) {
+  var out = figmaPublicFields(value, [
+    'id', 'result', 'errorCode', 'updated', 'unchanged', 'warnings',
+    'durationMs', 'startedAt', 'finishedAt', 'committedGenerationId'
+  ]);
+  if (!out) return null;
+  out.groups = Array.isArray(value.groups)
+    ? value.groups.slice(0, 200).map(publicFigmaGroup).filter(Boolean) : [];
+  return out;
+}
+
+function publicFigmaIntegration(value) {
+  var out = figmaPublicFields(value, ['status', 'reasonCode', 'configRevision']);
+  if (!out) return null;
+  out.account = figmaPublicFields(value.account, ['state', 'displayName', 'email', 'checkedAt']);
+  out.projectFile = figmaPublicFields(value.projectFile, ['state', 'key', 'name', 'url']);
+  out.access = figmaPublicFields(value.access, ['state', 'checkedAt', 'reasonCode']);
+  out.quota = figmaPublicFields(value.quota, ['state', 'reasonCode']);
+  out.test = publicFigmaJob(value.test);
+  out.fileCandidate = publicFigmaCandidate(value.fileCandidate);
+  out.syncGate = figmaPublicFields(value.syncGate, ['state', 'reasonCode']);
+  out.compareGate = figmaPublicFields(value.compareGate, ['state', 'reasonCode']);
+  out.actions = figmaPublicFields(value.actions, [
+    'canTest', 'canSync', 'canCompare', 'canChangeFile',
+    'canChangeAccount', 'canClearIntegration'
+  ]);
+  out.context = figmaPublicFields(value.context, [
+    'lastSuccessfulSync', 'updatedArtifacts', 'generationAvailable',
+    'generationError', 'generationId', 'resetAvailable'
+  ]);
+  out.diagnostics = figmaPublicFields(value.diagnostics, [
+    'connectorState', 'connectorScope', 'connectorUrl', 'competingConnector',
+    'checkedAt', 'syncRecoveryState', 'taskPublicationRecoveryState',
+    'verificationGeneration', 'accountReceipt', 'generationPointer'
+  ]);
+  var sync = figmaPublicFields(value.sync, [
+    'state', 'activeJobId', 'lastSuccessAt', 'committedGenerationId'
+  ]);
+  if (sync) {
+    sync.lastResult = publicFigmaSyncSummary(value.sync.lastResult);
+    sync.active = publicFigmaJob(value.sync.active);
+  }
+  out.sync = sync;
+  return out;
+}
+
+function publicFigmaFeature(value) {
+  return figmaPublicFields(value, ['state', 'reasonCode', 'configRevision', 'canEnable']);
+}
+
+function publicFigmaResult(result) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) {
+    return { ok: false, status: 500, error: 'internal' };
+  }
+  var ok = result.ok === true;
+  var status = Number.isInteger(result.status) && result.status >= (ok ? 200 : 400) &&
+    result.status <= (ok ? 299 : 599) ? result.status : (ok ? 200 : 500);
+  if (!ok) {
+    var code = /^[A-Za-z][A-Za-z0-9_-]{0,99}$/.test(String(result.error || ''))
+      ? result.error : 'internal';
+    var failure = { ok: false, status: status, error: code };
+    if (/^sha256:[a-f0-9]{64}$/.test(String(result.currentRevision || '')) ||
+        Number.isSafeInteger(result.currentRevision) && result.currentRevision >= 0) {
+      failure.currentRevision = result.currentRevision;
+    }
+    return failure;
+  }
+  var success = { ok: true, status: status };
+  if (Object.prototype.hasOwnProperty.call(result, 'revision')) {
+    success.revision = figmaPublicScalar(result.revision);
+  }
+  if (Object.prototype.hasOwnProperty.call(result, 'recovered')) {
+    success.recovered = result.recovered === true;
+  }
+  if (Object.prototype.hasOwnProperty.call(result, 'feature')) {
+    success.feature = publicFigmaFeature(result.feature);
+  }
+  if (Object.prototype.hasOwnProperty.call(result, 'job')) {
+    success.job = publicFigmaJob(result.job);
+  }
+  if (Object.prototype.hasOwnProperty.call(result, 'candidate')) {
+    success.candidate = publicFigmaCandidate(result.candidate);
+  }
+  if (Object.prototype.hasOwnProperty.call(result, 'plan')) {
+    success.plan = publicFigmaPlan(result.plan);
+  }
+  if (Object.prototype.hasOwnProperty.call(result, 'integration')) {
+    success.integration = publicFigmaIntegration(result.integration);
+  }
+  return success;
 }
 
 function handleFigmaTest(req, res) {
@@ -2138,7 +2302,19 @@ function handleCliLog(req, res, url) {
 // Queue an immediate re-probe of `claude mcp list`. invalidate() is intentionally
 // asynchronous, so the response labels the returned snapshot as cached instead of
 // claiming it is the fresh probe result; SSE publishes the result when it lands.
-function handleFigmaRecheck(req, res) {
+function handleEmptyFigmaRequest(req, res, action) {
+  readJsonBody(req).then(function (body) {
+    if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).length) {
+      jsonResponse(res, 400, { error: 'bad-json' });
+      return;
+    }
+    action();
+  }, function (error) {
+    jsonResponse(res, error.httpStatus || 400, { error: 'bad-json' });
+  });
+}
+
+function performFigmaRecheck(res) {
   if (finalizationsMod.mutationBlocked(null)) {
     jsonResponse(res, 409, { error: 'finalization-active', detail: 'Wait for the active task finalization before re-checking the Figma identity.' }); return;
   }
@@ -2147,6 +2323,12 @@ function handleFigmaRecheck(req, res) {
   figmaMod.invalidateIdentity();
   sse.pollLoop();
   jsonResponse(res, 202, { queued: true, figma: figmaMod.status() });
+}
+
+function handleFigmaRecheck(req, res) {
+  handleEmptyFigmaRequest(req, res, function () {
+    performFigmaRecheck(res);
+  });
 }
 
 // Bind this project: add a local-scoped "figma" MCP server (a `claude mcp add`
@@ -2172,7 +2354,7 @@ function activeFigmaOrTaskSession() {
   } catch (error) { return 'sessions:unavailable'; }
 }
 
-function handleFigmaAddLocal(req, res) {
+function performFigmaAddLocal(res) {
   if (finalizationsMod.mutationBlocked(null)) {
     jsonResponse(res, 409, { error: 'finalization-active', detail: 'Figma configuration mutations are blocked while any durable task finalization needs recovery.' }); return;
   }
@@ -2187,9 +2369,15 @@ function handleFigmaAddLocal(req, res) {
   });
 }
 
+function handleFigmaAddLocal(req, res) {
+  handleEmptyFigmaRequest(req, res, function () {
+    performFigmaAddLocal(res);
+  });
+}
+
 // Open the native Terminal already in the project dir with `claude` running (macOS only) so the user
 // only has to type /mcp → Authenticate. Not a Figma call — just `osascript`.
-function handleFigmaOpenTerminal(req, res) {
+function performFigmaOpenTerminal(res) {
   if (finalizationsMod.mutationBlocked(null)) {
     jsonResponse(res, 409, { error: 'finalization-active', detail: 'Wait for the active task finalization before changing the Figma account.' }); return;
   }
@@ -2204,6 +2392,12 @@ function handleFigmaOpenTerminal(req, res) {
     figmaMod.invalidateIdentity();
     sse.pollLoop();
     jsonResponse(res, 200, { opened: true });
+  });
+}
+
+function handleFigmaOpenTerminal(req, res) {
+  handleEmptyFigmaRequest(req, res, function () {
+    performFigmaOpenTerminal(res);
   });
 }
 
@@ -2796,7 +2990,7 @@ function handleApi(req, res, url) {
     return true;
   }
   if (req.method === 'POST' && !validateMutationRequest(req, res)) return true;
-  if (/^\/api\/figma(?:\/|$)/.test(url.pathname)) {
+  if (/^\/api\/figma(?:\/|$)/.test(url.pathname) && url.pathname !== '/api/figma/enable') {
     var figmaGate = figmaFeatureGate();
     if (!figmaGate.enabled) {
       jsonResponse(res, figmaGate.status, { ok: false, error: figmaGate.error }); return true;
@@ -2847,6 +3041,7 @@ function handleApi(req, res, url) {
   if (url.pathname === '/api/cli/login/cancel' && req.method === 'POST') { handleCliLoginCancel(req, res); return true; }
   if (url.pathname === '/api/cli/log' && req.method === 'GET')           { handleCliLog(req, res, url);    return true; }
   if (url.pathname === '/api/figma/recheck' && req.method === 'POST')    { handleFigmaRecheck(req, res);   return true; }
+  if (url.pathname === '/api/figma/enable' && req.method === 'POST') { handleFigmaEnable(req, res); return true; }
   if (url.pathname === '/api/figma/integration' && req.method === 'GET') { handleFigmaIntegration(req, res); return true; }
   if (url.pathname === '/api/figma/integration/reset' && req.method === 'POST') { handleFigmaIntegrationReset(req, res); return true; }
   if (url.pathname === '/api/figma/test' && req.method === 'POST') { handleFigmaTest(req, res); return true; }
@@ -2991,5 +3186,6 @@ function handle(req, res) {
 }
 
 module.exports = {
-  handle: handle
+  handle: handle,
+  _test: { publicFigmaResult: publicFigmaResult }
 };

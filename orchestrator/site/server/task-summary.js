@@ -17,7 +17,7 @@ var taskCheckpoints = require('./task-checkpoints');
 var tasksLog = require('./tasks-log');
 var taskTestCertification = require('./task-test-certification');
 var designCatalog = require('./design-catalog');
-var apiReportState = require('./api-report-state');
+var apiCatalog = require('./api-catalog');
 var core = require('../../tasks/task-state-core.cjs');
 var taskIndexSource = require('./task-source');
 
@@ -200,7 +200,8 @@ function byStem(list) {
 }
 
 function readSourceAvailability() {
-  var design = Object.create(null), coverage = Object.create(null), drift = Object.create(null);
+  var design = Object.create(null);
+  var api = Object.create(null);
   try {
     var designSnapshot = designCatalog.snapshot();
     if (designSnapshot && designSnapshot.ok && designSnapshot.byId) {
@@ -208,25 +209,21 @@ function readSourceAvailability() {
     }
   } catch (_) { /* Missing/corrupt optional source data means no proven target. */ }
   try {
-    var coveragePlan = apiReportState.readCoverage();
-    if (coveragePlan && coveragePlan.present && Array.isArray(coveragePlan.suggestions)) {
-      coveragePlan.suggestions.slice(0, 10000).forEach(function (row) {
-        if (row && typeof row.operationId === 'string') coverage[row.operationId] = true;
-      });
+    var apiSnapshot = apiCatalog.snapshot();
+    if (apiSnapshot && apiSnapshot.ok && !apiSnapshot.empty) {
+      var normalized = apiCatalog.normalized(apiSnapshot);
+      (normalized.changes || []).concat(normalized.mismatches || [])
+        .slice(0, 20000).forEach(function (row) {
+          if (row && row.sourceId) api[row.sourceId] = true;
+        });
     }
-  } catch (_) { /* Keep the target unavailable. */ }
-  try {
-    var driftReport = apiReportState.readDrift();
-    if (driftReport && driftReport.present && typeof driftReport.specHash === 'string' && typeof driftReport.checkedAt === 'string') {
-      drift['drift:' + crypto.createHash('sha256').update(driftReport.specHash + '\0' + driftReport.checkedAt, 'utf8').digest('hex')] = true;
-    }
-  } catch (_) { /* Keep the target unavailable. */ }
-  return { design: design, coverage: coverage, drift: drift };
+  } catch (_) { /* Optional API evidence must fail closed. */ }
+  return { design: design, api: api };
 }
 
 function sourceTarget(origin, allRows, availability) {
   if (!origin) return null;
-  availability = availability || { design: {}, coverage: {}, drift: {} };
+  availability = availability || { design: {} };
   if (origin.kind === 'figma') {
     var designRef = /^design:(?:component|surface|token):((?:cmp|srf|tok)-[a-f0-9]{24}):/.exec(origin.ref);
     return {
@@ -241,10 +238,8 @@ function sourceTarget(origin, allRows, availability) {
   };
   if (origin.kind === 'api') return {
     panel: 'api',
-    entityId: origin.type === 'api-mismatch' ? origin.ref : 'coverage:' + origin.ref,
-    availability: origin.type === 'api-mismatch'
-      ? availability.drift && availability.drift[origin.ref] ? 'available' : 'missing'
-      : availability.coverage && availability.coverage[origin.ref] ? 'available' : 'missing'
+    entityId: origin.ref,
+    availability: availability.api && availability.api[origin.ref] ? 'available' : 'missing'
   };
   if (origin.kind === 'follow-up') return {
     panel: 'board', entityId: origin.ref,

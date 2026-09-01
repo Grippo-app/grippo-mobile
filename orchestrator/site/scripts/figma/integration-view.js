@@ -82,9 +82,66 @@ function stateText(category, state) {
     el('span', { text: t(labelKey) })
   ]);
 }
+export function createFigmaFeatureView(handlers) {
+  var root = el('div', { class: 'figma-feature' });
+  var title = el('h2', { class: 'panel-title', text: t('figma.title') });
+  var lead = el('p', { class: 'panel-lead', text: t('figma.lead') });
+  var badge = el('span', { class: 'figma-integration-badge' });
+  var header = el('div', { class: 'figma-integration-header' }, [
+    el('div', null, [title, lead]),
+    el('div', { class: 'figma-integration-header-side' }, [badge])
+  ]);
+  var stateTitle = el('h3', {
+    id: 'figma-feature-state-title', attrs: { tabindex: '-1' }
+  });
+  var stateBody = el('p');
+  var enable = button('figma.feature.enable', 'btn btn--primary', handlers.enable);
+  var command = el('code', { class: 'figma-feature-command', text: 'npm start' });
+  var restart = el('div', { class: 'figma-feature-restart', hidden: true }, [command]);
+  var state = el('section', {
+    class: 'figma-feature-state', attrs: {
+      'aria-labelledby': 'figma-feature-state-title',
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+      role: 'status'
+    }
+  }, [stateTitle, stateBody, enable, restart]);
+  root.appendChild(header);
+  root.appendChild(state);
+
+  function update(feature, busy) {
+    feature = feature || {};
+    var kind = ['disabled', 'restart-required', 'invalid'].indexOf(feature.state) >= 0
+      ? feature.state : 'invalid';
+    var copyKind = kind === 'restart-required' ? 'restart' : kind;
+    root.setAttribute('data-state', kind);
+    badge.className = 'figma-integration-badge figma-integration-badge--' +
+      (kind === 'disabled' ? 'needs-attention' : 'unavailable');
+    badge.textContent = t('figma.feature.' + copyKind + '.title');
+    stateTitle.textContent = t('figma.feature.' + copyKind + '.title');
+    stateBody.textContent = t('figma.feature.' + copyKind + '.body');
+    enable.hidden = kind !== 'disabled';
+    enable.disabled = !!busy || feature.canEnable !== true;
+    enable.textContent = busy ? t('figma.feature.enabling') : t('figma.feature.enable');
+    restart.hidden = kind !== 'restart-required';
+  }
+
+  return {
+    el: root,
+    update: update,
+    focusAction: function () {
+      if (!enable.hidden && typeof enable.focus === 'function') enable.focus();
+      else if (typeof stateTitle.focus === 'function') {
+        stateTitle.focus();
+      }
+    }
+  };
+}
 export function createIntegrationView(handlers) {
   var root = el('div', { class: 'figma-integration' });
-  var title = el('h2', { class: 'panel-title', text: t('figma.title') });
+  var title = el('h2', {
+    class: 'panel-title', text: t('figma.title'), attrs: { tabindex: '-1' }
+  });
   var lead = el('p', { class: 'panel-lead', text: t('figma.lead') });
   var badge = el('span', { class: 'figma-integration-badge' });
   var test = button('figma.action.test', 'btn btn--primary', handlers.test);
@@ -236,6 +293,9 @@ export function createIntegrationView(handlers) {
   return {
     el: root,
     update: update,
+    focusPrimary: function () {
+      if (title && typeof title.focus === 'function') title.focus();
+    },
     focusSyncActions: function (scope) {
       var target = syncButtons[scope] || syncButtons.tokens;
       if (target && !target.disabled && typeof target.focus === 'function') target.focus();

@@ -34,11 +34,10 @@
     "coverage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["total", "implemented", "missing", "partial", "unknown", "analyzedFiles"],
+      "required": ["total", "implemented", "partial", "unknown", "analyzedFiles"],
       "properties": {
         "total": { "type": "integer", "minimum": 0, "maximum": 10000 },
         "implemented": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "missing": { "type": "integer", "minimum": 0, "maximum": 10000 },
         "partial": { "type": "integer", "minimum": 0, "maximum": 10000 },
         "unknown": { "type": "integer", "minimum": 0, "maximum": 10000 },
         "analyzedFiles": { "type": "integer", "minimum": 0, "maximum": 20000 }
@@ -130,7 +129,7 @@
       "required": ["operationId", "state", "file", "symbol", "confidence", "evidence"],
       "properties": {
         "operationId": { "type": "string", "minLength": 1, "maxLength": 200 },
-        "state": { "enum": ["implemented", "missing", "partial", "unknown"] },
+        "state": { "enum": ["implemented", "partial", "unknown"] },
         "file": { "$ref": "#/definitions/path" },
         "symbol": { "type": ["string", "null"], "maxLength": 300 },
         "confidence": { "enum": ["exact", "derived", "heuristic", null] },

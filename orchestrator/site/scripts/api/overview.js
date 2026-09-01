@@ -102,8 +102,8 @@ export const apiOverview = {
       ['implemented', Object.assign({}, clearEndpointFilters, {
         tab: 'endpoints', implementation: 'implemented'
       })],
-      ['missing', Object.assign({}, clearEndpointFilters, {
-        tab: 'endpoints', implementation: 'missing'
+      ['unknown', Object.assign({}, clearEndpointFilters, {
+        tab: 'endpoints', implementation: 'unknown'
       })],
       ['drifted', Object.assign({}, clearEndpointFilters, {
         tab: 'diagnostics', implementation: '', mismatch: '', query: ''
@@ -126,7 +126,6 @@ export const apiOverview = {
     var priorities = payload.priorities || {};
     var grid = el('div', { class: 'api-priority-grid' });
     grid.appendChild(priorityList(ctx, 'api.priority.breaking', priorities.breakingChanges || [], 'change'));
-    grid.appendChild(priorityList(ctx, 'api.priority.missing', priorities.missingEndpoints || [], 'endpoint'));
     grid.appendChild(priorityList(ctx, 'api.priority.mismatch', priorities.observedMismatches || [], 'mismatch'));
     grid.appendChild(priorityList(ctx, 'api.priority.recent', priorities.recentlyChanged || [], 'change'));
     grid.appendChild(priorityList(ctx, 'api.priority.tasks', priorities.openTasks || [], 'task'));

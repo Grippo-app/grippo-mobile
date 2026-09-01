@@ -669,6 +669,53 @@
   gap: 18px;
 }
 
+.figma-integration[hidden],
+.figma-feature[hidden] { display: none; }
+
+.figma-feature {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.figma-feature .figma-integration-badge {
+  max-width: 100%;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.figma-feature-state {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  max-width: 720px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warning);
+  border-radius: var(--radius-dialog);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.figma-feature[data-state="invalid"] .figma-feature-state,
+.figma-feature[data-state="restart-required"] .figma-feature-state {
+  border-left-color: var(--danger);
+}
+
+.figma-feature-state h3,
+.figma-feature-state p { margin: 0; }
+.figma-feature-state p { max-width: 64ch; color: var(--muted); line-height: 1.55; }
+.figma-feature-restart[hidden] { display: none; }
+.figma-feature-command {
+  display: inline-block;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+  color: var(--fg);
+}
+
 .figma-integration-header {
   display: flex;
   align-items: flex-start;
@@ -4590,6 +4637,9 @@ a.board-screens__shot:hover { border-color: var(--accent); }
 .site-status-dot[data-state="figma-misconfigured"] { background: var(--danger); box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 14%, transparent); }
 .site-status-dot[data-state="figma-cli-missing"]  { background: transparent; border: 1.5px dashed var(--warning); }
 .site-status-dot[data-state="figma-unknown"]      { background: transparent; border: 1.5px dashed var(--muted); }
+.site-status-dot[data-state="figma-disabled"]     { background: transparent; border: 1.5px dashed var(--muted); }
+.site-status-dot[data-state="figma-restart-required"] { background: var(--warning); box-shadow: 0 0 0 2px color-mix(in srgb, var(--warning) 16%, transparent); }
+.site-status-dot[data-state="figma-invalid"]      { background: var(--danger); box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 14%, transparent); }
 
 /* Skills pill dot states (header). Same palette; red = the run-gate is
    actively holding task runs (skills-status.js maps runHeld → "blocked"). */

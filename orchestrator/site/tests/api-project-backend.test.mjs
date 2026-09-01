@@ -12,6 +12,11 @@ import { fileURLToPath } from 'node:url'
 
 import { classifyChanges } from '../../api-contract/scripts/change-classifier.mjs'
 import { _test as analyzerTest } from '../../api-contract/scripts/analyze-project.mjs'
+import {
+  normalizeKotlinRoute, normalizeRoute, parseKotlinAnnotationCandidates,
+  parseKotlinClientEndpoints, parseKotlinDirectHttpCandidates, parseKotlinRequestCandidates,
+  parseKotlinRequestEndpoints, selectKotlinApiRecord,
+} from '../../api-contract/scripts/kotlin-routes.mjs'
 import { createApiRefreshCoordinator, createApiRenderGeneration } from '../scripts/panels/api.js'
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url))
@@ -24,6 +29,9 @@ const apiCatalog = require(join(REPO, 'orchestrator', 'site', 'server', 'api-cat
 const apiChanges = require(join(REPO, 'orchestrator', 'site', 'server', 'api-changes.js'))
 const apiChangeReviews = require(join(REPO, 'orchestrator', 'site', 'server', 'api-change-reviews.js'))
 const apiTasks = require(join(REPO, 'orchestrator', 'site', 'server', 'api-task-actions.js'))
+const runtimeReportContract = require(join(
+  REPO, 'orchestrator', 'api-contract', 'runtime-report-contract.cjs',
+))
 const apiMock = require(join(REPO, 'orchestrator', 'site', 'server', 'api-mock.js'))
 const contractHistory = require(join(REPO, 'orchestrator', 'site', 'server', 'contract-history.js'))
 const architectureContract = require(join(
@@ -575,7 +583,7 @@ test('semantic classifier declares recursive model graph truncation', () => {
   assert.deepEqual(report.limitations, ['model-graph-cap'])
 })
 
-test('project analyzer distinguishes exact, derived, heuristic, ambiguous, and missing mappings', () => {
+test('project analyzer distinguishes exact, derived, heuristic, ambiguous, and unknown mappings', () => {
   const target = endpoint()
   const exactRecord = {
     path: 'src/widget-client.ts',
@@ -616,6 +624,18 @@ test('project analyzer distinguishes exact, derived, heuristic, ambiguous, and m
     indexedConsumers.byOperation.getWidget.map((row) => row.file),
     ['src/widget-screen.ts'],
   )
+  assert.deepEqual(analyzerTest.consumerEvidenceIndex([
+    exactRecord,
+    { path: 'src/Docs.kt', text: 'val docs = "api.getWidget()"\n/* getWidget() */\n' },
+  ], [mapping], { present: false, map: null }).byOperation.getWidget || [], [])
+  const kotlinConsumers = analyzerTest.consumerEvidenceIndex([
+    exactRecord,
+    {
+      path: 'src/WidgetScreen.kt',
+      text: 'fun realConsumer() { /* fun fakeConsumer() */ getWidget() }\n',
+    },
+  ], [mapping], { present: false, map: null })
+  assert.equal(kotlinConsumers.byOperation.getWidget[0].symbol, 'realConsumer')
   const indexed = analyzerTest.evidenceIndexes(records, [target])
   indexed.routes = analyzerTest.exactRouteIndex(routes).index
   assert.equal(analyzerTest.implementationFor(target, records, routes, indexed).state, 'implemented')
@@ -630,7 +650,18 @@ test('project analyzer distinguishes exact, derived, heuristic, ambiguous, and m
   routes = records.flatMap(analyzerTest.routeCandidates)
   assert.equal(routes.length, 0)
   mapping = analyzerTest.implementationFor(target, records, routes)
-  assert.equal(mapping.state, 'missing')
+  assert.equal(mapping.state, 'unknown')
+
+  records = [{
+    path: 'src/NestedComment.kt',
+    text: 'fun unrelated() { /* outer /* "/widgets/{id}" */ still outer */ }\n',
+  }]
+  routes = records.flatMap(analyzerTest.routeCandidates)
+  const nestedIndexes = analyzerTest.evidenceIndexes(records, [target])
+  nestedIndexes.routes = analyzerTest.exactRouteIndex(routes).index
+  assert.equal(analyzerTest.implementationFor(
+    target, records, routes, nestedIndexes,
+  ).state, 'unknown')
 
   records = [{
     path: 'src/widget-operation.ts',
@@ -670,8 +701,166 @@ test('project analyzer distinguishes exact, derived, heuristic, ambiguous, and m
   mapping = analyzerTest.implementationFor(target, [{
     path: 'src/unrelated.ts', text: 'export const value = 1\n',
   }], [])
-  assert.equal(mapping.state, 'missing')
+  assert.equal(mapping.state, 'unknown')
   assert.equal(mapping.file, null)
+})
+
+test('canonical Kotlin route parsing is lexical, balanced, and language-specific', () => {
+  assert.equal(normalizeRoute('/trainings/$id'), '/trainings/$id')
+  assert.equal(normalizeKotlinRoute('/trainings/$id'), '/trainings/{}')
+  assert.equal(normalizeKotlinRoute('/trainings/${item.id}'), '/trainings/{}')
+  assert.equal(normalizeKotlinRoute('/users/$userId/trainings/${training.id}'), '/users/{}/trainings/{}')
+  assert.equal(normalizeKotlinRoute('/trainings/\\$id'), '/trainings/$id')
+  assert.equal(normalizeRoute('https://example.test/trainings/{id}?view=full'), '/trainings/{}')
+  assert.notEqual(normalizeRoute('/trainings/{id}:cancel'), normalizeRoute('/trainings/{id}:delete'))
+
+  const source = `
+    public suspend fun getTraining(id: String): Result<TrainingResponse> {
+      return request(
+        method = HttpMethod.Get,
+        path = "/trainings/$id"
+      )
+    }
+  `
+  const parsed = parseKotlinRequestEndpoints(source)
+  assert.deepEqual(parsed, [{ method: 'GET', path: '/trainings/{}' }])
+  assert.deepEqual(parseKotlinRequestEndpoints(`request(
+    body = Payload(make("x)")),
+    method = io.ktor.http.HttpMethod.Post,
+    path = "/trainings/${'${id.encodeURLPath()}'}"
+  )`), [{ method: 'POST', path: '/trainings/{}' }])
+  assert.deepEqual(parseKotlinRequestEndpoints(`request<TrainingResponse>(
+    method = HttpMethod./* outer /* nested */ comment */Get,
+    path = "/trainings/$id#detail"
+  )`), [{ method: 'GET', path: '/trainings/{}' }])
+  assert.deepEqual(parseKotlinRequestEndpoints(`request(
+    path = """/trainings/${'${id ?: "fallback"}'}""",
+    method = HttpMethod.Get
+  )`), [{ method: 'GET', path: '/trainings/{}' }])
+  assert.deepEqual(parseKotlinRequestEndpoints(`request(
+    method = HttpMethod.Get,
+    path = "exercise-metrics/exercise-example/$id/recent"
+  )`), [{ method: 'GET', path: '/exercise-metrics/exercise-example/{}/recent' }])
+  assert.deepEqual(parseKotlinRequestEndpoints([
+    '// request(method = HttpMethod.Get, path = "/ghost/$id")',
+    '/* request(method = HttpMethod.Post, path = "/ghost/$id") */',
+    'val docs = """request(method = HttpMethod.Put, path = "/ghost/$id")"""',
+    'request(method = HttpMethod.Get, path = "/trainings/" + id)',
+    'request(method = HttpMethod.Get, path = route)',
+    'request(method = HttpMethod.Get, path = "${baseUrl}/trainings/$id")',
+  ].join('\n')), [])
+  assert.deepEqual(parseKotlinDirectHttpCandidates(`
+    suspend fun one() = client.get<Training>("/trainings/$id")
+    suspend fun two() = httpClient.get(timeout = 10, urlString = "achievements/$id")
+    suspend fun three() = httpClient?.delete(uri = "/trainings/$id")
+    suspend fun four() = apiClient!!.post(path = "/trainings")
+    fun local() { get("/trainings/$id") }
+    fun ignored() { cache.get("/trainings/$id") }
+    // client.delete("/trainings/$id")
+  `).map(({ method, path }) => ({ method, path })), [
+    { method: 'GET', path: '/trainings/{}' },
+    { method: 'GET', path: '/achievements/{}' },
+    { method: 'DELETE', path: '/trainings/{}' },
+    { method: 'POST', path: '/trainings' },
+  ])
+  assert.deepEqual(parseKotlinClientEndpoints(`
+    suspend fun wrapped(id: String) = request(
+      method = HttpMethod.Get, path = "/trainings/$id"
+    )
+    suspend fun direct(id: String) = httpClient.get("trainings/$id")
+    fun ignored(id: String) = cache.get("/trainings/$id")
+  `), [
+    { method: 'GET', path: '/trainings/{}' },
+    { method: 'GET', path: '/trainings/{}' },
+  ])
+  assert.deepEqual(parseKotlinRequestEndpoints(`
+    request(method = HttpMethod.Get, path = " /trainings/$id")
+    request(method = HttpMethod.Get, path = "/trainings/$id ")
+  `), [])
+  assert.deepEqual(parseKotlinRequestEndpoints(
+    'request(method = HttpMethod.Get, path = "/trainings//$id")'
+  ), [{ method: 'GET', path: '/trainings//{}' }])
+  assert.deepEqual(parseKotlinRequestEndpoints(
+    'request(method = HttpMethod.Get, path = """/trainings/\\$id""")'
+  ), [{ method: 'GET', path: '/trainings/\\{}' }])
+  assert.notEqual(normalizeRoute('/trainings//{}'), normalizeRoute('/trainings/{}'))
+  assert.deepEqual(parseKotlinRequestCandidates(`request(
+    method = HttpMethod.Post,
+    body = request(method = HttpMethod.Get, path = "/inner/$id"),
+    path = "/outer/$id"
+  )`).map(({ method, path }) => ({ method, path })), [
+    { method: 'POST', path: '/outer/{}' },
+    { method: 'GET', path: '/inner/{}' },
+  ])
+  assert.deepEqual(parseKotlinAnnotationCandidates(`
+    @GetMapping(produces = ["application/json"], path = "/trainings/$id")
+    @retrofit2.http.POST("/users/$id/trainings")
+  `).map(({ method, path }) => ({ method, path })), [
+    { method: 'GET', path: '/trainings/{}' },
+    { method: 'POST', path: '/users/{}/trainings' },
+  ])
+  assert.equal(selectKotlinApiRecord([
+    { path: 'src/commonTest/data-services/AppApi.kt' },
+    { path: 'src/commonMain/data-services/AppApi.kt' },
+  ], 'AppApi').record.path, 'src/commonMain/data-services/AppApi.kt')
+  assert.equal(selectKotlinApiRecord([
+    { path: 'src/a/data-services/AppApi.kt' },
+    { path: 'src/b/data-services/AppApi.kt' },
+  ], 'AppApi').error, 'api-client-file-ambiguous')
+  const records = [{ path: 'src/GrippoApi.kt', text: source }]
+  const routes = records.flatMap(analyzerTest.routeCandidates)
+  const mapping = analyzerTest.implementationFor(endpoint({
+    operationId: 'getTraining', path: '/trainings/{id}'
+  }), records, routes)
+  assert.equal(mapping.state, 'implemented')
+  assert.equal(mapping.confidence, 'exact')
+  assert.equal(mapping.file, 'src/GrippoApi.kt')
+  assert.equal(mapping.symbol, 'getTraining')
+
+  const nestedSource = `suspend fun update(id: String) = request(
+    body = Payload(make("x)")), method = HttpMethod.Post,
+    path = "/trainings/${'${id.encodeURLPath()}'}"
+  )`
+  const nestedRoutes = analyzerTest.routeCandidates({ path: 'src/Api.kt', text: nestedSource })
+  assert.equal(analyzerTest.implementationFor(endpoint({
+    operationId: 'updateTraining', method: 'POST', path: '/trainings/{id}'
+  }), [{ path: 'src/Api.kt', text: nestedSource }], nestedRoutes).state, 'implemented')
+  assert.deepEqual(analyzerTest.routeCandidates({
+    path: 'src/Docs.kt',
+    text: 'val docs = """client.get(\\"/trainings/$id\\")"""\nfun lookup(id: String) = cache.get("/trainings/$id")',
+  }), [])
+  assert.deepEqual(analyzerTest.routeCandidates({
+    path: 'src/KtorClient.kt',
+    text: 'suspend fun listTrainings() = httpClient.get("trainings")',
+  }).map((row) => ({ method: row.method, route: row.route, symbol: row.symbol })), [{
+    method: 'GET', route: '/trainings', symbol: 'listTrainings',
+  }])
+  for (const literalDollarSource of [
+    'fun escaped(id: String) = request(method = HttpMethod.Get, path = "/training/\\$id")',
+    'fun raw(id: String) = request(method = HttpMethod.Get, path = """/training/${\'$\'}id""")',
+  ]) {
+    const literalRoutes = analyzerTest.routeCandidates({
+      path: 'src/LiteralDollar.kt', text: literalDollarSource,
+    })
+    assert.equal(literalRoutes[0].route, '/training/$id')
+    assert.equal(analyzerTest.implementationFor(endpoint({
+      operationId: 'getTraining', path: '/training/{id}'
+    }), [{ path: 'src/LiteralDollar.kt', text: literalDollarSource }], literalRoutes).state, 'unknown')
+  }
+  const misleading = 'fun real() { /* fun fake() */ request(method = HttpMethod.Get, path = "/trainings/$id") }'
+  assert.equal(analyzerTest.routeCandidates({ path: 'src/Misleading.kt', text: misleading })[0].symbol, 'real')
+  assert.equal(analyzerTest.routeCandidates({
+    path: 'src/client.js', text: 'client.get("/trainings/$id")',
+  })[0].route, '/trainings/$id')
+})
+
+test('coverage planner sanitizes snapshot summaries through the pure report contract', () => {
+  const raw = 'A'.repeat(501) + '\n' + 'B'.repeat(499)
+  const summary = runtimeReportContract.projectSummary(raw)
+  assert.equal(summary.length, 500)
+  assert.doesNotMatch(summary, /[\r\n]/)
+  assert.equal(runtimeReportContract.projectSummary('\u00a0 padded\t summary  '),
+    'padded summary')
 })
 
 test('new report schemas accept bounded producer-shaped values and reject extra fields', () => {
@@ -834,7 +1023,7 @@ test('new report schemas accept bounded producer-shaped values and reject extra 
 
   const common = {
     schemaVersion: 1,
-    analyzerVersion: 'api-project-analyzer-v1',
+    analyzerVersion: 'api-project-analyzer-v2',
     committedGenerationId: 'gen-20260101T000000Z-abcdef123456',
     contractHash: HASH_A,
     environmentId: 'local',
@@ -845,7 +1034,7 @@ test('new report schemas accept bounded producer-shaped values and reject extra 
     ...common,
     analysisStatus: 'complete',
     coverage: {
-      total: 1, implemented: 1, missing: 0, partial: 0, unknown: 0, analyzedFiles: 1,
+      total: 1, implemented: 1, partial: 0, unknown: 0, analyzedFiles: 1,
     },
     receipt: {
       fileCount: 1, totalBytes: 10, directoryCount: 2,
@@ -889,7 +1078,7 @@ test('new report schemas accept bounded producer-shaped values and reject extra 
   }, inventory), false)
   const inconsistent = structuredClone(implementation)
   inconsistent.coverage.implemented = 0
-  inconsistent.coverage.missing = 1
+  inconsistent.coverage.unknown = 1
   assert.equal(apiRelations._test.validImplementation(inconsistent, inventory), false)
   const poisonedConsumer = structuredClone(consumer)
   poisonedConsumer.operations[0].consumers[0].file = '../outside.ts'
@@ -931,6 +1120,26 @@ test('new report schemas accept bounded producer-shaped values and reject extra 
     ...drift,
     summary: { errors: 0, warnings: 1, infos: 0 },
   }), false)
+  const context = {
+    analyzerVersion: common.analyzerVersion,
+    committedGenerationId: common.committedGenerationId,
+    contractHash: common.contractHash,
+    environmentId: common.environmentId,
+    projectCodeRevision: common.projectCodeRevision,
+    specHash: HASH_A,
+  }
+  assert.equal(runtimeReportContract.currentDrift(drift, context), true)
+  assert.equal(runtimeReportContract.currentDrift({ ...drift, specHash: HASH_B }, context), false)
+  assert.equal(runtimeReportContract.currentDrift({ ...drift, findings: {} }, context), false)
+  assert.equal(runtimeReportContract.completeDrift(drift), true)
+  assert.equal(runtimeReportContract.completeDrift({
+    ...drift, limitations: ['drift-finding-count-cap'],
+  }), false)
+  const prototypeAreaDrift = structuredClone(drift)
+  prototypeAreaDrift.findings[0].area = 'constructor'
+  const areaCounts = runtimeReportContract.driftCountsByArea(prototypeAreaDrift)
+  assert.equal(Object.getPrototypeOf(areaCounts), null)
+  assert.equal(areaCounts.constructor, 1)
 })
 
 test('canonical project input receipt is deterministic, VCS-neutral, and fail-closed on symlinks', () => {
@@ -1100,7 +1309,7 @@ test('catalog/query/batch helpers enforce closed filters, cursors, redaction, an
   assert.equal(apiTasks._test.validReportHashes({
     implementation: HASH_A, consumers: null, drift: HASH_B, changes: null, extra: null,
   }), false)
-  assert.match(apiRelations.sourceId('missing', 'получить/виджет'), /^api:missing:missing-[a-f0-9]{24}$/)
+  assert.equal(apiRelations.sourceId('change', 'chg-' + 'a'.repeat(24)), 'api:change:chg-' + 'a'.repeat(24))
   const mismatchFinding = {
     kind: 'dto-field-unknown',
     operationId: null,

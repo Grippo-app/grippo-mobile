@@ -355,7 +355,7 @@ auto-reconnects per the server-advertised `retry: 1500`. The Board's
   `design-component-compare.js` (component-domain freshness configuration),
   `design-component-state.js` (cheap poll-safe component adapter/mapping/project-dirty signals),
   `design-overview.js`, `design-preview.js`, `design-relations.js`,
-  `design-task-actions.js`, `task-source.js`, `api-contract.js`, `api-report-state.js`,
+  `design-task-actions.js`, `task-source.js`,
   `api-project-inputs.js`, `api-relations.js`, `api-catalog.js`,
   `api-overview.js`, `api-changes.js`, `api-change-reviews.js`,
   `api-task-actions.js`, `api-mock.js`,
@@ -497,7 +497,7 @@ auto-reconnects per the server-advertised `retry: 1500`. The Board's
   **Overview**, **Endpoints**, **Changes**, and **Diagnostics**. It reads only
   the fully validated committed contract generation and never calls the
   backend. Overview combines environment/freshness context with implementation,
-  missing, observed-mismatch, and breaking-change metrics; unavailable analysis
+  unknown, observed-mismatch, and breaking-change metrics; unavailable analysis
   stays explicitly unknown. Endpoints provides URL-backed filters, bounded
   opaque-cursor pagination, independent implementation/change/mismatch/task
   badges, and an on-demand detail drawer with request/response models,
@@ -506,7 +506,7 @@ auto-reconnects per the server-advertised `retry: 1500`. The Board's
   versioned directional semantic classifier and exposes bounded impact evidence.
   Reviewed acknowledgements are stored separately under a sole-writer lease;
   they reduce unresolved attention without modifying the immutable diff.
-  Multi-select accepts at most 25 current missing/change/mismatch source ids;
+  Multi-select accepts at most 25 current change/mismatch source ids;
   preview and create re-resolve all task prose, provenance, fingerprints,
   generation/report/task revisions, and deduplication on the server.
   Diagnostics owns doctor/analyze/diff commands, report freshness/limitations,

@@ -5,35 +5,53 @@
 // stays silent about endpoints the client never references. This planner answers the reverse,
 // "what does the snapshot offer that I have NOT built yet, and what have I built that has
 // drifted?" It walks the committed endpoint inventory and reconciles each endpoint against
-//   (a) the client's coverage — `<Product>Api.request(method=…, path=…)` calls, and
+//   (a) the client's coverage — canonical Kotlin request-wrapper or direct Ktor calls, and
 //   (b) the current control/task report scope's drift.json, by area.
 //
 // State per endpoint (keyed on operationId — the durable single token, like figma's designComponentId):
-//   not in client coverage              -> "not-implemented" -> an "implement" task
+//   no recognized client call           -> "available-to-build" -> an optional "implement" task
 //   in client + its area has ERR/WARN   -> "drift"           -> an "actualize" task
-//   in client + its area clean          -> "implemented"     -> no task
+//   in client + current area clean      -> "implemented"     -> no task
+//   in client + no current drift report -> "observed-call"   -> no correctness claim
 //
 // WRITES A PLAN ONLY (suggested-endpoints.json in that same report scope); it CREATES NO TASK and ENQUEUES
-// NOTHING. Delivery (plan entry -> backlog task) is the API panel's Coverage-tab button via the
-// deterministic idempotent backlog endpoint — the same rail the drift button uses. The contract:
-// auto-CREATE — yes (later, into backlog, on a click); auto-RUN — never.
+// NOTHING. The report is a CLI planning artifact: consumers may inspect it or use it as input to
+// a separately authorized workflow. There is no Site action rail for this report.
 //
 // GOLDEN INVARIANT: never calls the backend — reads only local files under api-contract/ + the
 // hand-written client tree. Pre-data-layer (apiClassName still the <Product>Api placeholder, or
-// no Api file yet) the client covers nothing, so EVERY endpoint is "not-implemented" — which is
-// correct and useful: the plan becomes the initial implementation backlog.
+// no Api file yet) every endpoint is "available-to-build". This is a menu,
+// not proof that an implementation is absent.
 import {
   exists, readJson, contractPath, currentContractFiles, PROJECT_ROOT, EXECUTION_ROOT, readConfig, writeContractReport,
   info, ok, warnMsg, failMsg, summary,
 } from './_util.mjs'
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, sep } from 'node:path'
+import { createRequire } from 'node:module'
+import { dirname, join, relative } from 'node:path'
+import {
+  parseKotlinClientEndpoints, sameRouteShape, selectKotlinApiRecord,
+} from './kotlin-routes.mjs'
+
+const require = createRequire(import.meta.url)
+const projectInputs = require('../../site/server/api-project-inputs.js')
+const fileGuards = require('../../site/server/file-guards.js')
+const runtimeReportContract = require('../runtime-report-contract.cjs')
+const REPORT_MAX = 16 * 1024 * 1024
+const TASK_FILE_MAX = 128 * 1024
+const TASK_FILES_MAX = 10000
+const TASK_BYTES_MAX = 64 * 1024 * 1024
 
 const controlRel = (p) => relative(PROJECT_ROOT, p)
-const productRel = (p) => relative(EXECUTION_ROOT, p)
 function readOptionalJson(path, label) {
-  if (!exists(path)) return null
-  try { return readJson(path) }
+  const inspected = fileGuards.inspectEntryUnder(PROJECT_ROOT, dirname(path), path)
+  if (inspected && inspected.status === 'missing') return null
+  const hit = inspected && inspected.status === 'present'
+    ? fileGuards.boundedRegularFileUnder(PROJECT_ROOT, dirname(path), path, REPORT_MAX) : null
+  if (!hit || !hit.stat || String(hit.stat.nlink) !== '1') {
+    failMsg(`${label} is unsafe, non-regular, or exceeds ${REPORT_MAX} bytes`)
+    process.exit(summary('contract:suggest'))
+  }
+  try { return JSON.parse(hit.bytes.toString('utf8')) }
   catch (e) { failMsg(`${label} unreadable: ${e.message}`); process.exit(summary('contract:suggest')) }
 }
 
@@ -45,69 +63,19 @@ function safe(s, max = 120) {
   return String(s == null ? '' : s).replace(/[\x00-\x1f\x7f]/g, ' ').replace(/-->/g, ' ').replace(/[`<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max)
 }
 
-// ---- client coverage: parse <Product>Api.request() calls -----------------------
-// These three helpers are the canonical copy in scripts/diff.mjs (§2 + walk + sameShape).
-// diff.mjs runs as a side-effecting main() IIFE, so it cannot be imported without executing —
-// hence the duplication. KEEP IN SYNC with diff.mjs if the request() shape or path-template
-// normalization ever changes.
-const SKIP_ANYWHERE = new Set(['node_modules', 'build'])
-function walk(dir, depth, acc) {
-  let entries
-  try { entries = readdirSync(dir, { withFileTypes: true }) } catch { return }
-  for (const e of entries) {
-    if (e.name.startsWith('.')) continue
-    if (e.isDirectory()) {
-      if (SKIP_ANYWHERE.has(e.name)) continue
-      if (depth === 0 && e.name === 'orchestrator') continue   // the template/tooling tree, incl. this sidecar
-      walk(join(dir, e.name), depth + 1, acc)
-    } else if (e.name.endsWith('.kt')) acc.push(join(dir, e.name))
-  }
-}
-// `${userId.encode()}` -> `{userId}`, `${userId}` -> `{userId}`: capture only the leading
-// identifier of the first ${...} body so an interpolation with a function call still normalizes
-// to the spec's bare `{param}`. Non-interpolated segments are returned untouched by the caller.
-function normalizeSegment(seg) {
-  if (!seg.includes('$')) return seg
-  const m = seg.match(/\$\{\s*([A-Za-z_][A-Za-z0-9_]*)/)
-  return `{${(m && m[1]) || 'param'}}`
-}
-function parseApiEndpoints(text) {
-  const out = []
-  const reCall = /request\s*\(/g           // start only — capture the args by paren balance below
-  const reMethod = /method\s*=\s*HttpMethod\.([A-Za-z]+)/
-  const rePath = /path\s*=\s*"([^"]+)"/
-  let m
-  while ((m = reCall.exec(text))) {
-    let depth = 1, i = reCall.lastIndex     // same balanced scan as diff.mjs's parseDtoClasses
-    while (i < text.length && depth > 0) { if (text[i] === '(') depth++; else if (text[i] === ')') depth--; i++ }
-    const args = text.slice(reCall.lastIndex, i - 1)
-    reCall.lastIndex = i                    // resume past this call's closing ) (don't re-scan its inner ()s)
-    const mMethod = reMethod.exec(args)
-    const mPath = rePath.exec(args)
-    if (!mMethod || !mPath) continue
-    const path = '/' + mPath[1].split('/').filter(Boolean).map(normalizeSegment).join('/')
-    out.push({ method: mMethod[1].toUpperCase(), path })
-  }
-  return out
-}
-const sameShape = (a, b) => {
-  const sa = a.split('/').filter(Boolean), sb = b.split('/').filter(Boolean)
-  return sa.length === sb.length && sa.every((s, i) => s === sb[i] || (s.startsWith('{') && sb[i].startsWith('{')))
-}
-
-// Set of `${METHOD} ${path-shape}` the client implements. Empty while pre-data-layer.
-function clientCoverage(apiClassName) {
+// ---- client coverage: parse canonical <Product>Api HTTP calls -----------------
+// The same guarded receipt owner as the project analyzer supplies the source.
+// A symlink, hardlink, oversized file, path collision, or scan race therefore
+// cannot suppress an endpoint suggestion with untrusted implementation evidence.
+function clientCoverage(apiClassName, records) {
   if (!apiClassName) return { calls: [], apiFile: null }
-  const ktFiles = []
-  walk(EXECUTION_ROOT, 0, ktFiles)
-  const apiFile = ktFiles.find((p) => {
-    const r = productRel(p)
-    return r.endsWith(`${sep}${apiClassName}.kt`) && r.split(sep).includes('data-services')
-  })
+  const selected = selectKotlinApiRecord(records, apiClassName)
+  if (!selected.ok) return { calls: [], apiFile: null, error: selected.error, paths: selected.paths }
+  const apiFile = selected.record
   if (!apiFile) return { calls: [], apiFile: null }
   let calls = []
-  try { calls = parseApiEndpoints(readFileSync(apiFile, 'utf8')) } catch {}
-  return { calls, apiFile: productRel(apiFile) }
+  try { calls = parseKotlinClientEndpoints(apiFile.text) } catch {}
+  return { calls, apiFile: apiFile.path }
 }
 
 // ---- task bodies (FIXED templates; snapshot data only inside fenced blocks) -----
@@ -241,17 +209,28 @@ function pascalMethod(m) { const s = String(m || '').toLowerCase(); return s ? s
 // an endpoint already in flight. Returns the set of operationIds already represented.
 function openOperationIds(tasksDir) {
   const found = new Set()
+  let fileCount = 0
+  let totalBytes = 0
   for (const folder of ['backlog', 'todo', 'pending']) {
-    let files = []
-    try { files = readdirSync(join(tasksDir, folder)).filter((f) => f.endsWith('.md')) } catch { continue }
-    for (const f of files) {
-      let text = ''
-      try { text = readFileSync(join(tasksDir, folder, f), 'utf8') } catch { continue }
+    const directory = join(tasksDir, folder)
+    const listed = fileGuards.boundedDirectoryNamesUnder(PROJECT_ROOT, directory, TASK_FILES_MAX)
+    if (!listed.ok) return { ok: false, error: 'task-marker-directory-unsafe' }
+    for (const f of listed.names.filter((name) => name.endsWith('.md'))) {
+      fileCount++
+      if (fileCount > TASK_FILES_MAX) return { ok: false, error: 'task-marker-count-cap' }
+      const file = join(directory, f)
+      const hit = fileGuards.boundedRegularFileUnder(PROJECT_ROOT, directory, file, TASK_FILE_MAX)
+      if (!hit || !hit.stat || String(hit.stat.nlink) !== '1') {
+        return { ok: false, error: 'task-marker-file-unsafe' }
+      }
+      totalBytes += hit.bytes.length
+      if (totalBytes > TASK_BYTES_MAX) return { ok: false, error: 'task-marker-byte-cap' }
+      const text = hit.bytes.toString('utf8')
       const m = text.match(/contract-suggest op=(\S+)/)
       if (m) found.add(m[1].replace(/-->$/, ''))
     }
   }
-  return found
+  return { ok: true, values: found }
 }
 
 ;(function main() {
@@ -279,28 +258,49 @@ function openOperationIds(tasksDir) {
 
   if (!INV || !exists(INV)) {
     info('no validated current snapshot — nothing to plan')
-    writeContractReport(OUT, { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'plan', summary: { notImplemented: 0, drift: 0, implemented: 0, total: 0 }, apiClassName: null, suggestions: [] })
     process.exit(0)
   }
   let inventory
   try { inventory = readJson(INV) } catch (e) { failMsg(`endpoint-inventory.json unreadable: ${e.message}`); process.exit(summary('contract:suggest')) }
   const endpoints = Array.isArray(inventory.endpoints) ? inventory.endpoints : []
 
+  const scan = projectInputs.collect(EXECUTION_ROOT, { includeText: true })
+  if (!scan.ok) {
+    failMsg(`project input receipt unavailable (${scan.error || 'analyzer-input-unavailable'})`)
+    process.exit(summary('contract:suggest'))
+  }
   const apiClassName = readConfig('apiClassName')   // null while still the <Product>Api placeholder
   const apiName = apiClassName || '<Product>Api'    // read once — implementBody no longer re-reads the config per endpoint
-  const { calls } = clientCoverage(apiClassName)
-  const isCovered = (ep) => calls.some((c) => c.method === ep.method && sameShape(c.path, ep.path))
+  const coverage = clientCoverage(apiClassName, scan.records)
+  if (coverage.error) {
+    failMsg(`API client selection is ambiguous: ${coverage.paths.join(', ')}`)
+    process.exit(summary('contract:suggest'))
+  }
+  const { calls } = coverage
+  const isCovered = (ep) => calls.some((c) => c.method === ep.method && sameRouteShape(c.path, ep.path))
 
   // Areas carrying ERROR/WARNING drift (INFO is informational, not an actualize trigger).
-  const drift = readOptionalJson(DRIFT, 'drift report')
-  const driftByArea = {}
-  for (const f of ((drift && drift.findings) || [])) {
-    if ((f.severity === 'ERROR' || f.severity === 'WARNING') && f.area) driftByArea[f.area] = (driftByArea[f.area] || 0) + 1
-  }
+  const driftRaw = readOptionalJson(DRIFT, 'drift report')
+  const drift = runtimeReportContract.currentDrift(driftRaw, {
+    analyzerVersion: projectInputs.ANALYZER_VERSION,
+    committedGenerationId: current.committedGenerationId,
+    contractHash: current.snapshotHash,
+    environmentId: current.environmentId,
+    projectCodeRevision: scan.projectCodeRevision,
+    specHash: (inventory.source && inventory.source.specHash) || null,
+  }) ? driftRaw : null
+  const driftComplete = !!(drift && runtimeReportContract.completeDrift(drift))
+  const driftByArea = drift
+    ? runtimeReportContract.driftCountsByArea(drift) : Object.create(null)
 
-  const queued = openOperationIds(TASKS_DIR)
+  const queuedResult = openOperationIds(TASKS_DIR)
+  if (!queuedResult.ok) {
+    failMsg(`open task marker scan failed closed (${queuedResult.error})`)
+    process.exit(summary('contract:suggest'))
+  }
+  const queued = queuedResult.values
   const suggestions = []
-  const tally = { notImplemented: 0, drift: 0, implemented: 0, total: endpoints.length }
+  const tally = { availableToBuild: 0, drift: 0, implemented: 0, observedCalls: 0, total: endpoints.length }
   // markerKey collision guard (mirrors figma's identity-collision warn): two distinct
   // operationIds that sanitize to the same dedup key (only possible for pathological ids with
   // whitespace/`<`/`>` — verify.mjs already asserts raw operationId uniqueness) would share an
@@ -313,11 +313,12 @@ function openOperationIds(tasksDir) {
     const prior = seenKeys.get(mk)
     if (prior && prior !== opId) warnMsg(`operationId "${opId}" and "${prior}" both reduce to dedup key "${mk}" — the open-queue dedup can't tell them apart; rename one to disambiguate`)
     else seenKeys.set(mk, opId)
-    const base = { operationId: opId, method: ep.method, path: ep.path, area: ep.area || null, summary: ep.summary || null, queued: queued.has(mk) }
+    const base = { operationId: opId, method: ep.method, path: ep.path, area: ep.area || null,
+      summary: runtimeReportContract.projectSummary(ep.summary), queued: queued.has(mk) }
     if (!isCovered(ep)) {
-      tally.notImplemented++
-      suggestions.push({ ...base, state: 'not-implemented', driftCount: 0, taskTitle: `Implement ${ep.method} ${safe(ep.path, 120)} (backend endpoint)`, taskBody: implementBody(ep, apiName) })
-      ok(`${ep.method} ${ep.path} -> not-implemented`)
+      tally.availableToBuild++
+      suggestions.push({ ...base, state: 'available-to-build', driftCount: 0, taskTitle: `Implement ${ep.method} ${safe(ep.path, 120)} (backend endpoint)`, taskBody: implementBody(ep, apiName) })
+      ok(`${ep.method} ${ep.path} -> available-to-build`)
       continue
     }
     const dc = driftByArea[ep.area] || 0
@@ -327,11 +328,34 @@ function openOperationIds(tasksDir) {
       ok(`${ep.method} ${ep.path} -> drift (${dc} in area ${ep.area})`)
       continue
     }
-    tally.implemented++
-    suggestions.push({ ...base, state: 'implemented', driftCount: 0 })
+    if (driftComplete) {
+      tally.implemented++
+      suggestions.push({ ...base, state: 'implemented', driftCount: 0 })
+    } else {
+      tally.observedCalls++
+      suggestions.push({ ...base, state: 'observed-call', driftCount: 0 })
+    }
   }
 
-  writeContractReport(OUT, { schemaVersion: 1, generatedAt: new Date().toISOString(), mode: 'plan', apiClassName: apiClassName || null, summary: tally, suggestions })
-  info(`coverage plan: ${tally.notImplemented} to implement, ${tally.drift} to actualize, ${tally.implemented} clean (of ${tally.total}) -> ${controlRel(OUT)} — PLAN ONLY (creates no task; delivery is the Coverage-tab button)`)
+  const after = currentContractFiles()
+  const scanAfter = projectInputs.collect(EXECUTION_ROOT, { includeText: false })
+  if (after.invalid || after.mode !== 'generation' ||
+      after.committedGenerationId !== current.committedGenerationId ||
+      after.snapshotHash !== current.snapshotHash || after.environmentId !== current.environmentId ||
+      !scanAfter.ok || scanAfter.projectCodeRevision !== scan.projectCodeRevision) {
+    failMsg('contract or project inputs changed while building the coverage plan')
+    process.exit(summary('contract:suggest'))
+  }
+  writeContractReport(OUT, {
+    schemaVersion: 2,
+    analyzerVersion: projectInputs.ANALYZER_VERSION,
+    committedGenerationId: current.committedGenerationId,
+    contractHash: current.snapshotHash,
+    environmentId: current.environmentId,
+    projectCodeRevision: scan.projectCodeRevision,
+    generatedAt: new Date().toISOString(),
+    mode: 'plan', apiClassName: apiClassName || null, summary: tally, suggestions
+  })
+  info(`coverage plan: ${tally.availableToBuild} available to build, ${tally.drift} to actualize, ${tally.implemented} checked clean, ${tally.observedCalls} observed without current drift (of ${tally.total}) -> ${controlRel(OUT)} — PLAN ONLY`)
   process.exit(summary('contract:suggest'))
 })()

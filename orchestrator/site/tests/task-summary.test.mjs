@@ -68,8 +68,7 @@ function fixture() {
     snapshot,
     sourceAvailability: {
       design: { ['cmp-' + '1'.repeat(24)]: true },
-      coverage: { getProfile: true },
-      drift: {},
+      api: { ['api:change:chg-' + '2'.repeat(24)]: true },
     },
     latestReader: () => ({ event: null, truncated: false }),
   }
@@ -182,11 +181,12 @@ test('source targets are resolved server-side for Design, API, Follow-up and Arc
   const deps = fixture()
   const entity = 'cmp-' + '1'.repeat(24)
   deps.indexRead.value.backlog[0].origin = origin('figma', 'design-finding', 'design:component:' + entity + ':component-drift')
-  deps.indexRead.value.todo[0].origin = origin('api', 'api-missing', 'getProfile')
+  const apiRef = 'api:change:chg-' + '2'.repeat(24)
+  deps.indexRead.value.todo[0].origin = origin('api', 'api-change', apiRef)
   deps.indexRead.value.todo[1].origin = origin('manual', 'architecture-finding', 'arch-finding-7')
   const rows = Object.fromEntries(flatten(taskSummary.build({ limit: 100 }, deps)).map((item) => [item.stem, item]))
   assert.deepEqual(rows.TASK_1_manual.sourceTarget, { panel: 'design', entityId: entity, availability: 'available' })
-  assert.deepEqual(rows.TASK_3_ready.sourceTarget, { panel: 'api', entityId: 'coverage:getProfile', availability: 'available' })
+  assert.deepEqual(rows.TASK_3_ready.sourceTarget, { panel: 'api', entityId: apiRef, availability: 'available' })
   assert.deepEqual(rows.TASK_2_follow_up.sourceTarget, { panel: 'board', entityId: 'TASK_1_manual', availability: 'available' })
   assert.deepEqual(rows.TASK_5_blocked.sourceTarget, { panel: 'archmap', entityId: 'arch-finding-7', availability: 'missing' })
   assert.deepEqual(taskSummary.sourceTarget(
@@ -200,7 +200,7 @@ test('source targets are resolved server-side for Design, API, Follow-up and Arc
   })
 
   deps.sourceAvailability.design = {}
-  deps.sourceAvailability.coverage = {}
+  deps.sourceAvailability.api = {}
   const staleRows = Object.fromEntries(flatten(taskSummary.build({ limit: 100 }, deps)).map((item) => [item.stem, item]))
   assert.equal(staleRows.TASK_1_manual.sourceTarget.availability, 'missing')
   assert.equal(staleRows.TASK_3_ready.sourceTarget.availability, 'missing')
@@ -210,7 +210,9 @@ test('stale or missing INDEX rows are reconciled from canonical task artifacts',
   const indexed = fixture().indexRead.value
   const moved = row('TASK_3_ready', 'done', {
     title: 'Canonical title', outcomeStatus: 'completed-with-caveats',
-    dependsOn: ['TASK_4_done'], origin: origin('api', 'api-missing', 'getProfile'),
+    dependsOn: ['TASK_4_done'], origin: origin(
+      'api', 'api-change', 'api:change:chg-' + '2'.repeat(24),
+    ),
   })
   const unindexed = row('TASK_7_unindexed', 'todo')
   const columns = taskSummary.resilientRows(indexed, {

@@ -14,7 +14,7 @@ const TYPE_RE = /^[a-z][a-z0-9-]{0,63}$/;
 const SOURCE_TYPES = Object.freeze({
   manual: Object.freeze(['manual', 'architecture-finding']),
   figma: Object.freeze(['design-finding', 'figma-drift', 'figma-missing-component', 'figma-component-split']),
-  api: Object.freeze(['api-missing', 'api-change', 'api-mismatch', 'api-work-package']),
+  api: Object.freeze(['api-change', 'api-mismatch', 'api-work-package']),
   'follow-up': Object.freeze(['outcome-follow-up', 'reviewer-follow-up', 'task-split', 'test-foundation-prerequisite'])
 });
 const SOURCE_FIELDS = Object.freeze(['kind', 'type', 'ref', 'fingerprint']);

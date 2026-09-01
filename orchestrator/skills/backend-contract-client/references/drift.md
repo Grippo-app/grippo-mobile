@@ -47,7 +47,25 @@ The script is mechanical; the validator corroborates and extends it where syntax
 ```jsonc
 // control: .cache/api-contract/reports/drift.json
 // task:    .cache/api-contract/reports/executions/<worktreeId>/<runId>/drift.json
-{ "schemaVersion":1, "checkedAt":ISO, "specHash":str|null, "summary":{errors,warnings,infos}, "findings":[ { "severity":"ERROR|WARNING|INFO", "kind":"dto-field-unknown|server-field-missing-in-dto|type-mismatch|endpoint-missing-server-side|enum-new-value|nullability-mismatch|info", "area":str|null, "schemaRef":str|null, "operationId":str|null, "field":str|null, "dtoFile":str|null, "message":str, "suggestion":str|null } ] }
+{
+  "schemaVersion": 1,
+  "checkedAt": ISO,
+  "specHash": "sha256:…" | null,
+  "committedGenerationId": "gen-…",
+  "contractHash": "sha256:…",
+  "environmentId": str,
+  "projectCodeRevision": "sha256:…",
+  "analyzerVersion": str,
+  "limitations": [str],
+  "summary": { "errors": int, "warnings": int, "infos": int },
+  "findings": [{
+    "severity": "ERROR|WARNING|INFO",
+    "kind": "dto-field-unknown|server-field-missing-in-dto|type-mismatch|endpoint-missing-server-side|enum-new-value|nullability-mismatch|info",
+    "area": str | null, "schemaRef": str | null,
+    "operationId": str | null, "field": str | null,
+    "dtoFile": str | null, "message": str, "suggestion": str | null
+  }]
+}
 ```
 
 Written to the gitignored control report directory when invoked outside a task. A manager-issued
@@ -99,52 +117,42 @@ applies.
 
 ## Drift → backlog (NORMATIVE)
 
-A drift finding can spawn follow-up work through the site's deterministic,
-idempotent backlog endpoint. The server — not this skill or a Claude session —
-reserves `TASK_<N>`, publishes the Markdown and regenerates `INDEX.json`; do not
-write task files directly. The new task is tagged with its drift origin (kind +
-operationId/schemaRef), so the fix traces back to the finding. Its shallow AI
-intake runs afterwards as advisory triage and can never apply the suggestion or
-make the task runnable.
-
-The site offers the same path with one click: the API panel's Drift tab renders a **"Create fix task"**
-button next to the report summary. It builds a backlog task from the report (ERROR/WARNING findings
-verbatim with their suggestions, INFO collapsed to per-kind counts,
-the exact scoped `drift.json` cited as the primary Input) and submits
-it through the same deterministic endpoint with a stable idempotency key — one
-task per report (re-enabled when a newer report lands).
+The Site projects current drift findings as mismatch sources in the API
+workbench. A user may select at most 25 current change/mismatch source ids and
+preview or create focused follow-up work. The server re-resolves every source,
+generation/report/task revision, task body, provenance, fingerprint and dedup
+decision before it reserves `TASK_<N>` and publishes through the canonical
+backlog owner. There is no report-wide Drift tab or one-task-per-report action,
+and neither this skill nor `contract:diff` writes task files directly.
 
 ## Coverage → backlog (suggestion-only, NOT a gate) (NORMATIVE)
 
 Drift is client-anchored: it audits the endpoints the client *already* references and stays silent
 about endpoints in the snapshot the client has not built. The **coverage planner**
 (`scripts/suggest-endpoint-tasks.mjs`, npm `contract:suggest`) answers the reverse question. It walks
-the generation-aware inventory returned by `contract:paths`, reconciles each endpoint against the client's
-`<Product>Api.request()` calls and the `drift.json` from the same report scope (by area), and writes a
+the generation-aware inventory returned by `contract:paths`, reconciles each endpoint against recognized
+client calls (the request wrapper or a supported direct Ktor client call) and the `drift.json` from the
+same report scope (by area), and writes a
 PLAN — `suggested-endpoints.json` beside that drift report — classifying every endpoint:
 
-- `not-implemented` — in the snapshot, no client call → a ready-to-create **implementation** task
+- `available-to-build` — no recognized client call → an optional **implementation** task
   (route `endpoint-builder`).
 - `drift` — implemented, but its area carries an ERROR/WARNING drift finding → an **actualize** task.
-- `implemented` — implemented + clean → no task.
+- `implemented` — a call is observed and a current exact drift report is clean → no task.
+- `observed-call` — a call is observed, but drift has not been checked against the same generation and project revision → no correctness claim and no task.
 
-Coverage matching is **method + path-shape only**: an endpoint counts as `implemented` the moment a
-`<Product>Api.request()` call shares its HTTP method and path template — the planner does **not** check
-that the call's DTOs, fields, or types are *correct* (that is drift's job, surfaced separately via the
-area's findings). So `implemented` means "a call exists", not "the implementation is right". This is by
-design — coverage is a **menu of what is available to build, not a correctness signal**.
+Coverage matching is **method + path-shape only**. A matching call proves only that the endpoint was
+observed. It becomes `implemented` only when a complete drift report is current for the same generation,
+spec, analyzer and project revision and carries no ERROR/WARNING for its area. A capped or stale drift
+report leaves otherwise clean calls as `observed-call`; DTO correctness is never inferred from the call.
 
 This is a build menu, **not a gate, and not the rejected `backend-contract-coverage` validator**
-(`secrets-and-ci.md`): a not-implemented endpoint is **never a defect**. The mobile client consumes a
+(`secrets-and-ci.md`): an available-to-build endpoint is **never a defect**. The mobile client consumes a
 *subset* of the backend by design (ADR-8) — the planner only surfaces what is available to build and
 the human chooses; it flags nothing, fails nothing, and creates nothing on its own. Like the drift
-report it is suggestion-only and never calls the backend. The site delivers it on the API panel's
-**Coverage** tab: per-endpoint **"Create implementation task"** / **"Create actualize task"** buttons,
-each submitting through the same deterministic backlog endpoint with a stable
-per-suggestion idempotency key. The same per-endpoint state also badges
-each row of the **Endpoints** tab as a read-only indicator (the actionable buttons stay on Coverage).
-The plan is refreshed by `contract:suggest`; run it after `contract:diff` when coverage should reflect
-the latest drift report.
+report it is suggestion-only and never calls the backend. The bounded JSON plan is a CLI artifact under
+the current report scope; the Site does not project it or provide task buttons. Refresh it with
+`contract:suggest` after `contract:diff` when it should reflect the latest complete drift report.
 
 ## Not in scope (MUST)
 

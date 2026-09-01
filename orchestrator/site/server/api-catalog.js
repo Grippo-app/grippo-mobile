@@ -22,7 +22,7 @@ var CURSOR_SECRET = crypto.randomBytes(32);
 var catalogCache = { key: null, value: null };
 var METHODS = Object.freeze({ GET: 1, POST: 1, PUT: 1, PATCH: 1, DELETE: 1 });
 var IMPLEMENTATION_STATES = Object.freeze({
-  implemented: 1, missing: 1, partial: 1, unknown: 1
+  implemented: 1, partial: 1, unknown: 1
 });
 var CHANGE_SEVERITIES = Object.freeze({
   breaking: 1, 'potentially-breaking': 1, compatible: 1, info: 1
@@ -414,10 +414,7 @@ function normalized(snapshot) {
     var endpointMismatches = snapshot.drift.current
       ? (mismatchesByOperation[endpoint.operationId] || []) : null;
     var models = endpointModels(endpoint);
-    var taskRefs = [
-      relations.sourceId('missing', endpoint.operationId),
-      endpoint.operationId
-    ].concat(endpointChanges.map(function (change) { return change.sourceId; }))
+    var taskRefs = endpointChanges.map(function (change) { return change.sourceId; })
       .concat((endpointMismatches || []).map(function (finding) { return finding.sourceId; }));
     var tasks = relations.taskProjection(snapshot.tasks, taskRefs);
     var row = {
@@ -452,10 +449,6 @@ function normalized(snapshot) {
         severity: mismatchSeverity(endpointMismatches)
       },
       tasks: tasks,
-      sources: {
-        missing: implementation.state === 'missing'
-          ? relations.sourceId('missing', endpoint.operationId) : null
-      },
       latestChange: endpointChanges.length ? {
         id: endpointChanges[0].id,
         kind: endpointChanges[0].kind,
@@ -467,7 +460,7 @@ function normalized(snapshot) {
     };
     row._search = [
       row.path, row.operationId, row.summary, row.implementation.file,
-      row.implementation.symbol, row.sources.missing
+      row.implementation.symbol
     ].concat(
       models.requestIds,
       models.responseIds,
@@ -508,20 +501,14 @@ function publicEndpoint(row) {
     models: row.models,
     mismatch: row.mismatch,
     tasks: row.tasks,
-    sources: row.sources,
     latestChange: row.latestChange
   };
 }
 
 function taskSourceFactsFromCatalog(current, sourceIds) {
   current = current || {};
-  var endpointsByMissing = Object.create(null);
   var changesBySource = Object.create(null);
   var mismatchesBySource = Object.create(null);
-  (current.rows || []).forEach(function (endpoint) {
-    var sourceId = endpoint && endpoint.sources && endpoint.sources.missing;
-    if (sourceId) endpointsByMissing[sourceId] = endpoint;
-  });
   (current.changes || []).forEach(function (change) {
     if (change && change.sourceId) changesBySource[change.sourceId] = change;
   });
@@ -530,9 +517,9 @@ function taskSourceFactsFromCatalog(current, sourceIds) {
   });
 
   return sourceIds.map(function (sourceId) {
-    var endpoint = endpointsByMissing[sourceId] || null;
+    var endpoint = null;
     var finding = null;
-    var type = 'api-missing';
+    var type = null;
     if (sourceId.indexOf('api:change:') === 0) {
       type = 'api-change';
       finding = changesBySource[sourceId] || null;
@@ -545,7 +532,7 @@ function taskSourceFactsFromCatalog(current, sourceIds) {
         Object.prototype.hasOwnProperty.call(current.byOperation, finding.operationId)) {
       endpoint = current.byOperation[finding.operationId];
     }
-    var currentSource = !!endpoint || !!finding;
+    var currentSource = !!finding;
     var fallback = finding && (
       finding.afterSummary || finding.beforeSummary ||
       finding.message || finding.kind
@@ -575,7 +562,7 @@ function taskSourceFacts(sourceIds) {
   if (!Array.isArray(sourceIds) || sourceIds.length > 12 ||
       sourceIds.some(function (sourceId) {
         return typeof sourceId !== 'string' ||
-          !/^(?:api:missing:[A-Za-z0-9][A-Za-z0-9._:-]{0,199}|api:change:chg-[a-f0-9]{24}|api:mismatch:mismatch-[a-f0-9]{24})$/.test(sourceId);
+          !/^(?:api:change:chg-[a-f0-9]{24}|api:mismatch:mismatch-[a-f0-9]{24})$/.test(sourceId);
       })) {
     return { ok: false, status: 400, error: 'bad-api-query' };
   }

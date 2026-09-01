@@ -418,7 +418,7 @@ await check('API work-package provenance publishes through the canonical Python 
   const p = makeProject()
   const metadata = apiWorkPackage.create('area:widgets', [
     'api:change:chg-' + 'a'.repeat(24),
-    'api:missing:missing-' + 'b'.repeat(24),
+    'api:mismatch:mismatch-' + 'b'.repeat(24),
   ])
   const source = {
     kind: 'api',

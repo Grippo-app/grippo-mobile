@@ -6,7 +6,7 @@
 //     dto-field-unknown (ERROR), server-field-missing-in-dto (WARNING + exact all-nullable
 //     Kotlin suggestion), type-mismatch (ERROR — typeMatches is family-loose, a surviving
 //     mismatch breaks deserialization on the wire).
-//   • <Product>Api request(method=…, path=…) calls vs the inventory — endpoint-missing-server-side (ERROR).
+//   • canonical <Product>Api request-wrapper/direct Ktor calls vs the inventory — endpoint-missing-server-side (ERROR).
 //   • Slice-internal reality checks (no DTOs needed): nullability-mismatch (INFO — observed
 //     payload evidence contradicts the declared contract,
 //     the defensive DTO is justified), enum-new-value (WARNING/INFO).
@@ -21,6 +21,7 @@ import { readdirSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
+import { parseKotlinClientEndpoints, sameRouteShape, selectKotlinApiRecord } from './kotlin-routes.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const require = createRequire(import.meta.url)
@@ -144,38 +145,6 @@ function parseDtoClasses(text) {
   }
   return classes
 }
-// `${userId.encode()}` -> `{userId}`, `${userId}` -> `{userId}`: capture only the leading
-// identifier of the first ${...} body so an interpolation with a function call still normalizes
-// to the spec's bare `{param}`. Non-interpolated segments are returned untouched by the caller.
-function normalizeSegment(seg) {
-  if (!seg.includes('$')) return seg
-  const m = seg.match(/\$\{\s*([A-Za-z_][A-Za-z0-9_]*)/)
-  return `{${(m && m[1]) || 'param'}}`
-}
-function parseApiEndpoints(text) {
-  const out = []
-  const reCall = /request\s*\(/g           // start only — capture the args by paren balance below
-  const reMethod = /method\s*=\s*HttpMethod\.([A-Za-z]+)/
-  const rePath = /path\s*=\s*"([^"]+)"/
-  let m
-  while ((m = reCall.exec(text))) {
-    let depth = 1, i = reCall.lastIndex     // same balanced scan as parseDtoClasses
-    while (i < text.length && depth > 0) { if (text[i] === '(') depth++; else if (text[i] === ')') depth--; i++ }
-    const args = text.slice(reCall.lastIndex, i - 1)
-    reCall.lastIndex = i                    // resume past this call's closing ) (don't re-scan its inner ()s)
-    const mMethod = reMethod.exec(args)
-    const mPath = rePath.exec(args)
-    if (!mMethod || !mPath) continue
-    const path = '/' + mPath[1].split('/').filter(Boolean).map(normalizeSegment).join('/')
-    out.push({ method: mMethod[1].toUpperCase(), path })
-  }
-  return out
-}
-const sameShape = (a, b) => {
-  const sa = a.split('/').filter(Boolean), sb = b.split('/').filter(Boolean)
-  return sa.length === sb.length && sa.every((s, i) => s === sb[i] || (s.startsWith('{') && sb[i].startsWith('{')))
-}
-
 // ---- type mapping ----------------------------------------------------------------
 const KOTLIN_FOR = {
   string: 'String', integer: 'Long', number: 'Double', boolean: 'Boolean', object: 'JsonObject',
@@ -352,14 +321,15 @@ function typeMatches(specField, kotlinBase) {
 
   // ---- 2) <Product>Api paths vs the inventory -------------------------------------
   if (apiClassName) {
-    const apiFile = ktFiles.find((record) => {
-      const parts = record.path.split('/')
-      return parts[parts.length - 1] === `${apiClassName}.kt` &&
-        parts.includes('data-services')
-    })
+    const selectedApi = selectKotlinApiRecord(ktFiles, apiClassName)
+    if (!selectedApi.ok) {
+      failMsg(`API client selection is ambiguous: ${selectedApi.paths.join(', ')}`)
+      process.exit(summary('contract:diff'))
+    }
+    const apiFile = selectedApi.record
     if (apiFile) {
-      for (const call of parseApiEndpoints(apiFile.text)) {
-        const hit = inventory.endpoints.find((e) => e.method === call.method && sameShape(e.path, call.path))
+      for (const call of parseKotlinClientEndpoints(apiFile.text)) {
+        const hit = inventory.endpoints.find((e) => e.method === call.method && sameRouteShape(e.path, call.path))
         if (!hit) {
           add('ERROR', 'endpoint-missing-server-side', {
             dtoFile: apiFile.path, operationId: `${call.method} ${call.path}`,

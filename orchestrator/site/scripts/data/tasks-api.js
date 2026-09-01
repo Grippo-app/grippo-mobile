@@ -516,6 +516,10 @@ import { requestJson } from './request-json.js';
   // the user authenticates the project's local connector via /mcp).
   function figmaRecheck()      { return postJson('/api/figma/recheck', {}); }
 
+  function figmaEnable(expectedConfigRevision) {
+    return postJson('/api/figma/enable', { expectedConfigRevision: expectedConfigRevision });
+  }
+
   // Bind this project: add a local-scoped "figma" MCP server (server runs
   // `claude mcp add`). OAuth is still the user's interactive /mcp step.
   function figmaAddLocal()     { return postJson('/api/figma/add-local', {}); }
@@ -597,6 +601,7 @@ import { requestJson } from './request-json.js';
     cliLoginCode: cliLoginCode,
     cliLoginCancel: cliLoginCancel,
     figmaRecheck: figmaRecheck,
+    figmaEnable: figmaEnable,
     figmaAddLocal: figmaAddLocal,
     figmaOpenTerminal: figmaOpenTerminal,
     figmaTest: figmaTest,

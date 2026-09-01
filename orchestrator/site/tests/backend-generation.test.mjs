@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, test } from 'node:test'
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -27,8 +27,6 @@ writeFileSync(join(candidate, 'openapi.json'), JSON.stringify({ openapi: '3.1.0'
 const require = createRequire(import.meta.url)
 const generation = require(join(REPO, 'orchestrator', 'site', 'server', 'contract-generation.js'))
 const backendIntegration = require(join(REPO, 'orchestrator', 'site', 'server', 'backend-integration.js'))
-const apiReportState = require(join(REPO, 'orchestrator', 'site', 'server', 'api-report-state.js'))
-const apiContract = require(join(REPO, 'orchestrator', 'site', 'server', 'api-contract.js'))
 
 after(() => rmSync(root, { recursive: true, force: true }))
 
@@ -314,10 +312,132 @@ test('contract:suggest accepts only the validated current generation and canonic
   })
   assert.equal(planned.status, 0, planned.stderr + planned.stdout)
   const report = JSON.parse(readFileSync(join(root, 'orchestrator', '.cache', 'api-contract', 'reports', 'suggested-endpoints.json'), 'utf8'))
-  assert.deepEqual(report.summary, { notImplemented: 1, drift: 0, implemented: 0, total: 1 })
+  assert.equal(report.schemaVersion, 2)
+  assert.equal(report.analyzerVersion, 'api-project-analyzer-v2')
+  assert.match(report.committedGenerationId, /^gen-/)
+  assert.match(report.contractHash, /^sha256:[a-f0-9]{64}$/)
+  assert.match(report.projectCodeRevision, /^sha256:[a-f0-9]{64}$/)
+  assert.deepEqual(report.summary, {
+    availableToBuild: 1, drift: 0, implemented: 0, observedCalls: 0, total: 1
+  })
   assert.equal(report.suggestions[0].operationId, 'GET /notes')
   assert.equal(report.suggestions[0].method, 'GET')
   assert.equal(report.suggestions[0].path, '/notes')
+  assert.equal(report.suggestions[0].state, 'available-to-build')
+})
+
+test('diff and suggest classify request-wrapper and direct Ktor client calls identically', () => {
+  const suggest = join(REPO, 'orchestrator', 'api-contract', 'scripts', 'suggest-endpoint-tasks.mjs')
+  const diff = join(REPO, 'orchestrator', 'api-contract', 'scripts', 'diff.mjs')
+  const config = join(root, 'orchestrator', 'project-config.md')
+  const sourceDir = join(root, 'src', 'commonMain', 'kotlin', 'data-services')
+  const apiFile = join(sourceDir, 'FixtureApi.kt')
+  const reports = join(root, 'orchestrator', '.cache', 'api-contract', 'reports')
+  mkdirSync(sourceDir, { recursive: true })
+  writeFileSync(config, [
+    '---', 'apiClassName: FixtureApi', 'backendContractEnabled: true', '---', ''
+  ].join('\n'))
+
+  const run = (script) => spawnSync(process.execPath, [script], {
+    cwd: root,
+    env: { ...process.env, ORCHESTRATOR_PROJECT_ROOT: root },
+    encoding: 'utf8',
+  })
+  const plannedState = (source) => {
+    writeFileSync(apiFile, source)
+    const result = run(suggest)
+    assert.equal(result.status, 0, result.stderr + result.stdout)
+    const report = JSON.parse(readFileSync(join(reports, 'suggested-endpoints.json'), 'utf8'))
+    return report.summary
+  }
+  const driftKinds = (source) => {
+    writeFileSync(apiFile, source)
+    const result = run(diff)
+    assert.equal(result.status, 0, result.stderr + result.stdout)
+    const report = JSON.parse(readFileSync(join(reports, 'drift.json'), 'utf8'))
+    return report.findings.map((finding) => finding.kind)
+  }
+
+  try {
+    const directCoverage = plannedState(
+      'class FixtureApi { suspend fun notes() = httpClient.get("/notes") }\n')
+    const wrapperCoverage = plannedState([
+      'class FixtureApi { suspend fun notes() = request(',
+      '  method = HttpMethod.Get, path = "/notes"',
+      ') }', ''
+    ].join('\n'))
+    assert.deepEqual(directCoverage, wrapperCoverage)
+    assert.deepEqual(directCoverage, {
+      availableToBuild: 0, drift: 0, implemented: 0, observedCalls: 1, total: 1
+    })
+
+    const directDrift = driftKinds(
+      'class FixtureApi { suspend fun missing() = httpClient.get("/missing") }\n')
+    const wrapperDrift = driftKinds([
+      'class FixtureApi { suspend fun missing() = request(',
+      '  method = HttpMethod.Get, path = "/missing"',
+      ') }', ''
+    ].join('\n'))
+    assert.deepEqual(directDrift, wrapperDrift)
+    assert.equal(directDrift.includes('endpoint-missing-server-side'), true)
+
+    const openBacklog = join(root, 'orchestrator', 'tasks', 'backlog')
+    for (const column of ['backlog', 'todo', 'pending']) {
+      mkdirSync(join(root, 'orchestrator', 'tasks', column), { recursive: true })
+    }
+    const unsafeMarker = join(openBacklog, 'TASK_1_unsafe.md')
+    symlinkSync(apiFile, unsafeMarker)
+    let unsafe = run(suggest)
+    assert.equal(unsafe.status, 1)
+    assert.match(unsafe.stdout, /task-marker-file-unsafe/)
+    unlinkSync(unsafeMarker)
+
+    writeFileSync(unsafeMarker, Buffer.alloc(128 * 1024 + 1, 0x78))
+    unsafe = run(suggest)
+    assert.equal(unsafe.status, 1)
+    assert.match(unsafe.stdout, /task-marker-file-unsafe/)
+    unlinkSync(unsafeMarker)
+
+    if (process.platform !== 'win32') {
+      const fifo = spawnSync('mkfifo', [unsafeMarker], { encoding: 'utf8' })
+      assert.equal(fifo.status, 0, fifo.stderr)
+      unsafe = run(suggest)
+      assert.equal(unsafe.status, 1)
+      assert.match(unsafe.stdout, /task-marker-file-unsafe/)
+      unlinkSync(unsafeMarker)
+    }
+
+    const driftFile = join(reports, 'drift.json')
+    const driftBytes = readFileSync(driftFile)
+    try {
+      unlinkSync(driftFile)
+      symlinkSync(apiFile, driftFile)
+      let unsafeDrift = run(suggest)
+      assert.equal(unsafeDrift.status, 1)
+      assert.match(unsafeDrift.stdout, /drift report is unsafe/)
+      unlinkSync(driftFile)
+
+      writeFileSync(driftFile, Buffer.alloc(16 * 1024 * 1024 + 1, 0x78))
+      unsafeDrift = run(suggest)
+      assert.equal(unsafeDrift.status, 1)
+      assert.match(unsafeDrift.stdout, /drift report is unsafe/)
+      unlinkSync(driftFile)
+
+      if (process.platform !== 'win32') {
+        const fifo = spawnSync('mkfifo', [driftFile], { encoding: 'utf8' })
+        assert.equal(fifo.status, 0, fifo.stderr)
+        unsafeDrift = run(suggest)
+        assert.equal(unsafeDrift.status, 1)
+        assert.match(unsafeDrift.stdout, /drift report is unsafe/)
+      }
+    } finally {
+      rmSync(driftFile, { force: true })
+      writeFileSync(driftFile, driftBytes)
+    }
+  } finally {
+    rmSync(join(root, 'src'), { recursive: true, force: true })
+    rmSync(config, { force: true })
+  }
 })
 
 test('required artifact tampering invalidates the pointer and root files remain irrelevant', () => {
@@ -336,33 +456,6 @@ test('required artifact tampering invalidates the pointer and root files remain 
   assert.equal(shadowed.ok, true)
   unlinkSync(retiredInventory)
   assert.equal(generation.current().ok, true)
-})
-
-test('corrupt optional comparison reports are invalid, never successful empty state', () => {
-  const reports = join(root, 'orchestrator', '.cache', 'api-contract', 'reports')
-  mkdirSync(reports, { recursive: true })
-  const drift = join(reports, 'drift.json')
-  const coverage = join(reports, 'suggested-endpoints.json')
-  writeFileSync(drift, '{broken')
-  writeFileSync(coverage, '[]\n')
-  assert.deepEqual(apiReportState.readDrift(), {
-    present: false, invalid: true, error: 'contract-drift-invalid'
-  })
-  assert.deepEqual(apiReportState.readCoverage(), {
-    present: false, invalid: true, error: 'contract-coverage-invalid'
-  })
-  assert.deepEqual(apiContract.status().drift, {
-    present: false, invalid: true, error: 'contract-drift-invalid'
-  })
-  assert.deepEqual(apiContract.status().coverage, {
-    present: false, invalid: true, error: 'contract-coverage-invalid'
-  })
-  unlinkSync(drift)
-  unlinkSync(coverage)
-  assert.deepEqual(apiReportState.readDrift(), { present: false })
-  assert.deepEqual(apiReportState.readCoverage(), { present: false })
-  assert.deepEqual(apiContract.status().drift, { present: false })
-  assert.deepEqual(apiContract.status().coverage, { present: false })
 })
 
 test('optional runtime reports may expire without invalidating committed artifacts', () => {

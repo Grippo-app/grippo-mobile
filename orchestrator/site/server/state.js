@@ -29,7 +29,6 @@ var figmaMod    = require('./figma');
 var figmaIntegrationMod = require('./figma-integration');
 var figmaEvidenceMod = require('./figma-evidence');
 var figmaScreensMod = require('./figma-screens');
-var contractMod = require('./api-contract');
 var backendIntegrationMod = require('./backend-integration');
 var sessionsMod = require('./sessions');
 var finalizationsMod = require('./finalizations');
@@ -415,7 +414,7 @@ function deriveState(observations) {
   setupForm = Object.assign({}, setupForm);
   delete setupForm.codexEnabled;
   if (canonicalCodexEnabled) setupForm.codexEnabled = canonicalCodexEnabled;
-  var liveFigmaGate = figmaFeatureGate.current();
+  var liveFigmaGate = figmaFeatureGate.current(reviewerConfigRead);
   var figmaEnabled = liveFigmaGate.enabled;
   setupForm.figmaEnabled = reviewerConfigRead.ok &&
     reviewerConfigRead.figmaEnabledState !== 'invalid' && reviewerConfigRead.figmaEnabled === true;
@@ -564,6 +563,10 @@ function deriveState(observations) {
       tokensInfo: figmaTokensInfo,    // { count, mtime } from the current sealed generation
       canOpenTerminal: process.platform === 'darwin'   // the "Open terminal" button is macOS-only (osascript)
     }),
+    // Process applicability is separate from the integration model. Disabled
+    // projects expose no account/file receipts, but still get a truthful,
+    // actionable enable or restart-required state in the Figma panel.
+    figmaFeature: liveFigmaGate.feature,
     figmaIntegration: figmaIntegration,
     reviewerConfig: {
       mode: canonicalCodexEnabled === 'auto' ? 'automatic'
@@ -574,13 +577,8 @@ function deriveState(observations) {
       state: reviewerConfigRead.ok && canonicalCodexEnabled ? 'ready'
         : (reviewerConfigRead.ok && reviewerConfigRead.codexFieldState === 'missing' ? 'missing' : 'invalid')
     },
-    // Backend API-contract status for the header pill + the Backend / API
-    // panels. Config gate + committed snapshot + drift report + coverage-plan
-    // freshness, all read from local files under orchestrator/api-contract/
-    // (golden invariant: the server never calls the backend). See server/api-contract.js.
-    contract: contractMod.status(),
     // Typed Backend integration model (non-secret). Kept separate from the
-    // read-only `contract` projection used by Project -> API.
+    // generation-bound API workbench projections owned by api-relations.
     backend: backendIntegrationMod.get(),
     appRunPreferences: persisted.appRunPreferences,
     // Live (+ recently finished) interactive sessions keyed by context

@@ -6,6 +6,7 @@ import { popovers } from './popovers.js';
 import { parseFileKey } from './figma-actions.js';
 import { clipboard } from './clipboard.js';
 import { figmaActionError } from './panels/figma.js';
+import { figmaConnectorState, figmaFeaturePresentation } from './figma-status-model.js';
 
 // ----------------------------------------------------------------------
 // Header Figma-connector indicator. State comes from store.get().figma
@@ -33,22 +34,16 @@ function integrationOf() {
   var s = (store && typeof store.get === 'function') ? store.get() : null;
   return (s && s.figmaIntegration) || null;
 }
+function featureOf() {
+  var s = (store && typeof store.get === 'function') ? store.get() : null;
+  return s && Object.prototype.hasOwnProperty.call(s, 'figmaFeature')
+    ? s.figmaFeature : null;
+}
 // The currently-entered Figma file key (parsed). Mirrors figma-actions.js parseFileKey.
 function currentFigmaKey() {
   var s = (store && typeof store.get === 'function') ? store.get() : null;
   var integrationUrl = s && s.figmaIntegration && s.figmaIntegration.projectFile && s.figmaIntegration.projectFile.url;
   return parseFileKey(typeof integrationUrl === 'string' ? integrationUrl : '');
-}
-
-// The server contract (server/figma.js) is exactly these known states. Guard the
-// passthrough: any value outside the current contract must fall back to 'unknown' rather
-// than reach t('figma.pill.'+state) / t('figma.pop.'+state) verbatim and render
-// the raw i18n key. Every render path (buildPill label, buildPop, dot data-state,
-// popSignature) routes through here, so this one guard covers them all.
-var KNOWN_STATES = { 'connected': 1, 'needs-auth': 1, 'local-absent': 1, 'misconfigured': 1, 'cli-missing': 1, 'unknown': 1 };
-function inferState(f) {
-  if (!f || !f.state) return 'unknown';
-  return KNOWN_STATES[f.state] ? f.state : 'unknown';
 }
 
 var els = null;   // { container, pill, dot, label, pop }
@@ -58,13 +53,15 @@ var lastSig = null;
 // SSE fires a store 'change' every ~1.5s; rebuild the popover only when its
 // content actually changes, so a Re-check click isn't swept out from under the
 // pointer mid-interaction.
-function popSignature(f, integration) {
+function popSignature(f, integration, feature) {
   var g = (f && f.global) || {};
   var a = (f && f.account) || {};
   var gate = integration && integration.syncGate || {};
   // Use the account timestamp, not the connector probe timestamp: whoami changes
   // rarely, and its freshness is part of the text the popover presents.
-  return [inferState(f), g.present, g.name, a.handle, a.email,
+  var featureView = figmaFeaturePresentation(feature);
+  return [featureView.state, feature && feature.reasonCode, feature && feature.configRevision,
+          figmaConnectorState(f), g.present, g.name, a.handle, a.email,
           a.checkedAt, (f && f.tokensInfo && f.tokensInfo.count), currentFigmaKey(),
           integration && integration.status, integration && integration.reasonCode,
           gate.state, gate.reasonCode].join('|');
@@ -73,8 +70,10 @@ function hasConflict(f) {
   var l = (f && f.local) || {}, g = (f && f.global) || {};
   return !!(l.present && g.present);
 }
-function visualState(f, integration) {
-  var connector = inferState(f);
+function visualState(f, integration, feature) {
+  var featureView = figmaFeaturePresentation(feature);
+  if (featureView.overridesConnector) return featureView.displayState;
+  var connector = figmaConnectorState(f);
   if (hasConflict(f)) return 'conflict';
   if (connector !== 'connected') return connector;
   if (integration && (integration.status === 'needs-attention' || integration.status === 'unavailable')) return 'attention';
@@ -115,16 +114,34 @@ function openFigmaTab() {
   if (location.hash !== '#figma') location.hash = '#figma';
 }
 
-function buildPop(f) {
-  var state = inferState(f);
+function buildPop(f, feature) {
+  var state = figmaConnectorState(f);
+  var featureView = figmaFeaturePresentation(feature);
   var conflict = hasConflict(f);
   var integration = integrationOf();
-  var displayState = visualState(f, integration);
+  var displayState = visualState(f, integration, feature);
   var fileKey = currentFigmaKey();
   var nodes = [];
   nodes.push(el('div', { class: 'site-status-pop-head' }, [
     el('p', { class: 'site-status-pop-title', text: t('nav.figma') })
   ]));
+
+  if (featureView.overridesConnector) {
+    nodes.push(row('figma.pop.featureLabel', [
+      el('span', {
+        class: 'site-status-act site-status-act--worker-offline',
+        text: t(featureView.valueKey)
+      })
+    ]));
+    nodes.push(el('p', {
+      class: 'site-status-hint' + (featureView.state === 'disabled' ? '' : ' site-status-hint--warn'),
+      text: t(featureView.hintKey)
+    }));
+    var featureActions = el('div', { class: 'figma-actions' });
+    featureActions.appendChild(actionButton('figma.openTab', openFigmaTab, { primary: true }));
+    nodes.push(featureActions);
+    return nodes;
+  }
 
   var statusClass = state === 'connected' && !conflict
     ? 'site-status-act site-status-act--worker-online'
@@ -201,15 +218,18 @@ function buildPop(f) {
 function render() {
   if (!els) return;
   var f = figmaOf();
-  var state = inferState(f);
+  var feature = featureOf();
+  var featureView = figmaFeaturePresentation(feature);
+  var state = figmaConnectorState(f);
   var integration = integrationOf();
-  var displayState = visualState(f, integration);
+  var displayState = visualState(f, integration, feature);
   var hasAccount = !!(f && f.account && (f.account.handle || f.account.email));
   var hasFile = !!currentFigmaKey();
   els.dot.setAttribute('data-state', 'figma-' + displayState);
   // A competing global connector keeps state === 'connected', so without this
   // branch the pill claimed "Figma ✓" next to its own red dot.
-  var labelKey = displayState === 'conflict' ? 'figma.pill.conflict'
+  var labelKey = featureView.overridesConnector ? featureView.labelKey
+    : displayState === 'conflict' ? 'figma.pill.conflict'
     : displayState === 'attention' ? 'figma.pill.integrationAttention'
     : displayState === 'busy' ? 'figma.pill.busy'
     : state === 'connected' && !hasAccount ? 'figma.pill.connectedUnverified'
@@ -218,14 +238,16 @@ function render() {
   els.label.textContent = t(labelKey);
   var alert = displayState !== 'connected' || !hasAccount || !hasFile;
   if (els.pill.classList) els.pill.classList.toggle('site-status-pill--alert', alert);
-  els.pill.setAttribute('aria-label', t('figma.toggle'));
+  // Keep the accessible name synchronized with the visible, localized state.
+  // A generic label hid disabled/restart/config errors from screen-reader users.
+  els.pill.setAttribute('aria-label', els.label.textContent);
 
   if (open) {
-    var sig = popSignature(f, integration);
+    var sig = popSignature(f, integration, feature);
     if (sig !== lastSig) {
       lastSig = sig;
       while (els.pop.firstChild) els.pop.removeChild(els.pop.firstChild);
-      var rows = buildPop(f);
+      var rows = buildPop(f, feature);
       for (var i = 0; i < rows.length; i++) els.pop.appendChild(rows[i]);
     }
   }

@@ -193,9 +193,6 @@ function finishRow(row, snapshot, normalized) {
   related(row, normalized);
   row.fingerprint = sourceFingerprint(row, snapshot);
   var taskRefs = [row.sourceId];
-  // Pre-workspace API coverage tasks used the raw operation id as Source.ref.
-  // Preserve their coverage instead of creating a duplicate package.
-  if (row.operationId) taskRefs.push(row.operationId);
   row.tasks = relations.taskProjection(snapshot.tasks, taskRefs);
   return row;
 }
@@ -204,30 +201,6 @@ function resolvedRows(snapshot) {
   if (snapshot._apiTaskRows) return snapshot._apiTaskRows;
   var normalized = catalog.normalized(snapshot);
   var bySourceId = Object.create(null);
-
-  normalized.rows.forEach(function (endpoint) {
-    if (endpoint.implementation.state !== 'missing') return;
-    var sourceId = relations.sourceId('missing', endpoint.operationId);
-    bySourceId[sourceId] = finishRow({
-      sourceId: sourceId,
-      type: 'api-missing',
-      operationId: endpoint.operationId,
-      title: cleanLine(
-        'Implement API endpoint ' + endpoint.method + ' ' + endpoint.path,
-        'Implement API endpoint',
-        200
-      ),
-      summary: 'The current project analyzer found no implementation for this committed endpoint.',
-      evidence: {
-        operationId: endpoint.operationId,
-        method: endpoint.method,
-        path: endpoint.path,
-        area: endpoint.area,
-        auth: endpoint.auth,
-        implementation: endpoint.implementation
-      }
-    }, snapshot, normalized);
-  });
 
   normalized.changes.forEach(function (change) {
     bySourceId[change.sourceId] = finishRow({
@@ -336,7 +309,7 @@ function groupFor(row, snapshot) {
 }
 
 function compareRows(left, right) {
-  var priorities = { 'api-change': 0, 'api-mismatch': 1, 'api-missing': 2 };
+  var priorities = { 'api-change': 0, 'api-mismatch': 1 };
   return (priorities[left.type] - priorities[right.type]) ||
     compareText(left.operationIds[0], right.operationIds[0]) ||
     compareText(left.modelIds[0], right.modelIds[0]) ||

@@ -25,7 +25,6 @@ const taskSource = require(join(
 const HASH_A = 'sha256:' + 'a'.repeat(64)
 const HASH_B = 'sha256:' + 'b'.repeat(64)
 const CHANGE = (character) => 'api:change:chg-' + character.repeat(24)
-const MISSING = (character) => 'api:missing:missing-' + character.repeat(24)
 const MISMATCH = (character) => 'api:mismatch:mismatch-' + character.repeat(24)
 
 function sourceRow(index, overrides = {}) {
@@ -34,11 +33,8 @@ function sourceRow(index, overrides = {}) {
   )
   return {
     sourceId,
-    type: overrides.type || (
-      sourceId.startsWith('api:missing:') ? 'api-missing'
-        : sourceId.startsWith('api:mismatch:') ? 'api-mismatch'
-          : 'api-change'
-    ),
+    type: overrides.type || (sourceId.startsWith('api:mismatch:')
+      ? 'api-mismatch' : 'api-change'),
     operationId: overrides.operationId || 'operation' + index,
     title: overrides.title || 'Finding ' + index,
     summary: overrides.summary || 'Finding summary ' + index,
@@ -76,7 +72,7 @@ function snapshot(rows) {
 }
 
 test('canonical API work-package metadata is deterministic and tamper-evident', () => {
-  const sources = [MISSING('b'), CHANGE('a')]
+  const sources = [MISMATCH('b'), CHANGE('a')]
   const metadata = apiWorkPackage.create('area:widgets', sources)
   assert.deepEqual(metadata.sourceIds, sources.slice().sort())
   assert.match(metadata.packageId, /^pkg-[a-f0-9]{24}$/)
@@ -177,7 +173,7 @@ test('planner preserves open work coverage and blocks accidental singleton packa
       sourceId: CHANGE('1'),
       tasks: { open: [openTask], resolved: [] },
     }),
-    sourceRow(2, { sourceId: MISSING('2') }),
+    sourceRow(2, { sourceId: MISMATCH('2') }),
   ]
   const snap = snapshot(rows)
   const planned = apiTasks._test.plan(snap, rows, 'package')
@@ -255,7 +251,7 @@ test('explicit groups stay separate and oversized selections fail closed', () =>
 test('package body carries exact aliases and task scans restore every relation after restart', () => {
   const rows = [
     sourceRow(1, { sourceId: CHANGE('1') }),
-    sourceRow(2, { sourceId: MISSING('2') }),
+    sourceRow(2, { sourceId: MISMATCH('2') }),
     sourceRow(3, { sourceId: MISMATCH('3') }),
   ]
   const snap = snapshot(rows)

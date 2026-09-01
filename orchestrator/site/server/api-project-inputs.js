@@ -8,7 +8,7 @@ var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
 
-var ANALYZER_VERSION = 'api-project-analyzer-v1';
+var ANALYZER_VERSION = 'api-project-analyzer-v2';
 var SOURCE_EXTENSIONS = Object.freeze({
   '.kt': 1, '.kts': 1, '.swift': 1, '.java': 1, '.js': 1,
   '.jsx': 1, '.mjs': 1, '.cjs': 1, '.ts': 1, '.tsx': 1, '.cs': 1

@@ -198,7 +198,7 @@ function sources(source) {
         id: 'api-' + hash(sourceId).slice(7, 31),
         kind: 'api',
         type: sourceId.indexOf('api:change:') === 0 ? 'api-change' :
-          sourceId.indexOf('api:mismatch:') === 0 ? 'api-mismatch' : 'api-missing',
+          'api-mismatch',
         ref: bounded(sourceId, 500),
         label: bounded(sourceId, 500),
         target: { panel: 'api', entityId: sourceId },

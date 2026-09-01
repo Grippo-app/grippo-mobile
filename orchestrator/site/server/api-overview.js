@@ -43,13 +43,13 @@ function overview(expectedGenerationId) {
       },
       metrics: {
         implemented: metric(null, null, 'not-checked'),
-        missing: metric(null, null, 'not-checked'),
+        unknown: metric(null, null, 'not-checked'),
         drifted: metric(null, null, 'not-checked'),
         breakingChanges: metric(null, null, 'not-checked')
       },
       primaryAction: { kind: 'refresh-contract', href: '#backend' },
       priorities: {
-        breakingChanges: [], missingEndpoints: [], observedMismatches: [],
+        breakingChanges: [], observedMismatches: [],
         recentlyChanged: [], openTasks: []
       }
     });
@@ -76,9 +76,6 @@ function overview(expectedGenerationId) {
     return (row.severity === 'breaking' || row.severity === 'potentially-breaking') &&
       !reviewState.reviewed[row.id];
   });
-  var missing = normalized.rows.filter(function (row) {
-    return row.implementation.state === 'missing';
-  });
   var openTasks = (snapshot.tasks.items || []).filter(function (task) {
     return task.source && task.source.kind === 'api';
   }).slice(0, 10).map(relations.publicTask);
@@ -91,8 +88,6 @@ function overview(expectedGenerationId) {
     kind: 'refresh-contract', href: '#backend'
   } : attentionChanges.length ? {
     kind: 'review-breaking-changes', href: '#api?tab=changes&severity=attention'
-  } : missing.length ? {
-    kind: 'implement-missing', href: '#api?tab=endpoints&implementation=missing'
   } : freshness !== 'current' ? {
     kind: 'refresh-contract', href: '#backend'
   } : {
@@ -117,8 +112,8 @@ function overview(expectedGenerationId) {
         total,
         implementationState
       ),
-      missing: metric(
-        implementationCoverage && implementationCoverage.missing,
+      unknown: metric(
+        implementationCoverage && implementationCoverage.unknown,
         total,
         implementationState
       ),
@@ -144,12 +139,6 @@ function overview(expectedGenerationId) {
           task: row.tasks.open[0] || null
         };
       }),
-      missingEndpoints: missing.slice(0, 5).map(function (row) {
-        return {
-          operationId: row.operationId, method: row.method, path: row.path,
-          area: row.area, task: row.tasks.open[0] || null
-        };
-      }),
       observedMismatches: normalized.mismatches.slice(0, 5).map(function (row) {
         return {
           id: row.id, severity: row.severity, operationId: row.operationId,
@@ -173,9 +162,5 @@ function overview(expectedGenerationId) {
 }
 
 module.exports = {
-  overview: overview,
-  _test: {
-    daysSince: daysSince,
-    metric: metric
-  }
+  overview: overview
 };

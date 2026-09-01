@@ -40,7 +40,7 @@
  *   figma-session-actions, figma-sync, figma-sync-history, figma-task-publication, figma-test-job,
  *   file-guard-worker,
  *   file-guards, finalizations, fsutil, git, http, locks, paths, persistence, pixel-review,
- *   project-config, project-config-update, requests, reviewer, reviewer-activity, api-report-state,
+ *   project-config, project-config-update, requests, reviewer, reviewer-activity,
  *   reviewer-detector, runner, runtime-integrity, sessions, shallow-intake,
  *   shallow-intake-contract, shallow-owner-guard, skills, sse, startup-recovery, state, static, status,
  *   task-integrity, task-source, tasks-log, timing, validators, windows-runtime-proof, worker,

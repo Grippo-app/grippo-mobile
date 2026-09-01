@@ -108,7 +108,7 @@ function readState() {
     query: boundedUtf8(params.get('query'), 200),
     area: /^[a-z0-9][a-z0-9-]{0,99}$/.test(params.get('area') || '') ? params.get('area') : '',
     method: enumValue(params.get('method') || '', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
-    implementation: enumValue(params.get('implementation') || '', ['implemented', 'missing', 'partial', 'unknown']),
+    implementation: enumValue(params.get('implementation') || '', ['implemented', 'partial', 'unknown']),
     auth: bounded(params.get('auth'), 100),
     hasTask: enumValue(params.get('hasTask') || '', ['yes', 'no']),
     changeSeverity: enumValue(params.get('changeSeverity') || '', ['breaking', 'potentially-breaking', 'compatible', 'info']),
@@ -664,8 +664,6 @@ export const api = {
       changeState({ tab: 'changes', query: entityId.slice('api:change:'.length) }, false);
     } else if (entityId.indexOf('api:mismatch:') === 0) {
       changeState({ tab: 'diagnostics', query: entityId }, false);
-    } else if (entityId.indexOf('api:missing:') === 0) {
-      changeState({ tab: 'endpoints', query: entityId, entity: '' }, false);
     } else {
       changeState({ tab: 'endpoints', entity: entityId }, false);
     }

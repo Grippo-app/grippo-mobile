@@ -497,8 +497,9 @@ test('retired interactive contract session keys and dead contract state fields a
   assert.ok(sessions.includes("return key === 'contract:diff'"))
   assert.equal(sessions.includes("/^[a-z]+$/.test(key.slice('contract:'.length))"), false)
 
-  const apiContract = readFileSync(join(REPO, 'orchestrator', 'site', 'server', 'api-contract.js'), 'utf8')
-  for (const dead of ['INVENTORY_FILE', 'readGate', 'specUrl', 'postmanPath']) assert.equal(apiContract.includes(dead), false, dead)
+  assert.equal(existsSync(join(REPO, 'orchestrator', 'site', 'server', 'api-contract.js')), false)
+  const state = readFileSync(join(REPO, 'orchestrator', 'site', 'server', 'state.js'), 'utf8')
+  assert.doesNotMatch(state, /contractMod|contract:\s*contractMod\.status/)
 
   for (const sample of ['openapi.sample.json', 'postman.sample.json']) {
     const text = readFileSync(join(REPO, 'orchestrator', 'api-contract', 'scripts', 'examples', sample), 'utf8')

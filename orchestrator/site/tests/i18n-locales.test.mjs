@@ -33,11 +33,29 @@ test('Ukrainian is wired through the client toggle and persisted language allowl
 
 test('EN, RU, and UK dictionaries have exact key and placeholder parity', () => {
   const enKeys = Object.keys(dictionaries.en).sort()
-  assert.equal(enKeys.length, 3681)
+  assert.equal(enKeys.length, 3694)
   for (const locale of ['ru', 'uk']) {
     assert.deepEqual(Object.keys(dictionaries[locale]).sort(), enKeys, locale + ' keys')
     for (const key of enKeys) {
       assert.deepEqual(placeholders(dictionaries[locale][key]), placeholders(dictionaries.en[key]), locale + ':' + key)
+    }
+  }
+})
+
+test('disabled Figma has a complete enable and restart path in every locale', () => {
+  for (const locale of ['en', 'ru', 'uk']) {
+    for (const key of [
+      'figma.feature.disabled.title',
+      'figma.feature.disabled.body',
+      'figma.feature.enable',
+      'figma.feature.enabling',
+      'figma.feature.restart.title',
+      'figma.feature.restart.body',
+      'figma.feature.invalid.title',
+      'figma.feature.invalid.body',
+      'figma.requestError.bad-figma-enable-request',
+    ]) {
+      assert.ok(dictionaries[locale][key].length > 5, locale + ':' + key)
     }
   }
 })

@@ -20,7 +20,10 @@ var READ_ERRORS = Object.freeze({
   'project-config-duplicate-key': 1
 });
 var CAPABILITIES = {
-  figma: { fields: { figmaLibraryUrl: validateFigmaLibraryUrl } },
+  figma: { fields: {
+    figmaLibraryUrl: validateFigmaLibraryUrl,
+    figmaEnabled: validateFigmaEnabled
+  } },
   reviewer: { fields: { codexEnabled: validateCodexEnabled } }
 };
 
@@ -39,6 +42,12 @@ function exactObject(value) {
 
 function validateCodexEnabled(value) {
   return value === 'auto' || value === 'true' || value === 'false' ? value : null;
+}
+
+function validateFigmaEnabled(value) {
+  // This capability is intentionally enable-only. Disabling Figma changes the
+  // process-owner contract and remains a deliberate project-config edit.
+  return value === 'true' ? value : null;
 }
 
 function normalizeFigmaInput(value) {
@@ -135,6 +144,7 @@ function read() {
         ok: true, revision: null, figmaLibraryUrl: null, figmaFileKey: null,
         figmaFieldState: 'missing', hasFigmaField: false,
         productPackage: null, figmaEnabled: false, figmaEnabledState: 'missing',
+        hasFigmaEnabledField: false,
         codexEnabled: null, codexFieldState: 'missing', hasCodexField: false
       };
     }
@@ -173,6 +183,7 @@ function read() {
       productPackage: productPackage,
       figmaEnabled: figmaEnabledState === 'selected' && rawFigmaEnabled === 'true',
       figmaEnabledState: figmaEnabledState,
+      hasFigmaEnabledField: figmaEnabledRows.length === 1,
       codexEnabled: codexEnabled,
       codexFieldState: codexFieldState,
       hasCodexField: codexRows.length === 1
@@ -264,7 +275,9 @@ function update(request) {
       } else {
         after = read();
         var afterValue = after && after.ok
-          ? (request.field === 'figmaLibraryUrl' ? after.figmaLibraryUrl : after.codexEnabled)
+          ? (request.field === 'figmaLibraryUrl' ? after.figmaLibraryUrl
+            : request.field === 'figmaEnabled' ? (after.figmaEnabled ? 'true' : 'false')
+              : after.codexEnabled)
           : null;
         if (!after || !after.ok || after.revision !== sha(nextBytes) || afterValue !== normalized) {
           operationError = {
@@ -296,7 +309,8 @@ function update(request) {
     status: 200,
     revision: after.revision,
     field: request.field,
-    value: request.field === 'figmaLibraryUrl' ? after.figmaLibraryUrl : after.codexEnabled
+    value: request.field === 'figmaLibraryUrl' ? after.figmaLibraryUrl
+      : request.field === 'figmaEnabled' ? after.figmaEnabled : after.codexEnabled
   };
 }
 

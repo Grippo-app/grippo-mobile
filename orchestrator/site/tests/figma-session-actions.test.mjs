@@ -2,10 +2,12 @@
 
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
+import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const root = mkdtempSync(join(tmpdir(), 'figma-session-actions-'))
 const scratch = mkdtempSync(join(tmpdir(), 'figma-session-actions-scratch-'))
@@ -133,10 +135,23 @@ try {
 
   await check('runtime enablement cannot outrun startup initialization', () => {
     const gate = require('../server/figma-feature-gate.js')
-    const disabled = { ok: true, figmaEnabledState: 'selected', figmaEnabled: false }
-    const enabled = { ok: true, figmaEnabledState: 'selected', figmaEnabled: true }
-    assert.deepEqual(gate._test.evaluate(disabled, enabled), {
+    const disabled = {
+      ok: true, figmaEnabledState: 'selected', figmaEnabled: false,
+      hasFigmaEnabledField: true, revision: 'sha256:' + '1'.repeat(64),
+    }
+    const enabled = {
+      ok: true, figmaEnabledState: 'selected', figmaEnabled: true,
+      hasFigmaEnabledField: true, revision: 'sha256:' + '2'.repeat(64),
+    }
+    const restartRequired = gate._test.evaluate(disabled, enabled)
+    assert.deepEqual(restartRequired, {
       enabled: false, status: 503, error: 'figma-restart-required',
+    })
+    assert.deepEqual(gate._test.publicState(restartRequired, enabled), {
+      state: 'restart-required',
+      reasonCode: 'figma-restart-required',
+      configRevision: enabled.revision,
+      canEnable: false,
     })
     assert.deepEqual(gate._test.evaluate(enabled, disabled), {
       enabled: false, status: 409, error: 'figma-disabled',
@@ -452,12 +467,36 @@ try {
       assert.equal(disabled.figma.state, 'disabled')
       assert.equal(disabled.figma.account, null)
       assert.equal(disabled.figmaIntegration, null)
+      assert.deepEqual(disabled.figmaFeature, {
+        state: 'disabled',
+        reasonCode: 'figma-disabled',
+        configRevision: disabled.figmaFeature.configRevision,
+        canEnable: true
+      })
+      assert.match(disabled.figmaFeature.configRevision, /^sha256:[a-f0-9]{64}$/)
       const integration = await (await fetch(base + '/api/figma/integration')).json()
       assert.equal(integration.error, 'figma-disabled')
       const startDisabled = await post({ key: 'figma:whoami', figmaAction: 'whoami' })
       assert.equal(startDisabled.status, 409)
       assert.equal((await startDisabled.json()).error, 'figma-disabled')
       assert.equal(accountReads, 0)
+
+      const withoutCsrf = await fetch(base + '/api/figma/enable', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: base },
+        body: JSON.stringify({ expectedConfigRevision: disabled.figmaFeature.configRevision })
+      })
+      assert.equal(withoutCsrf.status, 403)
+      assert.equal((await withoutCsrf.json()).error, 'bad-csrf')
+      const enabled = await fetch(base + '/api/figma/enable', {
+        method: 'POST', headers,
+        body: JSON.stringify({ expectedConfigRevision: disabled.figmaFeature.configRevision })
+      })
+      assert.equal(enabled.status, 200)
+      const enabledBody = await enabled.json()
+      assert.equal(enabledBody.ok, true)
+      assert.equal(enabledBody.feature.state, 'enabled')
+      assert.match(readFileSync(projectConfigFile, 'utf8'), /figmaEnabled: true/)
     } finally {
       writeFileSync(projectConfigFile, enabledConfig)
       figma.account = enabledAccount
@@ -471,6 +510,8 @@ try {
       const invalid = await (await fetch(base + '/api/state')).json()
       assert.equal(invalid.figma.state, 'unavailable')
       assert.equal(invalid.figma.configError, 'figma-config-invalid')
+      assert.equal(invalid.figmaFeature.state, 'invalid')
+      assert.equal(invalid.figmaFeature.canEnable, false)
       const integration = await fetch(base + '/api/figma/integration')
       assert.equal(integration.status, 503)
       assert.equal((await integration.json()).error, 'figma-config-invalid')
@@ -505,6 +546,178 @@ try {
     const serialized = JSON.stringify(projection)
     assert.doesNotMatch(serialized, new RegExp(root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
     assert.doesNotMatch(serialized, /oauth.*token|prompt|transcript/i)
+
+    const privateFailure = httpMod._test.publicFigmaResult({
+      ok: false, status: 409, error: 'writer-lease-unavailable',
+      currentRevision: 'sha256:' + 'a'.repeat(64),
+      detail: '/private/reviewer-secret/project-path', diagnostic: { token: 'secret' },
+      unknown: 'must-not-publish'
+    })
+    assert.deepEqual(privateFailure, {
+      ok: false, status: 409, error: 'writer-lease-unavailable',
+      currentRevision: 'sha256:' + 'a'.repeat(64)
+    })
+    assert.equal(JSON.stringify(privateFailure).includes('/private/'), false)
+
+    const privateSuccess = httpMod._test.publicFigmaResult({
+      ok: true, status: 200,
+      feature: {
+        state: 'enabled', accessToken: 'super-secret', apiKey: 'another-secret',
+        path: '/private/workspace',
+        nested: {
+          privatePath: '/private/reviewer-secret/project-path',
+          prompt: 'do anything', bearer: 'abc'
+        }
+      }
+    })
+    assert.deepEqual(privateSuccess.feature, { state: 'enabled' })
+    assert.doesNotMatch(JSON.stringify(privateSuccess),
+      /super-secret|another-secret|\/private\/|do anything|bearer|abc/)
+
+    for (const route of [
+      '/api/figma/recheck', '/api/figma/add-local', '/api/figma/open-terminal'
+    ]) {
+      response = await fetch(base + route, {
+        method: 'POST', headers, body: JSON.stringify({ unexpected: true })
+      })
+      assert.equal(response.status, 400, route)
+      assert.equal((await response.json()).error, 'bad-json', route)
+    }
+
+    response = await fetch(base + '/api/figma/recheck', {
+      method: 'POST', headers,
+      body: JSON.stringify({ padding: 'x'.repeat(262144) })
+    })
+    assert.equal(response.status, 413)
+    assert.equal((await response.json()).error, 'bad-json')
+
+    response = await fetch(base + '/api/figma/enable', {
+      method: 'POST', headers,
+      body: JSON.stringify({ padding: 'x'.repeat(262144) })
+    })
+    assert.equal(response.status, 413)
+    assert.equal((await response.json()).error, 'bad-json')
+  })
+
+  await check('startup-disabled enable remains gated until a new process initializes Figma', async () => {
+    const isolated = mkdtempSync(join(tmpdir(), 'figma-feature-restart-'))
+    const isolatedOrchestrator = join(isolated, 'orchestrator')
+    const isolatedTasks = join(isolatedOrchestrator, 'tasks')
+    const isolatedCache = join(isolatedOrchestrator, '.cache', 'tasks')
+    try {
+      for (const column of ['backlog', 'pending', 'todo', 'done']) {
+        mkdirSync(join(isolatedTasks, column), { recursive: true })
+      }
+      for (const dir of ['locks', 'requests', 'request-reservations', 'runs', 'superseded',
+        'finalizations', 'creations', 'edits', 'intake']) {
+        mkdirSync(join(isolatedCache, dir), { recursive: true })
+      }
+      writeFileSync(join(isolatedTasks, 'INDEX.json'), JSON.stringify({
+        version: 2, generatedAt: '1970-01-01T00:00:00.000Z',
+        backlog: [], pending: [], todo: [], done: []
+      }) + '\n')
+      writeFileSync(join(isolatedOrchestrator, 'project-config.md'), [
+        '---', 'productName: Restart fixture', 'figmaEnabled: false',
+        'figmaLibraryUrl: <figma-library-url>', '---', ''
+      ].join('\n'))
+      const childEnv = {
+        ...process.env,
+        ORCHESTRATOR_PROJECT_ROOT: isolated,
+        ORCHESTRATOR_TASKS_DIR: isolatedTasks,
+        ORCHESTRATOR_LOCKS_DIR: join(isolatedCache, 'locks'),
+        ORCHESTRATOR_REQUESTS_DIR: join(isolatedCache, 'requests'),
+        ORCHESTRATOR_REQUEST_RESERVATIONS_DIR: join(isolatedCache, 'request-reservations'),
+        ORCHESTRATOR_RUNS_DIR: join(isolatedCache, 'runs'),
+        ORCHESTRATOR_SUPERSEDED_DIR: join(isolatedCache, 'superseded'),
+        ORCHESTRATOR_FINALIZATIONS_DIR: join(isolatedCache, 'finalizations'),
+        ORCHESTRATOR_TASK_CREATIONS_DIR: join(isolatedCache, 'creations'),
+        ORCHESTRATOR_TASK_EDITS_DIR: join(isolatedCache, 'edits'),
+        ORCHESTRATOR_TASK_INTAKE_DIR: join(isolatedCache, 'intake'),
+        ORCHESTRATOR_STATE_FILE: join(isolatedOrchestrator, '.cache', 'site', '.site-state.json'),
+        SHALLOW_INTAKE_SCRATCH_DIR: scratch,
+        RUNNER_DISABLED: '1'
+      }
+      const childScript = `
+        const { createServer } = require('node:http');
+        const http = require(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'http.js'))});
+        const server = createServer(http.handle);
+        server.listen(0, '127.0.0.1', async () => {
+          try {
+            const base = 'http://127.0.0.1:' + server.address().port;
+            const before = await (await fetch(base + '/api/state')).json();
+            if (process.env.CHILD_MODE === 'enable') {
+              const headers = { 'content-type': 'application/json', origin: base,
+                'x-orchestrator-csrf': before.csrfToken };
+              const enabledResponse = await fetch(base + '/api/figma/enable', { method: 'POST', headers,
+                body: JSON.stringify({ expectedConfigRevision: before.figmaFeature.configRevision }) });
+              const enabled = await enabledResponse.json();
+              const blockedResponse = await fetch(base + '/api/figma/integration');
+              const blocked = await blockedResponse.json();
+              const after = await (await fetch(base + '/api/state')).json();
+              console.log(JSON.stringify({ before: before.figmaFeature, enabledStatus: enabledResponse.status,
+                enabled, blockedStatus: blockedResponse.status, blocked, after: after.figmaFeature }));
+            } else {
+              const integration = await fetch(base + '/api/figma/integration');
+              console.log(JSON.stringify({ feature: before.figmaFeature, integrationStatus: integration.status }));
+            }
+          } catch (error) { console.error(error && error.stack || error); process.exitCode = 1; }
+          finally { server.close(); }
+        });
+      `
+      const runChild = (mode) => {
+        const result = spawnSync(process.execPath, ['-e', childScript], {
+          env: { ...childEnv, CHILD_MODE: mode }, encoding: 'utf8', timeout: 20000
+        })
+        assert.equal(result.status, 0, result.stderr + result.stdout)
+        const line = result.stdout.trim().split('\n').filter(Boolean).at(-1)
+        return JSON.parse(line)
+      }
+      const first = runChild('enable')
+      assert.equal(first.before.state, 'disabled')
+      assert.equal(first.enabledStatus, 200)
+      assert.equal(first.enabled.feature.state, 'restart-required')
+      assert.equal(first.after.state, 'restart-required')
+      assert.equal(first.blockedStatus, 503)
+      assert.equal(first.blocked.error, 'figma-restart-required')
+      const restarted = runChild('inspect')
+      assert.equal(restarted.feature.state, 'enabled')
+      assert.equal(restarted.integrationStatus, 200)
+
+      const ownerScript = `
+        const marks = [];
+        function replace(modulePath, name, marker, promise) {
+          const owner = require(modulePath);
+          owner[name] = function () {
+            marks.push(marker);
+            return promise ? Promise.resolve() : undefined;
+          };
+        }
+        replace(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'figma-task-publication.js'))}, 'beginRecovery', 'publication-begin', false);
+        replace(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'figma-task-publication.js'))}, 'init', 'publication-init', true);
+        replace(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'figma-test-job.js'))}, 'init', 'test-init', false);
+        replace(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'figma-test-job.js'))}, 'startupVerify', 'test-startup-verify', false);
+        replace(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'figma-sync.js'))}, 'init', 'sync-init', true);
+        replace(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server', 'figma.js'))}, 'init', 'connector-init', false);
+        require(${JSON.stringify(join(dirname(fileURLToPath(import.meta.url)), '..', 'server.js'))});
+        setTimeout(function () {
+          console.log('OWNER_MARKS ' + JSON.stringify(marks));
+          process.kill(process.pid, 'SIGTERM');
+        }, 1000);
+      `
+      const ownerRun = spawnSync(process.execPath, ['-e', ownerScript], {
+        env: { ...childEnv, PORT: '0' }, encoding: 'utf8', timeout: 15000
+      })
+      assert.equal(ownerRun.status, 0, ownerRun.stderr + ownerRun.stdout)
+      const ownerLine = ownerRun.stdout.split('\n').find((line) => line.startsWith('OWNER_MARKS '))
+      assert.ok(ownerLine, ownerRun.stdout)
+      const ownerMarks = JSON.parse(ownerLine.slice('OWNER_MARKS '.length))
+      for (const marker of [
+        'publication-begin', 'test-init', 'sync-init', 'publication-init',
+        'connector-init', 'test-startup-verify'
+      ]) assert.equal(ownerMarks.includes(marker), true, marker)
+    } finally {
+      rmSync(isolated, { recursive: true, force: true })
+    }
   })
 
   await check('HTTP rejects every client-owned Figma prompt and extra request field', async () => {
@@ -653,6 +866,13 @@ try {
       })
       assert.equal(response.status, 403)
       assert.equal((await response.json()).error, 'bad-csrf')
+
+      response = await fetch(base + '/api/figma/integration/reset', {
+        method: 'POST', headers,
+        body: JSON.stringify({ padding: 'x'.repeat(262144) })
+      })
+      assert.equal(response.status, 413)
+      assert.equal((await response.json()).error, 'bad-json')
 
       response = await fetch(base + '/api/figma/integration/reset', {
         method: 'POST', headers, body: JSON.stringify(request)

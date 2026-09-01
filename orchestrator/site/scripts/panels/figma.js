@@ -6,7 +6,7 @@ import { confirmDialog } from '../ui-dialog.js';
 import { tasksApi } from '../data/tasks-api.js';
 import { runErrorMessage } from '../run-errors.js';
 import { fileCandidateDisplayName, parseFileKey } from '../figma-actions.js';
-import { createIntegrationView } from '../figma/integration-view.js';
+import { createFigmaFeatureView, createIntegrationView } from '../figma/integration-view.js';
 import { createSyncView } from '../figma/sync-view.js';
 import { createHistoryPagination, createHistoryView } from '../figma/history-view.js';
 import { figmaEnumText } from '../figma/enum-labels.js';
@@ -16,6 +16,7 @@ import { figmaEnumText } from '../figma/enum-labels.js';
 
 var el = dom.el;
 var sectionEl = null;
+var featureView = null;
 var integrationView = null;
 var syncView = null;
 var historyView = null;
@@ -47,6 +48,7 @@ var INTENT_AUTO_TEST_REASONS = {
 
 function t(key, params) { return i18n && typeof i18n.t === 'function' ? i18n.t(key, params) : key; }
 function model() { return store.get().figmaIntegration || null; }
+function featureModel() { return store.get().figmaFeature || { state: 'invalid', canEnable: false, configRevision: null }; }
 function idempotencyKey(prefix) {
   var suffix = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() :
     Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
@@ -123,6 +125,32 @@ function currentFileKey() {
 }
 function runTest() {
   return withBusy(function () { return tasksApi.figmaTest(currentFileKey(), false); }).catch(function () {});
+}
+export function focusFigmaEnableResult(feature, integration, views) {
+  var available = !!(feature && feature.state === 'enabled' && integration);
+  if (available && views && views.integration &&
+      typeof views.integration.focusPrimary === 'function') {
+    views.integration.focusPrimary();
+    return 'integration';
+  }
+  if (views && views.feature && typeof views.feature.focusAction === 'function') {
+    views.feature.focusAction();
+  }
+  return 'feature';
+}
+function enableFigma() {
+  var feature = featureModel();
+  if (!feature.canEnable || !feature.configRevision) return;
+  return withBusy(function () {
+    return tasksApi.figmaEnable(feature.configRevision).then(function () {
+      return store.load().then(function (next) {
+        focusFigmaEnableResult(featureModel(), model(), {
+          feature: featureView, integration: integrationView
+        });
+        return next;
+      });
+    });
+  }).catch(function () {});
 }
 function openAccount() { showDialog(accountDialog); }
 function openFile() {
@@ -214,6 +242,11 @@ function consumeSyncIntent() {
   var scope = syncIntent();
   if (!scope) { blockedIntentKey = null; intentTestAttempted = false; return; }
   if (busy) return;
+  if (featureModel().state !== 'enabled') {
+    blockedIntentKey = scope + '|figma-feature-unavailable';
+    if (featureView && featureView.focusAction) featureView.focusAction();
+    return;
+  }
   var current = model();
   var allowed = current && current.actions && (scope === 'drift' ? current.actions.canCompare : current.actions.canSync);
   if (!allowed) {
@@ -392,6 +425,7 @@ function buildFileDialog() {
 function build() {
   if (!sectionEl) return;
   while (sectionEl.firstChild) sectionEl.removeChild(sectionEl.firstChild);
+  featureView = createFigmaFeatureView({ enable: enableFigma });
   integrationView = createIntegrationView({ test: runTest, sync: runSync, recover: recover, account: openAccount,
     file: openFile, history: openHistory, clear: openClearIntegration });
   syncView = createSyncView({ confirm: confirmSync, cancel: cancelSync });
@@ -409,15 +443,26 @@ function build() {
   });
   accountDialog = buildAccountDialog(); fileDialog = buildFileDialog(); clearDialog = buildClearDialog();
   integrationView.el.appendChild(syncView.progress);
+  sectionEl.appendChild(featureView.el);
   sectionEl.appendChild(integrationView.el);
   document.body.appendChild(syncView.dialog); document.body.appendChild(historyView.dialog); document.body.appendChild(accountDialog);
   document.body.appendChild(fileDialog); document.body.appendChild(clearDialog);
   render();
 }
 function render() {
-  if (!integrationView) return;
+  if (!featureView || !integrationView) return;
+  var feature = featureModel();
   var current = model();
-  if (!current) return;
+  var available = feature.state === 'enabled' && !!current;
+  featureView.el.hidden = available;
+  integrationView.el.hidden = !available;
+  featureView.update(available ? feature : (feature.state === 'enabled'
+    ? { state: 'invalid', canEnable: false, configRevision: feature.configRevision }
+    : feature), busy);
+  if (!available) {
+    syncView.update(null);
+    return;
+  }
   integrationView.update(current, busy, syncIntent());
   syncView.update(current.sync && current.sync.active || null);
   var candidate = current.fileCandidate && current.fileCandidate.id === fileVerificationCandidateId ? current.fileCandidate : null;

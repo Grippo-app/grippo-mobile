@@ -10,6 +10,10 @@ import {
   EXECUTION_ROOT, EXECUTION_SCOPE, PROJECT_ROOT as CONTROL_ROOT,
   REPORTS_DIR, writeContractReport,
 } from './_util.mjs'
+import {
+  isTestSourcePath, maskKotlinComments, maskKotlinNonCode, normalizeKotlinRoute, normalizeRoute, parseKotlinAnnotationCandidates,
+  parseKotlinClientCandidates,
+} from './kotlin-routes.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const SIDECAR_DIR = resolve(HERE, '..')
@@ -42,29 +46,12 @@ function fail(code, detail) {
   throw error
 }
 
-function normalizeRoute(value) {
-  let route = String(value || '').trim()
-  try {
-    if (/^https?:\/\//i.test(route)) route = new URL(route).pathname
-  } catch {}
-  route = route.split('?')[0].replace(/:[A-Za-z_][A-Za-z0-9_]*/g, '{}')
-    .replace(/\{[^}/]+\}/g, '{}').replace(/\/+/g, '/')
-  if (!route.startsWith('/')) route = '/' + route
-  return route.length > 1 ? route.replace(/\/$/, '') : route
-}
-
 function routeMatches(left, right) {
   return normalizeRoute(left) === normalizeRoute(right)
 }
 
 function isTestSource(sourcePath) {
-  const parts = String(sourcePath || '').split('/').filter(Boolean)
-  const file = parts[parts.length - 1] || ''
-  return parts.slice(0, -1).some((part) =>
-    /^(?:test|tests|__tests__|testFixtures)$/i.test(part) ||
-    /Test(?:s)?$/.test(part)) ||
-    /(?:^|[._-])(?:test|spec)\.[^.]+$/i.test(file) ||
-    /(?:Test|Tests)\.(?:kt|kts|swift|java|cs)$/i.test(file)
+  return isTestSourcePath(sourcePath)
 }
 
 function maskComments(text) {
@@ -118,7 +105,42 @@ function maskComments(text) {
 }
 
 function analysisText(record) {
+  if (['.kt', '.kts'].includes(extname(record.path).toLowerCase())) {
+    return maskKotlinComments(record.text)
+  }
   return typeof record.code === 'string' ? record.code : maskComments(record.text)
+}
+
+function genericCodeOnly(text) {
+  let out = ''
+  let state = 'code'
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index], next = text[index + 1]
+    if (state === 'line') {
+      if (char === '\n' || char === '\r') { state = 'code'; out += char } else out += ' '
+    } else if (state === 'block') {
+      if (char === '*' && next === '/') { out += '  '; index++; state = 'code' }
+      else out += char === '\n' || char === '\r' ? char : ' '
+    } else if (state !== 'code') {
+      out += char === '\n' || char === '\r' ? char : ' '
+      if (char === '\\' && index + 1 < text.length) {
+        out += text[index + 1] === '\n' || text[index + 1] === '\r' ? text[index + 1] : ' '
+        index++
+      } else if (char === state) state = 'code'
+    } else if (char === '/' && next === '/') {
+      out += '  '; index++; state = 'line'
+    } else if (char === '/' && next === '*') {
+      out += '  '; index++; state = 'block'
+    } else if (char === '"' || char === "'" || char === '`') {
+      out += ' '; state = char
+    } else out += char
+  }
+  return out
+}
+
+function codeOnlyText(record) {
+  return ['.kt', '.kts'].includes(extname(record.path).toLowerCase())
+    ? maskKotlinNonCode(record.text) : genericCodeOnly(record.text)
 }
 
 function nearbySymbol(text, offset) {
@@ -164,16 +186,29 @@ function nearbySymbol(text, offset) {
 function routeCandidates(record) {
   const candidates = []
   const source = analysisText(record)
-  const add = (method, route, index, evidence) => {
+  const symbolSource = codeOnlyText(record)
+  const kotlin = ['.kt', '.kts'].includes(extname(record.path).toLowerCase())
+  const add = (method, route, index, evidence, normalized) => {
     if (!METHOD_NAMES[String(method).toLowerCase()] || typeof route !== 'string') return
     candidates.push({
       method: METHOD_NAMES[String(method).toLowerCase()],
-      route: normalizeRoute(route),
+      route: normalized ? normalizeRoute(route)
+        : kotlin ? normalizeKotlinRoute(route) : normalizeRoute(route),
       file: record.path,
-      symbol: nearbySymbol(record.text, index),
+      symbol: nearbySymbol(symbolSource, index),
       confidence: 'exact',
       evidence,
     })
+  }
+  if (kotlin) {
+    for (const candidate of parseKotlinClientCandidates(record.text)) {
+      add(candidate.method, candidate.path, candidate.index,
+        candidate.kind === 'request' ? 'typed request method and path' : 'typed HTTP client call', true)
+    }
+    for (const candidate of parseKotlinAnnotationCandidates(record.text)) {
+      add(candidate.method, candidate.path, candidate.index, 'typed route annotation', true)
+    }
+    return candidates
   }
   const patterns = [
     {
@@ -200,13 +235,6 @@ function routeCandidates(record) {
   for (const pattern of patterns) {
     let match
     while ((match = pattern.regex.exec(source))) pattern.apply(match)
-  }
-  const request = /\brequest\s*\(([\s\S]{0,1000}?)\)/gi
-  let block
-  while ((block = request.exec(source))) {
-    const method = /method\s*=\s*(?:HttpMethod\.)?(Get|Post|Put|Patch|Delete)\b/i.exec(block[1])
-    const route = /path\s*=\s*["']([^"']+)["']/i.exec(block[1])
-    if (method && route) add(method[1], route[1], block.index, 'typed request method and path')
   }
   const fetchPattern = /\bfetch\s*\(\s*["']([^"']+)["']\s*(?:,\s*\{([\s\S]{0,500}?)\})?/gi
   let fetchMatch
@@ -249,13 +277,14 @@ function evidenceIndexes(records, endpoints) {
   }
   for (const record of records) {
     const source = analysisText(record)
+    const symbolSource = codeOnlyText(record)
     const words = /[A-Za-z_$][A-Za-z0-9_$.-]{0,199}/g
     let match
     while ((match = words.exec(source))) {
       if (!operationTargets.has(match[0])) continue
       add(operations, match[0], {
         file: record.path,
-        symbol: nearbySymbol(record.text, match.index),
+        symbol: nearbySymbol(symbolSource, match.index),
         confidence: 'derived',
         evidence: 'stable operation id reference',
       })
@@ -264,11 +293,12 @@ function evidenceIndexes(records, endpoints) {
     while ((match = strings.exec(source))) {
       const value = match[1]
       if (value.charAt(0) !== '/' && !/^https?:\/\//i.test(value)) continue
-      const normalized = normalizeRoute(value)
+      const normalized = ['.kt', '.kts'].includes(extname(record.path).toLowerCase())
+        ? normalizeKotlinRoute(value) : normalizeRoute(value)
       if (!routeTargets.has(normalized)) continue
       add(paths, normalized, {
         file: record.path,
-        symbol: nearbySymbol(record.text, match.index),
+        symbol: nearbySymbol(symbolSource, match.index),
         confidence: 'heuristic',
         evidence: 'path literal without a proven method binding',
       })
@@ -303,10 +333,11 @@ function implementationFor(endpoint, records, routes, indexes) {
       : records.map((record) => ({
         record,
         source: analysisText(record),
+        symbolSource: codeOnlyText(record),
       })).filter(({ source }) => wordPresent(source, endpoint.operationId))
-        .map(({ record, source }) => ({
-        file: record.path,
-        symbol: nearbySymbol(record.text, source.indexOf(endpoint.operationId)),
+        .map(({ record, source, symbolSource }) => ({
+          file: record.path,
+          symbol: nearbySymbol(symbolSource, source.indexOf(endpoint.operationId)),
         confidence: 'derived',
         evidence: 'stable operation id reference',
       }))
@@ -317,10 +348,11 @@ function implementationFor(endpoint, records, routes, indexes) {
       : records.map((record) => ({
         record,
         source: analysisText(record),
+        symbolSource: codeOnlyText(record),
       })).filter(({ source }) => source.includes(endpoint.path))
-        .map(({ record, source }) => ({
-        file: record.path,
-        symbol: nearbySymbol(record.text, source.indexOf(endpoint.path)),
+        .map(({ record, source, symbolSource }) => ({
+          file: record.path,
+          symbol: nearbySymbol(symbolSource, source.indexOf(endpoint.path)),
         confidence: 'heuristic',
         evidence: 'path literal without a proven method binding',
       }))
@@ -339,7 +371,7 @@ function implementationFor(endpoint, records, routes, indexes) {
   if (!unique.length) {
     return {
       operationId: endpoint.operationId,
-      state: 'missing',
+      state: 'unknown',
       file: null,
       symbol: null,
       confidence: null,
@@ -400,9 +432,9 @@ function consumersFor(mapping, records, architecture) {
   const call = new RegExp(`(?:\\.|\\b)${escaped}\\s*\\(`)
   const consumers = []
   for (const record of records) {
-    const source = analysisText(record)
+    const source = codeOnlyText(record)
     if (record.path === mapping.file || !call.test(source)) continue
-    const symbol = nearbySymbol(record.text, source.search(call))
+    const symbol = nearbySymbol(source, source.search(call))
     const archId = architecture.present ? architectureNode(architecture.map, record.path) : null
     const idSeed = `${mapping.operationId}\u0000${record.path}\u0000${symbol || ''}\u0000${archId || ''}`
     consumers.push({
@@ -431,13 +463,13 @@ function consumerEvidenceIndex(records, mappings, architecture) {
   let count = 0
   let truncated = false
   for (const record of records) {
-    const source = analysisText(record)
+    const source = codeOnlyText(record)
     const calls = /(?:\.|\b)([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/g
     let match
     while ((match = calls.exec(source))) {
       const targets = mappingsBySymbol.get(match[1])
       if (!targets) continue
-      const symbol = nearbySymbol(record.text, match.index)
+      const symbol = nearbySymbol(source, match.index)
       let architectureId = null
       if (architecture.present) {
         if (!architectureByFile.has(record.path)) {
@@ -519,7 +551,6 @@ function analyzeProject() {
   const coverage = {
     total: mappings.length,
     implemented: mappings.filter((row) => row.state === 'implemented').length,
-    missing: mappings.filter((row) => row.state === 'missing').length,
     partial: mappings.filter((row) => row.state === 'partial').length,
     unknown: mappings.filter((row) => row.state === 'unknown').length,
     analyzedFiles: sourceRecords.length,
@@ -623,6 +654,7 @@ export const _test = {
   consumersFor,
   consumerEvidenceIndex,
   maskComments,
+  codeOnlyText,
   sha,
   HASH_RE,
 }

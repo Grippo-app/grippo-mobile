@@ -801,12 +801,12 @@ try {
     const project = makeProject()
     const stem = 'TASK_306_api_package_immutable'
     const metadata = apiWorkPackage.create('area:users', [
-      'api:missing:getUser',
-      'api:missing:listUsers',
+      'api:change:chg-' + '1'.repeat(24),
+      'api:mismatch:mismatch-' + '2'.repeat(24),
     ])
     const changed = apiWorkPackage.create('area:users', [
-      'api:missing:getUser',
-      'api:missing:updateUser',
+      'api:change:chg-' + '1'.repeat(24),
+      'api:mismatch:mismatch-' + '3'.repeat(24),
     ])
     writeArtifact(
       project,

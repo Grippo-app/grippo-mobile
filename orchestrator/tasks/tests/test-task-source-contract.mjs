@@ -23,8 +23,8 @@ check('every registered Kind/Type pair round-trips through the exact block', () 
     for (const type of types) {
       const metadata = type === 'api-work-package'
         ? apiWorkPackage.create('area:users', [
-          'api:missing:getUser',
-          'api:missing:listUsers',
+          'api:change:chg-' + '1'.repeat(24),
+          'api:mismatch:mismatch-' + '2'.repeat(24),
         ])
         : null
       const ref = kind === 'follow-up'

@@ -36,9 +36,6 @@ function select(ctx, key, values) {
   return input;
 }
 function sourceFor(row) {
-  if (row.implementation && row.implementation.state === 'missing') {
-    return row.sources && row.sources.missing || null;
-  }
   if (row.latestChange && row.latestChange.id) return 'api:change:' + row.latestChange.id;
   return null;
 }
@@ -137,7 +134,6 @@ function renderToolbar(ctx, payload, toolbar) {
   form.appendChild(select(ctx, 'method', (facets.methods || []).map(function (value) { return [value, value]; })));
   form.appendChild(select(ctx, 'implementation', [
     ['implemented', ctx.t('api.implementation.implemented')],
-    ['missing', ctx.t('api.implementation.missing')],
     ['partial', ctx.t('api.implementation.partial')],
     ['unknown', ctx.t('api.implementation.unknown')]
   ]));

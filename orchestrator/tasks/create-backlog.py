@@ -104,7 +104,7 @@ SOURCE_FIELDS = {"kind", "type", "ref", "fingerprint"}
 SOURCE_TYPES = {
     "manual": {"manual", "architecture-finding"},
     "figma": {"design-finding", "figma-drift", "figma-missing-component", "figma-component-split"},
-    "api": {"api-missing", "api-change", "api-mismatch", "api-work-package"},
+    "api": {"api-change", "api-mismatch", "api-work-package"},
     "follow-up": {"outcome-follow-up", "reviewer-follow-up", "task-split", "test-foundation-prerequisite"},
 }
 STEM_RE = re.compile(r"^TASK_([0-9]+)_([A-Za-z0-9_]+)$")
