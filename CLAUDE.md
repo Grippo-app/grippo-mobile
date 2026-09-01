@@ -999,11 +999,15 @@ There are no test source sets or `*.kt` tests in the repo. Don't add without an 
 
 ## Orchestrator workflow
 
-The `orchestrator/` tree is the agent workforce bound to this project (config: `orchestrator/project-config.md`; end-user entry: `orchestrator/README.md`). The detailed skills installed in `.claude/skills/` (11: `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, `launch-readiness`) are the source of truth for task execution; this file stays the high-level guide.
+The `orchestrator/` tree is the agent workforce bound to this project (config: `orchestrator/project-config.md`; end-user entry: `orchestrator/README.md`). The detailed skills installed in `.claude/skills/` (12: `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, `launch-readiness`, `implement-figma`) are the source of truth for task execution; this file stays the high-level guide.
 
 - **Control surface**: `npm start` from the repo root → <http://localhost:8000/site/> (Node 22 workspace; `npm test` = fast verify suite).
 - **Task workflow**: tasks flow through the four-column kanban under `orchestrator/tasks/`: `backlog -> task-prep -> pending -> task-prep -> todo -> orchestrator -> done`. Drop free-text ideas in `backlog/`, run `task-prep`; if questions land in `pending/`, answer them and run `task-prep` again; then ask Claude to run the task once it is in `todo/`. The orchestrator moves the file to `done/` on success. See `orchestrator/tasks/README.md`.
-- **Figma**: disabled for this project (`figmaEnabled: false`) — there is no Figma library; the `orchestrator/figma/` sidecar stays dormant.
+- **Figma**: enabled for this project (`figmaEnabled: true`) — the `orchestrator/figma/` sidecar is live. `figmaLibraryUrl` is still the `<figma-library-url>` placeholder: bind the library via the site's Figma tab (OAuth MCP, the only data path) and press Sync before any pull/derive. Until it is bound, Figma-sourced UI work has no oracle. Account limit: the bound Figma account is a **View seat on a Starter plan** — 20 MCP tool calls per month, so spend reads deliberately.
+
+### Figma implementation rules
+
+Figma provides design context; production Kotlin components + `AppTokens.*` are the source of truth. Never copy React/Tailwind/HTML/CSS output literally. Always consult the component mapping registry (`orchestrator/figma/component-mappings.json` + the Design → Components panel) and the `implement-figma` skill before building from a Figma node. Never recreate a registered component with `Box`/`Row`/`Column`/`Surface`/`Canvas`. Never hardcode a design value when an `AppTokens.*` equivalent exists. Report missing mappings instead of silently approximating. Use localization resources for user-facing text.
 
 ### Backend contract rules
 

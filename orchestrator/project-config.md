@@ -19,7 +19,7 @@ featuresWithRootComponentSuffix:
   - home
   - trainings
 diHandWrittenModules: []
-figmaEnabled: false
+figmaEnabled: true
 figmaLibraryUrl: <figma-library-url>
 screenshotPixelGate: strict
 androidAssembleTask: :androidApp:assembleDebug
