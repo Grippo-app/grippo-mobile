@@ -63,3 +63,31 @@ Dark follow-up screenshots:
 - Final staged/unstaged diff whitespace checks passed; both simulators restored to dark appearance.
 - [ios-dark-login](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/dark-refinement/ios-dark-login.png)
 - [ios-light-login](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/dark-refinement/ios-light-login.png)
+
+## Button + shared shimmer
+
+Keep the current pill shape, warm primary gradient, medium 50 dp height and 14 sp bold label. Match small buttons to the compact type scale (12 sp semibold, 18 dp icon). Use minimum rather than fixed text-button height for larger system fonts; reserve trailing icons while long labels ellipsize.
+
+Add a shared `Modifier.shimmer(enabled, highlightColor)` with cached drawing resources, draw-phase animation, RTL traversal and no animation when disabled. Keep loading button contents/layout stable, prevent repeated clicks and expose indeterminate progress semantics. Keep the public Button call sites and state contract; migrate only Button in this task.
+
+Verification: compile common components for Android/iOS, temporary button gallery in both themes (all styles/states, long labels, font scaling, click prevention), remove gallery, final Android build and iOS component compile. No account/workout changes.
+
+### Button verification
+
+- `:androidApp:assembleDebug :design-system:components:compileKotlinIosArm64 :design-system:components:compileKotlinIosSimulatorArm64` — exit 0, BUILD SUCCESSFUL in 57s; `/tmp/grippo-button-final-build.log`.
+- Android gallery: all five styles, all states, text/icon buttons, preserved multicolor image icons in Loading, long label with trailing icon, both themes. Normal-scale small button sizes were identical across states: 232×96 px (transparent 160×49 px).
+- Toggling the main button to Loading preserved layout. Enabled click incremented the counter from 0 to 1; subsequent Loading click kept it at 1. Android accessibility tree exposed a disabled indeterminate progress node.
+- Font scale 2.5: small buttons grew from 32 dp to 49 dp to fit the label; full-width medium labels were not vertically clipped. Last buttons in a narrow three-button gallery row ellipsized as expected.
+- Temporary gallery/source and MainActivity hook removed, including the staged gallery addition. Final app installed/launched and Dashboard inspected. Original emulator light appearance and font scale 1.0 restored. No account/workout data changed.
+- Final iOS verification was compilation of components for device/simulator; no new iOS runtime shimmer capture.
+- Five-axis code review and staged/unstaged `git diff --check` passed. Existing unrelated compiler warnings remain.
+- [Light gallery](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/button-shimmer/light.png)
+- [Dark gallery](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/button-shimmer/dark.png)
+- [Shimmer animation](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/button-shimmer/dark-animation.mp4)
+- [Font scale 2.5](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/button-shimmer/large-font.png)
+- [Loading click prevention](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/button-shimmer/loading-click.png)
+- [Final app Dashboard](/Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/button-shimmer/final-dashboard.png)
+
+### Dedicated shimmer colors
+
+Added AppColor.ShimmerColors with a default highlight and five button style highlights in both palettes. Button and Modifier.shimmer consume tokens directly; palette values preserve the previously reviewed appearance. Verified Android assembleDebug and components compileKotlinIosArm64/compileKotlinIosSimulatorArm64: BUILD SUCCESSFUL (log /tmp/grippo-shimmer-tokens-build.log).

@@ -125,6 +125,17 @@ BottomOverlayContainer(
 The overlay color fades from transparent (top) to `overlay` (bottom) behind the CTA, so the
 last list item bleeds smoothly under it.
 
+## Shared shimmer modifier
+
+`Modifier.shimmer(enabled = loading)` adds an animated highlight behind existing content.
+Its default color is `AppTokens.colors.shimmer.highlight`; button styles use the dedicated
+`shimmer.buttonPrimary/Secondary/Tertiary/Transparent/Error` tokens. Both palettes own opacity.
+Apply it after a shape clip and background: `Modifier.clip(shape).background(color).shimmer()`.
+It does not supply a skeleton shape, hide content or add loading semantics; the owning
+component supplies those. Use `highlightColor` for a deliberate surface/content pairing.
+Disabled instances have no animation; direction follows RTL and animation uses Compose's
+system duration scaling. Do not migrate unrelated loaders as part of a button change.
+
 ## `Button`
 
 ```kotlin
@@ -136,7 +147,10 @@ public fun Button(
     state: ButtonState = ButtonState.Enabled,
     size: ButtonSize = ButtonSize.Medium,
     onClick: () -> Unit,
-    textStyle: TextStyle = AppTokens.typography.b14Bold(),
+    textStyle: TextStyle = when (size) {
+        ButtonSize.Small -> AppTokens.typography.b12Semi()
+        ButtonSize.Medium -> AppTokens.typography.b14Bold()
+    },
 )
 
 @Immutable
@@ -165,8 +179,9 @@ public sealed interface ButtonContent {
 @Immutable public enum class ButtonState { Enabled, Loading, Disabled }
 ```
 
-`state = ButtonState.Loading` shows a spinner inside the button and blocks interaction;
-`state = ButtonState.Disabled` greys it out without a spinner. Derive the state from active
+`state = ButtonState.Loading` keeps label/icons and width stable, shows a surface shimmer,
+blocks interaction and exposes indeterminate progress semantics.
+`state = ButtonState.Disabled` greys it out without an animation. Derive the state from active
 loaders + form validity:
 
 ```kotlin

@@ -11,6 +11,7 @@ public interface AppColor {
     public val divider: DividerColors
     public val semantic: SemanticColors
     public val overlay: OverlayColors
+    public val shimmer: ShimmerColors
     public val border: BorderColors
     public val brand: BrandColors
     public val icon: IconColors
@@ -118,6 +119,15 @@ public interface AppColor {
     public interface OverlayColors {
         public val shadow: Color
         public val overlay: Color
+    }
+
+    public interface ShimmerColors {
+        public val highlight: Color
+        public val buttonPrimary: Color
+        public val buttonSecondary: Color
+        public val buttonTertiary: Color
+        public val buttonTransparent: Color
+        public val buttonError: Color
     }
 
     public interface BorderColors {

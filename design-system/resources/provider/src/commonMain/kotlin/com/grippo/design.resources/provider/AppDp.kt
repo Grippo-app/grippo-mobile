@@ -340,6 +340,8 @@ public data object AppDp {
     }
 
     public data object Button {
+        val border: Dp = 2.dp
+        val verticalPadding: Dp = padding.extraSmall
         public val small: Small = Small
         public val medium: Medium = Medium
 
@@ -354,7 +356,7 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
-            val icon: Dp = AppDp.icon.medium
+            val icon: Dp = AppDp.icon.small
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.extraSmall
         }

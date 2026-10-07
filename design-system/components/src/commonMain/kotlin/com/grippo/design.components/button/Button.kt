@@ -1,20 +1,5 @@
 package com.grippo.design.components.button
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,8 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,26 +16,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.internal.resolveButtonColors
 import com.grippo.design.components.button.internal.resolveButtonSize
 import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Google
-import com.grippo.design.resources.provider.icons.Spinner
 
 @Immutable
 public sealed interface ButtonContent {
@@ -111,11 +98,7 @@ public enum class ButtonState {
     Disabled
 }
 
-/**
- * Canonical button with two layouts:
- * - ButtonContent.Text: standard (text with optional start/end icons)
- * - ButtonContent.Icon: square icon-only button
- */
+/** Loading preserves the label, icons and measured width while a shimmer crosses the surface. */
 @Composable
 public fun Button(
     modifier: Modifier = Modifier,
@@ -124,225 +107,78 @@ public fun Button(
     state: ButtonState = ButtonState.Enabled,
     size: ButtonSize = ButtonSize.Medium,
     onClick: () -> Unit,
-    textStyle: TextStyle = AppTokens.typography.b14Bold(),
+    textStyle: TextStyle = when (size) {
+        ButtonSize.Small -> AppTokens.typography.b12Semi()
+        ButtonSize.Medium -> AppTokens.typography.b14Bold()
+    },
 ) {
-    val colorTokens = resolveButtonColors(
-        style = style,
-        state = state
-    )
-
-    val metrics = resolveButtonSize(
-        size = size
-    )
-
-    val shape = CircleShape
-
-    val iconSize = metrics.icon
-    val isLoading = state == ButtonState.Loading
-    val tintImageIcons = state != ButtonState.Enabled
-
-    // Text layout metrics (Transparent keeps flexible height/paddings)
-    val textHeight = if (style == ButtonStyle.Transparent) null else metrics.height
-    val horizontalPadding =
-        if (style == ButtonStyle.Transparent) null else metrics.horizontalPadding
-    val iconPadding =
-        if (style == ButtonStyle.Transparent) metrics.spaceTransparent else metrics.space
-
-    // Minimum side for square icon-only layout
-    val minSide = metrics.height
-
-    val haptic = when (style) {
-        ButtonStyle.Primary -> true
-        ButtonStyle.Secondary -> true
-        ButtonStyle.Tertiary -> false
-        ButtonStyle.Transparent -> false
-        ButtonStyle.Error -> true
+    val colors = resolveButtonColors(style, state)
+    val metrics = resolveButtonSize(size)
+    val transparent = style == ButtonStyle.Transparent
+    val loading = state == ButtonState.Loading
+    val enabled = state == ButtonState.Enabled
+    val tintImages = state == ButtonState.Disabled
+    val highlight = when (style) {
+        ButtonStyle.Primary -> AppTokens.colors.shimmer.buttonPrimary
+        ButtonStyle.Secondary -> AppTokens.colors.shimmer.buttonSecondary
+        ButtonStyle.Tertiary -> AppTokens.colors.shimmer.buttonTertiary
+        ButtonStyle.Transparent -> AppTokens.colors.shimmer.buttonTransparent
+        ButtonStyle.Error -> AppTokens.colors.shimmer.buttonError
     }
-
+    val gap = if (transparent) metrics.spaceTransparent else metrics.space
     val baseModifier = modifier
+        .semantics(mergeDescendants = true) {
+            role = Role.Button
+            if (!enabled) disabled()
+            if (loading) progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+        }
         .scalableClick(
-            enabled = state == ButtonState.Enabled,
+            enabled = enabled,
             onClick = onClick,
-            haptic = haptic
-        ).background(
-            Brush.horizontalGradient(
-                0f to colorTokens.background1,
-                1f to colorTokens.background2,
-            ), shape
-        ).border(
-            2.dp,
-            colorTokens.border,
-            shape
+            haptic = style == ButtonStyle.Primary || style == ButtonStyle.Secondary ||
+                style == ButtonStyle.Error,
         )
-
-    val loadingTransition = rememberInfiniteTransition(label = "button_loading")
+        .clip(CircleShape)
+        .background(Brush.horizontalGradient(listOf(colors.background1, colors.background2)))
+        .border(AppTokens.dp.button.border, colors.border, CircleShape)
+        .shimmer(enabled = loading, highlightColor = highlight)
 
     when (content) {
-        is ButtonContent.Text -> {
-            val finalModifier = baseModifier
-                .then(horizontalPadding?.let { Modifier.padding(horizontal = it) } ?: Modifier)
-                .then(textHeight?.let { Modifier.height(it) } ?: Modifier)
-
-            Row(
-                modifier = finalModifier,
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Start slot
-                if (content.startIcon != null) {
-                    // Crossfade loader <-> start icon (width preserved)
-                    StartIconOrLoader(
-                        isLoading = isLoading,
-                        icon = content.startIcon,
-                        size = iconSize,
-                        tint = colorTokens.icon,
-                        label = "btn_text_start_crossfade",
-                        tintImageIcons = tintImageIcons
+        is ButtonContent.Text -> Row(
+            modifier = baseModifier.then(
+                if (transparent) Modifier else Modifier
+                    .heightIn(min = metrics.height)
+                    .padding(
+                        horizontal = metrics.horizontalPadding,
+                        vertical = AppTokens.dp.button.verticalPadding,
                     )
-                    Spacer(modifier = Modifier.width(iconPadding))
-                } else {
-                    // Two-phase removal: fade out first, then collapse width to 0
-                    CollapsingLoaderSlot(
-                        visible = isLoading,
-                        size = iconSize,
-                        spaceAfter = iconPadding,
-                        tint = colorTokens.icon,
-                        label = "btn_text_loader_collapsing"
-                    )
-                }
-
-                Text(
-                    text = content.text,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = colorTokens.content,
-                    style = textStyle
-                )
-
-                if (content.endIcon != null) {
-                    Spacer(modifier = Modifier.width(iconPadding))
-
-                    ButtonIconContent(
-                        modifier = Modifier.height(iconSize),
-                        icon = content.endIcon,
-                        tint = colorTokens.icon,
-                        tintImageIcons = tintImageIcons
-                    )
-                }
+            ),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            content.startIcon?.let { icon ->
+                ButtonIconContent(Modifier.size(metrics.icon), icon, colors.icon, tintImages)
+                Spacer(Modifier.width(gap))
+            }
+            Text(
+                modifier = Modifier.weight(1f, fill = false),
+                text = content.text,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = colors.content,
+                style = textStyle,
+            )
+            content.endIcon?.let { icon ->
+                Spacer(Modifier.width(gap))
+                ButtonIconContent(Modifier.size(metrics.icon), icon, colors.icon, tintImages)
             }
         }
-
-        is ButtonContent.Icon -> {
-            // Strict square icon-only button
-            Box(
-                modifier = baseModifier.size(minSide),
-                contentAlignment = Alignment.Center
-            ) {
-                AnimatedContent(
-                    targetState = isLoading,
-                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-                    label = "btn_icon_anim"
-                ) { loading ->
-                    if (loading) {
-                        val angle by loadingTransition.animateFloat(
-                            initialValue = 0f,
-                            targetValue = 360f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(durationMillis = 1000, easing = LinearEasing),
-                                repeatMode = RepeatMode.Restart
-                            ),
-                            label = "btn_icon_loader_rotation"
-                        )
-                        Icon(
-                            modifier = Modifier
-                                .size(iconSize)
-                                .graphicsLayer { rotationZ = angle },
-                            imageVector = AppTokens.icons.Spinner,
-                            tint = colorTokens.icon,
-                            contentDescription = null
-                        )
-                    } else {
-                        ButtonIconContent(
-                            modifier = Modifier.height(iconSize),
-                            icon = content.icon,
-                            tint = colorTokens.icon,
-                            tintImageIcons = tintImageIcons
-                        )
-                    }
-                }
-            }
+        is ButtonContent.Icon -> Box(
+            modifier = baseModifier.size(metrics.height),
+            contentAlignment = Alignment.Center,
+        ) {
+            ButtonIconContent(Modifier.size(metrics.icon), content.icon, colors.icon, tintImages)
         }
-    }
-}
-
-@Composable
-private fun StartIconOrLoader(
-    isLoading: Boolean,
-    icon: ButtonIcon,
-    size: Dp,
-    tint: Color,
-    label: String,
-    tintImageIcons: Boolean,
-) {
-    // Separate transition tracks so loader fades out before/after as needed
-    val transition = updateTransition(targetState = isLoading, label = label)
-
-    val loaderAlpha by transition.animateFloat(
-        transitionSpec = {
-            if (false isTransitioningTo true) { // appear
-                tween(durationMillis = 160, delayMillis = 120, easing = LinearEasing)
-            } else { // disappear
-                tween(durationMillis = 160, easing = LinearEasing)
-            }
-        },
-        label = "$label-loaderAlpha"
-    ) { if (it) 1f else 0f }
-
-    val iconAlpha by transition.animateFloat(
-        transitionSpec = {
-            if (true isTransitioningTo false) { // appear
-                tween(durationMillis = 160, delayMillis = 120, easing = LinearEasing)
-            } else { // disappear
-                tween(durationMillis = 160, easing = LinearEasing)
-            }
-        },
-        label = "$label-iconAlpha"
-    ) { if (it) 0f else 1f }
-
-    val rot = rememberInfiniteTransition(label = "$label-rot")
-    val angle by rot.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "$label-rotation"
-    )
-
-    // Stack loader and icon; width is constant (the Row's spacer handles gap)
-    Box(modifier = Modifier.size(size), contentAlignment = Alignment.Center) {
-        // Icon layer
-        ButtonIconContent(
-            modifier = Modifier
-                .fillMaxHeight()
-                .graphicsLayer { alpha = iconAlpha },
-            icon = icon,
-            tint = tint,
-            tintImageIcons = tintImageIcons
-        )
-        // Loader layer
-        Icon(
-            modifier = Modifier
-                .matchParentSize()
-                .graphicsLayer {
-                    alpha = loaderAlpha
-                    rotationZ = angle
-                },
-            imageVector = AppTokens.icons.Spinner,
-            tint = tint,
-            contentDescription = null
-        )
     }
 }
 
@@ -370,77 +206,6 @@ private fun ButtonIconContent(
                 colorFilter = if (tintImageIcons) ColorFilter.tint(tint) else null,
                 contentDescription = null
             )
-        }
-    }
-}
-
-@Composable
-private fun CollapsingLoaderSlot(
-    visible: Boolean,
-    size: Dp,
-    spaceAfter: Dp,
-    tint: Color,
-    label: String
-) {
-    // Two tracks: alpha fades immediately; width collapses after alpha completes
-    val transition = updateTransition(targetState = visible, label = label)
-
-    val alpha by transition.animateFloat(
-        transitionSpec = {
-            if (false isTransitioningTo true) {
-                tween(durationMillis = 160, delayMillis = 80, easing = LinearEasing)
-            } else {
-                tween(durationMillis = 160, easing = LinearEasing)
-            }
-        },
-        label = "$label-alpha"
-    ) { if (it) 1f else 0f }
-
-    val width by transition.animateDp(
-        transitionSpec = {
-            if (false isTransitioningTo true) {
-                // Expanding: width first, then fade-in starts (handled by alpha delay above)
-                tween(durationMillis = 180, easing = LinearOutSlowInEasing)
-            } else {
-                // Collapsing: start after fade-out finished
-                tween(durationMillis = 220, delayMillis = 160, easing = LinearOutSlowInEasing)
-            }
-        },
-        label = "$label-width"
-    ) { if (it) size + spaceAfter else 0.dp }
-
-    if (width > 0.dp) {
-        val rot = rememberInfiniteTransition(label = "$label-rot")
-        val angle by rot.animateFloat(
-            initialValue = 0f,
-            targetValue = 360f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 1000, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "$label-rotation"
-        )
-
-        Row(
-            modifier = Modifier.width(width),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(size)
-                    .graphicsLayer {
-                        this.alpha = alpha
-                        rotationZ = angle
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = AppTokens.icons.Spinner,
-                    tint = tint,
-                    contentDescription = null
-                )
-            }
-            // Trailing space is baked into `width` via `size + spaceAfter`
         }
     }
 }

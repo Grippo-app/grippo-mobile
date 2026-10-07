@@ -105,6 +105,15 @@ public object LightColor : AppColor {
         override val notice = AppPalette.LightAccent.Yellow
     }
 
+    override val shimmer: AppColor.ShimmerColors = object : AppColor.ShimmerColors {
+        override val highlight = AppPalette.NeutralLight.N800.copy(alpha = 0.16f)
+        override val buttonPrimary = AppPalette.Common.Black.copy(alpha = 0.14f)
+        override val buttonSecondary = AppPalette.Common.White.copy(alpha = 0.16f)
+        override val buttonTertiary = AppPalette.Common.Black.copy(alpha = 0.14f)
+        override val buttonTransparent = AppPalette.NeutralLight.N800.copy(alpha = 0.12f)
+        override val buttonError = AppPalette.Common.Black.copy(alpha = 0.14f)
+    }
+
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
         override val shadow = AppPalette.Common.Black.copy(alpha = 0.12f)
         override val overlay = AppPalette.NeutralLight.N100.copy(alpha = 0.90f)
