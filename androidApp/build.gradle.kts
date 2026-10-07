@@ -14,7 +14,7 @@ android {
         versionCode = 19
         versionName = "2.0"
         multiDexEnabled = true
-        manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] = "YOUR_GOOGLE_SERVER_CLIENT_ID"
+        manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] = "219092892396-amtjf3mh2t72sfv2dblffvgss7443i6i.apps.googleusercontent.com"
     }
 
     buildTypes {

@@ -57,11 +57,11 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>GIDClientID</key>
-	<string>YOUR_GID_CLIENT_ID</string>
+	<string>219092892396-mpf1aus9irglcq1i89ec4vq2332qhoov.apps.googleusercontent.com</string>
 	<key>GIDServerClientID</key>
-	<string>YOUR_GID_SERVER_CLIENT_ID</string>
+	<string>219092892396-amtjf3mh2t72sfv2dblffvgss7443i6i.apps.googleusercontent.com</string>
 	<key>GIDRedirectURI</key>
-	<string>YOUR_GID_REDIRECT_URI</string>
+	<string>com.googleusercontent.apps.219092892396-mpf1aus9irglcq1i89ec4vq2332qhoov:/oauthredirect</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -73,7 +73,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>YOUR_GID_REVERSED_CLIENT_ID</string>
+				<string>com.googleusercontent.apps.219092892396-mpf1aus9irglcq1i89ec4vq2332qhoov</string>
 			</array>
 		</dict>
 	</array>
