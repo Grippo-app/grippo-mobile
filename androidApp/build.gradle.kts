@@ -35,8 +35,8 @@ dependencies {
     implementation(projects.toolkit.notificationManager)
     implementation(projects.designSystem.core)
 
-    implementation(compose.foundation)
-    implementation(compose.material3)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)

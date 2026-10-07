@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "agent": "screen-builder",
+  "status": "finished",
+  "files_touched": [],
+  "produced_signatures": [],
+  "blockers": [],
+  "scope_deviations": [],
+  "test_not_applicable": "builder-decided"
+}

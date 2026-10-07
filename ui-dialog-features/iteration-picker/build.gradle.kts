@@ -20,8 +20,8 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.uiDialogFeatures.dialogApi)
 
-        implementation(compose.foundation)
-        implementation(compose.material3)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.material3)
 
         implementation(libs.immutable.collections)
     }

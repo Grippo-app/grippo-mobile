@@ -16,6 +16,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+}
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 @Suppress("UnstableApiUsage")
@@ -130,5 +134,3 @@ include(":data-mappers:domain-to-state")
 include(":data-mappers:domain-to-entity")
 include(":data-mappers:domain-to-dto")
 include(":data-mappers:state-to-domain")
-
-include(":tooling:detekt-rules")

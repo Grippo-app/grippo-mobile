@@ -22,7 +22,7 @@ kotlin {
         implementation(projects.toolkit.httpClient)
         implementation(projects.toolkit.serialization)
 
-        implementation(compose.runtime)
+        implementation(libs.compose.runtime)
     }
 
     targets.withType<KotlinNativeTarget>().configureEach {

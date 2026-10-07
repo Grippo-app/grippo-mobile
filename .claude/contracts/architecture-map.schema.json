@@ -1,0 +1,466 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openai.local/orchestrator/architecture-map.schema.json",
+  "title": "Orchestrator architecture map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "generatedAtRevision",
+    "structuralHash",
+    "generatorVersion",
+    "analysis",
+    "summary",
+    "nodes",
+    "edges",
+    "findings"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "generatedAt": {
+      "type": "string",
+      "pattern": "^(?!0000-)\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "generatedAtRevision": { "$ref": "#/$defs/hash" },
+    "structuralHash": { "$ref": "#/$defs/hash" },
+    "generatorVersion": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9.-]{0,63}$"
+    },
+    "analysis": { "$ref": "#/$defs/analysis" },
+    "summary": { "$ref": "#/$defs/summary" },
+    "nodes": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "maxItems": 50000,
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": { "$ref": "#/$defs/finding" }
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 180,
+      "pattern": "^[a-z][a-z0-9-]{0,31}:[A-Za-z0-9._~/-]{1,147}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?![A-Za-z]:[\\\\/])(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*\\\\)(?!.*\\/$)[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "capabilities", "limitations", "coverage"],
+      "properties": {
+        "status": { "enum": ["complete", "partial"] },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9.-]{0,63}$"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "analysis-coverage-partial",
+              "api-class-not-resolved",
+              "database-schema-not-resolved",
+              "dependency-target-not-in-settings",
+              "unsupported-gradle-dependency-expression"
+            ]
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "gradleFiles",
+            "dependencyExpressions",
+            "unsupportedDependencyExpressions",
+            "kotlinFiles",
+            "parserErrors",
+            "excludedModules",
+            "supportedPersistencePatterns",
+            "supportedApiPatterns"
+          ],
+          "properties": {
+            "schemaVersion": { "const": 1 },
+            "gradleFiles": { "type": "integer", "minimum": 0, "maximum": 20000 },
+            "dependencyExpressions": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+            "unsupportedDependencyExpressions": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+            "kotlinFiles": { "type": "integer", "minimum": 0, "maximum": 20000 },
+            "parserErrors": { "type": "integer", "minimum": 0, "maximum": 10000 },
+            "excludedModules": { "type": "integer", "minimum": 0, "maximum": 10000 },
+            "supportedPersistencePatterns": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^[a-z][a-z0-9.-]{0,63}$" }
+            },
+            "supportedApiPatterns": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^[a-z][a-z0-9.-]{0,63}$" }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modules",
+        "features",
+        "screens",
+        "dataSources",
+        "databaseEntities",
+        "findingsBySeverity"
+      ],
+      "properties": {
+        "modules": { "$ref": "#/$defs/nullableCount" },
+        "features": { "$ref": "#/$defs/nullableCount" },
+        "screens": { "$ref": "#/$defs/nullableCount" },
+        "dataSources": { "$ref": "#/$defs/nullableCount" },
+        "databaseEntities": { "$ref": "#/$defs/nullableCount" },
+        "findingsBySeverity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["error", "warning", "info"],
+          "properties": {
+            "error": { "type": "integer", "minimum": 0, "maximum": 5000 },
+            "warning": { "type": "integer", "minimum": 0, "maximum": 5000 },
+            "info": { "type": "integer", "minimum": 0, "maximum": 5000 }
+          }
+        }
+      }
+    },
+    "nullableCount": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "path", "platform", "layer", "metadata"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": [
+            "module",
+            "feature",
+            "screen",
+            "component",
+            "repository",
+            "data-source",
+            "api",
+            "database-entity"
+          ]
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "path": {
+          "anyOf": [
+            { "$ref": "#/$defs/relativePath" },
+            { "type": "null" }
+          ]
+        },
+        "platform": { "enum": ["shared", "android", "ios", "tooling", "unknown"] },
+        "layer": { "enum": ["ui", "domain", "data", "infrastructure", "build", "unknown"] },
+        "metadata": { "type": "object" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "module" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/moduleMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "feature" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/featureMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "screen" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/screenMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "component" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/componentMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "repository" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/repositoryMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "data-source" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/dataSourceMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "api" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/apiMetadata" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "database-entity" } } },
+          "then": { "properties": { "metadata": { "$ref": "#/$defs/databaseEntityMetadata" } } }
+        }
+      ]
+    },
+    "className": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9_]{0,199}$"
+    },
+    "moduleMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gradlePath", "sourceSets"],
+      "properties": {
+        "gradlePath": {
+          "type": "string",
+          "maxLength": 180,
+          "pattern": "^:[A-Za-z0-9_.:-]+$"
+        },
+        "sourceSets": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]{0,79}$" }
+        }
+      }
+    },
+    "featureMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ownershipId", "interfaceClass"],
+      "properties": {
+        "ownershipId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9._~-]+$"
+        },
+        "interfaceClass": {
+          "anyOf": [
+            { "$ref": "#/$defs/className" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "screenMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routes", "rootSuffix"],
+      "properties": {
+        "routes": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/className" }
+        },
+        "rootSuffix": { "type": "boolean" }
+      }
+    },
+    "componentMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["className"],
+      "properties": { "className": { "$ref": "#/$defs/className" } }
+    },
+    "repositoryMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["className", "role"],
+      "properties": {
+        "className": { "$ref": "#/$defs/className" },
+        "role": { "enum": ["interface", "implementation"] }
+      }
+    },
+    "dataSourceMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["className", "sourceType"],
+      "properties": {
+        "className": { "$ref": "#/$defs/className" },
+        "sourceType": {
+          "enum": ["RemoteDataSource", "LocalDataSource", "DataSource", "Store", "Dao"]
+        }
+      }
+    },
+    "apiMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["className", "methods"],
+      "properties": {
+        "className": { "$ref": "#/$defs/className" },
+        "methods": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][A-Za-z0-9_]{0,199}$"
+          }
+        }
+      }
+    },
+    "databaseEntityMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entityClass", "database", "version"],
+      "properties": {
+        "entityClass": { "$ref": "#/$defs/className" },
+        "database": { "$ref": "#/$defs/className" },
+        "version": { "type": "integer", "minimum": 0, "maximum": 2147483647 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourcePath", "line", "analyzer", "confidence"],
+      "properties": {
+        "sourcePath": { "$ref": "#/$defs/relativePath" },
+        "line": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 10000000
+        },
+        "analyzer": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9.-]{0,63}$"
+        },
+        "confidence": { "enum": ["exact", "derived", "heuristic"] }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "from", "to", "kind", "evidence"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "from": { "$ref": "#/$defs/id" },
+        "to": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": [
+            "depends-on",
+            "owns",
+            "implements",
+            "consumes",
+            "renders",
+            "persists",
+            "navigates-to"
+          ]
+        },
+        "evidence": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "findingEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourcePath", "line", "edgeId", "nodeId", "reasonCode"],
+      "properties": {
+        "sourcePath": { "$ref": "#/$defs/relativePath" },
+        "line": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 10000000
+        },
+        "edgeId": {
+          "anyOf": [
+            { "$ref": "#/$defs/id" },
+            { "type": "null" }
+          ]
+        },
+        "nodeId": {
+          "anyOf": [
+            { "$ref": "#/$defs/id" },
+            { "type": "null" }
+          ]
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "forbidden-dependency",
+            "module-dependency-cycle",
+            "module-has-no-incoming-relation",
+            "repository-has-no-proven-consumer",
+            "screen-has-no-owner"
+          ]
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "severity",
+        "title",
+        "summary",
+        "affectedNodeIds",
+        "evidence",
+        "ruleId",
+        "firstSeenRevision",
+        "fingerprint"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": {
+          "enum": [
+            "dependency-cycle",
+            "forbidden-dependency",
+            "orphan-module",
+            "unused-repository",
+            "screen-without-owner"
+          ]
+        },
+        "severity": { "enum": ["error", "warning", "info"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "affectedNodeIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": { "$ref": "#/$defs/findingEvidence" }
+        },
+        "ruleId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9.-]{0,95}$"
+        },
+        "firstSeenRevision": { "$ref": "#/$defs/hash" },
+        "fingerprint": { "$ref": "#/$defs/hash" }
+      }
+    }
+  }
+}

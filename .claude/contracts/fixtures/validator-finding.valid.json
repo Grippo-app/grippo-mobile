@@ -1,0 +1,19 @@
+{
+  "validator": "mvi-contract-validator",
+  "version": 1,
+  "status": "fail",
+  "required": true,
+  "condition": "task touches UI state",
+  "skip_reason": null,
+  "disabled_by": null,
+  "file": "ui-screen-features/profile/src/commonMain/kotlin/profile/notearchive/ProfileNoteArchiveContract.kt",
+  "line": 42,
+  "rule_id": "mvi.contract.empty-completeness",
+  "severity": "Major",
+  "evidence": "Contract.Empty is missing the onReload() override",
+  "routed_to": "screen-builder",
+  "fix": "add `override fun onReload() = Unit` to companion object Empty",
+  "blocking": true,
+  "suggestion_only": false,
+  "dedup_key": "ui-screen-features/profile/src/commonMain/kotlin/profile/notearchive/ProfileNoteArchiveContract.kt::mvi.contract.empty-completeness"
+}

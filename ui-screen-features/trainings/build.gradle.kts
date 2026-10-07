@@ -23,8 +23,8 @@ kotlin {
         implementation(projects.designSystem.components)
         implementation(projects.designSystem.preview)
 
-        implementation(compose.foundation)
-        implementation(compose.material3)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.material3)
 
         implementation(libs.immutable.collections)
         implementation(libs.datetime)

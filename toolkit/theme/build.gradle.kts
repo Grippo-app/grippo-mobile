@@ -10,6 +10,6 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
-        implementation(compose.foundation)
+        implementation(libs.compose.foundation)
     }
 }

@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 private fun scaleStops(): List<Pair<Float, Color>> = listOf(
     0f to Color(0xFF3A86FF), 0.5f to Color(0xFFB049F8), 1f to Color(0xFFFF7A33)

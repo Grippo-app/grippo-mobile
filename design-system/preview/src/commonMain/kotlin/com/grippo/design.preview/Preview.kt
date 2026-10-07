@@ -1,6 +1,7 @@
 package com.grippo.design.preview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -10,25 +11,30 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.ColorImage
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import com.grippo.design.core.AppTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private const val UI_MODE_NIGHT_NO = 0x10
+private const val UI_MODE_NIGHT_YES = 0x20
 
 @Preview(
-    name = "Phone • UK • Small",
+    name = "Phone • UK • Small • Light",
     group = "📱 Phone",
     widthDp = 360, heightDp = 800,
-    locale = "uk"
+    locale = "uk",
+    uiMode = UI_MODE_NIGHT_NO,
 )
 @Preview(
-    name = "Phone • EN • Big",
+    name = "Phone • EN • Big • Dark",
     group = "📱 Phone",
     widthDp = 412, heightDp = 915,
-    locale = "en"
+    locale = "en",
+    uiMode = UI_MODE_NIGHT_YES,
 )
 public annotation class AppPreview
 
@@ -37,16 +43,18 @@ public annotation class AppPreview
 public fun PreviewContainer(
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val darkTheme = isSystemInDarkTheme()
+
     val previewHandler = AsyncImagePreviewHandler {
         ColorImage(Color.Black.copy(alpha = 0.2f).toArgb())
     }
 
     CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
         Column {
-            AppTheme(darkTheme = true, localeTag = "en") {
+            AppTheme(darkTheme = darkTheme, localeTag = "en") {
                 Column(
                     modifier = Modifier
-                        .background(Color.Black)
+                        .background(if (darkTheme) Color.Black else Color.White)
                         .padding(12.dp),
                     content = content,
                     verticalArrangement = Arrangement.spacedBy(12.dp)

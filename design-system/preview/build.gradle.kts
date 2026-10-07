@@ -12,11 +12,11 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.core)
 
-        implementation(compose.foundation)
-        implementation(compose.components.uiToolingPreview)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coil.compose)
     }
     sourceSets.androidMain.dependencies {
-        implementation(compose.uiTooling)
+        implementation(libs.compose.ui.tooling)
     }
 }

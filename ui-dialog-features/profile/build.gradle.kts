@@ -21,8 +21,8 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataMappers.domainToState)
 
-        implementation(compose.foundation)
-        implementation(compose.material3)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.material3)
 
         implementation(libs.immutable.collections)
     }

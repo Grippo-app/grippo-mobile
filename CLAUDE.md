@@ -994,3 +994,17 @@ There are no test source sets or `*.kt` tests in the repo. Don't add without an 
 - Calling `Composable` from `BaseViewModel` (e.g. `@Composable fun ...` directly). VM does not know Compose.
 - Threading Decompose `ChildSlot`/`ChildStack` into Screen functions instead of a `component.childStack` reference to the Component itself — Screen works only with state/loaders/contract, optionally with the component for rendering stack/slot.
 - Storing `LocalDateTime` without UTC normalization in DB. In DAO, always go through `DateTimeUtils.toUtcIso(...)`.
+
+---
+
+## Orchestrator workflow
+
+The `orchestrator/` tree is the agent workforce bound to this project (config: `orchestrator/project-config.md`; end-user entry: `orchestrator/README.md`). The detailed skills installed in `.claude/skills/` (11: `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, `launch-readiness`) are the source of truth for task execution; this file stays the high-level guide.
+
+- **Control surface**: `npm start` from the repo root → <http://localhost:8000/site/> (Node 22 workspace; `npm test` = fast verify suite).
+- **Task workflow**: tasks flow through the four-column kanban under `orchestrator/tasks/`: `backlog -> task-prep -> pending -> task-prep -> todo -> orchestrator -> done`. Drop free-text ideas in `backlog/`, run `task-prep`; if questions land in `pending/`, answer them and run `task-prep` again; then ask Claude to run the task once it is in `todo/`. The orchestrator moves the file to `done/` on success. See `orchestrator/tasks/README.md`.
+- **Figma**: disabled for this project (`figmaEnabled: false`) — there is no Figma library; the `orchestrator/figma/` sidecar stays dormant.
+
+### Backend contract rules
+
+The validated current generation (resolve exact inventory and area paths with `npm run --silent contract:paths` in `orchestrator/api-contract/`) is the contract of record for endpoint paths, methods, field names, types, nullability, and enums. Consult it before writing or changing any DTO / `GrippoApi` method / mapper; never invent endpoints or fields. The all-nullable defensive DTO discipline stays regardless of what the spec declares. When the backend changes, refresh the snapshot in the Backend tab or with typed `contract:probe` then the matching `contract:refresh-*`, and act on `backend-contract-drift` findings instead of patching blind. Until the first snapshot is published via Integrations → Backend (Test + Refresh), endpoint/DTO work is BLOCKED by the drift gate — the Swagger at `grippo-backend`'s `/docs` is the source it will bind.

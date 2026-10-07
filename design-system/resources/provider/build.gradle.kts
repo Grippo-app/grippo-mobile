@@ -20,8 +20,8 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
-        api(compose.components.resources)
-        implementation(compose.foundation)
-        implementation(compose.materialIconsExtended)
+        api(libs.compose.resources)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.material.icons.extended)
     }
 }

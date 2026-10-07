@@ -19,6 +19,6 @@ kotlin {
         implementation(libs.immutable.collections)
         implementation(libs.kotlinx.serialization.json)
 
-        implementation(compose.foundation)
+        implementation(libs.compose.foundation)
     }
 }

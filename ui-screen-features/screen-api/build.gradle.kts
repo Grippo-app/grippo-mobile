@@ -21,6 +21,6 @@ kotlin {
         implementation(libs.datetime)
         implementation(libs.immutable.collections)
 
-        implementation(compose.foundation)
+        implementation(libs.compose.foundation)
     }
 }

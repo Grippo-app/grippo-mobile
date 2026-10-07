@@ -4,6 +4,9 @@ kotlin = "2.3.21"
 coroutines = "1.11.0"
 serialization = "1.11.0"
 compose-plugin = "1.10.3"
+# Preserve the Material3 and icons versions selected by the existing Compose plugin.
+compose-material3 = "1.9.0-beta03"
+compose-material-icons = "1.7.3"
 activity-compose = "1.13.0"
 datetime = "0.8.0"
 koin = "4.2.1"
@@ -27,6 +30,16 @@ firebase-crashlytics-plugin = "3.0.7"
 detekt = "1.23.7"
 
 [libraries]
+# Compose Multiplatform
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-plugin" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-plugin" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-plugin" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons" }
+compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-plugin" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-plugin" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-plugin" }
+
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutable-collections" }
 

@@ -22,14 +22,14 @@ kotlin {
         implementation(projects.toolkit.httpClient)
         implementation(projects.toolkit.serialization)
 
-        implementation(compose.runtime)
+        implementation(libs.compose.runtime)
     }
 
     sourceSets.androidMain.dependencies {
         implementation(libs.androidx.credentials)
         implementation(libs.androidx.credentials.play.services.auth)
         implementation(libs.google.identity.googleid)
-        implementation(compose.ui)
+        implementation(libs.compose.ui)
     }
 
     targets.withType<KotlinNativeTarget>().configureEach {

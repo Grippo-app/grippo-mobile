@@ -16,7 +16,7 @@ kotlin {
             implementation(projects.designSystem.core)
             implementation(projects.toolkit.logger)
 
-            implementation(compose.foundation)
+            implementation(libs.compose.foundation)
 
             implementation(libs.datetime)
             implementation(libs.kotlinx.serialization.json)

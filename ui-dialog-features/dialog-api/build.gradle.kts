@@ -19,6 +19,6 @@ kotlin {
         implementation(libs.kotlinx.serialization.json)
         implementation(libs.datetime)
 
-        implementation(compose.foundation)
+        implementation(libs.compose.foundation)
     }
 }

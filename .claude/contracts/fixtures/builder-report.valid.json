@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "agent": "screen-builder",
+  "status": "done",
+  "files_touched": [
+    "ui-screen-features/profile/.../ProfileNoteArchiveScreen.kt",
+    "ui-screen-features/profile/src/commonTest/kotlin/.../ProfileNoteArchiveViewModelTest.kt"
+  ],
+  "produced_signatures": ["ProfileRouter.NoteArchive(initialRange: DateRange)"],
+  "blockers": [],
+  "assumptions": ["DateRange imported from shared datetime utils"],
+  "scope_deviations": [],
+  "handoff": {"route": "ProfileRouter.NoteArchive"},
+  "tests_created": [
+    "ui-screen-features/profile/src/commonTest/kotlin/.../ProfileNoteArchiveViewModelTest.kt"
+  ],
+  "tests_modified": [],
+  "behavior_anchors": ["test:archive-card-opens-note-archive"],
+  "test_cases": [
+    {
+      "anchor": "test:archive-card-opens-note-archive",
+      "file": "ui-screen-features/profile/src/commonTest/kotlin/.../ProfileNoteArchiveViewModelTest.kt",
+      "identity": "profile.notearchive.ProfileNoteArchiveViewModelTest.archiveCardPushesNoteArchive",
+      "lane": "common"
+    }
+  ],
+  "test_capabilities_added": [],
+  "developer_runs": [":ui-screen-features:profile:hostTests (local feedback only)"],
+  "fail_before_claim": null,
+  "additional_impact_found": [],
+  "test_not_applicable": null
+}

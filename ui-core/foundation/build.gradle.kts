@@ -21,6 +21,6 @@ kotlin {
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.immutable.collections)
 
-        implementation(compose.foundation)
+        implementation(libs.compose.foundation)
     }
 }

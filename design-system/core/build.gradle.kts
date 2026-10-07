@@ -12,7 +12,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.resources.provider)
 
-        implementation(compose.foundation)
-        implementation(compose.runtime)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.runtime)
     }
 }
