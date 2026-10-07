@@ -198,7 +198,7 @@ internal fun LoginScreen(
                     modifier = Modifier.weight(1f),
                     content = ButtonContent.Text(
                         text = AppTokens.strings.res(Res.string.continue_with_apple),
-                        startIcon = ButtonIcon.Image(AppTokens.icons.Apple)
+                        startIcon = ButtonIcon.Icon(AppTokens.icons.Apple)
                     ),
                     state = buttonLoginByAppleState,
                     style = ButtonStyle.Secondary,

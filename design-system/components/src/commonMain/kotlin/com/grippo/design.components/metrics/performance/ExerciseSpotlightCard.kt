@@ -99,7 +99,7 @@ private fun ExerciseSpotlightCard(
                     ),
                 text = value.chipLabel().text(),
                 style = AppTokens.typography.b11Semi(),
-                color = color,
+                color = AppTokens.colors.text.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

@@ -134,18 +134,19 @@ semantic slots. Each implementation exposes the **same** `AppColor` interface; o
 values differ. Composables don't know which theme is active — they just read
 `AppTokens.colors.text.primary` and get the right color.
 
-> This template currently ships only `DarkColor`. The `AppTheme(darkTheme = ...)`
-> parameter is reserved for adding a `LightColor` peer later; until then the `darkTheme`
-> flag is accepted but not yet consumed by `ProvideResources`.
+`DarkColor` and `LightColor` implement every slot. `ProvideResources` selects the
+palette from `AppTheme(darkTheme = ...)`. Light surfaces use `NeutralLight`; deeper
+`LightAccent` values preserve contrast for colored text and white button content.
+The muscle map has a separate light ramp. `profile.avatarShade` controls the
+avatar gradient endpoint without theme branches in the component.
 
 ## Adding a new color slot
 
 1. Decide the **semantic** name. `text.primary`, not `gray900`.
 2. Add the field to the relevant group interface in
    `:design-system:resources:provider/AppColor.kt`.
-3. Provide a value for `DarkColor` (the currently-active implementation). When a
-   `LightColor` peer is added to the project, extend it there as well — **every** new
-   `AppColor` slot gets a concrete value in **every** concrete `AppColor` implementation on disk.
+3. Provide concrete values in both `DarkColor` and `LightColor` — **every** new
+   `AppColor` slot must exist in **every** implementation.
 4. Use it via `AppTokens.colors.<group>.<slot>` in Composables.
 
 If a new slot doesn't fit any existing group, add a new group — but ask first whether it's

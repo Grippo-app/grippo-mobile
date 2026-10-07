@@ -11,16 +11,17 @@ import com.grippo.design.resources.provider.AppIcon
 import com.grippo.design.resources.provider.AppString
 import com.grippo.design.resources.provider.AppTypography
 import com.grippo.design.resources.provider.colors.DarkColor
+import com.grippo.design.resources.provider.colors.LightColor
 
 @Composable
 internal fun ProvideResources(
-    @Suppress("UNUSED_PARAMETER") darkTheme: Boolean,
+    darkTheme: Boolean,
     @Suppress("UNUSED_PARAMETER") localeTag: String,
     vararg values: ProvidedValue<*>,
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalAppColors provides DarkColor,
+        LocalAppColors provides if (darkTheme) DarkColor else LightColor,
         LocalAppIcons provides AppIcon,
         LocalAppTypography provides AppTypography,
         LocalAppStrings provides AppString,

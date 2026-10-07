@@ -11,6 +11,7 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.core)
+        implementation(projects.designSystem.resources.provider)
 
         implementation(libs.compose.foundation)
         implementation(libs.compose.ui.tooling.preview)

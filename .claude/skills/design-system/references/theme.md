@@ -41,7 +41,7 @@ internal fun ProvideResources(
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalAppColors provides DarkColor,
+        LocalAppColors provides if (darkTheme) DarkColor else LightColor,
         LocalAppIcons provides AppIcon,
         LocalAppTypography provides AppTypography,
         LocalAppStrings provides AppString,
@@ -58,11 +58,9 @@ inputs and don't see the `Local*` mechanics. The `vararg values: ProvidedValue<*
 a feature inject extra composition locals (e.g. a feature-local theme) without bypassing the
 design-system providers.
 
-In the current the template the `darkTheme` and `localeTag` parameters are accepted but
-**not yet read** — `ProvideResources` always wires `LocalAppColors` to the single `DarkColor`
-implementation, and Compose Resources handles locale resolution on its own based on the
-system locale. The parameters are reserved for the future light-theme / explicit-locale-override
-wiring.
+`ProvideResources` selects `DarkColor` or `LightColor` from `darkTheme`. The root reads
+the system appearance through `:toolkit:theme`. `localeTag` remains accepted but unused
+by this provider: Compose Resources resolves strings from the system locale.
 
 > **Two `AppTheme` symbols coexist by design.** The composable
 > `AppTheme(darkTheme, localeTag) { … }` documented here lives in `:design-system:core`; the
@@ -145,7 +143,7 @@ lever.
 
 ## Theme switching
 
-When `darkTheme` changes (target state — currently only `DarkColor` is wired; see above):
+When `darkTheme` changes:
 
 1. `AppTheme` switches `LocalAppColors` from `LightColor` to `DarkColor`.
 2. Recomposition propagates — Composables reading `AppTokens.colors.*` get new values.

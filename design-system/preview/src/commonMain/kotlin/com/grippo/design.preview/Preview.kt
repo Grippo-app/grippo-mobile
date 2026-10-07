@@ -18,6 +18,7 @@ import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import com.grippo.design.core.AppTheme
+import com.grippo.design.core.AppTokens
 
 private const val UI_MODE_NIGHT_NO = 0x10
 private const val UI_MODE_NIGHT_YES = 0x20
@@ -54,7 +55,7 @@ public fun PreviewContainer(
             AppTheme(darkTheme = darkTheme, localeTag = "en") {
                 Column(
                     modifier = Modifier
-                        .background(if (darkTheme) Color.Black else Color.White)
+                        .background(AppTokens.colors.background.screen)
                         .padding(12.dp),
                     content = content,
                     verticalArrangement = Arrangement.spacedBy(12.dp)

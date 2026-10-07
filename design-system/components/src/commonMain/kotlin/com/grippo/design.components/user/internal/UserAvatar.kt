@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,11 +33,12 @@ internal fun UserAvatar(
 ) {
     val initials = remember(name) { name.toInitials() }
 
-    val gradient = remember(color) {
+    val shade = AppTokens.colors.profile.avatarShade
+    val gradient = remember(color, shade) {
         Brush.linearGradient(
             colors = listOf(
                 color.copy(alpha = 0.95f),
-                color.copy(alpha = 0.55f),
+                shade.compositeOver(color),
             )
         )
     }

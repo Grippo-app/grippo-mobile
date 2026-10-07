@@ -22,8 +22,66 @@ internal object AppPalette {
         val N500 = Color(0xFF4A5566)
         val N550 = Color(0xFF5B667A)
         val N600 = Color(0xFF7D8898)
+        val N650 = Color(0xFF8F9BAB)
         val N700 = Color(0xFFA5B0BF)
         val N800 = Color(0xFFF4F7FA)
+    }
+
+    object NeutralLight {
+        val N050 = Color(0xFFFFFFFF)
+        val N100 = Color(0xFFF8FAFC)
+        val N150 = Color(0xFFEDF1F5)
+        val N200 = Color(0xFFE2E8F0)
+        val N250 = Color(0xFFD3DCE7)
+        val N300 = Color(0xFFB8C4D2)
+        val N400 = Color(0xFF94A3B5)
+        val N450 = Color(0xFF748398)
+        val N500 = Color(0xFF5C6B7D)
+        val N550 = Color(0xFF4A586A)
+        val N600 = Color(0xFF3A485B)
+        val N700 = Color(0xFF263447)
+        val N800 = Color(0xFF17212F)
+    }
+
+    // Brighter accents remain readable on dark elevated surfaces.
+    object DarkAccent {
+        val Orange = Color(0xFFFF9A5C)
+        val Red = Color(0xFFFF7B85)
+        val Coral = Color(0xFFFF9D80)
+        val Yellow = Color(0xFFFDD835)
+        val Green = Color(0xFF66BB6A)
+        val Emerald = Color(0xFF5DBB84)
+        val Teal = Color(0xFF4DB6AC)
+        val Olive = Color(0xFFAFBF60)
+        val Sky = Color(0xFF64B5F6)
+        val Blue = Color(0xFF7090FF)
+        val Indigo = Color(0xFF9FA8DA)
+        val Purple = Color(0xFFB39DDB)
+        val Violet = Color(0xFFCE93D8)
+        val Magenta = Color(0xFFF472A8)
+        val Burgundy = Color(0xFFF48FB1)
+        val Copper = Color(0xFFD4A373)
+    }
+
+    // Deeper accents stay legible as text and behind white chip/button content.
+    object LightAccent {
+        val Orange = Color(0xFFB84208)
+        val Red = Color(0xFFC73541)
+        val Coral = Color(0xFFBA492A)
+        val Yellow = Color(0xFF806000)
+        val Amber = Color(0xFFA64D00)
+        val Green = Color(0xFF26743B)
+        val Emerald = Color(0xFF1C6A37)
+        val Teal = Color(0xFF006F70)
+        val Olive = Color(0xFF55721C)
+        val Sky = Color(0xFF0969B5)
+        val Blue = Color(0xFF1F5CC1)
+        val Indigo = Color(0xFF414AAF)
+        val Purple = Color(0xFF7047AF)
+        val Violet = Color(0xFF852698)
+        val Magenta = Color(0xFFB21755)
+        val Burgundy = Color(0xFF880E4F)
+        val Copper = Color(0xFF795844)
     }
 
     object Blue {
@@ -91,13 +149,22 @@ internal object AppPalette {
             Unique.Magenta
         )
 
-        val Palette6MuscleCalm: List<Color> = listOf(
-            lerp(Unique.Green, Common.White, 0.8f),
-            lerp(Unique.Green, Common.White, 0.6f),
-            lerp(Unique.Green, Common.White, 0.4f),
-            lerp(Unique.Green, Common.White, 0.2f),
+        val Palette6MuscleDark: List<Color> = listOf(
+            lerp(DarkAccent.Green, Common.White, 0.6f),
+            lerp(DarkAccent.Green, Common.White, 0.4f),
+            lerp(DarkAccent.Green, Common.White, 0.2f),
+            DarkAccent.Green,
+            DarkAccent.Emerald,
             Unique.Green,
-            Unique.Emerald,
+        )
+
+        val Palette6MuscleLight: List<Color> = listOf(
+            Color(0xFF478C5C),
+            Color(0xFF3A804D),
+            Color(0xFF26743B),
+            Color(0xFF1C622F),
+            Color(0xFF16572A),
+            Color(0xFF124D24),
         )
     }
 }

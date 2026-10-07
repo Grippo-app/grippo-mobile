@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalView
@@ -36,8 +37,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
         )
 
         setContent {
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun SystemBarsIcons() {
     val view = LocalView.current
+    val darkTheme = isSystemInDarkTheme()
 
     // Local helper inlined inside the composable (no top-level function)
     tailrec fun Context.findActivity(): Activity? = when (this) {
@@ -68,14 +70,13 @@ private fun SystemBarsIcons() {
     val activity = view.context.findActivity() ?: return
     val window = activity.window
     val controller = WindowCompat.getInsetsController(window, view)
-    DisposableEffect(Unit) {
+    DisposableEffect(view, darkTheme) {
         // Save previous icon modes
         val prevStatus = controller.isAppearanceLightStatusBars
         val prevNav = controller.isAppearanceLightNavigationBars
 
-        // Apply white icons for both bars
-        controller.isAppearanceLightStatusBars = false
-        controller.isAppearanceLightNavigationBars = false
+        controller.isAppearanceLightStatusBars = !darkTheme
+        controller.isAppearanceLightNavigationBars = !darkTheme
 
         onDispose {
             // Restore on exit

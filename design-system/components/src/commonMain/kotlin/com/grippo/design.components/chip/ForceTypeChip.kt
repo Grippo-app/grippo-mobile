@@ -43,7 +43,7 @@ public fun ForceTypeChip(
         ),
         size = size,
         stype = ChipStype.Default,
-        textColor = AppTokens.colors.static.white,
+        textColor = AppTokens.colors.text.primary,
         iconColor = value.color(),
         brush = SolidColor(AppTokens.colors.background.card)
     )

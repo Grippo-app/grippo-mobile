@@ -140,6 +140,7 @@ private fun BottomSheet(
             shouldDismissOnBackPress = isSwipeDismissEnabled, // recomposes with new flag
         ),
         containerColor = AppTokens.colors.background.dialog,
+        contentColor = AppTokens.colors.text.primary,
         dragHandle = null,
         shape = RoundedCornerShape(
             topStart = AppTokens.dp.bottomSheet.radius,
