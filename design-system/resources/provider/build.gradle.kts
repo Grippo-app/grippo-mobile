@@ -13,9 +13,6 @@ compose.resources {
 kotlin {
     android {
         namespace = "com.grippo.design.system.resources.provider"
-    }
-
-    androidLibrary {
         androidResources.enable = true
     }
 

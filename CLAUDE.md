@@ -10,12 +10,12 @@ API.
 
 ## Stack
 
-- Kotlin **2.3.21**, explicit API mode (enabled in `KotlinMultiplatformConventionPlugin`).
-- Compose Multiplatform **1.10.3** + Kotlin Compose plugin. Metrics and stability config enabled via convention plugin.
-- Targets: `commonMain`, `androidMain`, `iosMain` (`iosArm64`, `iosSimulatorArm64`, `iosX64`). Android `compileSdk = 36`, `minSdk = 26`. JVM toolchain 19.
+- Kotlin **2.4.20**, explicit API mode (enabled in `KotlinMultiplatformConventionPlugin`).
+- Compose Multiplatform **1.12.1** + Kotlin Compose plugin. Compiler metrics and reports enabled via convention plugin.
+- Targets: `commonMain`, `androidMain`, `iosMain` (`iosArm64`, `iosSimulatorArm64`). Android `compileSdk = 37`, `minSdk = 26`. JVM toolchain 19.
 - Decompose **3.5** + Essenty (`back-handler`, `state-keeper`, `lifecycle`).
 - Koin **4.2** + `koin-annotations` **2.3.1** + KSP. KOIN_CONFIG_CHECK is disabled (TODO until next Koin Annotations release).
-- Ktor **3.4** (Android engine + Darwin engine), `kotlinx-serialization-json` **1.11**.
+- Ktor **3.6** (Android engine + Darwin engine), `kotlinx-serialization-json` **1.11**.
 - Room **2.8** multiplatform, `androidx.sqlite-bundled`, `BundledSQLiteDriver` on iOS, migrations 2→3, 3→4, 4→5 in `:data-services:database`.
 - AndroidX DataStore **1.2** (preferences-core).
 - Coil **3** (`coil-compose`, `coil-network-ktor3`).
@@ -159,10 +159,10 @@ A module-level `build.gradle.kts` contains **only** `plugins { id("...convention
 
 What each does:
 
-- `kotlin.multiplatform.convention` — applies `kotlin("multiplatform")`, **`explicitApi()`**, registers iOS targets (`iosX64`, `iosArm64`, `iosSimulatorArm64`), `applyDefaultHierarchyTemplate`, **global `optIn(...)`** (Material3 ExperimentalApi, Foundation, Coroutines, ForeignApi, Decompose Delicate/Experimental, kotlin.time, kotlin.uuid, etc.).
-- `android.library.convention` — applies `com.android.kotlin.multiplatform.library`, KMP Android target with `compileSdk = 36`, `minSdk = 26`, `namespace = "com.grippo"`, JVM toolchain 19.
-- `android.application.convention` — Android `applicationId/SDK`, `compileSdk = 36`, `minSdk = 26`, `targetSdk = 36`, JVM 19.
-- `compose.multiplatform.convention` — Compose plugins, metrics/reports in `build/compose-{metrics,reports}`, `stabilityConfigurationFiles += compose-stability.conf` (file is currently missing — convention plugin silently ignores it; fix as a separate task).
+- `kotlin.multiplatform.convention` — applies `kotlin("multiplatform")`, **`explicitApi()`**, registers iOS targets (`iosArm64`, `iosSimulatorArm64`), `applyDefaultHierarchyTemplate`, **global `optIn(...)`** (Material3 ExperimentalApi, Foundation, Coroutines, ForeignApi, Decompose Delicate/Experimental, kotlin.time, kotlin.uuid, etc.).
+- `android.library.convention` — applies `com.android.kotlin.multiplatform.library`, KMP Android target with `compileSdk = 37`, `minSdk = 26`, `namespace = "com.grippo"`, JVM toolchain 19.
+- `android.application.convention` — Android `applicationId/SDK`, `compileSdk = 37`, `minSdk = 26`, `targetSdk = 36`, JVM 19.
+- `compose.multiplatform.convention` — Compose plugins, metrics/reports in `build/compose-{metrics,reports}`, stability is inferred from code annotations and types.
 - `koin.annotation.convention` — KSP, Koin Core + Annotations, `kspCommonMainMetadata`, `KOIN_CONFIG_CHECK = false` (TODO until next Koin release).
 - `room.convention` — KSP + Room compiler for Android and all iOS targets, `room.schemaLocation = $projectDir/schemas`.
 - `ios.swiftpackage.convention` — assembles `XCFramework("shared")`, **static** framework, exports Decompose API + `:data-services:firebase`, `linkerOpts: -lsqlite3`.
@@ -932,7 +932,7 @@ There are no test source sets or `*.kt` tests in the repo. Don't add without an 
 - Decompose 3.5 for navigation and lifecycle (not Compose Navigation, not Voyager).
 - Koin 4.2 + annotations + KSP for DI (not Hilt, not Anvil, not Metro).
 - Room 2.8 multiplatform for persistence (not SQLDelight).
-- Ktor 3.4 for network.
+- Ktor 3.6 for network.
 - `kotlinx-serialization` for JSON and Decompose state.
 - Pattern Component / Contract / State / Direction / Loader / ViewModel / Screen — mandatory for any new screen/dialog.
 - `BaseViewModel` uses CONFLATED `Channel` for navigation — known trade-off with rapid events.

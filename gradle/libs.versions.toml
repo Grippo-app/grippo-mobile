@@ -1,33 +1,31 @@
 [versions]
-agp = "9.0.1"
-kotlin = "2.3.21"
+agp = "9.3.3"
+kotlin = "2.4.20"
 coroutines = "1.11.0"
 serialization = "1.11.0"
-compose-plugin = "1.10.3"
-# Preserve the Material3 and icons versions selected by the existing Compose plugin.
-compose-material3 = "1.9.0-beta03"
+compose-plugin = "1.12.1"
+compose-material3 = "1.9.0"
 compose-material-icons = "1.7.3"
 activity-compose = "1.13.0"
 datetime = "0.8.0"
-koin = "4.2.1"
+koin = "4.2.2"
 koin-annotations = "2.3.1"
 decompose = "3.5.0"
-decompose-essently = "2.5.0"
-room = "2.8.4"
-ksp = "2.3.4"
-ktor = "3.4.3"
-immutable-collections = "0.4.0"
-sqlite = "2.6.2"
+decompose-essently = "2.6.0"
+room = "2.8.5"
+ksp = "2.3.6"
+ktor = "3.6.0"
+immutable-collections = "0.5.2"
+sqlite = "2.7.1"
 datastore = "1.2.1"
-appcompat = "1.7.1"
-coil = "3.4.0"
+appcompat = "1.8.0"
+coil = "3.6.3"
 core-splashscreen = "1.2.0"
-google-identity = "1.2.0"
+google-identity = "1.2.1"
 credentials = "1.6.0"
-firebase-bom = "34.13.0"
-google-services-plugin = "4.4.4"
-firebase-crashlytics-plugin = "3.0.7"
-detekt = "1.23.7"
+firebase-bom = "34.19.0"
+google-services-plugin = "4.5.0"
+firebase-crashlytics-plugin = "3.0.8"
 
 [libraries]
 # Compose Multiplatform
@@ -104,10 +102,6 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 
-#Detekt
-detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
-detekt-test = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
@@ -121,4 +115,3 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services-plugin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

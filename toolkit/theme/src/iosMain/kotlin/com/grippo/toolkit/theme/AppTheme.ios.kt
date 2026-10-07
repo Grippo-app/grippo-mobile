@@ -1,16 +1,13 @@
 package com.grippo.toolkit.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.InternalComposeUiApi
-import androidx.compose.ui.LocalSystemTheme
-import androidx.compose.ui.SystemTheme
 import platform.UIKit.UIScreen
 import platform.UIKit.UIUserInterfaceStyle
 
-@OptIn(InternalComposeUiApi::class)
 public actual object AppTheme {
     public actual val current: Boolean
-        @Composable get() = LocalSystemTheme.current == SystemTheme.Dark
+        @Composable get() = isSystemInDarkTheme()
 
     public actual fun current(): Boolean {
         val style = UIScreen.mainScreen.traitCollection.userInterfaceStyle

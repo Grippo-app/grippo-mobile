@@ -15,7 +15,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
                 extensions.configure<KotlinMultiplatformExtension> {
                     targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
-                        compileSdk = 36
+                        compileSdk = 37
                         minSdk = 26
                         namespace = "com.grippo"
                     }

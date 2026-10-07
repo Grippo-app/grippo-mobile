@@ -94,7 +94,7 @@ implementation(libs.kotlinx.html)
 
 ```toml
 [versions]
-ksp = "2.3.4"
+ksp = "2.3.6"
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -130,15 +130,15 @@ These are pulled from `[libraries]`, not `[plugins]` — Gradle uses the Maven c
 
 ### Avoid
 
-- **Hardcoded version strings** in module-level scripts (`"2.3.21"`). Always via the catalog.
+- **Hardcoded version strings** in module-level scripts (`"2.4.20"`). Always via the catalog.
 - **Multiple versions of the same library** declared in the catalog. Pick one.
-- **Plugin versions out of sync** with the corresponding library (e.g. `compose-plugin = "1.10.3"` but `compose-compiler` derived from `kotlin = "2.3.21"`). Compose Compiler and Compose Multiplatform are intentionally independent.
+- **Plugin versions out of sync** with the corresponding library (e.g. `compose-plugin = "1.12.1"` but `compose-compiler` derived from `kotlin = "2.4.20"`). Compose Compiler and Compose Multiplatform are intentionally independent.
 
 ### Common pitfalls
 
 #### `compose-plugin` is the Multiplatform Compose plugin
 
-`compose-plugin` in `[versions]` is the **Multiplatform** Compose version (`1.10.3`), not the Android Compose BOM. The Compose **Compiler** is `kotlin-version`-aligned (`2.3.21`).
+`compose-plugin` in `[versions]` is the **Multiplatform** Compose version (`1.12.1`), not the Android Compose BOM. The Compose **Compiler** is `kotlin-version`-aligned (`2.4.20`).
 
 | Concern | Source |
 |---|---|
@@ -279,8 +279,7 @@ include(":data-mappers:state-to-domain")
 
 // Tooling (JVM-only Gradle helpers — not part of the KMP build graph).
 // Append every `:tooling:<name>` module that the project ships. The reference
-// project ships `:tooling:detekt-rules`; other tooling modules go in the same block.
-include(":tooling:detekt-rules")
+// Add JVM-only tooling modules here when the project needs them.
 ```
 
 ### `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`
@@ -373,7 +372,7 @@ Modules are listed grouped:
 8. Toolkit.
 9. Compose libs.
 10. Data mappers.
-11. Tooling (e.g. `:tooling:detekt-rules` — JVM-only Gradle helpers, not part of the KMP build graph).
+11. Tooling (optional JVM-only Gradle helpers, outside the KMP build graph).
 
 Within a group, order alphabetically or by topological dependency (`:feature-api` before specific features).
 

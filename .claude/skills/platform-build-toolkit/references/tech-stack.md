@@ -8,28 +8,28 @@ These are the pinned toolkit/build baseline for the project: language and runtim
 
 | Concern | Version | Notes |
 |---|---|---|
-| Kotlin | **2.3.21** | `explicitApi()` enabled globally via convention plugin |
-| KSP | **2.3.4** (tracks Kotlin 2.3.x) | `ksp.useKSP2=true` |
-| AGP (Android Gradle Plugin) | **9.0.1** | uses `com.android.kotlin.multiplatform.library` for KMP modules |
-| Compose Multiplatform | **1.10.3** | metrics + stability config enabled |
-| Compose Compiler | matches Kotlin (2.3.21) | applied via `org.jetbrains.kotlin.plugin.compose` |
-| Decompose | **3.5.0** | + Essenty 2.5.0 (`lifecycle`, `state-keeper`, `back-handler`) |
-| Koin | **4.2.1** | + Koin Annotations **2.3.1** |
-| Ktor | **3.4.3** | Android engine + Darwin engine |
+| Kotlin | **2.4.20** | `explicitApi()` enabled globally via convention plugin |
+| KSP | **2.3.6** | `ksp.useKSP2=true` |
+| AGP (Android Gradle Plugin) | **9.3.3** | uses `com.android.kotlin.multiplatform.library` for KMP modules |
+| Compose Multiplatform | **1.12.1** | compiler metrics + reports enabled |
+| Compose Compiler | matches Kotlin (2.4.20) | applied via `org.jetbrains.kotlin.plugin.compose` |
+| Decompose | **3.5.0** | + Essenty 2.6.0 (`lifecycle`, `state-keeper`, `back-handler`) |
+| Koin | **4.2.2** | + Koin Annotations **2.3.1** |
+| Ktor | **3.6.0** | Android engine + Darwin engine |
 | kotlinx-serialization | **1.11.0** | JSON only |
 | kotlinx-datetime | **0.8.0** | for `LocalDateTime`/`LocalDate`/`DatePeriod`/`DateTimePeriod`/`TimeZone`/`Month`/`DayOfWeek` (`Instant`/`Clock`/`Duration` come from stdlib `kotlin.time`) |
 | kotlinx-coroutines | **1.11.0** | `core` + `play-services` (Android) |
-| kotlinx-collections-immutable | **0.4.0** | mandatory in all `@Immutable` state |
-| Room | **2.8.4** multiplatform | + `androidx.sqlite-bundled` **2.6.2** |
+| kotlinx-collections-immutable | **0.5.2** | mandatory in all `@Immutable` state |
+| Room | **2.8.5** multiplatform | + `androidx.sqlite-bundled` **2.7.1** |
 | AndroidX DataStore | **1.2.1** | preferences-core |
-| Coil | **3.4.0** | `coil-compose` + `coil-network-ktor3` |
-| Firebase BOM | **34.13.0** | Android-only: Analytics + Crashlytics + Messaging |
+| Coil | **3.6.3** | `coil-compose` + `coil-network-ktor3` |
+| Firebase BOM | **34.19.0** | Android-only: Analytics + Crashlytics + Messaging |
 
 ### Targets
 
 #### Android
 
-- `compileSdk = 36`
+- `compileSdk = 37`
 - `minSdk = 26`
 - `targetSdk = 36` (apps only)
 - JVM toolchain **19**
@@ -37,7 +37,7 @@ These are the pinned toolkit/build baseline for the project: language and runtim
 
 #### iOS (Kotlin/Native)
 
-- `iosX64`, `iosArm64`, `iosSimulatorArm64`
+- `iosArm64`, `iosSimulatorArm64`
 - `IPHONEOS_DEPLOYMENT_TARGET = 16.0`
 - Static `XCFramework` named `<iosFrameworkName>` (default `shared`)
 - Linker option `-lsqlite3` (required for Room/SQLite)
@@ -53,7 +53,7 @@ Every KMP module uses the default hierarchy template (`applyDefaultHierarchyTemp
 src/
   commonMain/kotlin/...
   androidMain/kotlin/...
-  iosMain/kotlin/...          (shared across iosArm64, iosX64, iosSimulatorArm64)
+  iosMain/kotlin/...          (shared across iosArm64, iosSimulatorArm64)
   commonMain/composeResources/  (Compose Multiplatform Resources — strings/drawables/fonts)
 ```
 
@@ -102,53 +102,54 @@ This is the canonical `gradle/libs.versions.toml`. Do **not** add libraries or b
 
 ```toml
 [versions]
-agp = "9.0.1"
-kotlin = "2.3.21"
+agp = "9.3.3"
+kotlin = "2.4.20"
 coroutines = "1.11.0"
 serialization = "1.11.0"
-compose-plugin = "1.10.3"
+compose-plugin = "1.12.1"
+compose-material3 = "1.9.0"
+compose-material-icons = "1.7.3"
 activity-compose = "1.13.0"
 datetime = "0.8.0"
-koin = "4.2.1"
+koin = "4.2.2"
 koin-annotations = "2.3.1"
 decompose = "3.5.0"
-decompose-essenty = "2.5.0"
-room = "2.8.4"
-ksp = "2.3.4"
-ktor = "3.4.3"
-immutable-collections = "0.4.0"
-sqlite = "2.6.2"
+decompose-essently = "2.6.0"
+room = "2.8.5"
+ksp = "2.3.6"
+ktor = "3.6.0"
+immutable-collections = "0.5.2"
+sqlite = "2.7.1"
 datastore = "1.2.1"
-appcompat = "1.7.1"
-coil = "3.4.0"
+appcompat = "1.8.0"
+coil = "3.6.3"
 core-splashscreen = "1.2.0"
-google-identity = "1.2.0"
+google-identity = "1.2.1"
 credentials = "1.6.0"
-firebase-bom = "34.13.0"
-google-services-plugin = "4.4.4"
-firebase-crashlytics-plugin = "3.0.7"
-detekt = "1.23.7"
-roborazzi = "1.64.0"
-robolectric = "4.16"
-junit4 = "4.13.2"
-turbine = "1.2.1"
-androidx-test-runner = "1.7.0"
-androidx-test-core = "1.7.0"
-kover = "0.9.9"
-# Android artifact line CMP `compose-plugin` 1.10.3 resolves to (observed via
-# dependency resolution, not guessed). Moves in lockstep with `compose-plugin`.
-compose-ui-test-manifest = "1.10.5"
+firebase-bom = "34.19.0"
+google-services-plugin = "4.5.0"
+firebase-crashlytics-plugin = "3.0.8"
 
 [libraries]
+# Compose Multiplatform
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-plugin" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-plugin" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-plugin" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons" }
+compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-plugin" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-plugin" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-plugin" }
+
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutable-collections" }
 
-# KotlinX
+#KotlinX
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
-# AndroidX
+#AndroidX
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
@@ -156,35 +157,36 @@ androidx-credentials = { group = "androidx.credentials", name = "credentials", v
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 google-identity-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "google-identity" }
 
-# Gradle plugins (consumed by build-logic/convention)
+#Gradle
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 
-# Firebase (Android shell only)
+#Firebase
 android-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 android-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 android-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
-# Decompose
+#Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose-experimental", version.ref = "decompose" }
-decompose-essenty = { module = "com.arkivanov.essenty:lifecycle", version.ref = "decompose-essenty" }
-decompose-back-handler = { module = "com.arkivanov.essenty:back-handler", version.ref = "decompose-essenty" }
-decompose-state-keeper = { module = "com.arkivanov.essenty:state-keeper", version.ref = "decompose-essenty" }
+decompose-essenty = { module = "com.arkivanov.essenty:lifecycle", version.ref = "decompose-essently" }
+decompose-back-handler = { module = "com.arkivanov.essenty:back-handler", version.ref = "decompose-essently" }
+decompose-state-keeper = { module = "com.arkivanov.essenty:state-keeper", version.ref = "decompose-essently" }
 
-# Room
+#Room
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
 
-# DataStore
+
+#Datastore
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 
-# Ktor
+#Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
@@ -193,39 +195,15 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 
-# Coil
+#Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
-# Koin
+#Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
-
-# Detekt
-detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
-detekt-test = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
-
-# Screenshot test (Roborazzi — opt-in screenshot-fidelity gate; androidHostTest + build-logic classpath only; see the implement-figma skill)
-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
-roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
-roborazzi-gradle-plugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
-junit4 = { module = "junit:junit", version.ref = "junit4" }
-
-# General test foundation (mandatory-test pipeline; wired ONLY through the
-# opt-in `kmp.test.convention` + capability conventions — never added to a
-# module by hand and never reachable from production configurations)
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
-androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose-ui-test-manifest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -240,12 +218,10 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services-plugin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+
 ```
 
-> **Note on `decompose-essenty`:** the correct spelling is `decompose-essenty` (the Essenty library). If you copy a catalog from somewhere that has the misspelled `decompose-essently`, fix it. The version-ref and module coordinates above are canonical.
+> Essenty uses the existing catalog version key `decompose-essently`; dependency aliases use `decompose-essenty`. Keep references consistent with the catalog.
 
 ### Adding a new library
 
@@ -279,7 +255,7 @@ Several versions in the catalog are not independent and must move together:
 - `kotlin` + `compose-compiler` — the `compose-compiler` plugin tracks the Kotlin compiler version exactly. Bumping `kotlin` requires bumping `compose-compiler` to a matching release.
 - `kotlin` + `agp` — the Kotlin/AGP compatibility matrix constrains which AGP versions work with a given Kotlin release; verify against JetBrains' published matrix before bumping either.
 - `compose-plugin` (JetBrains Compose Multiplatform) — follows its own release cadence, but each release is generally tied to a Kotlin version range; check the Compose Multiplatform release notes when bumping `kotlin`.
-- `compose-plugin` + `compose-ui-test-manifest` — the manifest artifact must match the androidx Compose UI line the CMP release resolves to (observe it via dependency resolution after any `compose-plugin` bump; 1.10.3 → androidx ui 1.10.5). A mismatched pin breaks the Robolectric host lane for Compose UI scenarios.
+- `compose-plugin` + `compose-ui-test-manifest` — the manifest artifact must match the androidx Compose UI line the CMP release resolves to (observe it via dependency resolution after any `compose-plugin` bump; 1.12.1 → androidx ui 1.12.1). A mismatched pin breaks the Robolectric host lane for Compose UI scenarios.
 
 ## gradle.properties
 
@@ -357,7 +333,7 @@ ksp.verbose=false
 | Situation | Allowed change |
 |---|---|
 | CI machine has < 16 GB RAM | Drop `org.gradle.jvmargs` to `-Xmx4g`; expect slower builds |
-| Local dev only on iOS | keep `kotlin.native.binary.gc=cms` commented (crash risk on K/N 2.3.21); re-enable only after iOS smoke-testing — see § Kotlin/Native |
+| Local dev only on iOS | keep `kotlin.native.binary.gc=cms` commented (crash risk on K/N 2.4.20); re-enable only after iOS smoke-testing — see § Kotlin/Native |
 | Build is hitting "OutOfMemoryError" in `konanc` | Bump `kotlin.native.jvmArgs` to `-Xmx8g` |
 | Build is hitting OOM in Kotlin daemon | Bump `kotlin.daemon.jvmargs` to `-Xmx4g` |
 | Configuration cache breaks after adding a plugin | Fix the plugin (don't disable the cache); see Gradle's CC docs |

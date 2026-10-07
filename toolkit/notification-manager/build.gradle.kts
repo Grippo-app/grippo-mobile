@@ -7,9 +7,6 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.toolkit.notification.manager"
-    }
-
-    androidLibrary {
         androidResources.enable = true
     }
 

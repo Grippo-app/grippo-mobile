@@ -36,7 +36,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
         extensions.getByType<KotlinMultiplatformExtension>().apply {
             explicitApi()
 
-            iosX64()
             iosArm64()
             iosSimulatorArm64()
 
@@ -66,7 +65,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
 ```
 
 - **`explicitApi()`** — every public declaration must have explicit visibility.
-- **iOS targets** registered up-front. `applyDefaultHierarchyTemplate()` sets up the standard source-set hierarchy (`commonMain`, `commonTest`, `iosMain`, `iosX64Main`, ...).
+- **iOS targets** registered up-front. `applyDefaultHierarchyTemplate()` sets up the standard source-set hierarchy (`commonMain`, `commonTest`, `iosMain`, ...).
 - **Global `optIn`** — the list of experimental APIs every module uses. Don't repeat `@OptIn` in source files.
 
 ### `AndroidLibraryConventionPlugin`
@@ -79,7 +78,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             extensions.configure<KotlinMultiplatformExtension> {
                 targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
-                    compileSdk = 36
+                    compileSdk = 37
                     minSdk = 26
                     namespace = "com.<org>.<product>"
                 }
@@ -92,7 +91,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 ```
 
 - Applies `com.android.kotlin.multiplatform.library` (the KMP-aware Android plugin).
-- `compileSdk = 36`, `minSdk = 26`.
+- `compileSdk = 37`, `minSdk = 26`.
 - `namespace = "com.<org>.<product>"` — the namespace **prefix**. Every module-level `build.gradle.kts` **must** override this with its full, unique namespace (`kotlin { android { namespace = "..." } }`); omitting the override leaves multiple modules sharing the bare prefix, causing duplicate-namespace/resource-merge build failures.
 - JVM toolchain 19.
 
@@ -104,7 +103,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.applySafely("com.android.application")
 
         extensions.configure<ApplicationExtension> {
-            compileSdk = 36
+            compileSdk = 37
             namespace = "com.<org>.<product>"
 
             defaultConfig {
@@ -138,9 +137,6 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
             extensions.configure<ComposeCompilerGradlePluginExtension> {
                 metricsDestination.set(layout.buildDirectory.dir("compose-metrics"))
                 reportsDestination.set(layout.buildDirectory.dir("compose-reports"))
-                stabilityConfigurationFiles.add(
-                    rootProject.layout.projectDirectory.file("compose-stability.conf"),
-                )
             }
         }
 
@@ -158,7 +154,7 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
 - Applies the **Compose Compiler** plugin (Kotlin's official plugin, version-aligned with Kotlin).
 - Applies **Jetbrains Compose** (the Multiplatform Compose plugin).
 - **Metrics + reports** — Compose Compiler emits `compose-metrics/` and `compose-reports/` in each module's `build/`. Used for stability analysis ("which Composables are non-skippable?").
-- **`compose-stability.conf`** — a project-root file telling the Compose Compiler about externally-stable types (e.g. immutable collections from the Decompose API). The file may not exist initially — the plugin silently ignores missing files.
+- Stability is inferred from code annotations and types. No external stability configuration is registered.
 
 ### `KoinAnnotationConventionPlugin`
 
@@ -200,7 +196,7 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
 - Registers Koin + Koin Annotations as common dependencies.
 - Adds the **KSP compiler** to `kspCommonMainMetadata` (the shared metadata target).
 - Sets `KOIN_CONFIG_CHECK = false` (Koin Annotations 2.3.1 sanity-check workaround).
-- Makes platform KSP tasks (`kspAndroid`, `kspIosX64`, ...) depend on the common metadata task.
+- Makes platform KSP tasks (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`) depend on the common metadata task.
 
 ### `RoomConventionPlugin`
 
@@ -222,7 +218,6 @@ class RoomConventionPlugin : Plugin<Project> {
 
         dependencies {
             add("kspAndroid", libs.findLibrary("androidx.room.compiler").get())
-            add("kspIosX64", libs.findLibrary("androidx.room.compiler").get())
             add("kspIosArm64", libs.findLibrary("androidx.room.compiler").get())
             add("kspIosSimulatorArm64", libs.findLibrary("androidx.room.compiler").get())
         }
@@ -250,7 +245,9 @@ class RoomConventionPlugin : Plugin<Project> {
 
 `IosSwiftPackageConventionPlugin` — see the iOS Swift-package spec for the canonical source and the `<iosFrameworkName>` substitution rule.
 
-## Test conventions — opt-in general test foundation
+## Test conventions — historical recipes
+
+These recipes were validated on the older stack named below. They are not installed in the current RELEASE-based checkout. Validate task names and resource handling on the current toolchain before adopting them; historical device-test limitations do not establish a limitation in Compose 1.12.1.
 
 The general KMP test stack is bootstrapped for every product but applied **only
 by modules that own tests** — `kotlin.multiplatform.convention` never applies
@@ -655,7 +652,7 @@ kotlin {
 
 - **`kotlin { jvmToolchain(19) }` in a module-level script.** Already in the convention.
 - **`@OptIn(...)` in source files for an opt-in already in `KotlinMultiplatformConventionPlugin`.** Redundant; remove.
-- **Adding a Compose plugin directly without the convention** for a Compose UI module. The metrics + stability config are lost.
+- **Adding a Compose plugin directly without the convention** for a Compose UI module. The compiler metrics + reports are lost.
 - **Skipping `applySafely`** in a new convention plugin. Double-apply errors on rebuilds.
 - **Adding global `optIn` opt-ins per-feature** instead of in `KotlinMultiplatformConventionPlugin`. Inconsistent — some files have it, some don't.
 - **Using `apply(plugin = ...)` instead of `pluginManager.applySafely(...)`** in convention plugins.

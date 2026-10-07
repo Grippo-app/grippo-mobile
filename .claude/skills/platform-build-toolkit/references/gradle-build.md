@@ -673,7 +673,7 @@ When you create a new module:
 - [ ] Module directory exists under the right group.
 - [ ] `build.gradle.kts` uses the right convention plugins.
 - [ ] `kotlin { android { namespace = "..." } }` is set to the full namespace.
-- [ ] If the module ships `composeResources/` or androidMain `res/`, `kotlin { androidLibrary { androidResources.enable = true } }` is set — otherwise its resources aren't packaged into the APK (runtime `MissingResourceException` on AGP 9). Today: `:design-system:resources:provider`, `:toolkit:notification-manager`.
+- [ ] If the module ships `composeResources/` or androidMain `res/`, `kotlin { android { androidResources.enable = true } }` is set — otherwise its resources aren't packaged into the APK (runtime `MissingResourceException` on AGP 9). Today: `:design-system:resources:provider`, `:toolkit:notification-manager`.
 - [ ] `sourceSets.commonMain.dependencies { ... }` lists only what the module actually uses.
 - [ ] No redundant deps.
 - [ ] No `repositories { ... }` block (forbidden by `FAIL_ON_PROJECT_REPOS`).
@@ -681,7 +681,7 @@ When you create a new module:
 - [ ] Module added to `settings.gradle.kts`.
 - [ ] Test conventions only if the module owns tests (`kmp.test.convention` is opt-in, never transitive); test dependencies arrive only through `*.test.convention` capabilities.
 - [ ] No `withHostTest`/`withDeviceTest` call in the module script — the single owners live in build-logic.
-- [ ] Compose module never enables the Android device lane (CMP 1.10.3 fails its `deviceTest` resources task at configuration).
+- [ ] Validate device-test resource tasks against the current Compose version before enabling the Android device lane.
 - [ ] If declares Koin module, added to `:shared/Koin.kt`.
 - [ ] If consumed by `:shared`, added to `:shared/build.gradle.kts`.
 

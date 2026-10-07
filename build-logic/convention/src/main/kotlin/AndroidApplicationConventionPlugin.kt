@@ -12,7 +12,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             pluginManager.applySafely("com.android.application")
 
             extensions.configure<ApplicationExtension> {
-                compileSdk = 36
+                compileSdk = 37
                 namespace = "com.grippo"
 
                 defaultConfig {
