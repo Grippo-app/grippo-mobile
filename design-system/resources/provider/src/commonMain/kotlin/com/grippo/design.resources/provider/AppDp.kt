@@ -110,7 +110,8 @@ public data object AppDp {
         val toolbar: Toolbar = Toolbar
 
         public data object Toolbar {
-            val height: Dp = size.small
+            val actionSize: Dp = 48.dp
+            val height: Dp = actionSize
         }
     }
 

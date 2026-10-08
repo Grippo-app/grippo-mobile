@@ -18,11 +18,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -51,17 +51,18 @@ public fun BottomSheetToolbar(
             .heightIn(min = AppTokens.dp.bottomSheet.toolbar.height),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.size(AppTokens.dp.bottomSheet.toolbar.actionSize), contentAlignment = Alignment.Center) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = allowBack,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 Button(
-                    modifier = Modifier.size(48.dp).semantics { contentDescription = backLabel },
+                    modifier = Modifier.size(AppTokens.dp.bottomSheet.toolbar.actionSize).semantics { contentDescription = backLabel },
                     content = ButtonContent.Icon(
                         icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft),
                     ),
+                    state = if (allowBack) ButtonState.Enabled else ButtonState.Disabled,
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,
                     onClick = onBack
@@ -84,7 +85,7 @@ public fun BottomSheetToolbar(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Button(
-            modifier = Modifier.size(48.dp).semantics { contentDescription = closeLabel },
+            modifier = Modifier.size(AppTokens.dp.bottomSheet.toolbar.actionSize).semantics { contentDescription = closeLabel },
             content = ButtonContent.Icon(
                 icon = ButtonIcon.Icon(AppTokens.icons.Cancel),
             ),
