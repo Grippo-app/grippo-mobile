@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -72,13 +71,13 @@ public fun Toolbar(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.contentPadding.content)
                 .padding(vertical = AppTokens.dp.contentPadding.content)
-                .height(AppTokens.dp.screen.toolbar.height)
+                .heightIn(min = AppTokens.dp.screen.toolbar.height)
                 .fillMaxWidth(),
         ) {
 
             when (leading) {
                 is Leading.Back -> Button(
-                    modifier = Modifier,
+                    modifier = Modifier.align(Alignment.CenterStart),
                     content = ButtonContent.Icon(
                         icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
                     ),
@@ -88,7 +87,7 @@ public fun Toolbar(
                 )
 
                 is Leading.Profile -> Button(
-                    modifier = Modifier,
+                    modifier = Modifier.align(Alignment.CenterStart),
                     content = ButtonContent.Icon(
                         icon = ButtonIcon.Icon(AppTokens.icons.User)
                     ),
@@ -104,7 +103,7 @@ public fun Toolbar(
 
             title?.let {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.align(Alignment.Center).fillMaxWidth(),
                     text = it,
                     style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
@@ -115,8 +114,7 @@ public fun Toolbar(
             trailing?.let { trailing ->
                 Box(
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .fillMaxHeight(),
+                        .align(Alignment.CenterEnd),
                     content = trailing,
                     contentAlignment = Alignment.Center
                 )
@@ -149,8 +147,8 @@ private fun ToolbarPreviewContent() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
-                        .background(Color.Cyan)
+                        .height(AppTokens.dp.button.medium.height)
+                        .background(AppTokens.colors.background.card)
                 )
             }
         )

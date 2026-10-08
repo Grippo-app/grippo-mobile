@@ -14,8 +14,8 @@ public object DarkColor : AppColor {
         override val backgroundPrimary1 = AppPalette.Unique.Orange
         override val backgroundPrimary2 = AppPalette.Unique.Red
         override val borderPrimary = AppPalette.Unique.Coral
-        override val textPrimary = AppPalette.Common.Black
-        override val iconPrimary = AppPalette.Common.Black
+        override val textPrimary = AppPalette.Common.White
+        override val iconPrimary = AppPalette.Common.White
 
         override val backgroundSecondary1 = AppPalette.Common.White
         override val backgroundSecondary2 = AppPalette.Common.White

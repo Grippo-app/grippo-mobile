@@ -4,7 +4,6 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.state.muscles.toState
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -43,16 +42,32 @@ internal class ExcludedMusclesViewModel(
             .toPersistentList()
             .ifEmpty { allIds.toPersistentList() }
 
-        update { it.copy(suggestions = suggestions, selectedMuscleIds = selected) }
+        update {
+            val selectedGroupId = it.selectedGroupId
+                ?.takeIf { id -> suggestions.any { group -> group.id == id } }
+                ?: suggestions.firstOrNull()?.id
+
+            it.copy(
+                suggestions = suggestions,
+                selectedMuscleIds = selected,
+                selectedGroupId = selectedGroupId
+            )
+        }
+    }
+
+    override fun onGroupClick(id: String) {
+        update { it.copy(selectedGroupId = id) }
     }
 
     override fun onSelect(id: String) {
-        val newList: PersistentList<String> = state.value.selectedMuscleIds
-            .toMutableList()
-            .apply { if (contains(id)) remove(id) else add(id) }
-            .toPersistentList()
-
-        update { it.copy(selectedMuscleIds = newList) }
+        update {
+            val selectedMuscleIds = if (id in it.selectedMuscleIds) {
+                it.selectedMuscleIds.removing(id)
+            } else {
+                it.selectedMuscleIds.adding(id)
+            }
+            it.copy(selectedMuscleIds = selectedMuscleIds)
+        }
     }
 
     override fun onNextClick() {

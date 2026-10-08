@@ -17,3 +17,7 @@
 - [x] Android visual/interaction checks, iOS component compile and final app build.
 
 - [x] Dedicated shimmer color tokens in both themes; Android build and iOS device/simulator component compilation.
+
+- [x] Excluded muscles: fixed hero and group tabs, filtered muscle list, Android visual/interaction checks, final Android build and both iOS target compilations.
+
+- [x] Recheck excluded muscles and migrate profile muscles to shared design-system MuscleSelection; font-scale fixes, light/dark Android checks, final Android build and both iOS target compilations.

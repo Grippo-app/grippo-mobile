@@ -10,5 +10,6 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 internal data class ProfileMusclesState(
     val suggestions: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
+    val selectedGroupId: String? = null,
     val selectedMuscleIds: PersistentList<String> = persistentListOf(),
 )

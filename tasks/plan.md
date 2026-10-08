@@ -91,3 +91,17 @@ Verification: compile common components for Android/iOS, temporary button galler
 ### Dedicated shimmer colors
 
 Added AppColor.ShimmerColors with a default highlight and five button style highlights in both palettes. Button and Modifier.shimmer consume tokens directly; palette values preserve the previously reviewed appearance. Verified Android assembleDebug and components compileKotlinIosArm64/compileKotlinIosSimulatorArm64: BUILD SUCCESSFUL (log /tmp/grippo-shimmer-tokens-build.log).
+
+### Excluded muscles tabs
+
+Replaced the alternating group grid with a fixed adaptive muscle illustration, the same horizontally scrolling outline Segment as missing equipment, and a separately scrolling full-width muscle list. Added selectedGroupId and onGroupClick to the screen state/contract/ViewModel; existing exclusion payload is unchanged. Data refresh retains a valid group or selects the first available one. Switching groups restarts the list while preserving muscle selection.
+
+Verified Android assembleDebug and authorization compileKotlinIosArm64/compileKotlinIosSimulatorArm64: BUILD SUCCESSFUL, final log /tmp/grippo-muscle-final-build.log. Android visual checks: light/dark on Pixel; on Small Phone, group switch, quadriceps toggle and corresponding illustration change, selection retained after switching away/back, horizontal tab scrolling, final Abductor row accessible above Continue after vertical scrolling. Temporary stub-data harness removed; final ordinary APK rebuilt. Screenshots: /Users/maxvoitenko/.codex/visualizations/2026/10/07/01a1168d-f474-7f63-ae5a-eaadbd5d0643/muscle-tabs/. No new iOS runtime capture.
+
+### Shared muscle selection and profile migration
+
+Both authorization and profile now use the design-system MuscleSelection: fixed adaptive hero, horizontal outline tabs, and an independently scrolling keyed list. Spacing, colors and sizing use AppTokens; dedicated muscleSelection dimensions reserve list space after measuring the footer. Group selection lives in the ViewModel and muscle toggles update immutable state atomically. Profile Apply behavior/payload is preserved.
+
+Android visual checks on Small Phone: both themes, group switching, selection retained after switching away/back, illustration updates, horizontally scrolling tabs; authorization final row is reachable. Font scales 1.5 and 2.0 exposed fixed-height toolbar/card clipping, corrected with minimum heights and tokenized padding. Final authorization at 2.0 retains a full two-line row and Continue button by shrinking the hero. Final profile light/dark screenshots are in profile-muscle-tabs under the workspace visualization directory.
+
+Final verification: :androidApp:assembleDebug and profile/authorization compileKotlinIosArm64 + compileKotlinIosSimulatorArm64 succeeded (exit 0; /tmp/grippo-profile-muscle-final-build.log). Temporary UI harness and MainActivity hook removed. Ordinary APK installed on both Android emulators and launched. No profile save was sent to the backend. iOS verification covers compilation, without a new simulator/device runtime session. Existing unrelated compiler warnings remain.

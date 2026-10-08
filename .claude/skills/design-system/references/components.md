@@ -424,3 +424,18 @@ design-system entries. When a "checkbox" feel is needed, prefer `CheckSelectable
 | Has its own gesture/animation logic > 100 LoC | `:compose-libs:*` |
 
 See the ui-feature skill's [`module-structure.md`](../../ui-feature/references/module-structure.md) § "When to extract a widget into `:compose-libs:*`" for the decision logic.
+
+## Muscle selection
+
+`MuscleSelection` owns a fixed adaptive `MusclesImage`, horizontally scrolling outline
+`Segment`, and a keyed lazy muscle list. Pass immutable muscle groups, a selected group ID,
+selected muscle IDs, and callbacks; logical selection remains in the caller's ViewModel.
+A required bottom slot provides the screen action with `BottomOverlayContainer` insets.
+Use a bounded height (for example `Modifier.weight(1f)` in a screen Column).
+`AppTokens.dp.muscleSelection` defines the maximum hero size, its available-height fraction,
+and the minimum list space. The measured bottom action is reserved before sizing the hero;
+the illustration shrinks on compact screens and at larger font scales.
+Group changes restart list scrolling and preserve the caller's muscle selection.
+
+Small toggle cards use a minimum height with vertical padding so two-line labels can grow
+at larger font scales. Toolbar height is also a minimum; title and actions stay centered.

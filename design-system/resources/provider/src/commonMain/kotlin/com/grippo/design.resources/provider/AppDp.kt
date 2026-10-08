@@ -47,6 +47,7 @@ public data object AppDp {
     val bottomSheet: BottomSheet = BottomSheet
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
+    val muscleSelection: MuscleSelection = MuscleSelection
     val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
@@ -79,6 +80,13 @@ public data object AppDp {
     val training: Training = Training
     val accent: Accent = Accent
     val pagerIndicator: PagerIndicator = PagerIndicator
+
+    public data object MuscleSelection {
+        val heroMaxHeight: Dp = icon.xxxxLarge
+        val heroMinHeight: Dp = 0.dp
+        val listMinHeight: Dp = size.xLarge
+        val heroHeightFraction: Float = 0.4f
+    }
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -488,6 +496,7 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.extraSmall
             val radius: Dp = AppDp.radius.medium
         }
     }
