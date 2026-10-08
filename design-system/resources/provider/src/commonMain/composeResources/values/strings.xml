@@ -865,4 +865,5 @@
     <string name="dialog_back">Back</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_saved_workout">Saved workout</string>
+    <string name="exercise_example_information">Information</string>
 </resources>

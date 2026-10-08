@@ -1,5 +1,9 @@
 package com.grippo.exercise.example.exerciseexample
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +16,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.achievements.stubAchievements
@@ -36,6 +46,10 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.performance.EstimatedOneRepMaxCard
 import com.grippo.design.components.metrics.volume.VolumeMetricChart
+import com.grippo.design.components.modifiers.shimmer
+import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
+import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -44,7 +58,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.achievements
 import com.grippo.design.resources.provider.history
+import com.grippo.design.resources.provider.exercise_example_information
+import com.grippo.design.resources.provider.no_data_yet
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
@@ -53,6 +70,14 @@ internal fun ExerciseExampleScreen(
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+
+    var selectedTab by rememberSaveable(state.example?.value?.id) { mutableStateOf(ExerciseExampleTab.Information) }
+    val tabs = remember {
+        persistentListOf(
+            ExerciseExampleTab.Information to UiText.Res(Res.string.exercise_example_information),
+            ExerciseExampleTab.Achievements to UiText.Res(Res.string.achievements),
+        )
+    }
 
     val basePadding = PaddingValues(top = AppTokens.dp.dialog.top)
 
@@ -99,112 +124,128 @@ internal fun ExerciseExampleScreen(
 
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-                ExampleDescriptionText(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                        .fillMaxWidth(),
-                    text = example.value.description,
+                Segment(
+                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding).fillMaxWidth(),
+                    items = tabs,
+                    selected = selectedTab,
+                    onSelect = { selectedTab = it },
+                    style = SegmentStyle.Outline,
+                    segmentWidth = SegmentWidth.EqualFill,
                 )
 
-                if (example.equipments.isNotEmpty()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    EquipmentsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = example.equipments,
-                        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    )
-                }
-
-                state.muscleLoad
-                    ?.takeIf { it.perGroup.entries.isNotEmpty() }
-                    ?.let { summary ->
-
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                        MuscleLoading(
+                when (selectedTab) {
+                    ExerciseExampleTab.Information -> {
+                        ExampleDescriptionText(
                             modifier = Modifier
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                                 .fillMaxWidth(),
-                            summary = summary,
-                            mode = MuscleLoadingMode.PerGroup,
+                            text = example.value.description,
                         )
-                    }
 
-                if (state.achievements.isNotEmpty()) {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                        if (example.equipments.isNotEmpty()) {
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        text = AppTokens.strings.res(Res.string.achievements),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary,
-                    )
+                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                    AchievementsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.achievements,
-                        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    )
-
-                    if (state.estimatedOneRepMax != null) {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                        EstimatedOneRepMaxCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                            state = state.estimatedOneRepMax,
-                        )
-                    }
-                }
-
-                if (state.recent.isNotEmpty()) {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        text = AppTokens.strings.res(Res.string.history),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary,
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                    state.exerciseVolume
-                        ?.takeIf { it.entries.isNotEmpty() }
-                        ?.let { data ->
-                            VolumeMetricChart(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                                value = data,
-                                xAxisLabels = BarChartXAxisLabels.WithoutLabels
-                            )
-
-                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-                        }
-
-                    state.recent.forEachIndexed { index, item ->
-                        key(item.id) {
-                            ExerciseCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                                value = item,
-                                style = ExerciseCardStyle.Small,
+                            EquipmentsCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = example.equipments,
+                                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
                             )
                         }
 
-                        if (index < state.recent.lastIndex) {
-                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                        state.muscleLoad
+                            ?.takeIf { it.perGroup.entries.isNotEmpty() }
+                            ?.let { summary ->
+
+                                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                                MuscleLoading(
+                                    modifier = Modifier
+                                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                        .fillMaxWidth(),
+                                    summary = summary,
+                                    mode = MuscleLoadingMode.PerGroup,
+                                )
+                            }
+                    }
+                    ExerciseExampleTab.Achievements -> {
+                        if (ExerciseExampleLoader.RecentExercises in loaders || ExerciseExampleLoader.Achievements in loaders) {
+                            UserDetailsShimmer()
+                        } else {
+                            if (state.achievements.isNotEmpty()) {
+                                AchievementsCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = state.achievements,
+                                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                )
+
+                            }
+
+                            if (state.estimatedOneRepMax != null) {
+                                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                                EstimatedOneRepMaxCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                                    state = state.estimatedOneRepMax,
+                                )
+                            }
+                            if (state.recent.isNotEmpty()) {
+                                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                                    text = AppTokens.strings.res(Res.string.history),
+                                    style = AppTokens.typography.h4(),
+                                    color = AppTokens.colors.text.primary,
+                                )
+
+                                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                                state.exerciseVolume
+                                    ?.takeIf { it.entries.isNotEmpty() }
+                                    ?.let { data ->
+                                        VolumeMetricChart(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                                            value = data,
+                                            xAxisLabels = BarChartXAxisLabels.WithoutLabels
+                                        )
+
+                                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                                    }
+
+                                state.recent.forEachIndexed { index, item ->
+                                    key(item.id) {
+                                        ExerciseCard(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                                            value = item,
+                                            style = ExerciseCardStyle.Small,
+                                        )
+                                    }
+
+                                    if (index < state.recent.lastIndex) {
+                                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                                    }
+                                }
+                            }
+
+                            if (state.achievements.isEmpty() && state.estimatedOneRepMax == null && state.recent.isEmpty()) {
+                                Text(
+                                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding).fillMaxWidth(),
+                                    text = AppTokens.strings.res(Res.string.no_data_yet),
+                                    style = AppTokens.typography.b14Med(),
+                                    color = AppTokens.colors.text.secondary,
+                                )
+                            }
                         }
                     }
                 }
@@ -233,6 +274,27 @@ internal fun ExerciseExampleScreen(
         }
     )
 }
+
+@Composable
+private fun UserDetailsShimmer() {
+    Column(
+        modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding).fillMaxWidth(),
+    ) {
+        repeat(3) { index ->
+            if (index > 0) Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(AppTokens.dp.button.medium.height * 2)
+                    .clip(RoundedCornerShape(AppTokens.dp.achievementCard.radius))
+                    .background(AppTokens.colors.background.card)
+                    .shimmer(),
+            )
+        }
+    }
+}
+
+private enum class ExerciseExampleTab { Information, Achievements }
 
 @AppPreview
 @Composable
@@ -279,5 +341,13 @@ private fun ScreenPreviewWithAction() {
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewUserDetailsLoading() {
+    PreviewContainer {
+        UserDetailsShimmer()
     }
 }

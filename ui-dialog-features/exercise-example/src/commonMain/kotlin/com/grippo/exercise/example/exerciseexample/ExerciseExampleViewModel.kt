@@ -39,12 +39,12 @@ public class ExerciseExampleViewModel(
             exerciseExampleFeature.getExerciseExampleById(id).getOrThrow()
         }
 
-        safeLaunch {
+        safeLaunch(loader = ExerciseExampleLoader.RecentExercises) {
             val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
             provideRecentExercises(exercises)
         }
 
-        safeLaunch {
+        safeLaunch(loader = ExerciseExampleLoader.Achievements) {
             val exercises = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
             provideAchievements(exercises)
         }
