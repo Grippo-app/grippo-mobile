@@ -43,10 +43,11 @@ internal class ErrorProviderImpl(
         }
 
         val config = DialogConfig.ErrorDisplay(
+            title = error.title(),
             error = error,
             onClose = callback
         )
 
-        dialogController.show(config)
+        dialogController.open(config)
     }
 }

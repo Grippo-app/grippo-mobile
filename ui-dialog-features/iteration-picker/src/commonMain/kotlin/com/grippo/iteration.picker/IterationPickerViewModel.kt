@@ -9,8 +9,6 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.dialog.api.DialogConfig
-import com.grippo.dialog.api.DialogController
 import kotlinx.collections.immutable.toPersistentList
 
 public class IterationPickerViewModel(
@@ -19,7 +17,6 @@ public class IterationPickerViewModel(
     suggestions: List<IterationState>,
     number: Int,
     focus: IterationFocusState,
-    private val dialogController: DialogController
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,
@@ -31,17 +28,13 @@ public class IterationPickerViewModel(
 ), IterationPickerContract {
 
     override fun onWeightPickerClick() {
-        val dialog = DialogConfig.WeightPicker(
-            initial = state.value.value.bodyWeight.value,
-            onResult = { result ->
-                update { s ->
-                    val iteration = s.value.copy(bodyWeight = WeightFormatState.of(result))
-                    s.copy(value = iteration)
-                }
-            }
-        )
+        navigateTo(IterationPickerDirection.PickBodyWeight(state.value.value.bodyWeight.value))
+    }
 
-        dialogController.show(dialog)
+    public fun onBodyWeightSelected(value: Float) {
+        update { current ->
+            current.copy(value = current.value.copy(bodyWeight = WeightFormatState.of(value)))
+        }
     }
 
     override fun onExternalWeightChange(value: String) {

@@ -2,6 +2,7 @@ package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
@@ -24,10 +25,21 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.dialog_saved_workout
+import com.grippo.design.resources.provider.exercise_details_btn
+import com.grippo.design.resources.provider.goal_details_title
+import com.grippo.design.resources.provider.goal_setup_suggestion_title
+import com.grippo.design.resources.provider.muscle_loading
 import com.grippo.design.resources.provider.notification_weight_description
 import com.grippo.design.resources.provider.notification_weight_title
+import com.grippo.design.resources.provider.performance_trend
 import com.grippo.design.resources.provider.period_picker_title
+import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.training_streak
+import com.grippo.design.resources.provider.value_muscle_loading
+import com.grippo.design.resources.provider.value_performance_trend
+import com.grippo.design.resources.provider.value_training_streak
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.distribution.toState
@@ -44,6 +56,9 @@ import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.days
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -52,9 +67,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.ZERO
-import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
@@ -241,10 +253,11 @@ internal class HomeViewModel(
             if (goalSetupSuggestionUseCase.shouldSuggest()) {
                 goalSetupSuggestionUseCase.markShown()
                 val config = DialogConfig.GoalSetupSuggestion(
+                    title = UiText.Res(Res.string.goal_setup_suggestion_title),
                     onConfigure = { navigateTo(HomeDirection.Goal) },
                     onLater = { navigateTo(HomeDirection.StartTraining) },
                 )
-                dialogController.show(config)
+                dialogController.open(config)
             } else {
                 navigateTo(HomeDirection.StartTraining)
             }
@@ -254,25 +267,37 @@ internal class HomeViewModel(
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
         val range = state.value.range.value ?: return
 
+        val rangeLabel = state.value.range.label()
+        val metricLabel = type.labelText()
+        val title = rangeLabel?.let {
+            UiText.Res(Res.string.value_performance_trend, persistentListOf(it, metricLabel))
+        } ?: UiText.Res(Res.string.performance_trend, persistentListOf(metricLabel))
         val dialog = DialogConfig.PerformanceTrendDetails(
+            title = title,
             range = range,
             metricType = type,
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onOpenMuscleLoading() {
         val range = state.value.range.value ?: return
 
+        val rangeLabel = state.value.range.label()
+        val title = rangeLabel?.let {
+            UiText.Res(Res.string.value_muscle_loading, persistentListOf(it))
+        } ?: UiText.Res(Res.string.muscle_loading)
         val dialog = DialogConfig.MuscleLoadingDetails(
+            title = title,
             range = range,
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onOpenProfile() {
         val dialog = DialogConfig.Profile(
+            title = UiText.Res(Res.string.profile),
             onProfileResult = {
                 when (it) {
                     ProfileMenu.Muscles -> navigateTo(HomeDirection.ExcludedMuscles)
@@ -291,7 +316,7 @@ internal class HomeViewModel(
             }
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onOpenTrainings() {
@@ -299,57 +324,63 @@ internal class HomeViewModel(
     }
 
     override fun onOpenPeriodPicker() {
-        safeLaunch {
-            val dialog = DialogConfig.PeriodPicker(
-                title = stringProvider.get(Res.string.period_picker_title),
-                initial = state.value.range.kind,
-                onResult = { result ->
-                    safeLaunch {
-                        localSettingsFeature.setRange(result.toDomain()).getOrThrow()
-                    }
+        val dialog = DialogConfig.PeriodPicker(
+            title = UiText.Res(Res.string.period_picker_title),
+            initial = state.value.range.kind,
+            onResult = { result ->
+                safeLaunch {
+                    localSettingsFeature.setRange(result.toDomain()).getOrThrow()
                 }
-            )
+            }
+        )
 
-            dialogController.show(dialog)
-        }
+        dialogController.open(dialog)
     }
 
     override fun onOpenExample(id: String) {
         val dialog = DialogConfig.ExerciseExample(
+            title = UiText.Res(Res.string.exercise_details_btn),
             id = id
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onResumeTraining() {
         val config = DialogConfig.DraftTraining(
+            title = UiText.Res(Res.string.dialog_saved_workout),
             onContinue = { navigateTo(HomeDirection.DraftTraining) },
             onStartNew = { navigateTo(HomeDirection.StartTraining) }
         )
 
-        dialogController.show(config)
+        dialogController.open(config)
     }
 
     override fun onOpenTrainingStreak() {
         val range = state.value.range.value ?: return
 
+        val rangeLabel = state.value.range.label()
+        val title = rangeLabel?.let {
+            UiText.Res(Res.string.value_training_streak, persistentListOf(it))
+        } ?: UiText.Res(Res.string.training_streak)
         val dialog = DialogConfig.TrainingStreakDetails(
+            title = title,
             range = range
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onOpenGoalDetails() {
         val range = state.value.range.value ?: return
 
         val dialog = DialogConfig.TrainingGoalDetails(
+            title = UiText.Res(Res.string.goal_details_title),
             range = range,
             onAddGoal = { navigateTo(HomeDirection.Goal) }
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onAddGoal() {

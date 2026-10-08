@@ -7,7 +7,6 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public data class PrimaryGoalPickerState(
-    val title: String,
     val value: GoalPrimaryGoalEnumState?,
     val goals: ImmutableList<GoalPrimaryGoalEnumState> = GoalPrimaryGoalEnumState.entries.toPersistentList(),
 )

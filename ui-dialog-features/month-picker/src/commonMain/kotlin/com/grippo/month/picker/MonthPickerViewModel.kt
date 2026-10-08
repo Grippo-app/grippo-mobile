@@ -6,14 +6,12 @@ import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
 
 public class MonthPickerViewModel(
-    title: String,
     initial: DateTimeFormatState,
     limitations: DateRange,
 ) : BaseViewModel<MonthPickerState, MonthPickerDirection, MonthPickerLoader>(
     MonthPickerState(
         value = initial,
         limitations = limitations,
-        title = title
     )
 ), MonthPickerContract {
 

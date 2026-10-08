@@ -9,6 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 public class ExerciseComponent(
     componentContext: ComponentContext,
+    private val onShowExampleDetails: (id: String) -> Unit,
     id: String,
     private val back: () -> Unit,
 ) : BaseComponent<ExerciseDirection>(componentContext) {
@@ -17,7 +18,6 @@ public class ExerciseComponent(
         ExerciseViewModel(
             id = id,
             trainingFeature = getKoin().get(),
-            dialogController = getKoin().get()
         )
     }
 
@@ -29,6 +29,7 @@ public class ExerciseComponent(
 
     override suspend fun eventListener(direction: ExerciseDirection) {
         when (direction) {
+            is ExerciseDirection.ShowExampleDetails -> onShowExampleDetails.invoke(direction.id)
             ExerciseDirection.Back -> back.invoke()
         }
     }

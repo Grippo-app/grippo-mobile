@@ -8,7 +8,6 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class PeriodPickerState(
-    val title: String,
     val value: DateRangeFormatState,
     val suggestions: ImmutableList<DateRangeFormatState> = persistentListOf(
         DateRangeFormatState.of(DateRangeKind.Last7Days),

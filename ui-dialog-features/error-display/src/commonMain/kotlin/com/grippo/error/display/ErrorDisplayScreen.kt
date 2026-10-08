@@ -34,16 +34,6 @@ internal fun ErrorDisplayScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = state.error.title().text(),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
     val description = state.error.description()
 
     if (description != null) {

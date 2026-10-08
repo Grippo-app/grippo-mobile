@@ -7,9 +7,11 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DurationFormatState
+import kotlin.time.Duration
 
 public class ConfirmTrainingCompletionComponent(
     componentContext: ComponentContext,
+    private val onPickDuration: (initial: Duration?, onResult: (Duration) -> Unit) -> Unit,
     private val initial: DurationFormatState,
     private val onResult: (DurationFormatState) -> Unit,
     private val back: () -> Unit,
@@ -18,7 +20,6 @@ public class ConfirmTrainingCompletionComponent(
     override val viewModel: ConfirmTrainingCompletionViewModel = componentContext.retainedInstance {
         ConfirmTrainingCompletionViewModel(
             initial = initial,
-            dialogController = getKoin().get(),
         )
     }
 
@@ -30,6 +31,8 @@ public class ConfirmTrainingCompletionComponent(
 
     override suspend fun eventListener(direction: ConfirmTrainingCompletionDirection) {
         when (direction) {
+            is ConfirmTrainingCompletionDirection.PickDuration ->
+                onPickDuration.invoke(direction.initial, viewModel::onDurationSelected)
             is ConfirmTrainingCompletionDirection.Confirm -> onResult.invoke(direction.value)
             ConfirmTrainingCompletionDirection.Back -> back.invoke()
         }

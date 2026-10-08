@@ -24,10 +24,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.training_streak
 import com.grippo.design.resources.provider.training_streak_confidence_title
 import com.grippo.design.resources.provider.training_streak_timeline_title
-import com.grippo.design.resources.provider.value_training_streak
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -40,18 +38,6 @@ internal fun TrainingStreakDetailsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = state.range.label()?.text()?.let {
-            AppTokens.strings.res(Res.string.value_training_streak, it)
-        } ?: AppTokens.strings.res(Res.string.training_streak),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier.fillMaxWidth(),

@@ -5,12 +5,10 @@ import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import kotlinx.coroutines.delay
 
 public class PrimaryGoalPickerViewModel(
-    title: String,
     initial: GoalPrimaryGoalEnumState?,
 ) : BaseViewModel<PrimaryGoalPickerState, PrimaryGoalPickerDirection, PrimaryGoalPickerLoader>(
     PrimaryGoalPickerState(
         value = initial,
-        title = title,
     )
 ), PrimaryGoalPickerContract {
 

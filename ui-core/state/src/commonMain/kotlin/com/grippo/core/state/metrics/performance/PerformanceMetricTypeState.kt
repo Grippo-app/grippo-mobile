@@ -3,6 +3,7 @@ package com.grippo.core.state.metrics.performance
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
@@ -21,6 +22,7 @@ import com.grippo.design.resources.provider.performance_trend_desc_volume
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.volume
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.StringResource
 
 @Serializable
 @Immutable
@@ -54,13 +56,15 @@ public enum class PerformanceMetricTypeState {
     }
 
     @Composable
-    public fun label(): String {
-        return when (this) {
-            Duration -> AppTokens.strings.res(Res.string.duration)
-            Volume -> AppTokens.strings.res(Res.string.volume)
-            Density -> AppTokens.strings.res(Res.string.performance_metric_density)
-            Repetitions -> AppTokens.strings.res(Res.string.repetitions)
-            Intensity -> AppTokens.strings.res(Res.string.performance_metric_intensity)
-        }
+    public fun label(): String = AppTokens.strings.res(labelResource())
+
+    public fun labelText(): UiText = UiText.Res(labelResource())
+
+    private fun labelResource(): StringResource = when (this) {
+        Duration -> Res.string.duration
+        Volume -> Res.string.volume
+        Density -> Res.string.performance_metric_density
+        Repetitions -> Res.string.repetitions
+        Intensity -> Res.string.performance_metric_intensity
     }
 }

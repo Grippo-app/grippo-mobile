@@ -10,7 +10,6 @@ import com.grippo.toolkit.date.utils.DateRangeKind
 
 public class PeriodPickerComponent(
     componentContext: ComponentContext,
-    private val title: String,
     private val initial: DateRangeKind,
     private val onResult: (value: DateRangeKind) -> Unit,
     private val back: () -> Unit,
@@ -19,7 +18,6 @@ public class PeriodPickerComponent(
     override val viewModel: PeriodPickerViewModel = componentContext.retainedInstance {
         PeriodPickerViewModel(
             initial = initial,
-            title = title
         )
     }
 

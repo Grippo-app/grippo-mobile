@@ -1,6 +1,8 @@
 package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.data.features.api.metrics.engagement.TrainingDigestUseCase
@@ -9,9 +11,12 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.exercise_record
+import com.grippo.design.resources.provider.menu
 import com.grippo.design.resources.provider.select_date
 import com.grippo.design.resources.provider.select_month
+import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.value_statistics
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
@@ -20,6 +25,7 @@ import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -35,7 +41,6 @@ import kotlinx.datetime.plus
 internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-    private val stringProvider: StringProvider,
     private val trainingDigestUseCase: TrainingDigestUseCase,
     private val deleteTrainingUseCase: DeleteTrainingUseCase,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
@@ -100,6 +105,7 @@ internal class TrainingsViewModel(
 
     override fun onTrainingMenuClick(id: String) {
         val dialog = DialogConfig.TrainingMenuPicker(
+            title = UiText.Res(Res.string.menu),
             onResult = { item ->
                 when (item) {
                     TrainingMenu.Delete -> deleteTraining(id)
@@ -109,23 +115,30 @@ internal class TrainingsViewModel(
             }
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onExerciseClick(id: String) {
         val dialog = DialogConfig.Exercise(
+            title = UiText.Res(Res.string.exercise_record),
             id = id,
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onDailyDigestViewStats() {
+        val range = state.value.date
+        val rangeLabel = DateRangeFormatState.of(range).label()
+        val title = rangeLabel?.let {
+            UiText.Res(Res.string.value_statistics, persistentListOf(it))
+        } ?: UiText.Res(Res.string.statistics)
         val config = DialogConfig.Statistics.Trainings(
-            range = state.value.date
+            title = title,
+            range = range
         )
 
-        dialogController.show(config)
+        dialogController.open(config)
     }
 
     override fun onStartTraining() {
@@ -141,27 +154,25 @@ internal class TrainingsViewModel(
     }
 
     override fun onOpenDateSelector() {
-        safeLaunch {
-            val current = state.value
-            val dialog = when (current.period) {
-                is TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
-                    title = stringProvider.get(Res.string.select_date),
-                    initial = current.date.from,
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
-                    limitations = current.limitations,
-                    onResult = ::applyAnchor,
-                )
+        val current = state.value
+        val dialog = when (current.period) {
+            is TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
+                title = UiText.Res(Res.string.select_date),
+                initial = current.date.from,
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                limitations = current.limitations,
+                onResult = ::applyAnchor,
+            )
 
-                is TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
-                    title = stringProvider.get(Res.string.select_month),
-                    initial = current.date.from,
-                    format = DateFormat.DateOnly.MmmYyyy,
-                    limitations = current.limitations,
-                    onResult = ::applyAnchor,
-                )
-            }
-            dialogController.show(dialog)
+            is TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
+                title = UiText.Res(Res.string.select_month),
+                initial = current.date.from,
+                format = DateFormat.DateOnly.MmmYyyy,
+                limitations = current.limitations,
+                onResult = ::applyAnchor,
+            )
         }
+        dialogController.open(dialog)
     }
 
     private fun applyAnchor(date: LocalDateTime) {
@@ -189,10 +200,11 @@ internal class TrainingsViewModel(
 
     private fun openTrainingOverview(id: String) {
         val config = DialogConfig.Statistics.Training(
+            title = UiText.Res(Res.string.statistics),
             id = id
         )
 
-        dialogController.show(config)
+        dialogController.open(config)
     }
 
     private fun deleteTraining(id: String) {

@@ -28,10 +28,9 @@ import com.grippo.design.resources.provider.cancel_btn
 import com.grippo.design.resources.provider.confirm_btn
 import com.grippo.design.resources.provider.confirm_training_completion_hint
 import com.grippo.design.resources.provider.confirm_training_completion_subtitle
-import com.grippo.design.resources.provider.confirm_training_completion_title
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlin.time.Duration.Companion.minutes
 
 @Composable
 internal fun ConfirmTrainingCompletionScreen(
@@ -40,18 +39,6 @@ internal fun ConfirmTrainingCompletionScreen(
     contract: ConfirmTrainingCompletionContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.confirm_training_completion_title),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier

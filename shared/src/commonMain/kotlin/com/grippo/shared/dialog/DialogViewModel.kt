@@ -3,105 +3,77 @@ package com.grippo.shared.dialog
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 internal class DialogViewModel(
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : BaseViewModel<DialogState, DialogDirection, DialogLoader>(DialogState()), DialogContract {
 
     init {
-        dialogProvider.dialog
-            .onEach(::show)
+        dialogProvider.openings
+            .onEach(::open)
             .safeLaunch(processing = Processing.Infinity)
     }
 
-    override fun onDismiss(pendingResult: (() -> Unit)?) {
-        val stack = state.value.stack
-        if (stack.isEmpty()) return
+    fun navigation(session: DialogSession, owner: DialogStep): SessionDialogNavigation =
+        SessionDialogNavigation(
+            sessionId = session.id,
+            ownerId = owner.id,
+            currentState = { state.value },
+            updateState = ::update,
+            onFinish = ::onDismiss,
+            onClose = ::onClose,
+        )
 
-        if (stack.size == 1) {
-            // Outermost dialog: hand off to the sheet hide animation.
-            // pendingResult fires from onRelease once the animation completes.
-            val withPending = stack.last().copy(pendingResult = pendingResult)
+    override fun onDismiss(pendingResult: (() -> Unit)?) {
+        val current = state.value
+        if (current.phase != SheetPhase.Present) return
+        val top = current.stack.lastOrNull() ?: return
+        if (current.stack.size == 1) {
             update {
                 it.copy(
-                    stack = persistentListOf(withPending),
+                    stack = persistentListOf(top.copy(pendingResult = pendingResult)),
                     phase = SheetPhase.Dismissing,
                 )
             }
         } else {
-            // In-sheet pop: bottom sheet stays on screen, only inner content swaps.
-            // The reconciler will pop Decompose's stack to match. pendingResult fires
-            // immediately so a chained show() from it lands in the same animation cycle.
-            update { it.copy(stack = stack.dropLast(1).toPersistentList()) }
+            update { it.copy(stack = it.stack.dropLast(1).toPersistentList()) }
+            top.config.onDismiss?.invoke()
             pendingResult?.invoke()
         }
     }
 
     override fun onClose() {
-        if (state.value.stack.isEmpty()) return
-        // Stack stays — sheet still needs content while animating out.
-        // onRelease clears it after the hide animation completes.
+        if (state.value.phase != SheetPhase.Present) return
         update { it.copy(phase = SheetPhase.Dismissing) }
     }
 
-    override fun onRelease(config: DialogConfig) {
+    override fun onRelease(session: DialogSession) {
         val current = state.value
-        if (current.phase == SheetPhase.Released) return
-
-        // These callbacks may synchronously call show(...), which routes into [show]
-        // and lands in [DialogState.pending] (phase is still Dismissing here).
+        if (current.session?.id != session.id || current.phase == SheetPhase.Released) return
+        // Invalidate old navigation before callbacks can open or modify another session.
+        update { DialogState() }
+        current.pending?.let(::open)
+        current.stack.asReversed().forEach { it.config.onDismiss?.invoke() }
         current.stack.lastOrNull()?.pendingResult?.invoke()
-        config.onDismiss?.invoke()
+    }
 
-        val nextShow = state.value.pending
-
-        if (nextShow != null) {
-            update {
-                it.copy(
-                    stack = persistentListOf(DialogEntry(nextShow, pendingResult = null)),
-                    phase = SheetPhase.Present,
-                    pending = null,
-                )
-            }
+    private fun open(config: DialogConfig) {
+        val current = state.value
+        if (current.phase != SheetPhase.Released) {
+            // A new opening is a new session, never an implicit in-sheet push.
+            update { it.copy(pending = config, phase = SheetPhase.Dismissing) }
         } else {
             update {
-                it.copy(
-                    stack = persistentListOf(),
-                    phase = SheetPhase.Released,
-                    pending = null,
+                DialogState(
+                    session = DialogSession(id = Uuid.random().toString()),
+                    stack = persistentListOf(DialogEntry(config)),
+                    phase = SheetPhase.Present,
                 )
             }
         }
     }
-
-    private fun show(config: DialogConfig) {
-        val current = state.value
-
-        // Skip exact duplicates that are still visible. Entries marked with a
-        // pendingResult are about to be removed by onRelease, so chaining onto the
-        // same key after a confirm-and-replace is allowed.
-        val isDuplicate = current.stack.any {
-            it.config.matches(config) && it.pendingResult == null
-        } || current.pending?.matches(config) == true
-        if (isDuplicate) return
-
-        if (current.phase == SheetPhase.Dismissing) {
-            // Previous dialog is still animating out; defer to onRelease.
-            update { it.copy(pending = config) }
-            return
-        }
-
-        update {
-            it.copy(
-                stack = (it.stack + DialogEntry(config, pendingResult = null)).toPersistentList(),
-                phase = SheetPhase.Present,
-            )
-        }
-    }
-
-    private fun DialogConfig.matches(other: DialogConfig): Boolean =
-        this::class == other::class && this.key == other.key
 }

@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -43,7 +42,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.start_training_title
 import com.grippo.design.resources.provider.start_training_use_btn
 import com.grippo.start.training.internal.StartTrainingPage
 import com.grippo.toolkit.date.utils.DateFormat
@@ -73,18 +71,6 @@ internal fun StartTrainingScreen(
     background = ScreenBackground.Color(AppTokens.colors.background.dialog)
 ) {
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.start_training_title),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center,
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
     val pagerState = rememberPagerState(
         pageCount = { state.options.size }

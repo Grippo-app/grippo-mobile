@@ -6,10 +6,10 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.formatters.UiText
 
 public class ConfirmationComponent(
-    private val title: String,
-    private val description: String?,
+    private val description: UiText?,
     private val onResult: () -> Unit,
     private val back: () -> Unit,
     componentContext: ComponentContext,
@@ -17,7 +17,6 @@ public class ConfirmationComponent(
 
     override val viewModel: ConfirmationViewModel = componentContext.retainedInstance {
         ConfirmationViewModel(
-            title = title,
             description = description
         )
     }

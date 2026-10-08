@@ -12,23 +12,17 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.toolbar.BottomSheetToolbar
 import com.grippo.design.core.AppTokens
-import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
-import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 internal fun DialogScreen(
@@ -40,40 +34,30 @@ internal fun DialogScreen(
     val slotState by component.childSlot.subscribeAsState()
     val child = slotState.child ?: return@BaseComposeScreen
 
-    val contentComponent = (child.instance.component as? DialogContentComponent)
-        ?: return@BaseComposeScreen
-
-    BottomSheet(
-        config = child.configuration,
-        stack = state.stack,
-        phase = state.phase,
-        component = contentComponent,
-        onBack = { contract.onDismiss(null) },
-        onClose = contract::onClose,
-        onDismiss = { contract.onRelease(child.configuration) },
-        onDismissComplete = { contract.onRelease(child.configuration) }
-    )
+    key(child.configuration.id) {
+        BottomSheet(
+            phase = state.phase,
+            component = child.instance,
+            onBack = { contract.onDismiss(null) },
+            onClose = contract::onClose,
+            onReleased = { contract.onRelease(child.configuration) }
+        )
+    }
 }
 
 @Composable
 private fun BottomSheet(
-    config: DialogConfig,
-    stack: ImmutableList<DialogEntry>,
     phase: SheetPhase,
     component: DialogContentComponent,
     onBack: () -> Unit,
     onClose: () -> Unit,
-    onDismiss: () -> Unit,
-    onDismissComplete: () -> Unit
+    onReleased: () -> Unit
 ) {
-    val onDismissCompleteRef = rememberUpdatedState(onDismissComplete)
-
-    // Compute the current flag from the top entry
-    val isSwipeDismissEnabled = stack.lastOrNull()?.config?.dismissBySwipe ?: true
-    // Keep the latest value for lambdas captured once
-    val isSwipeRef = rememberUpdatedState(isSwipeDismissEnabled)
-
-    val showBackButton = stack.size > 1
+    val onReleasedRef = rememberUpdatedState(onReleased)
+    val contentStack by component.childStack.subscribeAsState()
+    val activeConfig = contentStack.active.configuration.config
+    val isSwipeRef = rememberUpdatedState(activeConfig.dismissBySwipe)
+    val showBackButton = contentStack.backStack.isNotEmpty()
     val programmaticDismiss = phase == SheetPhase.Dismissing
 
     val programmaticDismissRef = rememberUpdatedState(programmaticDismiss)
@@ -82,62 +66,28 @@ private fun BottomSheet(
         skipPartiallyExpanded = true,
         confirmValueChange = { target ->
             // Use the latest flag; do not rely on a stale capture
-            if (target == SheetValue.Hidden && !isSwipeRef.value) return@rememberModalBottomSheetState false
+            if (target == SheetValue.Hidden && !isSwipeRef.value && !programmaticDismissRef.value) {
+                return@rememberModalBottomSheetState false
+            }
             true
         },
     )
 
-    var dismissNotified by remember { mutableStateOf(false) }
-
     LaunchedEffect(phase) {
         if (programmaticDismiss) {
-            dismissNotified = false
-            if (sheetState.currentValue != SheetValue.Hidden) {
-                sheetState.hide() // suspends until the hide animation finishes
-            }
-            if (!dismissNotified) {
-                onDismissCompleteRef.value()
-                dismissNotified = true
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { sheetState.currentValue }.collect { value ->
-            if (value == SheetValue.Hidden && programmaticDismissRef.value && !dismissNotified) {
-                onDismissCompleteRef.value()
-                dismissNotified = true
-            }
-        }
-    }
-
-    // If VM says PRESENT but the sheet is Hidden (e.g., new content after a prior hide),
-    // explicitly open it. This does not affect in-sheet Push/Pop when already visible.
-    LaunchedEffect(phase, config) {
-        if (phase == SheetPhase.Present) {
-            withFrameNanos { /* next frame */ }
-
-            val animInProgress = sheetState.currentValue != sheetState.targetValue
-            val isHiddenNow = sheetState.currentValue == SheetValue.Hidden
-            val targetIsHidden = sheetState.targetValue == SheetValue.Hidden
-
-            if (!animInProgress && isHiddenNow && targetIsHidden) {
-                try {
-                    sheetState.show()
-                } catch (_: CancellationException) {
-                }
-            }
+            sheetState.hide()
+            onReleasedRef.value()
         }
     }
 
     ModalBottomSheet(
         modifier = Modifier.statusBarsPadding(),
-        onDismissRequest = { if (isSwipeRef.value) onDismiss() }, // latest flag
+        onDismissRequest = { if (isSwipeRef.value) onReleasedRef.value() }, // latest flag
         sheetState = sheetState,
         contentWindowInsets = { WindowInsets() },
         scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(
-            shouldDismissOnBackPress = isSwipeDismissEnabled, // recomposes with new flag
+            shouldDismissOnBackPress = false, // Back is routed through the inner stack below.
         ),
         containerColor = AppTokens.colors.background.dialog,
         contentColor = AppTokens.colors.text.primary,
@@ -147,8 +97,11 @@ private fun BottomSheet(
             topEnd = AppTokens.dp.bottomSheet.radius
         ),
     ) {
+        BackHandler(enabled = phase == SheetPhase.Present, onBack = onBack)
+
         BottomSheetToolbar(
             modifier = Modifier.fillMaxWidth(),
+            title = activeConfig.title.text(),
             onBack = onBack,
             onClose = onClose,
             allowBack = showBackButton

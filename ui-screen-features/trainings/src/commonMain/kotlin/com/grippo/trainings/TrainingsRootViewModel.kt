@@ -1,8 +1,11 @@
 package com.grippo.trainings
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.UiText
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.DraftTraining
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.dialog_saved_workout
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import kotlinx.coroutines.flow.firstOrNull
@@ -25,13 +28,12 @@ public class TrainingsRootViewModel(
         val hasDraftTraining = value != null
 
         if (hasDraftTraining) {
-            safeLaunch {
-                val config = DialogConfig.DraftTraining(
-                    onContinue = { navigateTo(TrainingsRootDirection.DraftTraining) }
-                )
+            val config = DialogConfig.DraftTraining(
+                title = UiText.Res(Res.string.dialog_saved_workout),
+                onContinue = { navigateTo(TrainingsRootDirection.DraftTraining) }
+            )
 
-                dialogController.show(config)
-            }
+            dialogController.open(config)
         }
     }
 

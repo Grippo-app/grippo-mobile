@@ -2,6 +2,7 @@ package com.grippo.profile.body
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
@@ -9,9 +10,11 @@ import com.grippo.data.features.api.weight.history.UpdateWeightUseCase
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.height_picker_title
 import com.grippo.design.resources.provider.notification_weight_description
 import com.grippo.design.resources.provider.notification_weight_title
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.weight_picker_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
@@ -19,9 +22,9 @@ import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration.Companion.days
 
 internal class ProfileBodyViewModel(
     private val dialogController: DialogController,
@@ -72,18 +75,20 @@ internal class ProfileBodyViewModel(
 
     override fun onHeightPickerClick() {
         val dialog = DialogConfig.HeightPicker(
+            title = UiText.Res(Res.string.height_picker_title),
             initial = state.value.height.value,
             onResult = { value -> update { it.copy(height = HeightFormatState.of(value)) } }
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
+            title = UiText.Res(Res.string.weight_picker_title),
             initial = state.value.weight.value,
             onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onApplyClick() {

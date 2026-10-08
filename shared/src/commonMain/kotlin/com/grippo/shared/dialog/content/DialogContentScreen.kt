@@ -9,9 +9,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -23,32 +21,22 @@ import com.arkivanov.decompose.keyHashString
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.core.AppTokens
-import kotlinx.collections.immutable.ImmutableSet
 
 @OptIn(InternalDecomposeApi::class)
 @Composable
 internal fun DialogContentScreen(
     component: DialogContentComponent,
-    state: DialogContentState,
-    loaders: ImmutableSet<DialogContentLoader>,
-    contract: DialogContentContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     val stackState by component.childStack.subscribeAsState()
     val active = stackState.active
-
-    val visibleChild = remember { mutableStateOf(active) }
-
-    LaunchedEffect(active.key) {
-        visibleChild.value = active
-    }
 
     val holder = rememberSaveableStateHolder()
     holder.RetainStates(stackState.items.mapTo(HashSet(), Child<*, *>::keyHashString))
 
     AnimatedContent(
         modifier = Modifier.fillMaxWidth(),
-        targetState = visibleChild.value,
+        targetState = active,
         transitionSpec = {
             fadeIn(tween(200)) togetherWith fadeOut(tween(200)) using SizeTransform(clip = false)
         },

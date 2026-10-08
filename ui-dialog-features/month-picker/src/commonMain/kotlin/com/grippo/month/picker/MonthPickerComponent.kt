@@ -11,7 +11,6 @@ import com.grippo.toolkit.date.utils.DateRange
 
 public class MonthPickerComponent(
     componentContext: ComponentContext,
-    private val title: String,
     private val initial: DateTimeFormatState,
     private val limitations: DateRange,
     private val onResult: (value: DateTimeFormatState) -> Unit,
@@ -22,7 +21,6 @@ public class MonthPickerComponent(
         MonthPickerViewModel(
             initial = initial,
             limitations = limitations,
-            title = title
         )
     }
 

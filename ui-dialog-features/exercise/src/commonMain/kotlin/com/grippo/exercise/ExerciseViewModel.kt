@@ -3,15 +3,12 @@ package com.grippo.exercise
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Exercise
-import com.grippo.dialog.api.DialogConfig
-import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseViewModel(
     id: String,
     trainingFeature: TrainingFeature,
-    private val dialogController: DialogController
 ) : BaseViewModel<ExerciseState, ExerciseDirection, ExerciseLoader>(
     ExerciseState()
 ), ExerciseContract {
@@ -34,10 +31,6 @@ public class ExerciseViewModel(
     override fun onExampleDetailsClick() {
         val id = state.value.exercise?.exerciseExample?.id ?: return
 
-        val dialog = DialogConfig.ExerciseExample(
-            id = id,
-        )
-
-        dialogController.show(dialog)
+        navigateTo(ExerciseDirection.ShowExampleDetails(id))
     }
 }

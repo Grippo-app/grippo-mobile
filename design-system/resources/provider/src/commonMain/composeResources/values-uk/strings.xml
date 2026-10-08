@@ -841,4 +841,7 @@
     <string name="home_unlock_set_goal_title">Відповідність цілі</string>
     <string name="home_unlock_set_goal_description">Звіряй тренування з ціллю</string>
     <string name="home_unlock_set_goal_cta">Поставити</string>
+    <string name="dialog_back">Назад</string>
+    <string name="dialog_close">Закрити</string>
+    <string name="dialog_saved_workout">Збережене тренування</string>
 </resources>

@@ -34,9 +34,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.muscle_loading
 import com.grippo.design.resources.provider.muscle_loading_distribution_title
-import com.grippo.design.resources.provider.value_muscle_loading
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -50,18 +48,6 @@ internal fun MuscleLoadingDetailsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = state.range.label()?.text()?.let {
-            AppTokens.strings.res(Res.string.value_muscle_loading, it)
-        } ?: AppTokens.strings.res(Res.string.muscle_loading),
-        style = AppTokens.typography.h3(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier.fillMaxWidth(),

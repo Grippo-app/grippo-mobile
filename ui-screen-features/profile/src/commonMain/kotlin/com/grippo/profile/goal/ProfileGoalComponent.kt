@@ -16,7 +16,6 @@ internal class ProfileGoalComponent(
         ProfileGoalViewModel(
             goalFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get()
         )
     }
 

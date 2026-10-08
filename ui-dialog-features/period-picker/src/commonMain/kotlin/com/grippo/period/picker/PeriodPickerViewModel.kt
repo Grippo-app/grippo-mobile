@@ -6,12 +6,10 @@ import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.coroutines.delay
 
 public class PeriodPickerViewModel(
-    title: String,
     initial: DateRangeKind,
 ) : BaseViewModel<PeriodPickerState, PeriodPickerDirection, PeriodPickerLoader>(
     PeriodPickerState(
         value = DateRangeFormatState.of(initial),
-        title = title
     )
 ), PeriodPickerContract {
 

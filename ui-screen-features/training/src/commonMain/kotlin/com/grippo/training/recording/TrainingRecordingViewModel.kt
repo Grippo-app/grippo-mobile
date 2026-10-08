@@ -6,6 +6,7 @@ import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.stage.StageState
@@ -19,11 +20,14 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.confirm_training_completion_title
 import com.grippo.design.resources.provider.notification_forgot_training_description
 import com.grippo.design.resources.provider.notification_forgot_training_title
 import com.grippo.design.resources.provider.planned_sets_unfinished_description
 import com.grippo.design.resources.provider.planned_sets_unfinished_title
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.select_exercise
+import com.grippo.design.resources.provider.start_training_title
 import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
 import com.grippo.dialog.api.DialogConfig
@@ -42,6 +46,9 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
@@ -50,9 +57,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
-import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
     stage: StageState,
@@ -109,6 +113,7 @@ internal class TrainingRecordingViewModel(
     private suspend fun showStartTrainingDialog() {
         delay(START_TRAINING_DIALOG_DELAY)
         val dialog = DialogConfig.StartTraining(
+            title = UiText.Res(Res.string.start_training_title),
             onStartEmpty = ::onAddExercise,
             onUseExercises = { exercises ->
                 if (exercises.isEmpty()) return@StartTraining
@@ -119,7 +124,7 @@ internal class TrainingRecordingViewModel(
                 saveDraftTraining()
             },
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     private fun provideDraftTraining(value: DraftTraining?) {
@@ -167,13 +172,14 @@ internal class TrainingRecordingViewModel(
 
     override fun onAddExercise() {
         val dialog = DialogConfig.ExerciseExamplePicker.Default(
+            title = UiText.Res(Res.string.select_exercise),
             preselectedMuscleGroupId = lastTargetMuscleGroupId(),
             onResult = { example ->
                 val exercise = createExerciseFromExample(example.value)
                 navigateTo(TrainingRecordingDirection.ToExercise(exercise))
             }
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onEditExercise(id: String) {
@@ -245,14 +251,12 @@ internal class TrainingRecordingViewModel(
             return
         }
 
-        safeLaunch {
-            val dialog = DialogConfig.Confirmation(
-                title = stringProvider.get(Res.string.planned_sets_unfinished_title),
-                description = stringProvider.get(Res.string.planned_sets_unfinished_description),
-                onResult = ::showCompletionDialog
-            )
-            dialogController.show(dialog)
-        }
+        val dialog = DialogConfig.Confirmation(
+            title = UiText.Res(Res.string.planned_sets_unfinished_title),
+            description = UiText.Res(Res.string.planned_sets_unfinished_description),
+            onResult = ::showCompletionDialog
+        )
+        dialogController.open(dialog)
     }
 
     private fun showCompletionDialog() {
@@ -264,6 +268,7 @@ internal class TrainingRecordingViewModel(
         val duration = DateTimeUtils.ago(state.value.startAt)
 
         val dialog = DialogConfig.ConfirmTrainingCompletion(
+            title = UiText.Res(Res.string.confirm_training_completion_title),
             initial = duration,
             onResult = { result ->
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
@@ -285,7 +290,7 @@ internal class TrainingRecordingViewModel(
             }
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     private fun toCompleteTraining() {
@@ -305,14 +310,12 @@ internal class TrainingRecordingViewModel(
             return
         }
 
-        safeLaunch {
-            val dialog = DialogConfig.Confirmation(
-                title = stringProvider.get(Res.string.training_progress_lost_title),
-                description = stringProvider.get(Res.string.training_progress_lost_description),
-                onResult = ::discardDraftAndExit,
-            )
-            dialogController.show(dialog)
-        }
+        val dialog = DialogConfig.Confirmation(
+            title = UiText.Res(Res.string.training_progress_lost_title),
+            description = UiText.Res(Res.string.training_progress_lost_description),
+            onResult = ::discardDraftAndExit,
+        )
+        dialogController.open(dialog)
     }
 
     private fun discardDraftAndExit() {

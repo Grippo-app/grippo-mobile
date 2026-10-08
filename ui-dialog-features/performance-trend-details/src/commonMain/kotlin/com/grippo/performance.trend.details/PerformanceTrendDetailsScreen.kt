@@ -27,8 +27,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.history
-import com.grippo.design.resources.provider.performance_trend
-import com.grippo.design.resources.provider.value_performance_trend
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -41,22 +39,6 @@ internal fun PerformanceTrendDetailsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    val metricLabel = state.metricType.label()
-
-    val title = state.range.label()?.text()?.let {
-        AppTokens.strings.res(Res.string.value_performance_trend, it, metricLabel)
-    } ?: AppTokens.strings.res(Res.string.performance_trend, metricLabel)
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = title,
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier.fillMaxWidth(),

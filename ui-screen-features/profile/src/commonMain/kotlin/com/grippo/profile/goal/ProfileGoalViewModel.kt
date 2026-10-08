@@ -2,6 +2,7 @@ package com.grippo.profile.goal
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
@@ -9,7 +10,6 @@ import com.grippo.data.features.api.goal.models.SetGoal
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_picker_primary_title
 import com.grippo.design.resources.provider.goal_picker_secondary_title
-import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.select_date
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.onEach
 internal class ProfileGoalViewModel(
     private val goalFeature: GoalFeature,
     private val dialogController: DialogController,
-    private val stringProvider: StringProvider,
 ) : BaseViewModel<ProfileGoalState, ProfileGoalDirection, ProfileGoalLoader>(
     ProfileGoalState()
 ), ProfileGoalContract {
@@ -62,51 +61,45 @@ internal class ProfileGoalViewModel(
     }
 
     override fun onTargetDatePickerClick() {
-        safeLaunch {
-            val config = DialogConfig.DatePicker(
-                initial = state.value.selectedTarget.value,
-                format = state.value.selectedTarget.format,
-                limitations = state.value.limitations,
-                title = stringProvider.get(Res.string.select_date),
-                onResult = { result ->
-                    update {
-                        it.copy(
-                            selectedTarget = DateTimeFormatState.of(
-                                value = result,
-                                range = it.limitations,
-                                format = it.selectedTarget.format,
-                            )
+        val config = DialogConfig.DatePicker(
+            initial = state.value.selectedTarget.value,
+            format = state.value.selectedTarget.format,
+            limitations = state.value.limitations,
+            title = UiText.Res(Res.string.select_date),
+            onResult = { result ->
+                update {
+                    it.copy(
+                        selectedTarget = DateTimeFormatState.of(
+                            value = result,
+                            range = it.limitations,
+                            format = it.selectedTarget.format,
                         )
-                    }
+                    )
                 }
-            )
+            }
+        )
 
-            dialogController.show(config)
-        }
+        dialogController.open(config)
     }
 
     override fun onPrimaryGoalPickerClick() {
-        safeLaunch {
-            val config = DialogConfig.PrimaryGoalPicker(
-                initial = state.value.selectedPrimary,
-                title = stringProvider.get(Res.string.goal_picker_primary_title),
-                onResult = { update { current -> current.copy(selectedPrimary = it) } }
-            )
+        val config = DialogConfig.PrimaryGoalPicker(
+            initial = state.value.selectedPrimary,
+            title = UiText.Res(Res.string.goal_picker_primary_title),
+            onResult = { update { current -> current.copy(selectedPrimary = it) } }
+        )
 
-            dialogController.show(config)
-        }
+        dialogController.open(config)
     }
 
     override fun onSecondaryGoalPickerClick() {
-        safeLaunch {
-            val config = DialogConfig.SecondaryGoalPicker(
-                initial = state.value.selectedSecondary,
-                title = stringProvider.get(Res.string.goal_picker_secondary_title),
-                onResult = { update { current -> current.copy(selectedSecondary = it) } }
-            )
+        val config = DialogConfig.SecondaryGoalPicker(
+            initial = state.value.selectedSecondary,
+            title = UiText.Res(Res.string.goal_picker_secondary_title),
+            onResult = { update { current -> current.copy(selectedSecondary = it) } }
+        )
 
-            dialogController.show(config)
-        }
+        dialogController.open(config)
     }
 
     override fun onPersonalizationClick(item: PersonalizationKeyEnumState) {

@@ -10,7 +10,6 @@ import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 
 public class SecondaryGoalPickerComponent(
     componentContext: ComponentContext,
-    private val title: String,
     private val initial: GoalSecondaryGoalEnumState?,
     private val onResult: (value: GoalSecondaryGoalEnumState) -> Unit,
     private val back: () -> Unit,
@@ -19,7 +18,6 @@ public class SecondaryGoalPickerComponent(
     override val viewModel: SecondaryGoalPickerViewModel = componentContext.retainedInstance {
         SecondaryGoalPickerViewModel(
             initial = initial,
-            title = title,
         )
     }
 

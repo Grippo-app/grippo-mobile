@@ -862,4 +862,7 @@
     <string name="home_unlock_set_goal_title">Goal alignment</string>
     <string name="home_unlock_set_goal_description">See how training matches your goal</string>
     <string name="home_unlock_set_goal_cta">Set</string>
+    <string name="dialog_back">Back</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_saved_workout">Saved workout</string>
 </resources>

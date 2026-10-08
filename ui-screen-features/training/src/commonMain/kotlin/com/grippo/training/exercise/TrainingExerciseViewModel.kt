@@ -5,6 +5,7 @@ import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.ExerciseState
@@ -17,11 +18,16 @@ import com.grippo.data.features.api.training.models.ExerciseArtifacts
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.change_btn
-import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.exercise_details_btn
+import com.grippo.design.resources.provider.exercise_example_picker_title_replace
+import com.grippo.design.resources.provider.set_value
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.dialog.api.DialogController.Session
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.domain.training.toDomain
+import kotlin.uuid.Uuid
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,7 +36,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlin.uuid.Uuid
 
 internal class TrainingExerciseViewModel(
     exercise: ExerciseState,
@@ -38,7 +43,6 @@ internal class TrainingExerciseViewModel(
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val exerciseValidatorUseCase: ExerciseValidatorUseCase,
-    private val stringProvider: StringProvider,
 ) : BaseViewModel<TrainingExerciseState, TrainingExerciseDirection, TrainingExerciseLoader>(
     TrainingExerciseState(exercise = exercise)
 ), TrainingExerciseContract {
@@ -142,17 +146,17 @@ internal class TrainingExerciseViewModel(
     }
 
     override fun onExampleClick() {
-        safeLaunch {
-            val title = stringProvider.get(Res.string.change_btn)
-            val dialog = DialogConfig.ExerciseExample(
-                id = state.value.exercise.exerciseExample.id,
-                mode = DialogConfig.ExerciseExample.Mode.Action(
-                    title = title,
-                    onClick = ::showExercisePicker,
-                ),
-            )
-            dialogController.show(dialog)
-        }
+        val exampleId = state.value.exercise.exerciseExample.id
+        val title = UiText.Res(Res.string.change_btn)
+        val dialog = DialogConfig.ExerciseExample(
+            title = UiText.Res(Res.string.exercise_details_btn),
+            id = exampleId,
+            mode = DialogConfig.ExerciseExample.Mode.Action(
+                title = title,
+                onClick = { navigation -> showExercisePicker(navigation, exampleId) },
+            ),
+        )
+        dialogController.open(dialog)
     }
 
     override fun onSave() {
@@ -163,12 +167,13 @@ internal class TrainingExerciseViewModel(
         navigateTo(TrainingExerciseDirection.Back)
     }
 
-    private fun showExercisePicker() {
+    private fun showExercisePicker(navigation: Session, exampleId: String) {
         val dialog = DialogConfig.ExerciseExamplePicker.SimilarTo(
-            targetExerciseExampleId = state.value.exercise.exerciseExample.id,
+            title = UiText.Res(Res.string.exercise_example_picker_title_replace),
+            targetExerciseExampleId = exampleId,
             onResult = ::swapExerciseExample,
         )
-        dialogController.show(dialog)
+        navigation.replaceCurrent(dialog)
     }
 
     private fun swapExerciseExample(value: ExerciseExampleState) {
@@ -226,6 +231,7 @@ internal class TrainingExerciseViewModel(
         onResult: (IterationState) -> Unit,
     ) {
         val dialog = DialogConfig.Iteration(
+            title = UiText.Res(Res.string.set_value, persistentListOf(number)),
             initial = initial,
             number = number,
             suggestions = suggestedIterations(),
@@ -234,7 +240,7 @@ internal class TrainingExerciseViewModel(
             onResult = onResult,
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     private fun buildBlankIteration(example: ExerciseExampleState): IterationState {

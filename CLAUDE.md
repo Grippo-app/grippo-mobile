@@ -63,7 +63,7 @@ Groups:
 
 ### `:ui-dialog-features:*` — bottom sheet flows (~25 modules)
 
-- `:dialog-api` — `DialogConfig` sealed, `DialogController.show(config)`, `DialogProvider`, `DialogModule`.
+- `:dialog-api` — `DialogConfig` sealed, `DialogController.open(config)`, `DialogProvider`, `DialogModule`.
 - Each dialog feature is a standalone `Component`/`ViewModel`/`Screen` package, looking **identical to a screen feature** except the host is `DialogComponent` instead of `RootComponent`.
 
 ### `:data-services:*` — low-level services and DTOs
@@ -230,7 +230,7 @@ ErrorProvider.provide(exception, onError)
     ↓
 ErrorProviderImpl maps AppError → AppErrorState
     ↓
-DialogController.show(DialogConfig.ErrorDisplay(state, onClose = onError))
+dialogController.open(DialogConfig.ErrorDisplay(title = state.title(), error = state, onClose = onError))
 ```
 
 Catching exceptions manually inside a ViewModel is **forbidden** (exception: domain logic such as `result.onSuccess { ... }` after `api.call()`).
@@ -294,12 +294,14 @@ private fun RootComponent.Child.animator(): StackAnimator = when (this) {
 
 Fully separate subgraph parallel to the screen stack navigator:
 
-- `DialogController.show(config: DialogConfig)` — emit a config from any ViewModel (the controller is injected into VM via Koin).
-- `DialogConfig` — `@Serializable sealed class`; subtype implements `override val key: String` via `buildKey(...)` (length-prefixed parts: `${value.length}:${value}|...`).
-- `onDismiss: (() -> Unit)?` — `@Transient`, not serialized.
-- `dismissBySwipe: Boolean = true` — controls `ModalBottomSheetProperties.shouldDismissOnBackPress` and swipe-to-dismiss.
-- `DialogComponent` is hosted in `:shared`, uses `SlotNavigation<DialogConfig>` + `childSlot(serializer = DialogConfig.serializer())`. The Dialog VM maintains an **internal stack** in state for in-sheet navigation (push/pop without closing the sheet).
-- Pickers return results via a **callback in the config**: `DialogConfig.WeightPicker(initial = ..., onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } })`. The callback is also `@Transient`.
+- `DialogController.open(config: DialogConfig)` starts a new sheet session; an existing session closes first. The controller is injected into ordinary screen ViewModels via Koin.
+- `DialogConfig` is a runtime sealed class with a required `title: UiText`. It is not serialized. `hasSameContentAs(other)` compares typed content and titles, excluding callbacks, to ignore duplicate nested requests.
+- `onDismiss: (() -> Unit)?` runs when a step is removed. Callbacks remain live only for the lifetime of the in-memory session.
+- `dismissBySwipe: Boolean = true` controls swipe and scrim dismissal. Back navigates through the nested stack; toolbar Close dismisses the whole session.
+- `DialogComponent` in `:shared` uses `SlotNavigation<DialogSession>`. Its content uses `StackNavigation<DialogStep>`. Both use `serializer = null`: dialogs are not restored after process death. The retained ViewModel preserves the live session during ordinary screen recreation.
+- Nested-opening features emit semantic directions such as `PickBodyWeight(initial)` and `PickDuration(initial)`. Their components forward typed callbacks; the host chooses the dialog/title and connects the result to the feature. These feature modules do not depend on `dialog-api`.
+- `DialogController.Session` is bound to the originating step and session. Its `push`, `replaceCurrent`, `back`, and `close` methods ignore inactive or removed steps. It is supplied by the host, not injected through Koin.
+- Pickers return results via typed callbacks in their configs. The host guards delivery using the originating step and delivers results after popping the nested picker or closing the root sheet.
 
 ### `ResultManager` vs callback in DialogConfig
 
@@ -793,16 +795,15 @@ Example: `:ui-dialog-features:rating-picker`.
 3. Seven MVI files like a screen, but `<Name>Component`/`<Name>Screen` are called `RatingPickerComponent`/`RatingPickerScreen`. Component constructor is usually: `(componentContext, initial: <Type>, onResult: (<Type>) -> Unit, back: () -> Unit)`.
 4. In `:ui-dialog-features:dialog-api/DialogConfig.kt` add:
    ```kotlin
-   @Serializable
    public data class RatingPicker(
+       override val title: UiText,
        val initial: Int,
-       @Transient val onResult: (Int) -> Unit = { },
-   ) : DialogConfig(onDismiss = null, dismissBySwipe = true) {
-       override val key: String get() = buildKey("RatingPicker", initial)
-   }
+       val onResult: (Int) -> Unit = {},
+   ) : DialogConfig()
    ```
-5. In `:shared/dialog/content/DialogContentComponent` add the child factory: `is DialogConfig.RatingPicker -> Child.RatingPicker(RatingPickerComponent(context, config.initial, config.onResult, back))`.
-6. Use from any VM: `dialogController.show(DialogConfig.RatingPicker(initial = 5, onResult = { v -> update { ... } }))`.
+   Add its branch to the exhaustive `hasSameContentAs` comparison, comparing `initial` and excluding `onResult` (the common title comparison already runs first).
+5. In `:shared/dialog/content/DialogContentComponent`, add the child factory. Deliver `onResult` through the local step-bound `finish { router.onResult(value) }` helper, and route Back through `finish()`.
+6. Open from an ordinary screen ViewModel with `dialogController.open(DialogConfig.RatingPicker(title = UiText.Str("Rating"), initial = 5, onResult = { v -> update { ... } }))`. For nested opening, emit a feature-specific intention (for example `PickRating(initial)`) and let the host construct and push the config. Do not add a dialog-api dependency to the initiating feature.
 
 ### 4. Add a new data feature module
 
@@ -970,7 +971,7 @@ There are no test source sets or `*.kt` tests in the repo. Don't add without an 
 - Any change to `:androidApp`/`:iosApp` shell beyond obvious bug fixes.
 - Changes to DTOs in `:data-services:backend/dto/...` — this is a backend contract, sync with `grippo-backend` manually.
 - Changes to `BackendClient`/`TokenProvider`/`HttpModule` (network core).
-- Adding a field to `DialogConfig` (must serialize the `key` correctly).
+- Adding a field to `DialogConfig` (must update its typed `hasSameContentAs` comparison).
 - Adding a new CompositionLocal or a new `AppToken` (colors/dp/typography).
 
 ---

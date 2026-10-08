@@ -30,7 +30,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
-import com.grippo.design.resources.provider.value_statistics
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -43,19 +42,6 @@ internal fun StatisticsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = when (val mode = state.mode) {
-            is StatisticsMode.Exercises -> AppTokens.strings.res(Res.string.statistics)
-            is StatisticsMode.Trainings -> mode.range.label()?.text()?.let {
-                AppTokens.strings.res(Res.string.value_statistics, it)
-            } ?: AppTokens.strings.res(Res.string.statistics)
-        },
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
 
     when (val mode = state.mode) {
         is StatisticsMode.Exercises -> {

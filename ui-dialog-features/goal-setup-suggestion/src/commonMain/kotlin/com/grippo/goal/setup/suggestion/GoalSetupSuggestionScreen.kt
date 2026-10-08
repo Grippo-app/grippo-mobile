@@ -26,7 +26,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_setup_suggestion_primary_btn
 import com.grippo.design.resources.provider.goal_setup_suggestion_secondary_btn
 import com.grippo.design.resources.provider.goal_setup_suggestion_subtitle
-import com.grippo.design.resources.provider.goal_setup_suggestion_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -40,18 +39,6 @@ internal fun GoalSetupSuggestionScreen(
 ) {
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.goal_setup_suggestion_title),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center,
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier

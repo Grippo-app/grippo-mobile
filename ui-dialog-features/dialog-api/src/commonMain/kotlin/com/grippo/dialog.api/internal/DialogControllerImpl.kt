@@ -11,10 +11,10 @@ import org.koin.core.annotation.Single
 @Single(binds = [DialogController::class, DialogProvider::class])
 internal class DialogControllerImpl : DialogController, DialogProvider {
 
-    private val _dialog = Channel<DialogConfig>(Channel.BUFFERED)
-    override val dialog: Flow<DialogConfig> = _dialog.receiveAsFlow()
+    private val _openings = Channel<DialogConfig>(Channel.CONFLATED)
+    override val openings: Flow<DialogConfig> = _openings.receiveAsFlow()
 
-    override fun show(config: DialogConfig) {
-        _dialog.trySend(config)
+    override fun open(config: DialogConfig) {
+        check(_openings.trySend(config).isSuccess) { "Dialog request channel is closed" }
     }
 }

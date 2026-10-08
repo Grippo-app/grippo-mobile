@@ -1,13 +1,12 @@
 package com.grippo.confirmation
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.UiText
 
 public class ConfirmationViewModel(
-    title: String,
-    description: String?,
+    description: UiText?,
 ) : BaseViewModel<ConfirmationState, ConfirmationDirection, ConfirmationLoader>(
     ConfirmationState(
-        title = title,
         description = description
     )
 ), ConfirmationContract {

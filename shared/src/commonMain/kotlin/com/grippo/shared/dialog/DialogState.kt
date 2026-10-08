@@ -2,42 +2,40 @@ package com.grippo.shared.dialog
 
 import androidx.compose.runtime.Immutable
 import com.grippo.dialog.api.DialogConfig
-import kotlinx.collections.immutable.ImmutableList
+import kotlin.uuid.Uuid
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class DialogState(
-    val stack: ImmutableList<DialogEntry> = persistentListOf(),
+    val session: DialogSession? = null,
+    val stack: PersistentList<DialogEntry> = persistentListOf(),
     val phase: SheetPhase = SheetPhase.Released,
     val pending: DialogConfig? = null,
-) {
-    val sessionConfig: DialogConfig? = if (phase == SheetPhase.Released) {
-        null
-    } else {
-        stack.firstOrNull()?.config
-    }
+)
 
-    val innerConfigs: List<DialogConfig> = if (stack.size <= 1) {
-        emptyList()
-    } else {
-        stack.drop(1).map { it.config }
-    }
+@Immutable
+internal data class DialogSession(val id: String)
+
+/** Stable runtime identity preserves child instances across stack updates. */
+@Immutable
+internal class DialogStep(val id: String, val config: DialogConfig) {
+    override fun equals(other: Any?): Boolean = other is DialogStep && id == other.id
+    override fun hashCode(): Int = id.hashCode()
 }
 
 @Immutable
 internal data class DialogEntry(
     val config: DialogConfig,
-    val pendingResult: (() -> Unit)? = null
-)
+    val id: String = Uuid.random().toString(),
+    val pendingResult: (() -> Unit)? = null,
+) {
+    fun asStep(): DialogStep = DialogStep(id, config)
+}
 
 @Immutable
 internal sealed class SheetPhase {
-    @Immutable
     data object Present : SheetPhase()
-
-    @Immutable
     data object Dismissing : SheetPhase()
-
-    @Immutable
     data object Released : SheetPhase()
 }

@@ -32,7 +32,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_details_insights_title
 import com.grippo.design.resources.provider.goal_details_subtitle
-import com.grippo.design.resources.provider.goal_details_title
 import com.grippo.design.resources.provider.goal_fit_diagnostic_drifting_title
 import com.grippo.design.resources.provider.goal_fit_diagnostic_on_track_title
 import com.grippo.toolkit.date.utils.DateRangeKind
@@ -51,16 +50,6 @@ internal fun TrainingGoalDetailsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.goal_details_title),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center,
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier

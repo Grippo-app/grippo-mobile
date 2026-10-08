@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.ExerciseExampleValueState
@@ -44,9 +42,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_exercise_examples
-import com.grippo.design.resources.provider.exercise_example_picker_title_replace
 import com.grippo.design.resources.provider.icons.EmptyExerciseExample
-import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.Header
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -60,20 +56,6 @@ internal fun ExerciseExamplePickerScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     val replaceMode = state.mode as? ExerciseExamplePickerMode.SimilarTo
-
-    val title = if (replaceMode != null) {
-        AppTokens.strings.res(Res.string.exercise_example_picker_title_replace)
-    } else {
-        AppTokens.strings.res(Res.string.select_exercise)
-    }
-
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = title,
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
 
     var cachedCardTarget by remember {
         mutableStateOf<ExerciseExampleValueState?>(null)

@@ -18,6 +18,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.achievements.stubAchievements
 import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
@@ -219,7 +220,7 @@ internal fun ExerciseExampleScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        content = ButtonContent.Text(text = mode.title),
+                        content = ButtonContent.Text(text = mode.title.text()),
                         style = ButtonStyle.Secondary,
                         onClick = contract::onAction,
                     )
@@ -271,7 +272,7 @@ private fun ScreenPreviewWithAction() {
     PreviewContainer {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
-                mode = ExerciseExampleModeState.Action(title = "Change"),
+                mode = ExerciseExampleModeState.Action(title = UiText.Str("Change")),
                 example = stubExerciseExample(),
                 recent = stubExercises(),
             ),

@@ -2,6 +2,7 @@ package com.grippo.training.completed
 
 import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -15,8 +16,10 @@ import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.error_save_training_description
+import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.something_went_wrong
+import com.grippo.design.resources.provider.statistics
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.distribution.toState
@@ -133,16 +136,20 @@ internal class TrainingCompletedViewModel(
         val id = state.value.training?.id ?: return
 
         val dialog = DialogConfig.Statistics.Training(
+            title = UiText.Res(Res.string.statistics),
             id = id
         )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onExerciseClick(id: String) {
-        val dialog = DialogConfig.Exercise(id = id)
+        val dialog = DialogConfig.Exercise(
+            title = UiText.Res(Res.string.exercise_record),
+            id = id,
+        )
 
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onBack() {

@@ -18,7 +18,6 @@ internal class TrainingsComponent(
         TrainingsViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get(),
             trainingDigestUseCase = getKoin().get(),
             trainingTimelineUseCase = getKoin().get(),
             deleteTrainingUseCase = getKoin().get()

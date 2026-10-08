@@ -17,7 +17,6 @@ internal class ProfileSettingsComponent(
             logoutUseCase = getKoin().get(),
             deleteProfileUseCase = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get()
         )
     }
 

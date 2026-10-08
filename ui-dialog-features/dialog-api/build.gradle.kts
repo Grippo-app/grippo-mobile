@@ -3,7 +3,6 @@ plugins {
     id("kotlin.multiplatform.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -16,7 +15,6 @@ kotlin {
         implementation(projects.uiCore.state)
         implementation(projects.toolkit.dateUtils)
 
-        implementation(libs.kotlinx.serialization.json)
         implementation(libs.datetime)
 
         implementation(libs.compose.foundation)

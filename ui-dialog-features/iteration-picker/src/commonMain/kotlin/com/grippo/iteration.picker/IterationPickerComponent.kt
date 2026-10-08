@@ -12,6 +12,7 @@ import com.grippo.core.state.trainings.IterationState
 
 public class IterationPickerComponent(
     componentContext: ComponentContext,
+    private val onPickBodyWeight: (initial: Float?, onResult: (Float) -> Unit) -> Unit,
     private val example: ExerciseExampleState,
     private val focus: IterationFocusState,
     private val number: Int,
@@ -28,7 +29,6 @@ public class IterationPickerComponent(
             number = number,
             suggestions = suggestions,
             focus = focus,
-            dialogController = getKoin().get(),
         )
     }
 
@@ -40,6 +40,8 @@ public class IterationPickerComponent(
 
     override suspend fun eventListener(direction: IterationPickerDirection) {
         when (direction) {
+            is IterationPickerDirection.PickBodyWeight ->
+                onPickBodyWeight.invoke(direction.initial, viewModel::onBodyWeightSelected)
             is IterationPickerDirection.BackWithResult -> onResult.invoke(direction.value)
             IterationPickerDirection.Back -> back.invoke()
         }

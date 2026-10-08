@@ -3,6 +3,7 @@ package com.grippo.exercise.example.exerciseexample
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.achievements.AchievementState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxState
 import com.grippo.core.state.metrics.volume.VolumeSeriesState
@@ -31,7 +32,7 @@ public sealed interface ExerciseExampleModeState {
     public data object Default : ExerciseExampleModeState
 
     @Immutable
-    public data class Action(val title: String) : ExerciseExampleModeState
+    public data class Action(val title: UiText) : ExerciseExampleModeState
 }
 
 internal fun DialogConfig.ExerciseExample.Mode.toState(): ExerciseExampleModeState = when (this) {

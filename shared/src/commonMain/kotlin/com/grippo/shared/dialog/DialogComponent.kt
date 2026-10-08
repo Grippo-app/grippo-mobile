@@ -8,8 +8,7 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -17,7 +16,6 @@ import com.arkivanov.essenty.lifecycle.doOnCreate
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,15 +35,19 @@ internal class DialogComponent(
         DialogViewModel(dialogProvider = getKoin().get())
     }
 
-    private val backCallback = BackCallback(onBack = { viewModel.onDismiss(null) })
+    private val backCallback = BackCallback(
+        isEnabled = viewModel.state.value.phase == SheetPhase.Present,
+        onBack = { viewModel.onDismiss(null) },
+    )
 
-    private val dialog = SlotNavigation<DialogConfig>()
+    private val dialog = SlotNavigation<DialogSession>()
 
-    internal val childSlot: Value<ChildSlot<DialogConfig, Child>> = childSlot(
+    internal val childSlot: Value<ChildSlot<DialogSession, DialogContentComponent>> = childSlot(
         source = dialog,
-        serializer = DialogConfig.serializer(),
-        key = "DialogComponent",
-        handleBackButton = true,
+        serializer = null, // Sessions own callbacks and must not survive process death.
+        initialConfiguration = { viewModel.state.value.session },
+        key = "DialogComponent.v3",
+        handleBackButton = false,
         childFactory = ::createChild,
     )
 
@@ -53,10 +55,10 @@ internal class DialogComponent(
 
     init {
         backHandler.register(backCallback)
-
         lifecycle.doOnCreate {
             viewModel.state
-                .map { ReconcileTarget(it.sessionConfig, it.innerConfigs) }
+                .onEach { backCallback.isEnabled = it.phase == SheetPhase.Present }
+                .map { ReconcileTarget(it.session, it.stack.map { entry -> entry.asStep() }) }
                 .distinctUntilChanged()
                 .onEach(::reconcile)
                 .launchIn(reconcileScope)
@@ -86,38 +88,22 @@ internal class DialogComponent(
         }
 
         if (target.session == null) return
-        val active = activeContent() ?: return
-        applyInnerStack(active, target.inner)
+        val active = childSlot.value.child?.instance ?: return
+        applyStack(active, target.steps)
     }
 
-    private fun applyInnerStack(active: DialogContentComponent, target: List<DialogConfig>) {
-        val current = active.childStack.value.items.drop(1).map { it.configuration }
-        if (current == target) return
-
-        var commonLen = 0
-        while (commonLen < current.size &&
-            commonLen < target.size &&
-            current[commonLen].matches(target[commonLen])
-        ) {
-            commonLen++
-        }
-
-        repeat(current.size - commonLen) { active.navigation.pop() }
-        target.drop(commonLen).forEach { active.navigation.push(it) }
+    private fun applyStack(active: DialogContentComponent, target: List<DialogStep>) {
+        val current = active.childStack.value.items.map { it.configuration }
+        if (current == target || target.isEmpty()) return
+        active.navigation.replaceAll(*target.toTypedArray())
     }
 
-    private fun activeContent(): DialogContentComponent? =
-        childSlot.value.child?.instance?.component as? DialogContentComponent
-
-    private fun createChild(router: DialogConfig, context: ComponentContext): Child {
-        return Child.Content(
-            DialogContentComponent(
-                initial = router,
-                componentContext = context,
-                back = viewModel::onDismiss,
-            )
+    private fun createChild(router: DialogSession, context: ComponentContext): DialogContentComponent =
+        DialogContentComponent(
+            initial = viewModel.state.value.stack.first().asStep(),
+            navigationFor = { owner -> viewModel.navigation(router, owner) },
+            componentContext = context,
         )
-    }
 
     @Composable
     override fun Render() {
@@ -126,15 +112,8 @@ internal class DialogComponent(
         DialogScreen(this, state.value, loaders.value, viewModel)
     }
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Content(override val component: DialogContentComponent) : Child(component)
-    }
-
     private data class ReconcileTarget(
-        val session: DialogConfig?,
-        val inner: List<DialogConfig>,
+        val session: DialogSession?,
+        val steps: List<DialogStep>,
     )
-
-    private fun DialogConfig.matches(other: DialogConfig): Boolean =
-        this::class == other::class && this.key == other.key
 }

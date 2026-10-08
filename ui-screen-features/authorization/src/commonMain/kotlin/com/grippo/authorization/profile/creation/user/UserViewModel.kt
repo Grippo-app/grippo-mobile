@@ -3,8 +3,12 @@ package com.grippo.authorization.profile.creation.user
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.NameFormatState
+import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.data.features.api.authorization.LogoutUseCase
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.height_picker_title
+import com.grippo.design.resources.provider.weight_picker_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 
@@ -16,18 +20,20 @@ internal class UserViewModel(
 
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
+            title = UiText.Res(Res.string.weight_picker_title),
             initial = state.value.weight.value,
             onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onHeightPickerClick() {
         val dialog = DialogConfig.HeightPicker(
+            title = UiText.Res(Res.string.height_picker_title),
             initial = state.value.height.value,
             onResult = { value -> update { it.copy(height = HeightFormatState.of(value)) } }
         )
-        dialogController.show(dialog)
+        dialogController.open(dialog)
     }
 
     override fun onNameChange(value: String) {

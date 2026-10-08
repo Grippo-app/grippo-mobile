@@ -52,13 +52,12 @@ import com.grippo.design.resources.provider.assist_weight_placeholder
 import com.grippo.design.resources.provider.body_weight_placeholder
 import com.grippo.design.resources.provider.extra_weight_placeholder
 import com.grippo.design.resources.provider.of_body_weight
-import com.grippo.design.resources.provider.set_value
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.design.resources.provider.volume_placeholder
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun IterationPickerScreen(
@@ -90,16 +89,6 @@ internal fun IterationPickerScreen(
     }
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.set_value, state.number),
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 

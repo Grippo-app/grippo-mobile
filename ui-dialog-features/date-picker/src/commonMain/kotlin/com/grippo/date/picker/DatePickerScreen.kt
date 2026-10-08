@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -37,18 +36,6 @@ internal fun DatePickerScreen(
     contract: DatePickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = state.title,
-        style = AppTokens.typography.h2(),
-        color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     DateWheelPicker(
         modifier = Modifier
@@ -99,7 +86,6 @@ private fun ScreenPreview() {
                     format = DateFormat.DateOnly.DateMmmDdYyyy
                 ),
                 limitations = DateRangePresets.last365Days(),
-                title = "Select date",
             ),
             loaders = persistentSetOf(),
             contract = DatePickerContract.Empty

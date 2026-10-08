@@ -77,7 +77,6 @@ internal fun ExerciseScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-
     Button(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)

@@ -9,6 +9,11 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.shared"
+        withHostTestBuilder {}
+    }
+
+    sourceSets.getByName("androidHostTest").dependencies {
+        implementation(kotlin("test-junit"))
     }
 
     sourceSets.commonMain.dependencies {
@@ -101,6 +106,7 @@ kotlin {
         implementation(libs.datetime)
         implementation(libs.immutable.collections)
 
+        implementation(libs.compose.backhandler)
         implementation(libs.compose.ui)
         implementation(libs.compose.material3)
         implementation(libs.compose.foundation)
