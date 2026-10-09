@@ -1,10 +1,9 @@
 package com.grippo.training.recording
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -91,13 +90,16 @@ internal fun TrainingRecordingScreen(
             Header(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    .padding(
+                        horizontal = AppTokens.dp.screen.horizontalPadding,
+                        vertical = AppTokens.dp.contentPadding.content
+                    ),
                 duration = durationText,
                 volume = totalVolume,
                 repetitions = totalRepetitions,
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+            HorizontalDivider(color = AppTokens.colors.divider.default)
         }
     )
 

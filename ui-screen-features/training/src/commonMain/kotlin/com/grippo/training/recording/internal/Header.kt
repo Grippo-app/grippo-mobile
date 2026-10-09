@@ -1,10 +1,7 @@
 package com.grippo.training.recording.internal
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -27,31 +24,25 @@ internal fun Header(
     repetitions: RepetitionsFormatState,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+        modifier = modifier.fillMaxWidth()
     ) {
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.duration),
             value = AnnotatedString(duration),
-            accentColor = AppTokens.colors.context.duration,
-            contentColor = AppTokens.colors.text.primary,
+            contentColor = AppTokens.colors.context.duration,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.tonnage),
             value = volume.shortAnnotated(),
-            accentColor = AppTokens.colors.context.volume,
-            contentColor = AppTokens.colors.text.primary,
+            contentColor = AppTokens.colors.context.volume,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.reps),
             value = repetitions.shortAnnotated(),
-            accentColor = AppTokens.colors.context.repetitions,
-            contentColor = AppTokens.colors.text.primary,
+            contentColor = AppTokens.colors.context.repetitions,
         )
     }
 }
