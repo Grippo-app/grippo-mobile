@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -38,7 +37,7 @@ public fun DeleteUserCard(
     Column(
         modifier = modifier
             .border(
-                width = 1.dp,
+                width = AppTokens.dp.deleteUserCard.borderWidth,
                 color = AppTokens.colors.semantic.error.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(AppTokens.dp.deleteUserCard.radius)
             )

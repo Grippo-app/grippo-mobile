@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +43,7 @@ public fun TimelineIndicator(
 ) {
     val dotColor = AppTokens.colors.semantic.info
     val lineColor = AppTokens.colors.divider.default
-    val lineWidth = 2.dp
+    val lineWidth = AppTokens.dp.timeline.lineWidth
 
     Row(
         modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
@@ -81,7 +84,7 @@ public fun TimelineIndicator(
                     )
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(AppTokens.dp.timeline.dot)
                             .background(dotColor, CircleShape)
                     )
                     Box(
@@ -101,7 +104,7 @@ public fun TimelineIndicator(
                     )
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(AppTokens.dp.timeline.dot)
                             .background(dotColor, CircleShape)
                     )
                     Spacer(
@@ -119,7 +122,7 @@ public fun TimelineIndicator(
                     )
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(AppTokens.dp.timeline.dot)
                             .background(dotColor, CircleShape)
                     )
                     Spacer(
@@ -148,9 +151,14 @@ public fun TimelineIndicator(
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.subContent))
 
-        content()
+        CompositionLocalProvider(
+            LocalContentColor provides AppTokens.colors.text.primary,
+            LocalTextStyle provides AppTokens.typography.b13Med(),
+        ) {
+            content()
+        }
     }
 }
 

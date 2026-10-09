@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
@@ -35,7 +34,7 @@ public fun InputWeight(
         error = value.toInputError(),
         trailing = { color ->
             Text(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
                 text = AppTokens.strings.res(Res.string.kg),
                 style = AppTokens.typography.b15Med(),
                 color = color

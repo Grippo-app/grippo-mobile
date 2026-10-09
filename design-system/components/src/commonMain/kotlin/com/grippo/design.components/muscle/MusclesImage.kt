@@ -4,11 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.muscles.stubMuscleGroup
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
@@ -16,7 +16,6 @@ import com.grippo.design.resources.provider.muscles.bodyBack
 import com.grippo.design.resources.provider.muscles.bodyFront
 import com.grippo.design.resources.provider.muscles.bodySplit
 import com.grippo.design.resources.provider.muscles.legsSplit
-import kotlin.random.Random
 
 @Composable
 public fun MusclesImage(
@@ -45,14 +44,9 @@ public fun MusclesImage(
 private fun MusclesImagePreview() {
     PreviewContainer {
         val muscleGroup = stubMuscleGroup().first()
-        val nextColor = {
-            Color(
-                red = Random.nextFloat(),
-                green = Random.nextFloat(),
-                blue = Random.nextFloat(),
-                alpha = 1f
-            )
-        }
+        val palette = AppTokens.colors.muscle.palette6MuscleCalm
+        var colorIndex = 0
+        val nextColor = { palette[colorIndex++ % palette.size] }
         MusclesImage(
             item = muscleGroup,
             preset = MuscleColorPreset(
@@ -79,10 +73,10 @@ private fun MusclesImagePreview() {
                 quadriceps = nextColor(),
                 adductors = nextColor(),
                 abductors = nextColor(),
-                other = nextColor(),
-                outline = nextColor(),
-                backgroundFront = nextColor(),
-                backgroundBack = nextColor()
+                other = AppTokens.colors.muscle.inactive,
+                outline = AppTokens.colors.muscle.outline,
+                backgroundFront = AppTokens.colors.muscle.background,
+                backgroundBack = AppTokens.colors.muscle.background
             )
         )
     }

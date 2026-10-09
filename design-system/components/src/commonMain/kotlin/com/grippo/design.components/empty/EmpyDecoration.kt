@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -39,47 +38,48 @@ private data class EmptyIcon(
 
 @Composable
 public fun EmptyDecorations(modifier: Modifier = Modifier) {
-    val largeIconSize = AppTokens.dp.empty.image
+    val tokens = AppTokens.dp.empty
+    val largeIconSize = tokens.image
     val dumbbell = AppTokens.drawables.res(Res.drawable.dumbbell)
     val barbell = AppTokens.drawables.res(Res.drawable.barbell)
     val plate = AppTokens.drawables.res(Res.drawable.plate)
     val box = AppTokens.drawables.res(Res.drawable.box)
     val weight = AppTokens.drawables.res(Res.drawable.weight)
 
-    val decorations = remember {
+    val decorations = remember(tokens, largeIconSize, dumbbell, barbell, plate, box, weight) {
         persistentListOf(
             EmptyIcon(
                 painter = dumbbell,
                 alignment = Alignment.TopStart,
-                offset = DpOffset(-(largeIconSize / 3), -(34.dp)),
+                offset = DpOffset(-(largeIconSize / 3), -tokens.decorationTopOffset),
                 rotation = -12f,
                 size = largeIconSize,
             ),
             EmptyIcon(
                 painter = barbell,
                 alignment = Alignment.TopEnd,
-                offset = DpOffset((largeIconSize / 3), (92).dp),
+                offset = DpOffset((largeIconSize / 3), tokens.decorationBarbellOffset),
                 rotation = 0f,
                 size = largeIconSize * 1.3f,
             ),
             EmptyIcon(
                 painter = plate,
                 alignment = Alignment.CenterStart,
-                offset = DpOffset(-(largeIconSize / 2), -(34.dp)),
+                offset = DpOffset(-(largeIconSize / 2), -tokens.decorationTopOffset),
                 rotation = -18f,
                 size = largeIconSize,
             ),
             EmptyIcon(
                 painter = box,
                 alignment = Alignment.BottomEnd,
-                offset = DpOffset((largeIconSize / 3), -(52).dp),
+                offset = DpOffset((largeIconSize / 3), -tokens.decorationBoxOffset),
                 rotation = -8f,
                 size = largeIconSize,
             ),
             EmptyIcon(
                 painter = weight,
                 alignment = Alignment.BottomStart,
-                offset = DpOffset(-(largeIconSize / 2), 60.dp),
+                offset = DpOffset(-(largeIconSize / 2), tokens.decorationBottomOffset),
                 rotation = 10f,
                 size = largeIconSize,
             ),

@@ -56,7 +56,7 @@ internal fun ColumnScope.ExercisesPage(
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
 
     BottomOverlayContainer(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
@@ -87,7 +87,7 @@ internal fun ColumnScope.ExercisesPage(
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             state = dragDropState.listState,
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                             contentPadding = resolvedPadding
                         ) {
                             items(

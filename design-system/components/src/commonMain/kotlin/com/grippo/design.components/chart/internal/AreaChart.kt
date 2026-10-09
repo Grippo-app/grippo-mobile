@@ -25,25 +25,25 @@ internal fun AreaChart(
         grid = AreaStyle.Grid(
             show = true,
             color = AppTokens.colors.divider.default,
-            strokeWidth = 1.dp
+            strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         yAxis = AreaStyle.YAxis.Labels(
             targetTicks = 5,
             textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
             tickMarkColor = AppTokens.colors.divider.default,
-            tickMarkWidth = 1.dp
+            tickMarkWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         yAxisLine = AreaStyle.AxisLine(
             color = AppTokens.colors.divider.default,
-            width = 1.dp
+            width = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         xAxis = AreaStyle.XAxis.LabelsAdaptive(
             textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.secondary),
-            minGapDp = 1.dp
+            minGapDp = AppTokens.dp.metrics.charts.area.axisLabelGap
         ),
         line = AreaStyle.Line(
-            strokeWidth = 2.dp,
+            strokeWidth = AppTokens.dp.metrics.charts.area.lineWidth,
             color = charts.area.lineA,
             brushProvider = {
                 Brush.horizontalGradient(
@@ -57,7 +57,7 @@ internal fun AreaChart(
             curveSmoothness = 0.20f,
             clampOvershoot = true
         ),
-        glow = AreaStyle.Glow(width = 8.dp, color = charts.area.glow),
+        glow = AreaStyle.Glow(width = AppTokens.dp.metrics.charts.area.glowWidth, color = charts.area.glow),
         fill = AreaStyle.Fill { sz ->
             Brush.verticalGradient(
                 0f to charts.area.fillBase.copy(alpha = 0.18f),
@@ -65,11 +65,11 @@ internal fun AreaChart(
                 startY = 0f, endY = sz.height
             )
         },
-        dots = AreaStyle.Dots.Visible(radius = 2.dp, color = charts.area.dot),
+        dots = AreaStyle.Dots.Visible(radius = AppTokens.dp.metrics.charts.area.dotRadius, color = charts.area.dot),
         extrema = AreaStyle.Extrema.Visible(
             textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
             markerColor = null,
-            markerRadius = 3.dp
+            markerRadius = AppTokens.dp.metrics.charts.area.markerRadius
         )
     )
 

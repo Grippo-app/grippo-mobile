@@ -14,6 +14,7 @@ Self-contained reference pack for the `design-system` skill. These files carry t
 | `AppString` / `AppDrawable` / `AppIcon` accessors, string/drawable/font conventions | `accessors.md` |
 | `AppTheme` composable, `ProvideResources`, composition locals, theme + locale switching | `theme.md` |
 | `@AppPreview`, `PreviewContainer`, stub data, preview rules | `previews.md` |
+| Card hierarchy, semantic color, adaptive layouts, whole-screen visual review and capture cleanup | `visual-consistency.md` |
 | Shared widgets (Button, Input, Chip, Toolbar, Card, EmptyState, BannerCard, LineIndicator, Toggle, selectable cards), rules for all components, component-vs-`compose-libs` decision | `components.md` |
 | Compose Multiplatform resources, `composeResources/` layout, `androidResources.enable`, `strings.xml`/`plurals.xml`/drawables/fonts | `resources.md` |
 | `:design-system:*` module layout (`components`, `core`, `preview`, `resources:provider`, `resources:provider-impl`), build files, rules summary | `design-system-modules.md` |

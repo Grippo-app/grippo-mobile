@@ -13,10 +13,15 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.constrainHeight
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -34,12 +39,12 @@ public enum class ToolbarStyle {
     Default,
 }
 
-@Immutable
+@Stable
 public sealed class Leading {
-    @Immutable
+    @Stable
     public data class Back(val onClick: (() -> Unit)) : Leading()
 
-    @Immutable
+    @Stable
     public data class Profile(val onClick: (() -> Unit)) : Leading()
 
     @Immutable
@@ -55,6 +60,9 @@ public fun Toolbar(
     trailing: (@Composable BoxScope.() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
+    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
+    val titleGap = AppTokens.dp.contentPadding.text
+
     Column(
         modifier = modifier
             .background(
@@ -67,56 +75,77 @@ public fun Toolbar(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Box(
+        Layout(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.contentPadding.content)
                 .padding(vertical = AppTokens.dp.contentPadding.content)
                 .heightIn(min = AppTokens.dp.screen.toolbar.height)
                 .fillMaxWidth(),
-        ) {
-
-            when (leading) {
-                is Leading.Back -> Button(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    content = ButtonContent.Icon(
-                        icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
-                    ),
-                    style = ButtonStyle.Transparent,
-                    size = ButtonSize.Small,
-                    onClick = leading.onClick
-                )
-
-                is Leading.Profile -> Button(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    content = ButtonContent.Icon(
-                        icon = ButtonIcon.Icon(AppTokens.icons.User)
-                    ),
-                    style = ButtonStyle.Transparent,
-                    size = ButtonSize.Small,
-                    onClick = leading.onClick
-                )
-
-                Leading.Nothing -> {
-                    // Skip
+            content = {
+                Box(contentAlignment = Alignment.Center) {
+                    when (leading) {
+                        is Leading.Back -> Button(
+                            content = ButtonContent.Icon(
+                                icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
+                            ),
+                            style = ButtonStyle.Transparent,
+                            size = ButtonSize.Small,
+                            onClick = leading.onClick,
+                        )
+                        is Leading.Profile -> Button(
+                            content = ButtonContent.Icon(
+                                icon = ButtonIcon.Icon(AppTokens.icons.User)
+                            ),
+                            style = ButtonStyle.Transparent,
+                            size = ButtonSize.Small,
+                            onClick = leading.onClick,
+                        )
+                        Leading.Nothing -> Unit
+                    }
                 }
+                Box(contentAlignment = Alignment.Center) {
+                    title?.let {
+                        Text(
+                            text = it,
+                            style = AppTokens.typography.h3(),
+                            color = AppTokens.colors.text.primary,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+                Box(contentAlignment = Alignment.Center) {
+                    trailing?.invoke(this)
+                }
+            },
+        ) { measurables, constraints ->
+            val loose = constraints.copy(minWidth = 0, minHeight = 0)
+            val leadingAction = measurables[0].measure(loose)
+            val trailingAction = measurables[2].measure(loose)
+            val actionWidth = maxOf(leadingAction.width, trailingAction.width)
+            val gap = if (actionWidth > 0) titleGap.roundToPx() else 0
+            val centeredWidth = (constraints.maxWidth - 2 * (actionWidth + gap)).coerceAtLeast(0)
+            val stackTitle = largeFont && actionWidth > 0 &&
+                    measurables[1].maxIntrinsicWidth(Constraints.Infinity) > centeredWidth
+            val titlePlaceable = measurables[1].measure(
+                loose.copy(maxWidth = if (stackTitle) constraints.maxWidth else centeredWidth)
+            )
+            val actionsHeight = maxOf(leadingAction.height, trailingAction.height)
+            val contentHeight = if (stackTitle) {
+                actionsHeight + gap + titlePlaceable.height
+            } else {
+                maxOf(actionsHeight, titlePlaceable.height)
             }
-
-            title?.let {
-                Text(
-                    modifier = Modifier.align(Alignment.Center).fillMaxWidth(),
-                    text = it,
-                    style = AppTokens.typography.h3(),
-                    color = AppTokens.colors.text.primary,
-                    textAlign = TextAlign.Center
+            val height = constraints.constrainHeight(contentHeight)
+            layout(constraints.maxWidth, height) {
+                val actionsTop = if (stackTitle) 0 else (height - actionsHeight) / 2
+                leadingAction.placeRelative(0, actionsTop + (actionsHeight - leadingAction.height) / 2)
+                trailingAction.placeRelative(
+                    constraints.maxWidth - trailingAction.width,
+                    actionsTop + (actionsHeight - trailingAction.height) / 2,
                 )
-            }
-
-            trailing?.let { trailing ->
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd),
-                    content = trailing,
-                    contentAlignment = Alignment.Center
+                titlePlaceable.placeRelative(
+                    (constraints.maxWidth - titlePlaceable.width) / 2,
+                    if (stackTitle) actionsHeight + gap else (height - titlePlaceable.height) / 2,
                 )
             }
         }

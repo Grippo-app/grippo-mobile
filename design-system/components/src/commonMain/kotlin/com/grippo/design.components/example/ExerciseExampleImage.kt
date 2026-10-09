@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -37,7 +36,7 @@ public fun ExerciseExampleImage(
     style: ExerciseExampleImageStyle,
     value: String?
 ) {
-    val fallback = rememberInsetVectorPainter(AppTokens.icons.QuestionCircle, 12.dp)
+    val fallback = rememberInsetVectorPainter(AppTokens.icons.QuestionCircle, AppTokens.dp.contentPadding.content)
 
     when (style) {
         ExerciseExampleImageStyle.MEDIUM -> AsyncImage(

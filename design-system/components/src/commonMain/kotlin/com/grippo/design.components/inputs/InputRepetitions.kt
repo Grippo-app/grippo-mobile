@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
@@ -44,7 +43,7 @@ public fun InputRepetitions(
         error = value.toInputError(),
         trailing = { color ->
             Text(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
                 text = AppTokens.strings.res(Res.string.reps),
                 style = AppTokens.typography.b15Med(),
                 color = color

@@ -220,3 +220,16 @@ file is the single source of truth for the wrappers; do not fork the code here.
 - **Preview function `public`**. Previews are file-local; `private`.
 - **Preview takes parameters.** Compose previews don't support parameters (use
   `@PreviewParameter` if absolutely needed, but prefer multiple `*Preview` functions).
+
+## State fixtures and whole-screen review
+
+For meaningful variants, start from an existing stub and explicitly override
+the fields that determine the state. Keep compared names, values, dates and
+set counts deterministic; random stubs alone cannot reliably demonstrate a
+preset, partially completed or completed exercise. Use a small file-local
+fixture helper when several previews repeat the same setup.
+
+A component preview checks its own rendering. It does not demonstrate harmony
+with a toolbar, adjacent cards or a pinned action. For changes to shared card
+layout, follow [visual-consistency.md](visual-consistency.md) and inspect the
+whole-screen consumers as well.

@@ -103,7 +103,7 @@ internal fun WelcomeHomeContent(
                             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                             .fillMaxWidth(),
                         onClick = onResumeTraining,
-                        style = ButtonStyle.Error,
+                        style = ButtonStyle.Primary,
                         content = ButtonContent.Text(
                             text = AppTokens.strings.res(Res.string.resume_training_btn)
                         )

@@ -73,7 +73,7 @@ internal fun RadarChart(
 
     val style = RadarStyle(
         layout = RadarStyle.Layout(
-            labelPadding = 3.dp,
+            labelPadding = AppTokens.dp.metrics.charts.radar.labelPadding,
             startAngleDeg = -90f,
             clockwise = true,
             reserveAxisLabelSpace = showLabels,
@@ -83,33 +83,33 @@ internal fun RadarChart(
             levels = 5,
             asPolygon = true,
             color = AppTokens.colors.charts.radar.grid,
-            strokeWidth = 1.dp,
+            strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth,
             levelLabels = RadarStyle.LevelLabels.None,
         ),
         spokes = RadarStyle.Spokes.Visible(
             color = AppTokens.colors.charts.radar.grid,
-            strokeWidth = 1.dp,
+            strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth,
         ),
         peek = if (clickable) RadarStyle.Peek.Visible(
-            hitSlop = 26.dp,
+            hitSlop = AppTokens.dp.metrics.charts.peek.hitSlop,
 
             guideColor = charts.tooltip.guide,
-            guideWidth = 1.dp,
-            guideDash = 6.dp,
-            guideGap = 6.dp,
+            guideWidth = AppTokens.dp.metrics.charts.peek.guideWidth,
+            guideDash = AppTokens.dp.metrics.charts.peek.guideDash,
+            guideGap = AppTokens.dp.metrics.charts.peek.guideGap,
 
             focusColor = charts.tooltip.focus,
-            focusRadius = 3.5.dp,
-            focusRingWidth = 1.dp,
-            focusHaloRadius = 10.dp,
+            focusRadius = AppTokens.dp.metrics.charts.peek.focusRadius,
+            focusRingWidth = AppTokens.dp.metrics.charts.radar.focusRingWidth,
+            focusHaloRadius = AppTokens.dp.metrics.charts.radar.focusHaloRadius,
 
             tooltipBackground = charts.tooltip.background,
             tooltipBorder = charts.tooltip.border,
             tooltipText = charts.tooltip.text,
-            tooltipCornerRadius = 6.dp,
-            tooltipPaddingH = 8.dp,
-            tooltipPaddingV = 4.dp,
-            tooltipMargin = 6.dp,
+            tooltipCornerRadius = AppTokens.dp.metrics.charts.peek.tooltipRadius,
+            tooltipPaddingH = AppTokens.dp.metrics.charts.peek.tooltipHorizontalPadding,
+            tooltipPaddingV = AppTokens.dp.metrics.charts.peek.tooltipVerticalPadding,
+            tooltipMargin = AppTokens.dp.metrics.charts.peek.tooltipMargin,
 
             decimals = 0,
             showAxisLabel = true,
@@ -117,11 +117,11 @@ internal fun RadarChart(
         ) else RadarStyle.Peek.None,
         labels = labels,
         polygon = RadarStyle.Polygon(
-            strokeWidth = 1.5.dp,
+            strokeWidth = AppTokens.dp.metrics.charts.radar.seriesWidth,
             fillAlpha = 0.35f,
         ),
         vertices = RadarStyle.Vertices.Visible(
-            radius = 2.dp,
+            radius = AppTokens.dp.metrics.charts.radar.dotRadius,
             colorOverride = null,
         ),
         values = RadarStyle.Values.None,
@@ -274,7 +274,7 @@ private fun RadarChartPreview() {
             series = listOf(
                 RadarSeries(
                     name = "Current",
-                    color = Color(0xFFB049F8),
+                    color = AppTokens.colors.context.muscle,
                     values = RadarValues.ByAxisId(
                         mapOf(
                             "chest" to 0.75f,

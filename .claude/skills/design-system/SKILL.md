@@ -29,6 +29,10 @@ If a required input is missing, emit `BLOCKED: missing required input — {missi
 
 ## Workflow
 
+- **Visual consistency.** For card/layout changes or a cross-screen audit, read
+  [references/visual-consistency.md](references/visual-consistency.md). Check the
+  component in whole-screen consumers, including both themes and enlarged fonts;
+  token compliance alone does not establish visual quality.
 - **AppTokens is the only access path.** Every visual value in a component reads `AppTokens.colors|dp|typography|icons|strings|drawables`. Raw `Color(0xFF…)` / `12.dp` / inline `TextStyle(...)` literals are allowed **only** inside concrete `AppColor` implementations and `AppDp` data objects — never in components or features.
 - **Token slots:** add inside an existing widget group; every new `AppColor` slot gets a concrete value in **every** concrete `AppColors` impl on disk (dark/light specs). No new top-level `AppTokens.<category>` (stop-and-ask).
 - **Dark/light specs.** Token producers ship literals for each theme impl; one impl (`DarkColor`) may be the only one wired today — extend whatever impls exist.

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.progress.ProgressChart
 import com.grippo.chart.progress.ProgressChartData
@@ -24,10 +23,10 @@ internal fun ProgressChart(
 
     val style = ProgressStyle(
         layout = ProgressStyle.Layout(
-            barHeight = 16.dp,
-            spacing = 12.dp,
-            corner = 10.dp,
-            labelPadding = 8.dp,
+            barHeight = AppTokens.dp.metrics.charts.progress.barHeight,
+            spacing = AppTokens.dp.metrics.charts.progress.spacing,
+            corner = AppTokens.dp.metrics.charts.progress.radius,
+            labelPadding = AppTokens.dp.metrics.charts.progress.labelPadding,
         ),
         domain = ProgressStyle.Domain.Absolute(
             maxValue = 100f,
@@ -51,7 +50,7 @@ internal fun ProgressChart(
         values = ProgressStyle.Values.Inside(
             textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.static.white),
             formatter = { v, d -> ceil(v).toInt().toString() },
-            minInnerPadding = 6.dp,
+            minInnerPadding = AppTokens.dp.metrics.charts.progress.minInnerPadding,
             insideColor = null,
             preferNormalizedLabels = true,
         ),
@@ -72,11 +71,11 @@ private fun ProgressChartPreview() {
     PreviewContainer {
         val ds = ProgressData(
             items = listOf(
-                ProgressChartData("Bench Press", 72f, Color(0xFF6AA9FF)),
-                ProgressChartData("Deadlift", 100f, Color(0xFF00E6A7)),
-                ProgressChartData("Squat", 86f, Color(0xFFFF7A33)),
-                ProgressChartData("Overhead Press", 58f, Color(0xFFB049F8)),
-                ProgressChartData("Row", 64f, Color(0xFFFFC53D)),
+                ProgressChartData("Bench Press", 72f, AppTokens.colors.muscle.palette6MuscleCalm[0]),
+                ProgressChartData("Deadlift", 100f, AppTokens.colors.muscle.palette6MuscleCalm[1]),
+                ProgressChartData("Squat", 86f, AppTokens.colors.muscle.palette6MuscleCalm[2]),
+                ProgressChartData("Overhead Press", 58f, AppTokens.colors.muscle.palette6MuscleCalm[3]),
+                ProgressChartData("Row", 64f, AppTokens.colors.muscle.palette6MuscleCalm[4]),
             ),
         )
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.max
@@ -139,25 +140,25 @@ public fun BottomOverlayContainer(
 private fun BottomOverlayContainerPreview() {
     PreviewContainer {
         BottomOverlayContainer(
-            overlay = Color.Black,
+            overlay = AppTokens.colors.background.screen,
             bottom = {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(16.dp)
+                        .background(AppTokens.colors.background.card)
+                        .padding(AppTokens.dp.contentPadding.content)
                 ) {
-                    Text("Bottom content")
+                    Text("Bottom content", color = AppTokens.colors.text.primary, style = AppTokens.typography.b14Med())
                 }
             },
             content = { modifier, padding ->
                 Box(
                     modifier = modifier
                         .fillMaxWidth()
-                        .background(Color.LightGray)
+                        .background(AppTokens.colors.background.dialog)
                         .padding(padding)
                 ) {
-                    Text("Main content with bottom overlay")
+                    Text("Main content with bottom overlay", color = AppTokens.colors.text.primary, style = AppTokens.typography.b14Med())
                 }
             }
         )

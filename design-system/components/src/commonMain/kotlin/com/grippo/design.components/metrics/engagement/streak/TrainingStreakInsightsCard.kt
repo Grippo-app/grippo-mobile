@@ -28,7 +28,7 @@ public fun TrainingStreakInsightsCard(
     ) {
         Text(
             text = AppTokens.strings.res(Res.string.highlight_active_days, value.totalActiveDays),
-            style = AppTokens.typography.b14Semi(),
+            style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary
         )
 

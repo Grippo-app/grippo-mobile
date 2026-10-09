@@ -50,7 +50,7 @@ public enum class GoalInsightSeverity {
         Positive -> AppTokens.colors.semantic.success
         Warning -> AppTokens.colors.semantic.warning
         Negative -> AppTokens.colors.semantic.error
-        Neutral -> AppTokens.colors.semantic.info
+        Neutral -> AppTokens.colors.text.tertiary
     }
 }
 
@@ -103,7 +103,7 @@ public fun GoalInsightCard(
         ) {
             Text(
                 text = headline,
-                style = AppTokens.typography.b14Med(),
+                style = AppTokens.typography.h5(),
                 color = AppTokens.colors.text.primary,
             )
             Text(

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.AppDp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -25,9 +26,9 @@ public enum class ShadowElevation(
     public val dp: Dp,
     public val zIndex: Float
 ) {
-    Component(2.dp, zIndex = 1f),
-    Card(4.dp, zIndex = 2f),
-    Container(6.dp, zIndex = 3f),
+    Component(AppDp.shadow.component, zIndex = 1f),
+    Card(AppDp.shadow.card, zIndex = 2f),
+    Container(AppDp.shadow.container, zIndex = 3f),
     Non(0.dp, zIndex = 0f),
 }
 

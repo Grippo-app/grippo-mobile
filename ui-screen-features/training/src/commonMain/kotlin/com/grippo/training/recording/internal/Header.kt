@@ -1,9 +1,11 @@
 package com.grippo.training.recording.internal
 
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -23,26 +25,36 @@ internal fun Header(
     volume: VolumeFormatState,
     repetitions: RepetitionsFormatState,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth()
+    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
+
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        maxItemsInEachRow = if (largeFont) 2 else 3,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         TrainingStat(
-            modifier = Modifier.weight(1f),
+            modifier = if (largeFont) Modifier.fillMaxWidth() else Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.duration),
             value = AnnotatedString(duration),
-            contentColor = AppTokens.colors.context.duration,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.tonnage),
-            value = volume.shortAnnotated(),
-            contentColor = AppTokens.colors.context.volume,
+            value = when (volume) {
+                is VolumeFormatState.Empty -> VolumeFormatState.Valid("0", 0f).shortAnnotated()
+                else -> volume.shortAnnotated()
+            },
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.reps),
-            value = repetitions.shortAnnotated(),
-            contentColor = AppTokens.colors.context.repetitions,
+            value = when (repetitions) {
+                is RepetitionsFormatState.Empty -> RepetitionsFormatState.Valid("0", 0).shortAnnotated()
+                else -> repetitions.shortAnnotated()
+            },
+            contentColor = AppTokens.colors.text.primary,
         )
     }
 }

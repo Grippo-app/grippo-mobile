@@ -37,7 +37,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -185,7 +184,7 @@ internal fun Input(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = backgroundColor, shape = shape)
-                .border(width = 1.dp, color = borderColor, shape = shape)
+                .border(width = AppTokens.dp.input.borderWidth, color = borderColor, shape = shape)
                 .heightIn(min = height)
                 .onFocusChanged { hasFocus.value = it.hasFocus }
                 .animateContentSize(),

@@ -80,6 +80,19 @@ public data object AppDp {
     val training: Training = Training
     val accent: Accent = Accent
     val pagerIndicator: PagerIndicator = PagerIndicator
+    val swipe: Swipe = Swipe
+    val shadow: Shadow = Shadow
+
+    public data object Swipe {
+        val borderWidth: Dp = 1.dp
+        val extraVerticalPadding: Dp = padding.extraSmall
+    }
+
+    public data object Shadow {
+        val component: Dp = 2.dp
+        val card: Dp = 4.dp
+        val container: Dp = 6.dp
+    }
 
     public data object MuscleSelection {
         val heroMaxHeight: Dp = icon.xxxxLarge
@@ -89,11 +102,14 @@ public data object AppDp {
     }
 
     public data object Screen {
+        val logoSize: Dp = 80.dp
+        val largeFontScaleThreshold: Float = 1.3f
         val toolbar: Toolbar = Toolbar
         val horizontalPadding: Dp = padding.xLarge
         val verticalPadding: Dp = padding.xLarge
 
         public data object Toolbar {
+            val progressWidthFraction: Float = 0.5f
             val height: Dp = size.small
         }
     }
@@ -116,12 +132,14 @@ public data object AppDp {
     }
 
     public data object Dialog {
+        val maxMessageHeight: Dp = 400.dp
         val top: Dp = padding.small
         val bottom: Dp = padding.xLarge
         val horizontalPadding: Dp = padding.xLarge
     }
 
     public data object Calendar {
+        val trainingBarHeight: Dp = 5.dp
         val monthly: Monthly = Monthly
 
         public data object Monthly {
@@ -130,6 +148,99 @@ public data object AppDp {
     }
 
     public data object Metrics {
+        val charts: Charts = Charts
+
+        public data object Charts {
+            val axis: Axis = Axis
+            val peek: Peek = Peek
+            val area: Area = Area
+            val bar: Bar = Bar
+            val pie: Pie = Pie
+            val progress: Progress = Progress
+            val radar: Radar = Radar
+            val ring: Ring = Ring
+            val sparkline: Sparkline = Sparkline
+            val indicator: Indicator = Indicator
+
+            public data object Axis {
+                val strokeWidth: Dp = 1.dp
+                val tickLength: Dp = 6.dp
+            }
+
+            public data object Peek {
+                val hitSlop: Dp = 26.dp
+                val guideWidth: Dp = Axis.strokeWidth
+                val guideDash: Dp = 6.dp
+                val guideGap: Dp = guideDash
+                val focusRadius: Dp = 3.5.dp
+                val focusRingWidth: Dp = 2.dp
+                val focusHaloRadius: Dp = 18.dp
+                val tooltipRadius: Dp = 6.dp
+                val tooltipHorizontalPadding: Dp = padding.small
+                val tooltipVerticalPadding: Dp = padding.extraSmall
+                val tooltipMargin: Dp = 6.dp
+            }
+
+            public data object Area {
+                val axisLabelGap: Dp = 1.dp
+                val lineWidth: Dp = 2.dp
+                val glowWidth: Dp = 8.dp
+                val dotRadius: Dp = 2.dp
+                val markerRadius: Dp = 3.dp
+            }
+
+            public data object Bar {
+                val labelPadding: Dp = padding.small
+                val minHeight: Dp = 6.dp
+                val axisLabelSpacing: Dp = padding.tiny
+                val contentSpacing: Dp = padding.small
+                val radius: Dp = AppDp.radius.medium
+                val midDensityThreshold: Dp = 22.dp
+                val denseThreshold: Dp = 12.dp
+                val maxWidth: Dp = 56.dp
+            }
+
+            public data object Pie {
+                val layoutPadding: Dp = 56.dp
+                val arcWidth: Dp = 24.dp
+                val radius: Dp = 6.dp
+                val labelPadding: Dp = 6.dp
+                val leaderWidth: Dp = Axis.strokeWidth
+                val leaderOffset: Dp = padding.small
+            }
+
+            public data object Progress {
+                val barHeight: Dp = 16.dp
+                val spacing: Dp = padding.medium
+                val radius: Dp = 10.dp
+                val labelPadding: Dp = padding.small
+                val minInnerPadding: Dp = 6.dp
+            }
+
+            public data object Radar {
+                val labelPadding: Dp = 3.dp
+                val seriesWidth: Dp = 1.5.dp
+                val dotRadius: Dp = 2.dp
+                val focusRingWidth: Dp = Axis.strokeWidth
+                val focusHaloRadius: Dp = 10.dp
+            }
+
+            public data object Ring {
+                val strokeWidth: Dp = 12.dp
+            }
+
+            public data object Sparkline {
+                val lineWidth: Dp = Area.lineWidth
+                val dotRadius: Dp = Area.dotRadius
+                val markerRadius: Dp = Area.markerRadius
+            }
+
+            public data object Indicator {
+                val height: Dp = 6.dp
+                val labelSpacing: Dp = 6.dp
+            }
+        }
+
         val panel: Panel = Panel
         val status: Status = Status
         val lastTraining: LastTraining = LastTraining
@@ -173,6 +284,7 @@ public data object AppDp {
         }
 
         public data object TrainingSummary {
+            val dividerWidth: Dp = 1.dp
             val spot: Dp = icon.xxxLarge
         }
 
@@ -216,6 +328,8 @@ public data object AppDp {
             val goal: Goal = Goal
 
             public data object Goal {
+                val timelineMarker: Dp = 10.dp
+                val statusMarker: Dp = 6.dp
                 val chart: Dp = 100.dp
                 val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
@@ -312,6 +426,7 @@ public data object AppDp {
     }
 
     public data object Tooltip {
+        val textSpacing: Dp = padding.tiny
         val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small
@@ -325,6 +440,7 @@ public data object AppDp {
     }
 
     public data object Training {
+        val completionEntranceOffset: Dp = 40.dp
         val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small
@@ -338,10 +454,16 @@ public data object AppDp {
     }
 
     public data object Empty {
+        val decorationBarbellOffset: Dp = 92.dp
+        val decorationBoxOffset: Dp = 52.dp
+        val decorationTopOffset: Dp = 34.dp
+        val decorationBottomOffset: Dp = 60.dp
         val image: Dp = icon.xxxxLarge
     }
 
     public data object Input {
+        val borderWidth: Dp = 1.dp
+        val trailingActionSize: Dp = 40.dp
         val height: Dp = size.medium
         val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.xLarge
@@ -382,6 +504,7 @@ public data object AppDp {
     }
 
     public data object Timeline {
+        val lineWidth: Dp = 2.dp
         val dot: Dp = 10.dp
     }
 
@@ -393,6 +516,9 @@ public data object AppDp {
         val editable: Editable = Editable
 
         public data object Editable {
+            val labelMinWidth: Dp = 60.dp
+            val borderWidth: Dp = 1.dp
+            val verticalPadding: Dp = padding.extraSmall
             val horizontalPadding: Dp = padding.medium
             val height: Dp = size.medium
             val radius: Dp = AppDp.radius.small
@@ -415,19 +541,15 @@ public data object AppDp {
     }
 
     public data object DeleteUserCard {
+        val borderWidth: Dp = 1.dp
         val radius: Dp = AppDp.radius.large
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium
     }
 
     public data object ExerciseCard {
-        val large: Large = Large
-        val medium: Medium = Medium
+        val chevron: Dp = AppDp.icon.small
         val small: Small = Small
-
-        public data object Large
-
-        public data object Medium
 
         public data object Small {
             val radius: Dp = AppDp.radius.medium
@@ -554,6 +676,8 @@ public data object AppDp {
         }
 
         public data object Outline {
+            val indicatorWidth: Dp = 2.dp
+            val verticalPadding: Dp = padding.extraSmall
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
         }
@@ -565,6 +689,7 @@ public data object AppDp {
     }
 
     public data object Chip {
+        val markerSize: Dp = 8.dp
         val small: Small = Small
         val medium: Medium = Medium
 

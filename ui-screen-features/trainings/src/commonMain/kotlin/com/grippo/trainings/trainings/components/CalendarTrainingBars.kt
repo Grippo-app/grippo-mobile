@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -43,7 +42,7 @@ internal fun CalendarTrainingBars(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(5.dp)
+                        .height(AppTokens.dp.calendar.trainingBarHeight)
                         .clip(CircleShape)
                         .background(barColor)
                 )

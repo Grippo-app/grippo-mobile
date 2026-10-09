@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.examples.ExerciseExampleState
@@ -28,6 +29,7 @@ internal fun ExerciseExampleCardMedium(
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ExerciseExampleImage(
             value = value.value.imageUrl,
@@ -35,12 +37,12 @@ internal fun ExerciseExampleCardMedium(
         )
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
         ) {
             Text(
                 text = value.value.name,
-                style = AppTokens.typography.h4(),
+                style = AppTokens.typography.h5(),
                 color = AppTokens.colors.text.primary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

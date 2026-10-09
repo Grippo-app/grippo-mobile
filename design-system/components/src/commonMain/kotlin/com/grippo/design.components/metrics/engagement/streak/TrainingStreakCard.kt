@@ -115,7 +115,7 @@ public fun TrainingStreakCard(
             text = headlinePrimary,
             style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
 
@@ -123,7 +123,7 @@ public fun TrainingStreakCard(
             text = cadenceLabel,
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary,
-            maxLines = 1,
+            maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
 

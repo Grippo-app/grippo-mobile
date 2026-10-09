@@ -23,7 +23,7 @@ internal fun Sparkline(
 
     val style = SparklineStyle(
         line = SparklineStyle.Line(
-            stroke = 2.dp,
+            stroke = AppTokens.dp.metrics.charts.sparkline.lineWidth,
             color = AppTokens.colors.charts.sparkline.lineA,
             brush = { rect ->
                 Brush.horizontalGradient(
@@ -49,42 +49,42 @@ internal fun Sparkline(
         baseline = SparklineStyle.Baseline.None,
         midline = SparklineStyle.Midline.Visible(
             color = charts.tooltip.focus,
-            width = 1.dp,
-            dash = 6.dp,
-            gap = 6.dp
+            width = AppTokens.dp.metrics.charts.axis.strokeWidth,
+            dash = AppTokens.dp.metrics.charts.peek.guideDash,
+            gap = AppTokens.dp.metrics.charts.peek.guideGap
         ),
         peek = Peek.Visible(
-            hitSlop = 26.dp,
+            hitSlop = AppTokens.dp.metrics.charts.peek.hitSlop,
 
             guideColor = charts.tooltip.guide,
-            guideWidth = 1.dp,
-            guideDash = 6.dp,
-            guideGap = 6.dp,
+            guideWidth = AppTokens.dp.metrics.charts.peek.guideWidth,
+            guideDash = AppTokens.dp.metrics.charts.peek.guideDash,
+            guideGap = AppTokens.dp.metrics.charts.peek.guideGap,
 
             focusColor = charts.sparkline.lineA,
-            focusRadius = 3.5.dp,
-            focusRingWidth = 2.dp,
-            focusHaloRadius = 18.dp,
+            focusRadius = AppTokens.dp.metrics.charts.peek.focusRadius,
+            focusRingWidth = AppTokens.dp.metrics.charts.peek.focusRingWidth,
+            focusHaloRadius = AppTokens.dp.metrics.charts.peek.focusHaloRadius,
 
             tooltipBackground = charts.tooltip.background,
             tooltipBorder = charts.tooltip.border,
             tooltipText = charts.tooltip.text,
-            tooltipCornerRadius = 6.dp,
-            tooltipPaddingH = 8.dp,
-            tooltipPaddingV = 4.dp,
-            tooltipMargin = 6.dp,
+            tooltipCornerRadius = AppTokens.dp.metrics.charts.peek.tooltipRadius,
+            tooltipPaddingH = AppTokens.dp.metrics.charts.peek.tooltipHorizontalPadding,
+            tooltipPaddingV = AppTokens.dp.metrics.charts.peek.tooltipVerticalPadding,
+            tooltipMargin = AppTokens.dp.metrics.charts.peek.tooltipMargin,
 
             decimals = 0,
             showLabel = true,
         ),
         dots = SparklineStyle.Dots.Visible(
-            radius = 2.dp,
+            radius = AppTokens.dp.metrics.charts.sparkline.dotRadius,
             color = null
         ),
         extremes = SparklineStyle.Extremes.Visible(
             minColor = AppTokens.colors.semantic.warning,
             maxColor = AppTokens.colors.semantic.success,
-            radius = 3.dp
+            radius = AppTokens.dp.metrics.charts.sparkline.markerRadius
         )
     )
 

@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.error.AppErrorState
@@ -43,7 +42,7 @@ internal fun ErrorDisplayScreen(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth()
-                .heightIn(max = 400.dp),
+                .heightIn(max = AppTokens.dp.dialog.maxMessageHeight),
             text = description.text(),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,

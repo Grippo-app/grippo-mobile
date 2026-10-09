@@ -24,7 +24,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.design.components.button.Button
@@ -92,7 +91,7 @@ internal fun GoalCardContent(
                     text = value.goal.createdAt.display,
                     style = AppTokens.typography.b11Med(),
                     color = AppTokens.colors.text.secondary,
-                    maxLines = 1,
+                    maxLines = 2,
                 )
             },
             endLabel = {
@@ -100,13 +99,14 @@ internal fun GoalCardContent(
                     text = value.goal.target.display,
                     style = AppTokens.typography.b11Med(),
                     color = AppTokens.colors.text.secondary,
-                    maxLines = 1,
+                    maxLines = 2,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.End,
                 )
             },
             marker = {
                 Box(
                     modifier = Modifier
-                        .size(10.dp)
+                        .size(AppTokens.dp.metrics.profile.goal.timelineMarker)
                         .clip(CircleShape)
                         .background(AppTokens.colors.text.primary),
                 )
@@ -213,7 +213,7 @@ private fun GoalTitleBlock(
         ) {
             Box(
                 modifier = Modifier
-                    .size(6.dp)
+                    .size(AppTokens.dp.metrics.profile.goal.statusMarker)
                     .clip(CircleShape)
                     .background(statusColor),
             )

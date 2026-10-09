@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubIteration
 import com.grippo.core.state.trainings.stubPendingIteration
@@ -59,7 +58,7 @@ internal fun IterationCardEditable(
 
     val cellBorderModifier: Modifier = if (value.isPending) {
         Modifier.border(
-            width = 1.dp,
+            width = AppTokens.dp.iterationCard.editable.borderWidth,
             color = AppTokens.colors.border.default,
             shape = shape,
         )
@@ -75,9 +74,12 @@ internal fun IterationCardEditable(
 
         Text(
             modifier = Modifier
-                .widthIn(min = 60.dp)
-                .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
-                .height(AppTokens.dp.iterationCard.editable.height)
+                .widthIn(min = AppTokens.dp.iterationCard.editable.labelMinWidth)
+                .heightIn(min = AppTokens.dp.iterationCard.editable.height)
+                .padding(
+                    horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding,
+                    vertical = AppTokens.dp.iterationCard.editable.verticalPadding,
+                )
                 .wrapContentHeight(),
             text = label,
             textAlign = TextAlign.Center,
@@ -95,8 +97,11 @@ internal fun IterationCardEditable(
                     .fillMaxWidth()
                     .background(cellBackground, shape)
                     .then(cellBorderModifier)
-                    .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
-                    .height(AppTokens.dp.iterationCard.editable.height)
+                    .heightIn(min = AppTokens.dp.iterationCard.editable.height)
+                    .padding(
+                        horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding,
+                        vertical = AppTokens.dp.iterationCard.editable.verticalPadding,
+                    )
                     .wrapContentHeight(),
                 text = value.volume().shortAnnotated(),
                 textAlign = TextAlign.Center,
@@ -117,8 +122,11 @@ internal fun IterationCardEditable(
                     .fillMaxWidth()
                     .background(cellBackground, shape)
                     .then(cellBorderModifier)
-                    .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
-                    .height(AppTokens.dp.iterationCard.editable.height)
+                    .heightIn(min = AppTokens.dp.iterationCard.editable.height)
+                    .padding(
+                        horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding,
+                        vertical = AppTokens.dp.iterationCard.editable.verticalPadding,
+                    )
                     .wrapContentHeight(),
                 textAlign = TextAlign.Center,
                 text = value.repetitions.shortAnnotated(),

@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -119,7 +118,7 @@ public fun <KEY> Segment(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),
                     color = AppTokens.colors.segment.selector,
-                    thickness = 2.dp,
+                    thickness = AppTokens.dp.segment.outline.indicatorWidth,
                 )
             },
             content = {
@@ -134,8 +133,11 @@ public fun <KEY> Segment(
                             Text(
                                 modifier = Modifier
                                     .scalableClick(onClick = clickProvider)
-                                    .padding(horizontal = AppTokens.dp.segment.outline.horizontalPadding)
-                                    .height(AppTokens.dp.segment.outline.height)
+                                    .heightIn(min = AppTokens.dp.segment.outline.height)
+                                    .padding(
+                                        horizontal = AppTokens.dp.segment.outline.horizontalPadding,
+                                        vertical = AppTokens.dp.segment.outline.verticalPadding,
+                                    )
                                     .wrapContentHeight(),
                                 text = item.second.text(),
                                 style = if (isSelected) {

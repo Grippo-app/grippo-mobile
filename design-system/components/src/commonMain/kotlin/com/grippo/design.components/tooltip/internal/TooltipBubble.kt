@@ -107,7 +107,7 @@ internal fun TooltipBubble(
                             modifier = Modifier.size(dp.iconSize),
                         )
                     }
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.tooltip.textSpacing)) {
                         Text(
                             text = content.title,
                             style = AppTokens.typography.b13Semi(),

@@ -1,7 +1,7 @@
 package com.grippo.design.components.example
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,9 +21,10 @@ public fun ExampleTypeSection(
     value: ExerciseExampleValueState,
     size: ChipSize = ChipSize.Medium,
 ) {
-    Row(
+    FlowRow(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
         CategoryChip(
             value = value.category,

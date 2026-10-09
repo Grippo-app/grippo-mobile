@@ -107,8 +107,8 @@ private fun ExerciseSpotlightCard(
 
         Text(
             text = value.metricText().text(),
-            style = AppTokens.typography.h6(),
-            color = color,
+            style = AppTokens.typography.h5(),
+            color = AppTokens.colors.text.primary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
@@ -123,8 +123,8 @@ private fun ExerciseSpotlightCard(
 
         Text(
             text = value.actionText().text(),
-            style = AppTokens.typography.b11Semi(),
-            color = color,
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )

@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -33,7 +32,7 @@ public fun WeightTypeChip(
                         .fillMaxHeight()
                         .aspectRatio(1f)
                         .wrapContentSize()
-                        .size(8.dp)
+                        .size(AppTokens.dp.chip.markerSize)
                         .background(
                             color = value.color(),
                             shape = CircleShape

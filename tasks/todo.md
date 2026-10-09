@@ -21,3 +21,12 @@
 - [x] Excluded muscles: fixed hero and group tabs, filtered muscle list, Android visual/interaction checks, final Android build and both iOS target compilations.
 
 - [x] Recheck excluded muscles and migrate profile muscles to shared design-system MuscleSelection; font-scale fixes, light/dark Android checks, final Android build and both iOS target compilations.
+
+# Whole-app consistency audit
+
+- [x] Inventory all components and screens, establish role-based visual rules.
+- [x] Capture and inspect whole-screen Android fixtures in both themes.
+- [x] Align list cards and supporting metadata; verify affected screens.
+- [x] Align metric cards, selectors, forms and screen spacing; verify affected screens.
+- [x] Check small screens, long text and larger fonts.
+- [x] Compile Android/iOS, remove capture harness, restore app/settings and record evidence.

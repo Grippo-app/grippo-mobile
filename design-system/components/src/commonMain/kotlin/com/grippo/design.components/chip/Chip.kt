@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -101,10 +102,11 @@ public fun Chip(
                     onClick = stype.onClick,
                     haptic = true
                 ) else it
-            }.padding(
+            }
+            .heightIn(min = tokens.height)
+            .padding(
                 horizontal = tokens.horizontalPadding,
-            ).height(
-                height = tokens.height
+                vertical = AppTokens.dp.contentPadding.text / 2,
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -173,9 +175,9 @@ private fun ChipPreview() {
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            textColor = Color.Black,
-            iconColor = Color.Black,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             stype = ChipStype.Default,
             size = ChipSize.Medium
         )
@@ -184,9 +186,9 @@ private fun ChipPreview() {
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            textColor = Color.Black,
-            iconColor = Color.Black,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             stype = ChipStype.Default,
             size = ChipSize.Medium
         )
@@ -196,9 +198,9 @@ private fun ChipPreview() {
             label = ChipLabel.Text(UiText.Str(value = "Label Label Label")),
             value = "value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            textColor = Color.Black,
-            iconColor = Color.Black,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             stype = ChipStype.Default,
             size = ChipSize.Medium
         )
@@ -208,9 +210,9 @@ private fun ChipPreview() {
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            textColor = Color.Black,
-            iconColor = Color.Black,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             stype = ChipStype.Default,
             size = ChipSize.Small
         )
@@ -219,9 +221,9 @@ private fun ChipPreview() {
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            textColor = Color.Black,
-            iconColor = Color.Black,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             stype = ChipStype.Default,
             size = ChipSize.Small
         )
@@ -231,9 +233,9 @@ private fun ChipPreview() {
             label = ChipLabel.Text(UiText.Str(value = "Label Label Label")),
             value = "value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            textColor = Color.Black,
-            iconColor = Color.Black,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.text.primary,
             stype = ChipStype.Default,
             size = ChipSize.Small
         )

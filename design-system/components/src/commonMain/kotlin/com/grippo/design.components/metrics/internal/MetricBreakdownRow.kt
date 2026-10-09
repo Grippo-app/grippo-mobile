@@ -15,9 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -36,27 +36,34 @@ internal fun MetricBreakdownRow(
     modifier: Modifier = Modifier,
     items: ImmutableList<MetricBreakdownItem>,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        items.forEachIndexed { index, item ->
-            MetricBreakdownCell(
-                modifier = Modifier.weight(1f),
-                label = item.label,
-                value = item.value,
-                dimmed = item.dimmed,
-            )
+    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
+    val columns = if (largeFont) 2 else items.size.coerceAtLeast(1)
 
-            if (index != items.lastIndex) {
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(AppTokens.colors.border.default.copy(alpha = 0.4f))
-                )
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        items.chunked(columns).forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                row.forEachIndexed { index, item ->
+                    MetricBreakdownCell(
+                        modifier = Modifier.weight(1f),
+                        label = item.label,
+                        value = item.value,
+                        dimmed = item.dimmed,
+                    )
+                    if (index != row.lastIndex) {
+                        Box(
+                            modifier = Modifier
+                                .width(AppTokens.dp.metrics.trainingSummary.dividerWidth)
+                                .fillMaxHeight()
+                                .background(AppTokens.colors.border.default.copy(alpha = 0.4f))
+                        )
+                    }
+                }
             }
         }
     }
@@ -82,7 +89,7 @@ private fun MetricBreakdownCell(
             } else {
                 AppTokens.colors.text.primary
             },
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
@@ -91,7 +98,7 @@ private fun MetricBreakdownCell(
             text = label,
             style = AppTokens.typography.b11Med(),
             color = AppTokens.colors.text.secondary,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )

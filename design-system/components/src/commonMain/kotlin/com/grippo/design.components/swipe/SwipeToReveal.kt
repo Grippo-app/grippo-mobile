@@ -28,17 +28,15 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 @Immutable
 private enum class Slot {
@@ -93,8 +91,8 @@ public fun SwipeToReveal(
     }
 
     val noticeColor = AppTokens.colors.semantic.notice
-    val borderWidth = 1.dp
-    val maxExtraVerticalPadding = 4.dp
+    val borderWidth = AppTokens.dp.swipe.borderWidth
+    val maxExtraVerticalPadding = AppTokens.dp.swipe.extraVerticalPadding
 
     // We use SubcomposeLayout to (1) measure actions width, (2) layout actions off-screen, (3) slide content.
     SubcomposeLayout(
@@ -187,21 +185,21 @@ private fun SwipeToRevealPreview() {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .background(Color.Red)
-                        .padding(16.dp),
+                        .background(AppTokens.colors.semantic.error)
+                        .padding(AppTokens.dp.contentPadding.content),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Delete", color = Color.White)
+                    Text("Delete", color = AppTokens.colors.static.white, style = AppTokens.typography.b14Med())
                 }
             },
             content = {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(16.dp)
+                        .background(AppTokens.colors.background.card)
+                        .padding(AppTokens.dp.contentPadding.content)
                 ) {
-                    Text("Swipe left to reveal actions")
+                    Text("Swipe left to reveal actions", color = AppTokens.colors.text.primary, style = AppTokens.typography.b14Med())
                 }
             }
         )

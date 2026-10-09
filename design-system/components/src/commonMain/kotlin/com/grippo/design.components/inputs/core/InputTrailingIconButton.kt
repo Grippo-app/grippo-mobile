@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 
@@ -27,7 +26,7 @@ internal fun InputTrailingIconButton(
 ) {
     AnimatedVisibility(
         modifier = Modifier
-            .size(40.dp)
+            .size(AppTokens.dp.input.trailingActionSize)
             .scalableClick(onClick = onClick),
         visible = visible,
         enter = fadeIn() + scaleIn(),

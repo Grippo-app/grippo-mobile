@@ -51,7 +51,7 @@ internal fun UserCardCompact(
         ) {
             Text(
                 text = value.name,
-                style = AppTokens.typography.h4(),
+                style = AppTokens.typography.h5(),
                 color = AppTokens.colors.text.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

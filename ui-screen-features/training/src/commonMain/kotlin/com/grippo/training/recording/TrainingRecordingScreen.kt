@@ -14,8 +14,10 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingExercise
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -37,6 +39,7 @@ import com.grippo.training.recording.internal.Header
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun TrainingRecordingScreen(
@@ -117,7 +120,17 @@ private fun ScreenPreview() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 stage = StageState.Add,
-                exercises = stubTraining().exercises,
+                exercises = persistentListOf(
+                    previewExercise("Bench press", 3, listOf(60f, 70f, 80f)),
+                    previewExercise("Barbell squat", 4, listOf(80f, 100f)),
+                    previewExercise("Pull-ups", 3, emptyList()),
+                    previewExercise(
+                        "Жим гантелей лёжа на наклонной скамье нейтральным хватом",
+                        4,
+                        listOf(22.5f),
+                    ),
+                    previewExercise("Cable row", 3, emptyList()),
+                ),
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty
@@ -153,4 +166,27 @@ private fun ScreenPresetPreview() {
             contract = TrainingRecordingContract.Empty
         )
     }
+}
+
+private fun previewExercise(
+    name: String,
+    sets: Int,
+    weights: List<Float>,
+): ExerciseState {
+    val base = stubExercise()
+    val iterations = List(sets) { index ->
+        stubPendingIteration().copy(
+            externalWeight = weights.getOrNull(index)?.let { VolumeFormatState.of(it) }
+                ?: VolumeFormatState.Empty(),
+            repetitions = RepetitionsFormatState.of(10),
+        )
+    }.toPersistentList()
+    return base.copy(
+        exerciseExample = base.exerciseExample.copy(name = name),
+        iterations = iterations,
+        total = base.total.copy(
+            volume = VolumeFormatState.of(weights.sum() * 10),
+            repetitions = RepetitionsFormatState.of(weights.size * 10),
+        ),
+    )
 }

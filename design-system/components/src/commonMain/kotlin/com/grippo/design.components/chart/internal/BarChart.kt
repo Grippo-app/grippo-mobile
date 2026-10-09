@@ -37,76 +37,76 @@ internal fun BarChart(
 
     val style = BarStyle(
         layout = BarStyle.Layout(
-            labelPadding = 8.dp,
+            labelPadding = AppTokens.dp.metrics.charts.bar.labelPadding,
             chartPadding = BarStyle.ChartPadding(
                 start = 0.dp,
                 top = 0.dp,
                 end = 0.dp,
                 bottom = 0.dp
             ),
-            minBarHeight = 6.dp,
-            yAxisLabelSpacing = 2.dp,
-            valueLabelSpacing = 8.dp,
-            baselineSpacing = 8.dp,
-            barsAxisInsetStart = 8.dp,
-            barsAxisInsetEnd = 8.dp
+            minBarHeight = AppTokens.dp.metrics.charts.bar.minHeight,
+            yAxisLabelSpacing = AppTokens.dp.metrics.charts.bar.axisLabelSpacing,
+            valueLabelSpacing = AppTokens.dp.metrics.charts.bar.contentSpacing,
+            baselineSpacing = AppTokens.dp.metrics.charts.bar.contentSpacing,
+            barsAxisInsetStart = AppTokens.dp.metrics.charts.bar.contentSpacing,
+            barsAxisInsetEnd = AppTokens.dp.metrics.charts.bar.contentSpacing
         ),
         grid = BarStyle.Grid(
             show = true,
             color = colors.divider.default.copy(alpha = 0.2f),
-            strokeWidth = 1.dp
+            strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         yAxis = BarStyle.YAxis.Labels(
             ticks = 4,
             textStyle = typography.b10Reg().copy(color = colors.text.secondary),
             formatter = formatter,
             tickMarkColor = colors.border.default.copy(alpha = 0.4f),
-            tickMarkWidth = 1.dp,
-            tickMarkLength = 6.dp
+            tickMarkWidth = AppTokens.dp.metrics.charts.axis.strokeWidth,
+            tickMarkLength = AppTokens.dp.metrics.charts.axis.tickLength
         ),
         peek = BarStyle.Peek.Visible(
-            hitSlop = 26.dp,
+            hitSlop = AppTokens.dp.metrics.charts.peek.hitSlop,
 
             guideColor = colors.charts.tooltip.guide,
-            guideWidth = 1.dp,
-            guideDash = 6.dp,
-            guideGap = 6.dp,
+            guideWidth = AppTokens.dp.metrics.charts.peek.guideWidth,
+            guideDash = AppTokens.dp.metrics.charts.peek.guideDash,
+            guideGap = AppTokens.dp.metrics.charts.peek.guideGap,
 
             focusColor = colors.charts.tooltip.focus,
-            focusRadius = 3.5.dp,
-            focusRingWidth = 2.dp,
-            focusHaloRadius = 18.dp,
+            focusRadius = AppTokens.dp.metrics.charts.peek.focusRadius,
+            focusRingWidth = AppTokens.dp.metrics.charts.peek.focusRingWidth,
+            focusHaloRadius = AppTokens.dp.metrics.charts.peek.focusHaloRadius,
 
             tooltipBackground = colors.charts.tooltip.background,
             tooltipBorder = colors.charts.tooltip.border,
             tooltipText = colors.charts.tooltip.text,
-            tooltipCornerRadius = 6.dp,
-            tooltipPaddingH = 8.dp,
-            tooltipPaddingV = 4.dp,
-            tooltipMargin = 6.dp,
+            tooltipCornerRadius = AppTokens.dp.metrics.charts.peek.tooltipRadius,
+            tooltipPaddingH = AppTokens.dp.metrics.charts.peek.tooltipHorizontalPadding,
+            tooltipPaddingV = AppTokens.dp.metrics.charts.peek.tooltipVerticalPadding,
+            tooltipMargin = AppTokens.dp.metrics.charts.peek.tooltipMargin,
 
             decimals = 0,
             showLabel = true,
         ),
         yAxisLine = BarStyle.AxisLine(
             color = colors.border.default.copy(alpha = 0.4f),
-            width = 1.dp
+            width = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         xAxis = if (xAxisLabels == BarChartXAxisLabels.WithLabels) {
             BarStyle.XAxis.LabelsAdaptive(
                 textStyle = typography.b10Reg()
                     .copy(color = colors.text.tertiary),
-                minGapDp = 8.dp
+                minGapDp = AppTokens.dp.metrics.charts.bar.contentSpacing
             )
         } else {
             BarStyle.XAxis.None
         },
         xBaseline = BarStyle.Baseline(
             color = colors.border.default.copy(alpha = 0.45f),
-            width = 1.dp
+            width = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         bars = BarStyle.Bars(
-            corner = 12.dp,
+            corner = AppTokens.dp.metrics.charts.bar.radius,
             brushProvider = { entry, _, rect ->
                 val topColor = lerp(entry.color, colors.static.white, 0.25f)
                 val midColor = entry.color
@@ -123,11 +123,11 @@ internal fun BarChart(
             strokeWidth = 0.dp,
             strokeColor = Color.Transparent,
             sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps(
-                midThresholdDp = 22.dp,
-                denseThresholdDp = 12.dp,
+                midThresholdDp = AppTokens.dp.metrics.charts.bar.midDensityThreshold,
+                denseThresholdDp = AppTokens.dp.metrics.charts.bar.denseThreshold,
                 midRatio = 0.55f,
                 denseRatio = 0.35f,
-                maxBarWidth = 56.dp
+                maxBarWidth = AppTokens.dp.metrics.charts.bar.maxWidth
             )
         ),
         values = BarStyle.Values.Above(
@@ -190,17 +190,17 @@ private fun BarChartPreview() {
     PreviewContainer {
         val ds = BarData(
             items = listOf(
-                BarEntry("Mon", 6f, Color(0xFF6AA9FF)),
-                BarEntry("Tue", 10f, Color(0xFF00E6A7)),
-                BarEntry("Wed", 4f, Color(0xFFFF7A33)),
-                BarEntry("Thu", 12f, Color(0xFFB049F8)),
-                BarEntry("Fri", 8f, Color(0xFFFFC53D)),
-                BarEntry("Sat", 14f, Color(0xFF3A86FF)),
-                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
-                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
-                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
-                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
-                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
+                BarEntry("Mon", 6f, AppTokens.colors.palette.palette7BlueGrowth[0]),
+                BarEntry("Tue", 10f, AppTokens.colors.palette.palette7BlueGrowth[1]),
+                BarEntry("Wed", 4f, AppTokens.colors.palette.palette7BlueGrowth[2]),
+                BarEntry("Thu", 12f, AppTokens.colors.palette.palette7BlueGrowth[3]),
+                BarEntry("Fri", 8f, AppTokens.colors.palette.palette7BlueGrowth[4]),
+                BarEntry("Sat", 14f, AppTokens.colors.palette.palette7BlueGrowth[5]),
+                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[6]),
+                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[0]),
+                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[1]),
+                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[2]),
+                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[3]),
             ),
             xName = "Day",
             yName = "Volume",

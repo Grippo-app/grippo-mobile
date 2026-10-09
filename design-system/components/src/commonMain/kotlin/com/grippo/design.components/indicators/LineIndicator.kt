@@ -31,8 +31,8 @@ public fun LineIndicator(
     modifier: Modifier = Modifier,
     progress: Float,
     colors: AppColor.Charts.IndicatorColors.IndicatorColors = AppTokens.colors.charts.indicator.primary,
-    barHeight: Dp = 6.dp,
-    labelSpacing: Dp = 6.dp,
+    barHeight: Dp = AppTokens.dp.metrics.charts.indicator.height,
+    labelSpacing: Dp = AppTokens.dp.metrics.charts.indicator.labelSpacing,
     startLabel: (@Composable () -> Unit)? = null,
     endLabel: (@Composable () -> Unit)? = null,
     marker: (@Composable () -> Unit)? = null,
@@ -54,14 +54,13 @@ public fun LineIndicator(
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(labelSpacing),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Two fixed slots — SpaceBetween pushes them to the edges even when one is empty.
-            Box(contentAlignment = Alignment.CenterStart) {
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                 startLabel?.invoke()
             }
-            Box(contentAlignment = Alignment.CenterEnd) {
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
                 endLabel?.invoke()
             }
         }

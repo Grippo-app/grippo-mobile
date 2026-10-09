@@ -34,6 +34,7 @@ internal fun ExerciseExampleCardSmall(
         )
 
         Text(
+            modifier = Modifier.weight(1f),
             text = value.name,
             style = AppTokens.typography.b14Semi(),
             color = AppTokens.colors.text.primary,

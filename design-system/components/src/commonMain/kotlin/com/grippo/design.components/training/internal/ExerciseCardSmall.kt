@@ -3,19 +3,15 @@ package com.grippo.design.components.training.internal
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
-import com.grippo.design.components.training.IterationCard
-import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -45,20 +41,10 @@ internal fun ExerciseCardSmall(
             overflow = TextOverflow.Ellipsis
         )
 
-        FlowRow(
+        ExerciseSummary(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        ) {
-            value.iterations.forEach { iteration ->
-                key(iteration.id) {
-                    IterationCard(
-                        value = iteration,
-                        style = IterationCardStyle.SmallView
-                    )
-                }
-            }
-        }
+            value = value,
+        )
     }
 }
 

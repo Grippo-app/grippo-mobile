@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.grippo.chart.ring.RingChart as CoreRingChart
 import com.grippo.chart.ring.RingData
 import com.grippo.chart.ring.RingStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
-import com.grippo.chart.ring.RingChart as CoreRingChart
 
 @Composable
 internal fun RingChart(
@@ -20,7 +20,7 @@ internal fun RingChart(
     colors: AppColor.Charts.RingColor.RingPalette,
 ) {
     val style = RingStyle(
-        strokeWidth = 12.dp,
+        strokeWidth = AppTokens.dp.metrics.charts.ring.strokeWidth,
         trackColor = colors.track,
         indicatorColor = colors.indicator,
         startAngle = -90f,

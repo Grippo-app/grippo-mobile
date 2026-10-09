@@ -2,23 +2,26 @@ package com.grippo.design.components.training
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
-import com.grippo.design.components.training.internal.ExerciseCardLarge
-import com.grippo.design.components.training.internal.ExerciseCardMedium
+import com.grippo.core.state.trainings.stubIteration
+import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.design.components.training.internal.ExerciseCardRow
 import com.grippo.design.components.training.internal.ExerciseCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import kotlinx.collections.immutable.persistentListOf
 
-@Immutable
+@Stable
 public sealed interface ExerciseCardStyle {
-    @Immutable
+    @Stable
     public data class Large(
         val onClick: () -> Unit
     ) : ExerciseCardStyle
 
-    @Immutable
+    @Stable
     public data class Medium(
         val onClick: () -> Unit
     ) : ExerciseCardStyle
@@ -40,13 +43,13 @@ public fun ExerciseCard(
             value = value,
         )
 
-        is ExerciseCardStyle.Medium -> ExerciseCardMedium(
+        is ExerciseCardStyle.Medium -> ExerciseCardRow(
             modifier = modifier,
             value = value,
             onClick = style.onClick
         )
 
-        is ExerciseCardStyle.Large -> ExerciseCardLarge(
+        is ExerciseCardStyle.Large -> ExerciseCardRow(
             modifier = modifier,
             value = value,
             onClick = style.onClick
@@ -74,5 +77,30 @@ private fun ExerciseCardPreview() {
                 onClick = {}
             ),
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseCardStatesPreview() {
+    PreviewContainer {
+        val base = stubExercise()
+        val pending = stubPendingIteration()
+        val completed = stubIteration()
+        listOf(
+            base.copy(iterations = persistentListOf(pending)),
+            base.copy(iterations = persistentListOf(completed, pending)),
+            base.copy(iterations = persistentListOf(completed)),
+            base.copy(iterations = persistentListOf()),
+            base.copy(
+                exerciseExample = base.exerciseExample.copy(
+                    name = "Жим гантелей лёжа на наклонной скамье нейтральным хватом"
+                ),
+                iterations = persistentListOf(completed, pending),
+            ),
+        ).forEach { exercise ->
+            ExerciseCard(value = exercise, style = ExerciseCardStyle.Medium(onClick = {}))
+            ExerciseCard(value = exercise, style = ExerciseCardStyle.Small)
+        }
     }
 }

@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.EmailFormatState
@@ -76,7 +75,7 @@ internal fun LoginScreen(
     ) {
 
         Image(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(AppTokens.dp.screen.logoSize),
             imageVector = AppTokens.icons.GrippoLogo,
             contentDescription = null,
         )

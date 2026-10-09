@@ -52,17 +52,17 @@ private fun TrainingStatPreview() {
         TrainingStat(
             label = "Duration",
             value = AnnotatedString("00:45"),
-            contentColor = AppTokens.colors.context.duration,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             label = "Tonnage",
             value = AnnotatedString("5 628 кг"),
-            contentColor = AppTokens.colors.context.volume,
+            contentColor = AppTokens.colors.text.primary,
         )
         TrainingStat(
             label = "Reps",
             value = AnnotatedString("x73"),
-            contentColor = AppTokens.colors.context.repetitions,
+            contentColor = AppTokens.colors.text.primary,
         )
     }
 }

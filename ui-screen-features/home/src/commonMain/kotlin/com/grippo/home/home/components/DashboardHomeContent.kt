@@ -1,14 +1,13 @@
 package com.grippo.home.home.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
@@ -57,15 +57,18 @@ import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.HomeContract
 import com.grippo.home.home.HomeState
 import com.grippo.home.home.HomeUnlock
-import kotlinx.collections.immutable.persistentListOf
 import kotlin.time.Duration.Companion.hours
+import kotlinx.collections.immutable.persistentListOf
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun DashboardHomeContent(
     modifier: Modifier,
     state: HomeState,
     contract: HomeContract,
 ) {
+    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
+
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
         vertical = AppTokens.dp.contentPadding.content,
@@ -131,17 +134,17 @@ internal fun DashboardHomeContent(
                     item(
                         key = "muscle_loading_and_training_streak",
                         span = { GridItemSpan(2) }) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(intrinsicSize = IntrinsicSize.Max),
-                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            maxItemsInEachRow = if (largeFont) 1 else 2,
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                         ) {
                             if (state.muscleLoad != null) {
                                 MuscleLoadingCard(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .fillMaxHeight()
+                                        .fillMaxRowHeight()
                                         .scalableClick(onClick = contract::onOpenMuscleLoading),
                                     summary = state.muscleLoad
                                 )
@@ -150,7 +153,7 @@ internal fun DashboardHomeContent(
                                 TrainingStreakCard(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .fillMaxHeight()
+                                        .fillMaxRowHeight()
                                         .scalableClick(onClick = contract::onOpenTrainingStreak),
                                     value = state.streak
                                 )
@@ -182,25 +185,25 @@ internal fun DashboardHomeContent(
                     performanceMetricItem(
                         key = "performance_density",
                         metric = densityMetric,
-                        span = if (volumeMetric == null) 2 else 1,
+                        span = if (largeFont || volumeMetric == null) 2 else 1,
                         contract = contract,
                     )
                     performanceMetricItem(
                         key = "performance_volume",
                         metric = volumeMetric,
-                        span = if (densityMetric == null) 2 else 1,
+                        span = if (largeFont || densityMetric == null) 2 else 1,
                         contract = contract,
                     )
                     performanceMetricItem(
                         key = "performance_repetitions",
                         metric = repetitionsMetric,
-                        span = if (intensityMetric == null) 2 else 1,
+                        span = if (largeFont || intensityMetric == null) 2 else 1,
                         contract = contract,
                     )
                     performanceMetricItem(
                         key = "performance_intensity",
                         metric = intensityMetric,
-                        span = if (repetitionsMetric == null) 2 else 1,
+                        span = if (largeFont || repetitionsMetric == null) 2 else 1,
                         contract = contract,
                     )
                 }
@@ -237,9 +240,10 @@ internal fun DashboardHomeContent(
                 Button(
                     modifier = Modifier
                         .align(Alignment.End)
+                        .then(if (largeFont) Modifier.fillMaxWidth() else Modifier)
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                     onClick = contract::onResumeTraining,
-                    style = ButtonStyle.Error,
+                    style = ButtonStyle.Primary,
                     content = ButtonContent.Text(
                         text = AppTokens.strings.res(Res.string.resume_training_btn)
                     )
@@ -248,6 +252,7 @@ internal fun DashboardHomeContent(
                 Button(
                     modifier = Modifier
                         .align(Alignment.End)
+                        .then(if (largeFont) Modifier.fillMaxWidth() else Modifier)
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                     content = ButtonContent.Text(
                         text = AppTokens.strings.res(Res.string.start_workout),

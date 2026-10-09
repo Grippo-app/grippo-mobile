@@ -81,7 +81,7 @@ internal fun TrainingCompletedScreen(
     )
 
     val offsetY by animateDpAsState(
-        targetValue = if (cardVisible.value) 0.dp else 40.dp,
+        targetValue = if (cardVisible.value) 0.dp else AppTokens.dp.training.completionEntranceOffset,
         animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
         label = "offsetY"
     )

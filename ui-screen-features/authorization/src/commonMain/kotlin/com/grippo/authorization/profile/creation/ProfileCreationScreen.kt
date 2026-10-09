@@ -11,8 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -22,7 +23,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.screen.api.ProfileCreationRouter
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
-import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
 private val PROFILE_CREATION_FLOW = persistentListOf(
     ProfileCreationRouter.User,
@@ -59,8 +59,8 @@ internal fun ProfileCreationScreen(
                     .statusBarsPadding()
                     .padding(vertical = AppTokens.dp.contentPadding.content)
                     .height(AppTokens.dp.screen.toolbar.height)
-                    .fillMaxWidth()
-                    .padding(horizontal = 100.dp)
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth(AppTokens.dp.screen.toolbar.progressWidthFraction)
                     .wrapContentHeight(),
                 progress = progress,
                 marker = {

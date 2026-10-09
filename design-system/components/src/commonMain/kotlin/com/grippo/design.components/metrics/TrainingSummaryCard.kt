@@ -70,8 +70,8 @@ private fun SummaryHero(
         Text(
             modifier = Modifier.weight(weight = 1f, fill = false),
             text = AppTokens.strings.res(Res.string.tonnage),
-            style = AppTokens.typography.h6(),
-            color = AppTokens.colors.text.primary,
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.secondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -79,8 +79,8 @@ private fun SummaryHero(
         Text(
             modifier = Modifier.weight(weight = 1f, fill = false),
             text = training.total.volume.short(),
-            style = AppTokens.typography.h5(),
-            color = AppTokens.colors.semantic.notice,
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

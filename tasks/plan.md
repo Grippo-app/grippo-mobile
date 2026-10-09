@@ -105,3 +105,15 @@ Both authorization and profile now use the design-system MuscleSelection: fixed 
 Android visual checks on Small Phone: both themes, group switching, selection retained after switching away/back, illustration updates, horizontally scrolling tabs; authorization final row is reachable. Font scales 1.5 and 2.0 exposed fixed-height toolbar/card clipping, corrected with minimum heights and tokenized padding. Final authorization at 2.0 retains a full two-line row and Continue button by shrinking the hero. Final profile light/dark screenshots are in profile-muscle-tabs under the workspace visualization directory.
 
 Final verification: :androidApp:assembleDebug and profile/authorization compileKotlinIosArm64 + compileKotlinIosSimulatorArm64 succeeded (exit 0; /tmp/grippo-profile-muscle-final-build.log). Temporary UI harness and MainActivity hook removed. Ordinary APK installed on both Android emulators and launched. No profile save was sent to the backend. iOS verification covers compilation, without a new simulator/device runtime session. Existing unrelated compiler warnings remain.
+
+## Whole-app card and screen consistency audit — October 9, 2026
+
+Review all 140 component files and all 53 screen/dialog files. Preserve 64 dp exercise thumbnails and the current neutral training screen direction. Establish consistent roles rather than uniform sizes: screen/section headings, list-row titles, supporting metadata, status colors, selection colors and analytical chart accents. Keep functional contracts and backend data unchanged.
+
+1. Inventory components/screens, hardcoded styling, preview coverage and caller relationships.
+2. Capture existing whole-screen previews on the Android emulator with a temporary fixture-only harness; inspect both themes, representative small-screen/font-scale cases and long content.
+3. Apply small batches to shared list cards, analytical cards, selector/form components and screen layouts, rebuilding and recapturing affected screens.
+4. Review all source changes, compile Android/iOS targets, remove the temporary harness and restore the normal application and emulator settings.
+5. Record screenshot coverage, actual findings/fixes and any unverified screens in a durable audit report.
+
+Acceptance: visual values use AppTokens; related rows agree on typography/spacing; neutral metadata does not masquerade as status; selected/completed/error states remain distinguishable; no clipped headings, controls or CTA content on captured screens. Screenshot evidence distinguishes runtime fixture screens from ordinary authenticated navigation.
