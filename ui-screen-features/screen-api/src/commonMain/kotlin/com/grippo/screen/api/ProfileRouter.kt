@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 public sealed class ProfileRouter : BaseRouter {
     @Serializable
+    public data object Menu : ProfileRouter()
+
+    @Serializable
     public data object Equipments : ProfileRouter()
 
     @Serializable

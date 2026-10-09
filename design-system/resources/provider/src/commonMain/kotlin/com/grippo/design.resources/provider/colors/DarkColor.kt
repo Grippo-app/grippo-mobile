@@ -5,6 +5,11 @@ import com.grippo.design.resources.provider.AppColor
 
 public object DarkColor : AppColor {
 
+    override val bottomBar: AppColor.BottomBarColors = object : AppColor.BottomBarColors {
+        override val activeContent = AppPalette.DarkAccent.Blue
+        override val inactiveContent = AppPalette.NeutralDark.N650
+    }
+
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = AppPalette.NeutralDark.N250
         override val focus = AppPalette.DarkAccent.Blue

@@ -18,6 +18,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.core.AppTheme
 import com.grippo.home.HomeRootComponent
+import com.grippo.main.MainComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.HomeRouter
@@ -150,19 +151,41 @@ public class RootComponent(
             )
 
             RootRouter.Home -> Child.Home(
-                HomeRootComponent(
+                MainComponent(
                     componentContext = context,
-                    initial = HomeRouter.Home,
-                    toBody = viewModel::toWeightHistory,
-                    toMissingEquipment = viewModel::toMissingEquipment,
-                    toExcludedMuscles = viewModel::toExcludedMuscles,
-                    toExperience = viewModel::toExperience,
-                    toDebug = viewModel::toDebug,
-                    toTraining = viewModel::toTraining,
-                    toTrainings = viewModel::toTrainings,
-                    toSettings = viewModel::toSettings,
-                    toSocial = viewModel::toSocial,
-                    toGoal = viewModel::toGoal,
+                    createHome = { childContext, back ->
+                        HomeRootComponent(
+                            componentContext = childContext,
+                            initial = HomeRouter.Home,
+                            toTrainings = viewModel::toTrainings,
+                            toBody = viewModel::toWeightHistory,
+                            toMissingEquipment = viewModel::toMissingEquipment,
+                            toExcludedMuscles = viewModel::toExcludedMuscles,
+                            toExperience = viewModel::toExperience,
+                            toDebug = viewModel::toDebug,
+                            toTraining = viewModel::toTraining,
+                            toSettings = viewModel::toSettings,
+                            toSocial = viewModel::toSocial,
+                            toGoal = viewModel::toGoal,
+                            close = back,
+                        )
+                    },
+                    createCalendar = { childContext, back ->
+                        TrainingsRootComponent(
+                            componentContext = childContext,
+                            initial = TrainingsRouter.Trainings,
+                            toTraining = viewModel::toTraining,
+                            close = back,
+                        )
+                    },
+                    createProfile = { childContext, back ->
+                        ProfileComponent(
+                            componentContext = childContext,
+                            initial = ProfileRouter.Menu,
+                            toDebug = viewModel::toDebug,
+                            close = back,
+                        )
+                    },
                     close = viewModel::onClose
                 )
             )
@@ -180,6 +203,7 @@ public class RootComponent(
                 ProfileComponent(
                     componentContext = context,
                     initial = router.value,
+                    toDebug = viewModel::toDebug,
                     close = viewModel::onBack
                 )
             )
@@ -226,7 +250,7 @@ public class RootComponent(
         public data class Trainings(override val component: TrainingsRootComponent) :
             Child(component)
 
-        public data class Home(override val component: HomeRootComponent) :
+        public data class Home(override val component: MainComponent) :
             Child(component)
 
         public data class Profile(override val component: ProfileComponent) :

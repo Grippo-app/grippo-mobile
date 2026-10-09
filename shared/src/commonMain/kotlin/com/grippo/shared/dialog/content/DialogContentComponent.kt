@@ -23,7 +23,6 @@ import com.grippo.design.resources.provider.duration_picker_title
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
-import com.grippo.dialog.profile.ProfileComponent
 import com.grippo.draft.training.DraftTrainingComponent
 import com.grippo.duration.picker.DurationPickerComponent
 import com.grippo.error.display.ErrorDisplayComponent
@@ -334,27 +333,6 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.Profile -> Child.Profile(
-                ProfileComponent(
-                    componentContext = context,
-                    onProfileResult = { action ->
-                        finish {
-                            router.onProfileResult.invoke(
-                                action
-                            )
-                        }
-                    },
-                    onSettingsResult = { action ->
-                        finish {
-                            router.onSettingsResult.invoke(
-                                action
-                            )
-                        }
-                    },
-                    close = { finish(null) }
-                )
-            )
-
             is DialogConfig.Confirmation -> Child.Confirmation(
                 ConfirmationComponent(
                     componentContext = context,
@@ -408,9 +386,6 @@ internal class DialogContentComponent(
             Child(component)
 
         data class HeightPicker(override val component: HeightPickerComponent) :
-            Child(component)
-
-        data class Profile(override val component: ProfileComponent) :
             Child(component)
 
         data class ErrorDisplay(override val component: ErrorDisplayComponent) :

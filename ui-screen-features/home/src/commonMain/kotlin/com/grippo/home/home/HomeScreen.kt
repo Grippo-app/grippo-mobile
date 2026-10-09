@@ -2,7 +2,6 @@ package com.grippo.home.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,11 +17,6 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -31,7 +25,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.dashboard
-import com.grippo.design.resources.provider.icons.User
 import com.grippo.home.home.components.DashboardHomeContent
 import com.grippo.home.home.components.WelcomeHomeContent
 import kotlinx.collections.immutable.ImmutableSet
@@ -66,15 +59,6 @@ internal fun HomeScreen(
             null
         } else {
             AppTokens.strings.res(Res.string.dashboard)
-        },
-        trailing = {
-            Button(
-                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
-                content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.User)),
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                onClick = contract::onOpenProfile
-            )
         },
     )
 

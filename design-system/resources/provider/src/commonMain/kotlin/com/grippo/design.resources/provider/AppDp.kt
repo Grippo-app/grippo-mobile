@@ -44,6 +44,17 @@ public data object AppDp {
         val xxxxLarge: Dp = 200.dp
     }
 
+    val bottomBar: BottomBar = BottomBar
+
+    public data object BottomBar {
+        val minHeight: Dp = size.large
+        val iconSize: Dp = icon.large
+        val horizontalPadding: Dp = padding.small
+        val verticalPadding: Dp = padding.small
+        val gap: Dp = padding.extraSmall
+        val borderWidth: Dp = 1.dp
+    }
+
     val bottomSheet: BottomSheet = BottomSheet
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen

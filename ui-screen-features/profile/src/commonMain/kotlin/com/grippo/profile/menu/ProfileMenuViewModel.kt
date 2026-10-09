@@ -1,4 +1,4 @@
-package com.grippo.dialog.profile
+package com.grippo.profile.menu
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.ProfileMenu
@@ -8,12 +8,16 @@ import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
 import kotlinx.coroutines.flow.onEach
 
-public class ProfileViewModel(
+internal class ProfileMenuViewModel(
     userFeature: UserFeature,
-) : BaseViewModel<ProfileState, ProfileDirection, ProfileLoader>(ProfileState()),
-    ProfileContract {
+) : BaseViewModel<ProfileMenuState, ProfileMenuDirection, ProfileMenuLoader>(ProfileMenuState()),
+    ProfileMenuContract {
 
     init {
+        safeLaunch(loader = ProfileMenuLoader.User) {
+            userFeature.getUser().getOrThrow()
+        }
+
         userFeature.observeUser()
             .onEach(::provideUser)
             .safeLaunch()
@@ -24,14 +28,10 @@ public class ProfileViewModel(
     }
 
     override fun onProfileMenuClick(menu: ProfileMenu) {
-        navigateTo(ProfileDirection.BackWithProfileMenuResult(menu))
+        navigateTo(ProfileMenuDirection.ProfileMenuSelected(menu))
     }
 
     override fun onSettingsMenuClick(menu: SettingsMenu) {
-        navigateTo(ProfileDirection.BackWithSettingsMenuResult(menu))
-    }
-
-    override fun onBack() {
-        navigateTo(ProfileDirection.Back)
+        navigateTo(ProfileMenuDirection.SettingsMenuSelected(menu))
     }
 }

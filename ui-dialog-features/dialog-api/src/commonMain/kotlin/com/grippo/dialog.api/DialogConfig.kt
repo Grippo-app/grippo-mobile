@@ -3,8 +3,6 @@ package com.grippo.dialog.api
 import com.grippo.core.state.error.AppErrorState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.menu.ProfileMenu
-import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
@@ -58,7 +56,6 @@ public sealed class DialogConfig(
             is ExerciseExamplePicker.SimilarTo -> other is ExerciseExamplePicker.SimilarTo &&
                 targetExerciseExampleId == other.targetExerciseExampleId
             is TrainingMenuPicker -> other is TrainingMenuPicker
-            is Profile -> other is Profile
             is Confirmation -> other is Confirmation && description == other.description
             is ConfirmTrainingCompletion -> other is ConfirmTrainingCompletion && initial == other.initial
             is Statistics.Trainings -> other is Statistics.Trainings && range == other.range
@@ -219,12 +216,6 @@ public sealed class DialogConfig(
     public data class TrainingMenuPicker(
         public override val title: UiText,
         val onResult: (TrainingMenu) -> Unit = {},
-    ) : DialogConfig()
-
-    public data class Profile(
-        public override val title: UiText,
-        val onProfileResult: (ProfileMenu) -> Unit = {},
-        val onSettingsResult: (SettingsMenu) -> Unit = {},
     ) : DialogConfig()
 
     public data class Confirmation(

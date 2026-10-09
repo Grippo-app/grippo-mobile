@@ -75,6 +75,7 @@ kotlin {
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)
         implementation(projects.uiScreenFeatures.home)
+        implementation(projects.uiScreenFeatures.main)
 
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiDialogFeatures.weightPicker)
@@ -84,7 +85,6 @@ kotlin {
         implementation(projects.uiDialogFeatures.monthPicker)
         implementation(projects.uiDialogFeatures.draftTraining)
         implementation(projects.uiDialogFeatures.startTraining)
-        implementation(projects.uiDialogFeatures.profile)
         implementation(projects.uiDialogFeatures.errorDisplay)
         implementation(projects.uiDialogFeatures.confirmation)
         implementation(projects.uiDialogFeatures.confirmTrainingCompletion)

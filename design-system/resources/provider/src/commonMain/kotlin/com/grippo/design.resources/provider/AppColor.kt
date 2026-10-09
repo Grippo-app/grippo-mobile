@@ -3,6 +3,7 @@ package com.grippo.design.resources.provider
 import androidx.compose.ui.graphics.Color
 
 public interface AppColor {
+    public val bottomBar: BottomBarColors
     public val button: ButtonColors
     public val input: InputColors
     public val background: BackgroundColors
@@ -26,6 +27,11 @@ public interface AppColor {
     public val static: Static
     public val context: ContextColors
     public val selectableCardColors: SelectableCardColors
+
+    public interface BottomBarColors {
+        public val activeContent: Color
+        public val inactiveContent: Color
+    }
 
     public interface DividerColors {
         public val default: Color

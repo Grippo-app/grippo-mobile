@@ -58,7 +58,6 @@ internal fun TrainingsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
-        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent,
         content = {
             Segment(

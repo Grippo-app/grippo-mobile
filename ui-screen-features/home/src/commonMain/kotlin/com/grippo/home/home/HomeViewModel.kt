@@ -3,8 +3,6 @@ package com.grippo.home.home
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.menu.ProfileMenu
-import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
@@ -34,7 +32,6 @@ import com.grippo.design.resources.provider.notification_weight_description
 import com.grippo.design.resources.provider.notification_weight_title
 import com.grippo.design.resources.provider.performance_trend
 import com.grippo.design.resources.provider.period_picker_title
-import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_streak
 import com.grippo.design.resources.provider.value_muscle_loading
@@ -292,30 +289,6 @@ internal class HomeViewModel(
             title = title,
             range = range,
         )
-        dialogController.open(dialog)
-    }
-
-    override fun onOpenProfile() {
-        val dialog = DialogConfig.Profile(
-            title = UiText.Res(Res.string.profile),
-            onProfileResult = {
-                when (it) {
-                    ProfileMenu.Muscles -> navigateTo(HomeDirection.ExcludedMuscles)
-                    ProfileMenu.Equipment -> navigateTo(HomeDirection.MissingEquipment)
-                    ProfileMenu.Experience -> navigateTo(HomeDirection.Experience)
-                    ProfileMenu.Body -> navigateTo(HomeDirection.Body)
-                    ProfileMenu.Goal -> navigateTo(HomeDirection.Goal)
-                }
-            },
-            onSettingsResult = {
-                when (it) {
-                    SettingsMenu.Debug -> navigateTo(HomeDirection.Debug)
-                    SettingsMenu.Settings -> navigateTo(HomeDirection.Settings)
-                    SettingsMenu.Social -> navigateTo(HomeDirection.Social)
-                }
-            }
-        )
-
         dialogController.open(dialog)
     }
 

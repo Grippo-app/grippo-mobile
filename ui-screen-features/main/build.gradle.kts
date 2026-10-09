@@ -7,23 +7,23 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.grippo.ui.dialog.features.profile"
+        namespace = "com.grippo.ui.screen.features.main"
+        withHostTestBuilder {}
+    }
+
+    sourceSets.getByName("androidHostTest").dependencies {
+        implementation(kotlin("test-junit"))
     }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
+        implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
-        implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
-        implementation(projects.uiDialogFeatures.dialogApi)
-        implementation(projects.dataFeatures.featureApi)
-        implementation(projects.dataMappers.domainToState)
-
         implementation(libs.compose.foundation)
         implementation(libs.compose.material3)
-
         implementation(libs.immutable.collections)
     }
 }

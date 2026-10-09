@@ -868,4 +868,5 @@
     <string name="exercise_example_information">Information</string>
     <string name="exercise_sets_count">%1$d/%2$d sets</string>
     <string name="exercise_max_weight">%1$s max</string>
+    <string name="home">Home</string>
 </resources>

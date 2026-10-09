@@ -59,7 +59,9 @@ Groups:
 ### `:ui-screen-features:*` — full-screen features
 
 - `:screen-api` — public `*Router` sealed classes (`@Serializable`) and `Deeplink` enum. Used by Decompose for type-safe navigation **between features**.
-- Features: `authorization`, `home`, `profile`, `training`, `trainings`, `debug`. Inside a feature — a root `*RootComponent` with its own `StackNavigation<*Router>` and **internal** sub-Components for each screen.
+- Features: `authorization`, `main`, `home`, `profile`, `training`, `trainings`, `debug`. Inside a feature — a root `*RootComponent` with its own `StackNavigation<*Router>` and **internal** sub-Components for each screen.
+
+- `:main` owns the Home/Calendar/Profile tab shell and bottom bar. `:shared` supplies child-component factories; `:main` does not depend on feature implementations. Factories return `BaseComponent<*>` directly. The bottom bar remains visible throughout all tab flows.
 
 ### `:ui-dialog-features:*` — bottom sheet flows (~25 modules)
 

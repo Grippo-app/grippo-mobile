@@ -5,6 +5,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -21,6 +23,7 @@ import com.grippo.profile.body.ProfileBodyComponent
 import com.grippo.profile.equipments.ProfileEquipmentsComponent
 import com.grippo.profile.experience.ProfileExperienceComponent
 import com.grippo.profile.goal.ProfileGoalComponent
+import com.grippo.profile.menu.ProfileMenuComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
 import com.grippo.profile.settings.ProfileSettingsComponent
 import com.grippo.profile.social.ProfileSocialComponent
@@ -30,6 +33,7 @@ public class ProfileComponent(
     initial: ProfileRouter,
     componentContext: ComponentContext,
     private val close: () -> Unit,
+    private val toDebug: () -> Unit,
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
     override val viewModel: ProfileViewModel = componentContext.retainedInstance {
@@ -44,7 +48,12 @@ public class ProfileComponent(
 
     override suspend fun eventListener(direction: ProfileDirection) {
         when (direction) {
-            ProfileDirection.Back -> close.invoke()
+            is ProfileDirection.Open -> navigation.pushNew(direction.router)
+            ProfileDirection.Debug -> toDebug()
+            ProfileDirection.Back -> {
+                if (childStack.value.backStack.isEmpty()) close()
+                else navigation.pop()
+            }
         }
     }
 
@@ -53,14 +62,21 @@ public class ProfileComponent(
     internal val childStack: Value<ChildStack<ProfileRouter, Child>> = childStack(
         source = navigation,
         serializer = ProfileRouter.serializer(),
-        initialStack = { listOf(initial) },
-        key = "ProfileComponent",
+        initialConfiguration = initial,
         handleBackButton = true,
+        key = "ProfileComponent",
         childFactory = ::createChild,
     )
 
     private fun createChild(router: ProfileRouter, context: ComponentContext): Child {
         return when (router) {
+            ProfileRouter.Menu -> Child.Menu(
+                ProfileMenuComponent(
+                    componentContext = context,
+                    onProfileMenuClick = viewModel::onProfileMenuClick,
+                    onSettingsMenuClick = viewModel::onSettingsMenuClick,
+                )
+            )
             ProfileRouter.Muscles -> Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
@@ -120,6 +136,7 @@ public class ProfileComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Menu(override val component: ProfileMenuComponent) : Child(component)
         data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
         data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
         data class ProfileBody(override val component: ProfileBodyComponent) : Child(component)
