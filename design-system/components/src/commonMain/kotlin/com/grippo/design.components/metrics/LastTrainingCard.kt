@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
@@ -68,18 +67,16 @@ public fun LastTrainingCard(
     }
 
     Box(modifier = modifier.height(intrinsicSize = IntrinsicSize.Max)) {
-        if (LocalDensity.current.fontScale <= AppTokens.dp.screen.largeFontScaleThreshold) {
-            Image(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .offset(x = (AppTokens.dp.metrics.lastTraining.image / 2))
-                    .size(AppTokens.dp.metrics.lastTraining.image)
-                    .scale(2f),
-                painter = AppTokens.drawables.res(Res.drawable.plate),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-            )
-        }
+        Image(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .offset(x = (AppTokens.dp.metrics.lastTraining.image / 2))
+                .size(AppTokens.dp.metrics.lastTraining.image)
+                .scale(2f),
+            painter = AppTokens.drawables.res(Res.drawable.plate),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+        )
 
         Column(modifier = Modifier.fillMaxSize()) {
 

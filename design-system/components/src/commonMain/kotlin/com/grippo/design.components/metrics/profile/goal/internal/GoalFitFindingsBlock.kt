@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.profile.GoalFitFindingState
@@ -193,8 +192,6 @@ private fun FindingValueRow(
     titleMaxLines: Int,
     modifier: Modifier = Modifier,
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -202,39 +199,21 @@ private fun FindingValueRow(
     ) {
         SeverityDot(color = finding.dotColor())
 
-        if (largeFont) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                Text(
-                    text = title,
-                    style = titleStyle,
-                    color = AppTokens.colors.text.primary,
-                )
-                Text(
-                    text = finding.valueTargetText(),
-                    style = AppTokens.typography.b13Med(),
-                    color = finding.valueColor(),
-                )
-            }
-        } else {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = title,
-                style = titleStyle,
-                color = AppTokens.colors.text.primary,
-                maxLines = titleMaxLines,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = finding.valueTargetText(),
-                style = AppTokens.typography.b13Med(),
-                color = finding.valueColor(),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            style = titleStyle,
+            color = AppTokens.colors.text.primary,
+            maxLines = titleMaxLines,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = finding.valueTargetText(),
+            style = AppTokens.typography.b13Med(),
+            color = finding.valueColor(),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

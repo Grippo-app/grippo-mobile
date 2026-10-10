@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
@@ -23,8 +22,6 @@ internal fun ExerciseSummary(
     value: ExerciseState,
     modifier: Modifier = Modifier,
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
-
     val completedCount = value.iterations.count { !it.isPending }
 
     val totalCount = value.iterations.size
@@ -40,7 +37,6 @@ internal fun ExerciseSummary(
 
     FlowRow(
         modifier = modifier,
-        maxItemsInEachRow = if (largeFont) 1 else Int.MAX_VALUE,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
@@ -54,13 +50,11 @@ internal fun ExerciseSummary(
                 0f -> VolumeFormatState.Valid(display = "0", value = 0f)
                 else -> VolumeFormatState.of(maximum)
             }
-            if (!largeFont) {
-                Text(
-                    text = "·",
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.tertiary,
-                )
-            }
+            Text(
+                text = "·",
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.tertiary,
+            )
             Text(
                 text = AppTokens.strings.res(Res.string.exercise_max_weight, maximumWeight.short()),
                 style = AppTokens.typography.b13Med(),

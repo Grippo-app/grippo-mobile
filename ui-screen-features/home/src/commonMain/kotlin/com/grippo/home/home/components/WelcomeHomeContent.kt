@@ -21,7 +21,6 @@ import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.user.UserCard
-import com.grippo.design.components.user.UserCardStyle
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
 import com.grippo.design.components.welcome.WelcomeChecklistItem
@@ -135,7 +134,6 @@ private fun WelcomeBody(
             UserCard(
                 modifier = Modifier.fillMaxWidth(),
                 value = user,
-                style = UserCardStyle.Detailed,
             )
         }
 

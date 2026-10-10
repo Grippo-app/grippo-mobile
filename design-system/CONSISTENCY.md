@@ -32,23 +32,17 @@ A compact navigation item and a screen heading do not need the same font size.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
   Compact inline exercise references may use the existing small variant.
 - Use `contentPadding.block` between sections, `content` between related controls,
-  `subContent` between compact items and `text` within a text group.
+  `subContent` between compact items and `text` within a text group. Compact menu
+  sections use `content` spacing.
 - Keep control heights as minimums when content depends on font size. Chips, set
   cells, selectors and segmented labels must grow instead of clipping text.
-- At large font sizes, allow button labels to wrap to two lines. Keep the
-  dashboard action full-width so its complete label stays readable.
-- Toolbars reserve the width of leading and trailing actions. At enlarged fonts,
-  move a title that does not fit to its own row.
-- Give metric breakdowns two columns at enlarged fonts. Keep indicator date
-  labels in separate bounded slots and allow them to wrap.
+- Keep one layout across system font scales: single-line button labels, centered
+  toolbar titles within the action slots, and the regular dashboard/card grids.
+- Keep indicator date labels in separate bounded slots and allow them to wrap.
 - Let tags wrap. Do not hide a weight type just because the preceding tags are long.
-- Above `dp.screen.largeFontScaleThreshold`, give the workout timer its own row,
-  stack paired dashboard cards, stack diagnostic labels and values, and place
-  exercise summary values on separate lines. Decorative artwork must not compete
-  with enlarged text.
 - Preserve readable content when lists scroll behind a pinned action. Pass the
   bottom overlay's resolved padding into the list.
 
 Before changing shared components, inspect their variants and whole-screen
-consumers in both themes. Include a 360 dp phone, 150–200% font scaling and long
-localized text. Compilation alone does not verify visual composition.
+consumers in both themes. Include supported phone sizes and long localized text.
+Compilation alone does not verify visual composition.

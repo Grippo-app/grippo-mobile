@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
@@ -55,8 +54,6 @@ internal fun DashboardHomeContent(
     state: HomeState,
     contract: HomeContract,
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
-
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
         vertical = AppTokens.dp.contentPadding.content,
@@ -119,7 +116,7 @@ internal fun DashboardHomeContent(
                 span = { GridItemSpan(2) }) {
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    maxItemsInEachRow = if (largeFont) 1 else 2,
+                    maxItemsInEachRow = 2,
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 ) {
@@ -168,25 +165,25 @@ internal fun DashboardHomeContent(
             performanceMetricItem(
                 key = "performance_density",
                 metric = densityMetric,
-                span = if (largeFont || volumeMetric == null) 2 else 1,
+                span = if (volumeMetric == null) 2 else 1,
                 contract = contract,
             )
             performanceMetricItem(
                 key = "performance_volume",
                 metric = volumeMetric,
-                span = if (largeFont || densityMetric == null) 2 else 1,
+                span = if (densityMetric == null) 2 else 1,
                 contract = contract,
             )
             performanceMetricItem(
                 key = "performance_repetitions",
                 metric = repetitionsMetric,
-                span = if (largeFont || intensityMetric == null) 2 else 1,
+                span = if (intensityMetric == null) 2 else 1,
                 contract = contract,
             )
             performanceMetricItem(
                 key = "performance_intensity",
                 metric = intensityMetric,
-                span = if (largeFont || repetitionsMetric == null) 2 else 1,
+                span = if (repetitionsMetric == null) 2 else 1,
                 contract = contract,
             )
         }

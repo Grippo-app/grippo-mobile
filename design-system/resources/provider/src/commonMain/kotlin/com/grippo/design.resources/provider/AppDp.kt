@@ -117,7 +117,6 @@ public data object AppDp {
 
     public data object Screen {
         val logoSize: Dp = 80.dp
-        val largeFontScaleThreshold: Float = 1.3f
         val toolbar: Toolbar = Toolbar
         val horizontalPadding: Dp = padding.xLarge
         val verticalPadding: Dp = padding.xLarge
@@ -375,16 +374,8 @@ public data object AppDp {
     }
 
     public data object UserCard {
-        val compact: Compact = Compact
         val detailed: Detailed = Detailed
         val avatar: Avatar = Avatar
-
-        public data object Compact {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val space: Dp = padding.medium
-        }
 
         public data object Detailed {
             val avatarRing: Dp = 3.dp
@@ -468,10 +459,6 @@ public data object AppDp {
     }
 
     public data object Empty {
-        val decorationBarbellOffset: Dp = 92.dp
-        val decorationBoxOffset: Dp = 52.dp
-        val decorationTopOffset: Dp = 34.dp
-        val decorationBottomOffset: Dp = 60.dp
         val image: Dp = icon.xxxxLarge
     }
 
@@ -512,7 +499,6 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
 
         public data object Item {
-            val verticalPadding: Dp = padding.large
             val icon: Dp = AppDp.icon.small
         }
     }

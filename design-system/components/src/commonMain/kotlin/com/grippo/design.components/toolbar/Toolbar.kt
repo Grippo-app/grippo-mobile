@@ -18,9 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -60,7 +58,6 @@ public fun Toolbar(
     trailing: (@Composable BoxScope.() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
     val titleGap = AppTokens.dp.contentPadding.text
 
     Column(
@@ -124,20 +121,12 @@ public fun Toolbar(
             val actionWidth = maxOf(leadingAction.width, trailingAction.width)
             val gap = if (actionWidth > 0) titleGap.roundToPx() else 0
             val centeredWidth = (constraints.maxWidth - 2 * (actionWidth + gap)).coerceAtLeast(0)
-            val stackTitle = largeFont && actionWidth > 0 &&
-                    measurables[1].maxIntrinsicWidth(Constraints.Infinity) > centeredWidth
-            val titlePlaceable = measurables[1].measure(
-                loose.copy(maxWidth = if (stackTitle) constraints.maxWidth else centeredWidth)
-            )
+            val titlePlaceable = measurables[1].measure(loose.copy(maxWidth = centeredWidth))
             val actionsHeight = maxOf(leadingAction.height, trailingAction.height)
-            val contentHeight = if (stackTitle) {
-                actionsHeight + gap + titlePlaceable.height
-            } else {
-                maxOf(actionsHeight, titlePlaceable.height)
-            }
+            val contentHeight = maxOf(actionsHeight, titlePlaceable.height)
             val height = constraints.constrainHeight(contentHeight)
             layout(constraints.maxWidth, height) {
-                val actionsTop = if (stackTitle) 0 else (height - actionsHeight) / 2
+                val actionsTop = (height - actionsHeight) / 2
                 leadingAction.placeRelative(0, actionsTop + (actionsHeight - leadingAction.height) / 2)
                 trailingAction.placeRelative(
                     constraints.maxWidth - trailingAction.width,
@@ -145,7 +134,7 @@ public fun Toolbar(
                 )
                 titlePlaceable.placeRelative(
                     (constraints.maxWidth - titlePlaceable.width) / 2,
-                    if (stackTitle) actionsHeight + gap else (height - titlePlaceable.height) / 2,
+                    (height - titlePlaceable.height) / 2,
                 )
             }
         }

@@ -13,13 +13,10 @@ import com.grippo.design.resources.provider.icons.Kettlebell
 import com.grippo.design.resources.provider.icons.Medal
 import com.grippo.design.resources.provider.icons.Muscle
 import com.grippo.design.resources.provider.icons.Trophy
-import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import com.grippo.design.resources.provider.weight_and_height
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public sealed class ProfileMenu : PickerMenuItem {
@@ -96,12 +93,5 @@ public sealed class ProfileMenu : PickerMenuItem {
 
         @Composable
         override fun iconColor(): Color = AppTokens.colors.context.goal
-    }
-
-    public companion object {
-        public val entries: ImmutableList<ProfileMenu> =
-            persistentListOf(Goal, Body, Muscles, Equipment, Experience)
-
-        public fun title(): UiText = UiText.Res(Res.string.profile)
     }
 }

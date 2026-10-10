@@ -114,7 +114,6 @@
     <string name="height_placeholder">Enter your height</string>
     <string name="exercise_record">Exercise record</string>
     <string name="not_used_before">Not used before</string>
-    <string name="more">More</string>
     <string name="history">History</string>
     <string name="achievements">Achievements</string>
 
@@ -196,8 +195,8 @@
     <string name="experience_pro_description">5+ years of experience — excellent form and a high level of muscle development.</string>
 
 
-    <string name="profile_menu_excluded_muscles">Muscles</string>
-    <string name="profile_menu_missing_equipment">Equipment</string>
+    <string name="profile_menu_excluded_muscles">Excluded muscles</string>
+    <string name="profile_menu_missing_equipment">Unavailable equipment</string>
     <string name="profile_menu_experience">Experience</string>
 
     <string name="trainings">Workouts</string>
@@ -868,4 +867,10 @@
     <string name="exercise_sets_count">%1$d/%2$d sets</string>
     <string name="exercise_max_weight">%1$s max</string>
     <string name="home">Home</string>
+    <string name="profile_body_section">Body</string>
+    <string name="profile_height">Height</string>
+    <string name="profile_restrictions_section">Restrictions</string>
+    <string name="profile_name_not_set">Name not specified</string>
+    <string name="profile_value_not_set">—</string>
+    <string name="profile_account">Account</string>
 </resources>

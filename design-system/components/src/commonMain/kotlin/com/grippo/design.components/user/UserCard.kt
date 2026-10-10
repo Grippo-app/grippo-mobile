@@ -1,40 +1,50 @@
 package com.grippo.design.components.user
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
-import com.grippo.design.components.user.internal.UserCardCompact
-import com.grippo.design.components.user.internal.UserCardDetailed
+import com.grippo.design.components.user.internal.UserAvatar
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-
-@Immutable
-public sealed interface UserCardStyle {
-
-    @Immutable
-    public data object Compact : UserCardStyle
-
-    @Immutable
-    public data object Detailed : UserCardStyle
-}
 
 @Composable
 public fun UserCard(
     modifier: Modifier = Modifier,
     value: UserState,
-    style: UserCardStyle,
 ) {
-    when (style) {
-        UserCardStyle.Compact -> UserCardCompact(
-            modifier = modifier,
-            value = value,
+    val experienceColor = value.experience.color()
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        UserAvatar(
+            name = value.name,
+            color = experienceColor,
+            size = AppTokens.dp.userCard.avatar.large,
+            textStyle = AppTokens.typography.h1(),
+            ringWidth = AppTokens.dp.userCard.detailed.avatarRing,
         )
 
-        UserCardStyle.Detailed -> UserCardDetailed(
-            modifier = modifier,
-            value = value,
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+        Text(
+            text = value.name,
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -43,14 +53,10 @@ public fun UserCard(
 @Composable
 private fun UserCardPreview() {
     PreviewContainer {
-        UserCard(
-            value = stubUser(),
-            style = UserCardStyle.Compact
-        )
-
-        UserCard(
-            value = stubUser(),
-            style = UserCardStyle.Detailed
-        )
+        ExperienceEnumState.entries.forEach { experience ->
+            UserCard(
+                value = stubUser().copy(experience = experience)
+            )
+        }
     }
 }

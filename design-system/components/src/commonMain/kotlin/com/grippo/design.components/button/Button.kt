@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
@@ -114,7 +113,6 @@ public fun Button(
         ButtonSize.Medium -> AppTokens.typography.b14Bold()
     },
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
     val colors = resolveButtonColors(style, state)
     val metrics = resolveButtonSize(size)
     val transparent = style == ButtonStyle.Transparent
@@ -166,7 +164,7 @@ public fun Button(
             Text(
                 modifier = Modifier.weight(1f, fill = false),
                 text = content.text,
-                maxLines = if (largeFont) 2 else 1,
+                maxLines = 1,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
                 color = colors.content,

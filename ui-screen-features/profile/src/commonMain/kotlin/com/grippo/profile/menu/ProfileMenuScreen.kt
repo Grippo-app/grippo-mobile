@@ -1,24 +1,25 @@
 package com.grippo.profile.menu
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.profile.ExperienceEnumState
+import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
+import com.grippo.core.state.profile.RoleEnumState
+import com.grippo.core.state.profile.stubGoal
 import com.grippo.core.state.profile.stubUser
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
-import com.grippo.design.components.user.UserCard
-import com.grippo.design.components.user.UserCardStyle
-import com.grippo.design.core.AppTheme
+import com.grippo.design.components.user.UserProfileHeader
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -39,12 +40,20 @@ internal fun ProfileMenuScreen(
         title = AppTokens.strings.res(Res.string.profile),
         style = ToolbarStyle.Transparent,
     )
-    if (state.user == null && ProfileMenuLoader.User in loaders) {
-        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-        return@BaseComposeScreen
+    val userLoading = remember(state.user, loaders) {
+        state.user == null && ProfileMenuLoader.User in loaders
+    }
+    val goalLoading = remember(state.goal, loaders) {
+        state.goal == null && ProfileMenuLoader.Goal in loaders
+    }
+    val musclesLoading = remember(state.excludedMusclesCount, loaders) {
+        state.excludedMusclesCount == null && ProfileMenuLoader.Muscles in loaders
+    }
+    val equipmentsLoading = remember(state.excludedEquipmentsCount, loaders) {
+        state.excludedEquipmentsCount == null && ProfileMenuLoader.Equipments in loaders
     }
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().weight(1f).navigationBarsPadding(),
+        modifier = Modifier.fillMaxWidth().weight(1f),
         contentPadding = PaddingValues(
             start = AppTokens.dp.screen.horizontalPadding,
             end = AppTokens.dp.screen.horizontalPadding,
@@ -52,19 +61,23 @@ internal fun ProfileMenuScreen(
             bottom = AppTokens.dp.screen.verticalPadding,
         ),
     ) {
-        state.user?.let { user ->
-            item(key = "user") {
-                UserCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = user,
-                    style = UserCardStyle.Compact,
-                )
-                Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-            }
+        item(key = "user", contentType = "user") {
+            UserProfileHeader(
+                value = state.user,
+                loading = userLoading,
+            )
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
         }
-        item(key = "menu") {
+        item(key = "menu", contentType = "menu") {
             ProfileMenuContent(
-                role = state.user?.role,
+                user = state.user,
+                goal = state.goal,
+                excludedMusclesCount = state.excludedMusclesCount,
+                excludedEquipmentsCount = state.excludedEquipmentsCount,
+                userLoading = userLoading,
+                goalLoading = goalLoading,
+                musclesLoading = musclesLoading,
+                equipmentsLoading = equipmentsLoading,
                 onProfileMenuClick = contract::onProfileMenuClick,
                 onSettingsMenuClick = contract::onSettingsMenuClick,
             )
@@ -77,7 +90,7 @@ internal fun ProfileMenuScreen(
 private fun ProfileMenuScreenPreview() {
     PreviewContainer {
         ProfileMenuScreen(
-            state = ProfileMenuState(user = stubUser()),
+            state = profileMenuPreviewState(),
             loaders = persistentSetOf(),
             contract = ProfileMenuContract.Empty,
         )
@@ -90,33 +103,51 @@ private fun ProfileMenuScreenLoadingPreview() {
     PreviewContainer {
         ProfileMenuScreen(
             state = ProfileMenuState(),
-            loaders = persistentSetOf(ProfileMenuLoader.User),
+            loaders = persistentSetOf(
+                ProfileMenuLoader.User,
+                ProfileMenuLoader.Goal,
+                ProfileMenuLoader.Muscles,
+                ProfileMenuLoader.Equipments,
+            ),
             contract = ProfileMenuContract.Empty,
         )
     }
 }
 
-@Preview(
-    name = "Profile • UK • Long text • 200%",
-    widthDp = 360,
-    heightDp = 800,
-    fontScale = 2f,
-    locale = "uk",
-)
+@AppPreview
 @Composable
-private fun ProfileMenuScreenLargeFontPreview() {
+private fun ProfileMenuScreenEmptyPreview() {
     PreviewContainer {
-        AppTheme(darkTheme = isSystemInDarkTheme(), localeTag = "uk") {
-            ProfileMenuScreen(
-                state = ProfileMenuState(
-                    user = stubUser().copy(
-                        name = "Олександр Костянтинович",
-                        email = "oleksandr.kostiantynovych@example.com",
-                    )
-                ),
-                loaders = persistentSetOf(),
-                contract = ProfileMenuContract.Empty,
-            )
-        }
+        ProfileMenuScreen(
+            state = ProfileMenuState(),
+            loaders = persistentSetOf(),
+            contract = ProfileMenuContract.Empty,
+        )
     }
 }
+
+@AppPreview
+@Composable
+private fun ProfileMenuScreenPartialPreview() {
+    PreviewContainer {
+        ProfileMenuScreen(
+            state = profileMenuPreviewState().copy(goal = null),
+            loaders = persistentSetOf(ProfileMenuLoader.Goal),
+            contract = ProfileMenuContract.Empty,
+        )
+    }
+}
+
+private fun profileMenuPreviewState(): ProfileMenuState = ProfileMenuState(
+    user = stubUser().copy(
+        name = "Alex",
+        email = "alex@grippo.app",
+        height = HeightFormatState.of(178),
+        weight = WeightFormatState.of(82f),
+        experience = ExperienceEnumState.INTERMEDIATE,
+        role = RoleEnumState.DEFAULT,
+    ),
+    goal = stubGoal().copy(primaryGoal = GoalPrimaryGoalEnumState.GET_STRONGER),
+    excludedMusclesCount = 2,
+    excludedEquipmentsCount = 3,
+)

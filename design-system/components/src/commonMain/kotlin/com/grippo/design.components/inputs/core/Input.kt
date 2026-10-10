@@ -79,7 +79,6 @@ internal fun Input(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-    controller: InputController = rememberInputController(),
 ) {
     val colors = AppTokens.colors
     val shape = RoundedCornerShape(AppTokens.dp.input.radius)
@@ -100,27 +99,6 @@ internal fun Input(
             val s = tfv.selection.start.coerceIn(0, value.length)
             val e = tfv.selection.end.coerceIn(0, value.length)
             tfv = tfv.copy(text = value, selection = TextRange(s, e))
-        }
-    }
-
-    // Apply controller intent exactly when focus is gained
-    LaunchedEffect(
-        hasFocus.value,
-        controller.moveToEndOnNextFocus,
-        controller.selectAllOnNextFocus
-    ) {
-        if (hasFocus.value) {
-            when {
-                controller.selectAllOnNextFocus -> {
-                    tfv = tfv.copy(selection = TextRange(0, tfv.text.length))
-                    controller.selectAllOnNextFocus = false
-                }
-
-                controller.moveToEndOnNextFocus -> {
-                    tfv = tfv.copy(selection = TextRange(tfv.text.length))
-                    controller.moveToEndOnNextFocus = false
-                }
-            }
         }
     }
 

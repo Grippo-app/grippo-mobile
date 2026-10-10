@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
@@ -36,34 +35,24 @@ internal fun MetricBreakdownRow(
     modifier: Modifier = Modifier,
     items: ImmutableList<MetricBreakdownItem>,
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
-    val columns = if (largeFont) 2 else items.size.coerceAtLeast(1)
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    Row(
+        modifier = modifier.fillMaxWidth().height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        items.chunked(columns).forEach { row ->
-            Row(
-                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                row.forEachIndexed { index, item ->
-                    MetricBreakdownCell(
-                        modifier = Modifier.weight(1f),
-                        label = item.label,
-                        value = item.value,
-                        dimmed = item.dimmed,
-                    )
-                    if (index != row.lastIndex) {
-                        Box(
-                            modifier = Modifier
-                                .width(AppTokens.dp.metrics.trainingSummary.dividerWidth)
-                                .fillMaxHeight()
-                                .background(AppTokens.colors.border.default.copy(alpha = 0.4f))
-                        )
-                    }
-                }
+        items.forEachIndexed { index, item ->
+            MetricBreakdownCell(
+                modifier = Modifier.weight(1f),
+                label = item.label,
+                value = item.value,
+                dimmed = item.dimmed,
+            )
+            if (index != items.lastIndex) {
+                Box(
+                    modifier = Modifier
+                        .width(AppTokens.dp.metrics.trainingSummary.dividerWidth)
+                        .fillMaxHeight()
+                        .background(AppTokens.colors.border.default.copy(alpha = 0.4f)),
+                )
             }
         }
     }

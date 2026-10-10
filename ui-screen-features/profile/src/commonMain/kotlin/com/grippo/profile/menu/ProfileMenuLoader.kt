@@ -7,4 +7,13 @@ import com.grippo.core.foundation.models.BaseLoader
 internal sealed interface ProfileMenuLoader : BaseLoader {
     @Immutable
     data object User : ProfileMenuLoader
+
+    @Immutable
+    data object Goal : ProfileMenuLoader
+
+    @Immutable
+    data object Muscles : ProfileMenuLoader
+
+    @Immutable
+    data object Equipments : ProfileMenuLoader
 }

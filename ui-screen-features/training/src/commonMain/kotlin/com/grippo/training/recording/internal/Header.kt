@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -25,15 +24,13 @@ internal fun Header(
     volume: VolumeFormatState,
     repetitions: RepetitionsFormatState,
 ) {
-    val largeFont = LocalDensity.current.fontScale > AppTokens.dp.screen.largeFontScaleThreshold
-
     FlowRow(
         modifier = modifier.fillMaxWidth(),
-        maxItemsInEachRow = if (largeFont) 2 else 3,
+        maxItemsInEachRow = 3,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         TrainingStat(
-            modifier = if (largeFont) Modifier.fillMaxWidth() else Modifier.weight(1f),
+            modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.duration),
             value = AnnotatedString(duration),
             contentColor = AppTokens.colors.text.primary,

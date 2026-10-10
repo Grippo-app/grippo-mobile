@@ -2,8 +2,6 @@ package com.grippo.design.components.menu
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -32,35 +30,22 @@ public fun <KEY> Menu(
     items: ImmutableList<Pair<KEY, MenuItem>>,
     onClick: (KEY) -> Unit,
 ) {
-    // Indent the divider so it starts right after the icon column,
-    // aligned with the beginning of the text.
-    val dividerStartIndent = AppTokens.dp.menu.item.icon +
-            AppTokens.dp.contentPadding.subContent
-
     Column(modifier = modifier) {
 
         items.forEachIndexed { index, (key, item) ->
-            val onClickProvider = remember(key) {
+            val onClickProvider = remember(key, onClick) {
                 { onClick.invoke(key) }
             }
 
-            MenuCard(
+            MenuValueRow(
                 modifier = Modifier.fillMaxWidth(),
                 title = item.title.text(),
                 icon = item.icon,
                 titleColor = item.titleColor,
                 iconColor = item.iconColor,
-                onClick = onClickProvider
+                onClick = onClickProvider,
+                showDivider = index < items.lastIndex,
             )
-
-            if (index < items.lastIndex) {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = dividerStartIndent),
-                    color = AppTokens.colors.divider.default
-                )
-            }
         }
     }
 }

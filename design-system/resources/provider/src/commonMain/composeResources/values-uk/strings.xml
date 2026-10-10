@@ -114,7 +114,6 @@
     <string name="height_placeholder">Вкажи свій зріст</string>
     <string name="exercise_record">Рекорд вправи</string>
     <string name="not_used_before">Ще не використовувалося</string>
-    <string name="more">Більше</string>
     <string name="history">Історія</string>
     <string name="achievements">Досягнення</string>
 
@@ -194,8 +193,8 @@
 
     <string name="profile">Профіль</string>
 
-    <string name="profile_menu_excluded_muscles">М’язи</string>
-    <string name="profile_menu_missing_equipment">Обладнання</string>
+    <string name="profile_menu_excluded_muscles">Виключені м’язи</string>
+    <string name="profile_menu_missing_equipment">Недоступне обладнання</string>
     <string name="profile_menu_experience">Досвід</string>
 
     <string name="trainings">Тренування</string>
@@ -847,4 +846,10 @@
     <string name="exercise_sets_count">%1$d/%2$d підх.</string>
     <string name="exercise_max_weight">%1$s макс.</string>
     <string name="home">Головна</string>
+    <string name="profile_body_section">Тіло</string>
+    <string name="profile_height">Зріст</string>
+    <string name="profile_restrictions_section">Обмеження</string>
+    <string name="profile_name_not_set">Ім’я не вказано</string>
+    <string name="profile_value_not_set">—</string>
+    <string name="profile_account">Акаунт</string>
 </resources>

@@ -114,7 +114,6 @@
     <string name="height_placeholder">Введи свой рост</string>
     <string name="exercise_record">Рекорд упражнения</string>
     <string name="not_used_before">Не использовалось ранее</string>
-    <string name="more">Ещё</string>
     <string name="history">История</string>
     <string name="achievements">Достижения</string>
 
@@ -195,8 +194,8 @@
     <string name="experience_pro_description">5+ лет опыта — отличная техника и высокий уровень развития мышц.</string>
 
 
-    <string name="profile_menu_excluded_muscles">Мышцы</string>
-    <string name="profile_menu_missing_equipment">Оборудование</string>
+    <string name="profile_menu_excluded_muscles">Исключённые мышцы</string>
+    <string name="profile_menu_missing_equipment">Недоступное оборудование</string>
     <string name="profile_menu_experience">Опыт</string>
 
     <string name="trainings">Тренировки</string>
@@ -856,4 +855,10 @@
     <string name="exercise_sets_count">%1$d/%2$d подх.</string>
     <string name="exercise_max_weight">%1$s макс.</string>
     <string name="home">Главная</string>
+    <string name="profile_body_section">Тело</string>
+    <string name="profile_height">Рост</string>
+    <string name="profile_restrictions_section">Ограничения</string>
+    <string name="profile_name_not_set">Имя не указано</string>
+    <string name="profile_value_not_set">—</string>
+    <string name="profile_account">Аккаунт</string>
 </resources>
