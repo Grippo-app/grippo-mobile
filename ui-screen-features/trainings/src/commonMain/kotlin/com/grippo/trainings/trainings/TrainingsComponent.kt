@@ -11,7 +11,6 @@ internal class TrainingsComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
     private val toEditTraining: (id: String) -> Unit,
-    private val toStartTraining: () -> Unit,
 ) : BaseComponent<TrainingsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -34,7 +33,6 @@ internal class TrainingsComponent(
         when (direction) {
             TrainingsDirection.Back -> back.invoke()
             is TrainingsDirection.EditTraining -> toEditTraining.invoke(direction.id)
-            TrainingsDirection.StartTraining -> toStartTraining.invoke()
         }
     }
 

@@ -22,10 +22,7 @@ public class TrainingsRootComponent(
 ) : BaseComponent<TrainingsRootDirection>(componentContext) {
 
     override val viewModel: TrainingsRootViewModel = componentContext.retainedInstance {
-        TrainingsRootViewModel(
-            trainingFeature = getKoin().get(),
-            dialogController = getKoin().get(),
-        )
+        TrainingsRootViewModel()
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -37,8 +34,6 @@ public class TrainingsRootComponent(
     override suspend fun eventListener(direction: TrainingsRootDirection) {
         when (direction) {
             TrainingsRootDirection.Back -> close.invoke()
-            TrainingsRootDirection.StartTraining -> toTraining.invoke(StageState.Add)
-            TrainingsRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft)
             is TrainingsRootDirection.EditTraining -> toTraining.invoke(StageState.Edit(direction.id))
         }
     }
@@ -64,7 +59,6 @@ public class TrainingsRootComponent(
                 TrainingsComponent(
                     componentContext = context,
                     toEditTraining = viewModel::toEditTraining,
-                    toStartTraining = viewModel::toStartTraining,
                     back = viewModel::onBack
                 ),
             )

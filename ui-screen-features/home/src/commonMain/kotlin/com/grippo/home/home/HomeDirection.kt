@@ -4,9 +4,7 @@ import com.grippo.core.foundation.models.BaseDirection
 
 internal sealed interface HomeDirection : BaseDirection {
     data object Back : HomeDirection
-    data object StartTraining : HomeDirection
     data object Trainings : HomeDirection
-    data object DraftTraining : HomeDirection
 
     data object ExcludedMuscles : HomeDirection
     data object MissingEquipment : HomeDirection

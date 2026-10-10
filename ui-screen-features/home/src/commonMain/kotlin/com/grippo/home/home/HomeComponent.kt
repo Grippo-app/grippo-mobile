@@ -14,9 +14,7 @@ internal class HomeComponent(
     private val toMissingEquipment: () -> Unit,
     private val toExperience: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toStartTraining: () -> Unit,
     private val toTrainings: () -> Unit,
-    private val toDraftTraining: () -> Unit,
     private val toSettings: () -> Unit,
     private val toSocial: () -> Unit,
     private val toBody: () -> Unit,
@@ -37,7 +35,6 @@ internal class HomeComponent(
             permissionManager = getKoin().get(),
             notificationManager = getKoin().get(),
             goalFollowingUseCase = getKoin().get(),
-            goalSetupSuggestionUseCase = getKoin().get(),
             userFeature = getKoin().get(),
             excludedMusclesFeature = getKoin().get(),
             excludedEquipmentsFeature = getKoin().get(),
@@ -54,8 +51,6 @@ internal class HomeComponent(
     override suspend fun eventListener(direction: HomeDirection) {
         when (direction) {
             HomeDirection.Back -> back.invoke()
-            HomeDirection.StartTraining -> toStartTraining.invoke()
-            HomeDirection.DraftTraining -> toDraftTraining.invoke()
             HomeDirection.Debug -> toDebug.invoke()
             HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
             HomeDirection.MissingEquipment -> toMissingEquipment.invoke()

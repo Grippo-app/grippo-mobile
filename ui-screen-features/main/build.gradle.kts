@@ -13,11 +13,16 @@ kotlin {
 
     sourceSets.getByName("androidHostTest").dependencies {
         implementation(kotlin("test-junit"))
+        implementation(libs.kotlinx.coroutines.test)
+        implementation(libs.datetime)
+        implementation(projects.toolkit.dateUtils)
     }
 
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
+        implementation(projects.dataFeatures.featureApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)

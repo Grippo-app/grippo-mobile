@@ -61,7 +61,7 @@ Groups:
 - `:screen-api` — public `*Router` sealed classes (`@Serializable`) and `Deeplink` enum. Used by Decompose for type-safe navigation **between features**.
 - Features: `authorization`, `main`, `home`, `profile`, `training`, `trainings`, `debug`. Inside a feature — a root `*RootComponent` with its own `StackNavigation<*Router>` and **internal** sub-Components for each screen.
 
-- `:main` owns the Home/Calendar/Profile tab shell and bottom bar. `:shared` supplies child-component factories; `:main` does not depend on feature implementations. Factories return `BaseComponent<*>` directly. The bottom bar remains visible throughout all tab flows.
+- `:main` owns the Home/Calendar/Profile tab shell and bottom bar. `:shared` supplies child-component factories; `:main` does not depend on feature implementations. Factories return `BaseComponent<*>` directly. The bottom bar remains visible throughout all tab flows. Main owns the central workout action, including draft continuation and the goal setup suggestion; Home and Calendar do not own launch buttons.
 
 ### `:ui-dialog-features:*` — bottom sheet flows (~25 modules)
 

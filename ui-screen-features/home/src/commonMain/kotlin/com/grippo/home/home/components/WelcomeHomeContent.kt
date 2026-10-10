@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,10 +19,6 @@ import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.components.user.UserCardStyle
@@ -42,8 +36,6 @@ import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.icons.Medal
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Stack
-import com.grippo.design.resources.provider.resume_training_btn
-import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.welcome_benefit_history_subtitle
 import com.grippo.design.resources.provider.welcome_benefit_history_title
 import com.grippo.design.resources.provider.welcome_benefit_pack_subtitle
@@ -69,10 +61,7 @@ internal fun WelcomeHomeContent(
     excludedMusclesCount: Int,
     missingEquipmentCount: Int,
     hasGoal: Boolean,
-    hasDraftTraining: Boolean,
     showWelcomeConfetti: Boolean,
-    onStartTraining: () -> Unit,
-    onResumeTraining: () -> Unit,
     onWelcomeConfettiShown: () -> Unit,
 ) {
     val basePadding = PaddingValues(
@@ -81,50 +70,14 @@ internal fun WelcomeHomeContent(
     )
 
     Box(modifier = modifier) {
-        BottomOverlayContainer(
+        WelcomeBody(
             modifier = Modifier.fillMaxSize(),
             contentPadding = basePadding,
-            overlay = AppTokens.colors.background.screen,
-            content = { containerModifier, resolvedPadding ->
-                WelcomeBody(
-                    modifier = containerModifier.fillMaxSize(),
-                    contentPadding = resolvedPadding,
-                    user = user,
-                    experience = experience,
-                    excludedMusclesCount = excludedMusclesCount,
-                    missingEquipmentCount = missingEquipmentCount,
-                    hasGoal = hasGoal,
-                )
-            },
-            bottom = {
-                if (hasDraftTraining) {
-                    Button(
-                        modifier = Modifier
-                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                            .fillMaxWidth(),
-                        onClick = onResumeTraining,
-                        style = ButtonStyle.Primary,
-                        content = ButtonContent.Text(
-                            text = AppTokens.strings.res(Res.string.resume_training_btn)
-                        )
-                    )
-                } else {
-                    Button(
-                        modifier = Modifier
-                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                            .fillMaxWidth(),
-                        content = ButtonContent.Text(
-                            text = AppTokens.strings.res(Res.string.start_workout),
-                        ),
-                        style = ButtonStyle.Primary,
-                        onClick = onStartTraining
-                    )
-                }
-
-                Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
-
-                Spacer(Modifier.navigationBarsPadding())
-            }
+            user = user,
+            experience = experience,
+            excludedMusclesCount = excludedMusclesCount,
+            missingEquipmentCount = missingEquipmentCount,
+            hasGoal = hasGoal,
         )
 
         KonfettiParade(
@@ -303,10 +256,7 @@ private fun WelcomeHomeContentPreview() {
             excludedMusclesCount = 3,
             missingEquipmentCount = 5,
             hasGoal = true,
-            hasDraftTraining = false,
             showWelcomeConfetti = false,
-            onStartTraining = {},
-            onResumeTraining = {},
             onWelcomeConfettiShown = {},
         )
     }
@@ -314,7 +264,7 @@ private fun WelcomeHomeContentPreview() {
 
 @AppPreview
 @Composable
-private fun WelcomeHomeContentDraftPreview() {
+private fun WelcomeHomeContentWithoutGoalPreview() {
     PreviewContainer {
         WelcomeHomeContent(
             modifier = Modifier.fillMaxSize(),
@@ -323,10 +273,7 @@ private fun WelcomeHomeContentDraftPreview() {
             excludedMusclesCount = 0,
             missingEquipmentCount = 0,
             hasGoal = false,
-            hasDraftTraining = true,
             showWelcomeConfetti = false,
-            onStartTraining = {},
-            onResumeTraining = {},
             onWelcomeConfettiShown = {},
         )
     }
@@ -343,10 +290,7 @@ private fun WelcomeHomeContentCelebrationPreview() {
             excludedMusclesCount = 0,
             missingEquipmentCount = 0,
             hasGoal = false,
-            hasDraftTraining = false,
             showWelcomeConfetti = true,
-            onStartTraining = {},
-            onResumeTraining = {},
             onWelcomeConfettiShown = {},
         )
     }

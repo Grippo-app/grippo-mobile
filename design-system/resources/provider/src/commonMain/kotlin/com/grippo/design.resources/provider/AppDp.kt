@@ -47,6 +47,9 @@ public data object AppDp {
     val bottomBar: BottomBar = BottomBar
 
     public data object BottomBar {
+        val actionSize: Dp = 56.dp
+        val actionLift: Dp = padding.medium
+        val actionSpace: Dp = 72.dp
         val minHeight: Dp = size.large
         val iconSize: Dp = icon.large
         val horizontalPadding: Dp = padding.small

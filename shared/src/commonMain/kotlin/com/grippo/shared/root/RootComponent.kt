@@ -163,7 +163,6 @@ public class RootComponent(
                             toExcludedMuscles = viewModel::toExcludedMuscles,
                             toExperience = viewModel::toExperience,
                             toDebug = viewModel::toDebug,
-                            toTraining = viewModel::toTraining,
                             toSettings = viewModel::toSettings,
                             toSocial = viewModel::toSocial,
                             toGoal = viewModel::toGoal,
@@ -186,6 +185,8 @@ public class RootComponent(
                             close = back,
                         )
                     },
+                    toTraining = viewModel::toTraining,
+                    toGoal = viewModel::toGoal,
                     close = viewModel::onClose
                 )
             )

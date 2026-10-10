@@ -18,15 +18,12 @@ import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
-import kotlin.time.Duration
 
 @Immutable
 internal data class HomeState(
     val range: DateRangeFormatState = DateRangeFormatState.of(DateRangeKind.Last30Days),
     val user: UserState? = null,
-    val hasDraftTraining: Boolean = false,
     val lastTraining: TrainingState? = null,
-    val totalDuration: Duration? = null,
     val muscleLoad: MuscleLoadSummaryState? = null,
     val streak: TrainingStreakState? = null,
     val performance: ImmutableList<PerformanceMetricState> = persistentListOf(),

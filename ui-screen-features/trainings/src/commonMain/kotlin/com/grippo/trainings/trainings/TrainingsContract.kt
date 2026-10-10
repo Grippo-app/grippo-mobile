@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalDate
 
 @Immutable
 internal interface TrainingsContract {
-    fun onStartTraining()
     fun onDailyDigestViewStats()
     fun onExerciseClick(id: String)
     fun onTrainingMenuClick(id: String)
@@ -18,7 +17,6 @@ internal interface TrainingsContract {
 
     @Immutable
     companion object Empty : TrainingsContract {
-        override fun onStartTraining() {}
         override fun onDailyDigestViewStats() {}
         override fun onExerciseClick(id: String) {}
         override fun onTrainingMenuClick(id: String) {}

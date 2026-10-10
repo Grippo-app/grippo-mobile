@@ -8,7 +8,6 @@ import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeatur
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.goal.GoalFeature
-import com.grippo.data.features.api.goal.GoalSetupSuggestionUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
@@ -18,15 +17,12 @@ import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.dialog_saved_workout
 import com.grippo.design.resources.provider.exercise_details_btn
 import com.grippo.design.resources.provider.goal_details_title
-import com.grippo.design.resources.provider.goal_setup_suggestion_title
 import com.grippo.design.resources.provider.muscle_loading
 import com.grippo.design.resources.provider.notification_weight_description
 import com.grippo.design.resources.provider.notification_weight_title
@@ -53,8 +49,6 @@ import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.days
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -78,7 +72,6 @@ internal class HomeViewModel(
     private val permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
     private val goalFollowingUseCase: GoalFollowingUseCase,
-    private val goalSetupSuggestionUseCase: GoalSetupSuggestionUseCase,
     userFeature: UserFeature,
     excludedMusclesFeature: ExcludedMusclesFeature,
     excludedEquipmentsFeature: ExcludedEquipmentsFeature,
@@ -156,10 +149,6 @@ internal class HomeViewModel(
             exerciseExampleFeature.getExerciseExamples()
         }
 
-        trainingFeature.getDraftTraining()
-            .onEach(::provideDraftTraining)
-            .safeLaunch()
-
         safeLaunch {
             val status = localSettingsFeature.observeHomeWelcomeStatus().first()
             if (status != HomeWelcomeStatus.PendingCelebration) return@safeLaunch
@@ -180,11 +169,6 @@ internal class HomeViewModel(
         update { it.copy(range = DateRangeFormatState.of(kind)) }
     }
 
-    private fun provideDraftTraining(value: DraftTraining?) {
-        val hasDraftTraining = value != null
-        update { it.copy(hasDraftTraining = hasDraftTraining) }
-    }
-
     private suspend fun provideTrainings(list: List<Training>) {
         // Always run the performance use case — it returns 5 metrics regardless
         // of input size (Empty status when sparse), so the dashboard preserves a
@@ -196,7 +180,6 @@ internal class HomeViewModel(
         if (list.isEmpty()) {
             update {
                 it.copy(
-                    totalDuration = null,
                     spotlights = persistentListOf(),
                     muscleLoad = null,
                     streak = null,
@@ -211,10 +194,6 @@ internal class HomeViewModel(
         val sortedTrainingsDesc = list.sortedByDescending { it.createdAt }
         val trainings = sortedTrainingsDesc.toState()
         val last = trainings.firstOrNull() ?: return
-
-        val totalDuration = list.fold(ZERO) { acc: Duration, item ->
-            acc + item.duration
-        }
 
         val streak = trainingStreakUseCase
             .fromTrainings(list)
@@ -234,7 +213,6 @@ internal class HomeViewModel(
 
         update {
             it.copy(
-                totalDuration = totalDuration,
                 spotlights = spotlights,
                 muscleLoad = muscleLoadSummary,
                 streak = streak,
@@ -242,22 +220,6 @@ internal class HomeViewModel(
                 lastTraining = last,
                 goalProgress = goalProgress,
             )
-        }
-    }
-
-    override fun onStartTraining() {
-        safeLaunch {
-            if (goalSetupSuggestionUseCase.shouldSuggest()) {
-                goalSetupSuggestionUseCase.markShown()
-                val config = DialogConfig.GoalSetupSuggestion(
-                    title = UiText.Res(Res.string.goal_setup_suggestion_title),
-                    onConfigure = { navigateTo(HomeDirection.Goal) },
-                    onLater = { navigateTo(HomeDirection.StartTraining) },
-                )
-                dialogController.open(config)
-            } else {
-                navigateTo(HomeDirection.StartTraining)
-            }
         }
     }
 
@@ -317,16 +279,6 @@ internal class HomeViewModel(
         )
 
         dialogController.open(dialog)
-    }
-
-    override fun onResumeTraining() {
-        val config = DialogConfig.DraftTraining(
-            title = UiText.Res(Res.string.dialog_saved_workout),
-            onContinue = { navigateTo(HomeDirection.DraftTraining) },
-            onStartNew = { navigateTo(HomeDirection.StartTraining) }
-        )
-
-        dialogController.open(config)
     }
 
     override fun onOpenTrainingStreak() {

@@ -6,6 +6,7 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.stage.StageState
 import com.grippo.screen.api.MainRouter
 
 public class MainComponent(
@@ -13,9 +14,17 @@ public class MainComponent(
     private val createHome: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val createCalendar: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val createProfile: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
+    private val toTraining: (StageState) -> Unit,
+    private val toGoal: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<MainDirection>(componentContext) {
-    override val viewModel: MainViewModel = componentContext.retainedInstance { MainViewModel() }
+    override val viewModel: MainViewModel = componentContext.retainedInstance {
+        MainViewModel(
+            trainingFeature = getKoin().get(),
+            goalSetupSuggestionUseCase = getKoin().get(),
+            dialogController = getKoin().get(),
+        )
+    }
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
@@ -28,6 +37,8 @@ public class MainComponent(
     override suspend fun eventListener(direction: MainDirection) {
         when (direction) {
             is MainDirection.SelectTab -> navigation.select(direction.tab)
+            is MainDirection.Training -> toTraining(direction.stage)
+            MainDirection.Goal -> toGoal()
             MainDirection.Back -> if (!navigation.back()) close()
         }
     }

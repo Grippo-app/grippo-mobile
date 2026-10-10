@@ -30,7 +30,6 @@ import com.grippo.home.home.components.WelcomeHomeContent
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlin.time.Duration.Companion.hours
 
 @Composable
 internal fun HomeScreen(
@@ -72,10 +71,7 @@ internal fun HomeScreen(
             excludedMusclesCount = state.excludedMusclesCount,
             missingEquipmentCount = state.missingEquipmentCount,
             hasGoal = state.hasGoal,
-            hasDraftTraining = state.hasDraftTraining,
             showWelcomeConfetti = state.showWelcomeConfetti,
-            onStartTraining = contract::onStartTraining,
-            onResumeTraining = contract::onResumeTraining,
             onWelcomeConfettiShown = contract::onWelcomeConfettiShown,
         )
         return@BaseComposeScreen
@@ -97,7 +93,6 @@ private fun HomeScreenPreview() {
         HomeScreen(
             state = HomeState(
                 lastTraining = stubTraining(),
-                totalDuration = 28.hours,
                 spotlights = persistentListOf(
                     stubExerciseSpotlightNeedsAttention(),
                     stubExerciseSpotlightProgressWin(),
@@ -108,7 +103,6 @@ private fun HomeScreenPreview() {
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
                 goalProgress = stubGoalProgressList().random(),
-                hasDraftTraining = true,
                 user = stubUser()
             ),
             loaders = persistentSetOf(),

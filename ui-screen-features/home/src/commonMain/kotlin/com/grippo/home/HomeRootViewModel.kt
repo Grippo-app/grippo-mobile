@@ -30,14 +30,6 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
         navigateTo(HomeRootDirection.Trainings)
     }
 
-    override fun toStartTraining() {
-        navigateTo(HomeRootDirection.StartTraining)
-    }
-
-    override fun toDraftTraining() {
-        navigateTo(HomeRootDirection.DraftTraining)
-    }
-
     override fun toBody() {
         navigateTo(HomeRootDirection.Body)
     }

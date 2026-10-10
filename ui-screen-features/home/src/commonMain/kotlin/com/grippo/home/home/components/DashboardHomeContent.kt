@@ -4,13 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -18,7 +14,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
@@ -33,10 +28,6 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
@@ -52,12 +43,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.home_unlock_banner_header
-import com.grippo.design.resources.provider.resume_training_btn
-import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.HomeContract
 import com.grippo.home.home.HomeState
 import com.grippo.home.home.HomeUnlock
-import kotlin.time.Duration.Companion.hours
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -87,186 +75,146 @@ internal fun DashboardHomeContent(
         behavior = AnchorScrollBehavior.Animated,
     )
 
-    BottomOverlayContainer(
-        modifier = modifier,
+    LazyVerticalGrid(
+        state = gridState,
+        modifier = modifier.fillMaxWidth(),
+        columns = GridCells.Fixed(2),
         contentPadding = basePadding,
-        overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
-            LazyVerticalGrid(
-                state = gridState,
-                modifier = containerModifier.fillMaxWidth(),
-                columns = GridCells.Fixed(2),
-                contentPadding = resolvedPadding,
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                if (state.lastTraining != null) {
-                    item(key = "last_training", span = { GridItemSpan(2) }) {
-                        LastTrainingCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.lastTraining,
-                            onClick = contract::onOpenTrainings
-                        )
-                    }
-                }
-
-                item(key = "highlights_header", span = { GridItemSpan(2) }) {
-                    HighlightsHeader(
-                        modifier = Modifier.fillMaxWidth(),
-                        range = state.range,
-                        onPeriodChange = contract::onOpenPeriodPicker
-                    )
-                }
-
-                if (state.goalProgress != null) {
-                    item(key = "goal_progress", span = { GridItemSpan(2) }) {
-                        GoalCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenGoalDetails),
-                            value = state.goalProgress,
-                            onUpdateClick = contract::onAddGoal
-                        )
-                    }
-                }
-
-                if (state.muscleLoad != null || state.streak != null) {
-                    item(
-                        key = "muscle_loading_and_training_streak",
-                        span = { GridItemSpan(2) }) {
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            maxItemsInEachRow = if (largeFont) 1 else 2,
-                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                        ) {
-                            if (state.muscleLoad != null) {
-                                MuscleLoadingCard(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxRowHeight()
-                                        .scalableClick(onClick = contract::onOpenMuscleLoading),
-                                    summary = state.muscleLoad
-                                )
-                            }
-                            if (state.streak != null) {
-                                TrainingStreakCard(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxRowHeight()
-                                        .scalableClick(onClick = contract::onOpenTrainingStreak),
-                                    value = state.streak
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (state.spotlights.isNotEmpty()) {
-                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
-                        ExerciseSpotlightsCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.spotlights,
-                            onExampleClick = contract::onOpenExample
-                        )
-                    }
-                }
-
-                if (HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount)) {
-                    performanceMetricItem(
-                        key = "performance_duration",
-                        metric = durationMetric,
-                        span = 2,
-                        contract = contract,
-                    )
-                }
-
-                if (HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
-                    performanceMetricItem(
-                        key = "performance_density",
-                        metric = densityMetric,
-                        span = if (largeFont || volumeMetric == null) 2 else 1,
-                        contract = contract,
-                    )
-                    performanceMetricItem(
-                        key = "performance_volume",
-                        metric = volumeMetric,
-                        span = if (largeFont || densityMetric == null) 2 else 1,
-                        contract = contract,
-                    )
-                    performanceMetricItem(
-                        key = "performance_repetitions",
-                        metric = repetitionsMetric,
-                        span = if (largeFont || intensityMetric == null) 2 else 1,
-                        contract = contract,
-                    )
-                    performanceMetricItem(
-                        key = "performance_intensity",
-                        metric = intensityMetric,
-                        span = if (largeFont || repetitionsMetric == null) 2 else 1,
-                        contract = contract,
-                    )
-                }
-
-                if (state.user != null && HomeUnlock.shouldShowBanner(
-                        lifetimeCount = lifetimeTrainingCount,
-                        hasGoal = state.hasGoal,
-                    )
-                ) {
-                    item(key = "home_unlock_banner_header", span = { GridItemSpan(2) }) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = AppTokens.strings.res(Res.string.home_unlock_banner_header),
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                        )
-                    }
-
-                    item(key = "home_unlock_banner", span = { GridItemSpan(2) }) {
-                        HomeUnlockBanner(
-                            stats = state.user.stats,
-                            hasGoal = state.hasGoal,
-                            onAddGoal = contract::onAddGoal,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-            }
-        },
-        bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            if (state.hasDraftTraining) {
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .then(if (largeFont) Modifier.fillMaxWidth() else Modifier)
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    onClick = contract::onResumeTraining,
-                    style = ButtonStyle.Primary,
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.resume_training_btn)
-                    )
-                )
-            } else {
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .then(if (largeFont) Modifier.fillMaxWidth() else Modifier)
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.start_workout),
-                    ),
-                    style = ButtonStyle.Primary,
-                    onClick = contract::onStartTraining
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        if (state.lastTraining != null) {
+            item(key = "last_training", span = { GridItemSpan(2) }) {
+                LastTrainingCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.lastTraining,
+                    onClick = contract::onOpenTrainings
                 )
             }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    )
+
+        item(key = "highlights_header", span = { GridItemSpan(2) }) {
+            HighlightsHeader(
+                modifier = Modifier.fillMaxWidth(),
+                range = state.range,
+                onPeriodChange = contract::onOpenPeriodPicker
+            )
+        }
+
+        if (state.goalProgress != null) {
+            item(key = "goal_progress", span = { GridItemSpan(2) }) {
+                GoalCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .scalableClick(onClick = contract::onOpenGoalDetails),
+                    value = state.goalProgress,
+                    onUpdateClick = contract::onAddGoal
+                )
+            }
+        }
+
+        if (state.muscleLoad != null || state.streak != null) {
+            item(
+                key = "muscle_loading_and_training_streak",
+                span = { GridItemSpan(2) }) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    maxItemsInEachRow = if (largeFont) 1 else 2,
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                ) {
+                    if (state.muscleLoad != null) {
+                        MuscleLoadingCard(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxRowHeight()
+                                .scalableClick(onClick = contract::onOpenMuscleLoading),
+                            summary = state.muscleLoad
+                        )
+                    }
+                    if (state.streak != null) {
+                        TrainingStreakCard(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxRowHeight()
+                                .scalableClick(onClick = contract::onOpenTrainingStreak),
+                            value = state.streak
+                        )
+                    }
+                }
+            }
+        }
+
+        if (state.spotlights.isNotEmpty()) {
+            item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                ExerciseSpotlightsCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.spotlights,
+                    onExampleClick = contract::onOpenExample
+                )
+            }
+        }
+
+        if (HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount)) {
+            performanceMetricItem(
+                key = "performance_duration",
+                metric = durationMetric,
+                span = 2,
+                contract = contract,
+            )
+        }
+
+        if (HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
+            performanceMetricItem(
+                key = "performance_density",
+                metric = densityMetric,
+                span = if (largeFont || volumeMetric == null) 2 else 1,
+                contract = contract,
+            )
+            performanceMetricItem(
+                key = "performance_volume",
+                metric = volumeMetric,
+                span = if (largeFont || densityMetric == null) 2 else 1,
+                contract = contract,
+            )
+            performanceMetricItem(
+                key = "performance_repetitions",
+                metric = repetitionsMetric,
+                span = if (largeFont || intensityMetric == null) 2 else 1,
+                contract = contract,
+            )
+            performanceMetricItem(
+                key = "performance_intensity",
+                metric = intensityMetric,
+                span = if (largeFont || repetitionsMetric == null) 2 else 1,
+                contract = contract,
+            )
+        }
+
+        if (state.user != null && HomeUnlock.shouldShowBanner(
+                lifetimeCount = lifetimeTrainingCount,
+                hasGoal = state.hasGoal,
+            )
+        ) {
+            item(key = "home_unlock_banner_header", span = { GridItemSpan(2) }) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.home_unlock_banner_header),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
+
+            item(key = "home_unlock_banner", span = { GridItemSpan(2) }) {
+                HomeUnlockBanner(
+                    stats = state.user.stats,
+                    hasGoal = state.hasGoal,
+                    onAddGoal = contract::onAddGoal,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 }
 
 private fun LazyGridScope.performanceMetricItem(
@@ -298,7 +246,6 @@ private fun DashboardHomeContentPreview() {
             modifier = Modifier.fillMaxSize(),
             state = HomeState(
                 lastTraining = stubTraining(),
-                totalDuration = 28.hours,
                 spotlights = persistentListOf(
                     stubExerciseSpotlightNeedsAttention(),
                     stubExerciseSpotlightProgressWin(),
@@ -309,7 +256,6 @@ private fun DashboardHomeContentPreview() {
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
                 goalProgress = stubGoalProgressList().random(),
-                hasDraftTraining = true,
                 user = stubUser()
             ),
             contract = HomeContract.Empty,

@@ -5,8 +5,6 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 
 @Immutable
 internal interface HomeContract {
-    fun onStartTraining()
-    fun onResumeTraining()
     fun onOpenTrainings()
     fun onOpenExample(id: String)
     fun onOpenMuscleLoading()
@@ -20,8 +18,6 @@ internal interface HomeContract {
 
     @Immutable
     companion object Empty : HomeContract {
-        override fun onStartTraining() {}
-        override fun onResumeTraining() {}
         override fun onOpenTrainings() {}
         override fun onOpenMuscleLoading() {}
         override fun onOpenTrainingStreak() {}

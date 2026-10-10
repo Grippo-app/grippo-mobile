@@ -141,9 +141,6 @@ internal class TrainingsViewModel(
         dialogController.open(config)
     }
 
-    override fun onStartTraining() {
-        navigateTo(TrainingsDirection.StartTraining)
-    }
 
     override fun onSelectPeriod(id: String) {
         val current = state.value
