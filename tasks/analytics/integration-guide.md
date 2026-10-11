@@ -76,6 +76,8 @@ ScreenId/DialogId/EntryPoint содержат проверяемый стаби�
 
 Первый Granted включает SDK, затем устанавливает identity; очередь собственных событий ждёт завершения обеих операций. Identity update не отзывает consent временно. Это последовательность вызовов SDK, а не атомарная транзакция его автоматических событий.
 
-## Конфигурация приложения
+## Структура ядра и конфигурация
 
-`ApplicationConfigurationModule().module` регистрирует `AnalyticsConfiguration` через `@Single`, по существующему `expect/actual` подходу проекта. Android читает `Application.applicationInfo.flags` (`FLAG_DEBUGGABLE`) из Koin; отсутствие Application — ошибка wiring без fallback. iOS использует `Platform.isDebugBinary` связанного Kotlin framework. Xcode Debug/Release подключают соответствующий Debug/Release XCFramework. Параметра `analyticsDebug` у `Koin.init` больше нет. Настройки и регистрация не находятся в app shells; они подключают Android context и SDK adapters.
+Каждый сервис имеет публичные контракты в `api`, публичный `*Module` в корне `core` и закрытые реализации в `core/internal`. Папка `internal` подкреплена Kotlin-видимостью: engines, locks, catalog, configuration и diagnostic types объявлены `internal`. Shared подключает только `AnalyticsModule().module`, `CrashReportingModule().module`, `MessagingModule().module` и использует API bootstrap-контракты.
+
+`AnalyticsModule` сам регистрирует внутреннюю `AnalyticsConfiguration` через `@Single`; её `expect/actual` factory находится в `analytics/core/internal`. Android читает `Application.applicationInfo.flags` (`FLAG_DEBUGGABLE`) из собственного Koin scope; отсутствие Application — ошибка wiring без fallback. iOS использует `Platform.isDebugBinary` связанного Kotlin framework. Xcode Debug/Release подключают соответствующий Debug/Release XCFramework. Модуля конфигурации приложения и параметра `analyticsDebug` у `Koin.init` больше нет.

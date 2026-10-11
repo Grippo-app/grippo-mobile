@@ -12,6 +12,7 @@ public enum class AnalyticsCollection { Unknown, Denied, Granted }
 
 public interface AnalyticsEvent {
     public val definition: EventDefinition
+    /** Pure, bounded encoding. No IO, mutable shared state or analytics callbacks. */
     public fun parameters(): List<AnalyticsParameter>
 }
 
@@ -77,7 +78,10 @@ public class AnalyticsPayload(public val name: String, parameters: Map<String, A
     public val parameters: Map<String, AnalyticsValue> = parameters.toMap()
 }
 
-/** All methods are invoked serially. Returning means accepted by SDK, not delivered remotely. */
+/**
+ * Synchronous, non-blocking SDK submission; core invokes methods serially.
+ * Returning means accepted by SDK, not delivered remotely. Exceptions report transport failures.
+ */
 public interface AnalyticsSink {
     public fun setCollection(collection: AnalyticsCollection)
     public fun setIdentity(identity: AnalyticsIdentityPayload)

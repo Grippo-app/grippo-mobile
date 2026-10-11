@@ -12,10 +12,6 @@ kotlin {
         withHostTestBuilder {}
     }
 
-    sourceSets.getByName("iosTest").dependencies {
-        implementation(kotlin("test"))
-    }
-
     sourceSets.getByName("androidHostTest").dependencies {
         implementation(kotlin("test-junit"))
     }

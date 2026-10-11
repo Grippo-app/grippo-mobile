@@ -23,7 +23,6 @@ import com.grippo.services.database.DatabaseModule
 import com.grippo.services.datastore.DataStoreModule
 import com.grippo.services.google.auth.GoogleAuthModule
 import com.grippo.shared.bootstrap.ApplicationBootstrap
-import com.grippo.shared.configuration.ApplicationConfigurationModule
 import com.grippo.toolkit.analytics.core.AnalyticsModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
@@ -46,7 +45,6 @@ public object Koin {
         val application = KoinPlatformTools.defaultContext().startKoin {
             appDeclaration()
             modules(
-                ApplicationConfigurationModule().module,
                 AnalyticsModule().module,
                 CrashReportingModule().module,
                 MessagingModule().module,

@@ -2,6 +2,7 @@ package com.grippo.toolkit.crashreporting.core
 
 import com.grippo.toolkit.crashreporting.CrashReporting
 import com.grippo.toolkit.crashreporting.CrashReportingBootstrap
+import com.grippo.toolkit.crashreporting.core.internal.DefaultCrashReporting
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 

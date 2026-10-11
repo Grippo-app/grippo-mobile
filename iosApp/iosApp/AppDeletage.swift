@@ -68,17 +68,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseMessaging.Messaging.messaging().apnsToken = deviceToken
     }
 
-    // Required for Firebase to handle data messages and silent pushes (e.g. token refresh via APNs).
-    // Without this, FCM data-only messages and content-available payloads are silently dropped.
+    // Forward remote messages to Firebase because automatic delegate forwarding is disabled.
     func application(
         _ application: UIApplication,
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        // Required when swizzling is disabled: lets Firebase handle data messages
-        // and silent pushes (e.g. FCM token refresh via APNs).
         FirebaseMessaging.Messaging.messaging().appDidReceiveMessage(userInfo)
-        completionHandler(.newData)
+        // This bridge does not fetch application data.
+        completionHandler(.noData)
     }
 
     func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool {

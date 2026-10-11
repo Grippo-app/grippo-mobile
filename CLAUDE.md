@@ -38,7 +38,7 @@ Groups:
 
 ### `:shared` — composition root
 
-- `Koin.kt` — `Koin.init { ... }` starts all Koin modules **explicitly by enumeration** and returns `bootstrap/ApplicationBootstrap` with typed startup contracts. Any new module is added here manually. Each service core owns its annotated DI module; `configuration/ApplicationConfigurationModule` owns platform build configuration through `expect/actual` and `@Single`. App shells attach SDK adapters.
+- `Koin.kt` — `Koin.init { ... }` starts all Koin modules **explicitly by enumeration** and returns `bootstrap/ApplicationBootstrap` with typed startup contracts. Any new module is added here manually. Each service core owns its public annotated DI module; implementations live in `core/internal` with Kotlin `internal` visibility. AnalyticsModule owns its internal platform configuration through an `expect/actual` factory and `@Single`. App shells attach SDK adapters.
 - `RootComponent` / `RootViewModel` / `RootScreen` / `RootContract` / `RootDirection` / `RootLoader` / `RootState` — primary stack navigator + token observer for auto-logout (`authorizationFeature.getToken()` → `onEach { if (it == null) navigateTo(Login) }`).
 - `DialogComponent` — separate slot navigator for bottom sheets layered above the stack.
 
