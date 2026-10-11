@@ -863,7 +863,7 @@
     <string name="iteration_picker_weight_range">%1$s–1000 кг</string>
     <string name="iteration_picker_repetitions_range">1–100 повторений</string>
     <string name="training_external_weight">Внешний вес</string>
-    <string name="training_previous_set">В прошлый раз · первый подход: %1$s × %2$s</string>
+    <string name="training_previous_set">В прошлый раз: %1$s × %2$s</string>
     <string name="training_no_sets">Пока нет подходов</string>
     <string name="training_first_set_hint">Добавьте первый подход, чтобы отслеживать прогресс.</string>
     <string name="exercise_library">Библиотека упражнений</string>

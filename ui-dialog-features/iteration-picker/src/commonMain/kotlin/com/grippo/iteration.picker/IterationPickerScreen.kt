@@ -68,6 +68,7 @@ import com.grippo.design.resources.provider.iteration_picker_weight_range
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.repetitions_placeholder
 import com.grippo.design.resources.provider.save_btn
+import com.grippo.design.resources.provider.training_previous_set
 import com.grippo.design.resources.provider.volume_placeholder
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.persistentListOf
@@ -115,6 +116,20 @@ internal fun IterationPickerScreen(
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary
         )
+
+        state.previousIteration?.let { previous ->
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
+            Text(
+                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                text = AppTokens.strings.res(
+                    Res.string.training_previous_set,
+                    previous.volume().short(),
+                    previous.repetitions.short(),
+                ),
+                style = AppTokens.typography.b12Semi(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
 
         val iterationSuggestions = remember(state.iterationSuggestions, state.example.components) {
             state.iterationSuggestions
@@ -273,6 +288,18 @@ internal fun IterationPickerScreen(
         }
 
         Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+
+        state.value.volumeCalculation()?.let { calculation ->
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                text = calculation,
+                style = AppTokens.typography.b12Semi(),
+                color = AppTokens.colors.text.secondary,
+            )
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+        }
 
         val buttonState = remember(state.value, state.example.components) {
             val value = state.value

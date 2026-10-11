@@ -875,7 +875,7 @@
     <string name="iteration_picker_weight_range">%1$s–1000 kg</string>
     <string name="iteration_picker_repetitions_range">1–100 reps</string>
     <string name="training_external_weight">External weight</string>
-    <string name="training_previous_set">Last time · first set: %1$s × %2$s</string>
+    <string name="training_previous_set">Last time: %1$s × %2$s</string>
     <string name="training_no_sets">No sets yet</string>
     <string name="training_first_set_hint">Add your first set to start tracking your progress.</string>
     <string name="exercise_library">Exercise library</string>

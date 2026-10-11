@@ -28,6 +28,29 @@ public data class IterationState(
             && bodyWeight.value == null
 
     @Composable
+    public fun volumeCalculation(): String? {
+        val body = bodyWeight.value ?: return null
+        bodyMultiplier.value ?: return null
+        return buildString {
+            append(VolumeFormatState.of(body).short())
+            append(" × ")
+            append(bodyMultiplier.short())
+            extraWeight.value?.takeIf { it != 0f }?.let {
+                append(" + ")
+                append(extraWeight.short())
+            }
+            assistWeight.value?.takeIf { it != 0f }?.let {
+                append(" − ")
+                append(assistWeight.short())
+            }
+            externalWeight.value?.takeIf { it != 0f }?.let {
+                append(" + ")
+                append(externalWeight.short())
+            }
+        }
+    }
+
+    @Composable
     public fun volume(): VolumeFormatState {
         return remember(externalWeight, extraWeight, bodyWeight, assistWeight, bodyMultiplier) {
             val external = (externalWeight.value ?: 0f)

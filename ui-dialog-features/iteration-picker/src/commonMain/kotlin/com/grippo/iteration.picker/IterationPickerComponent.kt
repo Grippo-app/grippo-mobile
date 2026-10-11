@@ -20,6 +20,7 @@ public class IterationPickerComponent(
     private val suggestions: List<IterationState>,
     private val onResult: (value: IterationState) -> Unit,
     private val back: () -> Unit,
+    previousIteration: IterationState?,
 ) : BaseComponent<IterationPickerDirection>(componentContext) {
 
     override val viewModel: IterationPickerViewModel = componentContext.retainedInstance {
@@ -29,6 +30,7 @@ public class IterationPickerComponent(
             number = number,
             iterationSuggestions = suggestions,
             focus = focus,
+            previousIteration = previousIteration,
         )
     }
 

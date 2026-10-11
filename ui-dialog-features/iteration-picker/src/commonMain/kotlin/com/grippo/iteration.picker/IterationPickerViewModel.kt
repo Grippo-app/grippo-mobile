@@ -16,6 +16,7 @@ public class IterationPickerViewModel(
     iterationSuggestions: List<IterationState>,
     number: Int,
     focus: IterationFocusState,
+    previousIteration: IterationState?,
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,
@@ -23,6 +24,7 @@ public class IterationPickerViewModel(
         iterationSuggestions = iterationSuggestions.toPersistentList(),
         focus = focus,
         example = example,
+        previousIteration = previousIteration,
     )
 ), IterationPickerContract {
 

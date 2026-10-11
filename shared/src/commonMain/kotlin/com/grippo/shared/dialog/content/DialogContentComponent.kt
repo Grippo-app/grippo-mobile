@@ -212,6 +212,7 @@ internal class DialogContentComponent(
                     focus = router.focus,
                     example = router.example,
                     suggestions = router.suggestions,
+                    previousIteration = router.previousIteration,
                     onResult = { iteration -> finish { router.onResult.invoke(iteration) } },
                     back = { finish(null) }
                 )

@@ -68,7 +68,6 @@ import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.sets_value
 import com.grippo.design.resources.provider.training_first_set_hint
 import com.grippo.design.resources.provider.training_no_sets
-import com.grippo.design.resources.provider.training_previous_set
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -110,17 +109,6 @@ internal fun TrainingExerciseScreen(
                         style = ExerciseExampleCardStyle.Medium(value = example),
                     )
                     TrainingExerciseLoadType(components = example.components)
-                    state.previousIteration?.let { previous ->
-                        Text(
-                            text = AppTokens.strings.res(
-                                Res.string.training_previous_set,
-                                previous.volume().short(),
-                                previous.repetitions.short(),
-                            ),
-                            style = AppTokens.typography.b12Semi(),
-                            color = AppTokens.colors.text.secondary,
-                        )
-                    }
                 }
             }
 
@@ -235,6 +223,7 @@ internal fun TrainingExerciseScreen(
                                             modifier = Modifier.fillMaxWidth(),
                                             value = iteration,
                                             number = index + 1,
+                                            previousIteration = state.previousIterations.getOrNull(index),
                                             onVolumeClick = editVolumeProvider,
                                             onRepetitionClick = editRepetitionProvider,
                                             unusualWeight = iteration.id in state.volumeArtifactIds,

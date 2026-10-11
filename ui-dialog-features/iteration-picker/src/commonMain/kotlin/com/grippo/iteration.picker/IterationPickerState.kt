@@ -14,5 +14,6 @@ public data class IterationPickerState(
     val value: IterationState,
     val iterationSuggestions: ImmutableList<IterationState>,
     val focus: IterationFocusState,
+    val previousIteration: IterationState? = null,
     val repetitionSuggestions: ImmutableList<Int> = persistentListOf(),
 )

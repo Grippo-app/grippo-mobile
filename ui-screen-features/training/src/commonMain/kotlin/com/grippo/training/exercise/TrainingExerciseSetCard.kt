@@ -22,27 +22,31 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
+import com.grippo.core.state.formatters.MultiplierFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.core.state.trainings.stubIteration
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.assist_weight_placeholder
+import com.grippo.design.resources.provider.body_weight_placeholder
+import com.grippo.design.resources.provider.extra_weight_placeholder
 import com.grippo.design.resources.provider.icons.Body
 import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.Kettlebell
-import com.grippo.design.resources.provider.body_weight_placeholder
-import com.grippo.design.resources.provider.extra_weight_placeholder
-import com.grippo.design.resources.provider.assist_weight_placeholder
-import com.grippo.design.resources.provider.training_external_weight
 import com.grippo.design.resources.provider.icons.Warning
 import com.grippo.design.resources.provider.repetitions_placeholder
 import com.grippo.design.resources.provider.set_value
+import com.grippo.design.resources.provider.training_external_weight
+import com.grippo.design.resources.provider.training_previous_set
 import com.grippo.design.resources.provider.training_unusual_reps_subtitle
-import com.grippo.design.resources.provider.training_unusual_weight_subtitle
 import com.grippo.design.resources.provider.training_unusual_reps_title
+import com.grippo.design.resources.provider.training_unusual_weight_subtitle
 import com.grippo.design.resources.provider.training_unusual_weight_title
 import com.grippo.design.resources.provider.volume_placeholder
 
@@ -55,6 +59,7 @@ internal fun TrainingExerciseSetCard(
     onRepetitionClick: () -> Unit,
     unusualWeight: Boolean,
     unusualRepetitions: Boolean,
+    previousIteration: IterationState? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius)
     val warning = unusualWeight || unusualRepetitions
@@ -80,7 +85,10 @@ internal fun TrainingExerciseSetCard(
         ) {
             SetValueCell(
                 modifier = Modifier.weight(0.6f),
-                label = AppTokens.strings.res(Res.string.volume_placeholder),
+                label = buildString {
+                    append(AppTokens.strings.res(Res.string.volume_placeholder))
+                    value.volumeCalculation()?.let { append(" · $it") }
+                },
                 value = value.volume().shortAnnotated(),
                 pending = value.isPending,
                 warning = unusualWeight,
@@ -93,6 +101,17 @@ internal fun TrainingExerciseSetCard(
                 pending = value.repetitions.value == null,
                 warning = unusualRepetitions,
                 onClick = onRepetitionClick,
+            )
+        }
+        previousIteration?.let { previous ->
+            Text(
+                text = AppTokens.strings.res(
+                    Res.string.training_previous_set,
+                    previous.volume().short(),
+                    previous.repetitions.short(),
+                ),
+                style = AppTokens.typography.b12Semi(),
+                color = AppTokens.colors.text.secondary,
             )
         }
         if (unusualWeight) {
@@ -193,9 +212,20 @@ internal fun TrainingExerciseLoadType(components: ExerciseExampleComponentsState
 @AppPreview
 @Composable
 private fun TrainingExerciseSetCardPreview() {
+    val external = stubPendingIteration().copy(
+        externalWeight = VolumeFormatState.of(60f),
+        repetitions = RepetitionsFormatState.of(10),
+    )
+    val body = external.copy(
+        externalWeight = VolumeFormatState.Empty(),
+        bodyWeight = WeightFormatState.of(80f),
+        bodyMultiplier = MultiplierFormatState.of(0.65f),
+    )
     PreviewContainer {
-        TrainingExerciseSetCard(value = stubIteration(), number = 1, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = false, unusualRepetitions = false)
-        TrainingExerciseSetCard(value = stubPendingIteration(), number = 2, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = false, unusualRepetitions = false)
-        TrainingExerciseSetCard(value = stubIteration(), number = 3, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = true, unusualRepetitions = true)
+        TrainingExerciseSetCard(value = external, previousIteration = external, number = 1, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = false, unusualRepetitions = false)
+        TrainingExerciseSetCard(value = body, number = 2, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = false, unusualRepetitions = false)
+        TrainingExerciseSetCard(value = body.copy(extraWeight = VolumeFormatState.of(20f)), number = 3, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = false, unusualRepetitions = false)
+        TrainingExerciseSetCard(value = body.copy(assistWeight = VolumeFormatState.of(10f)), number = 4, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = true, unusualRepetitions = true)
+        TrainingExerciseSetCard(value = stubPendingIteration(), number = 5, onVolumeClick = {}, onRepetitionClick = {}, unusualWeight = false, unusualRepetitions = false)
     }
 }

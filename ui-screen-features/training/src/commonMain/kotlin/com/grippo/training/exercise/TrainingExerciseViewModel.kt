@@ -98,7 +98,7 @@ internal class TrainingExerciseViewModel(
     private fun clearValidation() {
         update { current ->
             current.copy(
-                previousIteration = null,
+                previousIterations = persistentListOf(),
                 volumeArtifactIds = persistentSetOf(),
                 repetitionArtifactIds = persistentSetOf(),
             )
@@ -110,7 +110,7 @@ internal class TrainingExerciseViewModel(
             if (current.exercise != value.source) return@update current
 
             current.copy(
-                previousIteration = value.previousIteration,
+                previousIterations = value.previousIterations,
                 volumeArtifactIds = value.volumeIds,
                 repetitionArtifactIds = value.repetitionIds,
             )
@@ -258,6 +258,7 @@ internal class TrainingExerciseViewModel(
             initial = initial,
             number = number,
             suggestions = suggestedIterations(),
+            previousIteration = state.value.previousIterations.getOrNull(number - 1),
             focus = focus,
             example = example,
             onResult = onResult,
@@ -353,14 +354,13 @@ internal class TrainingExerciseViewModel(
                 if (artifact.field == Field.Repetitions) repetitionIds += id else volumeIds += id
             }
         }
-        // An empty exercise clears previous highlights instead of retaining stale hints.
-        val previous = context.history
+        val previousIterations = context.history
             .filter { it.exerciseExample.id == source.exerciseExample.id }
             .filter { it.id != source.id && it.id != context.excludedExerciseId }
             .filter { previous -> source.createdAt.value?.let { previous.createdAt < it } == true }
             .filter { it.iterations.isNotEmpty() }
             .maxByOrNull { it.createdAt }
-            ?.iterations?.firstOrNull()?.toState()
-        return TrainingExerciseValidation(source, volumeIds.toPersistentSet(), repetitionIds.toPersistentSet(), previous)
+            ?.iterations?.map { it.toState() }?.toPersistentList() ?: persistentListOf()
+        return TrainingExerciseValidation(source, volumeIds.toPersistentSet(), repetitionIds.toPersistentSet(), previousIterations)
     }
 }

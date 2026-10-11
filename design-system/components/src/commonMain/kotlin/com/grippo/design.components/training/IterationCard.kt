@@ -1,5 +1,7 @@
 package com.grippo.design.components.training
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,23 +23,35 @@ public fun IterationCard(
     modifier: Modifier = Modifier,
     value: IterationState,
 ) {
-    Row(
-        modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
-        Text(
-            text = value.volume().shortAnnotated(),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.secondary
-        )
+        Row(
+            modifier = Modifier.height(intrinsicSize = IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = value.volume().shortAnnotated(),
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.secondary
+            )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+            Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
-        Text(
-            text = value.repetitions.shortAnnotated(),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary
-        )
+            Text(
+                text = value.repetitions.shortAnnotated(),
+                style = AppTokens.typography.b14Semi(),
+                color = AppTokens.colors.text.secondary
+            )
+        }
+        value.volumeCalculation()?.let { calculation ->
+            Text(
+                text = calculation,
+                style = AppTokens.typography.b12Semi(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
     }
 }
 

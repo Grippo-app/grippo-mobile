@@ -37,7 +37,8 @@ public sealed class DialogConfig(
                 range == other.range && metricType == other.metricType
             is TrainingGoalDetails -> other is TrainingGoalDetails && range == other.range
             is Iteration -> other is Iteration && initial == other.initial && number == other.number &&
-                example == other.example && focus == other.focus && suggestions == other.suggestions
+                example == other.example && focus == other.focus && suggestions == other.suggestions &&
+                previousIteration == other.previousIteration
             is WeightPicker -> other is WeightPicker && initial == other.initial
             is DurationPicker -> other is DurationPicker && initial == other.initial
             is HeightPicker -> other is HeightPicker && initial == other.initial
@@ -120,6 +121,7 @@ public sealed class DialogConfig(
         val example: ExerciseExampleState,
         val focus: IterationFocusState,
         val suggestions: List<IterationState>,
+        val previousIteration: IterationState? = null,
         val onResult: (iteration: IterationState) -> Unit = { },
     ) : DialogConfig()
 
