@@ -859,7 +859,8 @@
     <string name="profile_name_not_set">Имя не указано</string>
     <string name="profile_value_not_set">—</string>
     <string name="profile_account">Аккаунт</string>
-    <string name="iteration_picker_previous_sets">Предыдущие подходы</string>
+    <string name="iteration_picker_last_time">В прошлый раз · %1$s</string>
+    <string name="iteration_picker_suggestions">Подсказки</string>
     <string name="iteration_picker_weight_range">%1$s–1000 кг</string>
     <string name="iteration_picker_repetitions_range">1–100 повторений</string>
     <string name="training_external_weight">Внешний вес</string>

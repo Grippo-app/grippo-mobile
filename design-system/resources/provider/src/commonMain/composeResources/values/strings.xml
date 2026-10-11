@@ -871,7 +871,8 @@
     <string name="profile_name_not_set">Name not specified</string>
     <string name="profile_value_not_set">—</string>
     <string name="profile_account">Account</string>
-    <string name="iteration_picker_previous_sets">Previous sets</string>
+    <string name="iteration_picker_last_time">Last time · %1$s</string>
+    <string name="iteration_picker_suggestions">Suggestions</string>
     <string name="iteration_picker_weight_range">%1$s–1000 kg</string>
     <string name="iteration_picker_repetitions_range">1–100 reps</string>
     <string name="training_external_weight">External weight</string>

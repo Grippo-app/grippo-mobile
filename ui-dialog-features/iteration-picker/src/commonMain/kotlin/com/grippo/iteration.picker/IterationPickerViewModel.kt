@@ -78,9 +78,18 @@ public class IterationPickerViewModel(
         }
     }
 
+    override fun onPreviousIterationClick() {
+        val selected = state.value.previousIteration ?: return
+        applyIteration(selected)
+    }
+
     override fun onIterationClick(id: String) {
+        val selected = state.value.iterationSuggestions.find { it.id == id } ?: return
+        applyIteration(selected)
+    }
+
+    private fun applyIteration(selected: IterationState) {
         update {
-            val selected = it.iterationSuggestions.find { f -> f.id == id } ?: return@update it
             val components = it.example.components
 
             val externalWeight = when (components) {

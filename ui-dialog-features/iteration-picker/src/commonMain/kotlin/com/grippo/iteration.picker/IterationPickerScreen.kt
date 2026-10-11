@@ -62,13 +62,13 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.assist_weight_placeholder
 import com.grippo.design.resources.provider.body_weight_placeholder
 import com.grippo.design.resources.provider.extra_weight_placeholder
-import com.grippo.design.resources.provider.iteration_picker_previous_sets
+import com.grippo.design.resources.provider.iteration_picker_suggestions
 import com.grippo.design.resources.provider.iteration_picker_repetitions_range
 import com.grippo.design.resources.provider.iteration_picker_weight_range
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.repetitions_placeholder
 import com.grippo.design.resources.provider.save_btn
-import com.grippo.design.resources.provider.training_previous_set
+import com.grippo.design.resources.provider.iteration_picker_last_time
 import com.grippo.design.resources.provider.volume_placeholder
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.persistentListOf
@@ -110,28 +110,7 @@ internal fun IterationPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-        Text(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            text = state.example.value.name,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        state.previousIteration?.let { previous ->
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
-            Text(
-                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(
-                    Res.string.training_previous_set,
-                    previous.volume().short(),
-                    previous.repetitions.short(),
-                ),
-                style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-
-        val iterationSuggestions = remember(state.iterationSuggestions, state.example.components) {
+        val iterationSuggestions = remember(state.iterationSuggestions, state.previousIteration, state.example.components) {
             state.iterationSuggestions
                 .filter { item ->
                     item.repetitions is RepetitionsFormatState.Valid && when (state.example.components) {
@@ -142,14 +121,17 @@ internal fun IterationPickerScreen(
                     }
                 }
                 .distinctBy { it.suggestionKey(state.example.components) }
+                .filter { item ->
+                    item.suggestionKey(state.example.components) !=
+                        state.previousIteration?.suggestionKey(state.example.components)
+                }
         }
-        if (repetitionsFocused || iterationSuggestions.isNotEmpty()) {
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+        if (repetitionsFocused || state.previousIteration != null || iterationSuggestions.isNotEmpty()) {
             Text(
                 modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                 text = AppTokens.strings.res(
                     if (repetitionsFocused) Res.string.repetitions_placeholder
-                    else Res.string.iteration_picker_previous_sets
+                    else Res.string.iteration_picker_suggestions
                 ),
                 style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.tertiary
@@ -173,6 +155,17 @@ internal fun IterationPickerScreen(
                             )
                         }
                     } else {
+                        state.previousIteration?.let { previous ->
+                            SuggestionChip(
+                                value = AppTokens.strings.res(
+                                    Res.string.iteration_picker_last_time,
+                                    previous.suggestionLabel(state.example.components),
+                                ),
+                                isSelected = previous.suggestionKey(state.example.components) ==
+                                    state.value.suggestionKey(state.example.components),
+                                onClick = contract::onPreviousIterationClick,
+                            )
+                        }
                         iterationSuggestions.forEach { item ->
                             key(item.id) {
                                 val clickProvider = remember(item.id, contract) {
@@ -288,18 +281,6 @@ internal fun IterationPickerScreen(
         }
 
         Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
-
-        state.value.volumeCalculation()?.let { calculation ->
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                text = calculation,
-                style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.secondary,
-            )
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-        }
 
         val buttonState = remember(state.value, state.example.components) {
             val value = state.value
@@ -432,6 +413,7 @@ private fun PickerPreview(components: ExerciseExampleComponentsState) {
             state = IterationPickerState(
                 value = value,
                 repetitionSuggestions = persistentListOf(8, 12, 6, 10),
+                previousIteration = value.copy(id = "last-time", repetitions = RepetitionsFormatState.of(10)),
                 number = 2,
                 iterationSuggestions = persistentListOf(
                     value.copy(id = "previous-1"),
