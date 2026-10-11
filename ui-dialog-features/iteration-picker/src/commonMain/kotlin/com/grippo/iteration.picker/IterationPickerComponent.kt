@@ -27,7 +27,7 @@ public class IterationPickerComponent(
             initial = initial,
             example = example,
             number = number,
-            suggestions = suggestions,
+            iterationSuggestions = suggestions,
             focus = focus,
         )
     }
@@ -50,7 +50,6 @@ public class IterationPickerComponent(
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
-        val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        IterationPickerScreen(state.value, loaders.value, viewModel)
+        IterationPickerScreen(state.value, viewModel)
     }
 }

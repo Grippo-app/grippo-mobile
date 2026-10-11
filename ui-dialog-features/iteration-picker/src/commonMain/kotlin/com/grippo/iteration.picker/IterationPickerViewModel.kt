@@ -3,7 +3,6 @@ package com.grippo.iteration.picker
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -14,18 +13,29 @@ import kotlinx.collections.immutable.toPersistentList
 public class IterationPickerViewModel(
     initial: IterationState,
     example: ExerciseExampleState,
-    suggestions: List<IterationState>,
+    iterationSuggestions: List<IterationState>,
     number: Int,
     focus: IterationFocusState,
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,
         number = number,
-        suggestions = suggestions.toPersistentList(),
+        iterationSuggestions = iterationSuggestions.toPersistentList(),
         focus = focus,
         example = example,
     )
 ), IterationPickerContract {
+
+    init {
+        val repetitionSuggestions = (iterationSuggestions.mapNotNull {
+            (it.repetitions as? RepetitionsFormatState.Valid)?.value
+        } + listOf(6, 8, 10, 12)).distinct().take(5).toPersistentList()
+        update {
+            it.copy(
+                repetitionSuggestions = repetitionSuggestions
+            )
+        }
+    }
 
     override fun onWeightPickerClick() {
         navigateTo(IterationPickerDirection.PickBodyWeight(state.value.value.bodyWeight.value))
@@ -33,27 +43,28 @@ public class IterationPickerViewModel(
 
     public fun onBodyWeightSelected(value: Float) {
         update { current ->
-            current.copy(value = current.value.copy(bodyWeight = WeightFormatState.of(value)))
+            val iteration = current.value.copy(bodyWeight = WeightFormatState.of(value))
+            current.copy(value = iteration)
         }
     }
 
     override fun onExternalWeightChange(value: String) {
         update {
-            val iteration = it.value.copy(externalWeight = VolumeFormatState.of(value))
+            val iteration = it.value.copy(externalWeight = parseWeight(value))
             it.copy(value = iteration)
         }
     }
 
     override fun onAssistWeightChange(value: String) {
         update {
-            val iteration = it.value.copy(assistWeight = VolumeFormatState.of(value))
+            val iteration = it.value.copy(assistWeight = parseWeight(value))
             it.copy(value = iteration)
         }
     }
 
     override fun onExtraWeightChange(value: String) {
         update {
-            val iteration = it.value.copy(extraWeight = VolumeFormatState.of(value))
+            val iteration = it.value.copy(extraWeight = parseWeight(value))
             it.copy(value = iteration)
         }
     }
@@ -67,27 +78,9 @@ public class IterationPickerViewModel(
 
     override fun onIterationClick(id: String) {
         update {
-            val selected = it.suggestions.find { f -> f.id == id } ?: return@update it
+            val selected = it.iterationSuggestions.find { f -> f.id == id } ?: return@update it
             val components = it.example.components
 
-            val hasBodyWeightInput = when (components) {
-                is ExerciseExampleComponentsState.BodyAndAssist,
-                is ExerciseExampleComponentsState.BodyAndExtra,
-                is ExerciseExampleComponentsState.BodyOnly -> true
-
-                is ExerciseExampleComponentsState.External -> false
-            }
-
-            val bodyWeight = when {
-                !hasBodyWeightInput -> selected.bodyWeight
-                selected.bodyWeight is WeightFormatState.Empty -> it.value.bodyWeight
-                else -> selected.bodyWeight
-            }
-            val bodyMultiplier = when {
-                !hasBodyWeightInput -> selected.bodyMultiplier
-                selected.bodyMultiplier is MultiplierFormatState.Empty -> it.value.bodyMultiplier
-                else -> selected.bodyMultiplier
-            }
             val externalWeight = when (components) {
                 is ExerciseExampleComponentsState.External -> selected.externalWeight
                 else -> VolumeFormatState.Empty()
@@ -103,8 +96,6 @@ public class IterationPickerViewModel(
 
             val iteration = it.value.copy(
                 externalWeight = externalWeight,
-                bodyWeight = bodyWeight,
-                bodyMultiplier = bodyMultiplier,
                 assistWeight = assistWeight,
                 extraWeight = extraWeight,
                 repetitions = selected.repetitions
@@ -115,10 +106,36 @@ public class IterationPickerViewModel(
     }
 
     override fun onSubmit() {
+        if (!canSubmit(state.value.value, state.value.example.components)) return
+
         val direction = IterationPickerDirection.BackWithResult(
             value = state.value.value
         )
         navigateTo(direction)
+    }
+
+    private fun canSubmit(
+        value: IterationState,
+        components: ExerciseExampleComponentsState
+    ): Boolean {
+        if (value.repetitions !is RepetitionsFormatState.Valid) return false
+        return when (components) {
+            is ExerciseExampleComponentsState.External ->
+                value.externalWeight is VolumeFormatState.Valid
+            is ExerciseExampleComponentsState.BodyOnly ->
+                value.bodyWeight is WeightFormatState.Valid
+            is ExerciseExampleComponentsState.BodyAndExtra ->
+                value.bodyWeight is WeightFormatState.Valid &&
+                    value.extraWeight !is VolumeFormatState.Invalid
+            is ExerciseExampleComponentsState.BodyAndAssist ->
+                value.bodyWeight is WeightFormatState.Valid &&
+                    value.assistWeight !is VolumeFormatState.Invalid
+        }
+    }
+
+    private fun parseWeight(value: String): VolumeFormatState {
+        val parsed = VolumeFormatState.of(value)
+        return if (parsed is VolumeFormatState.Empty) parsed.copy(display = value) else parsed
     }
 
     override fun onBack() {

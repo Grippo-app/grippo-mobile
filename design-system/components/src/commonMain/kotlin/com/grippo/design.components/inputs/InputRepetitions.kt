@@ -29,6 +29,7 @@ public fun InputRepetitions(
     value: RepetitionsFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.repetitions_placeholder),
     onValueChange: (String) -> Unit,
+    onDone: (() -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -52,12 +53,13 @@ public fun InputRepetitions(
         placeholder = PlaceHolder.OverInput(
             value = placeholder
         ),
-        keyboardActions = KeyboardActions {
-            focusManager.moveFocus(FocusDirection.Next)
-        },
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.moveFocus(FocusDirection.Next) },
+            onDone = { onDone?.invoke() }
+        ),
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
-            imeAction = ImeAction.Next,
+            imeAction = if (onDone == null) ImeAction.Next else ImeAction.Done,
             keyboardType = KeyboardType.Number
         )
     )

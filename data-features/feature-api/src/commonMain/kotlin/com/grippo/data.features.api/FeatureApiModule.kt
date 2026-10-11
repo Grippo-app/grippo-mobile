@@ -82,7 +82,12 @@ public class FeatureApiModule {
         }
 
         single {
-            ExerciseValidatorUseCase()
+            ExerciseValidatorUseCase(
+                trainingFeature = get(),
+                exerciseMetricsFeature = get(),
+                exerciseExampleFeature = get(),
+                weightHistoryFeature = get(),
+            )
         }
 
         single {

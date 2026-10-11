@@ -14,7 +14,9 @@ import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.training.ExerciseValidatorUseCase
-import com.grippo.data.features.api.training.models.ExerciseArtifacts
+import com.grippo.data.features.api.training.models.ExerciseArtifacts.Field
+import com.grippo.data.features.api.training.models.ExerciseValidationContext
+import com.grippo.data.features.api.training.models.ExerciseValidationInput
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.change_btn
@@ -26,16 +28,19 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.dialog.api.DialogController.Session
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.domain.training.toDomain
-import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.uuid.Uuid
 
 internal class TrainingExerciseViewModel(
     exercise: ExerciseState,
@@ -55,42 +60,48 @@ internal class TrainingExerciseViewModel(
             .onEach(::provideExerciseExample)
             .safeLaunch()
 
-        state
-            .map { current ->
-                current.exercise.copy(
-                    iterations = current.exercise.iterations
-                        .filterNot { it.isPending }
-                        .toPersistentList()
-                )
+        val validationContexts = state
+            .map { TrainingExerciseValidationTarget(it.exercise.exerciseExample.id, it.exercise.createdAt.value) }
+            .distinctUntilChanged()
+            .onEach { clearValidation() }
+            .flatMapLatest { target ->
+                val date = target.performedAt ?: return@flatMapLatest emptyFlow<TrainingExerciseValidationContext>()
+                exerciseValidatorUseCase.observeContext(
+                    exampleId = target.exampleId,
+                    performedAt = date,
+                    excludedExerciseId = exercise.id,
+                ).map { TrainingExerciseValidationContext(target, it) }
             }
-            .map { it.toDomain() }
+
+        combine(
+            state.map { it.exercise }.distinctUntilChanged(),
+            validationContexts,
+        ) { source, snapshot ->
+            val target = TrainingExerciseValidationTarget(source.exerciseExample.id, source.createdAt.value)
+            if (snapshot.target != target) return@combine null
+            validateTrainingExercise(source, snapshot.value)
+        }
             .filterNotNull()
-            .map(exerciseValidatorUseCase::execute)
             .onEach(::provideValidation)
-            .safeLaunch()
+            .safeLaunch(onError = ::clearValidation)
     }
 
-    private fun provideValidation(value: ExerciseArtifacts?) {
+    private fun clearValidation() {
         update { current ->
-            val volumeIds = mutableSetOf<String>()
-            val repetitionIds = mutableSetOf<String>()
-            val completed = current.exercise.iterations.filterNot { it.isPending }
+            current.copy(
+                volumeArtifactIds = persistentSetOf(),
+                repetitionArtifactIds = persistentSetOf(),
+            )
+        }
+    }
 
-            value?.iterations?.forEachIndexed { index, (_, artifact) ->
-                val iteration = completed.getOrNull(index) ?: return@forEachIndexed
-
-                when (artifact) {
-                    is ExerciseArtifacts.Artifact.SuspiciousWeight,
-                    is ExerciseArtifacts.Artifact.SuspiciousVolume -> volumeIds += iteration.id
-
-                    is ExerciseArtifacts.Artifact.SuspiciousRepetitions -> repetitionIds += iteration.id
-                    null -> Unit
-                }
-            }
+    private fun provideValidation(value: TrainingExerciseValidation) {
+        update { current ->
+            if (current.exercise != value.source) return@update current
 
             current.copy(
-                volumeArtifactIds = volumeIds.toPersistentSet(),
-                repetitionArtifactIds = repetitionIds.toPersistentSet(),
+                volumeArtifactIds = value.volumeIds,
+                repetitionArtifactIds = value.repetitionIds,
             )
         }
     }
@@ -306,5 +317,31 @@ internal class TrainingExerciseViewModel(
         }
 
         navigateTo(direction)
+    }
+
+    private fun validateTrainingExercise(
+        source: ExerciseState,
+        context: ExerciseValidationContext,
+    ): TrainingExerciseValidation {
+        // The domain mapper drops rows without repetitions. Filter them before capturing IDs,
+        // so findings always address the exact rows sent to the validator.
+        val completed = source.iterations.filter { !it.isPending && it.repetitions.value != null }
+        val input = ExerciseValidationInput(
+            name = source.name,
+            exampleId = source.exerciseExample.id,
+            iterations = completed.toDomain(),
+            performedAt = source.createdAt.value,
+        )
+        val artifacts = exerciseValidatorUseCase.execute(input, context)
+        val volumeIds = mutableSetOf<String>()
+        val repetitionIds = mutableSetOf<String>()
+        artifacts?.iterations?.forEachIndexed { index, row ->
+            val id = completed[index].id
+            for (artifact in row.artifacts) {
+                if (artifact.field == Field.Repetitions) repetitionIds += id else volumeIds += id
+            }
+        }
+        // An empty exercise clears previous highlights instead of retaining stale hints.
+        return TrainingExerciseValidation(source, volumeIds.toPersistentSet(), repetitionIds.toPersistentSet())
     }
 }

@@ -1,260 +1,359 @@
 package com.grippo.data.features.api.training
 
-import com.grippo.data.features.api.training.ExerciseValidatorUseCase.Companion.MAX_SAFE_RATIO
-import com.grippo.data.features.api.training.ExerciseValidatorUseCase.Companion.MIN_SAFE_RATIO
-import com.grippo.data.features.api.training.ExerciseValidatorUseCase.Companion.MIN_SAMPLES
-import com.grippo.data.features.api.training.ExerciseValidatorUseCase.Companion.WARMUP_STEP_MIN_RATIO
-import com.grippo.data.features.api.training.ExerciseValidatorUseCase.Companion.Z_THRESHOLD
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExerciseExampleComponents
+import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
+import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.ExerciseArtifacts
 import com.grippo.data.features.api.training.models.ExerciseArtifacts.Artifact
+import com.grippo.data.features.api.training.models.ExerciseArtifacts.Field
+import com.grippo.data.features.api.training.models.ExerciseArtifacts.Reason
+import com.grippo.data.features.api.training.models.ExerciseValidationContext
+import com.grippo.data.features.api.training.models.ExerciseValidationInput
+import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.data.features.api.training.models.SetIteration
+import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import kotlin.math.abs
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.atTime
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.minus
 
-/**
- * Detects likely input artifacts in a single [SetExercise] — values that look
- * like accidental typos (e.g. "10" instead of "100" kg).
- *
- * The detection is *soft*: it returns an [ExerciseArtifacts] so the UI can
- * surface a gentle hint to the user without blocking the save.
- *
- * The result contains the **full iteration list** with every iteration paired
- * with its optional [Artifact].  This lets the UI render the complete exercise
- * in context and highlight only the suspicious rows.
- *
- * Returns `null` when the exercise looks clean.
- *
- * ## Detection pipeline (in priority order)
- *
- * 1. **Zero/negative repetitions** — always wrong, flagged immediately with no
- *    minimum sample requirement.
- *
- * 2. **External weight** — analysed statistically when ≥ [MIN_SAMPLES]
- *    iterations carry a non-null, positive `externalWeight`.
- *
- * 3. **Repetitions** — analysed statistically when ≥ [MIN_SAMPLES] iterations
- *    exist.  An iteration already flagged in step 1 is skipped.
- *
- * 4. **Volume (fallback)** — analysed statistically when step 2 was skipped
- *    (not enough `externalWeight` data).  Covers bodyweight and
- *    assisted-bodyweight exercises.  Already-flagged iterations are skipped.
- *
- * ## Statistical algorithm
- *
- * Steps 2–4 use the **Modified Z-score** (Iglewicz & Hoaglin, 1993):
- *
- * ```
- * z_i = 0.6745 × |x_i − median| / MAD
- * ```
- *
- * where `MAD = median(|x_i − median|)`.
- *
- * This estimator is *robust*: a single bad value does not corrupt the
- * statistics used to detect it (unlike mean + stddev).
- *
- * When MAD ≈ 0 (all reference values are identical), the algorithm falls back
- * to a ratio comparison:
- * - ratio < [MIN_SAFE_RATIO]  →  suspiciously low (dropped a digit)
- * - ratio > [MAX_SAFE_RATIO]  →  suspiciously high (added a digit)
- *
- * ## Warmup suppression
- *
- * [Z_THRESHOLD] is raised to 5.0 (vs the textbook 3.5) and a monotonic-prefix
- * check is applied to avoid false positives on warmup pyramids such as
- * `20×5 40×5 60×5 80×5 100×5 100×5`.  A flagged value is suppressed when it
- * sits inside the non-decreasing warmup ramp AND the step to the next value is
- * gradual enough (ratio ≥ [WARMUP_STEP_MIN_RATIO]).
- *
- * ## Known limitations
- *
- * - If more than half of the iterations carry the same typo, the median shifts
- *   toward the wrong values and detection may fail.  In practice this is
- *   extremely unlikely.
- *
- * - When warmup sets and a typo appear in the same exercise, the inflated
- *   variance may prevent detection of the typo.
- */
-public class ExerciseValidatorUseCase {
-
-    private companion object {
-        private const val MIN_SAMPLES = 3
-        private const val Z_THRESHOLD = 5.0f
-        private const val MAD_SCALE = 0.6745f
-        private const val EPS = 1e-3f
-        private const val MIN_SAFE_RATIO = 0.3f
-        private const val MAX_SAFE_RATIO = 3.0f
-        private const val WARMUP_STEP_MIN_RATIO = 0.2f
+/** Validates exercise input using loaded catalog, training and body-weight evidence. */
+public class ExerciseValidatorUseCase(
+    private val trainingFeature: TrainingFeature,
+    private val exerciseMetricsFeature: ExerciseMetricsFeature,
+    private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val weightHistoryFeature: WeightHistoryFeature,
+) {
+    /** Observes evidence without refetching it on every set edit. */
+    public fun observeContext(
+        exampleId: String,
+        performedAt: LocalDateTime,
+        excludedExerciseId: String?,
+    ): Flow<ExerciseValidationContext> {
+        val start = performedAt.date.minus(DatePeriod(days = VALIDATION_HISTORY_DAYS)).atTime(0, 0)
+        val recent: Flow<List<Exercise>> = flow {
+            emit(exerciseMetricsFeature.getRecentExercisesByExampleId(exampleId).getOrThrow())
+        }
+        return combine(
+            trainingFeature.observeTrainings(start, performedAt),
+            recent,
+            exerciseExampleFeature.observeExerciseExample(exampleId).map { example ->
+                requireNotNull(example) { "Exercise example $exampleId is unavailable." }
+            },
+            weightHistoryFeature.observeWeightHistory(),
+        ) { trainings, remote, example, weights ->
+            val bodyWeight = weights
+                // Exercise creation marks its start; a measurement later that day is still relevant.
+                .filter { it.createdAt.date <= performedAt.date && it.weight.isFinite() && it.weight > 0f }
+                .filter { it.createdAt.date.daysUntil(performedAt.date) in 0..90 }
+                .maxByOrNull { it.createdAt }?.weight
+            ExerciseValidationContext(
+                components = example.components,
+                // Recent server records supersede older cached versions of the same exercise.
+                history = (remote + trainings.flatMap { it.exercises })
+                    .filter { it.exerciseExample.id == exampleId }
+                    .distinctBy { it.id },
+                excludedExerciseId = excludedExerciseId,
+                bodyWeight = bodyWeight,
+            )
+        }.distinctUntilChanged()
     }
 
-    /**
-     * Analyses [exercise] and returns an [ExerciseArtifacts] describing every
-     * iteration paired with its optional [Artifact], or `null` if nothing
-     * suspicious was found.
-     */
-    public fun execute(exercise: SetExercise): ExerciseArtifacts? {
+    public fun execute(
+        exercise: SetExercise,
+        context: ExerciseValidationContext,
+    ): ExerciseArtifacts? = execute(
+        ExerciseValidationInput(exercise.name, exercise.exerciseExample.id, exercise.iterations, exercise.createdAt),
+        context,
+    )
+
+    public fun execute(
+        exercise: ExerciseValidationInput,
+        context: ExerciseValidationContext,
+    ): ExerciseArtifacts? {
         val iterations = exercise.iterations
-        if (iterations.isEmpty()) return null
-
-        // artifactMap: iterationIndex → Artifact (at most one per iteration)
-        val artifactMap = mutableMapOf<Int, Artifact>()
-
-        // ── Step 1: zero/negative repetitions ───────────────────────────────
-        iterations.forEachIndexed { index, it ->
-            if (it.repetitions <= 0) {
-                val repMedian = medianOf(
-                    iterations.mapIndexedNotNull { i, s ->
-                        if (i != index && s.repetitions > 0) s.repetitions.toFloat() else null
-                    }
-                ) ?: 0f
-                artifactMap[index] = Artifact.SuspiciousRepetitions(
-                    actual = it.repetitions,
-                    expectedMedian = repMedian,
-                )
-            }
+        val invalid = iterations.map { validateComponents(it, context) }
+        val validPeers = iterations.filterIndexed { index, _ -> invalid[index].isEmpty() }
+        val findings = invalid.map { it.toMutableList() }
+        val performedAt = exercise.performedAt
+        val history = if (performedAt == null) emptyList() else context.history
+            .asSequence()
+            .filter { it.exerciseExample.id == exercise.exampleId }
+            .filter { it.id != context.excludedExerciseId && it.createdAt < performedAt }
+            .filter { it.createdAt.date.daysUntil(performedAt.date) in 0..VALIDATION_HISTORY_DAYS }
+            .distinctBy { it.id }
+            .sortedByDescending { it.createdAt }
+            // The domain model has no trainingId. Same-day records cannot prove independent sessions.
+            .distinctBy { it.createdAt.date }
+            .take(MAX_HISTORY_REFERENCES)
+            .map { it.iterations.map { iteration -> iteration.validationIteration() } }
+            .toList()
+        val historyContext = context.copy(bodyWeight = null)
+        val validHistory = history.map { session ->
+            session.filter { validateComponents(it, historyContext).isEmpty() }
         }
 
-        // ── Step 2: external weight (statistical) ───────────────────────────
-        val weightPairs: List<Pair<Int, Float>> = iterations
-            .mapIndexedNotNull { index, it ->
-                val w = it.externalWeight ?: return@mapIndexedNotNull null
-                if (w <= EPS) return@mapIndexedNotNull null
-                index to w
-            }
-
-        val weightCheckPerformed = weightPairs.size >= MIN_SAMPLES
-        if (weightCheckPerformed) {
-            val weightValues = weightPairs.map { it.second }
-            val weightMedian = medianOf(weightValues) ?: 0f
-            val outliers = suppressWarmupSets(findOutlierPositions(weightValues), weightValues)
-            for (pos in outliers) {
-                val (iterIndex, actual) = weightPairs[pos]
-                if (iterIndex !in artifactMap) {
-                    artifactMap[iterIndex] = Artifact.SuspiciousWeight(
-                        actual = actual,
-                        expectedMedian = weightMedian,
-                    )
+        for (field in COMPONENT_FIELDS + Field.Repetitions) {
+            iterations.forEachIndexed { index, iteration ->
+                if (invalid[index].any { it.field == field }) return@forEachIndexed
+                val actual = iteration.value(field) ?: return@forEachIndexed
+                if (!actual.isFinite() || actual <= 0f) return@forEachIndexed
+                if (field == Field.Repetitions && repetitionsExplainedByLoad(iteration, validPeers)) {
+                    return@forEachIndexed
                 }
+                // Use immutable invalid findings, so checking one row never changes another's evidence.
+                val peers = iterations.mapIndexedNotNull { peerIndex, peer ->
+                    if (peerIndex == index || invalid[peerIndex].any { it.field == field }) null
+                    else peer.value(field)
+                }
+                val local = validationReference(peers, minimumCount = 2)
+                val supportingPeers = peers.count { peer ->
+                    peer.isFinite() && abs(peer - actual) <= actual * 0.25f
+                }
+                val ramp = field in ADDED_WEIGHT_FIELDS && isRamp(index, iterations, field, actual)
+                val historicalValues = validHistory.mapNotNull { session ->
+                    val comparable = session.filter { sample ->
+                        val value = sample.value(field)
+                        value != null && value.isFinite() && value > 0f &&
+                            sample.sameLoadModel(iteration) && comparableRepetitions(sample, iteration, field)
+                    }.mapNotNull { it.value(field) }
+                    // Ambiguous session modes cannot establish a representative value.
+                    validationReference(comparable, minimumCount = 1)?.value
+                }
+                val historical = validationReference(historicalValues, minimumCount = 3)
+                val historySupportsActual = historicalValues.count { reference ->
+                    abs(actual - reference) <= reference * 0.25f
+                } >= 3
+                if (local != null && local.count > supportingPeers + 1 && !historySupportsActual &&
+                    isOutlier(actual, local.value, field, history = false) && !(actual < local.value && ramp)
+                ) {
+                    findings[index] += outlier(field, actual, local, Reason.LocalOutlier)
+                    return@forEachIndexed
+                }
+                val locallySupported = supportingPeers >= 2
+                if (historical != null && !historySupportsActual && !(actual < historical.value && ramp) &&
+                    isOutlier(actual, historical.value, field, history = true) &&
+                    // Repeated current values cannot independently confirm a gross deviation.
+                    (!locallySupported || isGrossHistoryDeviation(actual, historical.value, field))
+                ) findings[index] += outlier(field, actual, historical, Reason.HistoryOutlier)
             }
         }
-
-        // ── Step 3: repetitions (statistical) ───────────────────────────────
-        val repPairs: List<Pair<Int, Float>> = iterations
-            .mapIndexedNotNull { index, it ->
-                if (index in artifactMap) return@mapIndexedNotNull null
-                if (it.repetitions <= 0) return@mapIndexedNotNull null
-                index to it.repetitions.toFloat()
-            }
-
-        if (repPairs.size >= MIN_SAMPLES) {
-            val repValues = repPairs.map { it.second }
-            val repMedian = medianOf(repValues) ?: 0f
-            for (pos in findOutlierPositions(repValues)) {
-                val (iterIndex, actual) = repPairs[pos]
-                if (iterIndex !in artifactMap) {
-                    artifactMap[iterIndex] = Artifact.SuspiciousRepetitions(
-                        actual = actual.toInt(),
-                        expectedMedian = repMedian,
-                    )
-                }
-            }
-        }
-
-        // ── Step 4: volume fallback (bodyweight / assisted exercises) ────────
-        if (!weightCheckPerformed) {
-            val volumePairs: List<Pair<Int, Float>> = iterations
-                .mapIndexedNotNull { index, it ->
-                    if (index in artifactMap) return@mapIndexedNotNull null
-                    val hasAnyWeightField = it.externalWeight != null
-                            || it.extraWeight != null
-                            || it.bodyWeight != null
-                            || it.assistWeight != null
-                    if (!hasAnyWeightField) return@mapIndexedNotNull null
-                    index to it.volume
-                }
-
-            if (volumePairs.size >= MIN_SAMPLES) {
-                val volumeValues = volumePairs.map { it.second }
-                val volumeMedian = medianOf(volumeValues) ?: 0f
-                val outliers = suppressWarmupSets(findOutlierPositions(volumeValues), volumeValues)
-                for (pos in outliers) {
-                    val (iterIndex, actual) = volumePairs[pos]
-                    if (iterIndex !in artifactMap) {
-                        artifactMap[iterIndex] = Artifact.SuspiciousVolume(
-                            actual = actual,
-                            expectedMedian = volumeMedian,
-                        )
-                    }
-                }
-            }
-        }
-
-        if (artifactMap.isEmpty()) return null
-
-        val pairedIterations: List<Pair<SetIteration, Artifact?>> = iterations
-            .mapIndexed { index, iteration -> iteration to artifactMap[index] }
-
+        if (findings.all { it.isEmpty() }) return null
         return ExerciseArtifacts(
             exerciseName = exercise.name,
-            iterations = pairedIterations,
+            iterations = iterations.mapIndexed { index, iteration ->
+                ExerciseArtifacts.IterationArtifacts(iteration, findings[index].toList())
+            },
         )
     }
 
-    // ── Warmup suppression ───────────────────────────────────────────────────
+    private fun repetitionsExplainedByLoad(actual: SetIteration, iterations: List<SetIteration>): Boolean {
+        val load = actual.volume
+        if (!load.isFinite() || load <= 0f) return false
+        return iterations.count { peer ->
+            peer.volume.isFinite() && peer.volume >= load * 2f && peer.repetitions > 0 &&
+                actual.repetitions.toDouble() >= peer.repetitions * 4.0 &&
+                load.toDouble() * actual.repetitions <= peer.volume.toDouble() * peer.repetitions * 2.0
+        } >= 2
+    }
 
-    private fun suppressWarmupSets(
-        outlierPositions: List<Int>,
-        values: List<Float>,
-    ): List<Int> {
-        if (outlierPositions.isEmpty()) return emptyList()
-        val med = medianOf(values) ?: return outlierPositions
-        val prefixLen = monotonicPrefixLength(values)
+    private fun comparableRepetitions(sample: SetIteration, actual: SetIteration, field: Field): Boolean {
+        if (field == Field.BodyWeight || field == Field.BodyMultiplier) return true
+        val jointIncrease = jointMagnitudeIncrease(sample, actual)
+        if (field != Field.Repetitions) {
+            return abs(sample.repetitions.toLong() - actual.repetitions.toLong()) <=
+                maxOf(2.0, actual.repetitions.toDouble() * 0.25) ||
+                (field in ADDED_WEIGHT_FIELDS && jointIncrease)
+        }
+        val load = actual.volume
+        return load.isFinite() && load > 0f && sample.volume.isFinite() &&
+            (abs(sample.volume - load) <= load * 0.25f || jointIncrease)
+    }
 
-        return outlierPositions.filter { pos ->
-            val v = values[pos]
-            if (pos >= prefixLen) return@filter true          // not in prefix → keep
-            if (v >= med) return@filter true                  // above median → keep
-            val next = values.getOrNull(pos + 1)
-            if (next == null || next <= EPS) return@filter true
-            v / next < WARMUP_STEP_MIN_RATIO                  // too big a jump → keep
+    private fun jointMagnitudeIncrease(sample: SetIteration, actual: SetIteration): Boolean {
+        if (actual.repetitions.toDouble() < sample.repetitions * 4.0) return false
+        // Simultaneous large increases in weight and repetitions need checking,
+        // even though neither field has a comparable rep/load range in history anymore.
+        return ADDED_WEIGHT_FIELDS.any { field ->
+            val before = sample.value(field)
+            val after = actual.value(field)
+            before != null && after != null && before > 0f && after.toDouble() / before >= 5.0
         }
     }
 
-    private fun monotonicPrefixLength(values: List<Float>): Int {
-        var end = 0
-        while (end + 1 < values.size && values[end + 1] >= values[end]) end++
-        return end + 1
+    private fun isGrossHistoryDeviation(actual: Float, reference: Float, field: Field): Boolean {
+        val ratio = actual.toDouble() / reference.toDouble()
+        return ratio >= (if (field in ADDED_WEIGHT_FIELDS) 5.0 else 8.0) || ratio <= 0.125
     }
 
-    // ── Outlier detection ────────────────────────────────────────────────────
+    private fun isOutlier(actual: Float, reference: Float, field: Field, history: Boolean): Boolean {
+        if (field == Field.BodyWeight) return bodyWeightMismatch(actual, reference)
+        val ratio = actual.toDouble() / reference.toDouble()
+        val minimumDifference = when (field) {
+            Field.Repetitions -> 8f
+            Field.BodyMultiplier -> 0.05f
+            else -> 2.5f
+        }
+        if (abs(actual - reference) < minimumDifference) return false
+        // Low reps may mean singles, fatigue or a failed attempt.
+        if (field == Field.Repetitions) return ratio >= 4.0
+        return ratio >= 3.0 || ratio <= if (history) 0.125 else 1.0 / 3.0
+    }
 
-    private fun findOutlierPositions(values: List<Float>): List<Int> {
-        if (values.size < MIN_SAMPLES) return emptyList()
-        val med = medianOf(values) ?: return emptyList()
-        if (abs(med) < EPS) return emptyList()
+    private fun isRamp(index: Int, iterations: List<SetIteration>, field: Field, actual: Float): Boolean {
+        fun gradual(from: Float?, to: Float?): Boolean =
+            from != null && to != null && from.isFinite() && to.isFinite() &&
+                from > 0f && to > 0f && from <= to && from / to >= 0.2f
 
-        val deviations = values.map { abs(it - med) }
-        val mad = medianOf(deviations) ?: return emptyList()
-
-        return if (mad < EPS) {
-            values.indices.filter { i ->
-                val ratio = values[i] / med
-                ratio < MIN_SAFE_RATIO || ratio > MAX_SAFE_RATIO
+        val next = iterations.getOrNull(index + 1)?.value(field)
+        val warmup = next != null && next > actual &&
+            (0..index).all { pos -> gradual(iterations[pos].value(field), iterations[pos + 1].value(field)) }
+        if (warmup) return true
+        val previous = iterations.getOrNull(index - 1)?.value(field)
+        return previous != null && previous > actual &&
+            (index until iterations.size).all { pos ->
+                gradual(iterations[pos].value(field), iterations[pos - 1].value(field))
             }
-        } else {
-            values.indices.filter { i ->
-                val z = MAD_SCALE * abs(values[i] - med) / mad
-                z > Z_THRESHOLD
+    }
+
+    private fun outlier(field: Field, actual: Float, reference: ValidationReference, reason: Reason): Artifact =
+        Artifact(field, reason, actual, reference.value, reference.count)
+
+    private fun SetIteration.value(field: Field): Float? = when (field) {
+        Field.ExternalWeight -> externalWeight
+        Field.ExtraWeight -> extraWeight
+        Field.AssistWeight -> assistWeight
+        Field.BodyWeight -> bodyWeight
+        Field.BodyMultiplier -> bodyMultiplier
+        Field.Repetitions -> repetitions.toFloat()
+        Field.Load -> volume
+    }
+
+    private fun Iteration.validationIteration(): SetIteration = SetIteration(
+        assistWeight, extraWeight, externalWeight, bodyWeight, bodyMultiplier, repetitions,
+    )
+
+    private fun validateComponents(iteration: SetIteration, context: ExerciseValidationContext): List<Artifact> = buildList {
+        for (field in COMPONENT_FIELDS) {
+            val value = iteration.value(field) ?: continue
+            when {
+                !value.isFinite() -> add(Artifact(field, Reason.NonFinite, value))
+                value < 0f -> add(Artifact(field, Reason.Negative, value))
+                value == 0f && field in BODY_FIELDS ->
+                    add(Artifact(field, Reason.NonPositive, value))
             }
+        }
+        if (iteration.repetitions <= 0) {
+            add(Artifact(Field.Repetitions, Reason.NonPositive, iteration.repetitions.toFloat()))
+        }
+        val components = context.components
+        if (components != null) {
+            val allowed = when (components) {
+                is ExerciseExampleComponents.External -> setOf(Field.ExternalWeight)
+                is ExerciseExampleComponents.BodyOnly -> BODY_FIELDS
+                is ExerciseExampleComponents.BodyAndExtra -> BODY_FIELDS + Field.ExtraWeight
+                is ExerciseExampleComponents.BodyAndAssist -> BODY_FIELDS + Field.AssistWeight
+            }
+            for (field in COMPONENT_FIELDS - allowed) {
+                iteration.value(field)?.let { add(Artifact(field, Reason.UnexpectedComponent, it)) }
+            }
+            val required = when (components) {
+                is ExerciseExampleComponents.External -> if (components.required) setOf(Field.ExternalWeight) else emptySet()
+                is ExerciseExampleComponents.BodyOnly -> if (components.required) BODY_FIELDS else emptySet()
+                is ExerciseExampleComponents.BodyAndExtra ->
+                    (if (components.bodyRequired) BODY_FIELDS else emptySet()) +
+                        (if (components.extraRequired) setOf(Field.ExtraWeight) else emptySet())
+                is ExerciseExampleComponents.BodyAndAssist ->
+                    (if (components.bodyRequired) BODY_FIELDS else emptySet()) +
+                        (if (components.assistRequired) setOf(Field.AssistWeight) else emptySet())
+            }
+            for (field in required) {
+                if (iteration.value(field) == null) add(Artifact(field, Reason.MissingRequired, null))
+                if (field == Field.ExternalWeight && iteration.externalWeight == 0f) {
+                    add(Artifact(field, Reason.NonPositive, 0f))
+                }
+            }
+            val multiplier = when (components) {
+                is ExerciseExampleComponents.External -> null
+                is ExerciseExampleComponents.BodyOnly -> components.multiplier
+                is ExerciseExampleComponents.BodyAndExtra -> components.bodyMultiplier
+                is ExerciseExampleComponents.BodyAndAssist -> components.bodyMultiplier
+            }
+            val actual = iteration.bodyMultiplier
+            // Allow UI rounding and small catalog changes to previously recorded coefficients.
+            if (multiplier != null && multiplier.isFinite() && multiplier > 0f &&
+                actual != null && actual.isFinite() && actual > 0f &&
+                abs(actual - multiplier) > maxOf(0.011f, multiplier * 0.25f)
+            ) add(Artifact(Field.BodyMultiplier, Reason.ComponentMismatch, actual, multiplier))
+        }
+        if (iteration.bodyWeight != null && iteration.bodyMultiplier == null &&
+            none { it.field == Field.BodyMultiplier }
+        ) add(Artifact(Field.BodyMultiplier, Reason.MissingRequired, null))
+
+        val reference = context.bodyWeight
+        val actual = iteration.bodyWeight
+        if (reference != null && reference.isFinite() && reference > 0f &&
+            actual != null && actual.isFinite() && actual > 0f &&
+            bodyWeightMismatch(actual, reference) && none { it.field == Field.BodyWeight }
+        ) add(Artifact(Field.BodyWeight, Reason.BodyWeightMismatch, actual, reference, 1))
+
+        // Negative effective load may be a legitimate machine convention; assistance is
+        // not bounded by body weight without machine metadata. Only arithmetic overflow is flagged.
+        if (COMPONENT_FIELDS.all { iteration.value(it)?.isFinite() != false } && !iteration.volume.isFinite()) {
+            add(Artifact(Field.Load, Reason.NonFinite, iteration.volume))
         }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    /** Body mass is a component measurement, so it does not use the lifting-weight typo threshold. */
+    private fun bodyWeightMismatch(actual: Float, reference: Float): Boolean =
+        abs(actual - reference) >= 10f &&
+            (actual.toDouble() / reference >= 1.5 || actual.toDouble() / reference <= 2.0 / 3.0)
 
-    private fun medianOf(values: List<Float>): Float? {
-        if (values.isEmpty()) return null
+    private data class ValidationReference(val value: Float, val count: Int)
+
+    /** Repeated, coherent values are stronger evidence than a median of unrelated set types. */
+    private fun validationReference(values: List<Float>, minimumCount: Int): ValidationReference? {
+        val finite = values.filter { it.isFinite() && it > 0f }
+        if (finite.size < minimumCount) return null
+        val groups = finite.map { center ->
+            finite.filter { abs(it - center) <= center * 0.20f }
+        }
+        val largest = groups.maxOf { it.size }
+        if (largest < minimumCount || largest * 2 < finite.size) return null
+        val candidates = groups.filter { it.size == largest }.map { median(it) }
+        // Equally supported, distant modes cannot establish an expected value.
+        if (candidates.max() / candidates.min() > 1.5f) return null
+        return ValidationReference(median(candidates), largest)
+    }
+
+    private fun median(values: List<Float>): Float {
         val sorted = values.sorted()
         val mid = sorted.size / 2
         return if (sorted.size % 2 == 1) sorted[mid]
-        else (sorted[mid - 1] + sorted[mid]) / 2f
+        else (sorted[mid - 1].toDouble() / 2.0 + sorted[mid].toDouble() / 2.0).toFloat()
+    }
+
+    private fun SetIteration.sameLoadModel(other: SetIteration): Boolean =
+        (externalWeight != null) == (other.externalWeight != null) &&
+            (bodyWeight != null) == (other.bodyWeight != null) &&
+            (assistWeight != null) == (other.assistWeight != null)
+
+    private companion object {
+        private const val VALIDATION_HISTORY_DAYS = 180
+        private const val MAX_HISTORY_REFERENCES = 12
+        private val COMPONENT_FIELDS = setOf(
+            Field.ExternalWeight, Field.ExtraWeight, Field.AssistWeight, Field.BodyWeight, Field.BodyMultiplier,
+        )
+        private val BODY_FIELDS = setOf(Field.BodyWeight, Field.BodyMultiplier)
+        private val ADDED_WEIGHT_FIELDS = setOf(Field.ExternalWeight, Field.ExtraWeight)
     }
 }
