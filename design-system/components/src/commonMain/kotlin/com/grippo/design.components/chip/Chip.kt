@@ -156,7 +156,6 @@ public fun Chip(
         }
 
         Text(
-            modifier = Modifier.padding(end = AppTokens.dp.contentPadding.text),
             text = value,
             style = tokens.valueTextStyle,
             maxLines = 1,

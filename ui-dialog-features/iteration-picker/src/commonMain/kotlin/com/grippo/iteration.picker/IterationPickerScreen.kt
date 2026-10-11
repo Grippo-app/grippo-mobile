@@ -25,13 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import com.grippo.core.foundation.BaseComposeScreen
@@ -130,37 +128,52 @@ internal fun IterationPickerScreen(
                 }
                 .distinctBy { it.suggestionKey(state.example.components) }
         }
-        if (iterationSuggestions.isNotEmpty()) {
+        if (repetitionsFocused || iterationSuggestions.isNotEmpty()) {
             Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
             Text(
                 modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(Res.string.iteration_picker_previous_sets),
+                text = AppTokens.strings.res(
+                    if (repetitionsFocused) Res.string.repetitions_placeholder
+                    else Res.string.iteration_picker_previous_sets
+                ),
                 style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.tertiary
             )
             Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                iterationSuggestions.forEach { item ->
-                    key(item.id) {
-                        val clickProvider = remember(item.id, contract) {
-                            { contract.onIterationClick(item.id) }
+            key(repetitionsFocused) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                ) {
+                    if (repetitionsFocused) {
+                        state.repetitionSuggestions.forEach { repetitions ->
+                            SuggestionChip(
+                                value = repetitions.toString(),
+                                isSelected = state.value.repetitions.value == repetitions,
+                                onClick = { contract.onRepetitionsChange(repetitions.toString()) }
+                            )
                         }
+                    } else {
+                        iterationSuggestions.forEach { item ->
+                            key(item.id) {
+                                val clickProvider = remember(item.id, contract) {
+                                    { contract.onIterationClick(item.id) }
+                                }
 
-                        val isSelected = item.suggestionKey(state.example.components) ==
-                            state.value.suggestionKey(state.example.components)
+                                val isSelected = item.suggestionKey(state.example.components) ==
+                                    state.value.suggestionKey(state.example.components)
 
-                        SuggestionChip(
-                            value = item.suggestionLabel(state.example.components),
-                            isSelected = isSelected,
-                            onClick = clickProvider
-                        )
+                                SuggestionChip(
+                                    value = item.suggestionLabel(state.example.components),
+                                    isSelected = isSelected,
+                                    onClick = clickProvider
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -259,41 +272,7 @@ internal fun IterationPickerScreen(
             }
         }
 
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .alpha(if (repetitionsFocused) 1f else 0f)
-                .then(if (repetitionsFocused) Modifier else Modifier.clearAndSetSemantics {})
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(Res.string.repetitions_placeholder),
-                style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.tertiary
-            )
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState(), enabled = repetitionsFocused)
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                state.repetitionSuggestions.forEach { repetitions ->
-                    val isSelected = state.value.repetitions.value == repetitions
-                    SuggestionChip(
-                        value = repetitions.toString(),
-                        isSelected = isSelected,
-                        enabled = repetitionsFocused,
-                        onClick = { contract.onRepetitionsChange(repetitions.toString()) }
-                    )
-                }
-            }
-        }
-
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
         val buttonState = remember(state.value, state.example.components) {
             val value = state.value
@@ -337,14 +316,13 @@ private fun SuggestionChip(
     value: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .heightIn(min = AppTokens.dp.input.height)
             .semantics { selected = isSelected }
-            .scalableClick(enabled = enabled, haptic = true, onClick = onClick),
+            .scalableClick(haptic = true, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Chip(
