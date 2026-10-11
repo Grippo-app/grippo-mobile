@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -110,6 +111,10 @@ internal fun MissingEquipmentsScreen(
                 segmentWidth = SegmentWidth.Unspecified,
                 style = SegmentStyle.Outline
             )
+
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+
+            HorizontalDivider(color = AppTokens.colors.divider.default)
 
             val equipments = remember(state.selectedGroupId, state.suggestions) {
                 state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()

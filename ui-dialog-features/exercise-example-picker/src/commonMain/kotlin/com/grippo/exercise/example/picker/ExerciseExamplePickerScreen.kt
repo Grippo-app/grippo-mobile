@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -99,6 +100,8 @@ internal fun ExerciseExamplePickerScreen(
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+    HorizontalDivider(color = AppTokens.colors.divider.default)
 
     val isEmpty = state.exerciseExamples.isEmpty()
 

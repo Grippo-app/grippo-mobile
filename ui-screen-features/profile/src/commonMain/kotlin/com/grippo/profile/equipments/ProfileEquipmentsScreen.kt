@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -88,6 +89,10 @@ internal fun ProfileEquipmentsScreen(
                 segmentWidth = SegmentWidth.Unspecified,
                 style = SegmentStyle.Outline
             )
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+            HorizontalDivider(color = AppTokens.colors.divider.default)
         }
     )
 

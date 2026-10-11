@@ -2,6 +2,7 @@ package com.grippo.debug.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -61,9 +63,16 @@ internal fun LoggerPage(
             style = SegmentStyle.Outline
         )
 
+        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+
+        HorizontalDivider(color = AppTokens.colors.divider.default)
+
         val logs = state.logs
 
-        LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            contentPadding = PaddingValues(top = AppTokens.dp.contentPadding.content),
+        ) {
             itemsIndexed(
                 items = logs,
                 key = { index, _ -> "${state.selectedCategory.orEmpty()}-$index" }

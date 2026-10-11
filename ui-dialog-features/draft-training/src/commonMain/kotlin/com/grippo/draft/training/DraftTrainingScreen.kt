@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -79,11 +80,17 @@ internal fun DraftTrainingScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    HorizontalDivider(color = AppTokens.colors.divider.default)
+
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
-        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content,
+        ),
         overlay = AppTokens.colors.background.dialog,
         content = { containerModifier, resolvedPadding ->
             LazyColumn(

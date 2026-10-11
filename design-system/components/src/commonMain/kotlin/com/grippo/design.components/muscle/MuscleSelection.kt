@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -65,7 +67,8 @@ public fun MuscleSelection(
             ) {
                 val availableHeroHeight = (
                     maxHeight - AppTokens.dp.segment.outline.height -
-                        AppTokens.dp.contentPadding.content * 2 - AppTokens.dp.muscleSelection.listMinHeight
+                        AppTokens.dp.contentPadding.content * 3 -
+                        DividerDefaults.Thickness - AppTokens.dp.muscleSelection.listMinHeight
                     ).coerceAtLeast(AppTokens.dp.muscleSelection.heroMinHeight)
                 val heroSize = minOf(
                     maxWidth,
@@ -94,6 +97,10 @@ public fun MuscleSelection(
                         segmentWidth = SegmentWidth.Unspecified,
                         style = SegmentStyle.Outline
                     )
+
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+                    HorizontalDivider(color = AppTokens.colors.divider.default)
 
                     key(selectedGroupId) {
                         LazyColumn(

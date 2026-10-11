@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -50,6 +51,8 @@ internal fun PerformanceTrendDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    HorizontalDivider(color = AppTokens.colors.divider.default)
+
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated
     )
@@ -59,7 +62,11 @@ internal fun PerformanceTrendDetailsScreen(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
-        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content,
+        ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         item(key = "info") {

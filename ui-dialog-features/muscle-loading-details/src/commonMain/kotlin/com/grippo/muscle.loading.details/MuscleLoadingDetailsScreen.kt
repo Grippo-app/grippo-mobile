@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -99,6 +100,12 @@ internal fun MuscleLoadingDetailsScreen(
         segmentWidth = SegmentWidth.EqualFill,
         style = SegmentStyle.Outline
     )
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+    HorizontalDivider(color = AppTokens.colors.divider.default)
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
     LazyColumn(
         state = listState,

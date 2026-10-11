@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,15 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.Constraints
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.delete_btn
+import com.grippo.design.resources.provider.icons.Cancel
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -83,44 +81,17 @@ public fun SwipeToReveal(
         )
     }
 
-    // Reveal progress: 0f at rest, 1f fully open. Drives bg, border and padding animations.
-    val dragFraction by remember {
-        derivedStateOf {
-            if (maxRevealPx > 0f) (-offsetX.value / maxRevealPx).coerceIn(0f, 1f) else 0f
-        }
-    }
-
-    val noticeColor = AppTokens.colors.semantic.notice
-    val borderWidth = AppTokens.dp.swipe.borderWidth
-    val maxExtraVerticalPadding = AppTokens.dp.swipe.extraVerticalPadding
-
-    // We use SubcomposeLayout to (1) measure actions width, (2) layout actions off-screen, (3) slide content.
+    // Actions keep their natural size; swiping never changes the row's height.
     SubcomposeLayout(
         modifier
             .clipToBounds()
-            .background(noticeColor.copy(alpha = dragFraction * 0.12f))
-            .drawWithContent {
-                drawContent()
-                val alpha = dragFraction
-                if (alpha > 0f) {
-                    val strokePx = borderWidth.toPx()
-                    val color = noticeColor.copy(alpha = alpha)
-                    drawRect(color, topLeft = Offset.Zero, size = Size(size.width, strokePx))
-                    drawRect(
-                        color = color,
-                        topLeft = Offset(0f, size.height - strokePx),
-                        size = Size(size.width, strokePx)
-                    )
-                }
-            }
             .then(dragModifier)
-            .padding(vertical = maxExtraVerticalPadding * dragFraction)
     ) { constraints ->
         // Measure actions with loose constraints to get their natural width
         val actionsMeasurables = subcompose(Slot.Actions) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.swipe.actionSpacing, Alignment.End),
                 content = actions
             )
         }
@@ -182,15 +153,11 @@ private fun SwipeToRevealPreview() {
     PreviewContainer {
         SwipeToReveal(
             actions = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .background(AppTokens.colors.semantic.error)
-                        .padding(AppTokens.dp.contentPadding.content),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Delete", color = AppTokens.colors.static.white, style = AppTokens.typography.b14Med())
-                }
+                SwipeRevealAction(
+                    label = AppTokens.strings.res(Res.string.delete_btn),
+                    icon = AppTokens.icons.Cancel,
+                    onClick = {},
+                )
             },
             content = {
                 Box(

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
@@ -49,6 +50,7 @@ import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.swipe.SwipeToReveal
+import com.grippo.design.components.swipe.SwipeRevealAction
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -62,6 +64,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.empty_exercise_sets
 import com.grippo.design.resources.provider.exercise_record
@@ -107,6 +110,8 @@ internal fun TrainingExerciseScreen(
                     style = ExerciseExampleCardStyle.Medium(value = example),
                 )
             }
+
+            HorizontalDivider(color = AppTokens.colors.divider.default)
         },
         title = AppTokens.strings.res(Res.string.exercise_record),
     )
@@ -185,12 +190,10 @@ internal fun TrainingExerciseScreen(
                                 DraggableItem(state = dragDropState, key = iteration.id) {
                                     SwipeToReveal(
                                         actions = {
-                                            Button(
+                                            SwipeRevealAction(
                                                 modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
-                                                content = ButtonContent.Icon(
-                                                    icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
-                                                ),
-                                                style = ButtonStyle.Transparent,
+                                                label = AppTokens.strings.res(Res.string.delete_btn),
+                                                icon = AppTokens.icons.Cancel,
                                                 onClick = deleteIterationProvider
                                             )
                                         }

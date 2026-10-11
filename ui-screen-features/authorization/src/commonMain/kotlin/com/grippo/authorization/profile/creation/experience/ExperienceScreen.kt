@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -88,7 +89,13 @@ internal fun ExperienceScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        val basePadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)
+        HorizontalDivider(color = AppTokens.colors.divider.default)
+
+        val basePadding = PaddingValues(
+            start = AppTokens.dp.screen.horizontalPadding,
+            end = AppTokens.dp.screen.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content,
+        )
 
         BottomOverlayContainer(
             modifier = Modifier

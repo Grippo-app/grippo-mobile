@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -81,6 +82,8 @@ internal fun ProfileGoalScreen(
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+    HorizontalDivider(color = AppTokens.colors.divider.default)
 
     val basePadding = PaddingValues(
         start = AppTokens.dp.screen.horizontalPadding,

@@ -23,19 +23,20 @@ import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.swipe.SwipeToReveal
+import com.grippo.design.components.swipe.SwipeRevealAction
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.icons.Cancel
@@ -105,12 +106,10 @@ internal fun ColumnScope.ExercisesPage(
                                 DraggableItem(state = dragDropState, key = exercise.id) {
                                     SwipeToReveal(
                                         actions = {
-                                            Button(
+                                            SwipeRevealAction(
                                                 modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
-                                                content = ButtonContent.Icon(
-                                                    icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
-                                                ),
-                                                style = ButtonStyle.Transparent,
+                                                label = AppTokens.strings.res(Res.string.delete_btn),
+                                                icon = AppTokens.icons.Cancel,
                                                 onClick = deleteExerciseProvider
                                             )
                                         }
