@@ -1,14 +1,14 @@
 package com.grippo.toolkit.messaging.core.internal
 
 import com.grippo.toolkit.messaging.Messaging
-import com.grippo.toolkit.messaging.MessagingBootstrap
-import com.grippo.toolkit.messaging.MessagingFailure
-import com.grippo.toolkit.messaging.MessagingSink
-import com.grippo.toolkit.messaging.PushToken
-import com.grippo.toolkit.messaging.PushTokenHandler
-import com.grippo.toolkit.messaging.PushTokenResult
-import com.grippo.toolkit.messaging.TokenSyncStatus
-import com.grippo.toolkit.messaging.TokenUnavailableReason
+import com.grippo.toolkit.messaging.lifecycle.MessagingBootstrap
+import com.grippo.toolkit.messaging.state.PushTokenFailure
+import com.grippo.toolkit.messaging.state.PushTokenState
+import com.grippo.toolkit.messaging.state.PushTokenUnavailableReason
+import com.grippo.toolkit.messaging.synchronization.PushTokenSyncStatus
+import com.grippo.toolkit.messaging.synchronization.PushTokenSynchronizer
+import com.grippo.toolkit.messaging.token.PushToken
+import com.grippo.toolkit.messaging.transport.PushTokenProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,33 +28,33 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-/** Latest-token-wins queue, one serial handler, bounded memory and no implicit retries. */
+/** Latest-token-wins queue, one serial synchronizer, bounded memory and no implicit retries. */
 internal class DefaultMessaging(
-    private val handler: PushTokenHandler,
+    private val synchronizer: PushTokenSynchronizer,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : Messaging, MessagingBootstrap {
     private val lock = MessagingLock()
-    private val fetch = Mutex()
+    private val fetchMutex = Mutex()
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val wake = Channel<Unit>(Channel.CONFLATED)
-    private var tokenState: PushTokenResult =
-        PushTokenResult.Unavailable(TokenUnavailableReason.NotInitialized)
-    private var syncState = TokenSyncStatus.Idle
-    private val current = MutableStateFlow(tokenState)
-    private val status = MutableStateFlow(syncState)
-    override val token: StateFlow<PushTokenResult> = current.asStateFlow()
-    override val syncStatus: StateFlow<TokenSyncStatus> = status.asStateFlow()
-    private var sink: MessagingSink? = null
+    private var latestTokenState: PushTokenState =
+        PushTokenState.Unavailable(PushTokenUnavailableReason.ProviderNotAttached)
+    private var latestSyncStatus = PushTokenSyncStatus.Idle
+    private val publishedTokenState = MutableStateFlow(latestTokenState)
+    private val publishedSyncStatus = MutableStateFlow(latestSyncStatus)
+    override val tokenState: StateFlow<PushTokenState> = publishedTokenState.asStateFlow()
+    override val tokenSyncStatus: StateFlow<PushTokenSyncStatus> = publishedSyncStatus.asStateFlow()
+    private var provider: PushTokenProvider? = null
     private var closed = false
     private var revision = 0L
 
     // Reuse the published value as callback identity; SDK fetches never create sync requests.
-    private var syncRequest: PushTokenResult.Available? = null
+    private var syncRequest: PushTokenState.Available? = null
 
     init {
         scope.launch {
             var delivered: PushToken? = null
-            var attempted: PushTokenResult.Available? = null
+            var attempted: PushTokenState.Available? = null
             for (ignored in wake) {
                 currentCoroutineContext().ensureActive()
                 yield()
@@ -63,44 +63,44 @@ internal class DefaultMessaging(
                 attempted = request
                 val next = request.token
                 if (next == delivered) {
-                    completeSync(request, TokenSyncStatus.Synced)
+                    completeSync(request, PushTokenSyncStatus.Synced)
                     continue
                 }
                 try {
-                    handler.onTokenRefresh(next)
+                    synchronizer.syncToken(next)
                     delivered = next
-                    completeSync(request, TokenSyncStatus.Synced)
+                    completeSync(request, PushTokenSyncStatus.Synced)
                 } catch (_: Exception) {
                     currentCoroutineContext().ensureActive()
-                    completeSync(request, TokenSyncStatus.Failed)
+                    completeSync(request, PushTokenSyncStatus.Failed)
                 }
             }
         }
     }
 
-    override fun attachSink(messagingSink: MessagingSink): Unit = lock.withLock {
-        check(!closed && this.sink == null)
-        this.sink = messagingSink
+    override fun attachTokenProvider(tokenProvider: PushTokenProvider): Unit = lock.withLock {
+        check(!closed && this.provider == null)
+        this.provider = tokenProvider
     }
 
-    override fun onRegistrationToken(value: String) {
+    override fun onTokenChanged(rawToken: String) {
         val token = try {
-            PushToken(value)
+            PushToken(rawToken)
         } catch (_: IllegalArgumentException) {
             onInvalidToken()
             return
         }
-        onTokenRefresh(token)
+        acceptToken(token)
     }
 
-    internal fun onTokenRefresh(token: PushToken) {
+    internal fun acceptToken(token: PushToken) {
         val changed = lock.withLock {
             if (closed) return@withLock false
             revision++
-            val request = PushTokenResult.Available(token)
+            val request = PushTokenState.Available(token)
             syncRequest = request
-            tokenState = request
-            syncState = TokenSyncStatus.Pending
+            latestTokenState = request
+            latestSyncStatus = PushTokenSyncStatus.Pending
             true
         }
         if (changed) {
@@ -115,40 +115,41 @@ internal class DefaultMessaging(
         val changed = lock.withLock {
             if (closed) return@withLock false
             revision++
-            tokenState = PushTokenResult.Failed(MessagingFailure.InvalidToken)
+            latestTokenState = PushTokenState.Failed(PushTokenFailure.InvalidToken)
             true
         }
         if (changed) publishToken()
     }
 
-    override suspend fun getToken(): PushTokenResult = fetch.withLock {
-        val snapshot = lock.withLock { FetchSnapshot(closed, sink, revision) }
-        if (snapshot.closed) return@withLock PushTokenResult.Unavailable(TokenUnavailableReason.Closed)
-        val target = snapshot.sink ?: return@withLock PushTokenResult.Unavailable(
-            TokenUnavailableReason.NotInitialized
+    override suspend fun fetchToken(): PushTokenState = fetchMutex.withLock {
+        val snapshot = lock.withLock { FetchSnapshot(closed, provider, revision) }
+        if (snapshot.closed) return@withLock PushTokenState.Unavailable(PushTokenUnavailableReason.Closed)
+        val target = snapshot.provider ?: return@withLock PushTokenState.Unavailable(
+            PushTokenUnavailableReason.ProviderNotAttached
         )
         val result = try {
-            target.getToken()
+            target.fetchToken()
         } catch (_: Exception) {
             currentCoroutineContext().ensureActive()
-            PushTokenResult.Failed(MessagingFailure.SdkFailure)
+            PushTokenState.Failed(PushTokenFailure.ProviderFailure)
         }
         currentCoroutineContext().ensureActive()
         lock.withLock {
             if (!closed && revision == snapshot.revision) {
-                tokenState = result; revision++
+                latestTokenState = result
+                revision++
             }
         }
         publishToken()
-        lock.withLock { tokenState }
+        lock.withLock { latestTokenState }
     }
 
-    private class FetchSnapshot(val closed: Boolean, val sink: MessagingSink?, val revision: Long)
+    private class FetchSnapshot(val closed: Boolean, val provider: PushTokenProvider?, val revision: Long)
 
-    private fun completeSync(request: PushTokenResult.Available, value: TokenSyncStatus) {
+    private fun completeSync(request: PushTokenState.Available, value: PushTokenSyncStatus) {
         val changed = lock.withLock {
             if (closed || syncRequest !== request) return@withLock false
-            syncState = value
+            latestSyncStatus = value
             true
         }
         if (changed) publishSyncStatus()
@@ -156,21 +157,21 @@ internal class DefaultMessaging(
 
     // StateFlow may resume observers inline: publish outside the lock and reconcile canonical state.
     private fun publishToken() {
-        publishState(current) { lock.withLock { tokenState } }
+        publishState(publishedTokenState) { lock.withLock { latestTokenState } }
     }
 
     private fun publishSyncStatus() {
-        publishState(status) { lock.withLock { syncState } }
+        publishState(publishedSyncStatus) { lock.withLock { latestSyncStatus } }
     }
 
     suspend fun close() {
         lock.withLock {
             closed = true
             revision++
-            sink = null
+            provider = null
             syncRequest = null
-            tokenState = PushTokenResult.Unavailable(TokenUnavailableReason.Closed)
-            syncState = TokenSyncStatus.Closed
+            latestTokenState = PushTokenState.Unavailable(PushTokenUnavailableReason.Closed)
+            latestSyncStatus = PushTokenSyncStatus.Closed
         }
         publishToken()
         publishSyncStatus()

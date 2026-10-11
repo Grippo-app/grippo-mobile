@@ -1,11 +1,11 @@
 package com.grippo.toolkit.analytics.core.internal
 
-import com.grippo.toolkit.analytics.AnalyticsCollection
-import com.grippo.toolkit.analytics.EntryPoint
-import com.grippo.toolkit.analytics.FlowContext
-import com.grippo.toolkit.analytics.FlowId
-import com.grippo.toolkit.analytics.ScreenId
-import com.grippo.toolkit.analytics.ScreenViewed
+import com.grippo.toolkit.analytics.context.EntryPoint
+import com.grippo.toolkit.analytics.context.FlowContext
+import com.grippo.toolkit.analytics.context.FlowId
+import com.grippo.toolkit.analytics.context.ScreenId
+import com.grippo.toolkit.analytics.events.ScreenViewed
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.Dispatchers

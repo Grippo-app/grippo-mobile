@@ -1,8 +1,12 @@
 package com.grippo.toolkit.analytics
 
+import com.grippo.toolkit.analytics.context.EntryPoint
+import com.grippo.toolkit.analytics.context.FlowContext
+import com.grippo.toolkit.analytics.context.FlowId
+import com.grippo.toolkit.analytics.context.ScreenId
+import kotlin.test.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.test.*
 
 class FlowContextTest {
     @Test fun flowSurvivesSerializationWithoutChangingOrigin() {

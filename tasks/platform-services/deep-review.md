@@ -12,7 +12,7 @@
 ## Повторный self-review
 
 - Public contracts отделены от Firebase. В корне core остаются только annotated Modules; engines, configuration, catalog и locks — Kotlin internal. Generated Koin bindings сохраняют общий singleton consumer/bootstrap, конфигурация принадлежит AnalyticsModule.
-- Deferred PushTokenHandler необходим для разрыва DI-цикла Messaging → Authorization → Repository → Messaging; разрешается при callback, не при startup.
+- Deferred PushTokenSynchronizer необходим для разрыва DI-цикла Messaging → Authorization → Repository → Messaging; разрешается при callback, не при startup.
 - Analytics: bounded queue, consent/identity revision gates, отсутствие автоматического replay, fail-closed SDK configuration; diagnostics выключены в release.
 - CrashReporting: bounded background queue, cancellation исключён, SDK calls вне state lock, ошибки transport не отправляются рекурсивно. Android использует per-event keys; Swift ExceptionModel содержит event-local metadata, не изменяет global keys.
 - Messaging: один serial handler, latest request identity, dedup успешного token, explicit fresh callback после ошибки; fetch сериализован, revision gate защищает от overwrite callback/close. StateFlow публикация и observer выполняются вне lock.

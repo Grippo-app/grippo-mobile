@@ -1,8 +1,8 @@
 package com.grippo.toolkit.crashreporting.core.internal
 
 import com.grippo.toolkit.crashreporting.CrashReporting
-import com.grippo.toolkit.crashreporting.CrashReportingBootstrap
 import com.grippo.toolkit.crashreporting.core.CrashReportingModule
+import com.grippo.toolkit.crashreporting.lifecycle.CrashReportingBootstrap
 import kotlin.test.Test
 import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest

@@ -82,3 +82,26 @@
 - https://support.google.com/analytics/answer/6366371?hl=en
 
 Провайдерские ограничения сверить с текущей официальной документацией при реализации адаптеров.
+
+
+## Единый стандарт интеграции фич (2026-10-12)
+
+Статус этого этапа: реализован и проверен; результат в `tasks/analytics/feature-standard-review.md`. Пользователь уточнил: сначала общий стандарт и обвязка, без подключения авторизации или других фич. Реализация: typed operation events + общая suspend-обвязка, фабрики flow/operation IDs, атомарный screen presentation API и lifecycle bridge в foundation. Product events и причины принадлежат фичам; универсального события с произвольными map нет. Навигационный владелец передаёт достоверный referrer/reason; обвязка не угадывает их.
+
+Последовательность:
+1. API операции и ID factories; тесты результатов, ошибок, отмены, длительности и параллельных попыток.
+2. Screen presentation API/core: один атомарный снимок контекста и screen_view, безопасное закрытие старой presentation. Тесты policy gates и overlapping presentations.
+3. Lifecycle bridge: только конечный экран, один view на RESUMED, закрытие на PAUSED/DESTROYED. Foreground resume считается новым показом; причина каждого показа передаётся явно. Тесты lifecycle на Android/iOS.
+4. Обязательный шаблон структуры и матрицы покрытия, будущая матрица авторизации. Annotated qualified @Single definitions, без новой DSL/нового Gradle-модуля.
+5. Self-review + Android Debug/Release, core/API/foundation host/native tests, iOS Debug XCFramework и Swift device/simulator compilation. Firebase runtime/send checks исключены пользователем.
+
+Не меняются BaseViewModel, BaseComponent, OperationManager и ErrorProvider. Обвязка вызывается внутри существующего safeLaunch. Consent остаётся обязательным; отложенного сбора событий до согласия нет. Автоматический сбор всех фич не включается от одного наличия общей обвязки.
+
+## Рефакторинг структуры API (2026-10-12)
+
+Сохранить wire-контракт и поведение; разделить публичные типы по ответственности,
+переименовать декларации схем, централизовать поля контекста и ограничения транспорта.
+Проверить unit-тесты Android/iOS, приложения Android Debug/Release и Swift Debug
+для устройства и симулятора. Фичи и Firebase runtime в этот этап не входят.
+
+Завершено: [отчёт рефакторинга](api-refactor-review.md).

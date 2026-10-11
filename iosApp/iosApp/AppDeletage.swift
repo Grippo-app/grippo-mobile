@@ -46,7 +46,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         analytics.setCollection(collection: .unknown)
         bootstrap.analytics.attachSink(analyticsSink: analytics)
         bootstrap.crashReporting.attachSink(crashSink: IosFirebaseCrashlytics())
-        bootstrap.messaging.attachSink(messagingSink: IosFirebaseMessaging())
+        bootstrap.messaging.attachTokenProvider(tokenProvider: IosFirebaseMessaging())
 
         UNUserNotificationCenter.current().delegate = self
         FirebaseMessaging.Messaging.messaging().delegate = self

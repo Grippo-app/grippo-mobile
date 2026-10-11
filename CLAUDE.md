@@ -74,7 +74,7 @@ Groups:
 - `:database` — Room `@Database(version = 5)`, all `@Entity`, DAOs, migrations, `models/*Pack` (`@Embedded` + `@Relation`), `converters/StringListConverter`, `DatabaseBuilder` (expect/actual), **`fallbackToDestructiveMigration(dropAllTables = true)` on both platforms — intentional**.
 - `:datastore` — wrapper over AndroidX DataStore.
 - `:google-auth` / `:apple-auth` — platform-specific wrappers for ID token.
-- `:firebase` — Android `AnalyticsSink` / `CrashSink` / `MessagingSink` adapters and the system FCM service. Only `:androidApp` depends on this transport module. Swift adapters live in `iosApp`; shared and features depend on toolkit contracts.
+- `:firebase` — Android `AnalyticsSink` / `CrashReportingSink` / `PushTokenProvider` adapters and the system FCM service. Only `:androidApp` depends on this transport module. Swift adapters live in `iosApp`; shared and features depend on toolkit contracts.
 
 ### `:data-features:*` — domain layer
 
@@ -88,6 +88,8 @@ Groups:
 ### `:toolkit:*` — platform-aware utilities
 
 - `:analytics:{api,core}`, `:crash-reporting:{api,core}`, `:messaging:{api,core}` — typed service contracts and bounded app-lifetime cores. Features inject consumer APIs; app shells use bootstrap interfaces. Messaging callback validation belongs to core, not the Firebase service.
+
+- Analytics feature integrations must follow `tasks/analytics/feature-standard.md` and include a coverage matrix based on `tasks/analytics/feature-coverage-template.md`. Create/carry a `FlowContext` at the real entry point; use `AnalyticsOperationEvents<T>` with `trackOperation` inside the existing coroutine for attempt outcomes and monotonic duration. Leaf components opt into `lifecycle.trackScreenViews` once during construction; every RESUMED activation counts as a view, including foreground return. Navigation owners supply actual referrer/reason; containers and Render do not send views. Register feature definitions using annotated qualified `@Single` providers and generated `.module`. Feature events, error classification and explicit flow exits belong to their fact owner; do not infer user intent from lifecycle destruction or exception text. Schema/payload fixtures and Android/iOS verification are required before claiming feature coverage. The shared wiring alone does not integrate a feature or grant collection consent.
 
 - `:context` — `NativeContext` (expect/actual: Android holds `Context`, iOS — pure object), `ContextModule`.
 - `:http-client` — Ktor `HttpClient` with `responseValidator` + `ApiErrorParser` (translates HTTP into `AppError`).
@@ -229,7 +231,7 @@ operationManager catches via CoroutineExceptionHandler
 BaseViewModel.sendError(exception, onError)
     ↓
 AppLogger.General.error(...)            // file log
-CrashReporting.record(...)              // common core → platform Crashlytics adapter
+CrashReporting.reportException(...)              // common core → platform Crashlytics adapter
 ErrorProvider.provide(exception, onError)
     ↓
 ErrorProviderImpl maps AppError → AppErrorState

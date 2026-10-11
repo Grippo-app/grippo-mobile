@@ -1,9 +1,9 @@
 package com.grippo.toolkit.analytics.core.internal
 
-import com.grippo.toolkit.analytics.AnalyticsCollection
-import com.grippo.toolkit.analytics.AnalyticsIdentityPayload
-import com.grippo.toolkit.analytics.AnalyticsPayload
-import com.grippo.toolkit.analytics.AnalyticsSink
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
+import com.grippo.toolkit.analytics.transport.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsSink
 
 /** Bounded test fixture; excluded from production source sets. */
 internal class RecordingAnalyticsSink(private val capacity: Int = 128) : AnalyticsSink {

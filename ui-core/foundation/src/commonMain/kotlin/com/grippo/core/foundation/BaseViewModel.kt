@@ -166,7 +166,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             append("└──────────────────────────")
         }
         AppLogger.General.error(log)
-        crashReporting.record(exception)
+        crashReporting.reportException(exception)
         errorProvider.provide(exception, callback = onError)
     }
 

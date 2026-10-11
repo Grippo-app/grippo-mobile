@@ -1,6 +1,32 @@
 package com.grippo.toolkit.analytics.core.internal
 
 import com.grippo.toolkit.analytics.*
+import com.grippo.toolkit.analytics.context.AnalyticsContext
+import com.grippo.toolkit.analytics.context.EntryPoint
+import com.grippo.toolkit.analytics.context.FlowContext
+import com.grippo.toolkit.analytics.context.FlowId
+import com.grippo.toolkit.analytics.context.NavigationContext
+import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.analytics.context.OperationId
+import com.grippo.toolkit.analytics.context.ScreenId
+import com.grippo.toolkit.analytics.events.ScreenViewed
+import com.grippo.toolkit.analytics.identity.AnalyticsIdentity
+import com.grippo.toolkit.analytics.identity.AnalyticsUserId
+import com.grippo.toolkit.analytics.identity.AnalyticsUserPropertyKey
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
+import com.grippo.toolkit.analytics.schema.AnalyticsCode
+import com.grippo.toolkit.analytics.schema.AnalyticsEvent
+import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
+import com.grippo.toolkit.analytics.schema.AnalyticsParameter
+import com.grippo.toolkit.analytics.schema.AnalyticsParameterKey
+import com.grippo.toolkit.analytics.schema.AnalyticsSchema
+import com.grippo.toolkit.analytics.transport.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsSink
+import com.grippo.toolkit.analytics.transport.AnalyticsValue
+import com.grippo.toolkit.analytics.values.AnalyticsCount
+import com.grippo.toolkit.analytics.values.AnalyticsNumber
+import com.grippo.toolkit.analytics.values.DurationMillis
 import kotlin.test.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
@@ -9,45 +35,45 @@ import kotlinx.coroutines.test.*
 
 class AnalyticsTest {
     @Test fun oversizedCatalogIsRejectedBeforeItsElementsAreRead() {
-        val events = object : AbstractList<EventDefinition>() {
+        val events = object : AbstractList<AnalyticsEventSchema>() {
             override val size = 501
-            override fun get(index: Int): EventDefinition = error("Oversized catalog must not be read")
+            override fun get(index: Int): AnalyticsEventSchema = error("Oversized catalog must not be read")
         }
-        val properties = object : AbstractList<UserPropertyKey<*>>() {
+        val properties = object : AbstractList<AnalyticsUserPropertyKey<*>>() {
             override val size = 26
-            override fun get(index: Int): UserPropertyKey<*> = error("Oversized properties must not be read")
+            override fun get(index: Int): AnalyticsUserPropertyKey<*> = error("Oversized properties must not be read")
         }
         assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(definitions = events) }
         assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(properties = properties) }
     }
 
     @Test fun featureCatalogIncludesBuiltInsInItsBudgetAndRejectsBeforeFlattening() {
-        val accepted = AnalyticsDefinitions(List(498) { EventDefinition("fixture_$it", 1, emptyList()) })
-        AnalyticsCatalog.fromDefinitions(listOf(accepted))
-        val oversized = AnalyticsDefinitions(List(499) { ScreenViewed.Definition })
+        val accepted = AnalyticsSchema(List(498) { AnalyticsEventSchema("fixture_$it", 1, emptyList()) })
+        AnalyticsCatalog.fromSchemas(listOf(accepted))
+        val oversized = AnalyticsSchema(List(499) { ScreenViewed.Schema })
         val failure = assertFailsWith<IllegalArgumentException> {
-            AnalyticsCatalog.fromDefinitions(listOf(oversized))
+            AnalyticsCatalog.fromSchemas(listOf(oversized))
         }
         assertEquals("Too many analytics event definitions", failure.message)
-        val first = AnalyticsDefinitions(emptyList(), List(13) { UserPropertyKey<Source>("first_$it") })
-        val second = AnalyticsDefinitions(emptyList(), List(13) { UserPropertyKey<Source>("second_$it") })
+        val first = AnalyticsSchema(emptyList(), List(13) { AnalyticsUserPropertyKey<Source>("first_$it") })
+        val second = AnalyticsSchema(emptyList(), List(13) { AnalyticsUserPropertyKey<Source>("second_$it") })
         assertEquals("Too many analytics user properties", assertFailsWith<IllegalArgumentException> {
-            AnalyticsCatalog.fromDefinitions(listOf(first, second))
+            AnalyticsCatalog.fromSchemas(listOf(first, second))
         }.message)
     }
 
     private enum class Source(override val analyticsCode: String) : AnalyticsCode { Button("button") }
     private class Event(private val count: Long = 3) : AnalyticsEvent {
-        override val definition = Definition
+        override val schema = Schema
         override fun parameters() = listOf(Count.value(AnalyticsCount(count)), SourceKey.value(Source.Button),
             Duration.value(DurationMillis(1234)), Number.value(AnalyticsNumber(2.5)), Flag.value(true))
         companion object {
-            val Count = ParameterKey.count("exercise_count")
-            val SourceKey = ParameterKey.code<Source>("source")
-            val Duration = ParameterKey.duration("duration_ms")
-            val Number = ParameterKey.number("score")
-            val Flag = ParameterKey.flag("confirmed")
-            val Definition = EventDefinition("test_event", 1, listOf(Count, SourceKey, Duration, Number, Flag))
+            val Count = AnalyticsParameterKey.count("exercise_count")
+            val SourceKey = AnalyticsParameterKey.code<Source>("source")
+            val Duration = AnalyticsParameterKey.duration("duration_ms")
+            val Number = AnalyticsParameterKey.number("score")
+            val Flag = AnalyticsParameterKey.flag("confirmed")
+            val Schema = AnalyticsEventSchema("test_event", 1, listOf(Count, SourceKey, Duration, Number, Flag))
         }
     }
     private class Sink : AnalyticsSink {
@@ -69,7 +95,7 @@ class AnalyticsTest {
         }
     }
     private fun core(dispatcher: kotlinx.coroutines.CoroutineDispatcher, capacity: Int = 128) =
-        DefaultAnalytics(AnalyticsCatalog(listOf(Event.Definition)), dispatcher, capacity, 100)
+        DefaultAnalytics(AnalyticsCatalog(listOf(Event.Schema)), dispatcher, capacity, 100)
 
     @Test fun nativeValuesAndContextAreCapturedAtCallTime() = runTest {
         val core = core(StandardTestDispatcher(testScheduler))
@@ -167,31 +193,31 @@ class AnalyticsTest {
     }
 
     @Test fun catalogRejectsCollisionsReservedNamesAndParameterBudget() {
-        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(Event.Definition, Event.Definition)) }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(Event.Schema, Event.Schema)) }
         for (name in listOf("ga_event", "app_exception", "bad-name", "1event")) {
-            assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition(name, 1, emptyList()))) }
+            assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(AnalyticsEventSchema(name, 1, emptyList()))) }
         }
-        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition("event", 0, emptyList()))) }
-        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition("event", 1, listOf(ParameterKey.count("flow_id"))))) }
-        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition("event", 1, (1..16).map { ParameterKey.count("p_$it") }))) }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(AnalyticsEventSchema("event", 0, emptyList()))) }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(AnalyticsEventSchema("event", 1, listOf(AnalyticsParameterKey.count("flow_id"))))) }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(AnalyticsEventSchema("event", 1, (1..16).map { AnalyticsParameterKey.count("p_$it") }))) }
         // Reserved event names are not reserved parameter/property names.
         AnalyticsCatalog(
-            listOf(EventDefinition("event", 1, listOf(ParameterKey.count("session_start")))),
-            listOf(UserPropertyKey<Source>("app_update")),
+            listOf(AnalyticsEventSchema("event", 1, listOf(AnalyticsParameterKey.count("session_start")))),
+            listOf(AnalyticsUserPropertyKey<Source>("app_update")),
         )
     }
 
     @Test fun malformedPayloadsAndWrongDefinitionInstancesAreRejected() = runTest {
         val core = core(StandardTestDispatcher(testScheduler))
         val sink = Sink(); core.attachSink(sink); core.updateCollection(AnalyticsCollection.Granted)
-        fun malformed(definition: EventDefinition, parameters: List<AnalyticsParameter>) = object : AnalyticsEvent {
-            override val definition = definition
+        fun malformed(definition: AnalyticsEventSchema, parameters: List<AnalyticsParameter>) = object : AnalyticsEvent {
+            override val schema = definition
             override fun parameters() = parameters
         }
-        core.track(malformed(Event.Definition, emptyList()))
-        core.track(malformed(Event.Definition, Event().parameters() + Event.Count.value(AnalyticsCount(1))))
-        core.track(malformed(Event.Definition, Event().parameters() + ParameterKey.count("other").value(AnalyticsCount(1))))
-        core.track(malformed(EventDefinition("test_event", 1, Event.Definition.parameters), Event().parameters()))
+        core.track(malformed(Event.Schema, emptyList()))
+        core.track(malformed(Event.Schema, Event().parameters() + Event.Count.value(AnalyticsCount(1))))
+        core.track(malformed(Event.Schema, Event().parameters() + AnalyticsParameterKey.count("other").value(AnalyticsCount(1))))
+        core.track(malformed(AnalyticsEventSchema("test_event", 1, Event.Schema.parameters), Event().parameters()))
         advanceUntilIdle()
         assertTrue(sink.payloads.isEmpty())
         assertEquals(4, core.diagnostics().count { it.disposition == AnalyticsDisposition.InvalidEvent })
@@ -199,15 +225,15 @@ class AnalyticsTest {
     }
 
     @Test fun invalidEnumValuesAndIdentityPropertiesAreRejected() = runTest {
-        val key = ParameterKey.code<AnalyticsCode>("source")
-        val definition = EventDefinition("event", 1, listOf(key))
+        val key = AnalyticsParameterKey.code<AnalyticsCode>("source")
+        val definition = AnalyticsEventSchema("event", 1, listOf(key))
         val core = DefaultAnalytics(AnalyticsCatalog(listOf(definition)), StandardTestDispatcher(testScheduler), diagnosticCapacity = 10)
         core.updateCollection(AnalyticsCollection.Granted)
         core.track(object : AnalyticsEvent {
-            override val definition = definition
+            override val schema = definition
             override fun parameters() = listOf(key.value(object : AnalyticsCode { override val analyticsCode = "email@example.com" }))
         })
-        core.updateIdentity(AnalyticsIdentity(properties = listOf(UserPropertyKey<Source>("undeclared").value(Source.Button))))
+        core.updateIdentity(AnalyticsIdentity(properties = listOf(AnalyticsUserPropertyKey<Source>("undeclared").value(Source.Button))))
         assertEquals(listOf(AnalyticsDisposition.InvalidEvent, AnalyticsDisposition.InvalidIdentity), core.diagnostics().map { it.disposition })
         core.close()
     }
@@ -226,7 +252,7 @@ class AnalyticsTest {
     }
 
     @Test fun propertiesAreExplicitlyClearedIncludingAfterRestart() {
-        val key = UserPropertyKey<Source>("source")
+        val key = AnalyticsUserPropertyKey<Source>("source")
         val catalog = AnalyticsCatalog(properties = listOf(key))
         val identity = AnalyticsIdentity(AnalyticsUserId("user1"), listOf(key.value(Source.Button)))
         catalog.validateIdentity(identity)
@@ -234,7 +260,7 @@ class AnalyticsTest {
         val cleared = catalog.encodeIdentity(AnalyticsIdentity())
         assertNull(cleared.userId)
         assertEquals(listOf("source"), cleared.clearedPropertyNames)
-        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(properties = listOf(UserPropertyKey<Source>("user_id"))) }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(properties = listOf(AnalyticsUserPropertyKey<Source>("user_id"))) }
         assertFailsWith<IllegalArgumentException> { catalog.validateIdentity(AnalyticsIdentity(properties = listOf(key.value(Source.Button), key.value(Source.Button)))) }
     }
 
@@ -249,7 +275,7 @@ class AnalyticsTest {
     }
 
     @Test fun debugModeFailsFastAndRecordingSinkRemainsBounded() = runTest {
-        val core = DefaultAnalytics(AnalyticsCatalog(listOf(Event.Definition)), StandardTestDispatcher(testScheduler), validationMode = AnalyticsValidationMode.Throw)
+        val core = DefaultAnalytics(AnalyticsCatalog(listOf(Event.Schema)), StandardTestDispatcher(testScheduler), validationMode = AnalyticsValidationMode.Throw)
         core.updateCollection(AnalyticsCollection.Granted)
         assertFailsWith<IllegalArgumentException> { core.track(ScreenViewed(ScreenId("home"))) }
         val sink = RecordingAnalyticsSink(1)
@@ -310,10 +336,10 @@ class AnalyticsTest {
     }
 
     @Test fun sameIdentityWithReorderedPropertiesPreservesPendingEvents() = runTest {
-        val first = UserPropertyKey<Source>("first")
-        val second = UserPropertyKey<Source>("second")
+        val first = AnalyticsUserPropertyKey<Source>("first")
+        val second = AnalyticsUserPropertyKey<Source>("second")
         val core = DefaultAnalytics(
-            AnalyticsCatalog(listOf(Event.Definition), listOf(first, second)),
+            AnalyticsCatalog(listOf(Event.Schema), listOf(first, second)),
             StandardTestDispatcher(testScheduler),
         )
         val user = AnalyticsUserId("user")

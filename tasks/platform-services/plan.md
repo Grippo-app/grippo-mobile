@@ -12,3 +12,20 @@
 6. Self-review loop: correctness/races/lifetimes, strictness/privacy, complexity/memory; fix all findings and repeat affected checks.
 
 Firebase SDK owns fatal capture, persistence and delivery. CrashReporting enqueue не выполняет SDK work в caller; serial SDK submission выполняется на IO worker. Push rendering/APNs/permissions remain existing platform responsibilities.
+
+## CrashReporting API refactor (2026-10-12)
+
+Разделить diagnostic codes и metadata keys; ключами фиксировать Code/Long/Boolean.
+Сохранить wire-значения и поведение доставки. Разделить API по ответственности,
+централизовать validation/queue/native-stack policies. Обновить существующих
+Kotlin/Swift consumers; подтвердить core tests, DI, Android Debug/Release и iOS
+Debug simulator/device без запуска приложения и отправки в Firebase.
+
+Завершено: [отчёт CrashReporting API](crash-api-refactor-review.md).
+
+## Messaging API refactor
+
+Разделить consumer state, SDK provider, backend synchronizer и startup boundary.
+Централизовать token validation/redaction policy; сохранить opaque token и текущую
+latest-token-wins/cancellation semantics. Обновить Kotlin/Swift consumers и проверить
+core tests, app wiring, generated header и Android/iOS builds без remote SDK calls.

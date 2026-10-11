@@ -1,11 +1,11 @@
 package com.grippo.toolkit.messaging.core.internal
 
 import com.grippo.toolkit.messaging.Messaging
-import com.grippo.toolkit.messaging.MessagingBootstrap
-import com.grippo.toolkit.messaging.PushToken
-import com.grippo.toolkit.messaging.PushTokenHandler
-import com.grippo.toolkit.messaging.TokenSyncStatus
 import com.grippo.toolkit.messaging.core.MessagingModule
+import com.grippo.toolkit.messaging.lifecycle.MessagingBootstrap
+import com.grippo.toolkit.messaging.synchronization.PushTokenSyncStatus
+import com.grippo.toolkit.messaging.synchronization.PushTokenSynchronizer
+import com.grippo.toolkit.messaging.token.PushToken
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -21,10 +21,10 @@ class MessagingModuleTest {
     @Test fun callbackUsesItsOwnContainerWithoutAGlobalKoinContext(): Unit = runBlocking {
         fun application(delivered: CompletableDeferred<PushToken>) = koinApplication {
             modules(MessagingModule().module, module {
-                single<PushTokenHandler> {
+                single<PushTokenSynchronizer> {
                     get<Messaging>()
-                    object : PushTokenHandler {
-                        override suspend fun onTokenRefresh(token: PushToken) { delivered.complete(token) }
+                    object : PushTokenSynchronizer {
+                        override suspend fun syncToken(token: PushToken) { delivered.complete(token) }
                     }
                 }
             })
@@ -34,8 +34,8 @@ class MessagingModuleTest {
         val first = application(firstDelivered)
         val second = application(secondDelivered)
         try {
-            first.koin.get<MessagingBootstrap>().onRegistrationToken("first")
-            second.koin.get<MessagingBootstrap>().onRegistrationToken("second")
+            first.koin.get<MessagingBootstrap>().onTokenChanged("first")
+            second.koin.get<MessagingBootstrap>().onTokenChanged("second")
             withTimeout(5000) {
                 assertEquals(PushToken("first"), firstDelivered.await())
                 assertEquals(PushToken("second"), secondDelivered.await())
@@ -51,9 +51,9 @@ class MessagingModuleTest {
     @Test fun compositionResolvesSingletonsAndDeferredCallbackWithoutCycle(): Unit = runBlocking {
         val application = koinApplication {
             modules(MessagingModule().module, module {
-                single<PushTokenHandler> {
+                single<PushTokenSynchronizer> {
                     get<Messaging>() // Mirrors the authorization repository's dependency on Messaging.
-                    object : PushTokenHandler { override suspend fun onTokenRefresh(token: PushToken) = Unit }
+                    object : PushTokenSynchronizer { override suspend fun syncToken(token: PushToken) = Unit }
                 }
             })
         }
@@ -61,8 +61,8 @@ class MessagingModuleTest {
         try {
             assertSame(messaging, application.koin.get<Messaging>())
             assertSame(messaging, application.koin.get<MessagingBootstrap>())
-            application.koin.get<MessagingBootstrap>().onRegistrationToken("fixture")
-            withTimeout(5000) { messaging.syncStatus.first { it == TokenSyncStatus.Synced } }
+            application.koin.get<MessagingBootstrap>().onTokenChanged("fixture")
+            withTimeout(5000) { messaging.tokenSyncStatus.first { it == PushTokenSyncStatus.Synced } }
         } finally {
             messaging.close()
             application.close()

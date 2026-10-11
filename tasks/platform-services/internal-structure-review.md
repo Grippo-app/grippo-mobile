@@ -12,8 +12,8 @@ AnalyticsModule registers its own internal AnalyticsConfiguration via @Single an
 - Locks: AnalyticsLock, CrashReportingLock, MessagingLock, each in a dedicated expect declaration and matching actual files under internal.
 - Diagnostics: AnalyticsDisposition, AnalyticsDiagnostic, AnalyticsValidationMode, CrashReportingDisposition each have a named file; all are internal.
 - Provider names reflect the returned service: provideAnalyticsConfiguration, provideAnalyticsCatalog, provideAnalytics, provideCrashReporting, provideMessaging.
-- DeferredPushTokenHandler lives in messaging/core/internal. It keeps the original callback-time, container-local resolution needed to break the authorization → messaging cycle.
-- Public API names were checked against their consumers. PushTokenDecoder is an actual nonthrowing SDK/Swift boundary contract and stays public. Private API validation helpers stay file-private.
+- DeferredPushTokenSynchronizer lives in messaging/core/internal. It keeps the original callback-time, container-local resolution needed to break the authorization → messaging cycle.
+- Public API names were checked against their consumers. PushTokenParser is an actual nonthrowing SDK/Swift boundary contract and stays public. Private API validation helpers stay file-private.
 
 ## Review loop
 

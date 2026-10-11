@@ -1,16 +1,19 @@
 package com.grippo.toolkit.analytics.core.internal
 
 import com.grippo.toolkit.analytics.Analytics
-import com.grippo.toolkit.analytics.AnalyticsBootstrap
-import com.grippo.toolkit.analytics.AnalyticsCollection
-import com.grippo.toolkit.analytics.AnalyticsContext
-import com.grippo.toolkit.analytics.AnalyticsEvent
-import com.grippo.toolkit.analytics.AnalyticsIdentity
-import com.grippo.toolkit.analytics.AnalyticsIdentityPayload
-import com.grippo.toolkit.analytics.AnalyticsPayload
-import com.grippo.toolkit.analytics.AnalyticsSink
-import com.grippo.toolkit.analytics.FlowContext
-import com.grippo.toolkit.analytics.OperationId
+import com.grippo.toolkit.analytics.context.AnalyticsContext
+import com.grippo.toolkit.analytics.context.FlowContext
+import com.grippo.toolkit.analytics.context.NavigationContext
+import com.grippo.toolkit.analytics.context.OperationId
+import com.grippo.toolkit.analytics.events.ScreenViewed
+import com.grippo.toolkit.analytics.identity.AnalyticsIdentity
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsBootstrap
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
+import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
+import com.grippo.toolkit.analytics.schema.AnalyticsEvent
+import com.grippo.toolkit.analytics.transport.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsSink
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +42,7 @@ internal class DefaultAnalytics(
     private val queue = ArrayDeque<AnalyticsPayload>()
     private val diagnostics = ArrayDeque<AnalyticsDiagnostic>()
     private var context = AnalyticsContext()
+    private var presentationRevision = 0L
     private val anonymousIdentity = catalog.encodeIdentity(AnalyticsIdentity())
     private var identity = anonymousIdentity
     private var collection = AnalyticsCollection.Unknown
@@ -51,7 +55,7 @@ internal class DefaultAnalytics(
     init {
         require(queueCapacity > 0 && diagnosticCapacity >= 0)
         scope.launch {
-            for (ignored in wake) {
+            for (ignored: Unit in wake) {
                 var processed = 0
                 while (true) {
                     ensureActive()
@@ -80,41 +84,66 @@ internal class DefaultAnalytics(
     }
 
     override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
-        val queued = lock.withLock {
-            if (closed) {
-                record(AnalyticsDisposition.Closed); return@withLock false
-            }
-            if (collection != AnalyticsCollection.Granted) {
-                record(AnalyticsDisposition.CollectionDisabled)
-                return@withLock false
-            }
-            if (failedRevision == revision) {
-                record(AnalyticsDisposition.TransportFailure)
-                return@withLock false
-            }
-            val payload = try {
-                catalog.encode(event, context, flow, operation)
-            } catch (e: Exception) {
-                record(AnalyticsDisposition.InvalidEvent)
-                if (validationMode == AnalyticsValidationMode.Throw) throw IllegalArgumentException(
-                    "Invalid analytics event",
-                    e
-                )
-                return@withLock false
-            }
-            if (queue.size == queueCapacity) {
-                record(AnalyticsDisposition.QueueFull, payload.name)
-                return@withLock false
-            }
-            queue.addLast(payload)
-            record(AnalyticsDisposition.Queued, payload.name)
-            true
-        }
+        val queued = lock.withLock { enqueue(event, flow, operation) }
         if (queued) wake.trySend(Unit)
     }
 
+    override fun presentScreen(navigation: NavigationContext, flow: FlowContext?): ScreenPresentation {
+        val presentation = lock.withLock {
+            presentationRevision++
+            if (!closed) context = context.copy(navigation = navigation)
+            Presentation(presentationRevision, enqueue(ScreenViewed(navigation.screen), flow, null))
+        }
+        if (presentation.queued) wake.trySend(Unit)
+        return presentation
+    }
+
+    /** Caller holds the state lock; signal the worker only after releasing it. */
+    private fun enqueue(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?): Boolean {
+        if (closed) {
+            record(AnalyticsDisposition.Closed); return false
+        }
+        if (collection != AnalyticsCollection.Granted) {
+            record(AnalyticsDisposition.CollectionDisabled)
+            return false
+        }
+        if (failedRevision == revision) {
+            record(AnalyticsDisposition.TransportFailure)
+            return false
+        }
+        val payload = try {
+            catalog.encode(event, context, flow, operation)
+        } catch (e: Exception) {
+            record(AnalyticsDisposition.InvalidEvent)
+            if (validationMode == AnalyticsValidationMode.Throw) throw IllegalArgumentException(
+                "Invalid analytics event",
+                e
+            )
+            return false
+        }
+        if (queue.size == queueCapacity) {
+            record(AnalyticsDisposition.QueueFull, payload.name)
+            return false
+        }
+        queue.addLast(payload)
+        record(AnalyticsDisposition.Queued, payload.name)
+        return true
+    }
+
     override fun updateContext(context: AnalyticsContext): Unit = lock.withLock {
-        if (!closed) this.context = context
+        if (!closed) {
+            presentationRevision++
+            this.context = context
+        }
+    }
+
+    private inner class Presentation(private val revision: Long, val queued: Boolean) : ScreenPresentation {
+        override fun close(): Unit = lock.withLock {
+            if (!closed && revision == presentationRevision) {
+                context = context.copy(navigation = null)
+                presentationRevision++
+            }
+        }
     }
 
     override fun updateIdentity(identity: AnalyticsIdentity) {

@@ -2,26 +2,29 @@ import FirebaseCrashlytics
 import Foundation
 import shared
 
-final class IosFirebaseCrashlytics: CrashSink {
+final class IosFirebaseCrashlytics: CrashReportingSink {
 
-    func breadcrumb(code: CrashCode) {
+    func logBreadcrumb(code: CrashDiagnosticCode) {
         autoreleasepool { Crashlytics.crashlytics().log(code.value) }
     }
 
-    func record(
+    func reportException(
         throwable: KotlinThrowable,
-        context: CrashContext
+        context: CrashReportContext
     ) {
         autoreleasepool { recordNative(throwable: throwable, context: context) }
     }
 
-    private func recordNative(throwable: KotlinThrowable, context: CrashContext) {
-        let name = CrashExceptionInfo.shared.typeName(throwable: throwable)
+    private func recordNative(throwable: KotlinThrowable, context: CrashReportContext) {
+        let stackPolicy = CrashStackTracePolicy.shared
+        let maximumCauseDepth = Int(stackPolicy.maximumCauseDepth)
+        let maximumStackFrames = stackPolicy.maximumStackFrames
+        let name = CrashExceptionType.shared.nameOf(throwable: throwable)
         var reason = throwable.message ?? name
         var origin = throwable
         var visited = Set<ObjectIdentifier>([ObjectIdentifier(throwable)])
-        while visited.count < 32, let cause = origin.cause, visited.insert(ObjectIdentifier(cause)).inserted {
-            let causeName = CrashExceptionInfo.shared.typeName(throwable: cause)
+        while visited.count < maximumCauseDepth, let cause = origin.cause, visited.insert(ObjectIdentifier(cause)).inserted {
+            let causeName = CrashExceptionType.shared.nameOf(throwable: cause)
             reason += "\nCaused by: \(causeName): \(cause.message ?? "")"
             origin = cause
         }
@@ -29,11 +32,11 @@ final class IosFirebaseCrashlytics: CrashSink {
         // ExceptionModel has no per-event custom-key API. Keep metadata with this event,
         // rather than overwriting global keys that can leak into another concurrent report.
         var metadata: [String: Any] = [:]
-        for attribute in context.attributes {
+        for attribute in context.metadata {
             switch attribute {
-            case let code as CrashAttribute.Code: metadata[code.key.value] = code.value.value
-            case let count as CrashAttribute.Count: metadata[count.key.value] = NSNumber(value: count.value)
-            case let flag as CrashAttribute.Flag: metadata[flag.key.value] = flag.value
+            case let code as CrashMetadataEntry.Code: metadata[code.key.name] = code.value.value
+            case let count as CrashMetadataEntry.Count: metadata[count.key.name] = NSNumber(value: count.value)
+            case let flag as CrashMetadataEntry.Flag: metadata[flag.key.name] = flag.value
             default: preconditionFailure("Unsupported crash attribute")
             }
         }
@@ -49,7 +52,7 @@ final class IosFirebaseCrashlytics: CrashSink {
 
         let model = ExceptionModel(name: name, reason: reason)
         let stack = origin.getStackTrace()
-        model.stackTrace = (0..<min(stack.size, 128)).compactMap { index -> StackFrame? in
+        model.stackTrace = (0..<min(stack.size, maximumStackFrames)).compactMap { index -> StackFrame? in
             guard let nativeLine = stack.get(index: index) else { return nil }
             let line = nativeLine as String
             // Kotlin/Native frames contain native instruction addresses. Let the matching

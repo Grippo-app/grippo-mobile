@@ -1,6 +1,22 @@
 package com.grippo.toolkit.analytics.core.internal
 
 import com.grippo.toolkit.analytics.*
+import com.grippo.toolkit.analytics.context.AnalyticsContext
+import com.grippo.toolkit.analytics.context.EntryPoint
+import com.grippo.toolkit.analytics.context.FlowContext
+import com.grippo.toolkit.analytics.context.FlowId
+import com.grippo.toolkit.analytics.context.LaunchSource
+import com.grippo.toolkit.analytics.context.NavigationContext
+import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.analytics.context.ScreenId
+import com.grippo.toolkit.analytics.events.ScreenViewed
+import com.grippo.toolkit.analytics.identity.AnalyticsIdentity
+import com.grippo.toolkit.analytics.identity.AnalyticsUserId
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
+import com.grippo.toolkit.analytics.transport.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsSink
+import com.grippo.toolkit.analytics.transport.AnalyticsValue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -8,6 +24,43 @@ import kotlin.test.*
 import kotlinx.coroutines.*
 
 class AnalyticsConcurrencyTest {
+    @Test fun concurrentPresentationsCannotMixScreenAndNavigationContext() = runBlocking {
+        val worker = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        val producers = Executors.newFixedThreadPool(4)
+        val count = 200
+        val complete = CountDownLatch(count)
+        val received = java.util.Collections.synchronizedList(mutableListOf<AnalyticsPayload>())
+        val core = DefaultAnalytics(dispatcher = worker, queueCapacity = count)
+        val sink = object : AnalyticsSink {
+            override fun setCollection(collection: AnalyticsCollection) = Unit
+            override fun setIdentity(identity: AnalyticsIdentityPayload) = Unit
+            override fun send(payload: AnalyticsPayload) { received.add(payload); complete.countDown() }
+        }
+        try {
+            core.updateContext(AnalyticsContext(launchSource = LaunchSource.Notification))
+            core.attachSink(sink); core.updateCollection(AnalyticsCollection.Granted)
+            val jobs = List(count) { index ->
+                producers.submit {
+                    val screen = ScreenId("screen_$index")
+                    core.presentScreen(NavigationContext(screen, reason = NavigationReason.Action),
+                        FlowContext(FlowId("flow_$index"), EntryPoint("entry_$index"), screen))
+                }
+            }
+            jobs.forEach { it.get(10, TimeUnit.SECONDS) }
+            assertTrue(complete.await(10, TimeUnit.SECONDS))
+            assertEquals(count, received.size)
+            received.forEach {
+                assertEquals(it.parameters["screen_name"], it.parameters["screen_id"])
+                assertEquals(it.parameters["screen_name"], it.parameters["origin_screen"])
+                assertEquals(AnalyticsValue.Text("notification"), it.parameters["launch_source"])
+            }
+        } finally {
+            core.close()
+            producers.shutdownNow()
+            worker.close()
+        }
+    }
+
     @Test fun immediateDispatcherNeverCallsSinkWhileHoldingTheStateLock() = runBlocking {
         val observer = Executors.newSingleThreadExecutor()
         val core = DefaultAnalytics(dispatcher = Dispatchers.Unconfined)

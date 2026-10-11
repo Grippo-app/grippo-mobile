@@ -7,7 +7,7 @@ import com.grippo.services.firebase.AndroidFirebaseAnalytics
 import com.grippo.services.firebase.AndroidFirebaseCrashlytics
 import com.grippo.services.firebase.AndroidFirebaseMessaging
 import com.grippo.shared.Koin
-import com.grippo.toolkit.analytics.AnalyticsCollection
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 
@@ -26,6 +26,6 @@ class App : Application() {
         bootstrap.analytics.attachSink(analytics)
 
         bootstrap.crashReporting.attachSink(AndroidFirebaseCrashlytics(FirebaseCrashlytics.getInstance()))
-        bootstrap.messaging.attachSink(AndroidFirebaseMessaging())
+        bootstrap.messaging.attachTokenProvider(AndroidFirebaseMessaging())
     }
 }

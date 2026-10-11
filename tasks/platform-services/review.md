@@ -29,7 +29,7 @@
 - Без новых SDK versions/third-party dependencies. Crash API не зависит от coroutines; Messaging API экспортирует StateFlow из существующей coroutines dependency.
 - Crash queue ≤16 plus one in-flight; one IO worker, no per-report launch и no recursive reporting. SDK work вне state lock, транспорт не вызывает core повторно. Throwable stack не подменяется новой synthetic exception при обычном report.
 - Messaging: one worker + conflated slot, one fetch Mutex, platform lock только вокруг state; network выполняется вне lock. Token strings ≤4096, toString redacted. Нет raw exception/token в status/diagnostics и no automatic retries.
-- CrashContext: ≤32 unique keys, bounded stable codes/nonnegative Long/Boolean; snapshot защищает от изменения входного списка. Ключи event-specific, глобальных mutable custom keys нет.
+- CrashReportContext: ≤32 unique keys, bounded stable codes/nonnegative Long/Boolean; snapshot защищает от изменения входного списка. Ключи event-specific, глобальных mutable custom keys нет.
 - Product notification rendering, account/session policy, consent/UI, SDK persistence/fatal capture остаются своими слоями. Их поведение не выдаётся за guarantee core; ограничения documented в integration-guide.md.
 
 ## Приёмка
@@ -42,11 +42,11 @@ Host integration test сначала пытался запускать весь 
 
 Swift name lookup: общий Messaging API и Firebase SDK экспортируют одно имя Messaging. SDK references/type annotations явно квалифицированы FirebaseMessaging.Messaging; application build проверяет эту границу.
 
-Проверка generated Objective-C header выявила ещё одну Swift границу: вложенные классы sealed interface PushTokenResult экспортируются как PushTokenResultUnavailable/PushTokenResultFailed, не как nested Swift classes. Adapter использует реальные generated names; типы значений остаются explicit.
+Проверка generated Objective-C header выявила ещё одну Swift границу: вложенные классы sealed interface PushTokenState экспортируются как PushTokenStateUnavailable/PushTokenStateFailed, не как nested Swift classes. Adapter использует реальные generated names; типы значений остаются explicit.
 
 Первый настоящий Swift build обнаружил lowercase enum member names (`platformnotready`, `sdkfailure`, `invalidtoken`) вместо Swift camelCase. Исправлено по generated header; повторный build обязателен. Android lint debug/release прошёл.
 
-Последний проход по расходам: CrashContext проверяет size ≤32 до snapshot/copy; regression test с oversized AbstractList сначала падал при чтении элементов, затем исправлен. Token validator проверяет length 1..4096 до bounded character scan; отдельный isBlank scan удалён как избыточный. Финальные проверки повторяются после этих изменений.
+Последний проход по расходам: CrashReportContext проверяет size ≤32 до snapshot/copy; regression test с oversized AbstractList сначала падал при чтении элементов, затем исправлен. Token validator проверяет length 1..4096 до bounded character scan; отдельный isBlank scan удалён как избыточный. Финальные проверки повторяются после этих изменений.
 
 
 ## Round 4 — установленный SDK и caller overhead

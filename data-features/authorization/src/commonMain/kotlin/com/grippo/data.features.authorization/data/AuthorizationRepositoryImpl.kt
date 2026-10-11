@@ -13,7 +13,7 @@ import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.entity.UserActiveEntity
 import com.grippo.toolkit.crashreporting.CrashReporting
 import com.grippo.toolkit.messaging.Messaging
-import com.grippo.toolkit.messaging.PushTokenResult
+import com.grippo.toolkit.messaging.state.PushTokenState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -98,11 +98,11 @@ internal class AuthorizationRepositoryImpl(
     }
 
     override suspend fun getPushToken(): String? {
-        return when (val result = messaging.getToken()) {
-            is PushTokenResult.Available -> result.token.value
-            is PushTokenResult.Unavailable -> null
-            is PushTokenResult.Failed -> {
-                crashReporting.record(IllegalStateException("Push token retrieval failed: ${result.reason}"))
+        return when (val result = messaging.fetchToken()) {
+            is PushTokenState.Available -> result.token.value
+            is PushTokenState.Unavailable -> null
+            is PushTokenState.Failed -> {
+                crashReporting.reportException(IllegalStateException("Push token retrieval failed: ${result.reason}"))
                 null
             }
         }

@@ -99,3 +99,18 @@
 - [x] Выполнен code review нового контракта, контекста, политики и платформенных границ.
 - [x] Старые события удалены, платформенные границы проверены; ограничения записаны. Прямой Firebase test исключён пользователем из текущей приёмки.
 - [x] Завершить локальный audit и финальные Android/iOS/Swift checks; дальше отдельная задача на каждую фичу по порядку plan.md.
+
+
+## Единый стандарт интеграции фич (2026-10-12)
+- [x] Typed operation contract, flow/operation ID factories, общая suspend-обвязка; outcome/cancellation/correlation tests.
+- [x] Atomic screen presentation API/core; context/consent/overlapping-close tests.
+- [x] Leaf lifecycle bridge в foundation, без изменений базовых классов; host/native lifecycle tests.
+- [x] Feature template, матрица покрытия и будущая матрица авторизации; ни одна фича пока не подключается.
+- [x] Self-review, Android Debug/Release, iOS XCFramework/Swift и test verification; фактические результаты записаны.
+
+## Структура и понятность API
+
+- [x] Разделить публичные типы по файлам и тематическим пакетам.
+- [x] Переименовать декларации и обновить всех потребителей без compatibility aliases.
+- [x] Общая матрица полей контекста и отдельные ограничения схемы.
+- [x] Подтвердить тесты, Android-сборки, XCFramework и Swift обеих платформ.

@@ -41,7 +41,7 @@ Android lint debug/release: BUILD SUCCESSFUL, 0 Errors/Fatal, по 14 Warning. �
 
 - Duplicate successful callback оставлял Pending: первоначально 10 messaging tests, 1 failure.
 - Fetch stranding sync status и cancelled late SDK result: при снятии двух fixes 15 focused messaging tests, 2 failures.
-- Oversized CrashContext читался/копировался до лимита: regression failed на прежнем constructor, теперь IllegalArgumentException до чтения элементов.
+- Oversized CrashReportContext читался/копировался до лимита: regression failed на прежнем constructor, теперь IllegalArgumentException до чтения элементов.
 - SDK submission выполнялась в caller: recordingNeverInvokesSdkInCaller failed на прямой реализации. После IO worker — проходит на Android/native iOS.
 - SDK exceptions/active CancellationException не останавливают worker; close при cancelled caller joins worker, future submissions rejected.
 

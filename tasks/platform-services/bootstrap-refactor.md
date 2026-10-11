@@ -9,7 +9,7 @@
 - AnalyticsModule, CrashReportingModule и MessagingModule находятся в соответствующих toolkit core, используют существующую koin.annotation.convention и @Module/@Single.
 - Koin.kt перечисляет модули, передаёт AnalyticsConfiguration и возвращает ApplicationBootstrap из shared/bootstrap. Bootstrap хранит только три типизированных интерфейса, не контейнер и не конкретные реализации.
 - Core реализуют отдельные bootstrap-контракты API; потребители продолжают использовать Analytics/CrashReporting/Messaging.
-- MessagingModule захватывает собственный Koin Scope и откладывает разрешение PushTokenHandler до callback. Это сохраняет разрыв authorization ↔ messaging и исключает глобальный lookup.
+- MessagingModule захватывает собственный Koin Scope и откладывает разрешение PushTokenSynchronizer до callback. Это сохраняет разрыв authorization ↔ messaging и исключает глобальный lookup.
 - Android получает bootstrap при старте; AppDelegate владеет bootstrap на iOS. Firebase.configure остаётся в didFinishLaunching перед подключением адаптеров и установкой Messaging delegate. Swift callback валидируется внутри Messaging core.
 
 ## Проверки и ревью

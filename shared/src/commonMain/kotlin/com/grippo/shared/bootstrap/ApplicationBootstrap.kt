@@ -1,8 +1,8 @@
 package com.grippo.shared.bootstrap
 
-import com.grippo.toolkit.analytics.AnalyticsBootstrap
-import com.grippo.toolkit.crashreporting.CrashReportingBootstrap
-import com.grippo.toolkit.messaging.MessagingBootstrap
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsBootstrap
+import com.grippo.toolkit.crashreporting.lifecycle.CrashReportingBootstrap
+import com.grippo.toolkit.messaging.lifecycle.MessagingBootstrap
 
 /** Instance-bound startup dependencies. Contains no global container lookup or SDK logic. */
 public class ApplicationBootstrap internal constructor(

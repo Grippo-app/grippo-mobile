@@ -2,11 +2,11 @@ package com.grippo.services.firebase
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.grippo.toolkit.analytics.AnalyticsCollection
-import com.grippo.toolkit.analytics.AnalyticsIdentityPayload
-import com.grippo.toolkit.analytics.AnalyticsPayload
-import com.grippo.toolkit.analytics.AnalyticsSink
-import com.grippo.toolkit.analytics.AnalyticsValue
+import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
+import com.grippo.toolkit.analytics.transport.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsPayload
+import com.grippo.toolkit.analytics.transport.AnalyticsSink
+import com.grippo.toolkit.analytics.transport.AnalyticsValue
 
 public class AndroidFirebaseAnalytics(
     private val core: FirebaseAnalytics

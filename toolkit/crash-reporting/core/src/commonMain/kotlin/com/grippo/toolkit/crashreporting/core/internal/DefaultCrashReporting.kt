@@ -1,10 +1,10 @@
 package com.grippo.toolkit.crashreporting.core.internal
 
-import com.grippo.toolkit.crashreporting.CrashCode
-import com.grippo.toolkit.crashreporting.CrashContext
 import com.grippo.toolkit.crashreporting.CrashReporting
-import com.grippo.toolkit.crashreporting.CrashReportingBootstrap
-import com.grippo.toolkit.crashreporting.CrashSink
+import com.grippo.toolkit.crashreporting.context.CrashReportContext
+import com.grippo.toolkit.crashreporting.lifecycle.CrashReportingBootstrap
+import com.grippo.toolkit.crashreporting.transport.CrashReportingSink
+import com.grippo.toolkit.crashreporting.values.CrashDiagnosticCode
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -24,19 +24,19 @@ import kotlinx.coroutines.yield
 
 /** SDK owns fatal capture/persistence. One background worker owns all nonfatal/log submissions. */
 internal class DefaultCrashReporting(
-    private val capacity: Int = 16,
+    private val capacity: Int = CrashReportingQueuePolicy.DEFAULT_CAPACITY,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : CrashReporting, CrashReportingBootstrap {
     private val lock = CrashReportingLock()
     private val queue = ArrayDeque<Work>()
     private val wake = Channel<Unit>(Channel.CONFLATED)
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
-    private var sink: CrashSink? = null
+    private var sink: CrashReportingSink? = null
     private var closed = false
     private val counts = LongArray(CrashReportingDisposition.entries.size)
 
     init {
-        require(capacity in 1..128)
+        require(capacity in 1..CrashReportingQueuePolicy.MAXIMUM_CAPACITY)
         scope.launch {
             for (ignored in wake) {
                 var processed = 0
@@ -48,7 +48,7 @@ internal class DefaultCrashReporting(
                         else Submission(target, queue.removeFirst())
                     } ?: break
                     submit(next)
-                    if (++processed == 32) {
+                    if (++processed == CrashReportingQueuePolicy.SUBMISSIONS_PER_BATCH) {
                         processed = 0; yield()
                     }
                 }
@@ -56,7 +56,7 @@ internal class DefaultCrashReporting(
         }
     }
 
-    override fun attachSink(crashSink: CrashSink) {
+    override fun attachSink(crashSink: CrashReportingSink) {
         lock.withLock {
             check(!closed && this.sink == null)
             this.sink = crashSink
@@ -64,7 +64,7 @@ internal class DefaultCrashReporting(
         wake.trySend(Unit)
     }
 
-    override fun record(throwable: Throwable, context: CrashContext) {
+    override fun reportException(throwable: Throwable, context: CrashReportContext) {
         if (throwable is CancellationException) {
             lock.withLock { increment(CrashReportingDisposition.CancellationIgnored) }
             return
@@ -72,7 +72,7 @@ internal class DefaultCrashReporting(
         enqueue(Work.Report(throwable, context))
     }
 
-    override fun breadcrumb(code: CrashCode) {
+    override fun logBreadcrumb(code: CrashDiagnosticCode) {
         enqueue(Work.Breadcrumb(code))
     }
 
@@ -118,8 +118,8 @@ internal class DefaultCrashReporting(
         try {
             currentCoroutineContext().ensureActive()
             when (val work = submission.work) {
-                is Work.Report -> submission.sink.record(work.throwable, work.context)
-                is Work.Breadcrumb -> submission.sink.breadcrumb(work.code)
+                is Work.Report -> submission.sink.reportException(work.throwable, work.context)
+                is Work.Breadcrumb -> submission.sink.logBreadcrumb(work.code)
             }
             lock.withLock { increment(CrashReportingDisposition.Submitted) }
         } catch (_: Exception) {
@@ -135,9 +135,9 @@ internal class DefaultCrashReporting(
         counts[value.ordinal]++
     }
 
-    private class Submission(val sink: CrashSink, val work: Work)
+    private class Submission(val sink: CrashReportingSink, val work: Work)
     private sealed interface Work {
-        class Report(val throwable: Throwable, val context: CrashContext) : Work
-        class Breadcrumb(val code: CrashCode) : Work
+        class Report(val throwable: Throwable, val context: CrashReportContext) : Work
+        class Breadcrumb(val code: CrashDiagnosticCode) : Work
     }
 }

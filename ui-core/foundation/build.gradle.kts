@@ -13,6 +13,7 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        api(projects.toolkit.analytics.api)
         implementation(projects.toolkit.logger)
         implementation(projects.uiCore.error.errorProvider)
         implementation(projects.toolkit.crashReporting.api)

@@ -5,7 +5,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
-import com.grippo.toolkit.messaging.MessagingBootstrap
+import com.grippo.toolkit.messaging.lifecycle.MessagingBootstrap
 import org.koin.core.component.KoinComponent
 
 public class MessagingService : FirebaseMessagingService(), KoinComponent {
@@ -15,7 +15,7 @@ public class MessagingService : FirebaseMessagingService(), KoinComponent {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        messaging.onRegistrationToken(token)
+        messaging.onTokenChanged(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
