@@ -23,7 +23,6 @@ kotlin {
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.notificationManager)
         implementation(projects.designSystem.core)
-        implementation(projects.dataServices.firebase)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)

@@ -47,5 +47,4 @@ dependencies {
     implementation(project.dependencies.platform(libs.android.firebase.bom))
     implementation(libs.android.firebase.analytics)
     implementation(libs.android.firebase.crashlytics)
-    implementation(libs.android.firebase.messaging)
 }

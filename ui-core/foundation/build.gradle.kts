@@ -15,7 +15,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.logger)
         implementation(projects.uiCore.error.errorProvider)
-        implementation(projects.dataServices.firebase)
+        implementation(projects.toolkit.crashReporting.api)
 
         api(libs.decompose.core)
         api(libs.decompose.extensions)

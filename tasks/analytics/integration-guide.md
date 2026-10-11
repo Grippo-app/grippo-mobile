@@ -2,11 +2,11 @@
 
 ## Границы
 
-Фича зависит от `:toolkit:analytics:api` и получает `Analytics` через constructor injection/Koin. Она не использует Firebase, AnalyticsSink, AnalyticsRuntime или DefaultAnalytics. Общие типы не зависят от UI, Decompose и доменных моделей. Кодирование событий — синхронная чистая функция без IO/побочных действий.
+Фича зависит от `:toolkit:analytics:api` и получает `Analytics` через constructor injection/Koin. Она не использует Firebase, AnalyticsSink, AnalyticsBootstrap или DefaultAnalytics. Общие типы не зависят от UI, Decompose и доменных моделей. Кодирование событий — синхронная чистая функция без IO/побочных действий.
 
 `Analytics.track` принимает AnalyticsEvent, optional FlowContext и OperationId. Сырые имена/maps существуют только в декларациях и транспортном payload. EventDefinition регистрируется один раз, используется тот же экземпляр; параметры создаются теми же экземплярами ParameterKey. Каталог проверяет все зарегистрированные схемы, включая collisions и общий бюджет параметров Firebase.
 
-Проверка схемы выполняется при создании каталога. Невалидная декларация — ошибка конфигурации приложения. Невалидное событие/identity в debug приводит к исключению, в release отклоняется. В release журнал выключен; debug хранит до 64 записей только с именами событий и статусами, без значений/ID/exception messages.
+Проверка схемы выполняется при создании каталога. Невалидная декларация — ошибка конфигурации приложения. Невалидное событие при разрешённом сборе и невалидная identity в debug приводят к исключению, в release отклоняются. Запрещённые события отсекаются до кодирования; схемы каталога проверяются независимо от consent. В release журнал выключен; debug хранит до 64 записей только с именами событий и статусами, без значений/ID/exception messages.
 
 ## Пример будущей фичи (ещё не интегрирован)
 
@@ -58,18 +58,24 @@ ScreenId/DialogId/EntryPoint содержат проверяемый стаби�
 
 При удалении user property из продукта её старый ключ сохраняют в каталоге для явной очистки либо выполняют отдельную миграцию SDK. Простое удаление ключа из каталога не очистит уже сохранённое Firebase значение.
 
-Все calls SDK выполняет один worker. updateCollection/updateIdentity меняют gate/очередь синхронно, применение к SDK происходит последовательно в worker. Уже начатый SDK-вызов невозможно отозвать; возвращение updateCollection не означает, что Firebase закончил применение. Буфер до attachSink ограничен 128 событиями, drop-new при переполнении. Нет собственного хранения на диске или обещания exactly-once. Успешный send означает только принятие локальным SDK.
+Основные calls SDK выполняет один worker, уступающий dispatcher после 32 единиц работы; bootstrap выполняется до attach, shutdown disable — после join. Вызовы не пересекаются. updateCollection/updateIdentity меняют gate/очередь синхронно, применение к SDK происходит последовательно в worker. Уже начатый SDK-вызов невозможно отозвать; возвращение updateCollection не означает, что Firebase закончил применение. Буфер до attachSink ограничен 128 событиями, drop-new при переполнении. Нет собственного хранения на диске или обещания exactly-once. Успешный send означает только принятие локальным SDK. Если событие извлечено из очереди и до send потеряло актуальность, diagnostic — DiscardedBeforeSend; close также учитывает оставшиеся события.
 
-Исключения send диагностируются, следующие события продолжают обрабатываться. Сбой конфигурации закрывает отправку и очищает очередь; bootstrap/tooling может вызвать retrySinkConfiguration для явной повторной настройки без автоматического replay. Отмена worker остаётся отменой, а не продуктовой ошибкой. App-lifetime worker не закрывают при уходе экрана в background.
+Исключения send диагностируются, следующие события продолжают обрабатываться. Сбой конфигурации закрывает отправку и очищает очередь; bootstrap/tooling может вызвать retrySinkConfiguration для явной повторной настройки без автоматического replay. Реальная отмена worker остаётся отменой. CancellationException действующего синхронного sink считается transport failure; он не должен незаметно остановить весь worker. Закрытие завершает join/disable даже при отменённом caller. App-lifetime worker не закрывают при уходе экрана в background.
 
 ## Проверка новой фичи
 
 1. Карта фактов, обязательных значений, entry points и известных причин; назначить владельца каждого события.
 2. Зарегистрировать AnalyticsDefinitions в Koin с уникальным qualifier. Не менять central core.
 3. Проверить catalog и payload fixtures, optional values, ошибочные поля и границы типов.
-4. RecordingAnalyticsSink использовать только с fixtures в тестах/preview. Он ограничен по памяти, но хранит raw payload; production DI его не регистрирует.
+4. RecordingAnalyticsSink находится в core/commonTest и доступен только тестам с fixtures. Production и preview его не содержат.
 5. Проверить false successes, retries, back/restore, parallel flows, cold/warm external launch и account switch.
 6. Проверить Android и iOS, затем событие и его параметры в Firebase DebugView. SDK acceptance, компиляция и DebugView — разные доказательства.
 7. Описать GA4 dimensions/metrics, funnel и условия измерения. Настройка Firebase/GA4/BigQuery отдельно от Kotlin-интеграции.
 
 Нет записи свободного текста, URLs с query, request bodies, exception messages или телесных/чувствительных значений по умолчанию. Они требуют отдельного решения в схеме. Аналитика не выводит психологическую причину закрытия приложения — только известные действия/ответы.
+
+Первый Granted включает SDK, затем устанавливает identity; очередь собственных событий ждёт завершения обеих операций. Identity update не отзывает consent временно. Это последовательность вызовов SDK, а не атомарная транзакция его автоматических событий.
+
+## Конфигурация приложения
+
+`ApplicationConfigurationModule().module` регистрирует `AnalyticsConfiguration` через `@Single`, по существующему `expect/actual` подходу проекта. Android читает `Application.applicationInfo.flags` (`FLAG_DEBUGGABLE`) из Koin; отсутствие Application — ошибка wiring без fallback. iOS использует `Platform.isDebugBinary` связанного Kotlin framework. Xcode Debug/Release подключают соответствующий Debug/Release XCFramework. Параметра `analyticsDebug` у `Koin.init` больше нет. Настройки и регистрация не находятся в app shells; они подключают Android context и SDK adapters.

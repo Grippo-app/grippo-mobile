@@ -8,13 +8,12 @@ kotlin {
         namespace = "com.grippo.data.services.firebase"
     }
 
-    sourceSets.commonMain.dependencies {
-        api(projects.toolkit.analytics.api)
-        implementation(libs.koin.core)
-        implementation(libs.kotlinx.coroutines.core)
-    }
-
     sourceSets.androidMain.dependencies {
+        api(projects.toolkit.analytics.api)
+        api(projects.toolkit.crashReporting.api)
+        api(projects.toolkit.messaging.api)
+
+        implementation(libs.koin.core)
         implementation(projects.toolkit.notificationManager)
 
         implementation(project.dependencies.platform(libs.android.firebase.bom))

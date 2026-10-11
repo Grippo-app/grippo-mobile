@@ -2,7 +2,21 @@
 
 Дата: 2026-10-11. Фичи пока не подключены.
 
-## Автоматические проверки
+## Глубокий локальный аудит — текущая приёмка
+
+По просьбе пользователя отправка в Firebase исключена: приложение не запускалось, тестовые события не отправлялись; release Crashlytics mapping upload отключён. Найденные дефекты и расходы описаны в review.md.
+
+Финальный Gradle запуск: `./gradlew :toolkit:analytics:api:testAndroidHostTest :toolkit:analytics:core:testAndroidHostTest :toolkit:analytics:api:iosSimulatorArm64Test :toolkit:analytics:core:iosSimulatorArm64Test :androidApp:assembleDebug :androidApp:assembleRelease :shared:assembleSharedDebugXCFramework -x :androidApp:uploadCrashlyticsMappingFileRelease` — BUILD SUCCESSFUL. Android: 25 tests; native iOS Simulator: 23 tests; failures/errors/skipped = 0. Android debug и release/R8 собраны; XCFramework включает device и simulator. Лог: `/tmp/grippo-analytics-review-accepted.log`.
+
+Пять регрессий сначала падали на исходной реализации; шестая (identity при первом grant) воспроизведена отдельно до исправления. Параллельные producers проверены на Android и нативном iOS; Android дополнительно проверяет учёт 2000 событий при гонках identity.
+
+Swift приложение: Debug Simulator build с `-disableAutomaticPackageResolution CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-` — BUILD SUCCEEDED. Лог: `/tmp/grippo-analytics-review-swift.log`. Приложение не устанавливалось и не запускалось.
+
+Проверены итоговые Android merged manifests (debug/release): правильный Application bootstrap и пять disabled defaults; те же пять defaults проверены в Info.plist собранного Swift приложения. `git diff --check` проходит. Legacy analytics API, временные probes и benchmark отсутствуют в production.
+
+## Предыдущая проверка реализации (история)
+
+### Автоматические проверки
 
 `./gradlew :toolkit:analytics:api:testAndroidHostTest :toolkit:analytics:core:testAndroidHostTest :toolkit:analytics:api:iosSimulatorArm64Test :toolkit:analytics:core:iosSimulatorArm64Test` — BUILD SUCCESSFUL; Android 16 тестов, iOS Simulator 15, failures=0/errors=0. Общие тесты выполняются нативно на iOS; Android дополнительно проверяет 200 событий от четырёх параллельных потоков без одновременных вызовов sink.
 
@@ -24,7 +38,7 @@
 
 Android SDK журнал: event logged, `_dbg=1`, `int_value`/`double_value` корректны, successful upload HTTP 204. iOS SDK журнал: event logged, `ga_debug (_dbg)=1`, числовые значения корректны, successful upload HTTP 204. Для iOS использована ad-hoc подпись симулятора (`CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-`): неподписанный запуск давал Firebase Installations Keychain -34018.
 
-В Chrome доступны Firebase Console и GA4 property 519002689; Firebase App ID Android потока совпадает с приложением. GA4 Streams показывают входящий трафик Android/iOS. Однако DebugView пока показывает 0 устройств: появление события в самом отчёте не подтверждено. HTTP 204 не заменяет эту проверку; checkpoint C остаётся открытым. Настройки удалённого проекта не менялись.
+В Chrome доступны Firebase Console и GA4 property 519002689; Firebase App ID Android потока совпадает с приложением. GA4 Streams показывают входящий трафик Android/iOS. Однако DebugView пока показывает 0 устройств: появление события в самом отчёте не подтверждено. HTTP 204 не заменяет эту проверку; на тот момент checkpoint C оставался открытым; позднее пользователь исключил удалённую проверку из текущей приёмки. Настройки удалённого проекта не менялись.
 
 Временные probe/event/registration/hooks и вывод payload полностью удалены. В финальном коде тестового включения collection нет.
 

@@ -12,6 +12,10 @@ kotlin {
         withHostTestBuilder {}
     }
 
+    sourceSets.getByName("iosTest").dependencies {
+        implementation(kotlin("test"))
+    }
+
     sourceSets.getByName("androidHostTest").dependencies {
         implementation(kotlin("test-junit"))
     }
@@ -41,6 +45,13 @@ kotlin {
         implementation(projects.toolkit.notificationManager)
         implementation(projects.toolkit.permissionManager)
 
+        api(projects.toolkit.crashReporting.api)
+        implementation(projects.toolkit.crashReporting.core)
+        api(projects.toolkit.messaging.api)
+        implementation(projects.toolkit.messaging.core)
+        api(projects.toolkit.analytics.api)
+        implementation(projects.toolkit.analytics.core)
+
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.uiCore.error.errorProviderImpl)
@@ -50,9 +61,6 @@ kotlin {
         implementation(projects.dataServices.backend)
         implementation(projects.dataServices.googleAuth)
         implementation(projects.dataServices.appleAuth)
-        api(projects.dataServices.firebase)
-        api(projects.toolkit.analytics.api)
-        implementation(projects.toolkit.analytics.core)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)

@@ -2,9 +2,25 @@ package com.grippo.toolkit.analytics.core
 
 import com.grippo.toolkit.analytics.*
 import kotlinx.coroutines.test.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlin.test.*
 
 class AnalyticsTest {
+    @Test fun oversizedCatalogIsRejectedBeforeItsElementsAreRead() {
+        val events = object : AbstractList<EventDefinition>() {
+            override val size = 501
+            override fun get(index: Int): EventDefinition = error("Oversized catalog must not be read")
+        }
+        val properties = object : AbstractList<UserPropertyKey<*>>() {
+            override val size = 26
+            override fun get(index: Int): UserPropertyKey<*> = error("Oversized properties must not be read")
+        }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(definitions = events) }
+        assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(properties = properties) }
+    }
+
     private enum class Source(override val analyticsCode: String) : AnalyticsCode { Button("button") }
     private class Event(private val count: Long = 3) : AnalyticsEvent {
         override val definition = Definition
@@ -143,6 +159,11 @@ class AnalyticsTest {
         assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition("event", 0, emptyList()))) }
         assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition("event", 1, listOf(ParameterKey.count("flow_id"))))) }
         assertFailsWith<IllegalArgumentException> { AnalyticsCatalog(listOf(EventDefinition("event", 1, (1..16).map { ParameterKey.count("p_$it") }))) }
+        // Reserved event names are not reserved parameter/property names.
+        AnalyticsCatalog(
+            listOf(EventDefinition("event", 1, listOf(ParameterKey.count("session_start")))),
+            listOf(UserPropertyKey<Source>("app_update")),
+        )
     }
 
     @Test fun malformedPayloadsAndWrongDefinitionInstancesAreRejected() = runTest {
@@ -221,5 +242,139 @@ class AnalyticsTest {
         assertEquals(AnalyticsValue.Integer(2), sink.payloads().single().parameters["exercise_count"])
         core.close()
         assertEquals(AnalyticsCollection.Denied, sink.collection())
+    }
+
+    @Test fun staleConfigurationFailureDoesNotDiscardNewIdentityEvents() = runTest {
+        val core = core(StandardTestDispatcher(testScheduler))
+        val payloads = mutableListOf<AnalyticsPayload>()
+        var identityCalls = 0
+        val sink = object : AnalyticsSink {
+            override fun setCollection(collection: AnalyticsCollection) = Unit
+            override fun setIdentity(identity: AnalyticsIdentityPayload) {
+                if (identityCalls++ == 0) {
+                    core.updateIdentity(AnalyticsIdentity(AnalyticsUserId("next_user")))
+                    core.track(Event(42))
+                    error("Old configuration failed after identity changed")
+                }
+            }
+            override fun send(payload: AnalyticsPayload) { payloads.add(payload) }
+        }
+        core.attachSink(sink)
+        core.updateCollection(AnalyticsCollection.Granted)
+        advanceUntilIdle()
+        assertEquals(AnalyticsValue.Integer(42), payloads.single().parameters["exercise_count"])
+        core.close()
+    }
+
+    @Test fun transportCancellationExceptionDoesNotSilentlyKillWorker() = runTest {
+        val core = core(StandardTestDispatcher(testScheduler))
+        val payloads = mutableListOf<AnalyticsPayload>()
+        var configureCalls = 0
+        var sendCalls = 0
+        val sink = object : AnalyticsSink {
+            override fun setCollection(collection: AnalyticsCollection) = Unit
+            override fun setIdentity(identity: AnalyticsIdentityPayload) {
+                if (configureCalls++ == 0) throw CancellationException("SDK configuration failure")
+            }
+            override fun send(payload: AnalyticsPayload) {
+                if (sendCalls++ == 0) throw CancellationException("SDK send failure")
+                payloads.add(payload)
+            }
+        }
+        core.attachSink(sink)
+        core.updateCollection(AnalyticsCollection.Granted)
+        core.track(Event())
+        advanceUntilIdle()
+        assertEquals(0, core.queuedEventCount())
+        core.retrySinkConfiguration()
+        core.track(Event(1))
+        core.track(Event(2))
+        advanceUntilIdle()
+        assertEquals(AnalyticsValue.Integer(2), payloads.single().parameters["exercise_count"])
+        core.close()
+    }
+
+    @Test fun sameIdentityWithReorderedPropertiesPreservesPendingEvents() = runTest {
+        val first = UserPropertyKey<Source>("first")
+        val second = UserPropertyKey<Source>("second")
+        val core = DefaultAnalytics(
+            AnalyticsCatalog(listOf(Event.Definition), listOf(first, second)),
+            StandardTestDispatcher(testScheduler),
+        )
+        val user = AnalyticsUserId("user")
+        core.updateCollection(AnalyticsCollection.Granted)
+        core.updateIdentity(AnalyticsIdentity(user, listOf(first.value(Source.Button), second.value(Source.Button))))
+        core.track(Event())
+        core.updateIdentity(AnalyticsIdentity(user, listOf(second.value(Source.Button), first.value(Source.Button))))
+        assertEquals(1, core.queuedEventCount())
+        core.close()
+    }
+
+    @Test fun workerYieldsToOtherMainDispatcherWorkDuringLargeDrain() = runTest {
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val core = core(dispatcher)
+        val sink = Sink()
+        core.attachSink(sink)
+        core.updateCollection(AnalyticsCollection.Granted)
+        repeat(100) { core.track(Event()) }
+        var sentBeforeOtherWork = -1
+        launch(dispatcher) { sentBeforeOtherWork = sink.payloads.size }
+        advanceUntilIdle()
+        assertTrue(sentBeforeOtherWork in 1 until 100)
+        assertEquals(100, sink.payloads.size)
+        core.close()
+    }
+
+    @Test fun cancelledCallerStillClosesWorkerAndDisablesSink() = runTest {
+        val core = core(StandardTestDispatcher(testScheduler))
+        val sink = Sink()
+        core.attachSink(sink)
+        core.updateCollection(AnalyticsCollection.Granted)
+        advanceUntilIdle()
+        launch {
+            cancel()
+            core.close()
+        }.join()
+        assertEquals(AnalyticsCollection.Denied, sink.collections.last())
+        core.track(Event())
+        assertEquals(0, core.queuedEventCount())
+    }
+
+    @Test fun shutdownAccountsForPendingEvents() = runTest {
+        val core = core(StandardTestDispatcher(testScheduler))
+        core.updateCollection(AnalyticsCollection.Granted)
+        core.track(Event())
+        core.track(Event())
+        core.close()
+        assertEquals(0, core.queuedEventCount())
+        assertEquals(2, core.diagnostics().count { it.disposition == AnalyticsDisposition.Closed && it.eventName == "test_event" })
+    }
+
+    @Test fun initialGrantConfiguresIdentityWhileSinkIsEnabled() = runTest {
+        val core = core(StandardTestDispatcher(testScheduler))
+        val usersAtSend = mutableListOf<AnalyticsUserId?>()
+        val user = AnalyticsUserId("user1")
+        var enabled = false
+        var sdkUser: AnalyticsUserId? = null
+        val sink = object : AnalyticsSink {
+            override fun setCollection(collection: AnalyticsCollection) {
+                enabled = collection == AnalyticsCollection.Granted
+            }
+            override fun setIdentity(identity: AnalyticsIdentityPayload) {
+                // SDKs may ignore property writes while measurement is disabled.
+                if (enabled) sdkUser = identity.userId
+            }
+            override fun send(payload: AnalyticsPayload) { usersAtSend.add(sdkUser) }
+        }
+        try {
+            core.attachSink(sink)
+            core.updateIdentity(AnalyticsIdentity(user))
+            core.updateCollection(AnalyticsCollection.Granted)
+            core.track(Event())
+            advanceUntilIdle()
+            assertEquals(listOf<AnalyticsUserId?>(user), usersAtSend)
+        } finally {
+            core.close()
+        }
     }
 }

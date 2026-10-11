@@ -19,7 +19,7 @@ API.
 - Room **2.8** multiplatform, `androidx.sqlite-bundled`, `BundledSQLiteDriver` on iOS, migrations 2→3, 3→4, 4→5 in `:data-services:database`.
 - AndroidX DataStore **1.2** (preferences-core).
 - Coil **3** (`coil-compose`, `coil-network-ktor3`).
-- Firebase: Analytics, Crashlytics, Messaging — Android shell only.
+- Firebase: Android SDK adapters in `:data-services:firebase`, Swift SDK adapters in `iosApp`; common API/core in `:toolkit:{analytics,crash-reporting,messaging}:{api,core}`.
 - Auth: Google (`androidx-credentials` + Google Identity), Apple (custom).
 - Build: Gradle with convention plugins in `build-logic/convention/`, version catalog in `gradle/libs.versions.toml`. Type-safe project accessors enabled.
 - iOS deliverable: static XCFramework `shared.xcframework` via `ios.swiftpackage.convention` (Decompose api re-exported for Swift, `-lsqlite3` linker flag).
@@ -38,7 +38,7 @@ Groups:
 
 ### `:shared` — composition root
 
-- `Koin.kt` — `Koin.init { ... }` starts all Koin modules **explicitly by enumeration**. Any new module is added here manually.
+- `Koin.kt` — `Koin.init { ... }` starts all Koin modules **explicitly by enumeration** and returns `bootstrap/ApplicationBootstrap` with typed startup contracts. Any new module is added here manually. Each service core owns its annotated DI module; `configuration/ApplicationConfigurationModule` owns platform build configuration through `expect/actual` and `@Single`. App shells attach SDK adapters.
 - `RootComponent` / `RootViewModel` / `RootScreen` / `RootContract` / `RootDirection` / `RootLoader` / `RootState` — primary stack navigator + token observer for auto-logout (`authorizationFeature.getToken()` → `onEach { if (it == null) navigateTo(Login) }`).
 - `DialogComponent` — separate slot navigator for bottom sheets layered above the stack.
 
@@ -74,7 +74,7 @@ Groups:
 - `:database` — Room `@Database(version = 5)`, all `@Entity`, DAOs, migrations, `models/*Pack` (`@Embedded` + `@Relation`), `converters/StringListConverter`, `DatabaseBuilder` (expect/actual), **`fallbackToDestructiveMigration(dropAllTables = true)` on both platforms — intentional**.
 - `:datastore` — wrapper over AndroidX DataStore.
 - `:google-auth` / `:apple-auth` — platform-specific wrappers for ID token.
-- `:firebase` — `interface FirebaseProvider` + `Firebase{Analytics,Crashlytics,Messaging}` with Android implementations (via `FirebaseProvider.setup(...)` in `App.onCreate`); iOS empty stub.
+- `:firebase` — Android `AnalyticsSink` / `CrashSink` / `MessagingSink` adapters and the system FCM service. Only `:androidApp` depends on this transport module. Swift adapters live in `iosApp`; shared and features depend on toolkit contracts.
 
 ### `:data-features:*` — domain layer
 
@@ -86,6 +86,8 @@ Groups:
 7 modules, one per direction. No cross-direction dependencies. See **Mappers** section below.
 
 ### `:toolkit:*` — platform-aware utilities
+
+- `:analytics:{api,core}`, `:crash-reporting:{api,core}`, `:messaging:{api,core}` — typed service contracts and bounded app-lifetime cores. Features inject consumer APIs; app shells use bootstrap interfaces. Messaging callback validation belongs to core, not the Firebase service.
 
 - `:context` — `NativeContext` (expect/actual: Android holds `Context`, iOS — pure object), `ContextModule`.
 - `:http-client` — Ktor `HttpClient` with `responseValidator` + `ApiErrorParser` (translates HTTP into `AppError`).
@@ -140,7 +142,7 @@ Hard rules:
 - **A UI module (`:ui-screen-features:*`, `:ui-dialog-features:*`) does NOT depend** on `:data-services:*` directly — only via `:data-features:feature-api`.
 - **`:data-features:feature-api`** does not depend on `:data-services:*`. It is pure contracts + domain models.
 - **`:data-mappers:*`** depend on adjacent layers (`dto-to-entity` → `:data-services:backend` + `:data-services:database`), but **never on UI**.
-- **`:toolkit:*`** depends on nothing except other `:toolkit:*` and `:data-services:firebase` (for crash logging).
+- **`:toolkit:*`** does not depend on the data layer or Firebase SDK. Service API modules contain pure contracts; core modules own state/queues and their Koin modules.
 - **`:design-system:*`** does not depend on the data layer. `AppTokens` are pure UI primitives.
 - `:shared` is the only module that imports "everything". `:androidApp`/`:iosApp` reach `RootComponent` and `Koin.init` only through `:shared`.
 
@@ -167,7 +169,7 @@ What each does:
 - `compose.multiplatform.convention` — Compose plugins, metrics/reports in `build/compose-{metrics,reports}`, stability is inferred from code annotations and types.
 - `koin.annotation.convention` — KSP, Koin Core + Annotations, `kspCommonMainMetadata`, `KOIN_CONFIG_CHECK = false` (TODO until next Koin release).
 - `room.convention` — KSP + Room compiler for Android and all iOS targets, `room.schemaLocation = $projectDir/schemas`.
-- `ios.swiftpackage.convention` — assembles `XCFramework("shared")`, **static** framework, exports Decompose API + `:data-services:firebase`, `linkerOpts: -lsqlite3`.
+- `ios.swiftpackage.convention` — assembles `XCFramework("shared")`, **static** framework, exports Decompose API + analytics/crash-reporting/messaging API contracts, `linkerOpts: -lsqlite3`.
 
 Additional global settings (`gradle.properties`):
 
@@ -227,7 +229,7 @@ operationManager catches via CoroutineExceptionHandler
 BaseViewModel.sendError(exception, onError)
     ↓
 AppLogger.General.error(...)            // file log
-FirebaseProvider.recordException(...)   // crashlytics
+CrashReporting.record(...)              // common core → platform Crashlytics adapter
 ErrorProvider.provide(exception, onError)
     ↓
 ErrorProviderImpl maps AppError → AppErrorState

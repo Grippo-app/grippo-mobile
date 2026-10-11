@@ -137,3 +137,7 @@ include(":data-mappers:state-to-domain")
 
 include(":toolkit:analytics:api")
 include(":toolkit:analytics:core")
+include(":toolkit:crash-reporting:api")
+include(":toolkit:crash-reporting:core")
+include(":toolkit:messaging:api")
+include(":toolkit:messaging:core")
