@@ -98,9 +98,7 @@ public data object AppDp {
     val shadow: Shadow = Shadow
 
     public data object Swipe {
-        val borderWidth: Dp = 1.dp
-        val extraVerticalPadding: Dp = padding.extraSmall
-        val actionWidth: Dp = 80.dp
+        val actionWidth: Dp = 56.dp
         val actionHeight: Dp = 48.dp
         val actionRadius: Dp = radius.medium
         val actionSpacing: Dp = padding.small

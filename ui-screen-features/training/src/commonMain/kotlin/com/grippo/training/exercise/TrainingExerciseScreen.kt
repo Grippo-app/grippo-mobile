@@ -68,7 +68,7 @@ import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.empty_exercise_sets
 import com.grippo.design.resources.provider.exercise_record
-import com.grippo.design.resources.provider.icons.Cancel
+import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.sets_value
@@ -189,18 +189,17 @@ internal fun TrainingExerciseScreen(
 
                                 DraggableItem(state = dragDropState, key = iteration.id) {
                                     SwipeToReveal(
+                                        horizontalPadding = AppTokens.dp.screen.horizontalPadding,
                                         actions = {
                                             SwipeRevealAction(
-                                                modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
                                                 label = AppTokens.strings.res(Res.string.delete_btn),
-                                                icon = AppTokens.icons.Cancel,
+                                                icon = AppTokens.icons.Trash,
                                                 onClick = deleteIterationProvider
                                             )
                                         }
                                     ) {
                                         IterationCard(
                                             modifier = Modifier
-                                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                                                 .fillMaxWidth(),
                                             value = iteration,
                                             style = IterationCardStyle.Editable(

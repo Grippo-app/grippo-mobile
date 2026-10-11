@@ -39,7 +39,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.empty_training_exercises
-import com.grippo.design.resources.provider.icons.Cancel
+import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
@@ -105,18 +105,17 @@ internal fun ColumnScope.ExercisesPage(
 
                                 DraggableItem(state = dragDropState, key = exercise.id) {
                                     SwipeToReveal(
+                                        horizontalPadding = AppTokens.dp.screen.horizontalPadding,
                                         actions = {
                                             SwipeRevealAction(
-                                                modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
                                                 label = AppTokens.strings.res(Res.string.delete_btn),
-                                                icon = AppTokens.icons.Cancel,
+                                                icon = AppTokens.icons.Trash,
                                                 onClick = deleteExerciseProvider
                                             )
                                         }
                                     ) {
                                         ExerciseCard(
                                             modifier = Modifier
-                                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                                                 .fillMaxWidth(),
                                             value = exercise,
                                             style = ExerciseCardStyle.Large(

@@ -139,9 +139,7 @@ internal fun StartTrainingScreen(
                 ?: return@HorizontalPager
 
             StartTrainingPage(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                modifier = Modifier.fillMaxSize(),
                 option = option,
                 previousOption = state.options.getOrNull(index - 1),
                 nextOption = state.options.getOrNull(index + 1),

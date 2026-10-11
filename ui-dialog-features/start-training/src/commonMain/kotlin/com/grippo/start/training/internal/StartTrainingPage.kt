@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -121,17 +122,22 @@ private fun EmptyPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         StartTrainingInfoCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             accent = AppTokens.colors.text.tertiary,
             icon = AppTokens.icons.Muscle,
             title = AppTokens.strings.res(Res.string.start_training_option_empty_title),
             description = AppTokens.strings.res(Res.string.start_training_option_empty_description),
         )
 
+        HorizontalDivider(color = AppTokens.colors.divider.default)
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
+                .weight(1f)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         ) {
             EmptyState(
                 modifier = Modifier.fillMaxSize(),
@@ -203,17 +209,24 @@ private fun ExercisesPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         ExerciseHeaderBanner(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             header = header,
             exercisesCount = exercises.size,
         )
+
+        HorizontalDivider(color = AppTokens.colors.divider.default)
 
         BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
             overlay = AppTokens.colors.background.dialog,
-            contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.subContent),
+            contentPadding = PaddingValues(
+                horizontal = AppTokens.dp.dialog.horizontalPadding,
+                vertical = AppTokens.dp.contentPadding.subContent,
+            ),
             bottom = {
                 Spacer(modifier = Modifier.height(overlayReservedHeight))
             },

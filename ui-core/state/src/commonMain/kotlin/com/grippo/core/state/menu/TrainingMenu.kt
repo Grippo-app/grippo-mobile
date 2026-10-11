@@ -10,7 +10,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.details
 import com.grippo.design.resources.provider.edit_btn
-import com.grippo.design.resources.provider.icons.Cancel
+import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.icons.Edit
 import com.grippo.design.resources.provider.icons.Info
 import com.grippo.design.resources.provider.selected
@@ -56,7 +56,7 @@ public sealed class TrainingMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.delete_btn)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Cancel
+        override fun icon(): ImageVector = AppTokens.icons.Trash
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.semantic.error
