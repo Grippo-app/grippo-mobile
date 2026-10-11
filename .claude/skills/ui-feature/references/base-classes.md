@@ -3,7 +3,7 @@
 > Drop-in reference sources live at the end (BaseViewModel/Component/Screen/models/
 > OperationManager/platform helpers). Replace `<org>`/`<product>` placeholders both
 > inside fences and in each `Target path` line. The `ResultManager`/`ResultEmitter`
-> sources live in `references/results.md`.
+> source links and result conventions live in `references/results.md`.
 
 ## `BaseViewModel`
 
@@ -59,7 +59,7 @@ override fun onDestroy()
 
 - **`state`** is read-only outside the VM. `update { it.copy(...) }` is the **only** mutator (atomic compare-and-swap; thread-safe). **Never** capture `state.value` before a slow op then `update { it.copy(... = capturedValue + ...) }` — a concurrent update is lost; the lambda receives the **current** value.
 - **`loaders`** is an `ImmutableSet` (multiple concurrent). `withLoader(MyLoader.X) { block() }` adds X, runs `block`, removes X on completion (success **or** failure via `try/finally`); `loader == null` runs without modifying the set. Useful inside `mapLatest`/`flatMapLatest` chains.
-- **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire `navigateTo()` may collapse (double-tap debounce — intentional). For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
+- **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
 - **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. On a non-`CancellationException` throw: log + Firebase (if enabled) + `ErrorProvider.provide(exception, callback = onError)` (the `onError` fires when the dialog is dismissed). Default `Processing.Infinity` runs to completion regardless of lifecycle.
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.
 - **`Processing.WhileActive` has no effect in the block form** — lifecycle gating applies only to `Flow.safeLaunch()`. Use `Processing.Infinity` (default) for blocks.
@@ -251,7 +251,7 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 - **`BaseLoader`** — `public interface BaseLoader`. Active async ops. Per-screen `<Name>Loader` is an `@Immutable sealed interface : BaseLoader` (every subtype `@Immutable data object`). A screen with no async ops still declares the interface (empty body).
 - **`BaseRouter`** — `public interface BaseRouter`. Nav route marker in `:ui-screen-features:screen-api`. `@Serializable` on the sealed class and every subtype; subtypes carry only serializable payloads.
 - **`BaseResult`** + `Result<T>` — `Result<T : Any>(val data: T) : BaseResult` wraps every payload carried through `ResultManager`. Action protocols are plain sealed interfaces nested inside the producer's `*Router.<Screen>` (no `BaseResult` extension); `sendResult` wraps them in `Result<T>`.
-- **`ResultKey<T : BaseResult>(val key: String)`** + `ResultKeys.create(key)` — typed channel identifiers; equal by string. **One `ResultKey` per protocol, not per subtype.** A single shared key is correct only while **one** screen opens the producer (else derive a key per caller — `references/results.md`).
+- **`ResultKey<T : BaseResult>(val key: String)`** + `ResultKeys.create(key)` — typed channel identifiers; equal by string. **One `ResultKey` per protocol, not per subtype.** The receiver defines the key in its companion object and passes an explicit `resultKey: ResultKey<Result<Payload>>` on the producer route; scope by receiver identity when multiple instances can coexist (see `references/results.md`).
 - **`ComponentIdentifier`** + `NoneIdentifier` — distinguishes multiple **live instances of the same producer** in one stack. Default `NoneIdentifier`; most components leave it.
 
 ### Rules (MUST)
@@ -794,4 +794,4 @@ private fun Modifier.offsetXFactor(factor: Float): Modifier =
     }
 ```
 
-> `ResultEmitter.kt` / `ResultManager.kt` drop-in sources: see `references/results.md`.
+> `ResultEmitter.kt` / `ResultManager.kt` source of truth and conventions: see `references/results.md`.

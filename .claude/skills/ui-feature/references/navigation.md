@@ -85,6 +85,19 @@ A `sealed class Child(component: BaseComponent<*>)` lets `RootScreen` pattern-ma
 - The `<X>RootComponent` form (`HomeRootComponent`, `NotesRootComponent`) is reserved **only** for features whose first sub-screen reuses the feature name (`:home` has a `Home` sub-screen → `HomeRootComponent`; `:notes` has a `Notes` sub-screen → `NotesRootComponent`).
 - Owning a private `StackNavigation` is **orthogonal** to this naming: `AuthComponent`/`ProfileComponent`/`NoteDetailComponent` all own internal stacks despite the bare name. `DebugComponent` is the rare single-screen feature with no inner stack.
 
+## Returning data from a screen
+
+Read [results.md](results.md) for the agreed return convention. The receiving
+screen owns companion key definitions; the producing route carries explicit
+`resultKey: ResultKey<Result<Payload>>`. Thread it without rewriting through Directions, constructor
+callbacks and `createChild`. The producer sends the result then requests ordinary
+Back. Parent navigation performs its normal `pop()`; receiver observers handle
+data and request their own next destination through normal Directions.
+
+Do not infer the receiver from `childStack`, add an `Origin` mapping in the
+producer, or introduce a parent close-and-resend relay or runtime selection flag.
+Keep callbacks out of serialized routes and retain keys on restoration.
+
 ## Navigation operations
 
 `StackNavigation<T>` provides: `push(config)`, `pop()`, `popWhile(predicate)`, `popTo(index)`, `replaceCurrent(config)`, `replaceAll(configs)`, `bringToFront(config)`.

@@ -72,11 +72,9 @@
     <string name="confirm_btn">Confirm</string>
     <string name="no_data_yet">No data yet</string>
     <string name="empty_training_exercises">Add your first exercise to start tracking this workout.</string>
-    <string name="empty_exercise_sets">No sets yet. Add one to start tracking.</string>
     <string name="empty_daily_trainings">No workouts on this day.</string>
     <string name="empty_exercise_examples">No exercises match your search.</string>
-    <string name="exercise_example_picker_suggestions_chip">Suggested</string>
-    <string name="exercise_example_picker_title_replace">Replace</string>
+    <string name="exercise_library_suggestions_chip">Suggested</string>
     <string name="daily">Daily</string>
     <string name="yearly">Yearly</string>
     <string name="custom">Custom</string>
@@ -479,10 +477,10 @@
     <string name="notification_weight_title">Quick weigh-in? 👋</string>
     <string name="notification_weight_description">A fresh weight keeps your progress and recommendations accurate.</string>
 
-    <string name="tooltip_suspicious_weight_title">Unusual weight</string>
-    <string name="tooltip_suspicious_weight_subtitle">Possible missing or extra digit</string>
-    <string name="tooltip_suspicious_reps_title">Unusual rep count</string>
-    <string name="tooltip_suspicious_reps_subtitle">Possible missing or extra digit</string>
+    <string name="training_unusual_weight_title">Unusual weight</string>
+    <string name="training_unusual_weight_subtitle">Possible missing or extra digit</string>
+    <string name="training_unusual_reps_title">Unusual rep count</string>
+    <string name="training_unusual_reps_subtitle">Possible missing or extra digit</string>
 
     <!-- Goal Profile -->
     <string name="goal_title">Training goal</string>
@@ -876,4 +874,9 @@
     <string name="iteration_picker_previous_sets">Previous sets</string>
     <string name="iteration_picker_weight_range">%1$s–1000 kg</string>
     <string name="iteration_picker_repetitions_range">1–100 reps</string>
+    <string name="training_external_weight">External weight</string>
+    <string name="training_previous_set">Last time · first set: %1$s × %2$s</string>
+    <string name="training_no_sets">No sets yet</string>
+    <string name="training_first_set_hint">Add your first set to start tracking your progress.</string>
+    <string name="exercise_library">Exercise library</string>
 </resources>

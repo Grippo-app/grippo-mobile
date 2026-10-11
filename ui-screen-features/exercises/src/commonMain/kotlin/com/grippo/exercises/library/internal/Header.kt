@@ -1,4 +1,4 @@
-package com.grippo.exercise.example.picker.internal
+package com.grippo.exercises.library.internal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,23 +21,23 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_example_picker_suggestions_chip
-import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
-import com.grippo.exercise.example.picker.Queries
-import com.grippo.exercise.example.picker.QueryFilter
+import com.grippo.design.resources.provider.exercise_library_suggestions_chip
+import com.grippo.exercises.library.ExerciseLibraryContract
+import com.grippo.exercises.library.Queries
+import com.grippo.exercises.library.QueryFilter
 
 @Composable
 internal fun Header(
     modifier: Modifier = Modifier,
     value: Queries,
     canShowSuggestions: Boolean,
-    contract: ExerciseExamplePickerContract,
+    contract: ExerciseLibraryContract,
 ) {
     Column(modifier = modifier) {
         InputSearch(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
             value = value.name,
             onValueChange = contract::onQueryChange
         )
@@ -46,7 +46,7 @@ internal fun Header(
 
         val groupsListState = rememberLazyListState()
 
-        LaunchedEffect(value.muscleGroups) {
+        LaunchedEffect(value.muscleGroups, value.filter, canShowSuggestions) {
             val groupOffset = if (canShowSuggestions) 1 else 0
             val targetIndex = when (val filter = value.filter) {
                 QueryFilter.Suggestions -> if (canShowSuggestions) 0 else null
@@ -63,7 +63,7 @@ internal fun Header(
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
             state = groupsListState
         ) {
             if (canShowSuggestions) {
@@ -74,7 +74,7 @@ internal fun Header(
 
                     CheckSelectableCard(
                         style = CheckSelectableCardStyle.Small(
-                            title = AppTokens.strings.res(Res.string.exercise_example_picker_suggestions_chip)
+                            title = AppTokens.strings.res(Res.string.exercise_library_suggestions_chip)
                         ),
                         isSelected = value.filter is QueryFilter.Suggestions,
                         onSelect = suggestionsClickProvider
@@ -112,7 +112,7 @@ private fun HeaderPreview() {
                 filter = QueryFilter.Suggestions,
             ),
             canShowSuggestions = true,
-            contract = ExerciseExamplePickerContract.Empty,
+            contract = ExerciseLibraryContract.Empty,
         )
     }
 }

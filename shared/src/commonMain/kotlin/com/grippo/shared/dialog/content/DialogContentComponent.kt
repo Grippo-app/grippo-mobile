@@ -28,8 +28,6 @@ import com.grippo.duration.picker.DurationPickerComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
-import com.grippo.exercise.example.picker.ExerciseExamplePickerComponent
-import com.grippo.exercise.example.picker.ExerciseExamplePickerMode
 import com.grippo.goal.setup.suggestion.GoalSetupSuggestionComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
@@ -307,23 +305,6 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
-                ExerciseExamplePickerComponent(
-                    componentContext = context,
-                    mode = when (router) {
-                        is DialogConfig.ExerciseExamplePicker.Default -> ExerciseExamplePickerMode.Default(
-                            preselectedMuscleGroupId = router.preselectedMuscleGroupId,
-                        )
-
-                        is DialogConfig.ExerciseExamplePicker.SimilarTo -> ExerciseExamplePickerMode.SimilarTo(
-                            targetExerciseExampleId = router.targetExerciseExampleId,
-                        )
-                    },
-                    onResult = { example -> finish { router.onResult.invoke(example) } },
-                    back = { finish(null) }
-                )
-            )
-
             is DialogConfig.TrainingMenuPicker -> Child.MenuPicker(
                 MenuPickerComponent(
                     componentContext = context,
@@ -427,8 +408,7 @@ internal class DialogContentComponent(
         data class MonthPicker(override val component: MonthPickerComponent) :
             Child(component)
 
-        data class ExerciseExamplePicker(override val component: ExerciseExamplePickerComponent) :
-            Child(component)
+
 
         data class IterationPicker(override val component: IterationPickerComponent) :
             Child(component)

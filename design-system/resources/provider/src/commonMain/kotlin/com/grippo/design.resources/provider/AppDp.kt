@@ -515,17 +515,8 @@ public data object AppDp {
     }
 
     public data object IterationCard {
-        val editable: Editable = Editable
-
-        public data object Editable {
-            val labelMinWidth: Dp = 60.dp
-            val borderWidth: Dp = 1.dp
-            val verticalPadding: Dp = padding.extraSmall
-            val horizontalPadding: Dp = padding.medium
-            val height: Dp = size.medium
-            val radius: Dp = AppDp.radius.small
-            val spacing: Dp = padding.medium
-        }
+        val borderWidth: Dp = 1.dp
+        val radius: Dp = AppDp.radius.small
     }
 
     public data object Toggle {

@@ -65,6 +65,21 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 
 ## Navigation
 
+Screen-result rules are defined in the ui-feature skill,
+[results.md](../../ui-feature/references/results.md). Review these explicitly:
+
+- **Hardcoded receiver key inside a returning screen.** Receiver companion owns
+  the definition; producer receives explicit `resultKey` through its route.
+- **Back in an observer to close another screen**, or parent close-and-resend
+  relays for standard screen returns. Producer uses `sendResult → back`; updates
+  that keep the screen open only send data.
+- **Runtime selection/navigation guards** such as `selectionSent`, `resultHandled`
+  or `isClosing`, including equivalent flags hidden in Jobs, sets or wrappers.
+- **Claiming a navigation race without evidence**, or claiming conflated navigation
+  provides strict debounce/exactly-once behavior. Check actual callback chains and
+  queued/immediate dispatch for result-driven navigation.
+
+
 - **Compose Navigation alongside Decompose.** One nav library only. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
 - **`LaunchedEffect(Unit) { navigate(...) }`.** Direction + eventListener.
 - **Routes carrying lambdas.** Not serializable; crash on backgrounding.

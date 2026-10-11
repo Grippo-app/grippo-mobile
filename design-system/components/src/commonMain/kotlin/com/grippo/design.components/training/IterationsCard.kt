@@ -34,8 +34,7 @@ public fun IterationsCard(
         value.forEach { iteration ->
             key(iteration.id) {
                 IterationCard(
-                    value = iteration,
-                    style = IterationCardStyle.SmallView
+                    value = iteration
                 )
             }
         }

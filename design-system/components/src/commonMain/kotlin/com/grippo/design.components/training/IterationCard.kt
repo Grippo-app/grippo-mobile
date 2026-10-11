@@ -1,121 +1,61 @@
 package com.grippo.design.components.training
 
-import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubIteration
-import com.grippo.design.components.training.internal.IterationCardEditable
-import com.grippo.design.components.training.internal.IterationCardSmallView
+import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-
-@Immutable
-public sealed interface IterationCardStyle {
-    @Immutable
-    public data object SmallView : IterationCardStyle
-
-    @Immutable
-    public data class Editable(
-        val label: String,
-        val onVolumeClick: () -> Unit,
-        val onRepetitionClick: () -> Unit,
-        val volumeDecorator: @Composable BoxScope.() -> Unit,
-        val repetitionDecorator: @Composable BoxScope.() -> Unit,
-    ) : IterationCardStyle
-}
 
 @Composable
 public fun IterationCard(
     modifier: Modifier = Modifier,
     value: IterationState,
-    style: IterationCardStyle = IterationCardStyle.SmallView
 ) {
-    when (style) {
-        is IterationCardStyle.SmallView -> IterationCardSmallView(
-            modifier = modifier,
-            value = value
+    Row(
+        modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = value.volume().shortAnnotated(),
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.secondary
         )
 
-        is IterationCardStyle.Editable -> IterationCardEditable(
-            modifier = modifier,
-            label = style.label,
-            value = value,
-            onVolumeClick = style.onVolumeClick,
-            onRepetitionClick = style.onRepetitionClick,
-            volumeDecorator = style.volumeDecorator,
-            repetitionDecorator = style.repetitionDecorator,
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
+        Text(
+            text = value.repetitions.shortAnnotated(),
+            style = AppTokens.typography.b14Semi(),
+            color = AppTokens.colors.text.secondary
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun IterationCardSmallViewPreview() {
+private fun IterationCardPreview() {
     PreviewContainer {
         IterationCard(
             value = stubIteration(),
-            style = IterationCardStyle.SmallView
         )
         IterationCard(
             value = stubIteration(),
-            style = IterationCardStyle.SmallView
         )
         IterationCard(
-            value = stubIteration(),
-            style = IterationCardStyle.SmallView
+            value = stubPendingIteration(),
         )
         IterationCard(
-            value = stubIteration(),
-            style = IterationCardStyle.SmallView
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun IterationCardEditablePreview() {
-    PreviewContainer {
-        IterationCard(
-            value = stubIteration(),
-            style = IterationCardStyle.Editable(
-                label = "1",
-                onVolumeClick = {},
-                onRepetitionClick = {},
-                volumeDecorator = {},
-                repetitionDecorator = {}
-            )
-        )
-        IterationCard(
-            value = stubIteration(),
-            style = IterationCardStyle.Editable(
-                label = "2",
-                onVolumeClick = {},
-                onRepetitionClick = {},
-                volumeDecorator = {},
-                repetitionDecorator = {}
-            ),
-        )
-        IterationCard(
-            value = stubIteration(),
-            style = IterationCardStyle.Editable(
-                label = "3",
-                onVolumeClick = {},
-                onRepetitionClick = {},
-                volumeDecorator = {},
-                repetitionDecorator = {}
-            ),
-        )
-        IterationCard(
-            value = stubIteration(),
-            style = IterationCardStyle.Editable(
-                label = "4",
-                onVolumeClick = {},
-                onRepetitionClick = {},
-                volumeDecorator = {},
-                repetitionDecorator = {}
-            ),
+            value = stubPendingIteration(),
         )
     }
 }

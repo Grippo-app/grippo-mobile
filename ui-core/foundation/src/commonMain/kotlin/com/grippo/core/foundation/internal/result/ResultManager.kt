@@ -4,10 +4,11 @@ import com.grippo.core.foundation.models.BaseResult
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.InjectedParam
 
@@ -22,16 +23,21 @@ internal class ResultManager(
         key: ResultKey<T>,
         onResult: suspend (T) -> Unit
     ) {
-        val job = resultEmitter.results
-            .filter { (resultKey, _) -> resultKey == key.key }
-            .onEach { (_, result) -> @Suppress("UNCHECKED_CAST") onResult(result as T) }
-            .launchIn(coroutineScope)
+        // Subscribe before returning so an immediate result cannot race registration.
+        val job = coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
+            resultEmitter.results
+                .filter { (resultKey, _) -> resultKey == key.key }
+                .collect { (_, result) -> @Suppress("UNCHECKED_CAST") onResult(result as T) }
+        }
 
         activeSubscriptions.add(job)
     }
 
     fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
-        resultEmitter.sendResult(key, data)
+        coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
+            ensureActive()
+            resultEmitter.sendResult(key, data)
+        }
     }
 
     fun clear() {

@@ -1,4 +1,4 @@
-package com.grippo.exercise.example.picker
+package com.grippo.exercises.library
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,25 +40,34 @@ import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.toolbar.Leading
+import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_exercise_examples
+import com.grippo.design.resources.provider.exercise_library
 import com.grippo.design.resources.provider.icons.EmptyExerciseExample
-import com.grippo.exercise.example.picker.internal.Header
+import com.grippo.exercises.library.internal.Header
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-internal fun ExerciseExamplePickerScreen(
-    state: ExerciseExamplePickerState,
-    contract: ExerciseExamplePickerContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+internal fun ExerciseLibraryScreen(
+    state: ExerciseLibraryState,
+    contract: ExerciseLibraryContract
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.exercise_library),
+        style = ToolbarStyle.Transparent,
+        leading = Leading.Back(contract::onBack),
+    )
 
-    val replaceMode = state.mode as? ExerciseExamplePickerMode.SimilarTo
+    val replaceMode = state.mode as? ExerciseLibraryMode.SimilarTo
 
     var cachedCardTarget by remember {
         mutableStateOf<ExerciseExampleValueState?>(null)
@@ -80,7 +91,7 @@ internal fun ExerciseExamplePickerScreen(
             FocusFrame(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
             ) {
                 ExerciseExampleCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -108,7 +119,8 @@ internal fun ExerciseExamplePickerScreen(
     AnimatedContent(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f),
+            .weight(1f)
+            .imePadding(),
         transitionSpec = {
             (fadeIn(animationSpec = tween(220, delayMillis = 90)))
                 .togetherWith(fadeOut(animationSpec = tween(90)))
@@ -118,24 +130,23 @@ internal fun ExerciseExamplePickerScreen(
         when (it) {
             true -> EmptyState(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
                 value = AppTokens.icons.EmptyExerciseExample,
                 text = AppTokens.strings.res(Res.string.empty_exercise_examples)
             )
 
             false -> {
                 val basePadding = PaddingValues(
-                    horizontal = AppTokens.dp.dialog.horizontalPadding,
+                    horizontal = AppTokens.dp.screen.horizontalPadding,
                     vertical = AppTokens.dp.contentPadding.content
                 )
 
                 BottomOverlayContainer(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                        .fillMaxSize(),
                     contentPadding = basePadding,
-                    overlay = AppTokens.colors.background.dialog,
+                    overlay = AppTokens.colors.background.screen,
                     content = { containerModifier, resolvedPadding ->
                         val listState = rememberLazyListState()
                         val canLoadMore = !state.pagination.isEndReached &&
@@ -157,8 +168,7 @@ internal fun ExerciseExamplePickerScreen(
 
                         LazyColumn(
                             modifier = containerModifier
-                                .fillMaxWidth()
-                                .weight(1f),
+                                .fillMaxSize(),
                             state = listState,
                             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                             contentPadding = resolvedPadding
@@ -181,7 +191,7 @@ internal fun ExerciseExamplePickerScreen(
                         }
                     },
                     bottom = {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
                         Spacer(modifier = Modifier.navigationBarsPadding())
                     }
@@ -195,15 +205,15 @@ internal fun ExerciseExamplePickerScreen(
 @Composable
 private fun ScreenPreviewDefault() {
     PreviewContainer {
-        ExerciseExamplePickerScreen(
-            state = ExerciseExamplePickerState(
-                mode = ExerciseExamplePickerMode.Default(preselectedMuscleGroupId = null),
+        ExerciseLibraryScreen(
+            state = ExerciseLibraryState(
+                mode = ExerciseLibraryMode.Default(preselectedMuscleGroupId = null),
                 exerciseExamples = persistentListOf(
                     stubExerciseExample(),
                     stubExerciseExample(),
                 ),
             ),
-            contract = ExerciseExamplePickerContract.Empty,
+            contract = ExerciseLibraryContract.Empty,
         )
     }
 }
@@ -213,9 +223,9 @@ private fun ScreenPreviewDefault() {
 private fun ScreenPreviewReplace() {
     val targetExample = stubExerciseExample().value
     PreviewContainer {
-        ExerciseExamplePickerScreen(
-            state = ExerciseExamplePickerState(
-                mode = ExerciseExamplePickerMode.SimilarTo(
+        ExerciseLibraryScreen(
+            state = ExerciseLibraryState(
+                mode = ExerciseLibraryMode.SimilarTo(
                     targetExerciseExampleId = targetExample.id,
                     target = targetExample,
                 ),
@@ -225,7 +235,7 @@ private fun ScreenPreviewReplace() {
                 ),
                 queries = Queries(filter = QueryFilter.Suggestions),
             ),
-            contract = ExerciseExamplePickerContract.Empty,
+            contract = ExerciseLibraryContract.Empty,
         )
     }
 }
@@ -234,11 +244,11 @@ private fun ScreenPreviewReplace() {
 @Composable
 private fun ScreenPreviewEmpty() {
     PreviewContainer {
-        ExerciseExamplePickerScreen(
-            state = ExerciseExamplePickerState(
-                mode = ExerciseExamplePickerMode.Default(preselectedMuscleGroupId = null),
+        ExerciseLibraryScreen(
+            state = ExerciseLibraryState(
+                mode = ExerciseLibraryMode.Default(preselectedMuscleGroupId = null),
             ),
-            contract = ExerciseExamplePickerContract.Empty,
+            contract = ExerciseLibraryContract.Empty,
         )
     }
 }

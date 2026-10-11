@@ -76,6 +76,22 @@ mappers (mappers), reusable widgets in `:design-system:components`
 8. **Verify** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
    assemble when `iosEnabled: true`). Build failures are yours to fix.
 
+## Screen results and dialog-to-screen changes
+
+For any screen that returns data, read [references/results.md](references/results.md)
+before changing routes, Components or observers. The receiver defines its key in
+its companion object and passes `resultKey` to the producer; the producer uses
+`sendResult → back`. No Back in receiver observers, result relays or hidden
+selection/navigation flags.
+
+When converting a dialog to a screen, follow the existing screen feature-root,
+subgraph, seven-file MVI and visibility patterns. Route through `screen-api`,
+update all callers/dependencies/config entries, use screen toolbar/background/
+spacing/insets from the design system, and preserve all existing modes and states.
+Remove obsolete dialog names, resources and integration points within the migration
+scope. Compare with actual neighboring features; do not invent a new construction
+and present it as an existing project convention.
+
 ## Stop and ask
 
 - Required reading file missing → `BLOCKED: required reading missing — <list>`.

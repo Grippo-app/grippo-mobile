@@ -28,6 +28,7 @@ kotlin {
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
         implementation(projects.uiScreenFeatures.screenApi)
+        implementation(projects.uiScreenFeatures.exercises)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.stateToDomain)

@@ -305,30 +305,28 @@ Fully separate subgraph parallel to the screen stack navigator:
 - `DialogController.Session` is bound to the originating step and session. Its `push`, `replaceCurrent`, `back`, and `close` methods ignore inactive or removed steps. It is supplied by the host, not injected through Koin.
 - Pickers return results via typed callbacks in their configs. The host guards delivery using the originating step and delivers results after popping the nested picker or closing the root sheet.
 
-### `ResultManager` vs callback in DialogConfig
+### Screen results vs dialog callbacks
 
-- **Callback in DialogConfig** (`onResult = { value -> ... }`) — default path for pickers. Each picker has its own typed `onResult` parameter. Simple, explicit, local.
-- **`ResultManager` via `ResultKey`** — for cases where a callback cannot be threaded:
-  - Between two screens in different feature modules.
-  - When the initiator and consumer are split by lifecycle (one dialog launched another, the answer needs to reach the initiator).
+The detailed rules are in [.claude/skills/ui-feature/references/results.md](.claude/skills/ui-feature/references/results.md).
 
-  Usage: `Component A` calls `sendResult(MyKey, data)`, `Component B` subscribes via `observeResult(MyKey) { data -> ... }`. `ResultEmitter` — singleton `Channel<Pair<String, BaseResult>>(BUFFERED)`; `ResultManager` is per-component with `Job` subscriptions.
-
-  **Action types live inside the child's `Router.<Screen>` config.** When a screen emits results to a parent, declare them as a nested `public sealed interface Action` (or similar) on the corresponding `*Router.<Screen>` data class in `:screen-api`. Sender and observer reference the same fully-qualified path, e.g. `TrainingRouter.Exercise.Action.Sync(exercise)` / `Action.Remove(id)`. This keeps the screen's full contract (input + output) in one place and avoids leaking the result protocol into shared internal packages.
-
-  **One `observeResult` call per Component per domain.** `ResultEmitter`'s `Channel` is single-consumer — multiple subscriptions inside one Component compete via FIFO and a non-matching filter silently drops the item. Use a single subscription with `when` dispatch on the sealed subtypes:
-
-  ```kotlin
-  observeResult<Result<TrainingRouter.Exercise.Action>>(
-      key = ResultKeys.create("exercise"),
-      onResult = {
-          when (val action = it.data) {
-              is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
-              is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
-          }
-      }
-  )
-  ```
+- Dialogs keep typed `DialogConfig.onResult` callbacks and their session `finish(result)`.
+- Returning screens use the existing BaseComponent result bus. The receiver defines
+  keys in its ViewModel companion (constant or stable entity-ID function), subscribes
+  once before launch, and passes explicit `resultKey: ResultKey<Result<Payload>>` through the producer's
+  serializable route and Component constructor. Producer keys are never hardcoded.
+- The producer Component handles a result Direction with `sendResult` followed by
+  ordinary `back.invoke()`. Updates that keep the screen open only send data.
+  Receiver observers update their ViewModel or request the next destination through
+  normal Directions; they do not call Back to close the sender.
+- No parent close-and-resend relay, `Origin` mapping, stack inspection/casts to find
+  the receiver, second bus/key hop, or hidden runtime flags such as `selectionSent`.
+- Protocol Actions stay nested in the producer's `Router.<Screen>.Action`; one key
+  covers all its variants. Keys must avoid collisions among unrelated live receivers.
+- ResultEmitter is a no-replay SharedFlow with 64 extra buffer slots; ResultManager
+  subscriptions are component-scoped. Hidden callers continue observing; destruction
+  cancels subscriptions/pending sends. Results are not durable across process death.
+  Conflated navigation is not strict debounce or exactly-once delivery. Verify
+  queued/immediate result-driven transitions rather than asserting unproven races.
 
 ---
 

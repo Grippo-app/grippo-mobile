@@ -1,5 +1,7 @@
 package com.grippo.training.exercise
 
+import com.grippo.core.foundation.models.ResultKeys
+
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ComponentContext
 import androidx.compose.runtime.Composable
@@ -13,6 +15,7 @@ import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.data.features.api.achievements.Achievement
@@ -25,6 +28,7 @@ import com.grippo.data.features.api.training.models.*
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.dialog.api.DialogConfig
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.domain.example.toDomain
 import kotlinx.collections.immutable.toPersistentList
@@ -45,6 +49,7 @@ import org.koin.ksp.generated.module
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertIs
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -52,6 +57,7 @@ import kotlin.test.assertTrue
 class TrainingExerciseValidationTest {
     private var lifecycle: LifecycleRegistry? = null
     private var viewModel: TrainingExerciseViewModel? = null
+    private val directions = mutableListOf<TrainingExerciseDirection>()
 
     @BeforeTest fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
@@ -66,6 +72,7 @@ class TrainingExerciseValidationTest {
 
     private fun createViewModel(
         source: ExerciseState,
+        onDialog: (DialogConfig) -> Unit = { error("No dialogs expected") },
         remote: suspend () -> Result<List<Exercise>> = { Result.success(emptyList()) },
     ): TrainingExerciseViewModel {
         val example = ExerciseExample(source.exerciseExample.toDomain(), ExerciseExampleComponents.External(true), emptyList(), emptyList())
@@ -75,7 +82,7 @@ class TrainingExerciseValidationTest {
         startKoin { modules(CoreModule().module) }
         val vm = TrainingExerciseViewModel(
             source, examples, object : DialogController {
-                override fun open(config: DialogConfig) = error("No dialogs expected")
+                override fun open(config: DialogConfig) = onDialog(config)
             }, weights, validator,
         )
         val registry = LifecycleRegistry()
@@ -86,12 +93,55 @@ class TrainingExerciseValidationTest {
         return vm
     }
 
-    private class TestComponent(
+    private inner class TestComponent(
         context: ComponentContext,
         override val viewModel: TrainingExerciseViewModel,
     ) : BaseComponent<TrainingExerciseDirection>(context) {
-        override suspend fun eventListener(direction: TrainingExerciseDirection) = Unit
+        override suspend fun eventListener(direction: TrainingExerciseDirection) { directions += direction }
         @Composable override fun Render() = Unit
+    }
+
+    @Test fun replacementClosesDetailsSessionAndOpensLibraryScreen() = runTest {
+        val source = stubExercise()
+        var opened: DialogConfig? = null
+        val model = createViewModel(source, onDialog = { opened = it })
+        advanceUntilIdle()
+        model.onExampleClick()
+        val details = assertIs<DialogConfig.ExerciseExample>(opened)
+        val action = assertIs<DialogConfig.ExerciseExample.Mode.Action>(details.mode)
+        var closed = false
+        action.onClick(object : DialogController.Session {
+            override fun close() { closed = true }
+            override fun push(config: DialogConfig) = error("Screen expected")
+            override fun replaceCurrent(config: DialogConfig) = error("Screen expected")
+            override fun back() = error("Whole session must close")
+        })
+        assertTrue(closed)
+        advanceUntilIdle()
+        assertEquals(
+            ExercisesRouter.Library(
+                mode = ExercisesRouter.Mode.SimilarTo(source.exerciseExample.id),
+                resultKey = ResultKeys.create("exercise-library:${source.id}"),
+            ),
+            assertIs<TrainingExerciseDirection.ToLibrary>(directions.single()).route,
+        )
+    }
+
+    @Test fun libraryReplacementPreservesExerciseIdentityAndRecordedSets() = runTest {
+        val source = stubExercise().copy(iterations = listOf(row("recorded", 100f)).toPersistentList())
+        val model = createViewModel(source)
+        advanceUntilIdle()
+        val selected = stubExerciseExample().let {
+            it.copy(value = it.value.copy(id = "replacement", name = "Replacement"))
+        }
+        model.swapExerciseExample(selected)
+        advanceUntilIdle()
+        val updated = model.state.value.exercise
+        assertEquals(source.id, updated.id)
+        assertEquals(source.createdAt, updated.createdAt)
+        assertEquals(source.iterations, updated.iterations)
+        assertEquals(selected.value, updated.exerciseExample)
+        assertEquals(selected.value.name, updated.name)
     }
 
     @Test fun skippedUnmappableRowDoesNotShiftHighlightToAnotherSet() = runTest {
@@ -185,6 +235,30 @@ class TrainingExerciseValidationTest {
         vm.onDeleteIteration("typo")
         advanceUntilIdle()
         assertTrue(vm.state.value.volumeArtifactIds.isEmpty())
+    }
+
+    @Test fun previousSetUsesLatestEarlierExerciseAndExcludesCurrentAndFuture() = runTest {
+        val initial = stubExercise()
+        val source = initial.copy(createdAt = DateTimeFormatState.Valid(
+            display = "", value = LocalDateTime(2026, 10, 11, 12, 0), format = initial.createdAt.format,
+        ))
+        fun history(id: String, day: Int, weight: Float) = Exercise(
+            id = id, name = source.name,
+            iterations = listOf(Iteration(id = "$id-set", externalWeight = weight, assistWeight = null,
+                extraWeight = null, bodyWeight = null, bodyMultiplier = null, repetitions = 10)),
+            exerciseExample = source.exerciseExample.toDomain(),
+            createdAt = LocalDateTime(2026, 10, day, 12, 0),
+            volume = weight * 10, repetitions = 10, intensity = weight,
+        )
+        val vm = createViewModel(source) { Result.success(listOf(
+            history("older", 8, 40f), history("previous", 10, 60f),
+            history("future", 12, 90f), history(source.id, 9, 100f),
+            history("empty", 11, 80f).copy(iterations = emptyList(), createdAt = LocalDateTime(2026, 10, 11, 10, 0)),
+            history("other", 11, 80f).copy(exerciseExample = source.exerciseExample.toDomain().copy(id = "other-example")),
+        )) }
+        advanceUntilIdle()
+        assertEquals("previous-set", vm.state.value.previousIteration?.id)
+        assertEquals(60f, vm.state.value.previousIteration?.externalWeight?.value)
     }
 
     private fun row(id: String, weight: Float): IterationState = stubPendingIteration().copy(

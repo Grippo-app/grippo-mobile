@@ -1,152 +1,151 @@
-# Cross-Component Results (`ResultManager`) & ViewModel data flow
+# Screen results and ViewModel data flow
 
-> Examples use `Note` / `Tag` as the generic `<Entity>`. Substitute your domain.
+## Agreed project convention
 
-Use **callbacks in `DialogConfig`** for almost all dialog-driven results. Reach
-for `ResultManager` only when a callback cannot be threaded:
-- Two screens in different `:ui-screen-features:*` modules exchange data with no obvious lambda site.
-- An initiator opens a dialog which opens another dialog; the second result must reach the initiator.
-- Producer and consumer are split by lifecycle (one component destroyed while the other waits).
+For a screen returning data, use the existing `BaseComponent.observeResult` /
+`sendResult` API. Dialogs keep their existing `DialogConfig.onResult` callbacks
+and session `finish(result)`; do not convert them to screen results.
 
-## API (in `:ui-core:foundation`)
+### The receiver owns the key
 
-```kotlin
-public interface BaseResult
-public data class Result<T : Any>(public val data: T) : BaseResult
-public data class ResultKey<T : BaseResult>(public val key: String) { override fun toString() = key }
-public object ResultKeys { public fun <T : BaseResult> create(key: String): ResultKey<T> = ResultKey(key) }
-```
+- The receiving screen chooses the key and registers its observer before opening
+  the producer. Define fixed typed keys as `val` in the receiver ViewModel's
+  `companion object`; define an instance-specific key with a companion function
+  taking the stable entity ID. Use the same definition for subscription and launch.
+- Pass an explicit, immutable `resultKey: ResultKey<Result<Payload>>` through the producer's
+  `@Serializable` route, navigation Directions/callbacks and Component constructor.
+  Preserve it during route restoration. Use the same typed key directly in
+  `observeResult` / `sendResult`; do not unwrap and recreate it. Do not provide a
+  producer-owned fallback key.
+- The producer sends to the supplied key; it must not know the caller identities,
+  introduce an `Origin` enum or infer the caller from the active/previous stack entry.
+- All variants of one result protocol use that key. Protocol Actions stay nested
+  under the producer's route; `Result<T>` wraps the payload automatically.
+- Keys are global across live components. Scope keys by stable receiver identity
+  when several instances can coexist; a fixed constant is suitable only for a
+  receiver that is unique in that flow. The same key must always mean the same type.
 
-`ResultEmitter` (singleton, `@Single`) — a single buffered `Channel<Pair<String, BaseResult>>(Channel.BUFFERED)`, exposed as `results: Flow` via `receiveAsFlow()`; `sendResult` uses `trySend` (non-blocking; full buffer drops the event); `clear()` closes the channel.
-
-`ResultManager` (per-component, `@Factory`, `@InjectedParam coroutineScope`) — `observeResult(key, onResult)` filters the emitter flow by key, casts the matched `BaseResult` to `T`, launches on `coroutineScope`, tracks the `Job`; `sendResult` passes through to the emitter; `clear()` cancels all tracked subscriptions.
-
-`BaseComponent` exposes `protected fun observeResult(...)` / `sendResult(...)` to subclasses; `ResultManager` is `internal` and feature code never injects it. A VM that needs to publish a result emits a navigation `Direction`; its Component sends from `eventListener`.
-
-## Channel semantics (MUST understand)
-
-- **Single-consumer.** `ResultEmitter` uses a single `Channel`, not a `SharedFlow`. If two components subscribe to the same `ResultKey`, they **compete** on FIFO — only one receives each event.
-  - **Rule: at most one `observeResult` per `ResultKey` across the live component tree at any given time.**
-- **Buffered.** `Channel.BUFFERED` (~64 slots). Bursts don't block; after 64 unread events `trySend` drops new events silently.
-- **No replay.** A subscription started after the event was sent will **not** see it. The initiator must subscribe before triggering the producer.
-- **Filtered by key.** Non-matching events are silently dropped — but because the channel is single-consumer, the matched event is consumed by the **first** FIFO subscriber. Multiple subscribers on **different** keys are safe. Worse case: if A filters `keyA`, B filters `keyB`, and a `keyB` event arrives while A is the current channel head, A drops it (filter mismatch) and B never sees it.
-
-`SharedFlow(replay=1)` is intentionally **not** used: replay would confuse a process-death-recreated consumer, and multi-collector would double-process. The single-consumer Channel is the design; the cost is the "one subscription per key" discipline (by convention, not runtime).
-
-## Action types
-
-Result protocol types live nested inside the **producer screen's** `*Router.<Screen>.Action`:
+Current examples: `TrainingRecordingViewModel.LIBRARY_RESULT_KEY` and
+`EXERCISE_RESULT_KEY`, `TrainingExerciseViewModel.libraryResultKey(exerciseId)`,
+`ExercisesRouter.Library.resultKey`, and `TrainingRouter.Exercise.resultKey`.
 
 ```kotlin
-// :ui-screen-features:screen-api/NotesRouter.kt
-@Serializable
-public sealed class NotesRouter : BaseRouter {
-    @Serializable
-    public data class Note(val note: NoteState) : NotesRouter() {
-        public sealed interface Action {
-            public data class Sync(val note: NoteState) : Action
-            public data class Remove(val id: String) : Action
-        }
-    }
-    @Serializable public data class Completed(/* ... */) : NotesRouter()
+// Receiver ViewModel
+companion object {
+    val EDITOR_RESULT_KEY: ResultKey<Result<NotesRouter.Note.Action>> =
+        ResultKeys.create("notes-editor")
 }
+
+// Receiver Component: register once in init, before launching the editor.
+observeResult<Result<NotesRouter.Note.Action>>(
+    key = NotesListViewModel.EDITOR_RESULT_KEY,
+    onResult = { result ->
+        when (val action = result.data) {
+            is NotesRouter.Note.Action.Sync -> viewModel.updateNote(action.note)
+            is NotesRouter.Note.Action.Remove -> viewModel.removeNote(action.id)
+        }
+    },
+)
+
+// Receiver launches a serializable route containing its key.
+NotesRouter.Note(note = note, resultKey = EDITOR_RESULT_KEY)
 ```
 
-`Action` is co-located with the route that produces it. It is **not** a `BaseResult`: `sendResult<T : Any>(key, data: T)` wraps the payload in `Result<T>` (the `BaseResult`); the consumer subscribes to `Result<NotesRouter.Note.Action>`. Keeping `Action` as a plain sealed interface lets `sendResult` infer `T` directly. Primitive payloads use the same shape (`sendResult(key, data = 5)` / `observeResult<Result<Int>>`).
+### The sender requests Back
 
-## Subscribing
-
-**One `observeResult` per Component per protocol**, with `when` dispatch on sealed subtypes:
+The ViewModel emits a data-bearing Direction. The sending Component handles it
+with `sendResult`, then its ordinary constructor-injected `back` callback:
 
 ```kotlin
-init {
-    observeResult<Result<NotesRouter.Note.Action>>(
-        key = ResultKeys.create("note"),
-        onResult = { result ->
-            when (val action = result.data) {
-                is NotesRouter.Note.Action.Sync -> viewModel.updateNote(action.note)
-                is NotesRouter.Note.Action.Remove -> viewModel.removeNote(action.id)
-            }
-        }
-    )
+is NoteEditorDirection.Save -> {
+    sendResult(resultKey, NotesRouter.Note.Action.Sync(direction.note))
+    back.invoke()
 }
+NoteEditorDirection.Back -> back.invoke()
 ```
 
-**Don't** add a second `observeResult` for `Action.Remove` — Channel FIFO will eat one of the two subscriptions' events at random. The consumer's `init { observeResult(...) }` must run **before** the consumer triggers the producer (no replay).
+- Use this same `sendResult → back` shape for Library selection and editor Save.
+  Updates that keep the screen open send data without Back.
+- The receiver observer updates its own ViewModel. If receiving requires a new
+  screen, the ViewModel emits the normal `ToExercise`/`ToEditor` Direction.
+  Never call Back in an observer to close the sending screen.
+- The parent handles the ordinary Back via its existing navigation chain and `pop()`.
+  Do not introduce a parent `pop { success -> sendResult(...) }` relay, a second
+  result key, special replacement Direction or `closeWithResult` callback for
+  this standard return scenario.
+- Do not add hidden runtime flags such as `selectionSent`, `resultHandled` or
+  `isClosing` to suppress repeat selection/navigation. Use existing navigation
+  and lifecycle mechanisms; do not disguise the flag as a Job, set or wrapper.
+- `sendResult` returns before observers necessarily finish. This convention is
+  not a synchronous transaction or an exactly-once guarantee. Verify the actual
+  navigation chain for a receiver that immediately opens another screen. Do not
+  claim a race exists, or promise that it cannot exist, without evidence.
 
-## Producing
+## ResultKey serialization
 
-The producer is a **Component**, never a ViewModel. The VM emits a navigation `Direction` carrying the payload; the Component sends the result from `eventListener`:
+Use the existing foundation `ResultKey<T : BaseResult>`, not a second key wrapper
+or a raw String contract. `ResultKeys.create<Result<Payload>>(address)` creates it.
+The type parameter connects sender, route and observer at compile time.
+`ResultKeySerializer` encodes only the address as a String; it does not serialize
+`Result` or its payload. This preserves the previous String route representation
+and allows non-serializable Action protocols. Runtime matching still uses the
+address, so the type parameter does not protect against manually reusing one
+address with incompatible payload types.
 
-```kotlin
-// VM — emits the Direction; does NOT touch ResultManager.
-fun onSaveClick() = navigateTo(NoteEditorDirection.Save(buildNote()))
+## Existing bus semantics
 
-// Component — sends the result when it observes that Direction.
-override suspend fun eventListener(direction: NoteEditorDirection) {
-    when (direction) {
-        is NoteEditorDirection.Save -> {
-            sendResult(key = ResultKeys.create("note"), data = NotesRouter.Note.Action.Sync(direction.note))
-            back.invoke()
-        }
-        NoteEditorDirection.Back -> back.invoke()
-    }
-}
-```
+`ResultManager` is internal to foundation; feature code never injects it or
+creates a second result bus. The Component owns result observation and emission,
+not the ViewModel or Composable.
 
-## Keying a multi-caller producer (MUST when 2+ callers)
+- `ResultEmitter` is a singleton `MutableSharedFlow<Pair<String, BaseResult>>`
+  with no replay and `extraBufferCapacity = 64`, exposed as `Flow`.
+- Emission uses suspending `emit`, not dropping `trySend`. A full buffer can suspend
+  pending sends; a slow subscriber can create backpressure across keys.
+- All subscribed collectors see emissions and filter by key. Different-key
+  observers cannot steal events. Same-key observers all receive the result;
+  accidental duplicate subscriptions can therefore duplicate handling.
+- `ResultManager.observeResult` starts with `CoroutineStart.UNDISPATCHED` to
+  subscribe before returning. Register once per key in Component `init` on Main,
+  not from Render, repeated click handlers or repeated lifecycle callbacks.
+- `sendResult` launches with `UNDISPATCHED` and checks `ensureActive()` before
+  emission. It may suspend; do not treat UNDISPATCHED as synchronous completion.
+- `BaseComponent` uses `Main.immediate`; observers remain subscribed while the
+  component is hidden. On destruction, subscriptions and pending sends are canceled.
+  Cancellation does not retract a result already committed to the shared buffer.
+- No replay or durable delivery: a new observer does not receive an earlier result.
+  Restored routes retain keys, not pending result payloads. Re-subscribe normally
+  when components are recreated; do not invent replay caches or subscription registries.
+- Keep observers short. An unhandled exception can terminate that observer.
 
-A hardcoded `"note"` key on both sides is safe **only while one screen ever opens the producer.** A second caller misroutes the result silently (single-consumer channel hands each result to whichever caller is FIFO-current). It also breaks the "one observer per key" rule. Fix — **one key per caller, from one exhaustive mapping**:
+## Verification for changes to screen results
 
-1. **Thread the caller identity on the producer's route**, as a `@Serializable` field (reuse an existing per-caller field, or add a semantic `origin`). It must live on the **route**, not a runtime `var` or `ComponentIdentifier` — results don't survive process death, so after recreation the producer re-derives its key from the route.
+Check caller-chosen key delivery for every result Action, no delivery to an
+unrelated key, and key serialization/restoration. For Library-like flows check
+add, replace, cancellation/system Back, retained caller state and navigation after
+selection. Exercise both queued and immediate coroutine handling when navigation
+order matters. Do not add tests that merely duplicate a constant definition.
 
-2. **Map identity → key in one place, co-located with the `Action`** in the producer's `*Router.<Screen>`. Exhaustive `when`, **no `else`**; raw key strings live nowhere else:
-```kotlin
-@Serializable
-public data class Note(val note: NoteState, val origin: Origin) : NotesRouter() {
-    @Serializable public enum class Origin { Notes, Archive }
-    public sealed interface Action { /* Sync, Remove */ }
-    public companion object {
-        public fun resultKey(origin: Origin): ResultKey<Result<Action>> = when (origin) {
-            Origin.Notes -> ResultKeys.create("notes.note@notes")
-            Origin.Archive -> ResultKeys.create("notes.note@archive")
-        }
-    }
-}
-```
+## Anti-patterns
 
-3. **Producer** sends on the key for its own `origin` (threaded from its launch route): `sendResult(key = NotesRouter.Note.resultKey(origin), data = ...)`.
+- Hardcoded receiver keys inside producers, or duplicated raw key strings at
+  subscription and launch sites.
+- Producer-side caller mappings, reading/casting the active route to discover the
+  receiver, or guessing from the previous stack entry.
+- Multiple result relays/keys for a single return, or sending navigation commands
+  as result payloads instead of ordinary Directions.
+- Closing the sending screen from the receiving observer.
+- Hidden once-only runtime flags and new result infrastructure for this scenario.
+- Re-registering an observer or treating the bus as durable/replayed messaging.
 
-4. **Each caller** observes the key for **its own** identity: `observeResult(NotesRouter.Note.resultKey(Origin.Notes)) { ... }` in one module, `observeResult(NotesRouter.Note.resultKey(Origin.Archive)) { ... }` in another. A third caller is a compile error until it adds an `Origin` + key.
+## Foundation source of truth
 
-> `Origin` (which caller receives the result; rides the route) is orthogonal to `ComponentIdentifier` (distinguishes multiple **live instances of the same producer** in one stack). A producer may need both.
+Inspect the existing implementation before changing its mechanics:
+- [ResultEmitter.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/internal/result/ResultEmitter.kt)
+- [ResultManager.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/internal/result/ResultManager.kt)
+- [BaseComponent.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseComponent.kt)
 
-> Delivery routing is runtime — verify on-device that the launching screen reacts and the others stay quiet.
-
-## Lifecycle
-
-`ResultManager.clear()` is called in `BaseComponent.lifecycle.doOnDestroy` (automatic). Subscriptions auto-cancel on component destroy. Producers can `sendResult` from any lifecycle; consumers must be alive at send time. Payloads live only in memory and **do not survive process death** — `ResultManager` is for live flows, not durable delivery.
-
-## When to use ResultManager vs callback
-
-| Situation | Use |
-|---|---|
-| Dialog returns a value to the screen that opened it; picker; confirmation yes/no | **Callback in `DialogConfig`** |
-| Screen A in module X produces a value for Screen B in module Y (no shared call site) | **`ResultManager`** |
-| Multi-step: A opens X, X opens Y, Y produces value for A | **`ResultManager`**, key namespaced by the initiator |
-| One producer opened from 2+ callers, each needing the result | **`ResultManager`**, key per caller (above) |
-| A screen is destroyed/recreated before the result arrives | **`ResultManager`** (callback would be GC'd) |
-
-## Anti-patterns (MUST avoid)
-
-- **Two `observeResult` for the same key in one Component.** Channel FIFO eats one.
-- **Reusing a `ResultKey` across unrelated flows.** Keys are global; collisions cause cross-talk.
-- **One hardcoded key shared by every caller of a multi-caller producer.** Silent misdelivery. Derive a key per caller.
-- **Sending a result before any consumer subscribes.** No replay; the event is lost.
-- **Threading data through `ResultManager` when a callback would work.** Verbose, harder to trace, adds a singleton dependency.
-- **Using `ResultManager` for navigation.** Navigation goes via `Direction`. Results carry data only.
-- **Storing the `ResultKey` as a `var`.** Keys are constants — `val` or `companion object` properties.
-- **Treating `ResultManager` as durable messaging.** Reach for persistence when a result must outlive the process.
+Do not recreate these classes from a generic template.
 
 ---
 
@@ -182,83 +181,3 @@ Rules at this layer (MUST):
 - Map domain to state via `:data-mappers:domain-to-state` (`it.toState()`).
 
 ---
-
-# Reference implementation (drop-in sources, `:ui-core:foundation`)
-
-> Replace `<org>`/`<product>` placeholders inside fences AND in each `Target path` line.
-
-## ResultEmitter.kt
-
-Target path: `src/commonMain/kotlin/com/<org>/<product>/core/foundation/internal/result/ResultEmitter.kt`
-
-```kotlin
-package com.<org>.<product>.core.foundation.internal.result
-
-import com.<org>.<product>.core.foundation.models.BaseResult
-import com.<org>.<product>.core.foundation.models.Result
-import com.<org>.<product>.core.foundation.models.ResultKey
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
-import org.koin.core.annotation.Single
-
-@Single
-internal class ResultEmitter {
-
-    private val resultChannel = Channel<Pair<String, BaseResult>>(capacity = Channel.BUFFERED)
-
-    val results: Flow<Pair<String, BaseResult>> = resultChannel.receiveAsFlow()
-
-    fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
-        resultChannel.trySend(key.key to Result(data))
-    }
-
-    fun clear() {
-        resultChannel.close()
-    }
-}
-```
-
-## ResultManager.kt
-
-Target path: `src/commonMain/kotlin/com/<org>/<product>/core/foundation/internal/result/ResultManager.kt`
-
-```kotlin
-package com.<org>.<product>.core.foundation.internal.result
-
-import com.<org>.<product>.core.foundation.models.BaseResult
-import com.<org>.<product>.core.foundation.models.Result
-import com.<org>.<product>.core.foundation.models.ResultKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import org.koin.core.annotation.Factory
-import org.koin.core.annotation.InjectedParam
-
-@Factory
-internal class ResultManager(
-    private val resultEmitter: ResultEmitter,
-    @InjectedParam val coroutineScope: CoroutineScope
-) {
-    private val activeSubscriptions = mutableListOf<Job>()
-
-    fun <T : BaseResult> observeResult(key: ResultKey<T>, onResult: suspend (T) -> Unit) {
-        val job = resultEmitter.results
-            .filter { (resultKey, _) -> resultKey == key.key }
-            .onEach { (_, result) -> @Suppress("UNCHECKED_CAST") onResult(result as T) }
-            .launchIn(coroutineScope)
-        activeSubscriptions.add(job)
-    }
-
-    fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
-        resultEmitter.sendResult(key, data)
-    }
-
-    fun clear() {
-        activeSubscriptions.forEach { it.cancel() }
-        activeSubscriptions.clear()
-    }
-}
-```

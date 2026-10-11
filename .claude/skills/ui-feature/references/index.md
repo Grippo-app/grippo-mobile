@@ -14,7 +14,7 @@ runtime.
 | Scaffold a feature module | `module-structure.md` → `navigation.md`, `mvi-contract.md` |
 | Wire Decompose navigation (ChildStack, routers, animations, back, deeplinks) | `navigation.md` |
 | Cross-feature navigation jump (recipe) | `navigation.md` (§ Cross-feature navigation) → `module-structure.md` (§ feature-to-feature anti-pattern) |
-| Cross-component results (`ResultManager`, keys, channel semantics) | `results.md` |
+| Cross-component results (`ResultManager`, receiver-owned keys, SharedFlow semantics) | `results.md` |
 | Process-death / restoration (7 hard rules) | `process-death.md` |
 | Error pipeline (sendError, ErrorProvider, dialog mapping, error triad) | `error-pipeline.md` |
 | `:ui-core:state` models / `UiText` / `*FormatState` / state conventions / `stub*` | `state.md` → `module-structure.md` (§ ui-core), `error-pipeline.md` (§ error triad) |
@@ -30,7 +30,7 @@ runtime.
 | `mvi-contract.md` | the seven files (State/Direction/Loader/Contract/ViewModel/Component/Screen), flow of data, what-goes-where, architecture cross-cuts |
 | `navigation.md` | Decompose 3 layers, `*Router` sealed classes, `ChildStack`/`createChild`/`Child`, Direction→nav, **cross-feature nav recipe**, animations, deeplinks, back, anti-patterns |
 | `dialogs.md` | `SlotNavigation`/`DialogConfig`/`DialogController`/`DialogProvider`, `DialogComponent`/`DialogContentComponent`, in-sheet nav, returning a result, dismissal, **add-dialog recipe** |
-| `results.md` | `ResultManager`/`ResultEmitter` API + drop-in source, channel semantics, Action types, subscribing/producing, multi-caller keying, ViewModel data flow |
+| `results.md` | receiver-owned companion keys, serialized resultKey, sendResult → back, SharedFlow semantics/lifecycle, Action protocols, verification, ViewModel data flow |
 | `error-pipeline.md` | single error path, `ErrorProvider`/`ErrorProviderImpl` mapping, `sendError`, authoring rules, the `AppError`→`AppErrorState`→`ErrorProviderImpl` triad |
 | `process-death.md` | StateKeeper mechanism, 7 hard rules, `retainedInstance`, iOS specifics, anti-patterns |
 | `base-classes.md` | `BaseViewModel`/`BaseComponent`/`BaseComposeScreen` API + rules, marker interfaces, `OperationManager`, platform helpers, **drop-in sources** |

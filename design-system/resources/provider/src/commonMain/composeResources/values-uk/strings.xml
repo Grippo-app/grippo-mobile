@@ -72,11 +72,9 @@
     <string name="confirm_btn">Підтвердити</string>
     <string name="no_data_yet">Поки що немає даних</string>
     <string name="empty_training_exercises">Додай першу вправу, щоб почати відстежувати тренування.</string>
-    <string name="empty_exercise_sets">Підходів поки немає. Додай перший, щоб почати.</string>
     <string name="empty_daily_trainings">Цього дня тренувань немає.</string>
     <string name="empty_exercise_examples">За запитом нічого не знайшли.</string>
-    <string name="exercise_example_picker_suggestions_chip">Схожі</string>
-    <string name="exercise_example_picker_title_replace">Замінити</string>
+    <string name="exercise_library_suggestions_chip">Схожі</string>
     <string name="daily">Щодня</string>
     <string name="yearly">Щороку</string>
     <string name="custom">Власний</string>
@@ -475,10 +473,10 @@
     <string name="notification_weight_title">Швидке зважування? 👋</string>
     <string name="notification_weight_description">Свіжа вага тримає прогрес і рекомендації точними.</string>
 
-    <string name="tooltip_suspicious_weight_title">Незвичайна вага</string>
-    <string name="tooltip_suspicious_weight_subtitle">Можливо, пропущена або зайва цифра</string>
-    <string name="tooltip_suspicious_reps_title">Незвичайна кількість повторень</string>
-    <string name="tooltip_suspicious_reps_subtitle">Можливо, пропущена або зайва цифра</string>
+    <string name="training_unusual_weight_title">Незвичайна вага</string>
+    <string name="training_unusual_weight_subtitle">Можливо, пропущена або зайва цифра</string>
+    <string name="training_unusual_reps_title">Незвичайна кількість повторень</string>
+    <string name="training_unusual_reps_subtitle">Можливо, пропущена або зайва цифра</string>
 
     <!-- Goal Profile -->
     <string name="goal_title">Ціль тренувань</string>
@@ -855,4 +853,9 @@
     <string name="iteration_picker_previous_sets">Попередні підходи</string>
     <string name="iteration_picker_weight_range">%1$s–1000 кг</string>
     <string name="iteration_picker_repetitions_range">1–100 повторень</string>
+    <string name="training_external_weight">Зовнішня вага</string>
+    <string name="training_previous_set">Минулого разу · перший підхід: %1$s × %2$s</string>
+    <string name="training_no_sets">Поки немає підходів</string>
+    <string name="training_first_set_hint">Додайте перший підхід, щоб відстежувати прогрес.</string>
+    <string name="exercise_library">Бібліотека вправ</string>
 </resources>

@@ -6,10 +6,11 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.models.Result
-import com.grippo.core.foundation.models.ResultKeys
+import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.screen.api.TrainingRouter
 import kotlinx.datetime.LocalDateTime
 
@@ -17,13 +18,18 @@ internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
     stage: StageState,
     private val toCompleted: (stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime) -> Unit,
-    private val toExercise: (exercise: ExerciseState) -> Unit,
+    private val toExercise: (exercise: ExerciseState, resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>) -> Unit,
+    private val toLibrary: (ExercisesRouter.Library) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
 
     init {
-        observeResult<Result<TrainingRouter.Exercise.Action>>(
-            key = ResultKeys.create("exercise"),
+        observeResult(
+            key = TrainingRecordingViewModel.LIBRARY_RESULT_KEY,
+            onResult = { viewModel.acceptLibrarySelection(it.data) },
+        )
+        observeResult(
+            key = TrainingRecordingViewModel.EXERCISE_RESULT_KEY,
             onResult = {
                 when (val action = it.data) {
                     is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
@@ -54,6 +60,7 @@ internal class TrainingRecordingComponent(
 
     override suspend fun eventListener(direction: TrainingRecordingDirection) {
         when (direction) {
+            is TrainingRecordingDirection.ToLibrary -> toLibrary(direction.route)
             is TrainingRecordingDirection.ToCompleted -> toCompleted.invoke(
                 direction.stage,
                 direction.exercises,
@@ -61,7 +68,8 @@ internal class TrainingRecordingComponent(
             )
 
             is TrainingRecordingDirection.ToExercise -> toExercise.invoke(
-                direction.exercise
+                direction.exercise,
+                direction.resultKey,
             )
 
             TrainingRecordingDirection.Back -> back.invoke()

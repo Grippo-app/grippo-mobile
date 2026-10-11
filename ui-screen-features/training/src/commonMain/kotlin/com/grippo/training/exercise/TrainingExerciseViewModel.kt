@@ -1,6 +1,9 @@
 package com.grippo.training.exercise
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.Result
+import com.grippo.core.foundation.models.ResultKey
+import com.grippo.core.foundation.models.ResultKeys
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.MultiplierFormatState
@@ -21,13 +24,15 @@ import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.change_btn
 import com.grippo.design.resources.provider.exercise_details_btn
-import com.grippo.design.resources.provider.exercise_example_picker_title_replace
 import com.grippo.design.resources.provider.set_value
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.dialog.api.DialogController.Session
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.training.toState
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.state.domain.training.toDomain
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -40,7 +45,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlin.uuid.Uuid
 
 internal class TrainingExerciseViewModel(
     exercise: ExerciseState,
@@ -51,6 +55,11 @@ internal class TrainingExerciseViewModel(
 ) : BaseViewModel<TrainingExerciseState, TrainingExerciseDirection, TrainingExerciseLoader>(
     TrainingExerciseState(exercise = exercise)
 ), TrainingExerciseContract {
+
+    companion object {
+        fun libraryResultKey(exerciseId: String): ResultKey<Result<ExerciseExampleState>> =
+            ResultKeys.create("exercise-library:$exerciseId")
+    }
 
     init {
         state
@@ -89,6 +98,7 @@ internal class TrainingExerciseViewModel(
     private fun clearValidation() {
         update { current ->
             current.copy(
+                previousIteration = null,
                 volumeArtifactIds = persistentSetOf(),
                 repetitionArtifactIds = persistentSetOf(),
             )
@@ -100,6 +110,7 @@ internal class TrainingExerciseViewModel(
             if (current.exercise != value.source) return@update current
 
             current.copy(
+                previousIteration = value.previousIteration,
                 volumeArtifactIds = value.volumeIds,
                 repetitionArtifactIds = value.repetitionIds,
             )
@@ -164,7 +175,7 @@ internal class TrainingExerciseViewModel(
             id = exampleId,
             mode = DialogConfig.ExerciseExample.Mode.Action(
                 title = title,
-                onClick = { navigation -> showExercisePicker(navigation, exampleId) },
+                onClick = { navigation -> showExerciseLibrary(navigation, exampleId) },
             ),
         )
         dialogController.open(dialog)
@@ -178,16 +189,17 @@ internal class TrainingExerciseViewModel(
         navigateTo(TrainingExerciseDirection.Back)
     }
 
-    private fun showExercisePicker(navigation: Session, exampleId: String) {
-        val dialog = DialogConfig.ExerciseExamplePicker.SimilarTo(
-            title = UiText.Res(Res.string.exercise_example_picker_title_replace),
-            targetExerciseExampleId = exampleId,
-            onResult = ::swapExerciseExample,
-        )
-        navigation.replaceCurrent(dialog)
+    private fun showExerciseLibrary(navigation: Session, exampleId: String) {
+        navigation.close()
+        navigateTo(TrainingExerciseDirection.ToLibrary(
+            ExercisesRouter.Library(
+                mode = ExercisesRouter.Mode.SimilarTo(exampleId),
+                resultKey = libraryResultKey(state.value.exercise.id),
+            )
+        ))
     }
 
-    private fun swapExerciseExample(value: ExerciseExampleState) {
+    fun swapExerciseExample(value: ExerciseExampleState) {
         val current = state.value.exercise
         if (current.exerciseExample.id == value.value.id) return
 
@@ -342,6 +354,13 @@ internal class TrainingExerciseViewModel(
             }
         }
         // An empty exercise clears previous highlights instead of retaining stale hints.
-        return TrainingExerciseValidation(source, volumeIds.toPersistentSet(), repetitionIds.toPersistentSet())
+        val previous = context.history
+            .filter { it.exerciseExample.id == source.exerciseExample.id }
+            .filter { it.id != source.id && it.id != context.excludedExerciseId }
+            .filter { previous -> source.createdAt.value?.let { previous.createdAt < it } == true }
+            .filter { it.iterations.isNotEmpty() }
+            .maxByOrNull { it.createdAt }
+            ?.iterations?.firstOrNull()?.toState()
+        return TrainingExerciseValidation(source, volumeIds.toPersistentSet(), repetitionIds.toPersistentSet(), previous)
     }
 }

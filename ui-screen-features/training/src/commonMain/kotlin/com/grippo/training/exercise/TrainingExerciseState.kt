@@ -2,6 +2,7 @@ package com.grippo.training.exercise
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.training.models.ExerciseValidationContext
 import kotlinx.collections.immutable.ImmutableSet
@@ -12,6 +13,7 @@ import kotlinx.datetime.LocalDateTime
 internal data class TrainingExerciseState(
     val exercise: ExerciseState,
     val exerciseExample: ExerciseExampleState? = null,
+    val previousIteration: IterationState? = null,
     val volumeArtifactIds: ImmutableSet<String> = persistentSetOf(),
     val repetitionArtifactIds: ImmutableSet<String> = persistentSetOf(),
 )
@@ -31,4 +33,5 @@ internal data class TrainingExerciseValidation(
     val source: ExerciseState,
     val volumeIds: ImmutableSet<String>,
     val repetitionIds: ImmutableSet<String>,
+    val previousIteration: IterationState? = null,
 )

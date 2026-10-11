@@ -25,11 +25,11 @@ dialogs.open(
         mode = DialogConfig.ExerciseExample.Mode.Action(
             title = UiText.Res(Res.string.change_btn),
             onClick = { navigation ->
-                navigation.replaceCurrent(
-                    DialogConfig.ExerciseExamplePicker.SimilarTo(
-                        title = UiText.Res(Res.string.exercise_example_picker_title_replace),
-                        targetExerciseExampleId = exampleId,
-                        onResult = ::onExerciseSelected,
+                navigation.close()
+                toLibrary(
+                    ExercisesRouter.Library(
+                        mode = ExercisesRouter.Mode.SimilarTo(exampleId),
+                        resultKey = libraryResultKey(exerciseId),
                     )
                 )
             },
@@ -37,6 +37,11 @@ dialogs.open(
     )
 )
 ```
+
+The Library route carries the edited exercise's result key. `exerciseId` identifies
+that exercise; `libraryResultKey` is the receiver companion function returning
+`ResultKey<Result<ExerciseExampleState>>`. Library sends the result to that key and requests Back, following
+the same pattern as saving an exercise. The receiver handles the data.
 
 Navigation methods run on the UI thread:
 

@@ -51,10 +51,6 @@ public sealed class DialogConfig(
                 format == other.format && limitations == other.limitations
             is DraftTraining -> other is DraftTraining
             is StartTraining -> other is StartTraining
-            is ExerciseExamplePicker.Default -> other is ExerciseExamplePicker.Default &&
-                preselectedMuscleGroupId == other.preselectedMuscleGroupId
-            is ExerciseExamplePicker.SimilarTo -> other is ExerciseExamplePicker.SimilarTo &&
-                targetExerciseExampleId == other.targetExerciseExampleId
             is TrainingMenuPicker -> other is TrainingMenuPicker
             is Confirmation -> other is Confirmation && description == other.description
             is ConfirmTrainingCompletion -> other is ConfirmTrainingCompletion && initial == other.initial
@@ -196,22 +192,6 @@ public sealed class DialogConfig(
         val onStartEmpty: () -> Unit = {},
         val onUseExercises: (exercises: List<ExerciseState>) -> Unit = {},
     ) : DialogConfig(dismissBySwipe = false)
-
-    public sealed class ExerciseExamplePicker : DialogConfig() {
-        public abstract val onResult: (ExerciseExampleState) -> Unit
-
-        public data class Default(
-            public override val title: UiText,
-            public val preselectedMuscleGroupId: String? = null,
-            override val onResult: (ExerciseExampleState) -> Unit = {},
-        ) : ExerciseExamplePicker()
-
-        public data class SimilarTo(
-            public override val title: UiText,
-            public val targetExerciseExampleId: String,
-            override val onResult: (ExerciseExampleState) -> Unit = {},
-        ) : ExerciseExamplePicker()
-    }
 
     public data class TrainingMenuPicker(
         public override val title: UiText,

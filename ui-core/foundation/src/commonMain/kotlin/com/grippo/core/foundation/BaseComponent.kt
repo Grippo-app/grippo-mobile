@@ -54,6 +54,10 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     protected abstract suspend fun eventListener(direction: DIRECTION)
 
+    /**
+     * Register once per key on the main thread when constructing the component.
+     * Observes until destruction, including while hidden. Keep the handler short.
+     */
     protected fun <T : BaseResult> observeResult(
         key: ResultKey<T>,
         onResult: suspend (T) -> Unit
@@ -61,6 +65,10 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
         resultManager.observeResult(key, onResult)
     }
 
+    /**
+     * Sends to current observers without replay; returns before handlers finish.
+     * Destruction cancels pending sends without retracting results already in the buffer.
+     */
     protected fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
         resultManager.sendResult(key, data)
     }

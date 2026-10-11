@@ -3,23 +3,19 @@ package com.grippo.core.foundation.internal.result
 import com.grippo.core.foundation.models.BaseResult
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import org.koin.core.annotation.Single
 
 @Single
 internal class ResultEmitter {
 
-    private val resultChannel = Channel<Pair<String, BaseResult>>(capacity = Channel.BUFFERED)
+    private val resultFlow = MutableSharedFlow<Pair<String, BaseResult>>(extraBufferCapacity = 64)
 
-    val results: Flow<Pair<String, BaseResult>> = resultChannel.receiveAsFlow()
+    val results: Flow<Pair<String, BaseResult>> = resultFlow.asSharedFlow()
 
-    fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
-        resultChannel.trySend(key.key to Result(data))
-    }
-
-    fun clear() {
-        resultChannel.close()
+    suspend fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
+        resultFlow.emit(key.key to Result(data))
     }
 }

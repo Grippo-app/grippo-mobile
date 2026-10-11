@@ -1,4 +1,4 @@
-package com.grippo.exercise.example.picker
+package com.grippo.exercises.library
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ExerciseExampleState
@@ -10,61 +10,61 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-public data class ExerciseExamplePickerState(
-    val mode: ExerciseExamplePickerMode,
+internal data class ExerciseLibraryState(
+    val mode: ExerciseLibraryMode,
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val pagination: PaginationState = PaginationState.Next(),
     val queries: Queries = Queries(),
     val hasSuggestionsResults: Boolean = true,
 ) {
     val canShowSuggestions: Boolean =
-        mode is ExerciseExamplePickerMode.SimilarTo && hasSuggestionsResults
+        mode is ExerciseLibraryMode.SimilarTo && hasSuggestionsResults
 }
 
 @Immutable
-public sealed interface ExerciseExamplePickerMode {
+internal sealed interface ExerciseLibraryMode {
 
     @Immutable
-    public data class Default(
-        public val preselectedMuscleGroupId: String?,
-    ) : ExerciseExamplePickerMode
+    data class Default(
+        val preselectedMuscleGroupId: String?,
+    ) : ExerciseLibraryMode
 
     @Immutable
-    public data class SimilarTo(
-        public val targetExerciseExampleId: String,
-        public val target: ExerciseExampleValueState? = null,
-    ) : ExerciseExamplePickerMode
+    data class SimilarTo(
+        val targetExerciseExampleId: String,
+        val target: ExerciseExampleValueState? = null,
+    ) : ExerciseLibraryMode
 }
 
 @Immutable
-public data class Queries(
+internal data class Queries(
     val name: String = "",
     val filter: QueryFilter = QueryFilter.All,
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 )
 
 @Immutable
-public sealed interface QueryFilter {
+internal sealed interface QueryFilter {
 
     @Immutable
-    public data object All : QueryFilter
+    data object All : QueryFilter
 
     @Immutable
-    public data object Suggestions : QueryFilter
+    data object Suggestions : QueryFilter
 
     @Immutable
-    public data class Group(val id: String) : QueryFilter
+    data class Group(val id: String) : QueryFilter
 }
 
 @Immutable
-public sealed class PaginationState {
-    public abstract val page: Int
-    public abstract val limit: Int
-    public abstract val isLoadingNextPage: Boolean
-    public abstract val isEndReached: Boolean
+internal sealed class PaginationState {
+    abstract val page: Int
+    abstract val limit: Int
+    abstract val isLoadingNextPage: Boolean
+    abstract val isEndReached: Boolean
 
     @Immutable
-    public data class Next(
+    data class Next(
         override val page: Int = ExamplePage.Chunk.number,
         override val limit: Int = ExamplePage.Chunk.limits,
         override val isLoadingNextPage: Boolean = false,
@@ -72,7 +72,7 @@ public sealed class PaginationState {
     ) : PaginationState()
 
     @Immutable
-    public data class Restartable(
+    data class Restartable(
         override val page: Int = ExamplePage.Chunk.number,
         override val limit: Int = ExamplePage.Chunk.limits,
         override val isLoadingNextPage: Boolean = false,

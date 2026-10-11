@@ -5,14 +5,18 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
-import com.grippo.core.foundation.models.ResultKeys
+import com.grippo.core.foundation.models.Result
+import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.screen.api.TrainingRouter
 
 internal class TrainingExerciseComponent(
     componentContext: ComponentContext,
     private val exercise: ExerciseState,
+    private val resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>,
+    private val toLibrary: (ExercisesRouter.Library) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingExerciseDirection>(componentContext) {
 
@@ -30,27 +34,33 @@ internal class TrainingExerciseComponent(
 
     init {
         backHandler.register(backCallback)
+
+        observeResult(
+            key = TrainingExerciseViewModel.libraryResultKey(exercise.id),
+            onResult = { viewModel.swapExerciseExample(it.data) },
+        )
     }
 
     override suspend fun eventListener(direction: TrainingExerciseDirection) {
         when (direction) {
+            is TrainingExerciseDirection.ToLibrary -> toLibrary(direction.route)
             TrainingExerciseDirection.Back -> back.invoke()
 
             is TrainingExerciseDirection.Update ->
                 sendResult(
-                    ResultKeys.create("exercise"),
+                    resultKey,
                     TrainingRouter.Exercise.Action.Sync(direction.exercise)
                 )
 
             is TrainingExerciseDirection.Delete ->
                 sendResult(
-                    ResultKeys.create("exercise"),
+                    resultKey,
                     TrainingRouter.Exercise.Action.Remove(direction.id)
                 )
 
             is TrainingExerciseDirection.Save -> {
                 sendResult(
-                    ResultKeys.create("exercise"),
+                    resultKey,
                     TrainingRouter.Exercise.Action.Sync(direction.exercise)
                 )
                 back.invoke()
@@ -61,7 +71,6 @@ internal class TrainingExerciseComponent(
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
-        val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingExerciseScreen(state.value, loaders.value, viewModel)
+        TrainingExerciseScreen(state.value, viewModel)
     }
 }

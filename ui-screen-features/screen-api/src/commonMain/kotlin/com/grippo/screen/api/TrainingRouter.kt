@@ -1,6 +1,8 @@
 package com.grippo.screen.api
 
 import com.grippo.core.foundation.models.BaseRouter
+import com.grippo.core.foundation.models.Result
+import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
@@ -16,13 +18,19 @@ public sealed class TrainingRouter : BaseRouter {
 
     @Serializable
     public data class Exercise(
-        val exercise: ExerciseState
+        val exercise: ExerciseState,
+        val resultKey: ResultKey<Result<Action>>,
     ) : TrainingRouter() {
         public sealed interface Action {
             public data class Sync(val exercise: ExerciseState) : Action
             public data class Remove(val id: String) : Action
         }
     }
+
+    @Serializable
+    public data class Exercises(
+        val value: ExercisesRouter.Library
+    ) : TrainingRouter()
 
     @Serializable
     public data class Completed(

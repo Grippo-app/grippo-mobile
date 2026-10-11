@@ -1,6 +1,10 @@
 package com.grippo.training.recording
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.Result
+import com.grippo.core.foundation.models.ResultKey
+import com.grippo.core.foundation.models.ResultKeys
+import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -26,7 +30,6 @@ import com.grippo.design.resources.provider.notification_forgot_training_title
 import com.grippo.design.resources.provider.planned_sets_unfinished_description
 import com.grippo.design.resources.provider.planned_sets_unfinished_title
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.select_exercise
 import com.grippo.design.resources.provider.start_training_title
 import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
@@ -36,6 +39,8 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.screen.api.ExercisesRouter
+import com.grippo.screen.api.TrainingRouter
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
@@ -72,6 +77,8 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     companion object {
+        val LIBRARY_RESULT_KEY: ResultKey<Result<ExerciseExampleState>> = ResultKeys.create("exercise-library-add")
+        val EXERCISE_RESULT_KEY: ResultKey<Result<TrainingRouter.Exercise.Action>> = ResultKeys.create("exercise")
         private val START_TRAINING_DIALOG_DELAY = 300.milliseconds
     }
 
@@ -171,20 +178,21 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddExercise() {
-        val dialog = DialogConfig.ExerciseExamplePicker.Default(
-            title = UiText.Res(Res.string.select_exercise),
-            preselectedMuscleGroupId = lastTargetMuscleGroupId(),
-            onResult = { example ->
-                val exercise = createExerciseFromExample(example.value)
-                navigateTo(TrainingRecordingDirection.ToExercise(exercise))
-            }
-        )
-        dialogController.open(dialog)
+        navigateTo(TrainingRecordingDirection.ToLibrary(
+            ExercisesRouter.Library(
+                mode = ExercisesRouter.Mode.Default(lastTargetMuscleGroupId()),
+                resultKey = LIBRARY_RESULT_KEY,
+            )
+        ))
+    }
+
+    fun acceptLibrarySelection(example: ExerciseExampleState) {
+        navigateTo(TrainingRecordingDirection.ToExercise(createExerciseFromExample(example.value), EXERCISE_RESULT_KEY))
     }
 
     override fun onEditExercise(id: String) {
         val exercise = state.value.exercises.find { it.id == id } ?: return
-        navigateTo(TrainingRecordingDirection.ToExercise(exercise))
+        navigateTo(TrainingRecordingDirection.ToExercise(exercise, EXERCISE_RESULT_KEY))
     }
 
     fun updateExercise(value: ExerciseState) {

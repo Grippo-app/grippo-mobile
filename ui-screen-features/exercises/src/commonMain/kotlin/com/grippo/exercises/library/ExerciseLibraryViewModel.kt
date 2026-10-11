@@ -1,4 +1,4 @@
-package com.grippo.exercise.example.picker
+package com.grippo.exercises.library
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -20,20 +20,27 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(FlowPreview::class)
-public class ExerciseExamplePickerViewModel(
-    mode: ExerciseExamplePickerMode,
+internal class ExerciseLibraryViewModel(
+    mode: ExerciseLibraryMode,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
-) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
-    ExerciseExamplePickerState(
+) : BaseViewModel<ExerciseLibraryState, ExerciseLibraryDirection, ExerciseLibraryLoader>(
+    ExerciseLibraryState(
         mode = mode,
-        queries = Queries(filter = initialFilter(mode)),
+        queries = Queries(
+            filter = when (mode) {
+                is ExerciseLibraryMode.SimilarTo -> QueryFilter.Suggestions
+                is ExerciseLibraryMode.Default -> mode.preselectedMuscleGroupId
+                    ?.let(QueryFilter::Group)
+                    ?: QueryFilter.All
+            },
+        ),
     )
-), ExerciseExamplePickerContract {
+), ExerciseLibraryContract {
 
     init {
-        if (mode is ExerciseExamplePickerMode.SimilarTo) {
+        if (mode is ExerciseLibraryMode.SimilarTo) {
             exerciseExampleFeature.observeExerciseExample(mode.targetExerciseExampleId)
                 .onEach(::provideTarget)
                 .safeLaunch()
@@ -53,11 +60,11 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
     }
 
-    private fun buildParams(current: ExerciseExamplePickerState): ExampleParams {
+    private fun buildParams(current: ExerciseLibraryState): ExampleParams {
         val scope: ExampleScope = when (val filter = current.queries.filter) {
             QueryFilter.Suggestions -> when (val m = current.mode) {
-                is ExerciseExamplePickerMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
-                is ExerciseExamplePickerMode.Default -> ExampleScope.All()
+                is ExerciseLibraryMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
+                is ExerciseLibraryMode.Default -> ExampleScope.All()
             }
 
             is QueryFilter.Group -> ExampleScope.All(muscleGroupId = filter.id)
@@ -76,7 +83,7 @@ public class ExerciseExamplePickerViewModel(
 
     private fun provideTarget(value: ExerciseExample?) {
         update { current ->
-            if (current.mode !is ExerciseExamplePickerMode.SimilarTo) return@update current
+            if (current.mode !is ExerciseLibraryMode.SimilarTo) return@update current
 
             current.copy(mode = current.mode.copy(target = value?.toState()?.value))
         }
@@ -121,7 +128,7 @@ public class ExerciseExamplePickerViewModel(
             val isFirstPage = pagination is PaginationState.Restartable ||
                     pagination.page == ExamplePage.Chunk.number
             val isSuggestionsActive = current.queries.filter is QueryFilter.Suggestions &&
-                    current.mode is ExerciseExamplePickerMode.SimilarTo
+                    current.mode is ExerciseLibraryMode.SimilarTo
 
             // Auto-switch: empty Suggestions on first page → fall back to All, hide chip
             if (isSuggestionsActive && isFirstPage && value.isEmpty()) {
@@ -166,7 +173,7 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onSuggestionsClick() {
-        if (state.value.mode !is ExerciseExamplePickerMode.SimilarTo) return
+        if (state.value.mode !is ExerciseLibraryMode.SimilarTo) return
         updateWithPaginationReset {
             val nextFilter = if (it.queries.filter is QueryFilter.Suggestions) {
                 QueryFilter.All
@@ -214,15 +221,15 @@ public class ExerciseExamplePickerViewModel(
 
     override fun onExerciseExampleSelectClick(id: String) {
         val example = state.value.exerciseExamples.find { it.value.id == id } ?: return
-        navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
+        navigateTo(ExerciseLibraryDirection.BackWithResult(example))
     }
 
-    override fun onDismiss() {
-        navigateTo(ExerciseExamplePickerDirection.Back)
+    override fun onBack() {
+        navigateTo(ExerciseLibraryDirection.Back)
     }
 
     private fun updateWithPaginationReset(
-        transform: (ExerciseExamplePickerState) -> ExerciseExamplePickerState
+        transform: (ExerciseLibraryState) -> ExerciseLibraryState
     ) {
         update { current ->
             val state = transform(current)
@@ -235,15 +242,6 @@ public class ExerciseExamplePickerViewModel(
                     isEndReached = false
                 )
             )
-        }
-    }
-
-    private companion object {
-        private fun initialFilter(mode: ExerciseExamplePickerMode): QueryFilter = when (mode) {
-            is ExerciseExamplePickerMode.SimilarTo -> QueryFilter.Suggestions
-            is ExerciseExamplePickerMode.Default -> mode.preselectedMuscleGroupId
-                ?.let(QueryFilter::Group)
-                ?: QueryFilter.All
         }
     }
 }
