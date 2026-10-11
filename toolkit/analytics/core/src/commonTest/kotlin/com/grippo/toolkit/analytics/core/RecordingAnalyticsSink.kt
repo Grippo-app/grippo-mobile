@@ -1,15 +1,20 @@
 package com.grippo.toolkit.analytics.core
 
-import com.grippo.toolkit.analytics.*
+import com.grippo.toolkit.analytics.AnalyticsCollection
+import com.grippo.toolkit.analytics.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.AnalyticsPayload
+import com.grippo.toolkit.analytics.AnalyticsSink
 
-/** Opt-in test/preview sink. Stores raw fixtures in memory; never attach in production. */
-public class RecordingAnalyticsSink(private val capacity: Int = 128) : AnalyticsSink {
+/** Bounded test fixture; excluded from production source sets. */
+internal class RecordingAnalyticsSink(private val capacity: Int = 128) : AnalyticsSink {
     private val lock = AnalyticsLock()
     private val events = ArrayDeque<AnalyticsPayload>()
     private var collection = AnalyticsCollection.Unknown
     private var identity = AnalyticsIdentityPayload(null, emptyMap(), emptyList())
 
-    init { require(capacity > 0) }
+    init {
+        require(capacity > 0)
+    }
 
     override fun setCollection(collection: AnalyticsCollection): Unit = lock.withLock {
         this.collection = collection
@@ -25,7 +30,7 @@ public class RecordingAnalyticsSink(private val capacity: Int = 128) : Analytics
         events.addLast(payload)
     }
 
-    public fun payloads(): List<AnalyticsPayload> = lock.withLock { events.toList() }
-    public fun identity(): AnalyticsIdentityPayload = lock.withLock { identity }
-    public fun collection(): AnalyticsCollection = lock.withLock { collection }
+    fun payloads(): List<AnalyticsPayload> = lock.withLock { events.toList() }
+    fun identity(): AnalyticsIdentityPayload = lock.withLock { identity }
+    fun collection(): AnalyticsCollection = lock.withLock { collection }
 }

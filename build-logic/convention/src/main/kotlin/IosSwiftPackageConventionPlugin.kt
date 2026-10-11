@@ -51,8 +51,9 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
                                 libs.findLibrary("decompose.back.handler").get()
                             ).forEach { exportedDep -> export(exportedDep) }
 
-                            // Bridge to implement firebase interface
-                            export(project(":data-services:firebase"))
+                            // SDK-independent platform service contracts for Swift adapters
+                            export(project(":toolkit:crash-reporting:api"))
+                            export(project(":toolkit:messaging:api"))
                             export(project(":toolkit:analytics:api"))
                         }
                     }

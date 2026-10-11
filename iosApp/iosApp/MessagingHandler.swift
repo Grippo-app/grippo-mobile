@@ -5,8 +5,8 @@ import shared
 extension AppDelegate: MessagingDelegate {
 
     /// Called whenever Firebase rotates the FCM registration token.
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    func messaging(_ messaging: FirebaseMessaging.Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken else { return }
-        MessagingEventBridge.shared.onTokenRefresh(token: fcmToken)
+        bootstrap.messaging.onRegistrationToken(value: fcmToken)
     }
 }

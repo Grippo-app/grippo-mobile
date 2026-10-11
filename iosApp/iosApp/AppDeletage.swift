@@ -6,6 +6,13 @@ import shared
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 
+    let bootstrap: ApplicationBootstrap
+
+    override init() {
+        bootstrap = Koin().doInit(appDeclaration: { _ in })
+        super.init()
+    }
+
     var backDispatcher: BackDispatcher = BackDispatcherKt.BackDispatcher()
 
     lazy var root: RootComponent = RootComponent(
@@ -37,14 +44,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         let analytics = IosFirebaseAnalytics()
         analytics.setCollection(collection: .unknown)
-        AnalyticsRuntime.shared.attachSink(sink: analytics)
-        FirebaseProvider.shared.setup(
-            crashlytics: IosFirebaseCrashlytics(),
-            messaging: IosFirebaseMessaging()
-        )
+        bootstrap.analytics.attachSink(analyticsSink: analytics)
+        bootstrap.crashReporting.attachSink(crashSink: IosFirebaseCrashlytics())
+        bootstrap.messaging.attachSink(messagingSink: IosFirebaseMessaging())
 
         UNUserNotificationCenter.current().delegate = self
-        Messaging.messaging().delegate = self
+        FirebaseMessaging.Messaging.messaging().delegate = self
 
         // Register with APNs so Firebase can obtain an FCM token.
         // Note: this does NOT show a permission prompt — it only fetches the APNs device token.
@@ -60,7 +65,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        Messaging.messaging().apnsToken = deviceToken
+        FirebaseMessaging.Messaging.messaging().apnsToken = deviceToken
     }
 
     // Required for Firebase to handle data messages and silent pushes (e.g. token refresh via APNs).
@@ -72,7 +77,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     ) {
         // Required when swizzling is disabled: lets Firebase handle data messages
         // and silent pushes (e.g. FCM token refresh via APNs).
-        Messaging.messaging().appDidReceiveMessage(userInfo)
+        FirebaseMessaging.Messaging.messaging().appDidReceiveMessage(userInfo)
         completionHandler(.newData)
     }
 

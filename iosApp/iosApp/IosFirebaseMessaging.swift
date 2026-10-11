@@ -2,21 +2,20 @@ import FirebaseMessaging
 import Foundation
 import shared
 
-/// Implements the KMP `FirebaseMessagingProvider` interface using the native Firebase Messaging SDK.
-/// The FCM token is available only after APNs registration is complete (handled in AppDelegate).
-final class IosFirebaseMessaging: FirebaseMessagingProvider {
-
-    func getToken(completionHandler: @escaping (String?, Error?) -> Void) {
-        Messaging.messaging().token { token, error in
-            if let token {
-                completionHandler(token, nil)
-                return
+final class IosFirebaseMessaging: MessagingSink {
+    func getToken(completionHandler: @escaping (PushTokenResult?, Error?) -> Void) {
+        guard FirebaseMessaging.Messaging.messaging().apnsToken != nil else {
+            completionHandler(PushTokenResultUnavailable(reason: .platformnotready), nil)
+            return
+        }
+        FirebaseMessaging.Messaging.messaging().token { token, error in
+            if error != nil {
+                completionHandler(PushTokenResultFailed(reason: .sdkfailure), nil)
+            } else if let token {
+                completionHandler(PushTokenDecoder.shared.decode(value: token), nil)
+            } else {
+                completionHandler(PushTokenResultFailed(reason: .invalidtoken), nil)
             }
-
-            // On iOS Firebase may be asked for the FCM token before APNs registration finishes.
-            // Treat that as "token is not ready yet" and let MessagingDelegate deliver it later.
-            _ = error
-            completionHandler(nil, nil)
         }
     }
 }

@@ -11,7 +11,9 @@ import com.grippo.services.backend.dto.push.PushTokenBody
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.entity.UserActiveEntity
-import com.grippo.services.firebase.FirebaseProvider
+import com.grippo.toolkit.crashreporting.CrashReporting
+import com.grippo.toolkit.messaging.Messaging
+import com.grippo.toolkit.messaging.PushTokenResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -22,6 +24,8 @@ import org.koin.core.annotation.Single
 @Single(binds = [AuthorizationRepository::class])
 internal class AuthorizationRepositoryImpl(
     private val api: GrippoApi,
+    private val messaging: Messaging,
+    private val crashReporting: CrashReporting,
     private val tokenDao: TokenDao,
     private val userActiveDao: UserActiveDao,
 ) : AuthorizationRepository {
@@ -94,7 +98,14 @@ internal class AuthorizationRepositoryImpl(
     }
 
     override suspend fun getPushToken(): String? {
-        return FirebaseProvider.getMessagingToken()
+        return when (val result = messaging.getToken()) {
+            is PushTokenResult.Available -> result.token.value
+            is PushTokenResult.Unavailable -> null
+            is PushTokenResult.Failed -> {
+                crashReporting.record(IllegalStateException("Push token retrieval failed: ${result.reason}"))
+                null
+            }
+        }
     }
 
     override suspend fun deletePushToken(): Result<Unit> {

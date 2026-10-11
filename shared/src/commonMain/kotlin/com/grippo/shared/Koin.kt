@@ -22,81 +22,70 @@ import com.grippo.services.backend.BackendModule
 import com.grippo.services.database.DatabaseModule
 import com.grippo.services.datastore.DataStoreModule
 import com.grippo.services.google.auth.GoogleAuthModule
+import com.grippo.shared.bootstrap.ApplicationBootstrap
+import com.grippo.shared.configuration.ApplicationConfigurationModule
+import com.grippo.toolkit.analytics.core.AnalyticsModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
+import com.grippo.toolkit.crashreporting.core.CrashReportingModule
 import com.grippo.toolkit.http.client.HttpModule
 import com.grippo.toolkit.image.loader.ImageLoaderModule
 import com.grippo.toolkit.link.opener.LinkOpenerModule
 import com.grippo.toolkit.local.notification.NotificationManagerModule
+import com.grippo.toolkit.messaging.core.MessagingModule
 import com.grippo.toolkit.permission.PermissionManagerModule
 import com.grippo.toolkit.serialization.SerializationModule
-import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
 import org.koin.mp.KoinPlatformTools
-import org.koin.dsl.module
-import com.grippo.toolkit.analytics.Analytics
-import com.grippo.toolkit.analytics.AnalyticsDefinitions
-import com.grippo.toolkit.analytics.ScreenViewed
-import com.grippo.toolkit.analytics.DialogViewed
-import com.grippo.toolkit.analytics.core.AnalyticsCatalog
-import com.grippo.toolkit.analytics.core.DefaultAnalytics
-import com.grippo.toolkit.analytics.core.AnalyticsValidationMode
 
 public object Koin {
     public fun init(
-        analyticsDebug: Boolean = false,
         appDeclaration: KoinAppDeclaration = {},
-    ): KoinApplication = KoinPlatformTools.defaultContext().startKoin {
-        appDeclaration()
-        modules(
-            module {
-                single {
-                    val groups = getAll<AnalyticsDefinitions>()
-                    AnalyticsCatalog(
-                        definitions = listOf(ScreenViewed.Definition, DialogViewed.Definition) + groups.flatMap { it.events },
-                        properties = groups.flatMap { it.properties },
-                    )
-                }
-                single {
-                    DefaultAnalytics(
-                        catalog = get(),
-                        diagnosticCapacity = if (analyticsDebug) 64 else 0,
-                        validationMode = if (analyticsDebug) AnalyticsValidationMode.Throw else AnalyticsValidationMode.Reject,
-                    )
-                }
-                single<Analytics> { get<DefaultAnalytics>() }
-            },
-            ContextModule().module,
-            DatabaseModule().module,
-            DataStoreModule().module,
-            BackendModule().module,
-            GoogleAuthModule().module,
-            AppleAuthModule().module,
-            CoreModule().module,
-            DialogModule().module,
-            AuthorizationFeatureModule().module,
-            ErrorModule().module,
-            UserFeatureModule().module,
-            WeightHistoryFeatureModule().module,
-            GoalFeatureModule().module,
-            MusclesFeatureModule().module,
-            EquipmentFeatureModule().module,
-            ExerciseExamplesFeatureModule().module,
-            ExcludedMusclesFeatureModule().module,
-            TrainingsFeatureModule().module,
-            ExcludedEquipmentFeatureModule().module,
-            FeatureApiModule().module,
-            ConnectivityModule().module,
-            LinkOpenerModule().module,
-            NotificationManagerModule().module,
-            PermissionManagerModule().module,
-            ResourcesProviderModule().module,
-            SerializationModule().module,
-            ExerciseMetricsFeatureModule().module,
-            LocalSettingsFeatureModule().module,
-            HttpModule().module,
-            ImageLoaderModule().module,
+    ): ApplicationBootstrap {
+        val application = KoinPlatformTools.defaultContext().startKoin {
+            appDeclaration()
+            modules(
+                ApplicationConfigurationModule().module,
+                AnalyticsModule().module,
+                CrashReportingModule().module,
+                MessagingModule().module,
+                ContextModule().module,
+                DatabaseModule().module,
+                DataStoreModule().module,
+                BackendModule().module,
+                GoogleAuthModule().module,
+                AppleAuthModule().module,
+                CoreModule().module,
+                DialogModule().module,
+                AuthorizationFeatureModule().module,
+                ErrorModule().module,
+                UserFeatureModule().module,
+                WeightHistoryFeatureModule().module,
+                GoalFeatureModule().module,
+                MusclesFeatureModule().module,
+                EquipmentFeatureModule().module,
+                ExerciseExamplesFeatureModule().module,
+                ExcludedMusclesFeatureModule().module,
+                TrainingsFeatureModule().module,
+                ExcludedEquipmentFeatureModule().module,
+                FeatureApiModule().module,
+                ConnectivityModule().module,
+                LinkOpenerModule().module,
+                NotificationManagerModule().module,
+                PermissionManagerModule().module,
+                ResourcesProviderModule().module,
+                SerializationModule().module,
+                ExerciseMetricsFeatureModule().module,
+                LocalSettingsFeatureModule().module,
+                HttpModule().module,
+                ImageLoaderModule().module,
+            )
+        }
+        return ApplicationBootstrap(
+            analytics = application.koin.get(),
+            crashReporting = application.koin.get(),
+            messaging = application.koin.get(),
         )
     }
 }

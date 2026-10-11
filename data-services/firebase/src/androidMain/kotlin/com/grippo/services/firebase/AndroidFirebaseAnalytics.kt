@@ -2,7 +2,11 @@ package com.grippo.services.firebase
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.grippo.toolkit.analytics.*
+import com.grippo.toolkit.analytics.AnalyticsCollection
+import com.grippo.toolkit.analytics.AnalyticsIdentityPayload
+import com.grippo.toolkit.analytics.AnalyticsPayload
+import com.grippo.toolkit.analytics.AnalyticsSink
+import com.grippo.toolkit.analytics.AnalyticsValue
 
 public class AndroidFirebaseAnalytics(
     private val core: FirebaseAnalytics
@@ -24,12 +28,14 @@ public class AndroidFirebaseAnalytics(
     override fun setCollection(collection: AnalyticsCollection) {
         val enabled = collection == AnalyticsCollection.Granted
         if (!enabled) core.setAnalyticsCollectionEnabled(false)
-        core.setConsent(mapOf(
-            FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE to if (enabled) FirebaseAnalytics.ConsentStatus.GRANTED else FirebaseAnalytics.ConsentStatus.DENIED,
-            FirebaseAnalytics.ConsentType.AD_STORAGE to FirebaseAnalytics.ConsentStatus.DENIED,
-            FirebaseAnalytics.ConsentType.AD_USER_DATA to FirebaseAnalytics.ConsentStatus.DENIED,
-            FirebaseAnalytics.ConsentType.AD_PERSONALIZATION to FirebaseAnalytics.ConsentStatus.DENIED,
-        ))
+        core.setConsent(
+            mapOf(
+                FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE to if (enabled) FirebaseAnalytics.ConsentStatus.GRANTED else FirebaseAnalytics.ConsentStatus.DENIED,
+                FirebaseAnalytics.ConsentType.AD_STORAGE to FirebaseAnalytics.ConsentStatus.DENIED,
+                FirebaseAnalytics.ConsentType.AD_USER_DATA to FirebaseAnalytics.ConsentStatus.DENIED,
+                FirebaseAnalytics.ConsentType.AD_PERSONALIZATION to FirebaseAnalytics.ConsentStatus.DENIED,
+            )
+        )
         if (enabled) core.setAnalyticsCollectionEnabled(true)
     }
 

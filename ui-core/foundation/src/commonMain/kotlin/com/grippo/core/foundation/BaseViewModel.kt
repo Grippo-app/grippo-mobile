@@ -5,7 +5,7 @@ import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.internal.operation.OperationManager
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.foundation.models.BaseLoader
-import com.grippo.services.firebase.FirebaseProvider
+import com.grippo.toolkit.crashreporting.CrashReporting
 import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -156,6 +156,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     // ------------ ERROR API ------------
 
     private val errorProvider by inject<ErrorProvider>()
+    private val crashReporting by inject<CrashReporting>()
 
     private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
         val log = buildString {
@@ -165,7 +166,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             append("└──────────────────────────")
         }
         AppLogger.General.error(log)
-        FirebaseProvider.recordException(exception)
+        crashReporting.record(exception)
         errorProvider.provide(exception, callback = onError)
     }
 
