@@ -4,8 +4,8 @@ import com.grippo.toolkit.connectivity.Connectivity
 import com.grippo.toolkit.connectivity.ConnectivityOptions
 import com.grippo.toolkit.connectivity.ConnectivityProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DefaultConnectivity(
@@ -23,6 +22,7 @@ internal class DefaultConnectivity(
     options: ConnectivityOptions,
 ) : Connectivity, CoroutineScope by scope {
 
+    private val monitorLock = createConnectivityLock()
     private var job: Job? = null
 
     private val _statusUpdates = MutableSharedFlow<Connectivity.Status>(
@@ -47,23 +47,33 @@ internal class DefaultConnectivity(
     }
 
     override fun start() {
-        job?.cancel()
-        job = launch {
-            _monitoring.update { true }
-            provider.monitor().collect { status ->
-                _statusUpdates.emit(status)
+        val monitoringJob = monitorLock.withLock {
+            job?.cancel()
+            val newJob = launch(start = CoroutineStart.LAZY) {
+                provider.monitor().collect { status ->
+                    _statusUpdates.emit(status)
+                }
             }
+            job = newJob
+            _monitoring.value = true
+            newJob.invokeOnCompletion {
+                monitorLock.withLock {
+                    if (job === newJob) {
+                        job = null
+                        _monitoring.value = false
+                    }
+                }
+            }
+            newJob
         }
+        monitoringJob.start()
     }
 
     override fun stop() {
-        cancelJob()
-        _monitoring.update { false }
-    }
-
-    private fun cancelJob() {
-        cancel()
-        job?.cancel()
-        job = null
+        monitorLock.withLock {
+            job?.cancel()
+            job = null
+            _monitoring.value = false
+        }
     }
 }

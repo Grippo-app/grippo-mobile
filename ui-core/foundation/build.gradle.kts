@@ -1,6 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
+    id("kotlin.multiplatform.test.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
     alias(libs.plugins.kotlin.serialization)
@@ -9,12 +10,6 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.ui.core.foundation"
-        withHostTestBuilder {}
-    }
-
-    sourceSets.getByName("androidHostTest").dependencies {
-        implementation(kotlin("test-junit"))
-        implementation(libs.kotlinx.coroutines.test)
     }
 
     sourceSets.commonMain.dependencies {

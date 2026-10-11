@@ -28,12 +28,9 @@ public fun rootViewController(
     return ComposeUIViewController(
         configure = {
             onFocusBehavior = OnFocusBehavior.DoNothing
-            // Encode Metal/GPU commands on a separate render thread instead of main.
-            // Experimental flag introduced in Compose Multiplatform 1.8 — releases the main
-            // thread from rendering work, noticeably reduces input lag and scroll jank on iOS.
-            // Safe here because the project doesn't use UIKitView interop inside Compose tree
-            // (only the outer SwiftUI -> ComposeUIViewController bridge).
-            // If the symbol is renamed across versions, alternative is `useSeparateRenderThreadWhenPossible = true`.
+            // Compose >= 1.11 uses SurfaceMetalRedrawer with managed drawable lifetimes.
+            // Keep this enabled: false selects the legacy renderer involved in CMP-7598.
+            // https://github.com/JetBrains/compose-multiplatform-core/pull/2732
             parallelRendering = true
         }
     ) {

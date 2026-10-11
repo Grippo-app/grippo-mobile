@@ -6,7 +6,7 @@ import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.JsonConvertException
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.CancellationException
 import kotlinx.io.IOException
 
 internal fun HttpClientConfig<*>.responseValidator(
@@ -17,7 +17,13 @@ internal fun HttpClientConfig<*>.responseValidator(
 
         if (statusCode in 200..299) return@validateResponse
 
-        val rawBody = runCatching { response.bodyAsText() }.getOrNull()
+        val rawBody = try {
+            response.bodyAsText()
+        } catch (cause: CancellationException) {
+            throw cause
+        } catch (_: IOException) {
+            null
+        }
 
         when (statusCode) {
             in 400..499 -> {
@@ -43,9 +49,9 @@ internal fun HttpClientConfig<*>.responseValidator(
 
     handleResponseExceptionWithRequest { cause, _ ->
         when (cause) {
-            is AppError.Network.Expected -> throw cause
+            is CancellationException -> throw cause
+            is AppError -> throw cause
 
-            is TimeoutCancellationException,
             is HttpRequestTimeoutException -> throw AppError.Network.Timeout(
                 message = "Request timed out. Try again.",
                 cause = cause
@@ -61,7 +67,7 @@ internal fun HttpClientConfig<*>.responseValidator(
                 cause = cause
             )
 
-            else -> AppError.Network.Unexpected(
+            else -> throw AppError.Network.Unexpected(
                 message = cause.message ?: "Unexpected network error",
                 cause = cause
             )

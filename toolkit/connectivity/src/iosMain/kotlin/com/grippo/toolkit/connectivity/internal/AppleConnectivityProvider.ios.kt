@@ -22,13 +22,13 @@ import platform.darwin.dispatch_queue_create
 internal class AppleConnectivityProvider : ConnectivityProvider {
 
     override fun monitor(): Flow<Connectivity.Status> {
-        val monitor = nw_path_monitor_create()
-        val queue = dispatch_queue_create(
-            label = "com.grippo.toolkit.connectivity.monitor",
-            attr = DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL,
-        )
-
         return callbackFlow {
+            // A cancelled NWPathMonitor cannot be restarted. Each collection owns one monitor.
+            val monitor = nw_path_monitor_create()
+            val queue = dispatch_queue_create(
+                label = "com.grippo.toolkit.connectivity.monitor",
+                attr = DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL,
+            )
             nw_path_monitor_set_update_handler(monitor) { path ->
                 val status = nw_path_get_status(path)
                 when {

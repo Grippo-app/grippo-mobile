@@ -1,5 +1,15 @@
 # Light theme — complete
 
+## Crash remediation — 2026-10-11
+
+- [x] Follow-up review: serialize connectivity state across threads and centralize shared test setup in a convention plugin. Verify 19 host tests, iPhone module and native-test compilation.
+
+- [x] Diagnose Apple/Android incidents and verify the resolved renderer. Historical archive commit remains unproven; matching missing dSYM was uploaded.
+- [ ] Make Kotlin framework preparation automatic in Xcode (specific approval pending). Archive dSYM phase verified: Release archive succeeds, upload validation succeeds, binary/dSYM UUIDs match.
+- [x] Preserve Kotlin exception frames, actual type names, causes and event metadata. Swift compilation succeeds; backend symbolication of a new nonfatal event remains a release check.
+- [x] Repair confirmed lifecycle/cancellation defects. Regression tests pass for operation ownership, monitoring stop/restart/owner cancellation, native repeated subscription and HTTP cancellation/error translation.
+- [x] Review changes and exercise platform builds/startup/transitions. Android APK, final native frameworks, Swift app and unsigned iPhone archive build successfully; iOS 17.5/26.1 startup and background/foreground pass. Physical-device race and production closure remain explicitly unverified.
+
 - [x] Full token palette and system-theme wiring.
 - [x] Android build and screenshots of screens and dialogs; visual fixes.
 - [x] Dark regression, iOS build/start, contrast checks and final review.

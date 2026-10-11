@@ -36,4 +36,8 @@ public object FirebaseProvider {
     public fun recordException(throwable: Throwable, metadata: Map<String, String> = emptyMap()) {
         crashlytics?.recordException(throwable, metadata)
     }
+
+    // Swift may only see KotlinThrowable for exception classes not exported to Objective-C.
+    public fun exceptionTypeName(throwable: Throwable): String =
+        throwable::class.qualifiedName ?: throwable::class.simpleName ?: "Throwable"
 }

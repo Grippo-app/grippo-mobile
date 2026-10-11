@@ -10,10 +10,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 /**
- * How to refresh shared.xcframework after editing Kotlin code:
- * 1. For Debug, run `./gradlew :shared:assembleSharedDebugXCFramework`; Xcode will pick up the updated bundle at shared/build/XCFrameworks/debug/shared.xcframework automatically.
- * 2. For Release, run `./gradlew :shared:assembleSharedReleaseXCFramework` and update the Xcode reference to ../shared/build/XCFrameworks/release/shared.xcframework.
- * 3. Build the target in Xcode afterwards; if anything gets stuck, try Product > Clean Build Folder and rebuild.
+ * Rebuild the complete artifact before using Xcode's manual XCFramework integration:
+ * Debug: ./gradlew :shared:assembleSharedDebugXCFramework
+ * Release: ./gradlew :shared:assembleSharedReleaseXCFramework
+ * These tasks package both Kotlin code and matching Compose resources. Linking an individual
+ * framework alone leaves resource offsets inconsistent with an older XCFramework bundle.
  */
 class IosSwiftPackageConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

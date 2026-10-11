@@ -12,38 +12,37 @@ final class IosFirebaseCrashlytics: FirebaseCrashlyticsProvider {
         throwable: KotlinThrowable,
         metadata: [String: String]
     ) {
-        let crashlytics = Crashlytics.crashlytics()
-
-        metadata.forEach { key, value in
-            crashlytics.setCustomValue(value, forKey: key)
+        let name = FirebaseProvider.shared.exceptionTypeName(throwable: throwable)
+        var reason = throwable.message ?? name
+        var origin = throwable
+        var visited = Set<ObjectIdentifier>([ObjectIdentifier(throwable)])
+        while let cause = origin.cause, visited.insert(ObjectIdentifier(cause)).inserted {
+            let causeName = FirebaseProvider.shared.exceptionTypeName(throwable: cause)
+            reason += "\nCaused by: \(causeName): \(cause.message ?? "")"
+            origin = cause
         }
 
-        let stackTraceArray = throwable.getStackTrace()
+        // ExceptionModel has no per-event custom-key API. Keep metadata with this event,
+        // rather than overwriting global keys that can leak into another concurrent report.
+        if !metadata.isEmpty,
+           let data = try? JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys]),
+           let json = String(data: data, encoding: .utf8) {
+            reason += "\nMetadata: \(json)"
+        }
 
-        var stackTraceLines: [String] = []
-        stackTraceLines.reserveCapacity(Int(stackTraceArray.size))
-
-        for i in 0..<stackTraceArray.size {
-            if let element = stackTraceArray.get(index: i) {
-                stackTraceLines.append(String(describing: element))
+        let model = ExceptionModel(name: name, reason: reason)
+        let stack = origin.getStackTrace()
+        model.stackTrace = (0..<stack.size).compactMap { index -> StackFrame? in
+            guard let nativeLine = stack.get(index: index) else { return nil }
+            let line = nativeLine as String
+            // Kotlin/Native frames contain native instruction addresses. Let the matching
+            // app dSYM symbolicate them; NSError would capture this Swift reporting bridge.
+            if let token = line.split(whereSeparator: { $0.isWhitespace }).first(where: { $0.hasPrefix("0x") }),
+               let address = UInt(token.dropFirst(2), radix: 16) {
+                return StackFrame(address: address)
             }
+            return StackFrame(symbol: line, file: "", line: 0)
         }
-
-        let stackTrace = stackTraceLines.joined(separator: "\n")
-
-        let description =
-            throwable.message ??
-                String(describing: type(of: throwable))
-
-        let nsError = NSError(
-            domain: "KotlinException.\(String(describing: type(of: throwable)))",
-            code: 1,
-            userInfo: [
-                NSLocalizedDescriptionKey: description,
-                "kotlin_stacktrace": stackTrace
-            ]
-        )
-
-        crashlytics.record(error: nsError)
+        Crashlytics.crashlytics().record(exceptionModel: model)
     }
 }

@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -33,7 +32,7 @@ internal class OperationManagerImpl(
             if (t !is CancellationException) coroutineScope.launch { onError(t) }
         }
         return coroutineScope.launch(
-            dispatcher + handler + SupervisorJob(coroutineScope.coroutineContext[Job])
+            dispatcher + handler
         ) {
             supervisorScope { block() }
         }
