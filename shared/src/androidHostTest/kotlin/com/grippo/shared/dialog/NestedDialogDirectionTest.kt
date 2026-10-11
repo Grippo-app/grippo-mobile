@@ -62,7 +62,8 @@ class NestedDialogDirectionTest {
         val viewModel = IterationPickerViewModel(
             initial = initial,
             example = stubExerciseExample(),
-            suggestions = emptyList(),
+            iterationSuggestions = emptyList(),
+            previousIteration = null,
             number = 1,
             focus = IterationFocusState.VOLUME,
         )

@@ -68,5 +68,6 @@ class DialogContentComparisonTest {
         assertFalse(config.hasSameContentAs(config.copy(number = 2)))
         assertFalse(config.hasSameContentAs(config.copy(focus = IterationFocusState.REPETITIONS)))
         assertFalse(config.hasSameContentAs(config.copy(suggestions = listOf(initial))))
+        assertFalse(config.hasSameContentAs(config.copy(previousIteration = initial)))
     }
 }

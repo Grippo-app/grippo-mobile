@@ -154,6 +154,7 @@ class TrainingExerciseValidationTest {
         val result = vm.state.value
         assertEquals(setOf("typo"), result.volumeArtifactIds)
         assertTrue(result.repetitionArtifactIds.isEmpty())
+        assertTrue(result.previousIterations.isEmpty())
         assertEquals(source, result.exercise)
     }
 
@@ -237,11 +238,17 @@ class TrainingExerciseValidationTest {
         assertTrue(vm.state.value.volumeArtifactIds.isEmpty())
     }
 
-    @Test fun previousSetUsesLatestEarlierExerciseAndExcludesCurrentAndFuture() = runTest {
+    @Test fun previousSetsFollowOrdinalFromLatestEarlierWorkoutAndClearOnExampleChange() = runTest {
         val initial = stubExercise()
-        val source = initial.copy(createdAt = DateTimeFormatState.Valid(
-            display = "", value = LocalDateTime(2026, 10, 11, 12, 0), format = initial.createdAt.format,
-        ))
+        val source = initial.copy(
+            createdAt = DateTimeFormatState.Valid(
+                display = "", value = LocalDateTime(2026, 10, 11, 12, 0), format = initial.createdAt.format,
+            ),
+            iterations = listOf(
+                row("current-first", 40f), row("current-second", 60f),
+                row("current-third", 60f), row("current-extra", 60f),
+            ).toPersistentList(),
+        )
         fun history(id: String, day: Int, weight: Float) = Exercise(
             id = id, name = source.name,
             iterations = listOf(Iteration(id = "$id-set", externalWeight = weight, assistWeight = null,
@@ -251,14 +258,33 @@ class TrainingExerciseValidationTest {
             volume = weight * 10, repetitions = 10, intensity = weight,
         )
         val vm = createViewModel(source) { Result.success(listOf(
-            history("older", 8, 40f), history("previous", 10, 60f),
+            history("older", 8, 40f), history("previous", 10, 60f).copy(iterations = listOf(
+                Iteration(id = "previous-first", externalWeight = 40f, assistWeight = null,
+                    extraWeight = null, bodyWeight = null, bodyMultiplier = null, repetitions = 12),
+                Iteration(id = "previous-second", externalWeight = 60f, assistWeight = null,
+                    extraWeight = null, bodyWeight = null, bodyMultiplier = null, repetitions = 10),
+                Iteration(id = "previous-third", externalWeight = 60f, assistWeight = null,
+                    extraWeight = null, bodyWeight = null, bodyMultiplier = null, repetitions = 8),
+            )),
             history("future", 12, 90f), history(source.id, 9, 100f),
             history("empty", 11, 80f).copy(iterations = emptyList(), createdAt = LocalDateTime(2026, 10, 11, 10, 0)),
             history("other", 11, 80f).copy(exerciseExample = source.exerciseExample.toDomain().copy(id = "other-example")),
         )) }
         advanceUntilIdle()
-        assertEquals("previous-set", vm.state.value.previousIteration?.id)
-        assertEquals(60f, vm.state.value.previousIteration?.externalWeight?.value)
+        val previous = vm.state.value.previousIterations
+        assertEquals(listOf(40f, 60f, 60f), previous.map { it.externalWeight?.value })
+        assertEquals(listOf(12, 10, 8), previous.map { it.repetitions.value })
+        assertEquals(null, previous.getOrNull(3))
+        val ids = source.iterations.map { it.id }
+        vm.onStartReorderIterations(ids[0], ids[1])
+        vm.onEndReorderIterations()
+        advanceUntilIdle()
+        assertEquals(listOf(ids[1], ids[0], ids[2], ids[3]), vm.state.value.exercise.iterations.map { it.id })
+        assertEquals(previous, vm.state.value.previousIterations)
+        val other = stubExerciseExample().let { it.copy(value = it.value.copy(id = "new-example")) }
+        vm.swapExerciseExample(other)
+        advanceUntilIdle()
+        assertTrue(vm.state.value.previousIterations.isEmpty())
     }
 
     private fun row(id: String, weight: Float): IterationState = stubPendingIteration().copy(
