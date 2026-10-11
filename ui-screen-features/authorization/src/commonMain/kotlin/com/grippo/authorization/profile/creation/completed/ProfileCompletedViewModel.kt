@@ -6,8 +6,6 @@ import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import com.grippo.data.features.api.user.models.CreateUserProfile
-import com.grippo.services.firebase.FirebaseProvider
-import com.grippo.services.firebase.FirebaseProvider.Event
 import com.grippo.state.domain.user.toDomain
 import kotlinx.collections.immutable.ImmutableList
 
@@ -25,7 +23,6 @@ internal class ProfileCompletedViewModel(
 ), ProfileCompletedContract {
 
     init {
-        FirebaseProvider.logEvent(Event.REGISTRATION_COMPLETED)
 
         val mappedExperience = experience?.toDomain()
 

@@ -42,7 +42,6 @@ import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.ExercisesRouter
 import com.grippo.screen.api.TrainingRouter
 import com.grippo.screen.api.deeplink.Deeplink
-import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.state.domain.training.toDraftDomain
 import com.grippo.toolkit.date.utils.DateFormat
@@ -83,7 +82,6 @@ internal class TrainingRecordingViewModel(
     }
 
     init {
-        FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
 
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)

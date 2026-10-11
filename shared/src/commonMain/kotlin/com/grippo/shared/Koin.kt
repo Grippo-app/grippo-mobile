@@ -34,13 +34,39 @@ import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
 import org.koin.mp.KoinPlatformTools
+import org.koin.dsl.module
+import com.grippo.toolkit.analytics.Analytics
+import com.grippo.toolkit.analytics.AnalyticsDefinitions
+import com.grippo.toolkit.analytics.ScreenViewed
+import com.grippo.toolkit.analytics.DialogViewed
+import com.grippo.toolkit.analytics.core.AnalyticsCatalog
+import com.grippo.toolkit.analytics.core.DefaultAnalytics
+import com.grippo.toolkit.analytics.core.AnalyticsValidationMode
 
 public object Koin {
     public fun init(
+        analyticsDebug: Boolean = false,
         appDeclaration: KoinAppDeclaration = {},
     ): KoinApplication = KoinPlatformTools.defaultContext().startKoin {
         appDeclaration()
         modules(
+            module {
+                single {
+                    val groups = getAll<AnalyticsDefinitions>()
+                    AnalyticsCatalog(
+                        definitions = listOf(ScreenViewed.Definition, DialogViewed.Definition) + groups.flatMap { it.events },
+                        properties = groups.flatMap { it.properties },
+                    )
+                }
+                single {
+                    DefaultAnalytics(
+                        catalog = get(),
+                        diagnosticCapacity = if (analyticsDebug) 64 else 0,
+                        validationMode = if (analyticsDebug) AnalyticsValidationMode.Throw else AnalyticsValidationMode.Reject,
+                    )
+                }
+                single<Analytics> { get<DefaultAnalytics>() }
+            },
             ContextModule().module,
             DatabaseModule().module,
             DataStoreModule().module,

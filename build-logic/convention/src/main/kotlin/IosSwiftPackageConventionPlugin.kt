@@ -53,6 +53,7 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
 
                             // Bridge to implement firebase interface
                             export(project(":data-services:firebase"))
+                            export(project(":toolkit:analytics:api"))
                         }
                     }
             }

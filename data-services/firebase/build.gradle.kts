@@ -9,6 +9,7 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        api(projects.toolkit.analytics.api)
         implementation(libs.koin.core)
         implementation(libs.kotlinx.coroutines.core)
     }

@@ -134,3 +134,6 @@ include(":data-mappers:domain-to-state")
 include(":data-mappers:domain-to-entity")
 include(":data-mappers:domain-to-dto")
 include(":data-mappers:state-to-domain")
+
+include(":toolkit:analytics:api")
+include(":toolkit:analytics:core")

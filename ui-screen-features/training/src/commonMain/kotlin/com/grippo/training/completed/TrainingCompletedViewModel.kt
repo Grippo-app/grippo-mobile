@@ -25,8 +25,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.distribution.toState
 import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.training.toState
-import com.grippo.services.firebase.FirebaseProvider
-import com.grippo.services.firebase.FirebaseProvider.Event
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull
@@ -50,7 +48,6 @@ internal class TrainingCompletedViewModel(
 ), TrainingCompletedContract {
 
     init {
-        FirebaseProvider.logEvent(Event.WORKOUT_COMPLETED)
 
         safeLaunch(
             loader = TrainingCompletedLoader.SaveTraining,

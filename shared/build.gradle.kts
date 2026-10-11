@@ -51,6 +51,8 @@ kotlin {
         implementation(projects.dataServices.googleAuth)
         implementation(projects.dataServices.appleAuth)
         api(projects.dataServices.firebase)
+        api(projects.toolkit.analytics.api)
+        implementation(projects.toolkit.analytics.core)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)

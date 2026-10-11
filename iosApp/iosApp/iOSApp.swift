@@ -8,7 +8,12 @@ struct iOSApp: App {
     var appDelegate: AppDelegate
 
     init() {
-        Koin().doInit(appDeclaration: { _ in })
+        #if DEBUG
+        let analyticsDebug = true
+        #else
+        let analyticsDebug = false
+        #endif
+        Koin().doInit(analyticsDebug: analyticsDebug, appDeclaration: { _ in })
     }
 
     var body: some Scene {

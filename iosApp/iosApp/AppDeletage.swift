@@ -35,8 +35,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // so AppDelegateSwizzler cannot find it and logs:
         // "App Delegate does not conform to UIApplicationDelegate protocol."
         FirebaseApp.configure()
+        let analytics = IosFirebaseAnalytics()
+        analytics.setCollection(collection: .unknown)
+        AnalyticsRuntime.shared.attachSink(sink: analytics)
         FirebaseProvider.shared.setup(
-            analytics: IosFirebaseAnalytics(),
             crashlytics: IosFirebaseCrashlytics(),
             messaging: IosFirebaseMessaging()
         )
