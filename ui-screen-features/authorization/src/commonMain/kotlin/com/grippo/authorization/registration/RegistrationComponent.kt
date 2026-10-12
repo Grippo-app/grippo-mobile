@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.credential
+package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,16 +7,16 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
-internal class CredentialComponent(
+internal class RegistrationComponent(
     componentContext: ComponentContext,
     email: String?,
     private val toCreateProfile: () -> Unit,
     private val toHome: () -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<CredentialDirection>(componentContext) {
+) : BaseComponent<RegistrationDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        CredentialViewModel(
+        RegistrationViewModel(
             analytics = getKoin().get(),
             email = email,
             registerUseCase = getKoin().get()
@@ -29,11 +29,11 @@ internal class CredentialComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: CredentialDirection) {
+    override suspend fun eventListener(direction: RegistrationDirection) {
         when (direction) {
-            CredentialDirection.CreateProfile -> toCreateProfile.invoke()
-            CredentialDirection.Home -> toHome.invoke()
-            CredentialDirection.Back -> back.invoke()
+            RegistrationDirection.CreateProfile -> toCreateProfile.invoke()
+            RegistrationDirection.Home -> toHome.invoke()
+            RegistrationDirection.Back -> back.invoke()
         }
     }
 
@@ -41,6 +41,6 @@ internal class CredentialComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        CredentialScreen(state.value, loaders.value, viewModel)
+        RegistrationScreen(state.value, loaders.value, viewModel)
     }
 }

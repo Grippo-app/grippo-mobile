@@ -600,7 +600,7 @@ Compose Multiplatform Resources in `:design-system:resources:provider`:
 - Strings — `commonMain/composeResources/values/strings.xml` (en) + `values-uk/`, `values-ru/` for localizations. Access — `Res.string.<key>`.
 - Drawables — `commonMain/composeResources/drawable/`. Access — `Res.drawable.<key>`.
 - Plurals — `commonMain/composeResources/values/plurals.xml`. Access — `Res.plurals.<key>`.
-- All keys — `snake_case`, descriptive (`registration_credential_title`, not `title1`).
+- All keys — `snake_case`, descriptive (`registration_title`, not `title1`).
 - Changing Accept-Language on backend ⇒ changing `AppLocale.current` locally (`AppLocale.current` and `AppTheme.current` — expect/actual `@Composable` functions; in `RootScreen` they switch `AppTheme(darkTheme, localeTag)` and trigger `DateFormatting.install(systemLocaleTag)`).
 
 ### `Format*State` formatters
@@ -703,7 +703,7 @@ init {
 
 ### Packages
 
-- Base scheme: `com.grippo.<area>.<feature>` (`com.grippo.profile.body`, `com.grippo.authorization.registration.credential`).
+- Base scheme: `com.grippo.<area>.<feature>` (`com.grippo.profile.body`, `com.grippo.authorization.registration`).
 - **Existing inconsistency:** `data-features/`, `data-mappers/`, `data-services/`, `dialog-api`, `weight-picker` use packages **with a dot in the directory name** (`com/grippo/data.features.trainings/`, `com/grippo/dto.entity.training/`, `com/grippo/dialog.api/`, `com/grippo/weight.picker/`). Inside, the `package` declaration is normal (`package com.grippo.data.features.trainings`). **Intentional, do not refactor — but new modules should be written without dots in directories.**
 - `internal` functions in a public module — in an `internal/` subpackage.
 

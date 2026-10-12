@@ -8,7 +8,7 @@
 
 ## Исправление
 
-ViewModel Login/Credential/Splash сохранялась через InstanceKeeper, а UI binding
+ViewModel Login/Registration/Splash сохранялась через InstanceKeeper, а UI binding
 каждый раз создавал новый mutable analytics scenario. При пересоздании component
 с сохранённой ViewModel операции продолжали использовать старый scenario,
 тогда как navigation, screen presentation и новый StateKeeper сохраняли новый.

@@ -10,7 +10,7 @@
 
 Все 14 production файлов analytics: facade/contracts/module, четыре event families,
 schema/event matrices, operation execution, navigation/state, validation и failures.
-Login/Credential/Splash Components и ViewModel, Auth/AuthProcess containers, serializable
+Login/Registration/Splash Components и ViewModel, Auth/AuthProcess containers, serializable
 AuthRouter/AuthorizationEntryPoint, Root token-absence routing, shared qualified Koin wiring.
 LoginUseCase/RegisterUseCase и их domain preparation contract; вызовы Google/Apple providers
 и typed cancellation. Общие trackOperation/TrackedOperation и lifecycle screen binding;

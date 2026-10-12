@@ -127,8 +127,8 @@
     <string name="login_button_registration">Sign up</string>
     <string name="at_least_six_characters">At least 6 characters</string>
 
-    <string name="registration_credential_title">Let’s get you signed up</string>
-    <string name="registration_credential_description">Create an account to save workouts and track progress.</string>
+    <string name="registration_title">Let’s get you signed up</string>
+    <string name="registration_description">Create an account to save workouts and track progress.</string>
 
     <string name="registration_user_title">Let’s set up your profile</string>
 

@@ -11,7 +11,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
-import com.grippo.authorization.registration.credential.CredentialComponent
+import com.grippo.authorization.registration.RegistrationComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.AuthProcessRouter
@@ -81,7 +81,7 @@ internal class AuthProcessComponent(
             )
 
             is AuthProcessRouter.Registration -> Child.Registration(
-                CredentialComponent(
+                RegistrationComponent(
                     componentContext = context,
                     email = router.email,
                     toCreateProfile = viewModel::toProfileCreation,
@@ -101,6 +101,6 @@ internal class AuthProcessComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Login(override val component: LoginComponent) : Child(component)
-        data class Registration(override val component: CredentialComponent) : Child(component)
+        data class Registration(override val component: RegistrationComponent) : Child(component)
     }
 }

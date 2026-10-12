@@ -1,9 +1,9 @@
-package com.grippo.authorization.registration.credential
+package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Immutable
 
 @Immutable
-internal interface CredentialContract {
+internal interface RegistrationContract {
     fun onEmailChange(value: String)
     fun onPasswordChange(value: String)
     fun onEmailFocused()
@@ -16,7 +16,7 @@ internal interface CredentialContract {
     fun onBack()
 
     @Immutable
-    companion object Empty : CredentialContract {
+    companion object Empty : RegistrationContract {
         override fun onEmailChange(value: String) {}
         override fun onPasswordChange(value: String) {}
         override fun onEmailFocused() {}

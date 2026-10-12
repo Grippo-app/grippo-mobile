@@ -126,8 +126,8 @@
     <string name="login_button_registration">Зареєструватися</string>
     <string name="at_least_six_characters">Щонайменше 6 символів</string>
 
-    <string name="registration_credential_title">Створімо акаунт</string>
-    <string name="registration_credential_description">Створи акаунт, щоб зберігати тренування та відстежувати прогрес.</string>
+    <string name="registration_title">Створімо акаунт</string>
+    <string name="registration_description">Створи акаунт, щоб зберігати тренування та відстежувати прогрес.</string>
 
     <string name="registration_user_title">Налаштуємо твій профіль</string>
 

@@ -24,7 +24,7 @@ Messaging, Android Firebase/Swift adapters и bootstrap.
 |---|---|
 | Два NavigationContext в тесте DI создавались без обязательного reason | Явный Initial в ScreenAnalyticsTest |
 | Тесты юзкейсов не фиксировали все запросы подготовки и их порядок | Fixture записывает каждый запрос; проверяются полные последовательности и остановка на каждой ошибке |
-| Не было проверки фактического Register/Email декоратора и error/navigation pipeline CredentialViewModel | Тест реальной VM, RegisterUseCase и generated modules, с исправным и падающим reporting |
+| Не было проверки фактического Register/Email декоратора и error/navigation pipeline RegistrationViewModel | Тест реальной VM, RegisterUseCase и generated modules, с исправным и падающим reporting |
 | Авторизация вручную дублировала настройки KMP test source sets | Общий kotlin.multiplatform.test.convention |
 | Тест CAS публикации StateFlow реализует экспериментальный coroutines API без явного согласия | Локальный ExperimentalForInheritanceCoroutinesApi opt-in |
 | Активные инструкции повторяли старые варианты, неверно утверждали отсутствие тестов и допускали UI Firebase transport | Консолидированы skill/standard/guide/coverage и связанные UI/DI/data/build инструкции |

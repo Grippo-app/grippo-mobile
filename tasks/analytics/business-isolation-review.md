@@ -7,7 +7,7 @@
 > последующие изменения.
 
 1. RegisterUseCase.createAccount выполняет register + private prepare и возвращает
-   Boolean. CredentialViewModel измеряет один полный attempt. Удалены Preparation
+   Boolean. RegistrationViewModel измеряет один полный attempt. Удалены Preparation
    API, фабрика, события, outcome и четыре setup схемы. Теперь 12 schemas:
    attempt_failed v4, остальные attempt v3 (полный login/register), session
    completed/failed v2, остальные 5 v1.

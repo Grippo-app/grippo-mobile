@@ -286,7 +286,7 @@
 
 - [x] Self-review и независимое ревью API/core, providers, retention/lifecycle, авторизации и Android/Swift wiring; повторный проход после исправлений.
 - [x] Исправить обязательный navigation reason в DI тесте, унифицировать test convention и явно отметить coroutines inheritance opt-in.
-- [x] Проверить полные последовательности use cases, ошибки на каждом запросе и реальный CredentialViewModel с работающим/падающим reporting.
+- [x] Проверить полные последовательности use cases, ошибки на каждом запросе и реальный RegistrationViewModel с работающим/падающим reporting.
 - [x] Консолидировать canonical skill/standard/guide/coverage, актуализировать UI/DI/data/build references и testing rules.
 - [x] Проверить скилл на будущем сценарии, YAML/metadata, примеры, ссылки и code fences.
 - [x] Выполнить все существующие Kotlin test suites: Android 294, iOS 203; failures/errors/skipped = 0.
@@ -298,7 +298,7 @@
 
 ## Читаемость ViewModel — 2026-10-12
 
-- [x] Упростить чтение Login/Credential/Splash, сохранив цельные операции, SDK-ошибки и выбор направления по бизнес-результату.
+- [x] Упростить чтение Login/Registration/Splash, сохранив цельные операции, SDK-ошибки и выбор направления по бизнес-результату.
 - [x] Оставить muscle → equipment напрямую в Splash init/safeLaunch; развернуть непустые Kotlin-блоки.
 - [x] Почистить профильные ViewModel авторизации и профиля; убрать промежуточные коллекции и mutable-копию для toggle без изменения правил выбора.
 - [x] Удалить повторную обработку save result в TrainingCompleted; развернуть блоки TrainingRecording без изменения исполняемого содержимого.
@@ -493,7 +493,7 @@ toolkit cores не удалялись как неиспользуемый код
 
 ## Авторизация и аналитика после очистки stash — 2026-10-12
 
-- [x] Заново просмотреть DI/API/scenarios/schema, Auth/Splash/Login/Credential/ProfileCreation routes/components, все 11 authorization ViewModel и цельные Login/Register use case. Проверить annotated bindings, public API dependencies и shared `.module` enumeration по исходникам.
+- [x] Заново просмотреть DI/API/scenarios/schema, Auth/Splash/Login/Registration/ProfileCreation routes/components, все 11 authorization ViewModel и цельные Login/Register use case. Проверить annotated bindings, public API dependencies и shared `.module` enumeration по исходникам.
 - [x] Упростить одноэлементные childStack через `initialConfiguration`; убрать повторное хранение analytics/input arguments в leaf/completion components. По локальному Decompose source это тот же restore/save path.
 - [x] Удалить мёртвый `ToBodyWithName` и нечитавшиеся payloads ProfileCreation Directions. Бизнес-данные остаются в immutable VM state; typed callbacks, router destinations и snapshot wire shape не меняются.
 - [x] Удалить вредный fallback «пустой выбор → выбрать всё» в мышцах/оборудовании. Reconciliation выполняется атомарно в update: снятые отметки сохраняются, отсутствующие ID удаляются, новые ID выбираются.
@@ -797,3 +797,30 @@ integration; production collection по-прежнему ждёт application co
 `/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/analytics-screen-skill-20261013-3k54vafl/verification.json`
 и `docs.patch` рядом. Прежние staged whitespace замечания в старых/deleted API
 файлах записаны отдельно; staging не менялся.
+
+## Повторная проверка авторизации и событий — 2026-10-13
+
+- [x] Независимо сверить все 11 route/Component/VM/Render chains: 8 обязательных fixed screen hooks и 3 null containers; отсутствие duplicate views, feature lifecycle wiring/providers/retention и лишних jobs.
+- [x] Проследить все 44 Contract callbacks и 2 picker results; проверить guards, typed payloads/privacy, 22 schemas, DI и whole operations/results/errors/cancellation. Production behavior defects не найдены.
+- [x] Исправить stale foundation KDoc и синхронизировать source reference; уточнить coverage: clear только Email, password clear control отсутствует, IME не submit, text status changes не raw edits.
+- [x] Усилить repository Registration/selection event assertions и ProfileCreation regression всех 5 actual steps с Initial/Restore/close once, pending business operation и Home после completion. Cleanup выполняется до завершения Koin/Main dispatcher.
+- [x] Fresh isolated JVM tests: Auth 19 + toolkit/API/core/foundation 62 + Auth UI 40 = 121 passed. UI включает 37 repository cases и 3 temporary Login/AuthProcess cases; проверить actual Login↔Registration navigation/lifecycle без parent views.
+- [x] Final self/independent review, current coverage и docs/source verification. Android/iOS builds, Gradle/KSP, rendering/native SDK и Firebase не запускать; substitutions и unrun checks явно записать.
+
+Команды: `python3 /tmp/auth-coverage-review-20261013-rjz9am53/verify-jvm.py`,
+`python3 /tmp/auth-coverage-review-20261013-rjz9am53/ui-jvm/verify-ui.py --production-only`,
+`python3 /tmp/auth-coverage-review-20261013-rjz9am53/ui-jvm/verify-ui.py --tests-only`,
+`python3 /tmp/auth-coverage-review-20261013-rjz9am53/verify-docs.py`, `git diff --check`.
+Отчёты/исходный manifest и exact before copies — в этом новом temporary directory,
+отдельно от прежних запусков. Подробный scope: [актуальная проверка](authorization-coverage.md#текущая-проверка).
+
+## Переименование экрана регистрации — 2026-10-13
+
+- [x] Перенести семь MVI-файлов в `registration/`, назвать все типы `Registration*`; обновить AuthProcessComponent, тест и документацию.
+- [x] Переименовать title/description resource keys во всех трёх локалях; сохранить тексты, маршруты, serialized contracts, бизнес-логику и analytics identities.
+- [x] Проверить отсутствие прежних screen names/paths, конфликты типов/ресурсов и точное сохранение кода после замены имён.
+- [x] Изолированные JVM-проверки авторизации: 40 tests passed; Android/iOS builds, Gradle/KSP, rendering/native SDK и Firebase не запускались.
+
+Команда: `python3 /tmp/registration-rename-20261013-qtku23fu/ui-jvm/verify-ui.py`.
+Scope и substitutions — `ui-jvm/tests.json`, проверка переименования —
+`rename-verification.json` в том же temporary directory.

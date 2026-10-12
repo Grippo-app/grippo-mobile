@@ -9,7 +9,7 @@
 AuthAnalyticsRetention.kt удалён. AuthProcessComponent и SplashComponent владеют
 private createAnalytics, private typed RetainedAnalytics и private ключом.
 Новых base classes/hooks/delegates и module-wide extensions нет. Дочерние
-Login/Credential компоненты получают тот же Authorization через конструктор.
+Login/Registration компоненты получают тот же Authorization через конструктор.
 
 Порядок сохранён: consume snapshot → getOrCreate retained instance → route FlowId
 check (Authorization) → register актуального save → создание/получение ViewModel.

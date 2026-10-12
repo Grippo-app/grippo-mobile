@@ -23,7 +23,7 @@ Gradle/KSP/generated DI, rendering/native SDK runtime и Firebase не вход�
 - UI analytics/ содержит только AuthInputMapping. Все typed events/operations и
   screen declarations принадлежат VM. Component retainedInstance resolves
   analytics=getKoin().get() как остальные deps; без analytics constructor params.
-- Восемь leaf VM override optional screenPresentation, вызывая presentScreen с
+- Все восемь отдельных экранов имеют обязательный screenPresentation, вызывая presentScreen с
   fixed AuthScreen и foundation reason. BaseComponent existing doOnCreate calls
   internal VM.bindScreen(lifecycle); ScreenAnalytics владеет Initial/Restore/close.
   Graph null hook означает отсутствие binding и lifecycle-service resolution.
@@ -42,7 +42,7 @@ Gradle/KSP/generated DI, rendering/native SDK runtime и Firebase не вход�
 | AuthRouter.Splash | leaf / Splash | SplashViewModel.screenPresentation |
 | AuthRouter.AuthProcess | graph, без отдельного screen_view | AuthProcessViewModel: отсутствует |
 | AuthProcessRouter.Login | leaf / Login | LoginViewModel.screenPresentation |
-| AuthProcessRouter.Registration | leaf / Registration | CredentialViewModel.screenPresentation |
+| AuthProcessRouter.Registration | leaf / Registration | RegistrationViewModel.screenPresentation |
 | AuthRouter.ProfileCreation | graph, без отдельного screen_view | ProfileCreationViewModel: отсутствует |
 | ProfileCreationRouter.User | leaf / User | UserViewModel.screenPresentation |
 | ProfileCreationRouter.Experience | leaf / Experience | ExperienceViewModel.screenPresentation |
@@ -73,8 +73,8 @@ Graph/container screen_view не создаётся; destroy не считает
 | Leaf | AuthEvent family / safe facts |
 |---|---|
 | Splash | Back |
-| Login | InputChanged/Focused/Cleared/KeyboardAction(CredentialField); password visible Boolean; Submit(Method), Register, Back |
-| Registration | Credential input/status/focus/clear/IME, password visible; Submit, Back |
+| Login | InputChanged/Focused/KeyboardAction(Email/Password), InputCleared(Email); password visible Boolean; Submit(Method), Register, Back |
+| Registration | InputChanged/Focused/KeyboardAction(Email/Password), InputCleared(Email); password visible Boolean; Submit, Back |
 | User | NameInputChanged/Focused/Cleared/KeyboardAction; PickerOpened/Confirmed(ProfilePicker.Height/Weight, status); Control(Next/Back) |
 | Experience | Selected(ProfileExperience), Control(Next/Back) |
 | ExcludedMuscles | GroupSelected, SelectionChanged(selected, count), Control(Next/Back) |
@@ -91,6 +91,11 @@ Cache/«первый edit всегда виден» больше нет; Empty�
 не создают события. Picker confirmations/clicks/selections всегда distinct.
 Это изменение population событий ввода, даже при прежнем payload/schema v1;
 новые и прежние объёмы не считать напрямую сопоставимыми.
+
+InputPassword не содержит Clear control: password InputCleared caller отсутствует
+и событие не выдумывается. IME Next/Done наблюдают keyboard action, не запускают
+submit. Для текстовых полей наблюдается смена validation status, а не каждый
+символ/равный status; это намеренное покрытие текущего простого API.
 
 Existing eligibility/busy guards стоят до intent event; analytics не меняет
 validation/доступность controls. Rejected Login.Email/Registration.Submit/User.Next/
@@ -143,6 +148,39 @@ adapters не менялись; Firebase delivery не проверяется э
 
 ## Текущая проверка
 
+Повторный аудит 2026-10-13 после обязательного screen coverage gate:
+
+- Все 11 actual route/Component/retained VM/Render цепочек сверены независимо:
+  8 отдельных экранов с matching typed hook, 3 контейнера с default null.
+  Source inventory проверяет bijection AuthScreen ↔ hook; provider/retention/manual
+  bind/activation observers в feature отсутствуют. Functional production defects
+  не найдены; исправлены устаревший foundation KDoc и неточная coverage формулировка.
+- Все 44 реальных Contract callbacks и 2 picker results прослежены до события;
+  guards, whole-operation boundaries, payload/privacy, DI/catalog и сохранение
+  результата/ошибок проверены по исходникам. Отсутствующие UI controls и намеренные
+  omissions перечислены выше; общий код не создаёт выдуманных user events.
+- Усилены repository Registration и selection tests: exact event order/count,
+  focus/clear/IME/visibility/status/field/screen, group callbacks, selected/count
+  после изменения state и отсутствие events от catalog reconciliation.
+- Repository ProfileCreationComponentTest проходит все 5 actual steps: Initial и
+  Restore каждого, no container views, close once, Next/selection/picker/Back
+  facts, pending CreateProfileUseCase и Home после полного business completion.
+- Свежая isolated JVM compilation/tests: Auth 19 + toolkit/API/core/foundation 62
+  + Auth UI 40 = **121 passing tests**. UI: 37 repository tests и 3 temporary JVM
+  tests — 2 Login email/guards/reporting-isolation и 1 actual AuthProcessComponent
+  Login→Registration→hardware Back, pause/resume/destroy без parent views.
+  Скомпилирован 221 production/fixture source и 12 test sources.
+  Native provider methods и Render не вызываются; substitutions/ограничения
+  прежнего harness ниже остаются применимыми. DI extensions — test composition,
+  поэтому generated KSP wiring проверено только source review.
+
+Свежие logs/reports/command scripts, screen inventory и baseline:
+`/tmp/auth-coverage-review-20261013-rjz9am53/`.
+Android/iOS builds, Gradle/KSP/generated DI, rendering/native SDK runtime и Firebase
+не запускались. Обычная reporting isolation проверена в разрешённом JVM scope.
+
+### Предыдущий полный проход
+
 Строгий review 2026-10-13: три независимых направления (API/matrix, UI/lifecycle,
 core/adapters), исправления и повторное перекрёстное ревью. Сравнение с началом
 прохода подтверждает прежние business bodies/guards и wiring платформ.
@@ -158,7 +196,7 @@ core/adapters), исправления и повторное перекрёст�
   LoginViewModel дают ещё 2, итого UI — 38 и общий результат — 119.
   Скомпилирован 221 production/fixture source и 11 test sources. Исполняются
   настоящие VMs, use cases, validation, state/mappers, Components/navigation/lifecycle.
-  Rejected/eligible Login, Credential, User и Experience проверены отдельно;
+  Rejected/eligible Login, Registration, User и Experience проверены отдельно;
   busy guard и reporting-failure isolation Login не меняют бизнес/navigation.
   Возврат четырёх прежних event positions в temporary baseline artifact вызывает
   ровно четыре AssertionError; текущий artifact повторно проходит 38 tests.

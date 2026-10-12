@@ -96,12 +96,28 @@ class ProfileSelectionViewModelTest {
         val recorder = RecordingAuthAnalytics()
         val analytics = factory(recorder)
         withActiveViewModel(create = { ExcludedMusclesViewModel(analytics, feature) }) { viewModel, directions ->
-            val initial = listOf(muscles("initial", "first", "second"))
+            val initial = listOf(muscles("initial", "first", "second"), muscles("other"))
             groups.emit(initial)
             runCurrent()
             assertEquals(listOf("first", "second"), viewModel.state.value.selectedMuscleIds)
+            assertEquals("initial", viewModel.state.value.selectedGroupId)
+            assertTrue(recorder.events.isEmpty())
+
+            viewModel.onGroupClick("other")
+            assertEquals("other", viewModel.state.value.selectedGroupId)
+            viewModel.onGroupClick("initial")
+            assertEquals("initial", viewModel.state.value.selectedGroupId)
+            assertEquals(listOf("first", "second"), viewModel.state.value.selectedMuscleIds)
+            assertEquals(listOf("auth_control_clicked", "auth_control_clicked"), recorder.names)
+            assertEquals(listOf("group_selected", "group_selected"), recorder.events
+                .map { it.text("interaction_action") })
 
             viewModel.onSelect("first")
+            assertEquals(listOf("second"), viewModel.state.value.selectedMuscleIds)
+            viewModel.onSelect("first")
+            assertEquals(listOf("second", "first"), viewModel.state.value.selectedMuscleIds)
+            viewModel.onSelect("first")
+            assertEquals(listOf("second"), viewModel.state.value.selectedMuscleIds)
             viewModel.onSelect("second")
             groups.emit(initial)
             runCurrent()
@@ -126,12 +142,26 @@ class ProfileSelectionViewModelTest {
             assertTrue(viewModel.state.value.selectedMuscleIds.isEmpty())
             assertEquals(null, viewModel.state.value.selectedGroupId)
             val selections = recorder.events.filter { it.event.schema.name == "auth_selection_changed" }
-            assertEquals(listOf(1L, 0L), selections.map { captured ->
-                (captured.event.parameters().single { it.key.name == "selected_count" }.value as AnalyticsValue.Integer).value
+            assertEquals(listOf(0L to 1L, 1L to 2L, 0L to 1L, 0L to 0L), selections.map { captured ->
+                val parameters = captured.event.parameters()
+                (parameters.single { it.key.name == "selected" }.value as AnalyticsValue.Integer).value to
+                    (parameters.single { it.key.name == "selected_count" }.value as AnalyticsValue.Integer).value
             })
-            assertTrue(recorder.events.flatMap { it.event.parameters() }.none { parameter ->
+            assertEquals(
+                listOf("auth_control_clicked", "auth_control_clicked", "auth_selection_changed",
+                    "auth_selection_changed", "auth_selection_changed", "auth_selection_changed",
+                    "auth_control_clicked", "auth_control_clicked"),
+                recorder.names,
+            )
+            assertEquals(listOf("group_selected", "group_selected", "next", "next"), recorder.events
+                .filter { it.event.schema.name == "auth_control_clicked" }
+                .map { it.text("interaction_action") })
+            assertTrue(recorder.events.all {
+                it.text("interaction_screen") == "profile_creation_excluded_muscles" && it.flow == null && it.operation == null
+            })
+            assertTrue(recorder.events.flatMap { it.event.parameters() }.all { parameter ->
                 val value = parameter.value
-                value is AnalyticsValue.Text && value.value in setOf("initial", "replacement", "first", "second", "third")
+                value !is AnalyticsValue.Text || value.value in setOf("profile_creation_excluded_muscles", "group_selected", "next")
             })
         }
     }
@@ -147,12 +177,28 @@ class ProfileSelectionViewModelTest {
         val recorder = RecordingAuthAnalytics()
         val analytics = factory(recorder)
         withActiveViewModel(create = { MissingEquipmentsViewModel(analytics, feature) }) { viewModel, directions ->
-            val initial = listOf(equipments("initial", "first", "second"))
+            val initial = listOf(equipments("initial", "first", "second"), equipments("other"))
             groups.emit(initial)
             runCurrent()
             assertEquals(listOf("first", "second"), viewModel.state.value.selectedEquipmentIds)
+            assertEquals("initial", viewModel.state.value.selectedGroupId)
+            assertTrue(recorder.events.isEmpty())
+
+            viewModel.onGroupClick("other")
+            assertEquals("other", viewModel.state.value.selectedGroupId)
+            viewModel.onGroupClick("initial")
+            assertEquals("initial", viewModel.state.value.selectedGroupId)
+            assertEquals(listOf("first", "second"), viewModel.state.value.selectedEquipmentIds)
+            assertEquals(listOf("auth_control_clicked", "auth_control_clicked"), recorder.names)
+            assertEquals(listOf("group_selected", "group_selected"), recorder.events
+                .map { it.text("interaction_action") })
 
             viewModel.onEquipmentClick("first")
+            assertEquals(listOf("second"), viewModel.state.value.selectedEquipmentIds)
+            viewModel.onEquipmentClick("first")
+            assertEquals(listOf("second", "first"), viewModel.state.value.selectedEquipmentIds)
+            viewModel.onEquipmentClick("first")
+            assertEquals(listOf("second"), viewModel.state.value.selectedEquipmentIds)
             viewModel.onEquipmentClick("second")
             groups.emit(initial)
             runCurrent()
@@ -177,12 +223,26 @@ class ProfileSelectionViewModelTest {
             assertTrue(viewModel.state.value.selectedEquipmentIds.isEmpty())
             assertEquals(null, viewModel.state.value.selectedGroupId)
             val selections = recorder.events.filter { it.event.schema.name == "auth_selection_changed" }
-            assertEquals(listOf(1L, 0L), selections.map { captured ->
-                (captured.event.parameters().single { it.key.name == "selected_count" }.value as AnalyticsValue.Integer).value
+            assertEquals(listOf(0L to 1L, 1L to 2L, 0L to 1L, 0L to 0L), selections.map { captured ->
+                val parameters = captured.event.parameters()
+                (parameters.single { it.key.name == "selected" }.value as AnalyticsValue.Integer).value to
+                    (parameters.single { it.key.name == "selected_count" }.value as AnalyticsValue.Integer).value
             })
-            assertTrue(recorder.events.flatMap { it.event.parameters() }.none { parameter ->
+            assertEquals(
+                listOf("auth_control_clicked", "auth_control_clicked", "auth_selection_changed",
+                    "auth_selection_changed", "auth_selection_changed", "auth_selection_changed",
+                    "auth_control_clicked", "auth_control_clicked"),
+                recorder.names,
+            )
+            assertEquals(listOf("group_selected", "group_selected", "next", "next"), recorder.events
+                .filter { it.event.schema.name == "auth_control_clicked" }
+                .map { it.text("interaction_action") })
+            assertTrue(recorder.events.all {
+                it.text("interaction_screen") == "profile_creation_missing_equipments" && it.flow == null && it.operation == null
+            })
+            assertTrue(recorder.events.flatMap { it.event.parameters() }.all { parameter ->
                 val value = parameter.value
-                value is AnalyticsValue.Text && value.value in setOf("initial", "replacement", "first", "second", "third")
+                value !is AnalyticsValue.Text || value.value in setOf("profile_creation_missing_equipments", "group_selected", "next")
             })
         }
     }

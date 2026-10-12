@@ -166,7 +166,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     // ------------ SCREEN ANALYTICS API ------------
 
-    /** Declare only on an instrumented screen. Foundation binds each component lifecycle. */
+    /** Every independent screen overrides this hook; containers keep null. Foundation binds the lifecycle. */
     protected open val screenPresentation: ((NavigationReason) -> ScreenPresentation)? = null
 
     internal fun bindScreen(lifecycle: Lifecycle) {

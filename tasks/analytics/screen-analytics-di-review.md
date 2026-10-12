@@ -14,7 +14,7 @@ Internal internal/analytics/ScreenAnalyticsImpl @Single(binds=[ScreenAnalytics])
 destroy отписывает. Reporting Exceptions изолированы; destroyed-lifecycle
 invariant и fatal Error не маскируются.
 
-Удалены обе lifecycle extensions и overload navigation/flow. Login/Credential/
+Удалены обе lifecycle extensions и overload navigation/flow. Login/Registration/
 Splash bind через getKoin().get<ScreenAnalytics>(); feature analytics не зависит
 от foundation implementation. RetainedAnalytics не изменён и не зарегистрирован
 в DI. Тестовые исходники lifecycle/error/current facts адаптированы; добавлена

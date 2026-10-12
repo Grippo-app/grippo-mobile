@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.credential
+package com.grippo.authorization.registration
 
 import com.grippo.analytics.authorization.AuthAnalytics
 import com.grippo.analytics.authorization.models.AuthEvent
@@ -13,15 +13,15 @@ import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.toolkit.analytics.context.NavigationReason
 
-internal class CredentialViewModel(
+internal class RegistrationViewModel(
     email: String?,
     private val analytics: AuthAnalytics,
     private val registerUseCase: RegisterUseCase
-) : BaseViewModel<CredentialState, CredentialDirection, CredentialLoader>(
-    CredentialState(
+) : BaseViewModel<RegistrationState, RegistrationDirection, RegistrationLoader>(
+    RegistrationState(
         email = EmailFormatState.of(email)
     )
-), CredentialContract {
+), RegistrationContract {
 
     override val screenPresentation = { reason: NavigationReason ->
         analytics.presentScreen(AuthScreen.Registration, reason)
@@ -89,7 +89,7 @@ internal class CredentialViewModel(
 
         analytics.trackEvent(AuthEvent.Registration.Submit)
 
-        safeLaunch(loader = CredentialLoader.RegisterButton) {
+        safeLaunch(loader = RegistrationLoader.RegisterButton) {
             val hasProfile = analytics.trackOperation(AuthOperation.Register) {
                 registerUseCase.createAccount(
                     email = email.value,
@@ -98,9 +98,9 @@ internal class CredentialViewModel(
             }
 
             val destination = if (hasProfile) {
-                CredentialDirection.Home
+                RegistrationDirection.Home
             } else {
-                CredentialDirection.CreateProfile
+                RegistrationDirection.CreateProfile
             }
             navigateTo(destination)
         }
@@ -108,6 +108,6 @@ internal class CredentialViewModel(
 
     override fun onBack() {
         analytics.trackEvent(AuthEvent.Registration.Back)
-        navigateTo(CredentialDirection.Back)
+        navigateTo(RegistrationDirection.Back)
     }
 }

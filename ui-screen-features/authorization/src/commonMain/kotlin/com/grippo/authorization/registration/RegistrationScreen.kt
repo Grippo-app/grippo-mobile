@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.credential
+package com.grippo.authorization.registration
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,16 +32,16 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.create_account_btn
-import com.grippo.design.resources.provider.registration_credential_description
-import com.grippo.design.resources.provider.registration_credential_title
+import com.grippo.design.resources.provider.registration_description
+import com.grippo.design.resources.provider.registration_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun CredentialScreen(
-    state: CredentialState,
-    loaders: ImmutableSet<CredentialLoader>,
-    contract: CredentialContract
+internal fun RegistrationScreen(
+    state: RegistrationState,
+    loaders: ImmutableSet<RegistrationLoader>,
+    contract: RegistrationContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen
@@ -64,7 +64,7 @@ internal fun CredentialScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_credential_title),
+            text = AppTokens.strings.res(Res.string.registration_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -74,7 +74,7 @@ internal fun CredentialScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_credential_description),
+            text = AppTokens.strings.res(Res.string.registration_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
@@ -114,7 +114,7 @@ internal fun CredentialScreen(
 
         val buttonState = remember(loaders, state.email, state.password) {
             when {
-                loaders.contains(CredentialLoader.RegisterButton) -> ButtonState.Loading
+                loaders.contains(RegistrationLoader.RegisterButton) -> ButtonState.Loading
                 state.email is EmailFormatState.Invalid -> ButtonState.Disabled
                 state.email is EmailFormatState.Empty -> ButtonState.Disabled
                 state.password is PasswordFormatState.Empty -> ButtonState.Disabled
@@ -143,13 +143,13 @@ internal fun CredentialScreen(
 @Composable
 private fun ScreenPreviewEmpty() {
     PreviewContainer {
-        CredentialScreen(
-            state = CredentialState(
+        RegistrationScreen(
+            state = RegistrationState(
                 email = EmailFormatState.Empty(),
                 password = PasswordFormatState.Empty()
             ),
             loaders = persistentSetOf(),
-            contract = CredentialContract.Empty
+            contract = RegistrationContract.Empty
         )
     }
 }
@@ -158,13 +158,13 @@ private fun ScreenPreviewEmpty() {
 @Composable
 private fun ScreenPreviewFilled() {
     PreviewContainer {
-        CredentialScreen(
-            state = CredentialState(
+        RegistrationScreen(
+            state = RegistrationState(
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123")
             ),
             loaders = persistentSetOf(),
-            contract = CredentialContract.Empty
+            contract = RegistrationContract.Empty
         )
     }
 }

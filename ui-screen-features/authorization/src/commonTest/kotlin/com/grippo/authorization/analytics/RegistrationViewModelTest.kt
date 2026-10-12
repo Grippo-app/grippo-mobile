@@ -1,8 +1,8 @@
 package com.grippo.authorization.analytics
 
-import com.grippo.authorization.registration.credential.CredentialDirection
-import com.grippo.authorization.registration.credential.CredentialLoader
-import com.grippo.authorization.registration.credential.CredentialViewModel
+import com.grippo.authorization.registration.RegistrationDirection
+import com.grippo.authorization.registration.RegistrationLoader
+import com.grippo.authorization.registration.RegistrationViewModel
 import com.grippo.core.error.provider.AppError
 import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.CoreModule
@@ -36,7 +36,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
-class CredentialViewModelTest {
+class RegistrationViewModelTest {
     @Test
     fun repeatedSubmitCannotStartAnotherRegistrationWhilePreparationIsPending() = runTest {
         for (reportingFails in listOf(false, true)) {
@@ -52,7 +52,7 @@ class CredentialViewModelTest {
                 viewModel.onNextClick()
                 runCurrent()
                 assertEquals(listOf("register", "profile"), domain.calls)
-                assertEquals(setOf<CredentialLoader>(CredentialLoader.RegisterButton), viewModel.loaders.value)
+                assertEquals(setOf<RegistrationLoader>(RegistrationLoader.RegisterButton), viewModel.loaders.value)
 
                 viewModel.onNextClick()
                 runCurrent()
@@ -62,7 +62,7 @@ class CredentialViewModelTest {
                 profile.complete(Unit)
                 advanceUntilIdle()
                 assertEquals(1, domain.calls.count { it == "register" })
-                assertEquals(listOf(CredentialDirection.Home), directions)
+                assertEquals(listOf(RegistrationDirection.Home), directions)
                 assertTrue(errors.isEmpty())
                 assertTrue(viewModel.loaders.value.isEmpty())
                 if (!reportingFails) {
@@ -87,6 +87,7 @@ class CredentialViewModelTest {
             viewModel.onEmailFocused()
             viewModel.onPasswordFocused()
             viewModel.onPasswordVisibilityChange(true)
+            viewModel.onPasswordVisibilityChange(false)
             viewModel.onEmailKeyboardNext()
             viewModel.onPasswordKeyboardDone()
             viewModel.onNextClick()
@@ -97,25 +98,54 @@ class CredentialViewModelTest {
             assertTrue(domain.calls.isEmpty())
             assertTrue(directions.isEmpty())
             assertTrue(errors.isEmpty())
-            assertEquals(2, recorder.events.count { it.event.schema.name == "auth_input_changed" })
-            assertEquals(listOf("next", "done"), recorder.events
+            assertEquals(
+                listOf("auth_input_changed", "auth_input_changed", "auth_input_focused", "auth_input_focused",
+                    "auth_password_visibility_changed", "auth_password_visibility_changed",
+                    "auth_keyboard_action", "auth_keyboard_action"),
+                recorder.names,
+            )
+            assertEquals(listOf("email" to "invalid", "password" to "invalid"), recorder.events
+                .filter { it.event.schema.name == "auth_input_changed" }
+                .map { it.text("input_field") to it.text("input_status") })
+            assertEquals(listOf("email", "password"), recorder.events
+                .filter { it.event.schema.name == "auth_input_focused" }
+                .map { it.text("input_field") })
+            assertEquals(listOf(AnalyticsValue.Integer(1), AnalyticsValue.Integer(0)), recorder.events
+                .filter { it.event.schema.name == "auth_password_visibility_changed" }
+                .map { captured -> captured.event.parameters().single { it.key.name == "password_visible" }.value })
+            assertEquals(listOf("email" to "next", "password" to "done"), recorder.events
                 .filter { it.event.schema.name == "auth_keyboard_action" }
-                .map { it.text("keyboard_action") })
+                .map { it.text("input_field") to it.text("keyboard_action") })
             assertEquals(0, recorder.events.count { it.event.schema.name == "auth_submit_clicked" })
             assertTrue(recorder.names.none { it.startsWith("auth_attempt_") })
 
             viewModel.onEmailChange("")
             viewModel.onEmailCleared()
             assertTrue(viewModel.state.value.email is EmailFormatState.Empty)
-            assertEquals("empty", recorder.events.last { it.event.schema.name == "auth_input_changed" }.text("input_status"))
+            assertEquals(listOf("auth_input_changed", "auth_input_cleared"), recorder.names.takeLast(2))
+            val clearedStatus = recorder.events.last { it.event.schema.name == "auth_input_changed" }
+            assertEquals("email" to "empty", clearedStatus.text("input_field") to clearedStatus.text("input_status"))
             assertEquals("email", recorder.events.single { it.event.schema.name == "auth_input_cleared" }.text("input_field"))
-            val changes = recorder.events.count { it.event.schema.name == "auth_input_changed" }
+            val factsAfterClear = recorder.events.size
             viewModel.onEmailChange("")
-            assertEquals(changes, recorder.events.count { it.event.schema.name == "auth_input_changed" })
-            assertTrue(recorder.events.flatMap { it.event.parameters() }.none { parameter ->
+            assertEquals(factsAfterClear, recorder.events.size)
+            viewModel.onEmailChange("another@example.com")
+            viewModel.onPasswordChange("AnotherPassword123!")
+            assertTrue(viewModel.state.value.email is EmailFormatState.Valid)
+            assertTrue(viewModel.state.value.password is PasswordFormatState.Valid)
+            assertEquals(listOf("auth_input_changed", "auth_input_changed"), recorder.names.takeLast(2))
+            assertEquals(listOf("email" to "valid", "password" to "valid"), recorder.events.takeLast(2)
+                .map { it.text("input_field") to it.text("input_status") })
+            assertTrue(domain.calls.isEmpty())
+            assertTrue(directions.isEmpty())
+            assertTrue(recorder.names.none { it == "auth_submit_clicked" || it.startsWith("auth_attempt_") })
+            assertTrue(recorder.events.all {
+                it.text("interaction_screen") == "auth_registration" && it.flow == null && it.operation == null
+            })
+            assertTrue(recorder.events.flatMap { it.event.parameters() }.all { parameter ->
                 val value = parameter.value
-                value is AnalyticsValue.Text && value.value in setOf(
-                    "private invalid email", "another private invalid email", "bad", "person@example.com", "Password123!"
+                value !is AnalyticsValue.Text || value.value in setOf(
+                    "auth_registration", "email", "password", "invalid", "empty", "valid", "next", "done",
                 )
             })
         }
@@ -124,10 +154,10 @@ class CredentialViewModelTest {
     private fun TestScope.withViewModel(
         domain: AuthorizationFixture,
         reportingFails: Boolean = false,
-        verify: TestScope.(CredentialViewModel, RecordingAuthAnalytics, List<Throwable>, List<CredentialDirection>) -> Unit,
+        verify: TestScope.(RegistrationViewModel, RecordingAuthAnalytics, List<Throwable>, List<RegistrationDirection>) -> Unit,
     ) {
         val errors = mutableListOf<Throwable>()
-        val directions = mutableListOf<CredentialDirection>()
+        val directions = mutableListOf<RegistrationDirection>()
         val recorder = RecordingAuthAnalytics()
         val observer: Analytics = if (reportingFails) object : Analytics by recorder {
             override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
@@ -149,16 +179,16 @@ class CredentialViewModelTest {
                 } }
             })
         }
-        var viewModel: CredentialViewModel? = null
+        var viewModel: RegistrationViewModel? = null
         try {
-            val credential = CredentialViewModel(null, analytics, domain.registerUseCase())
-            viewModel = credential
+            val registration = RegistrationViewModel(null, analytics, domain.registerUseCase())
+            viewModel = registration
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                credential.navigator.collect { directions += it }
+                registration.navigator.collect { directions += it }
             }
-            credential.onEmailChange("person@example.com")
-            credential.onPasswordChange("Password123!")
-            verify(credential, recorder, errors, directions)
+            registration.onEmailChange("person@example.com")
+            registration.onPasswordChange("Password123!")
+            verify(registration, recorder, errors, directions)
         } finally {
             viewModel?.onDestroy()
             stopKoin()
@@ -173,7 +203,7 @@ class CredentialViewModelTest {
                 withViewModel(domain, reportingFails) { viewModel, recorder, errors, directions ->
                     viewModel.onNextClick()
                     advanceUntilIdle()
-                    assertEquals(listOf(if (profile) CredentialDirection.Home else CredentialDirection.CreateProfile), directions)
+                    assertEquals(listOf(if (profile) RegistrationDirection.Home else RegistrationDirection.CreateProfile), directions)
                     assertEquals("register", domain.calls.first())
                     assertEquals("push_register", domain.calls.last())
                     assertTrue(errors.isEmpty())

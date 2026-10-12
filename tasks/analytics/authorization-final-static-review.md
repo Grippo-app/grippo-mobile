@@ -32,7 +32,7 @@
 
 API/models, scenario factories, internal flows/events/schemas/operation factories,
 UI AnalyticsProvider/classifier/annotated module, owner/leaf component ordering,
-Login/Credential/Splash ViewModels, existing Login/Register use cases, auth routing,
+Login/Registration/Splash ViewModels, existing Login/Register use cases, auth routing,
 profile leaf structure, generated module registration source, tests и active skills.
 
 Сохранены closed typed AuthOperation/AuthTransition, required exit reason,
