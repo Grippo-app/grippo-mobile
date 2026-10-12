@@ -62,6 +62,7 @@ class SplashViewModelTest {
         verify: TestScope.(SplashViewModel, RecordingAuthAnalytics, List<Throwable>, List<SplashDirection>, List<() -> Unit>) -> Unit,
     ) {
         val errors = mutableListOf<Throwable>()
+        val crashes = mutableListOf<Throwable>()
         val directions = mutableListOf<SplashDirection>()
         val dismissCallbacks = mutableListOf<() -> Unit>()
         val analytics = RecordingAuthAnalytics()
@@ -84,7 +85,9 @@ class SplashViewModelTest {
                 }
             } }
             single<CrashReporting> { object : CrashReporting {
-                override fun reportException(throwable: Throwable, context: CrashReportContext) = Unit
+                override fun reportException(throwable: Throwable, context: CrashReportContext) {
+                    crashes += throwable
+                }
                 override fun logBreadcrumb(code: CrashDiagnosticCode) = Unit
             } }
         }) }
@@ -96,6 +99,7 @@ class SplashViewModelTest {
                 splash.navigator.collect { directions += it }
             }
             verify(splash, analytics, errors, directions, dismissCallbacks)
+            assertEquals(errors, crashes, "Dialogs and crash reporting must receive the same original failures")
         } finally {
             viewModel?.onDestroy()
             stopKoin()
@@ -149,7 +153,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun profileLookupFailuresReturnToAuthorizationWithoutADialogOrInitialData() = runTest {
+    fun profileLookupFailuresUseTheStandardDialogAndRetryAfterDismissal() = runTest {
         val original = AppError.Network.Timeout("private")
         val domains = listOf(
             AuthorizationFixture().apply {
@@ -164,24 +168,107 @@ class SplashViewModelTest {
 
         for (domain in domains) {
             val data = DataFixture()
+            var tokenRequests = 0
+            domain.tokenFlow = flow {
+                tokenRequests++
+                emit("fixture_session")
+            }
             withSplash(domain, data) { splash, analytics, errors, directions, callbacks ->
                 advanceUntilIdle()
 
-                assertEquals(
-                    listOf(SplashDirection.AuthProcess(AuthorizationEntryPoint.SessionCheckFailed)),
-                    directions,
-                )
+                val reported = errors.single()
+                assertSame(original, if (reported.cause === original) reported.cause else reported)
+                assertTrue(directions.isEmpty())
                 assertEquals(0, data.calls)
                 assertTrue(splash.loaders.value.isEmpty())
-                assertTrue(errors.isEmpty())
-                assertTrue(callbacks.isEmpty())
+                assertEquals(1, callbacks.size)
+                assertEquals(1, tokenRequests)
                 assertEquals(
                     listOf("auth_session_check_started", "auth_session_check_failed"),
                     analytics.names,
                 )
                 assertEquals("timeout", analytics.events.last().text("failure_category"))
                 assertNull(analytics.events.last().text("session_outcome"))
+
+                val profileRequestsBeforeRetry = domain.calls.size
+                domain.profileError = null
+                domain.userFlow = flowOf(null)
+                callbacks.single().invoke()
+                advanceUntilIdle()
+
+                assertEquals(2, tokenRequests)
+                assertEquals(profileRequestsBeforeRetry + 1, domain.calls.size)
+                assertEquals(listOf(SplashDirection.Home), directions)
+                assertEquals(0, data.calls)
+                assertEquals(1, errors.size)
+                assertTrue(splash.loaders.value.isEmpty())
+                assertEquals(
+                    listOf(
+                        "auth_session_check_started", "auth_session_check_failed",
+                        "auth_session_check_started", "auth_session_check_completed",
+                    ),
+                    analytics.names,
+                )
+                val firstAttempt = assertNotNull(analytics.events[0].operation)
+                val retryAttempt = assertNotNull(analytics.events[2].operation)
+                assertEquals(firstAttempt, analytics.events[1].operation)
+                assertEquals(retryAttempt, analytics.events[3].operation)
+                assertNotEquals(firstAttempt, retryAttempt)
+                val session = assertNotNull(analytics.events.first().flow)
+                assertTrue(analytics.events.all { it.flow == session })
             }
+        }
+    }
+
+    @Test
+    fun profileRetryRechecksTheTokenBeforeLoadingAnyProfile() = runTest {
+        val domain = AuthorizationFixture().apply {
+            profileError = AppError.Network.Timeout("Profile failed")
+        }
+        val data = DataFixture()
+        withSplash(domain, data) { splash, analytics, errors, directions, callbacks ->
+            advanceUntilIdle()
+            assertEquals(1, errors.size)
+            assertTrue(directions.isEmpty())
+            assertEquals(listOf("profile"), domain.calls)
+            assertTrue(data.requests.isEmpty())
+
+            domain.tokenFlow = flowOf(null)
+            callbacks.single().invoke()
+            advanceUntilIdle()
+
+            assertEquals(listOf("profile"), domain.calls)
+            assertEquals(listOf("muscles", "equipments"), data.requests)
+            assertEquals(
+                listOf(SplashDirection.AuthProcess(AuthorizationEntryPoint.LaunchWithoutSession)),
+                directions,
+            )
+            assertEquals(1, errors.size)
+            assertTrue(splash.loaders.value.isEmpty())
+            assertEquals(listOf("auth_session_check_started", "auth_session_check_failed"), analytics.names)
+        }
+    }
+
+    @Test
+    fun profileDialogCannotRestartADestroyedViewModel() = runTest {
+        val domain = AuthorizationFixture().apply {
+            profileError = AppError.Network.Timeout("Profile failed")
+        }
+        withSplash(domain) { splash, analytics, errors, directions, callbacks ->
+            advanceUntilIdle()
+            assertEquals(1, errors.size)
+            assertEquals(listOf("profile"), domain.calls)
+            assertTrue(directions.isEmpty())
+
+            splash.onDestroy()
+            callbacks.single().invoke()
+            advanceUntilIdle()
+
+            assertEquals(listOf("profile"), domain.calls)
+            assertEquals(1, errors.size)
+            assertTrue(directions.isEmpty())
+            assertTrue(splash.loaders.value.isEmpty())
+            assertEquals(listOf("auth_session_check_started", "auth_session_check_failed"), analytics.names)
         }
     }
 
@@ -210,7 +297,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun fatalProfileErrorsUseTheStandardPipelineWithoutAuthorizationFallback() = runTest {
+    fun fatalProfileErrorsUseTheStandardPipeline() = runTest {
         val original = AssertionError("Fatal profile failure")
         val domain = AuthorizationFixture().apply {
             beforeProfile = {
@@ -232,25 +319,35 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun reportingFailuresCannotChangeProfileSuccessOrBusinessFallback() = runTest {
+    fun reportingFailuresCannotChangeProfileSuccessOrErrorHandling() = runTest {
         for (profileFails in listOf(false, true)) {
+            val original = AppError.Network.Timeout("Profile failed")
             val domain = AuthorizationFixture().apply {
                 if (profileFails) {
-                    profileError = AppError.Network.Timeout("Profile failed")
+                    profileError = original
                 }
             }
             withSplash(domain, rejectReporting = true) { splash, analytics, errors, directions, callbacks ->
                 advanceUntilIdle()
 
-                val destination = if (profileFails) {
-                    SplashDirection.AuthProcess(AuthorizationEntryPoint.SessionCheckFailed)
+                if (profileFails) {
+                    val reported = errors.single()
+                    assertSame(original, if (reported.cause === original) reported.cause else reported)
+                    assertEquals(1, callbacks.size)
+                    assertTrue(directions.isEmpty())
+
+                    domain.profileError = null
+                    callbacks.single().invoke()
+                    advanceUntilIdle()
+
+                    assertEquals(listOf("profile", "profile"), domain.calls)
+                    assertEquals(1, errors.size)
                 } else {
-                    SplashDirection.Home
+                    assertEquals(listOf("profile"), domain.calls)
+                    assertTrue(errors.isEmpty())
+                    assertTrue(callbacks.isEmpty())
                 }
-                assertEquals(listOf(destination), directions)
-                assertEquals(listOf("profile"), domain.calls)
-                assertTrue(errors.isEmpty())
-                assertTrue(callbacks.isEmpty())
+                assertEquals(listOf(SplashDirection.Home), directions)
                 assertTrue(splash.loaders.value.isEmpty())
                 assertTrue(analytics.events.isEmpty())
             }
@@ -258,7 +355,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun profileCancellationDoesNotRecoverOrOpenADialog() = runTest {
+    fun profileCancellationDoesNotOpenADialogOrNavigate() = runTest {
         val domain = AuthorizationFixture().apply {
             profileError = CancellationException("private")
         }
@@ -272,7 +369,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun destructionInterruptsAPendingProfileLookupWithoutRecovery() = runTest {
+    fun destructionInterruptsAPendingProfileLookup() = runTest {
         var cancelled = false
         val domain = AuthorizationFixture().apply {
             beforeProfile = {
