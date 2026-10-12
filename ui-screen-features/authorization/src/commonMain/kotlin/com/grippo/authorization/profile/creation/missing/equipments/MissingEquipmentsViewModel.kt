@@ -4,7 +4,6 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.domain.state.equipment.toState
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -29,31 +28,27 @@ internal class MissingEquipmentsViewModel(
             .flatMap { it.equipments }
             .map { it.id }
             .toSet()
-        val allIds = suggestions.flatMap { it.equipments }.map { it.id }
 
-        val retainedSet = previous.selectedEquipmentIds
-            .filter { it in allIds }
-            .toSet()
-        val newlyDiscovered = allIds
-            .filter { it !in previousKnownIds }
-            .toSet()
+        val previousSelectedIds = previous.selectedEquipmentIds.toSet()
+
+        val allIds = suggestions
+            .flatMap { it.equipments }
+            .map { it.id }
 
         val selectedIds = allIds
-            .filter { it in retainedSet || it in newlyDiscovered }
+            .filter { it in previousSelectedIds || it !in previousKnownIds }
             .toPersistentList()
             .ifEmpty { allIds.toPersistentList() }
 
         update {
-            val currentGroup = it.selectedGroupId
-            val resolvedGroupId = when {
-                currentGroup != null && suggestions.any { group -> group.id == currentGroup } -> currentGroup
-                else -> suggestions.firstOrNull()?.id
-            }
+            val selectedGroupId = it.selectedGroupId
+                ?.takeIf { id -> suggestions.any { group -> group.id == id } }
+                ?: suggestions.firstOrNull()?.id
 
             it.copy(
                 suggestions = suggestions,
                 selectedEquipmentIds = selectedIds,
-                selectedGroupId = resolvedGroupId
+                selectedGroupId = selectedGroupId
             )
         }
     }
@@ -64,22 +59,23 @@ internal class MissingEquipmentsViewModel(
 
     override fun onEquipmentClick(id: String) {
         update {
-            val newList: PersistentList<String> = it.selectedEquipmentIds
-                .toMutableList()
-                .apply { if (contains(id)) remove(id) else add(id) }
-                .toPersistentList()
-
-            it.copy(selectedEquipmentIds = newList)
+            val selectedEquipmentIds = if (id in it.selectedEquipmentIds) {
+                it.selectedEquipmentIds.removing(id)
+            } else {
+                it.selectedEquipmentIds.adding(id)
+            }
+            it.copy(selectedEquipmentIds = selectedEquipmentIds)
         }
     }
 
     override fun onNextClick() {
-        val formattedList = state.value.suggestions
+        val current = state.value
+        val missingEquipmentIds = current.suggestions
             .flatMap { it.equipments }
-            .map { it.id } - state.value.selectedEquipmentIds
+            .map { it.id } - current.selectedEquipmentIds
 
         val direction = MissingEquipmentsDirection.Completed(
-            missingEquipmentIds = formattedList
+            missingEquipmentIds = missingEquipmentIds
         )
         navigateTo(direction)
     }
