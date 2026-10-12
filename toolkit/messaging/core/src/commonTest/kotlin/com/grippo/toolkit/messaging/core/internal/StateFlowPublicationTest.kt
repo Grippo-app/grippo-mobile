@@ -3,9 +3,11 @@ package com.grippo.toolkit.messaging.core.internal
 import com.grippo.toolkit.messaging.synchronization.PushTokenSyncStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class StateFlowPublicationTest {
+    @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
     @Test fun aDelayedPendingPublicationCannotOverwriteACompletedSync() {
         val state = MutableStateFlow(PushTokenSyncStatus.Synced)
         var canonical = PushTokenSyncStatus.Pending

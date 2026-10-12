@@ -149,7 +149,7 @@ class AnalyticsOperationTest {
         val events = object : AnalyticsOperationEvents<Int> by Events() {
             override fun completed(result: Int, duration: DurationMillis): AnalyticsEvent = error("schema defect")
         }
-        assertFailsWith<IllegalStateException> { analytics.trackOperation(events, flow) { 1 } }
+        assertEquals(1, analytics.trackOperation(events, flow) { 1 })
         assertEquals(listOf("fixture_started"), analytics.entries.map { it.event.schema.name })
     }
 
@@ -165,6 +165,58 @@ class AnalyticsOperationTest {
         })
         assertEquals(listOf(encodingFailure), failure.suppressedExceptions)
         assertEquals(1, analytics.entries.size)
+    }
+
+    @Test fun startFactoryFailureDoesNotPreventBusinessExecution() = runTest {
+        val analytics = Recording()
+        val events = object : AnalyticsOperationEvents<Int> by Events() {
+            override fun started(): AnalyticsEvent = error("schema defect")
+        }
+        var calls = 0
+        assertEquals(7, analytics.trackOperation(events, flow) { calls++; 7 })
+        assertEquals(1, calls)
+        assertEquals(listOf("fixture_completed"), analytics.entries.map { it.event.schema.name })
+    }
+
+    @Test fun transportReportingExceptionsDoNotReplaceTheResult() = runTest {
+        val analytics = object : Analytics by Recording() {
+            override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
+                throw IllegalStateException("reporting defect")
+            }
+        }
+        assertEquals(7, analytics.trackOperation(Events(), flow) { 7 })
+        val original = IllegalArgumentException("business")
+        assertSame(original, assertFailsWith<IllegalArgumentException> {
+            analytics.trackOperation(Events(), flow) { throw original }
+        })
+    }
+
+    @Test fun cancellationDuringCompletionReportingStillCancelsCaller() = runTest {
+        val analytics = Recording()
+        val task = async {
+            val job = coroutineContext[kotlinx.coroutines.Job]!!
+            val events = object : AnalyticsOperationEvents<Int> by Events() {
+                override fun completed(result: Int, duration: DurationMillis): AnalyticsEvent {
+                    job.cancel()
+                    throw CancellationException("reporting interrupted")
+                }
+            }
+            analytics.trackOperation(events, flow) { 7 }
+        }
+        assertFailsWith<CancellationException> { task.await() }
+        assertEquals(listOf("fixture_started"), analytics.entries.map { it.event.schema.name })
+    }
+
+    @Test fun fatalReportingErrorsAreNotSwallowed() = runTest {
+        val fatal = AssertionError("fatal reporting defect")
+        val events = object : AnalyticsOperationEvents<Int> by Events() {
+            override fun started(): AnalyticsEvent = throw fatal
+        }
+        var calls = 0
+        assertSame(fatal, assertFailsWith<AssertionError> {
+            Recording().trackOperation(events, flow) { calls++; 7 }
+        })
+        assertEquals(0, calls)
     }
 
     private class Events(private val onStart: () -> Unit = {}) : AnalyticsOperationEvents<Int> {
