@@ -82,7 +82,6 @@ internal class TrainingRecordingViewModel(
     }
 
     init {
-
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
             .safeLaunch()
@@ -199,7 +198,9 @@ internal class TrainingRecordingViewModel(
         update { current ->
             val index = current.exercises.indexOfFirst { it.id == refreshed.id }
             val updated = if (index >= 0) {
-                current.exercises.toMutableList().apply { this[index] = refreshed }
+                current.exercises.toMutableList().apply {
+                    this[index] = refreshed
+                }
             } else {
                 current.exercises + refreshed
             }
@@ -210,13 +211,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onDeleteExercise(id: String) {
-        update { current ->
-            current.copy(
-                exercises = current.exercises
-                    .filterNot { it.id == id }
-                    .toPersistentList()
-            )
-        }
+        update { current -> current.copy(exercises = current.exercises.filterNot { it.id == id }.toPersistentList()) }
 
         if (state.value.exercises.isEmpty()) {
             clearDraftTraining()
@@ -244,13 +239,13 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun clearDraftTraining() {
-        safeLaunch { trainingFeature.deleteDraftTraining().getOrThrow() }
+        safeLaunch {
+            trainingFeature.deleteDraftTraining().getOrThrow()
+        }
     }
 
     override fun onSave() {
-        val hasPending = state.value.exercises.any { exercise ->
-            exercise.iterations.any { it.isPending }
-        }
+        val hasPending = state.value.exercises.any { exercise -> exercise.iterations.any { it.isPending } }
 
         if (!hasPending) {
             showCompletionDialog()
@@ -266,9 +261,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun showCompletionDialog() {
-        val hasCompletedSets = state.value.exercises.any { exercise ->
-            exercise.iterations.any { !it.isPending }
-        }
+        val hasCompletedSets = state.value.exercises.any { exercise -> exercise.iterations.any { !it.isPending } }
         if (!hasCompletedSets) return
 
         val duration = DateTimeUtils.ago(state.value.startAt)
@@ -291,7 +284,7 @@ internal class TrainingRecordingViewModel(
                         .toPersistentList()
                     current.copy(exercises = cleaned, startAt = startAt)
                 }
-                cancelNotificationReminder()
+                notificationManager.cancel(NotificationKey.FinishWorkout)
                 toCompleteTraining()
             }
         )
@@ -354,10 +347,6 @@ internal class TrainingRecordingViewModel(
         notificationManager.show(notification = notification, delay = 45.minutes)
     }
 
-    private fun cancelNotificationReminder() {
-        notificationManager.cancel(NotificationKey.FinishWorkout)
-    }
-
     private fun lastTargetMuscleGroupId(): String? {
         val snapshot = state.value
         val exercises = snapshot.exercises.reversed()
@@ -365,8 +354,7 @@ internal class TrainingRecordingViewModel(
         val muscles = snapshot.muscles
 
         for (exercise in exercises) {
-            val example = examples.firstOrNull { it.value.id == exercise.exerciseExample.id }
-                ?: continue
+            val example = examples.firstOrNull { it.value.id == exercise.exerciseExample.id } ?: continue
 
             val muscleId = example.bundles
                 .maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }

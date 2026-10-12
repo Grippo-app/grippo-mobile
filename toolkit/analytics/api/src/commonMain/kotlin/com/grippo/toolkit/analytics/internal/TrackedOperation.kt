@@ -18,7 +18,11 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
 ): T {
     currentCoroutineContext().ensureActive()
     val operation = OperationId.create()
-    track(events.started(), flow, operation)
+    try {
+        track(events.started(), flow, operation)
+    } catch (_: Exception) {
+        // Reporting must not prevent business execution.
+    }
     val started = timeSource.markNow()
     val result = try {
         currentCoroutineContext().ensureActive()
@@ -36,6 +40,11 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
         throw error
     }
     // Keep encoding outside the operation catch: its defect cannot produce two terminal events.
-    track(events.completed(result, DurationMillis(started.elapsedNow().inWholeMilliseconds)), flow, operation)
+    try {
+        track(events.completed(result, DurationMillis(started.elapsedNow().inWholeMilliseconds)), flow, operation)
+    } catch (_: Exception) {
+        // Reporting must not replace the successful business result.
+    }
+    currentCoroutineContext().ensureActive()
     return result
 }

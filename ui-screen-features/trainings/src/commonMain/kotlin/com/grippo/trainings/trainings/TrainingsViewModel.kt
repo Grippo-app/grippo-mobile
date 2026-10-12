@@ -71,9 +71,7 @@ internal class TrainingsViewModel(
                     .observeTrainings(start = range.from, end = range.to)
                     .map { trainings -> range to trainings }
             }
-            .onEach { (range, trainings) ->
-                provideTrainings(range, trainings)
-            }
+            .onEach { (range, trainings) -> provideTrainings(range, trainings) }
             .safeLaunch()
     }
 
@@ -141,7 +139,6 @@ internal class TrainingsViewModel(
         dialogController.open(config)
     }
 
-
     override fun onSelectPeriod(id: String) {
         val current = state.value
         if (current.period.id == id) return
@@ -187,12 +184,7 @@ internal class TrainingsViewModel(
         val range = TrainingsTimelinePeriod.Daily()
             .rangeFor(DateTimeUtils.startOfDay(date))
             .coerceWithin(state.value.limitations)
-        update {
-            it.copy(
-                period = TrainingsTimelinePeriod.Daily(),
-                date = range,
-            )
-        }
+        update { it.copy(period = TrainingsTimelinePeriod.Daily(), date = range) }
     }
 
     private fun openTrainingOverview(id: String) {

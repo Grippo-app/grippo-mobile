@@ -158,9 +158,7 @@ internal class TrainingExerciseViewModel(
         if (from < 0 || to < 0) return
 
         val reordered = iterations.toMutableList().apply { add(to, removeAt(from)) }
-        update {
-            it.copy(exercise = it.exercise.copy(iterations = reordered.toPersistentList()))
-        }
+        update { it.copy(exercise = it.exercise.copy(iterations = reordered.toPersistentList())) }
     }
 
     override fun onEndReorderIterations() {
@@ -307,9 +305,7 @@ internal class TrainingExerciseViewModel(
     }
 
     private fun replaceIteration(id: String, value: IterationState) {
-        mutateIterations { iterations ->
-            iterations.map { if (it.id == id) value else it }
-        }
+        mutateIterations { iterations -> iterations.map { if (it.id == id) value else it } }
     }
 
     private fun mutateIterations(transform: (List<IterationState>) -> List<IterationState>) {

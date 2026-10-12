@@ -23,7 +23,6 @@ internal fun SplashScreen(
         value = AppTokens.colors.background.screen
     )
 ) {
-
     Box(Modifier.fillMaxSize()) {
         if (loaders.contains(SplashLoader.AppContent)) {
             Loader(modifier = Modifier.fillMaxSize())

@@ -56,12 +56,7 @@ public class TrainingGoalDetailsViewModel(
         val progress = adherence.toState()
         val insights = buildInsights(progress)
 
-        update {
-            it.copy(
-                progress = progress,
-                insights = insights,
-            )
-        }
+        update { it.copy(progress = progress, insights = insights) }
     }
 
     /**

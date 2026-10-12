@@ -22,7 +22,9 @@ internal class UserViewModel(
         val dialog = DialogConfig.WeightPicker(
             title = UiText.Res(Res.string.weight_picker_title),
             initial = state.value.weight.value,
-            onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
+            onResult = { value ->
+                update { it.copy(weight = WeightFormatState.of(value)) }
+            }
         )
         dialogController.open(dialog)
     }
@@ -31,7 +33,9 @@ internal class UserViewModel(
         val dialog = DialogConfig.HeightPicker(
             title = UiText.Res(Res.string.height_picker_title),
             initial = state.value.height.value,
-            onResult = { value -> update { it.copy(height = HeightFormatState.of(value)) } }
+            onResult = { value ->
+                update { it.copy(height = HeightFormatState.of(value)) }
+            }
         )
         dialogController.open(dialog)
     }
@@ -41,9 +45,10 @@ internal class UserViewModel(
     }
 
     override fun onNextClick() {
-        val name = (state.value.name as? NameFormatState.Valid) ?: return
-        val weight = (state.value.weight as? WeightFormatState.Valid) ?: return
-        val height = (state.value.height as? HeightFormatState.Valid) ?: return
+        val current = state.value
+        val name = (current.name as? NameFormatState.Valid) ?: return
+        val weight = (current.weight as? WeightFormatState.Valid) ?: return
+        val height = (current.height as? HeightFormatState.Valid) ?: return
 
         val direction = UserDirection.Experience(
             name = name.value,

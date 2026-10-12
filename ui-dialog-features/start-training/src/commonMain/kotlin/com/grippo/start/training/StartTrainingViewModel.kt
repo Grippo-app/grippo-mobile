@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 
 public class StartTrainingViewModel(
     private val trainingFeature: TrainingFeature,
-    private val generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
+    generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
 ) : BaseViewModel<StartTrainingState, StartTrainingDirection, StartTrainingLoader>(
     StartTrainingState()
 ), StartTrainingContract {

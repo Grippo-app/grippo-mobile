@@ -1,6 +1,5 @@
 package com.grippo.training.completed
 
-import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.stage.StageState
@@ -15,10 +14,7 @@ import com.grippo.data.features.api.training.UpdateTrainingUseCase
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.error_save_training_description
 import com.grippo.design.resources.provider.exercise_record
-import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.something_went_wrong
 import com.grippo.design.resources.provider.statistics
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
@@ -35,20 +31,18 @@ internal class TrainingCompletedViewModel(
     exercises: List<ExerciseState>,
     startAt: LocalDateTime,
     private val trainingFeature: TrainingFeature,
-    private val setTrainingUseCase: SetTrainingUseCase,
-    private val updateTrainingUseCase: UpdateTrainingUseCase,
-    private val trainingTotalUseCase: TrainingTotalUseCase,
+    setTrainingUseCase: SetTrainingUseCase,
+    updateTrainingUseCase: UpdateTrainingUseCase,
+    trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
+    exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
-    private val stringProvider: StringProvider,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
 
     init {
-
         safeLaunch(
             loader = TrainingCompletedLoader.SaveTraining,
             onError = ::onBack
@@ -69,33 +63,11 @@ internal class TrainingCompletedViewModel(
                 repetitions = totals.repetitions.value ?: 0,
             )
 
-            val id = when (val allocatedId = stage.id) {
-                null -> {
-                    val result = setTrainingUseCase
-                        .execute(training)
-                        .onFailure {
-                            throw AppError.Expected(
-                                message = stringProvider.get(Res.string.something_went_wrong),
-                                description = stringProvider.get(Res.string.error_save_training_description)
-                            )
-                        }.getOrThrow() ?: return@safeLaunch
-
-                    result
-                }
-
-                else -> {
-                    val result = updateTrainingUseCase
-                        .execute(allocatedId, training)
-                        .onFailure {
-                            throw AppError.Expected(
-                                message = stringProvider.get(Res.string.something_went_wrong),
-                                description = stringProvider.get(Res.string.error_save_training_description)
-                            )
-                        }.getOrThrow() ?: return@safeLaunch
-
-                    result
-                }
+            val saveResult = when (val trainingId = stage.id) {
+                null -> setTrainingUseCase.execute(training)
+                else -> updateTrainingUseCase.execute(trainingId, training)
             }
+            val id = saveResult.getOrThrow() ?: return@safeLaunch
 
             trainingFeature.deleteDraftTraining().getOrThrow()
 

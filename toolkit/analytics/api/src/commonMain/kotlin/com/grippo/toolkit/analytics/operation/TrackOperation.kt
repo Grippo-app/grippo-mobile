@@ -7,7 +7,8 @@ import kotlin.time.TimeSource
 
 /**
  * A started operation has one classified terminal outcome; both share a fresh ID.
- * An already-cancelled caller starts no work. Fatal errors/schema defects are not business outcomes.
+ * An already-cancelled caller starts no work. Reporting exceptions never prevent the block or replace its result.
+ * Fatal errors are not business outcomes.
  * Call inside the existing safeLaunch/use-case coroutine. No new job, retry or dispatcher.
  * Exceptions retain their identity and are rethrown to the existing error handler.
  */
