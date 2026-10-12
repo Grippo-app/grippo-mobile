@@ -824,3 +824,20 @@ integration; production collection по-прежнему ждёт application co
 Команда: `python3 /tmp/registration-rename-20261013-qtku23fu/ui-jvm/verify-ui.py`.
 Scope и substitutions — `ui-jvm/tests.json`, проверка переименования —
 `rename-verification.json` в том же temporary directory.
+
+## Аудит авторизации после Registration rename — 2026-10-13
+
+- [x] Независимо проверить нейминг, три Router, все 11 MVI-комплектов и Component/VM/Render chains: восемь screen hooks, три null containers, 44 leaf callbacks и два picker results; старых screen names/providers/retention/manual bindings нет.
+- [x] Удалить неиспользуемые serialization plugin/dateUtils dependency из authorization; перенести datetime в commonTest, сохранить serialization.core и screen-api serializers.
+- [x] Исправить потерю Result.failure локальной очистки в LogoutUseCase через getOrThrow; сохранить best-effort remote push cleanup, прежний порядок запросов и стандартный error pipeline обоих callers.
+- [x] Добавить две repository проверки actual UserViewModel: local-clear failure без logout/navigation и с failed telemetry; remote cleanup failure с logout/Back/completed. Независимо проверить assertions и cleanup.
+- [x] Fresh isolated JVM tests: Auth 19 + UI 44 = 63 passed; UI содержит 39 repository и пять temporary tests, включая оба affected ProfileSettings scenarios. Pre-fix LogoutUseCase даёт ровно две expected failures на actual caller regressions; текущий вариант проходит.
+- [x] Сверить exact diff/scope, current coverage и source naming/DI/dependency gates. Android/iOS builds, Gradle/KSP, rendering/native SDK и Firebase не запускать.
+
+Команды: `python3 /tmp/auth-registration-audit-20261013-rch4oat_/verify-jvm.py --auth-only`,
+`python3 /tmp/auth-registration-audit-20261013-rch4oat_/ui-baseline-jvm/verify-ui.py --tests-only`,
+`python3 /tmp/auth-registration-audit-20261013-rch4oat_/ui-jvm/verify-ui.py`, `git diff --check`.
+Baseline uses only the original LogoutUseCase snapshot in a temporary artifact;
+working-tree sources were not reverted for the regression check. Existing draft
+process-restoration limitation is recorded in [coverage](authorization-coverage.md#текущая-проверка),
+not implemented as part of this cleanup. Substitutions/excluded checks: `ui-jvm/tests.json`.

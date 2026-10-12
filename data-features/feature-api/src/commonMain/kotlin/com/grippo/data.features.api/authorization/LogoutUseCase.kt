@@ -8,7 +8,7 @@ public class LogoutUseCase(
 ) {
     public suspend fun execute() {
         authorizationFeature.deletePushToken()
-        localSettingsFeature.clear()
+        localSettingsFeature.clear().getOrThrow()
         authorizationFeature.logout()
     }
 }

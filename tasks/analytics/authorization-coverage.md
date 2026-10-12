@@ -148,6 +148,39 @@ adapters не менялись; Firebase delivery не проверяется э
 
 ## Текущая проверка
 
+Аудит после переименования в Registration — 2026-10-13:
+
+- Independently reviewed naming, all 11 MVI/route/Component/VM/Render chains,
+  44 leaf callbacks, 2 picker results, typed events/operations, schemas and DI.
+  Eight leaf hooks match AuthScreen; three containers keep null. Old Credential
+  screen names/paths and feature providers/retention/manual bindings are absent.
+- Removed unused authorization serialization compiler plugin and dateUtils
+  dependency; datetime belongs to commonTest. serialization.core stays in
+  commonMain for childStack/route serializer signatures. screen-api still owns
+  its serialization plugin and generated route serializers.
+- LogoutUseCase now unwraps the mandatory local settings clear result. Its original
+  failure reaches safeLaunch before token logout/navigation; analytics reports failed.
+  Remote push deletion remains best effort for ordinary returned failures, preserving
+  local logout when the network is unavailable. No new wrappers/jobs/recovery.
+- Fresh isolated JVM compilation/tests: Auth 19 + UI 44 = **63 passing tests**.
+  UI contains 39 repository cases and 5 temporary cases: Login (2), AuthProcess
+  lifecycle (1), and the affected ProfileSettings logout caller (2).
+  Both local-clear regressions fail against the pre-fix use case and pass after
+  the fix; remote cleanup failure still permits a successful logout.
+- Independent review of production changes and regression tests has no blockers.
+  Existing profile-draft limitation remains outside this cleanup: parent VM state
+  is retained in memory, while restored child routes do not carry the entered draft.
+  Process recreation can therefore lose data and return Completed to an earlier step.
+  This audit does not claim that profile draft restoration is complete.
+
+Fresh logs/scripts, red/green results, inventory and baseline:
+`/tmp/auth-registration-audit-20261013-rch4oat_/`.
+Android/iOS builds, Gradle/KSP/generated DI, rendering/native SDK runtime and Firebase
+were not run. JVM fixtures substitute generated UI/resources/platform signatures
+and test DI composition; dependency configuration is checked by source review.
+
+### Предыдущая проверка покрытий
+
 Повторный аудит 2026-10-13 после обязательного screen coverage gate:
 
 - Все 11 actual route/Component/retained VM/Render цепочек сверены независимо:

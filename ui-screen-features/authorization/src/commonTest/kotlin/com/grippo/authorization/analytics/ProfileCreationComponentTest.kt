@@ -13,7 +13,9 @@ import com.grippo.authorization.profile.creation.completed.ProfileCompletedViewM
 import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesViewModel
 import com.grippo.authorization.profile.creation.experience.ExperienceViewModel
 import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsViewModel
+import com.grippo.authorization.profile.creation.user.UserDirection
 import com.grippo.authorization.profile.creation.user.UserViewModel
+import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.CoreModule
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
@@ -41,18 +43,27 @@ import com.grippo.screen.api.ProfileCreationRouter
 import com.grippo.toolkit.analytics.Analytics
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.transport.AnalyticsValue
+import com.grippo.toolkit.crashreporting.CrashReporting
+import com.grippo.toolkit.crashreporting.context.CrashReportContext
+import com.grippo.toolkit.crashreporting.values.CrashDiagnosticCode
 import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -361,6 +372,158 @@ class ProfileCreationComponentTest {
         assertTrue(recorder.views.all { it.closes == 1 })
     }
 
+    @Test
+    fun userBackPreservesLocalSettingsFailureAndDoesNotLogoutOrNavigate() = runTest {
+        val original = IllegalStateException("Local settings cleanup failed")
+        val recorder = RecordingAuthAnalytics()
+        val calls = mutableListOf<String>()
+        val errors = mutableListOf<Throwable>()
+        val crashes = mutableListOf<Throwable>()
+        val directions = mutableListOf<UserDirection>()
+        val settings = TestSettings(calls, clearResult = Result.failure(original))
+        var logoutJob: Job? = null
+        val authorization = object : AuthorizationFeature by AuthorizationFixture() {
+            override suspend fun deletePushToken(): Result<Unit> {
+                calls += "push_delete"
+                logoutJob = currentCoroutineContext()[Job]
+                return Result.success(Unit)
+            }
+
+            override suspend fun logout() {
+                calls += "logout"
+            }
+        }
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val application = startKoin {
+            modules(CoreModule().module, AuthAnalyticsModule().module, module {
+                single<Analytics> { recorder }
+                single { LogoutUseCase(authorization, settings) }
+                single<DialogController> { object : DialogController {
+                    override fun open(config: DialogConfig) = error("Unexpected dialog")
+                } }
+                single<ErrorProvider> { object : ErrorProvider {
+                    override suspend fun provide(exception: Throwable, callback: () -> Unit) {
+                        errors += exception
+                    }
+                } }
+                single<CrashReporting> { object : CrashReporting {
+                    override fun reportException(throwable: Throwable, context: CrashReportContext) {
+                        crashes += throwable
+                    }
+                    override fun logBreadcrumb(code: CrashDiagnosticCode) = Unit
+                } }
+            })
+        }
+        var viewModel: UserViewModel? = null
+        var navigationJob: Job? = null
+        try {
+            val user = UserViewModel(application.koin.get(), application.koin.get(), application.koin.get())
+            viewModel = user
+            navigationJob = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                user.navigator.collect { directions += it }
+            }
+            user.onBack()
+            runCurrent()
+
+            assertEquals(listOf("push_delete", "settings_clear"), calls)
+            assertTrue(directions.isEmpty())
+            val reportedError = errors.single()
+            assertSame(original, if (reportedError.cause === original) reportedError.cause else reportedError)
+            val reportedCrash = crashes.single()
+            assertSame(original, if (reportedCrash.cause === original) reportedCrash.cause else reportedCrash)
+            assertEquals(listOf("auth_control_clicked", "profile_operation_started", "profile_operation_failed"), recorder.names)
+            assertEquals("profile_creation_user", recorder.events.first().text("interaction_screen"))
+            assertEquals("back", recorder.events.first().text("interaction_action"))
+            val operations = recorder.events.filter { it.text("profile_action") == "logout" }
+            assertEquals(listOf("profile_operation_started", "profile_operation_failed"), operations.map { it.event.schema.name })
+            assertNotNull(operations.first().operation)
+            assertEquals(operations.first().operation, operations.last().operation)
+            assertTrue(recorder.events.all { it.flow == null })
+            assertTrue(user.loaders.value.isEmpty())
+            assertTrue(assertNotNull(logoutJob).isCompleted)
+        } finally {
+            viewModel?.onDestroy()
+            runCurrent()
+            stopKoin()
+            Dispatchers.resetMain()
+        }
+        assertTrue(assertNotNull(navigationJob).isCompleted)
+    }
+
+    @Test
+    fun userBackStillLogsOutWhenRemotePushCleanupReturnsFailure() = runTest {
+        val remoteFailure = IllegalStateException("Remote push cleanup unavailable")
+        val recorder = RecordingAuthAnalytics()
+        val calls = mutableListOf<String>()
+        val errors = mutableListOf<Throwable>()
+        val crashes = mutableListOf<Throwable>()
+        val directions = mutableListOf<UserDirection>()
+        val settings = TestSettings(calls)
+        var logoutJob: Job? = null
+        val authorization = object : AuthorizationFeature by AuthorizationFixture() {
+            override suspend fun deletePushToken(): Result<Unit> {
+                calls += "push_delete"
+                logoutJob = currentCoroutineContext()[Job]
+                return Result.failure(remoteFailure)
+            }
+
+            override suspend fun logout() {
+                calls += "logout"
+            }
+        }
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val application = startKoin {
+            modules(CoreModule().module, AuthAnalyticsModule().module, module {
+                single<Analytics> { recorder }
+                single { LogoutUseCase(authorization, settings) }
+                single<DialogController> { object : DialogController {
+                    override fun open(config: DialogConfig) = error("Unexpected dialog")
+                } }
+                single<ErrorProvider> { object : ErrorProvider {
+                    override suspend fun provide(exception: Throwable, callback: () -> Unit) {
+                        errors += exception
+                    }
+                } }
+                single<CrashReporting> { object : CrashReporting {
+                    override fun reportException(throwable: Throwable, context: CrashReportContext) {
+                        crashes += throwable
+                    }
+                    override fun logBreadcrumb(code: CrashDiagnosticCode) = Unit
+                } }
+            })
+        }
+        var viewModel: UserViewModel? = null
+        var navigationJob: Job? = null
+        try {
+            val user = UserViewModel(application.koin.get(), application.koin.get(), application.koin.get())
+            viewModel = user
+            navigationJob = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                user.navigator.collect { directions += it }
+            }
+            user.onBack()
+            runCurrent()
+
+            assertEquals(listOf("push_delete", "settings_clear", "logout"), calls)
+            assertEquals(listOf<UserDirection>(UserDirection.Back), directions)
+            assertTrue(errors.isEmpty())
+            assertTrue(crashes.isEmpty())
+            assertEquals(listOf("auth_control_clicked", "profile_operation_started", "profile_operation_completed"), recorder.names)
+            val operations = recorder.events.filter { it.text("profile_action") == "logout" }
+            assertEquals(listOf("profile_operation_started", "profile_operation_completed"), operations.map { it.event.schema.name })
+            assertNotNull(operations.first().operation)
+            assertEquals(operations.first().operation, operations.last().operation)
+            assertTrue(recorder.events.all { it.flow == null })
+            assertTrue(user.loaders.value.isEmpty())
+            assertTrue(assertNotNull(logoutJob).isCompleted)
+        } finally {
+            viewModel?.onDestroy()
+            runCurrent()
+            stopKoin()
+            Dispatchers.resetMain()
+        }
+        assertTrue(assertNotNull(navigationJob).isCompleted)
+    }
+
     private fun TestScope.assertScreenCycle(
         lifecycle: LifecycleRegistry,
         recorder: RecordingAuthAnalytics,
@@ -379,10 +542,13 @@ class ProfileCreationComponentTest {
         assertEquals(0, recorder.views.last().closes)
     }
 
-    private class TestSettings(private val calls: MutableList<String>) : LocalSettingsFeature {
+    private class TestSettings(
+        private val calls: MutableList<String>,
+        private val clearResult: Result<Unit> = Result.success(Unit),
+    ) : LocalSettingsFeature {
         override suspend fun clear(): Result<Unit> {
             calls += "settings_clear"
-            return Result.success(Unit)
+            return clearResult
         }
 
         override fun observeRange(): Flow<Range?> = error("Unused settings call")
