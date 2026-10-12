@@ -3,7 +3,6 @@
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
     <string name="repetitions">Повторения</string>
-    <string name="error_save_training_description">Мы сохранили твою тренировку. Можешь завершить и сохранить её в любой момент с главной.</string>
     <string name="search_placeholder">Поиск…</string>
     <string name="set_value">Подход №%1$s</string>
     <string name="plus_value_more">+ ещё %1$s</string>

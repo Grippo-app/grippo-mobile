@@ -3,7 +3,6 @@
     <string name="kg">kg</string>
     <string name="reps">reps</string>
     <string name="repetitions">Repetitions</string>
-    <string name="error_save_training_description">We saved your workout. You can finish and save it anytime from the dashboard.</string>
     <string name="search_placeholder">Search…</string>
     <string name="set_value">Set #%1$s</string>
     <string name="plus_value_more">+ %1$s more</string>
