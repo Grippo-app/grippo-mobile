@@ -12,8 +12,9 @@ internal class ExperienceViewModel :
     }
 
     override fun onNextClick() {
+        val experience = state.value.selected ?: return
         val direction = ExperienceDirection.ExcludedMuscles(
-            experience = state.value.selected ?: return
+            experience = experience
         )
         navigateTo(direction)
     }
