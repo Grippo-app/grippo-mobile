@@ -1,10 +1,8 @@
 package com.grippo.services.apple.auth
 
-import com.grippo.toolkit.context.NativeContext
-import io.ktor.client.HttpClient
 import kotlinx.cinterop.BetaInteropApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.serialization.json.Json
 import platform.AuthenticationServices.ASAuthorization
 import platform.AuthenticationServices.ASAuthorizationAppleIDCredential
 import platform.AuthenticationServices.ASAuthorizationAppleIDProvider
@@ -34,7 +32,9 @@ public actual class AppleAuthUiProvider internal constructor(
     private var currentDelegate: AppleAuthorizationDelegate? = null
 
     public actual suspend fun signIn(): Result<AppleAccount> {
-        return runCatching { beginSignIn() }
+        return runCatching { beginSignIn() }.onFailure { error ->
+            if (error is CancellationException || error !is Exception) throw error
+        }
     }
 
     private suspend fun beginSignIn(): AppleAccount =
@@ -97,11 +97,7 @@ public actual class AppleAuthUiProvider internal constructor(
         }
 }
 
-public actual class AppleAuthProvider actual constructor(
-    @Suppress("UNUSED_PARAMETER") nativeContext: NativeContext,
-    @Suppress("UNUSED_PARAMETER") httpClient: HttpClient,
-    @Suppress("UNUSED_PARAMETER") json: Json,
-) {
+public actual class AppleAuthProvider actual constructor() {
     public actual val isSupported: Boolean
         get() = true
 
@@ -156,7 +152,7 @@ private class AppleAuthorizationDelegate(
         if (didCompleteWithError.domain == ASAuthorizationErrorDomain &&
             didCompleteWithError.code == ASAuthorizationErrorCanceled.toLong()
         ) {
-            onFailure(AppleAuthException("Apple sign-in was cancelled"))
+            onFailure(AppleAuthException("Apple sign-in was cancelled", reason = AppleAuthFailureReason.Cancelled))
             return
         }
 
@@ -167,9 +163,10 @@ private class AppleAuthorizationDelegate(
 }
 
 private fun Throwable.asAppleAuthException(): AppleAuthException {
+    if (this !is Exception) throw this
     return this as? AppleAuthException ?: AppleAuthException(
         message ?: "Apple sign-in failed",
-        this
+        cause = this
     )
 }
 

@@ -14,6 +14,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.CancellationException
 
 public actual typealias GoogleAuthUiProvider = AndroidGoogleAuthUiProvider
 
@@ -31,7 +32,10 @@ public class AndroidGoogleAuthUiProvider(
             handleCredential(credential)
         }.fold(
             onSuccess = { Result.success(it) },
-            onFailure = { error -> Result.failure(error.asGoogleAuthException()) },
+            onFailure = { error ->
+                if (error is CancellationException || error !is Exception) throw error
+                Result.failure(error.asGoogleAuthException())
+            },
         )
     }
 
@@ -93,16 +97,7 @@ public class AndroidGoogleAuthUiProvider(
             is NoCredentialException -> true
             is GetCredentialInterruptedException -> true
 
-            is GetCredentialCancellationException -> {
-                val msg = (error.message ?: "").lowercase()
-                val isExplicitUserCancel =
-                    msg.contains("user canceled") ||
-                            msg.contains("user cancelled") ||
-                            msg.contains("canceled by the user") ||
-                            msg.contains("cancelled by the user")
-
-                !isExplicitUserCancel
-            }
+            is GetCredentialCancellationException -> false
 
             is GetCredentialException -> true
             else -> false
@@ -172,7 +167,8 @@ public class AndroidGoogleAuthUiProvider(
             )
         } catch (error: GoogleAuthException) {
             throw error
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
+            if (error is CancellationException) throw error
             throw GoogleAuthException.TokenParseFailed(
                 message = "Unexpected error while parsing Google credential",
                 cause = error,
@@ -189,29 +185,10 @@ public class AndroidGoogleAuthUiProvider(
                 cause = this,
             )
 
-            is GetCredentialCancellationException -> {
-                val msg = (message ?: "").lowercase()
-                val isReauth = msg.contains("reauth")
-                val isUserCancel =
-                    msg.contains("canceled") || msg.contains("cancelled") || msg.contains("user canceled")
-
-                when {
-                    isReauth -> GoogleAuthException.ReauthFailed(
-                        message = "Google account re-auth failed on device",
-                        cause = this,
-                    )
-
-                    isUserCancel -> GoogleAuthException.Cancelled(
-                        message = "Google sign-in cancelled",
-                        cause = this,
-                    )
-
-                    else -> GoogleAuthException.Cancelled(
-                        message = "Google sign-in interrupted/cancelled",
-                        cause = this,
-                    )
-                }
-            }
+            is GetCredentialCancellationException -> GoogleAuthException.Cancelled(
+                message = "Google sign-in cancelled",
+                cause = this,
+            )
 
             is GetCredentialInterruptedException -> GoogleAuthException.Interrupted(
                 message = "Google sign-in interrupted",
