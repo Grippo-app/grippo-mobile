@@ -6,7 +6,6 @@ import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.domain.state.equipment.toState
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.combine
 
@@ -38,20 +37,18 @@ internal class ProfileEquipmentsViewModel(
         val selectedIds = suggestions
             .flatMap { it.equipments }
             .map { it.id }
-            .minus(excluded.map { it.id })
+            .minus(excluded.map { it.id }.toSet())
             .toPersistentList()
 
         update {
-            val currentGroup = it.selectedGroupId
-            val resolvedGroupId = when {
-                currentGroup != null && suggestions.any { group -> group.id == currentGroup } -> currentGroup
-                else -> suggestions.firstOrNull()?.id
-            }
+            val selectedGroupId = it.selectedGroupId
+                ?.takeIf { id -> suggestions.any { group -> group.id == id } }
+                ?: suggestions.firstOrNull()?.id
 
             it.copy(
                 suggestions = suggestions,
                 selectedEquipmentIds = selectedIds,
-                selectedGroupId = resolvedGroupId
+                selectedGroupId = selectedGroupId
             )
         }
     }
@@ -66,22 +63,23 @@ internal class ProfileEquipmentsViewModel(
 
     override fun onSelectEquipment(id: String) {
         update {
-            val newList: PersistentList<String> = it.selectedEquipmentIds
-                .toMutableList()
-                .apply { if (contains(id)) remove(id) else add(id) }
-                .toPersistentList()
-
-            it.copy(selectedEquipmentIds = newList)
+            val selectedEquipmentIds = if (id in it.selectedEquipmentIds) {
+                it.selectedEquipmentIds.removing(id)
+            } else {
+                it.selectedEquipmentIds.adding(id)
+            }
+            it.copy(selectedEquipmentIds = selectedEquipmentIds)
         }
     }
 
     override fun onApply() {
-        val formattedList = state.value.suggestions
+        val current = state.value
+        val excludedEquipmentIds = current.suggestions
             .flatMap { it.equipments }
-            .map { it.id } - state.value.selectedEquipmentIds
+            .map { it.id } - current.selectedEquipmentIds
 
         safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton) {
-            excludedEquipmentsFeature.setExcludedEquipments(formattedList).getOrThrow()
+            excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds).getOrThrow()
             navigateTo(ProfileEquipmentsDirection.Back)
         }
     }

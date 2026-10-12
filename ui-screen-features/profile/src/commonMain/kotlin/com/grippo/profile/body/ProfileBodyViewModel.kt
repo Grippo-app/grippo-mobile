@@ -64,13 +64,7 @@ internal class ProfileBodyViewModel(
 
     private fun provideUser(value: User?) {
         val user = value?.toState() ?: return
-        update {
-            it.copy(
-                weight = user.weight,
-                height = user.height,
-                user = user
-            )
-        }
+        update { it.copy(weight = user.weight, height = user.height, user = user) }
     }
 
     override fun onHeightPickerClick() {

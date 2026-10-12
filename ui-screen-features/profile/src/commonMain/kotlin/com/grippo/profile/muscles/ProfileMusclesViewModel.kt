@@ -29,7 +29,7 @@ internal class ProfileMusclesViewModel(
         }
     }
 
-    private suspend fun provideMuscles(list: List<MuscleGroup>, excluded: List<Muscle>) {
+    private fun provideMuscles(list: List<MuscleGroup>, excluded: List<Muscle>) {
         val suggestions = list.toState()
         val selectedIds = suggestions
             .flatMap { it.muscles }
@@ -66,12 +66,13 @@ internal class ProfileMusclesViewModel(
     }
 
     override fun onApply() {
-        val formattedList = state.value.suggestions
+        val current = state.value
+        val excludedMuscleIds = current.suggestions
             .flatMap { it.muscles }
-            .map { it.value.id } - state.value.selectedMuscleIds
+            .map { it.value.id } - current.selectedMuscleIds
 
         safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
-            excludedMusclesFeature.setExcludedMuscles(formattedList).getOrThrow()
+            excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds).getOrThrow()
             navigateTo(ProfileMusclesDirection.Back)
         }
     }
@@ -79,5 +80,4 @@ internal class ProfileMusclesViewModel(
     override fun onBack() {
         navigateTo(ProfileMusclesDirection.Back)
     }
-
 }

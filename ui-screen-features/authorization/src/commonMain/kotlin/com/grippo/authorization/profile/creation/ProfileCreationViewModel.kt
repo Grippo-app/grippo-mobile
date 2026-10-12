@@ -25,14 +25,14 @@ internal class ProfileCreationViewModel :
     }
 
     override fun toMissingEquipmentWithMuscles(ids: List<String>) {
-        val list = ids.toPersistentList()
-        update { it.copy(excludedMuscleIds = list) }
+        val excludedMuscleIds = ids.toPersistentList()
+        update { it.copy(excludedMuscleIds = excludedMuscleIds) }
         navigateTo(ProfileCreationDirection.ToMissingEquipmentWithMuscles(ids))
     }
 
     override fun toCompletedWithEquipment(ids: List<String>) {
-        val list = ids.toPersistentList()
-        update { it.copy(missingEquipmentIds = list) }
+        val missingEquipmentIds = ids.toPersistentList()
+        update { it.copy(missingEquipmentIds = missingEquipmentIds) }
         navigateTo(ProfileCreationDirection.ToCompletedWithEquipment(ids))
     }
 

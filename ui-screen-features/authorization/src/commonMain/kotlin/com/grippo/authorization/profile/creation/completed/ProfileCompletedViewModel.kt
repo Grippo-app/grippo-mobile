@@ -16,14 +16,13 @@ internal class ProfileCompletedViewModel(
     experience: ExperienceEnumState?,
     excludedMuscleIds: ImmutableList<String>,
     missingEquipmentIds: ImmutableList<String>,
-    private val createProfileUseCase: CreateProfileUseCase,
-    private val localSettingsFeature: LocalSettingsFeature,
+    createProfileUseCase: CreateProfileUseCase,
+    localSettingsFeature: LocalSettingsFeature,
 ) : BaseViewModel<ProfileCompletedState, ProfileCompletedDirection, ProfileCompletedLoader>(
     ProfileCompletedState
 ), ProfileCompletedContract {
 
     init {
-
         val mappedExperience = experience?.toDomain()
 
         if (mappedExperience == null) {
@@ -44,7 +43,9 @@ internal class ProfileCompletedViewModel(
 
                 createProfileUseCase.execute(profile)
 
-                localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration).getOrThrow()
+                localSettingsFeature
+                    .setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration)
+                    .getOrThrow()
 
                 navigateTo(ProfileCompletedDirection.Home)
             }
