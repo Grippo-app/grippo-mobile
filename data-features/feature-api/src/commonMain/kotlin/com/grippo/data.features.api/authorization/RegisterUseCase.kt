@@ -14,24 +14,23 @@ public class RegisterUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val goalFeature: GoalFeature,
 ) {
-    public suspend fun execute(email: String, password: String): Boolean {
+    public suspend fun createAccount(email: String, password: String): Boolean {
         authorizationFeature.register(email, password).getOrThrow()
+        return prepare()
+    }
 
+    private suspend fun prepare(): Boolean {
         val hasProfile = userFeature.getUser().getOrThrow()
-
         if (hasProfile) {
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
             goalFeature.getGoal().getOrThrow()
         }
-
         val pushToken = authorizationFeature.getPushToken()
-
         if (pushToken != null) {
             authorizationFeature.updatePushToken(pushToken).getOrThrow()
         }
-
         return hasProfile
     }
 }

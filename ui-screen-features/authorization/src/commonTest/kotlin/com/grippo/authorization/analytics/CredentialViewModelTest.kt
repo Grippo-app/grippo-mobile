@@ -2,6 +2,7 @@ package com.grippo.authorization.analytics
 
 import com.grippo.analytics.authorization.models.EntryPoint
 import com.grippo.authorization.registration.credential.CredentialDirection
+import com.grippo.authorization.registration.credential.CredentialLoader
 import com.grippo.authorization.registration.credential.CredentialViewModel
 import com.grippo.core.error.provider.AppError
 import com.grippo.core.error.provider.ErrorProvider
@@ -18,6 +19,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -25,6 +27,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.koin.core.context.startKoin
@@ -33,6 +36,42 @@ import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
 class CredentialViewModelTest {
+    @Test
+    fun repeatedSubmitCannotStartAnotherRegistrationWhilePreparationIsPending() = runTest {
+        for (reportingFails in listOf(false, true)) {
+            val profile = CompletableDeferred<Unit>()
+            val domain = AuthorizationFixture().apply {
+                beforeProfile = {
+                    profile.await()
+                }
+            }
+
+            withViewModel(domain, reportingFails) { viewModel, recorder, errors, directions ->
+                viewModel.onNextClick()
+                viewModel.onNextClick()
+                runCurrent()
+                assertEquals(listOf("register", "profile"), domain.calls)
+                assertEquals(setOf<CredentialLoader>(CredentialLoader.RegisterButton), viewModel.loaders.value)
+
+                viewModel.onNextClick()
+                runCurrent()
+                assertEquals(listOf("register", "profile"), domain.calls)
+                assertTrue(directions.isEmpty())
+
+                profile.complete(Unit)
+                advanceUntilIdle()
+                assertEquals(1, domain.calls.count { it == "register" })
+                assertEquals(listOf(CredentialDirection.Home), directions)
+                assertTrue(errors.isEmpty())
+                assertTrue(viewModel.loaders.value.isEmpty())
+                if (!reportingFails) {
+                    val attempts = recorder.names.filter { it.startsWith("auth_attempt_") }
+                    assertEquals(listOf("auth_attempt_started", "auth_attempt_succeeded"), attempts)
+                }
+            }
+        }
+    }
+
     private fun TestScope.withViewModel(
         domain: AuthorizationFixture,
         reportingFails: Boolean = false,

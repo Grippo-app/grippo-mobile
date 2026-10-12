@@ -95,6 +95,9 @@ val hasProfile = analytics.trackOperation(AuthOperation.SessionCheck) {
 их обёртки в production запрещены как лишняя обвязка. Отмена сохраняется устройством
 исполнения и распространением `CancellationException`; применять
 [общее правило проекта](../../.claude/skills/validation-gates/references/forbidden-patterns.md#coroutines).
+Декоратор сообщает interrupted, когда бизнес-блок выбросил CancellationException,
+и пробрасывает тот же объект. Если блок вернул результат, он сохраняется;
+декоратор не добавляет точки отмены до/после блока и не переопределяет его исход.
 
 ```kotlin
 val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {

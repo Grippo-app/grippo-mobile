@@ -22,32 +22,26 @@ internal class MissingEquipmentsViewModel(
 
     private fun provideEquipments(list: List<EquipmentGroup>) {
         val suggestions = list.toState()
-        val previous = state.value
-
-        val previousKnownIds = previous.suggestions
-            .flatMap { it.equipments }
-            .map { it.id }
-            .toSet()
-
-        val previousSelectedIds = previous.selectedEquipmentIds.toSet()
-
         val allIds = suggestions
             .flatMap { it.equipments }
             .map { it.id }
 
-        val selectedIds = allIds
-            .filter { it in previousSelectedIds || it !in previousKnownIds }
-            .toPersistentList()
-            .ifEmpty { allIds.toPersistentList() }
-
-        update {
-            val selectedGroupId = it.selectedGroupId
+        update { previous ->
+            val knownIds = previous.suggestions
+                .flatMap { it.equipments }
+                .map { it.id }
+                .toSet()
+            val selectedIds = previous.selectedEquipmentIds.toSet()
+            val selectedEquipmentIds = allIds
+                .filter { it in selectedIds || it !in knownIds }
+                .toPersistentList()
+            val selectedGroupId = previous.selectedGroupId
                 ?.takeIf { id -> suggestions.any { group -> group.id == id } }
                 ?: suggestions.firstOrNull()?.id
 
-            it.copy(
+            previous.copy(
                 suggestions = suggestions,
-                selectedEquipmentIds = selectedIds,
+                selectedEquipmentIds = selectedEquipmentIds,
                 selectedGroupId = selectedGroupId
             )
         }

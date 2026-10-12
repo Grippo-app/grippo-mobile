@@ -155,8 +155,9 @@ remain valid.
 Splash has one `safeLaunch` with `AppContent`, started through class-level
 `loadContent()` from `init` and reused by `onError = ::loadContent`. Token,
 reference and profile failures all use the standard log/crash/dialog pipeline.
-Closing the dialog retries the complete sequence; failures do not navigate to
-authorization or Home. With a token, `loadProfile()` runs in that same coroutine:
+Closing the dialog retries the complete sequence; Splash itself does not turn
+lookup failures into authorization or Home navigation. Root independently owns
+navigation after token loss. With a token, `loadProfile()` runs in that same coroutine:
 
 ```kotlin
 private suspend fun loadProfile() {
@@ -173,8 +174,8 @@ private suspend fun loadProfile() {
 }
 ```
 
-`hasProfile` is a business Boolean: a cached or loaded profile leads to Home;
-confirmed absence leads to CreateProfile. Analytics decorates only the lookup
+`hasProfile` is a business Boolean: `true` leads to Home, `false` to CreateProfile.
+Analytics decorates only the lookup
 and preserves its result/error. Cancellation propagates naturally; there is no
 local catch, second launch, extra loader or recovery wrapper.
 

@@ -446,3 +446,73 @@ policy не включено в этот структурный проход.
 Лог: `/tmp/splash-single-launch-verification.log`.
 Сохранилось прежнее предупреждение deprecated BackHandler. Полные app builds и
 Firebase sends/sign-in/uploads в этом проходе не выполнялись.
+
+## Splash: стандартная обработка ошибки профиля — 2026-10-12
+
+Пользователь выбрал убрать локальный catch и обрабатывать ошибку профиля через
+обычный `safeLaunch`. Этот проход заменяет прежний немедленный возврат на вход.
+
+- [x] Удалить try/catch и import CancellationException из Splash; оставить suspend loadProfile, единственный safeLaunch/AppContent и последовательные muscle → equipment для no-session пути.
+- [x] Начальная загрузка и post-dismiss повтор используют один private class-level loadContent; каждый повтор заново читает token. Успешный бизнес-Boolean выбирает Home/CreateProfile, ошибка проходит logger → CrashReporting → ErrorProvider.
+- [x] Аналитика остаётся декоратором профильной операции: исходная ошибка даёт failed, повтор получает новый OperationId в прежнем session flow. Schema v3/payload не менялись.
+- [x] Сохранить SessionCheckFailed в сериализуемых routes/API и bounded wire codes для восстановления legacy state; текущий Splash этот вход не создаёт.
+- [x] Обновить тесты remote/cache-flow ошибок, исходного crash/dialog error и deferred retry; проверить повтор после потери token, fresh paired operation IDs, callback после destroy, reporting failures, cancellation и fatal errors.
+- [x] Обновить 12 skills/standard/coverage документов, удалить прежнее разрешение локального UI catch. Единый onError/mapError контракт обеих перегрузок сохранён.
+- [x] Self-review и независимый review; YAML, 44 локальные ссылки, Markdown fences, точный BaseViewModel drop-in/Splash example, отсутствие local catch/active legacy entry producer и git diff --check.
+- [x] Android host tests: foundation 25, UI authorization 34 — всего 59. iOS simulator: foundation 14, UI authorization 34 — всего 48. Failures/errors/skipped = 0.
+- [x] Android/iOS simulator shared compilation; Gradle BUILD SUCCESSFUL (3m 22s, 1977 tasks).
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :shared:compileAndroidMain :shared:compileKotlinIosSimulatorArm64 --offline`.
+Лог: `/tmp/splash-standard-error-verification.log`.
+
+Прежние global opt-in/expect-actual/BackHandler warnings сохранены. TokenProvider
+refresh/invalidation и неоднозначный getUser Boolean контракт не менялись; их
+ранее найденные проблемы отмечены в coverage как отдельная работа. Полные app
+builds и Firebase sends/sign-in/uploads в этом проходе не выполнялись.
+
+## Очистка восстановленных файлов из stash — 2026-10-12
+
+Пользователь подтвердил, что из stash случайно вернулся устаревший код, и
+попросил удалить его по всему затронутому дереву без Android/iOS билдов.
+
+- [x] Удалить `SessionRestoration`, старый `SessionPreparation` и тест прежней initial-data обвязки. Сохранить текущие запросы Splash и цельные Login/Register use case.
+- [x] Удалить прежний `analytics/feature-api`, плоские дубли implementation, старые preparation/stage/outcome модели и UI bindings/provider/state. Сохранить `analytics-api`, internal implementation folders, `AuthAnalyticsProvider` и актуальные тесты интеграции.
+- [x] Удалить старые `PlatformServicesModule/Runtime`, `shared/main`, устаревшие toolkit API/config/locks/tests, неиспользуемые Profile/Main helpers и прежние navigation resources. Сохранить актуальную main shell, internal expect/actual и Android/Swift bootstrap wiring.
+- [x] Исправить внутреннюю опечатку `MussingEquipments`; проверить оставшиеся точечные изменения читаемости. Не менять бизнес-логику, route identity, StateKeeper keys, snapshot SerialName, wire-коды или версии схем.
+- [x] Self-review и независимый review всех 67 удалений: 2143 строки устаревшего кода/тестов/ресурсов. Проверить актуальных потребителей, замены и DI перед удалением.
+- [x] Статические проверки: нет импортов или неразрешённых same-package ссылок на удалённые типы; нет duplicate top-level типов в затронутых module/source sets; все 94 включённых Gradle-модуля имеют build files, literal project accessors разрешаются в settings.
+- [x] Проверить границы analytics/API и screen-api, отсутствие старых символов в production/test source и действующих skills/standard/coverage; просмотреть 11 authorization ViewModel и актуальные provider/Splash тесты. Scan 59 ViewModel не нашёл локальных именованных функций; найденный `libraryResultKey` — метод companion, он сохранён.
+- [x] Финальный `git diff --check` без ошибок. Скиллы и стандарт уже описывают текущую структуру; новых правил или примеров устаревшей реализации в них нет.
+
+Статический отчёт: `/tmp/stash-cleanup-static-verification.json`.
+В этом проходе Gradle, Android/iOS сборки и тестовые раннеры не запускались.
+Результаты предыдущих запусков выше относятся к предыдущим изменениям, а не
+подтверждают компиляцию после этой очистки. Действующие cancellation guards
+toolkit cores не удалялись как неиспользуемый код: они относятся к текущему
+контракту отмены и требуют отдельного поведенческого изменения.
+
+## Авторизация и аналитика после очистки stash — 2026-10-12
+
+- [x] Заново просмотреть DI/API/scenarios/schema, Auth/Splash/Login/Credential/ProfileCreation routes/components, все 11 authorization ViewModel и цельные Login/Register use case. Проверить annotated bindings, public API dependencies и shared `.module` enumeration по исходникам.
+- [x] Упростить одноэлементные childStack через `initialConfiguration`; убрать повторное хранение analytics/input arguments в leaf/completion components. По локальному Decompose source это тот же restore/save path.
+- [x] Удалить мёртвый `ToBodyWithName` и нечитавшиеся payloads ProfileCreation Directions. Бизнес-данные остаются в immutable VM state; typed callbacks, router destinations и snapshot wire shape не меняются.
+- [x] Удалить вредный fallback «пустой выбор → выбрать всё» в мышцах/оборудовании. Reconciliation выполняется атомарно в update: снятые отметки сохраняются, отсутствующие ID удаляются, новые ID выбираются.
+- [x] Ограничить login/register одним активным submit через существующие loaders. Блокировать cross-method/repeated clicks и переход к регистрации во время входа; согласовать LoginScreen Loading/Disabled без новых flags/jobs/helpers.
+- [x] Убрать четыре manual ensureActive из общего operation decorator. Он исполняет block напрямую, сохраняет T и исходную business exception; выброшенная CancellationException даёт interrupted и пробрасывается. Явно снять старое обещание pre-gate уже отменённого caller; отменённый Job остаётся отменённым, даже если несуспендящий блок вернул T. Это намеренное выравнивание с business-decoration правилом, не механическое сохранение прежних guard fixtures.
+- [x] Обновить contract/tests источники: direct cancellation identity, cancelled Job + non-suspending block result, completion-reporting cancellation; сохранить suspension cancellation, original failures, reporting/fatal isolation и paired IDs. Добавить четыре actual-VM regression cases для профильного выбора/state и повторной регистрации. Убрать local named helper из RetainedAnalyticsTest.
+- [x] Сохранить legacy SessionCheckFailed enum/mapping и пояснить его роль; текущий Splash его не создаёт. Splash error/retry policy, use-case request order, StateKeeper keys, serializers, 12 custom schemas и версии не изменены.
+- [x] Актуализировать feature-analytics skill, стандарт, integration guide и coverage для точной границы cancellation и новых business safeguards/omissions; новые events не добавлены.
+- [x] Self-review + независимые review loops после исправлений: operation decorator/fixtures, атомарный выбор, lifecycle activation/generics, Directions/state ownership и loaders/UI согласованы по реальным контрактам.
+- [x] Статические проверки: duplicate top-level types по module/source set = 0; неизвестные literal Gradle project accessors = 0; все 94 included modules существуют; 27 schema/event/model/route files побайтно совпадают с baseline. Provider mapping/keys неизменны; removed-symbol scans и relevant production scope/ensureActive/local-function scans чистые.
+- [x] Проверить 19 локальных Markdown links, balanced fences и неизменённый YAML frontmatter; финальный `git diff --check` без ошибок.
+
+Статический отчёт: `/tmp/auth-post-stash-static-verification.json`.
+Gradle, Android/iOS builds, Kotlin test runners, KSP regeneration и Firebase sends
+в этом проходе не выполнялись. Новые regression sources ещё не скомпилированы и
+не запускались; статический review не подменяет эти проверки.
+`quick_validate.py` недоступен из-за отсутствия PyYAML в system/bundled Python;
+зависимости не устанавливались, frontmatter не менялся и проверен against baseline.
+Отдельная transport cancellation policy сервисных workers не менялась: она
+различает CancellationException активного SDK sink и реальную отмену worker.
+Оставшиеся worker guards вне operation decorator требуют отдельного пересмотра
+этого контракта; этот проход не утверждает отсутствие ensureActive во всём toolkit.

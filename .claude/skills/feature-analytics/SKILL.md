@@ -90,6 +90,9 @@ Removing reporting must leave the business block and its result unchanged.
 - Follow the [project coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines):
   do not add manual `ensureActive()` checks or wrappers in production, including
   analytics decorators. Preserve caller cancellation through the execution design.
+  The decorator reports a thrown business `CancellationException` as interruption
+  and rethrows that same exception. A returned result stays a returned result;
+  do not add cancellation checkpoints before/after the block or reinterpret it.
 - Use toolkit `trackOperation` and `AnalyticsOperationEvents<T>` for timing and IDs.
   Every attempt defines one start/terminal pair; retries receive fresh IDs.
   Reporting errors, consent and queue policy can prevent delivery of either fact. A returned

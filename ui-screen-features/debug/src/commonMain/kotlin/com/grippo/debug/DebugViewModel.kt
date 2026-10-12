@@ -64,7 +64,6 @@ public class DebugViewModel(
 
     private fun loadLogs() {
         safeLaunch(loader = DebugLoader.Logs) {
-
             val logsByCategory = AppLogger.logFileContentsByCategory()
 
             update { state ->

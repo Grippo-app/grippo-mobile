@@ -38,7 +38,7 @@ public class AuthComponent(
 
     override suspend fun eventListener(direction: AuthDirection) {
         when (direction) {
-            AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess)
+            is AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess(direction.entryPoint))
             AuthDirection.Back -> close.invoke()
             AuthDirection.Home -> toHome.invoke()
             AuthDirection.ProfileCreation -> navigation.push(AuthRouter.ProfileCreation)
@@ -50,9 +50,9 @@ public class AuthComponent(
     internal val childStack: Value<ChildStack<AuthRouter, Child>> = childStack(
         source = navigation,
         serializer = AuthRouter.serializer(),
-        initialStack = { listOf(initial) },
+        initialConfiguration = initial,
         key = "AuthComponent",
-        handleBackButton = true,
+        handleBackButton = false,
         childFactory = ::createChild,
     )
 
@@ -71,6 +71,7 @@ public class AuthComponent(
             is AuthRouter.AuthProcess -> AuthProcess(
                 AuthProcessComponent(
                     componentContext = context,
+                    route = router,
                     toHome = viewModel::toHome,
                     toProfileCreation = viewModel::toProfileCreation,
                     close = viewModel::onBack

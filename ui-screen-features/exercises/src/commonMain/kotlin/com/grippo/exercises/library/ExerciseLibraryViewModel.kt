@@ -13,13 +13,11 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-@OptIn(FlowPreview::class)
 internal class ExerciseLibraryViewModel(
     mode: ExerciseLibraryMode,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
@@ -165,11 +163,7 @@ internal class ExerciseLibraryViewModel(
     }
 
     override fun onQueryChange(value: String) {
-        updateWithPaginationReset {
-            it.copy(
-                queries = it.queries.copy(name = value),
-            )
-        }
+        updateWithPaginationReset { it.copy(queries = it.queries.copy(name = value)) }
     }
 
     override fun onSuggestionsClick() {

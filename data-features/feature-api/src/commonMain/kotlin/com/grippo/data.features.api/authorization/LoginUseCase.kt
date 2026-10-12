@@ -16,55 +16,23 @@ public class LoginUseCase(
     private val weightHistoryFeature: WeightHistoryFeature,
     private val goalFeature: GoalFeature,
 ) {
-    public suspend fun executeEmail(email: String, password: String): Boolean {
+    public suspend fun loginEmail(email: String, password: String): Boolean {
         authorizationFeature.login(email, password).getOrThrow()
-
-        val hasProfile = userFeature.getUser().getOrThrow()
-
-        if (hasProfile) {
-            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
-            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
-            exerciseExampleFeature.getExerciseExamples().getOrThrow()
-            weightHistoryFeature.getWeightHistory().getOrThrow()
-            goalFeature.getGoal().getOrThrow()
-        }
-
-        val pushToken = authorizationFeature.getPushToken()
-
-        if (pushToken != null) {
-            authorizationFeature.updatePushToken(pushToken).getOrThrow()
-        }
-
-        return hasProfile
+        return prepare()
     }
 
-    public suspend fun executeGoogle(token: String): Boolean {
+    public suspend fun loginGoogle(token: String): Boolean {
         authorizationFeature.google(token).getOrThrow()
-
-        val hasProfile = userFeature.getUser().getOrThrow()
-
-        if (hasProfile) {
-            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
-            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
-            exerciseExampleFeature.getExerciseExamples().getOrThrow()
-            weightHistoryFeature.getWeightHistory().getOrThrow()
-            goalFeature.getGoal().getOrThrow()
-        }
-
-        val pushToken = authorizationFeature.getPushToken()
-
-        if (pushToken != null) {
-            authorizationFeature.updatePushToken(pushToken).getOrThrow()
-        }
-
-        return hasProfile
+        return prepare()
     }
 
-    public suspend fun executeApple(code: String): Boolean {
+    public suspend fun loginApple(code: String): Boolean {
         authorizationFeature.apple(code).getOrThrow()
+        return prepare()
+    }
 
+    private suspend fun prepare(): Boolean {
         val hasProfile = userFeature.getUser().getOrThrow()
-
         if (hasProfile) {
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
@@ -72,13 +40,10 @@ public class LoginUseCase(
             weightHistoryFeature.getWeightHistory().getOrThrow()
             goalFeature.getGoal().getOrThrow()
         }
-
         val pushToken = authorizationFeature.getPushToken()
-
         if (pushToken != null) {
             authorizationFeature.updatePushToken(pushToken).getOrThrow()
         }
-
         return hasProfile
     }
 }

@@ -9,6 +9,12 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.math.min
+import kotlin.random.Random
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -40,12 +46,6 @@ import platform.UIKit.UIWindow
 import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.math.min
-import kotlin.random.Random
 
 private const val AUTH_HOST = "accounts.google.com"
 private const val AUTH_PATH = "/o/oauth2/v2/auth"
@@ -85,7 +85,10 @@ public actual class GoogleAuthUiProvider internal constructor(
             tokenClient.exchange(authorizationCode, pkce.verifier, configuration)
         }.fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(it.asGoogleAuthException()) },
+            onFailure = { error ->
+                error.rethrowCancellationOrFatal()
+                Result.failure(error.asGoogleAuthException())
+            },
         )
     }
 
@@ -219,11 +222,6 @@ public actual class GoogleAuthUiProvider internal constructor(
     private fun Throwable.asGoogleAuthException(): GoogleAuthException {
         return when (this) {
             is GoogleAuthException -> this
-            is CancellationException -> GoogleAuthException.Cancelled(
-                "Google sign-in cancelled",
-                this
-            )
-
             else -> GoogleAuthException.Unknown("Google sign-in failed", this)
         }
     }
@@ -298,6 +296,7 @@ private class GoogleTokenClient(
                 setBody(FormDataContent(parameters))
             }.bodyAsText()
         }.getOrElse { error ->
+            error.rethrowCancellationOrFatal()
             throw GoogleAuthException.CredentialManagerFailed(
                 "Failed to exchange Google authorization code",
                 error,
@@ -306,6 +305,7 @@ private class GoogleTokenClient(
 
         val payload =
             runCatching { json.parseToJsonElement(responseText).jsonObject }.getOrElse { error ->
+                error.rethrowCancellationOrFatal()
                 throw GoogleAuthException.TokenParseFailed(
                     "Google token endpoint returned unexpected payload",
                     error,
@@ -504,9 +504,9 @@ private fun decodePayload(json: Json, token: String): JsonObject? {
     val segments = token.split('.')
     if (segments.size < 2) return null
     val payload = padBase64(segments[1])
-    val decoded = runCatching { Base64.UrlSafe.decode(payload) }.getOrNull() ?: return null
-    val jsonString = runCatching { decoded.decodeToString() }.getOrNull() ?: return null
-    return runCatching { json.parseToJsonElement(jsonString).jsonObject }.getOrNull()
+    val decoded = runCatching { Base64.UrlSafe.decode(payload) }.onFailure { it.rethrowCancellationOrFatal() }.getOrNull() ?: return null
+    val jsonString = runCatching { decoded.decodeToString() }.onFailure { it.rethrowCancellationOrFatal() }.getOrNull() ?: return null
+    return runCatching { json.parseToJsonElement(jsonString).jsonObject }.onFailure { it.rethrowCancellationOrFatal() }.getOrNull()
 }
 
 private fun padBase64(value: String): String {
@@ -707,4 +707,8 @@ private fun currentPresentationAnchor(): ASPresentationAnchor? {
     if (keyWindow != null) return keyWindow
 
     return typedWindows.firstOrNull()
+}
+
+private fun Throwable.rethrowCancellationOrFatal() {
+    if (this is CancellationException || this !is Exception) throw this
 }

@@ -32,23 +32,19 @@ internal class ProfileCreationComponent(
 
     override suspend fun eventListener(direction: ProfileCreationDirection) {
         when (direction) {
-            is ProfileCreationDirection.ToBodyWithName -> navigation.push(
-                ProfileCreationRouter.User
-            )
-
-            is ProfileCreationDirection.ToExperienceWithBody -> navigation.push(
+            ProfileCreationDirection.ToExperience -> navigation.push(
                 ProfileCreationRouter.Experience
             )
 
-            is ProfileCreationDirection.ToExcludedMusclesWithExperience -> navigation.push(
+            ProfileCreationDirection.ToExcludedMuscles -> navigation.push(
                 ProfileCreationRouter.ExcludedMuscles
             )
 
-            is ProfileCreationDirection.ToMissingEquipmentWithMuscles -> navigation.push(
+            ProfileCreationDirection.ToMissingEquipments -> navigation.push(
                 ProfileCreationRouter.MissingEquipments
             )
 
-            is ProfileCreationDirection.ToCompletedWithEquipment -> navigation.push(
+            ProfileCreationDirection.ToCompleted -> navigation.push(
                 ProfileCreationRouter.Completed
             )
 
@@ -102,7 +98,7 @@ internal class ProfileCreationComponent(
                 ),
             )
 
-            ProfileCreationRouter.MissingEquipments -> Child.MussingEquipments(
+            ProfileCreationRouter.MissingEquipments -> Child.MissingEquipments(
                 MissingEquipmentsComponent(
                     componentContext = context,
                     toCompleted = viewModel::toCompletedWithEquipment,
@@ -143,7 +139,7 @@ internal class ProfileCreationComponent(
         data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
             Child(component)
 
-        data class MussingEquipments(override val component: MissingEquipmentsComponent) :
+        data class MissingEquipments(override val component: MissingEquipmentsComponent) :
             Child(component)
 
         data class Completed(override val component: ProfileCompletedComponent) :

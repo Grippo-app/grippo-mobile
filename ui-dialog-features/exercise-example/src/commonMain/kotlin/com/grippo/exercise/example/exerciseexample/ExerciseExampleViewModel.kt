@@ -83,12 +83,7 @@ public class ExerciseExampleViewModel(
             .fromExerciseExample(exampleState.value.id)
             .toState()
 
-        update { current ->
-            current.copy(
-                example = exampleState,
-                muscleLoad = muscleLoad
-            )
-        }
+        update { current -> current.copy(example = exampleState, muscleLoad = muscleLoad) }
     }
 
     override fun onDismiss() {

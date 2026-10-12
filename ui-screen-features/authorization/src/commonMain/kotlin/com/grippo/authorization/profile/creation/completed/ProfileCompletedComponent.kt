@@ -11,12 +11,12 @@ import kotlinx.collections.immutable.ImmutableList
 
 internal class ProfileCompletedComponent(
     componentContext: ComponentContext,
-    private val name: String,
-    private val weight: Float,
-    private val height: Int,
-    private val experience: ExperienceEnumState?,
-    private val excludedMuscleIds: ImmutableList<String>,
-    private val missingEquipmentIds: ImmutableList<String>,
+    name: String,
+    weight: Float,
+    height: Int,
+    experience: ExperienceEnumState?,
+    excludedMuscleIds: ImmutableList<String>,
+    missingEquipmentIds: ImmutableList<String>,
     private val toHome: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<ProfileCompletedDirection>(componentContext) {

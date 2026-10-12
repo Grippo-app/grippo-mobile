@@ -96,7 +96,10 @@ Toolkit trackOperation вызывает четыре фабрики AnalyticsOpe
 started/completed/failed/interrupted, сохраняет исходный result и error identity,
 измеряет monotonic duration вокруг block без времени фабрик. Reporting Exceptions
 start/completed не предотвращают выполнение/возврат; вторичная failure-reporting
-ошибка может быть suppressed. Caller cancellation проверяется, fatal Error не
+ошибка может быть suppressed. Выброшенная блоком CancellationException даёт
+interrupted и пробрасывается без подмены. Возвращённый результат сохраняется;
+декоратор не добавляет точки отмены до/после блока. Отменённый Job остаётся
+отменённым, даже если несуспендящий блок успел завершиться. Fatal Error не
 становится продуктовым failure. Coroutine/job/retry не создаются.
 
 Feature API оборачивает цельную бизнес-операцию. Login/register включают приватную

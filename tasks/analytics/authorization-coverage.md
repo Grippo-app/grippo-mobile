@@ -27,6 +27,9 @@ Firebase delivery/sign-in/uploads не входят в текущие прове
   trackOperation-блоков. SDK-ошибки преобразуются через safeLaunch.mapError только
   для диалога; аналитика и CrashReporting получают исходную ошибку.
   Направление выбирается только по бизнес-результату.
+  Существующие loaders допускают одну активную попытку входа/регистрации;
+  повторные и конкурирующие submit не запускают use case или новый analytics
+  attempt. Переход к регистрации недоступен во время входа.
   Splash запускает class-level loadContent() из init: единственный safeLaunch с
   AppContent читает token, загружает muscle → equipment для no-session пути и
   повторяется после dismiss. При token вызывает private suspend loadProfile()
@@ -52,7 +55,9 @@ Reporting errors, consent и queue policy могут исключить отпр
 LoginUseCase.loginEmail/loginGoogle/loginApple и RegisterUseCase.createAccount
 возвращают бизнес-Boolean после private prepare; failure подготовки — failure
 полной попытки. Отдельных preparation операций/схем нет. SDK cancellation
-определяется типом, coroutine cancellation — Interrupted.
+определяется типом; выброшенная бизнес-блоком CancellationException даёт
+Interrupted. Если блок вернул результат, декоратор сохраняет его без
+дополнительных проверок состояния Job.
 
 Splash принимает решения через бизнес-Boolean и SplashDirection. Единственный
 safeLaunch читает token; без token последовательно загружает muscle → equipment
@@ -62,10 +67,11 @@ safeLaunch читает token; без token последовательно за�
 же корутине; SessionCheck декорирует только hasProfile (cache или remote lookup).
 Обычная ошибка проверки даёт failed с исходной FailureCategory и проходит
 logger → CrashReporting → ErrorProvider; Splash остаётся на месте до закрытия
-диалога, затем повторяет loadContent. Cancellation даёт interrupted без диалога
+диалога, затем повторяет loadContent. CancellationException даёт interrupted без диалога
 или навигации; fatal Error не превращается в продуктовый failure.
 Успех даёт completed, а бизнес-Boolean затем выбирает Home/CreateProfile вне
-аналитики. Ошибка не ведёт на Home или вход. Локального catch нет.
+аналитики. Splash сам не переводит ошибку lookup в Home или вход; Root независимо
+владеет переходом на вход при потере token. Локального catch нет.
 Один VM job и loader AppContent охватывают весь startup.
 Completed означает завершение блока, не подтверждённое восстановление сессии.
 Reporting Exceptions не блокируют block/result, transition/navigation или
@@ -112,6 +118,11 @@ foreground return — Restore. Destroy не user exit; Render/containers не с
 - Muscle → equipment выполняются последовательно в Splash safeLaunch, вне session
   operation, без coroutineScope/async; первая ошибка не запускает второй запрос.
 - ProfileCreation и notification/deep-link launch attribution пока не подключены.
+  Выбор мышц/оборудования остаётся бизнес-состоянием: обновление справочника
+  сохраняет снятые отметки, удаляет отсутствующие ID и выбирает новые элементы.
+  Пустой выбор не сбрасывается на «выбрать всё»; новых analytics facts нет.
+- Этот рефакторинг не меняет TokenProvider refresh/invalidation и Boolean-контракт
+  getUser; существующие проблемы этих контрактов отложены за пределы текущего scope.
 - Credentials/tokens/codes/input/messages/body/URL не попадают в payload.
 - auth_attempt_failed v4; остальные четыре attempt events v3: success/duration/failure
   охватывают полный login/register. Setup схемы удалены. Все четыре SessionCheck
@@ -129,6 +140,8 @@ foreground return — Restore. Destroy не user exit; Render/containers не с
   route ID boundaries/legacy JSON, generated DI, typed SDK classifier и lifecycle.
 - CredentialViewModelTest: actual registration/navigation/error pipeline при
   reporting failures и ошибке подготовки, Register/Email start/terminal.
+  Повторный submit до dispatch и во время подготовки сохраняет одну попытку
+  и один бизнес-сценарий, независимо от ошибок reporting.
 - SplashViewModelTest: actual requests/navigation/cached-profile short circuit,
   token/reference/profile errors через стандартный pipeline без перехода на вход,
   повтор только после dismiss, обязательные справочники для no-session пути,
@@ -136,6 +149,9 @@ foreground return — Restore. Destroy не user exit; Render/containers не с
 - RetainedAnalyticsTest: actual helper type-key retention/latest save/validation order.
 - ScreenAnalyticsTest: actual lifecycle callbacks/reporting errors и DI singleton
   с независимыми owners.
+- ProfileSelectionViewModelTest: actual profile-setup ViewModel сохраняют пустой
+  выбор при обновлении справочника, новые/удалённые ID, смену группы и выходные
+  business directions. Эти экраны пока не инструментированы.
 
 Наличие тестов не означает, что они запускались или покрывают весь UI runtime.
 Actual commands/results/skips и app/platform compilation относятся к текущему

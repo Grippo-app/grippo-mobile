@@ -42,7 +42,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     public val state: StateFlow<STATE> = _state.asStateFlow()
 
     protected fun update(updateFunc: (STATE) -> STATE) {
-        _state.update { currentState -> updateFunc.invoke(currentState) }
+        _state.update(updateFunc)
     }
 
     // ------------ LOADER API ------------
@@ -83,7 +83,10 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     // ------------ COROUTINE API ------------
 
-    protected enum class Processing { WhileActive, Infinity }
+    protected enum class Processing {
+        WhileActive,
+        Infinity,
+    }
 
     private val coroutineScope: CoroutineScope = CoroutineScope(
         context = SupervisorJob() + Dispatchers.Main.immediate
@@ -97,41 +100,44 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         processing: Processing = Processing.WhileActive,
         onError: (() -> Unit) = {},
+        mapError: (Throwable) -> Throwable = { it },
     ): Job {
         val flow = when (processing) {
             Processing.WhileActive -> operationManager.whileActive(this@safeLaunch, activation)
             Processing.Infinity -> this@safeLaunch
         }
 
-        val job = operationManager.launch(
+        return operationManager.launch(
             dispatcher = dispatcher,
-            onError = { t -> sendError(t, onError) },
-            block = { flow.collect() }
+            onError = { exception ->
+                sendError(exception, onError, mapError)
+            },
+            block = {
+                flow.collect()
+            }
         )
-
-        return job
     }
 
     protected fun safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-        processing: Processing = Processing.Infinity,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
+        mapError: (Throwable) -> Throwable = { it },
         block: suspend CoroutineScope.() -> Unit,
     ): Job {
         addLoader(loader)
 
         val job = operationManager.launch(
             dispatcher = dispatcher,
-            onError = { t -> sendError(t, onError) }
-        ) {
-            when (processing) {
-                Processing.WhileActive,
-                Processing.Infinity -> block()
-            }
-        }
+            onError = { exception ->
+                sendError(exception, onError, mapError)
+            },
+            block = block,
+        )
 
-        job.invokeOnCompletion { removeLoader(loader) }
+        job.invokeOnCompletion {
+            removeLoader(loader)
+        }
         return job
     }
 
@@ -158,7 +164,11 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     private val errorProvider by inject<ErrorProvider>()
     private val crashReporting by inject<CrashReporting>()
 
-    private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
+    private suspend fun sendError(
+        exception: Throwable,
+        onError: () -> Unit,
+        mapError: (Throwable) -> Throwable,
+    ) {
         val log = buildString {
             append("─────── ViewModel error ──────\n")
             append("│ message: ${exception.message}\n")
@@ -167,7 +177,12 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         }
         AppLogger.General.error(log)
         crashReporting.reportException(exception)
-        errorProvider.provide(exception, callback = onError)
+        val displayError = if (exception is Exception) {
+            mapError(exception)
+        } else {
+            exception
+        }
+        errorProvider.provide(displayError, callback = onError)
     }
 
     // ------------ RELEASE API ------------

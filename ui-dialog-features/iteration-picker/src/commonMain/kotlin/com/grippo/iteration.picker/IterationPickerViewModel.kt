@@ -29,14 +29,12 @@ public class IterationPickerViewModel(
 ), IterationPickerContract {
 
     init {
-        val repetitionSuggestions = (iterationSuggestions.mapNotNull {
-            (it.repetitions as? RepetitionsFormatState.Valid)?.value
-        } + listOf(6, 8, 10, 12)).distinct().take(5).toPersistentList()
-        update {
-            it.copy(
-                repetitionSuggestions = repetitionSuggestions
-            )
-        }
+        val repetitionSuggestions = (iterationSuggestions
+            .mapNotNull { (it.repetitions as? RepetitionsFormatState.Valid)?.value } + listOf(6, 8, 10, 12))
+            .distinct()
+            .take(5)
+            .toPersistentList()
+        update { it.copy(repetitionSuggestions = repetitionSuggestions) }
     }
 
     override fun onWeightPickerClick() {
@@ -44,38 +42,23 @@ public class IterationPickerViewModel(
     }
 
     public fun onBodyWeightSelected(value: Float) {
-        update { current ->
-            val iteration = current.value.copy(bodyWeight = WeightFormatState.of(value))
-            current.copy(value = iteration)
-        }
+        update { it.copy(value = it.value.copy(bodyWeight = WeightFormatState.of(value))) }
     }
 
     override fun onExternalWeightChange(value: String) {
-        update {
-            val iteration = it.value.copy(externalWeight = parseWeight(value))
-            it.copy(value = iteration)
-        }
+        update { it.copy(value = it.value.copy(externalWeight = parseWeight(value))) }
     }
 
     override fun onAssistWeightChange(value: String) {
-        update {
-            val iteration = it.value.copy(assistWeight = parseWeight(value))
-            it.copy(value = iteration)
-        }
+        update { it.copy(value = it.value.copy(assistWeight = parseWeight(value))) }
     }
 
     override fun onExtraWeightChange(value: String) {
-        update {
-            val iteration = it.value.copy(extraWeight = parseWeight(value))
-            it.copy(value = iteration)
-        }
+        update { it.copy(value = it.value.copy(extraWeight = parseWeight(value))) }
     }
 
     override fun onRepetitionsChange(value: String) {
-        update {
-            val iteration = it.value.copy(repetitions = RepetitionsFormatState.of(value))
-            it.copy(value = iteration)
-        }
+        update { it.copy(value = it.value.copy(repetitions = RepetitionsFormatState.of(value))) }
     }
 
     override fun onPreviousIterationClick() {

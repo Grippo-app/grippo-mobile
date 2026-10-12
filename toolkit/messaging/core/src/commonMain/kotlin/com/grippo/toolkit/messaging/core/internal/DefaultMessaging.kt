@@ -56,7 +56,6 @@ internal class DefaultMessaging(
             var delivered: PushToken? = null
             var attempted: PushTokenState.Available? = null
             for (ignored in wake) {
-                currentCoroutineContext().ensureActive()
                 yield()
                 val request = lock.withLock { if (closed) null else syncRequest } ?: continue
                 if (request === attempted) continue
@@ -130,7 +129,6 @@ internal class DefaultMessaging(
         val result = try {
             target.fetchToken()
         } catch (_: Exception) {
-            currentCoroutineContext().ensureActive()
             PushTokenState.Failed(PushTokenFailure.ProviderFailure)
         }
         currentCoroutineContext().ensureActive()

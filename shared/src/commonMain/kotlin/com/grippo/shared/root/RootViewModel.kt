@@ -4,12 +4,10 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.screen.api.deeplink.Deeplink
-import com.grippo.toolkit.connectivity.Connectivity
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
-    connectivity: Connectivity,
     deeplink: String? = null,
 ) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState(deeplink = deeplink)),
     RootContract {
@@ -19,14 +17,7 @@ public class RootViewModel(
             .getToken()
             .onEach { if (it == null) navigateTo(RootDirection.Login) }
             .safeLaunch()
-
-        connectivity
-            .statusUpdates
-            .onEach(::provideConnectionStatus)
-            .safeLaunch()
     }
-
-    private fun provideConnectionStatus(value: Connectivity.Status) {}
 
     override fun onClose() {
         navigateTo(RootDirection.Close)
@@ -34,7 +25,10 @@ public class RootViewModel(
 
     override fun toHome() {
         navigateTo(RootDirection.Home)
-        state.value.deeplink?.let { parseDeeplink(it)?.let { dir -> navigateTo(dir) } }
+        val direction = state.value.deeplink?.let(::parseDeeplink)
+        if (direction != null) {
+            navigateTo(direction)
+        }
         update { it.copy(deeplink = null) }
     }
 

@@ -3,6 +3,7 @@ package com.grippo.authorization
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.StackAnimator
 import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.stackAnimation
@@ -11,7 +12,6 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.foundation.platform.platformStackAnimator
 import com.grippo.design.core.AppTokens
 import kotlinx.collections.immutable.ImmutableSet
-import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
 @Composable
 internal fun AuthScreen(

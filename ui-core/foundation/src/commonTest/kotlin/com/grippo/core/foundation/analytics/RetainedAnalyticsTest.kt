@@ -14,19 +14,12 @@ import kotlin.test.assertSame
 class RetainedAnalyticsTest {
     private class Scenario(var value: Int)
     private class AnotherScenario(val value: Int)
+    private var creations = 0
 
     @Test fun retentionUsesScenarioTypeAndSaveReadsItsLatestValue() {
         val instances = InstanceKeeperDispatcher()
         val firstState = StateKeeperDispatcher()
         val firstOwner = DefaultComponentContext(LifecycleRegistry(), firstState, instances)
-        var creations = 0
-        fun provide(owner: DefaultComponentContext): Scenario =
-            RetainedAnalytics(owner).provide<Scenario, Int>(
-                key = "scenario",
-                serializer = Int.serializer(),
-                create = { creations++; Scenario(it ?: 0) },
-                save = { it.value },
-            )
         val first = provide(firstOwner)
         val nextState = StateKeeperDispatcher(firstState.save())
         val next = provide(DefaultComponentContext(LifecycleRegistry(), nextState, instances))
@@ -69,4 +62,15 @@ class RetainedAnalyticsTest {
         )
         assertSame(original, valid)
     }
+
+    private fun provide(owner: DefaultComponentContext): Scenario =
+        RetainedAnalytics(owner).provide<Scenario, Int>(
+            key = "scenario",
+            serializer = Int.serializer(),
+            create = {
+                creations++
+                Scenario(it ?: 0)
+            },
+            save = { it.value },
+        )
 }

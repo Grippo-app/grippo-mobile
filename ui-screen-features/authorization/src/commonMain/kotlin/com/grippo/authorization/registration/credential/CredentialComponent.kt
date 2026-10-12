@@ -4,11 +4,15 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.models.Step
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.analytics.ScreenAnalytics
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class CredentialComponent(
     componentContext: ComponentContext,
+    analytics: AuthAnalytics.Authorization,
     email: String?,
     private val toCreateProfile: () -> Unit,
     private val toHome: () -> Unit,
@@ -17,6 +21,7 @@ internal class CredentialComponent(
 
     override val viewModel = componentContext.retainedInstance {
         CredentialViewModel(
+            analytics = analytics,
             email = email,
             registerUseCase = getKoin().get()
         )
@@ -26,6 +31,9 @@ internal class CredentialComponent(
 
     init {
         backHandler.register(backCallback)
+        getKoin().get<ScreenAnalytics>().bind(lifecycle) {
+            analytics.presentScreen(Step.Registration)
+        }
     }
 
     override suspend fun eventListener(direction: CredentialDirection) {

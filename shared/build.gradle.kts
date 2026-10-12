@@ -48,6 +48,8 @@ kotlin {
         api(projects.toolkit.analytics.api)
         implementation(projects.toolkit.analytics.core)
 
+        implementation(projects.analytics.authorization)
+
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.uiCore.error.errorProviderImpl)

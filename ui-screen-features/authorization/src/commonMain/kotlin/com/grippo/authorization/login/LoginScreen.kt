@@ -119,6 +119,7 @@ internal fun LoginScreen(
         val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
             when {
                 loaders.contains(LoginLoader.LoginByEmailButton) -> ButtonState.Loading
+                loaders.isNotEmpty() -> ButtonState.Disabled
                 state.email is EmailFormatState.Invalid -> ButtonState.Disabled
                 state.email is EmailFormatState.Empty -> ButtonState.Disabled
                 state.password is PasswordFormatState.Empty -> ButtonState.Disabled
@@ -162,6 +163,7 @@ internal fun LoginScreen(
                     when {
                         googleAuthUiContext == null -> ButtonState.Disabled
                         loaders.contains(LoginLoader.LoginByGoogleButton) -> ButtonState.Loading
+                        loaders.isNotEmpty() -> ButtonState.Disabled
                         else -> ButtonState.Enabled
                     }
                 }
@@ -189,6 +191,7 @@ internal fun LoginScreen(
                     when {
                         appleAuthUiContext == null -> ButtonState.Disabled
                         loaders.contains(LoginLoader.LoginByAppleButton) -> ButtonState.Loading
+                        loaders.isNotEmpty() -> ButtonState.Disabled
                         else -> ButtonState.Enabled
                     }
                 }
@@ -228,6 +231,11 @@ internal fun LoginScreen(
                 ),
                 size = ButtonSize.Small,
                 style = ButtonStyle.Transparent,
+                state = if (loaders.isEmpty()) {
+                    ButtonState.Enabled
+                } else {
+                    ButtonState.Disabled
+                },
                 onClick = contract::onRegisterClick
             )
         }

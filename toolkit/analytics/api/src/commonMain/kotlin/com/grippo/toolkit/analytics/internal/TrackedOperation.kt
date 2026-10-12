@@ -7,8 +7,6 @@ import com.grippo.toolkit.analytics.operation.AnalyticsOperationEvents
 import com.grippo.toolkit.analytics.values.DurationMillis
 import kotlin.time.TimeSource
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 
 internal suspend fun <T> Analytics.executeTrackedOperation(
     events: AnalyticsOperationEvents<T>,
@@ -16,7 +14,6 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
     timeSource: TimeSource,
     block: suspend () -> T,
 ): T {
-    currentCoroutineContext().ensureActive()
     val operation = OperationId.create()
     try {
         track(events.started(), flow, operation)
@@ -25,8 +22,7 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
     }
     val started = timeSource.markNow()
     val result = try {
-        currentCoroutineContext().ensureActive()
-        block().also { currentCoroutineContext().ensureActive() }
+        block()
     } catch (error: Exception) {
         // A schema/encoding defect must not replace the original operation failure.
         try {
@@ -45,6 +41,5 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
     } catch (_: Exception) {
         // Reporting must not replace the successful business result.
     }
-    currentCoroutineContext().ensureActive()
     return result
 }

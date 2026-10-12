@@ -141,3 +141,6 @@ include(":toolkit:crash-reporting:api")
 include(":toolkit:crash-reporting:core")
 include(":toolkit:messaging:api")
 include(":toolkit:messaging:core")
+
+include(":analytics:analytics-api")
+include(":analytics:authorization")

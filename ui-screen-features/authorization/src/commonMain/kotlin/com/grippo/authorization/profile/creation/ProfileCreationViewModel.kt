@@ -16,24 +16,22 @@ internal class ProfileCreationViewModel :
 
     override fun toExperienceWithUser(name: String, weight: Float, height: Int) {
         update { it.copy(weight = weight, height = height, name = name) }
-        navigateTo(ProfileCreationDirection.ToExperienceWithBody(name, weight, height))
+        navigateTo(ProfileCreationDirection.ToExperience)
     }
 
     override fun toExcludedMusclesWithExperience(experience: ExperienceEnumState) {
         update { it.copy(experience = experience) }
-        navigateTo(ProfileCreationDirection.ToExcludedMusclesWithExperience(experience))
+        navigateTo(ProfileCreationDirection.ToExcludedMuscles)
     }
 
     override fun toMissingEquipmentWithMuscles(ids: List<String>) {
-        val excludedMuscleIds = ids.toPersistentList()
-        update { it.copy(excludedMuscleIds = excludedMuscleIds) }
-        navigateTo(ProfileCreationDirection.ToMissingEquipmentWithMuscles(ids))
+        update { it.copy(excludedMuscleIds = ids.toPersistentList()) }
+        navigateTo(ProfileCreationDirection.ToMissingEquipments)
     }
 
     override fun toCompletedWithEquipment(ids: List<String>) {
-        val missingEquipmentIds = ids.toPersistentList()
-        update { it.copy(missingEquipmentIds = missingEquipmentIds) }
-        navigateTo(ProfileCreationDirection.ToCompletedWithEquipment(ids))
+        update { it.copy(missingEquipmentIds = ids.toPersistentList()) }
+        navigateTo(ProfileCreationDirection.ToCompleted)
     }
 
     override fun toHome() {

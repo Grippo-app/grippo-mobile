@@ -72,29 +72,33 @@ class AnalyticsOperationTest {
         assertEquals(null, events.error)
     }
 
-    @Test fun anAlreadyCancelledCallerDoesNotStartAnOperation() = runTest {
+    @Test fun aCancelledCallerKeepsTheNonSuspendingBlocksResult() = runTest {
         val analytics = Recording()
+        var result: Int? = null
         val task = async {
             coroutineContext[kotlinx.coroutines.Job]!!.cancel()
-            analytics.trackOperation(Events(), flow) { 7 }
+            result = analytics.trackOperation(Events(), flow) { 7 }
         }
         assertFailsWith<CancellationException> { task.await() }
-        assertEquals(emptyList(), analytics.entries)
+        assertEquals(7, result)
+        assertEquals(listOf("fixture_started", "fixture_completed"), analytics.entries.map { it.event.schema.name })
     }
 
-    @Test fun aBlockReturningAfterCancellationCannotReportCompletion() = runTest {
+    @Test fun cancellationDoesNotReplaceAResultReturnedByTheBlock() = runTest {
         val analytics = Recording()
+        var result: Int? = null
         val task = async {
-            analytics.trackOperation(Events(), flow) {
+            result = analytics.trackOperation(Events(), flow) {
                 coroutineContext[kotlinx.coroutines.Job]!!.cancel()
                 7
             }
         }
         assertFailsWith<CancellationException> { task.await() }
-        assertEquals(listOf("fixture_started", "fixture_interrupted"), analytics.entries.map { it.event.schema.name })
+        assertEquals(7, result)
+        assertEquals(listOf("fixture_started", "fixture_completed"), analytics.entries.map { it.event.schema.name })
     }
 
-    @Test fun cancellationBetweenStartAndTheBlockDoesNotRunBusinessWork() = runTest {
+    @Test fun startReportingDoesNotAddACancellationBoundaryBeforeBusinessWork() = runTest {
         val analytics = Recording()
         var ran = false
         val task = async {
@@ -102,7 +106,18 @@ class AnalyticsOperationTest {
             analytics.trackOperation(Events(onStart = { job.cancel() }), flow) { ran = true; 7 }
         }
         assertFailsWith<CancellationException> { task.await() }
-        assertEquals(false, ran)
+        assertEquals(true, ran)
+        assertEquals(listOf("fixture_started", "fixture_completed"), analytics.entries.map { it.event.schema.name })
+    }
+
+    @Test fun thrownCancellationIsRethrownUnchanged() = runTest {
+        val analytics = Recording()
+        val cancellation = CancellationException("business cancellation")
+        assertSame(cancellation, assertFailsWith<CancellationException> {
+            analytics.trackOperation(Events(), flow) {
+                throw cancellation
+            }
+        })
         assertEquals(listOf("fixture_started", "fixture_interrupted"), analytics.entries.map { it.event.schema.name })
     }
 
@@ -193,6 +208,7 @@ class AnalyticsOperationTest {
 
     @Test fun cancellationDuringCompletionReportingStillCancelsCaller() = runTest {
         val analytics = Recording()
+        var result: Int? = null
         val task = async {
             val job = coroutineContext[kotlinx.coroutines.Job]!!
             val events = object : AnalyticsOperationEvents<Int> by Events() {
@@ -201,9 +217,10 @@ class AnalyticsOperationTest {
                     throw CancellationException("reporting interrupted")
                 }
             }
-            analytics.trackOperation(events, flow) { 7 }
+            result = analytics.trackOperation(events, flow) { 7 }
         }
         assertFailsWith<CancellationException> { task.await() }
+        assertEquals(7, result)
         assertEquals(listOf("fixture_started"), analytics.entries.map { it.event.schema.name })
     }
 

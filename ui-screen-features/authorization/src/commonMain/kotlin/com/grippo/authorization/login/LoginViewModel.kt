@@ -1,5 +1,8 @@
 package com.grippo.authorization.login
 
+import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.models.AuthOperation
+import com.grippo.analytics.authorization.models.Method
 import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.EmailFormatState
@@ -13,6 +16,7 @@ import com.grippo.services.google.auth.GoogleAuthProvider
 import com.grippo.services.google.auth.GoogleAuthUiContext
 
 internal class LoginViewModel(
+    private val analytics: AuthAnalytics.Authorization,
     private val loginUseCase: LoginUseCase,
     private val googleAuthProvider: GoogleAuthProvider,
     private val appleAuthProvider: AppleAuthProvider,
@@ -21,8 +25,7 @@ internal class LoginViewModel(
         isGoogleLoginAvailable = googleAuthProvider.isSupported,
         isAppleLoginAvailable = appleAuthProvider.isSupported,
     )
-),
-    LoginContract {
+), LoginContract {
 
     override fun onEmailChange(value: String) {
         update { it.copy(email = EmailFormatState.of(value)) }
@@ -33,56 +36,76 @@ internal class LoginViewModel(
     }
 
     override fun onLoginByEmailClick() {
-        safeLaunch(loader = LoginLoader.LoginByEmailButton) {
-            val loginState = state.value
-            val hasProfile = loginUseCase.executeEmail(
-                email = loginState.email.value.orEmpty(),
-                password = loginState.password.value.orEmpty()
-            )
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
 
-            navigatePostLogin(hasProfile)
+        val snapshot = state.value
+        val email = snapshot.email
+        val password = snapshot.password
+        if (email !is EmailFormatState.Valid || password !is PasswordFormatState.Valid) {
+            return
+        }
+
+        safeLaunch(loader = LoginLoader.LoginByEmailButton) {
+            val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Email)) {
+                loginUseCase.loginEmail(
+                    email = email.value,
+                    password = password.value,
+                )
+            }
+
+            navigateAfterLogin(hasProfile)
         }
     }
 
     override fun onLoginByGoogleClick(context: GoogleAuthUiContext) {
-        safeLaunch(loader = LoginLoader.LoginByGoogleButton) {
-            val googleAccount = googleAuthProvider
-                .getUiProvider(context)
-                .signIn()
-                .onFailure {
-                    val msg = (it as? GoogleAuthException)?.message ?: throw it
-                    throw AppError.Expected(msg, description = null)
-                }
-                .getOrThrow()
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
 
-            val hasProfile = loginUseCase.executeGoogle(
-                token = googleAccount.token,
-            )
+        safeLaunch(
+            loader = LoginLoader.LoginByGoogleButton,
+            mapError = ::mapAuthError,
+        ) {
+            val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
+                val account = googleAuthProvider
+                    .getUiProvider(context)
+                    .signIn()
+                    .getOrThrow()
+                loginUseCase.loginGoogle(token = account.token)
+            }
 
-            navigatePostLogin(hasProfile)
+            navigateAfterLogin(hasProfile)
         }
     }
 
     override fun onLoginByAppleClick(context: AppleAuthUiContext) {
-        safeLaunch(loader = LoginLoader.LoginByAppleButton) {
-            val appleAccount = appleAuthProvider
-                .getUiProvider(context)
-                .signIn()
-                .onFailure {
-                    val msg = (it as? AppleAuthException)?.message ?: throw it
-                    throw AppError.Expected(msg, description = null)
-                }
-                .getOrThrow()
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
 
-            val hasProfile = loginUseCase.executeApple(
-                code = appleAccount.authorizationCode,
-            )
+        safeLaunch(
+            loader = LoginLoader.LoginByAppleButton,
+            mapError = ::mapAuthError,
+        ) {
+            val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Apple)) {
+                val account = appleAuthProvider
+                    .getUiProvider(context)
+                    .signIn()
+                    .getOrThrow()
+                loginUseCase.loginApple(code = account.authorizationCode)
+            }
 
-            navigatePostLogin(hasProfile)
+            navigateAfterLogin(hasProfile)
         }
     }
 
     override fun onRegisterClick() {
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
+
         val email = state.value.email.takeIf { it is EmailFormatState.Valid }?.display
         navigateTo(LoginDirection.Registration(email))
     }
@@ -91,11 +114,18 @@ internal class LoginViewModel(
         navigateTo(LoginDirection.Back)
     }
 
-    private fun navigatePostLogin(hasProfile: Boolean) {
-        if (hasProfile) {
-            navigateTo(LoginDirection.Home)
+    private fun navigateAfterLogin(hasProfile: Boolean) {
+        val destination = if (hasProfile) {
+            LoginDirection.Home
         } else {
-            navigateTo(LoginDirection.CreateProfile)
+            LoginDirection.CreateProfile
         }
+        navigateTo(destination)
+    }
+
+    private fun mapAuthError(error: Throwable): Throwable = when (error) {
+        is GoogleAuthException -> AppError.Expected(error.message, description = null)
+        is AppleAuthException -> AppError.Expected(error.message, description = null)
+        else -> error
     }
 }
