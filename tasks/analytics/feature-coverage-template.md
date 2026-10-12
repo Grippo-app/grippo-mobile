@@ -28,11 +28,11 @@
 
 ## Приёмка
 
-- [ ] У каждого факта один owner, у каждого result точный смысл business success.
+- [ ] У каждого факта один owner; completed и business success различаются явно.
 - [ ] Строгие события и причины; все фабрики operation events реализованы.
 - [ ] Annotated qualified definitions зарегистрированы через .module; fixtures прошли.
-- [ ] Flow переносится и восстанавливается; повторные попытки получают новые operation IDs.
+- [ ] Для persisted сценариев Flow переносится и восстанавливается; для остальных отсутствие persistence обосновано. Повторные попытки получают новые operation IDs.
 - [ ] Referrer/reason достоверны, показ только у leaf; foreground policy соблюдается.
-- [ ] Errors/cancellation, параллельные flows, retries, consent и account switch проверены.
+- [ ] Проверены применимые errors/cancellation, независимые flows, retries, consent и account switch; неприменимые сценарии отмечены с причиной.
 - [ ] Личные/чувствительные значения исключены; нет свободных exception messages.
 - [ ] Android/iOS проверки прошли, ограничения записаны.

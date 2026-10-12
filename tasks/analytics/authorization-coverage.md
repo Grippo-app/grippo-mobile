@@ -1,44 +1,105 @@
-# Авторизация: будущая матрица интеграции
+# Авторизация: матрица интеграции
 
-Статус: proposal, **не подключено**. Общий стандарт сначала; авторизация реализуется отдельным следующим этапом. Scope первого подключения: Login Email/Google/Apple, регистрация credentials и проверка сессии. Создание профиля — следующий отдельный сценарий.
+Статус: реализация подключена и проверена текущим полным review/testing pass.
+Результаты Android/iOS tests/builds и ограничения записаны в
+[full-review-verification.md](full-review-verification.md). Предыдущие статические
+отчёты и исторические builds относятся к прежним версиям.
+Firebase delivery/sign-in/uploads не входят в текущие проверки.
 
-## Точки входа
+## Подключение и границы
 
-| Typed entry point | Наблюдаемый факт | Owner |
-|---|---|---|
-| LaunchWithoutSession | Splash не нашёл сохранённый token | Auth navigation owner |
-| TokenAbsent | Root наблюдает отсутствие token во время работы | Root → Auth; не называть expired без typed причины |
-| LoginRegistration | Login открывает credentials | AuthProcess owner; origin Login |
-| ProfileSetupReturn | Возврат из незавершённого профиля к Login | ProfileCreation → Auth owner |
+- AuthAnalytics — один consumer entry point в analytics-api с nested Authorization,
+  Session и FailureClassifier. Operation/transition/enums/snapshot — models/.
+- analytics/authorization содержит internal scenario/state/models/events/operation/
+  schema и public annotated module. Нет UI/domain/services/SDK/core dependencies.
+  Consumer EntryPoint enum кодируется внутренней AuthEntryPoints matrix.
+- UI analytics/: internal stateless AuthAnalyticsProvider, отдельный
+  AuthFailureClassifierImpl и существующий AuthAnalyticsIntegrationModule с @Single
+  bindings/generated .module. Provider не хранит UI contexts или scenarios.
+- Foundation RetainedAnalytics выполняет consume → type-key retention → identity
+  check → register latest save. Provider владеет mapping/keys/serializer; прежние
+  authorization_analytics_flow / authorization_session_flow остаются в его private
+  companion. Mismatched owner/snapshot отклоняется, не заменяется новым flow.
+- Компоненты получают analytics до retained ViewModel и передают тот же instance
+  детям/VM. VM/use cases владеют бизнес-запросами и решениями; Components — реальной
+  навигацией. Leaf lifecycle подключён через DI ScreenAnalytics.bind.
+- 12 custom schemas зарегистрированы один раз qualified @Single через
+  AuthAnalyticsModule().module в shared, built-in screen schema не дублируется.
 
-LaunchSource notification/deep link передаётся только из достоверных app-entry данных. Flow context сохраняется в navigation state и не пересоздаётся при back/foreground. Смена формы не теряет provenance, а открытие самостоятельного registration scenario получает свой flow с известным parent/origin при необходимости.
+## События
 
-## Покрытие операций
-
-| Триггер | Предлагаемые события | Single owner | Typed параметры / outcomes | Обязательная проверка |
+| Факт | Схемы | Владелец | Типизированные значения | Проверки |
 |---|---|---|---|---|
-| Реальный вход в сценарий | auth_flow_started | Auth owner | EntryPoint через FlowContext | Initial/restore без дубля start |
-| Login submit | auth_attempt_started / succeeded / failed / cancelled / interrupted | Provider + use-case coordinator, один attempt | AuthMethod Email/Google/Apple; AuthAction Login; DurationMillis; FailureStage/Category | Один итог, повторная попытка новый ID |
-| Registration submit | auth_attempt_started / succeeded / failed / interrupted | Registration use-case coordinator | AuthAction Register, метод Email | Account created отличается от downstream preparation |
-| Подготовка после auth | auth_preparation_started / finished / failed / interrupted | Use-case owner | Этап ProfileLoad / DataLoad / PushRegistration; typed outcome | Ошибка подготовки не объявляет auth failure |
-| Splash session check | auth_session_check_started / completed / failed / interrupted | Splash coordinator | NoSession / Restored / NeedsProfile; typed failure stage | No token отличается от profile-load error |
-| Явное закрытие сценария | auth_flow_exited | Auth navigation owner | AuthExitReason, last known step | Не отправлять из onDestroy |
-| Submit отклонён валидацией | auth_form_rejected | Form ViewModel | Typed field/rule, без введённого значения | Только реально отклонённый submit |
+| Новый flow | auth_flow_started | Provider → AuthFlow factory, только создание | EntryPoint, origin, FlowId | AuthNavigationTest; AuthAnalyticsProviderTest |
+| Выход | auth_flow_exited | AuthProcessComponent → trackTransition(Exit(reason)) | ExitReason, Step | AuthNavigationTest |
+| Email/Google/Apple вход | auth_attempt_started/succeeded/failed/cancelled/interrupted | LoginViewModel → trackOperation(Login(method)) | Method, AuthAction.Login, duration полного входа, FailureCategory | AuthOperationsTest; AuthIntegrationTest |
+| Создание аккаунта | auth_attempt_* | CredentialViewModel → trackOperation(Register) | Method.Email, AuthAction.Register, duration полного создания, FailureCategory | CredentialViewModelTest; AuthOperationsTest; AuthIntegrationTest |
+| Проверка сессии | auth_session_check_started/completed/failed/interrupted | SplashViewModel → trackOperation(SessionCheck) | Duration; FailureCategory необработанной ошибки, без outcome/stage | AuthOperationsTest; SplashViewModelTest |
+| Login → Registration / Back | auth_step_changed | AuthProcessComponent → trackTransition(OpenRegistration/BackToLogin) | Step, Action/Back | AuthNavigationTest |
+| Leaf screen views | built-in screen schema | Login/Credential/Splash lifecycle → ScreenAnalytics.bind | ScreenId, referrer, reason | ScreenAnalyticsTest; AuthNavigationTest; AuthIntegrationTest |
 
-## Экраны и причины
+Одна попытка определяет start/terminal с общим OperationId, retry получает новый ID.
+Reporting errors, consent и queue policy могут исключить отправку; delivery не гарантируется.
+LoginUseCase.loginEmail/loginGoogle/loginApple и RegisterUseCase.createAccount
+возвращают бизнес-Boolean после private prepare; failure подготовки — failure
+полной попытки. Отдельных preparation операций/схем нет. SDK cancellation
+определяется типом, coroutine cancellation — Interrupted.
 
-Splash, Login и Registration — leaf surfaces; Auth/AuthProcess контейнеры screen_view не отправляют. Initial/Action/Back/Restore/External предоставляет навигационный owner. Переключение Login → Registration сохраняет реальный referrer; back и foreground return различаются. Нельзя определять reason по тексту ошибки, lifecycle destroy или отсутствию token.
+Splash принимает решения через SplashDirection. Ошибка профиля сохраняет
+бизнес-fallback; SessionCheck completed означает завершение блока, включая этот
+fallback, не подтверждённое восстановление сессии. Необработанная ошибка даёт failed
+и сохраняет error pipeline. Reporting Exceptions не блокируют block/result,
+transition/navigation или lifecycle; caller cancellation/fatal Error сохраняются.
+Closed flow не переоткрывается, duplicate transition не меняет attribution,
+Exit deduplicated.
 
-## До начала реализации устранить ограничения типизации
+## Атрибуция и persistence
 
-- LoginUseCase/RegisterUseCase смешивают auth, user/data loading и push registration. Нужна граница фактов/этапов, чтобы auth success фиксировался после server confirmation, а downstream failure имел свой outcome. Не добавлять второй attempt в UI и data одновременно.
-- AppleAuthException сейчас не различает user cancellation типом. Добавить typed reason у provider до аналитического mapping; строку сообщения не парсить.
-- Google/Apple LoginViewModel сейчас переводит provider error в AppError.Expected и теряет typed reason. Классифицировать до этого преобразования, не менять existing error UI ради tracking.
-- Splash catch(Throwable) сейчас поглощает cancellation вместе с profile-load failures. При будущей интеграции сохранить реальную cancellation, иначе interrupted outcome будет ложным.
-- Token absence в Root сам по себе не объясняет session expiration/logout. Передавать только наблюдаемое, дополнительные причины требуют typed domain source.
+| EntryPoint | Триггер | Origin |
+|---|---|---|
+| SessionCheck (internal) | Создание Splash | absent |
+| LaunchWithoutSession | Splash получил null token | auth_splash |
+| TokenAbsent | Root получил null token вне Auth | absent |
+| SessionCheckFailed | Splash получил profile load failure | auth_splash |
+| ProfileSetupReturn | Возврат из ProfileCreation | profile_creation_user |
+| RestoredScenario | Legacy route без provenance | absent |
 
-## Приватность и приёмка
+Route сериализует собственный screen-api FlowId; только provider преобразует value
+в toolkit ID. Поле flowId, shape {value} и legacy SerialName сохранены.
+Login/Registration используют общий immutable FlowContext. Snapshot хранит
+navigation/step/exited и legacy SerialName. Retained instance актуальнее snapshot;
+recreated owner регистрирует save того же instance. Независимые owners изолированы.
+Restore не повторяет start. Initial/Action/Back/Restore задаёт navigation owner;
+foreground return — Restore. Destroy не user exit; Render/containers не создают views.
 
-Не собирать email/password/provider tokens, authorization code, push token, имя, тело запроса, полный URL и exception message. Provider cancellation и coroutine interruption различаются. Consent/UserId/reset имеют отдельного владельца и не включаются автоматически с подключением событий.
+## Объём и совместимость
 
-При реализации заполнить exact class/function owners и реальные fixture/test names по feature-coverage-template.md. Сейчас эта матрица описывает контракт следующего этапа, не подтверждает его покрытие.
+- Не трекаются field validation, reference loads, внутренние Profile/Data/Push stages,
+  per-keystroke input и generic/duplicate clicks.
+- Muscle → equipment выполняются последовательно в Splash safeLaunch, вне session
+  operation, без coroutineScope/async; первая ошибка не запускает второй запрос.
+- ProfileCreation и notification/deep-link launch attribution пока не подключены.
+- Credentials/tokens/codes/input/messages/body/URL не попадают в payload.
+- auth_attempt_failed v4; остальные четыре attempt events v3: success/duration/failure
+  охватывают полный login/register. Setup схемы удалены. Session completed/failed
+  v2 без outcome/stage; остальные пять схем v1. Прежние server-only timings нельзя
+  сравнивать с новыми напрямую.
+
+## Проверяемые границы
+
+- AuthSchemaTest: 12 payload/key/version fixtures.
+- AuthOperationsTest: results/errors/cancellation/reporting failures/retry IDs/contexts.
+- AuthNavigationTest: attribution/restore/exit/repeated/closed transitions.
+- AuthAnalyticsProviderTest: recreation/latest save/mismatch/mapping/independent owners.
+- AuthIntegrationTest: цельные use cases, preparation/push/error/cancellation,
+  route ID boundaries/legacy JSON, generated DI, typed SDK classifier и lifecycle.
+- CredentialViewModelTest: actual registration/navigation/error pipeline при
+  reporting failures и ошибке подготовки, Register/Email start/terminal.
+- SplashViewModelTest: actual requests/navigation/fallback/sequential loads/cancellation.
+- RetainedAnalyticsTest: actual helper type-key retention/latest save/validation order.
+- ScreenAnalyticsTest: actual lifecycle callbacks/reporting errors и DI singleton
+  с независимыми owners.
+
+Наличие тестов не означает, что они запускались или покрывают весь UI runtime.
+Actual commands/results/skips и app/platform compilation относятся к текущему
+verification report. Матрица фиксирует подключённые факты, не Firebase delivery.

@@ -236,12 +236,15 @@ The dependency graph is strictly directional. Violations are architecture bugs �
 
 ### Hard rules
 
-1. **UI modules (`:ui-screen-features:*`, `:ui-dialog-features:*`) MUST NOT depend on `:data-services:*` directly.** The only path from UI to data is via `:data-features:feature-api`. Three narrow carve-outs exist in the template:
-   - `:ui-screen-features:authorization` imports `:data-services:google-auth` so the login screen can drive the Google credential flow before a domain user exists. The service doesn't have a domain mirror by design — the ID token it returns is fed straight into `AuthorizationFeature.login(...)`.
-   - `:ui-screen-features:authorization` imports `:data-services:apple-auth` so the login screen can drive the Apple credential flow before a domain user exists. The service doesn't have a domain mirror by design — the ID token it returns is fed straight into `AuthorizationFeature.login(...)`.
-   - Any UI feature may import `:data-services:firebase` to emit analytics events directly (`FirebaseProvider.logEvent(...)`); the provider is a stateless `object` and bypassing a domain layer for telemetry is intentional.
+1. **UI modules (`:ui-screen-features:*`, `:ui-dialog-features:*`) MUST NOT depend on `:data-services:*` directly.** The only path from UI to data is via `:data-features:feature-api`. Two platform-auth carve-outs exist:
+   - `:ui-screen-features:authorization` imports `:data-services:google-auth` to drive the credential UI. Its ID token is passed to the complete `LoginUseCase.loginGoogle(token)` operation.
+   - `:ui-screen-features:authorization` imports `:data-services:apple-auth` to drive the supported iOS credential UI. Its authorization code is passed to the complete `LoginUseCase.loginApple(code)` operation.
 
-   The same telemetry carve-out extends to **`:data-features:authorization`**, which imports `:data-services:firebase` to log auth lifecycle events (login success/failure, token refresh failures) at the boundary between the auth state machine and the persistence layer. This is the only `:data-features:*` → `:data-services:firebase` edge in the reference; all other feature modules route telemetry through their UseCases or stay UI-side. Firebase is treated as a cross-cutting sink (logger + analytics + crashlytics), not as a domain service.
+   Feature telemetry uses `:analytics:analytics-api` and `:analytics:<feature>`;
+   apply [feature-analytics](../../feature-analytics/SKILL.md). UI/domain never
+   import Firebase for reporting. Only Android app owns the Android transport;
+   Swift adapters live in iosApp, while shared wires toolkit cores and feature
+   analytics implementations through generated modules.
 
    Do not extend this list. Anything that looks like a new exception is a `:data-features:feature-api` UseCase in disguise.
 2. **`:data-features:feature-api` MUST NOT depend on `:data-services:*`.** It is pure interfaces + domain models. No DTOs, no entities, no DAOs.

@@ -52,11 +52,6 @@ struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate: AppDelegate
 
-    init() {
-        // Koin.init — `Koin` is a Kotlin `object`, so the generated Swift name is `Koin`, not `KoinKt`.
-        Koin().doInit(appDeclaration: { _ in })
-    }
-
     var body: some Scene {
         WindowGroup {
             RootView(root: appDelegate.root, backDispatcher: appDelegate.backDispatcher)
@@ -89,6 +84,13 @@ import FirebaseCore
 // endregion firebase-conditional
 class AppDelegate: NSObject, UIApplicationDelegate {
 
+    let bootstrap: ApplicationBootstrap
+
+    override init() {
+        bootstrap = Koin().doInit(appDeclaration: { _ in })
+        super.init()
+    }
+
     let backDispatcher: BackDispatcher = BackDispatcherKt.BackDispatcher()
 
     lazy var root: RootComponent = RootComponent(
@@ -111,11 +113,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         // region firebase-conditional
         FirebaseApp.configure()
-        FirebaseProvider.shared.setup(
-            analytics: IosFirebaseAnalytics(),
-            crashlytics: IosFirebaseCrashlytics(),
-            messaging: IosFirebaseMessaging()
-        )
+        let analytics = IosFirebaseAnalytics()
+        analytics.setCollection(collection: .unknown)
+        bootstrap.analytics.attachSink(analyticsSink: analytics)
+        bootstrap.crashReporting.attachSink(crashSink: IosFirebaseCrashlytics())
+        bootstrap.messaging.attachTokenProvider(tokenProvider: IosFirebaseMessaging())
         // endregion firebase-conditional
         return true
     }
@@ -145,110 +147,24 @@ struct RootView: UIViewControllerRepresentable {
 }
 ```
 
-## Firebase providers (only when `firebaseEnabled: true`)
+## Firebase adapters (when Firebase is configured)
 
-### IosFirebaseAnalytics.swift
+Use the current Swift implementations as the maintained reference rather than
+recreating provider interfaces:
 
-_Target path:_ `iosApp/iosApp/IosFirebaseAnalytics.swift`
+- `iosApp/iosApp/IosFirebaseAnalytics.swift`: toolkit AnalyticsSink, typed payload
+  encoding, collection consent and identity.
+- `iosApp/iosApp/IosFirebaseCrashlytics.swift`: toolkit CrashReportingSink.
+- `iosApp/iosApp/IosFirebaseMessaging.swift`: toolkit PushTokenProvider; preserve
+  typed readiness/failure and callback cancellation semantics.
+- `iosApp/iosApp/MessagingHandler.swift` and `AppDeletage.swift`: token refresh/APNs
+  and app callback wiring through MessagingBootstrap.
 
-```swift
-import Foundation
-import <iosFrameworkName>
-import FirebaseAnalytics
-
-final class IosFirebaseAnalytics: FirebaseAnalyticsProvider {
-
-    func logEvent(name: String, params: [String: String]) {
-        Analytics.logEvent(name, parameters: params)
-    }
-}
-```
-
-### IosFirebaseCrashlytics.swift
-
-_Target path:_ `iosApp/iosApp/IosFirebaseCrashlytics.swift`
-
-```swift
-import Foundation
-import <iosFrameworkName>
-import FirebaseCrashlytics
-
-final class IosFirebaseCrashlytics: FirebaseCrashlyticsProvider {
-
-    func log(message: String) {
-        Crashlytics.crashlytics().log(message)
-    }
-
-    func recordException(
-        throwable: KotlinThrowable,
-        metadata: [String: String]
-    ) {
-        let crashlytics = Crashlytics.crashlytics()
-
-        metadata.forEach { key, value in
-            crashlytics.setCustomValue(value, forKey: key)
-        }
-
-        let stackTraceArray = throwable.getStackTrace()
-
-        var stackTraceLines: [String] = []
-        stackTraceLines.reserveCapacity(Int(stackTraceArray.size))
-
-        for i in 0..<stackTraceArray.size {
-            if let element = stackTraceArray.get(index: i) {
-                stackTraceLines.append(String(describing: element))
-            }
-        }
-
-        let stackTrace = stackTraceLines.joined(separator: "\n")
-
-        let description =
-            throwable.message ??
-                String(describing: type(of: throwable))
-
-        let nsError = NSError(
-            domain: "KotlinException.\(String(describing: type(of: throwable)))",
-            code: 1,
-            userInfo: [
-                NSLocalizedDescriptionKey: description,
-                "kotlin_stacktrace": stackTrace
-            ]
-        )
-
-        crashlytics.record(error: nsError)
-    }
-}
-```
-
-### IosFirebaseMessaging.swift
-
-_Target path:_ `iosApp/iosApp/IosFirebaseMessaging.swift`
-
-```swift
-import FirebaseMessaging
-import Foundation
-import <iosFrameworkName>
-
-/// Implements the KMP `FirebaseMessagingProvider` interface using the native Firebase Messaging SDK.
-/// The FCM token is available only after APNs registration completes. Wiring the APNs token and
-/// `MessagingDelegate` (token refresh, foreground banners, deeplink taps) is product-specific and
-/// intentionally left out of the bootstrap shell — add it when the product needs push.
-final class IosFirebaseMessaging: FirebaseMessagingProvider {
-
-    func getToken(completionHandler: @escaping (String?, Error?) -> Void) {
-        Messaging.messaging().token { token, error in
-            if let token {
-                completionHandler(token, nil)
-                return
-            }
-            // Firebase may be asked for the FCM token before APNs registration finishes.
-            // Treat that as "not ready yet" rather than a hard error.
-            _ = error
-            completionHandler(nil, nil)
-        }
-    }
-}
-```
+Paths are relative to repo root. Core contracts live under `toolkit`; adapters
+stay in the app shell. Do not swallow a token error as successful null, recreate
+a static SDK facade, or enable collection as part of feature integration.
+Feature telemetry follows [feature-analytics](../../feature-analytics/SKILL.md).
+Automatic Firebase screen reporting remains disabled; leaf tracking owns views.
 
 ## Resources & config
 

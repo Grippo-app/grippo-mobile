@@ -1,101 +1,142 @@
-# Analytics core: контракт и подключение фич
+# Analytics core: контракт и подключение
 
-## Границы
+Правила интеграции фич — [feature-standard](feature-standard.md) и
+[канонический скилл](../../.claude/skills/feature-analytics/SKILL.md).
+Текущая реализация и проверяемые факты — [авторизация](authorization-coverage.md).
+Этот документ описывает механизмы toolkit core, не заменяет feature API.
 
-Фича зависит от `:toolkit:analytics:api` и получает `Analytics` через constructor injection/Koin. Она не использует Firebase, AnalyticsSink, AnalyticsBootstrap или DefaultAnalytics. Общие типы не зависят от UI, Decompose и доменных моделей. Кодирование событий — синхронная чистая функция без IO/побочных действий.
+## Границы и схемы
 
-`Analytics.track` принимает AnalyticsEvent, optional FlowContext и OperationId. Сырые имена/maps существуют только в декларациях и транспортном payload. AnalyticsEventSchema регистрируется один раз, используется тот же экземпляр; параметры создаются теми же экземплярами AnalyticsParameterKey. Каталог проверяет все зарегистрированные схемы, включая collisions и общий бюджет параметров Firebase.
+UI получает `<Feature>Analytics` из analytics-api. Реализация в analytics/<feature>
+использует toolkit Analytics; shared подключает generated modules. Она не знает
+Firebase, AnalyticsSink/Bootstrap, UI или domain. Кодирование событий — чистая
+синхронная функция без IO. Analytics API, core state/queue и платформенные sink
+adapters разделены.
 
-Проверка схемы выполняется при создании каталога. Невалидная декларация — ошибка конфигурации приложения. Невалидное событие при разрешённом сборе и невалидная identity в debug приводят к исключению, в release отклоняются. Запрещённые события отсекаются до кодирования; схемы каталога проверяются независимо от consent. В release журнал выключен; debug хранит до 64 записей только с именами событий и статусами, без значений/ID/exception messages.
+`Analytics.track` принимает AnalyticsEvent, optional FlowContext/OperationId.
+Сырые имена/maps остаются в декларациях и транспортном payload. Event использует
+тот же экземпляр Schema и ParameterKey, что зарегистрирован в каталоге.
+Имена lower_snake_case, версии и enum analyticsCode явные. Проверяемые значения:
+AnalyticsCount, DurationMillis и finite AnalyticsNumber; Boolean кодируется Long 0/1.
+Free-form text не поддерживается. Не подменять единицы измерения.
 
-## Пример будущей фичи (ещё не интегрирован)
+Каталог создаётся один раз, проверяет collisions/reserved names и бюджет Firebase:
+до 15 собственных параметров, резерв для 10 общих. Невалидная декларация — ошибка
+конфигурации независимо от consent. При Granted неверное событие/identity в debug
+вызывает исключение, release отклоняет; бизнес-декораторы изолируют обычные
+reporting exceptions. Прямые проверки остаются строгими. Debug хранит до 64
+диагностических записей с именем/статусом, без значений/ID/messages; release журнал
+выключен. Изменение смысла требует решения по отчётам, не только новой версии.
 
-```kotlin
-enum class SaveMode(override val analyticsCode: String) : AnalyticsCode {
-    Create("create"), Edit("edit")
-}
-
-class WorkoutSaved(val mode: SaveMode, val exerciseCount: AnalyticsCount) : AnalyticsEvent {
-    override val schema = Schema
-    override fun parameters() = listOf(Mode.value(mode), Count.value(exerciseCount))
-
-    companion object {
-        private val Mode = AnalyticsParameterKey.code<SaveMode>("save_mode")
-        private val Count = AnalyticsParameterKey.count("exercise_count")
-        val Schema = AnalyticsEventSchema("workout_saved", 1, listOf(Mode, Count))
-    }
-}
-
-// In the owning feature's annotated module, before Analytics is first resolved:
-@Module
-class TrainingAnalyticsModule {
-    @Single
-    @Named("training_analytics")
-    internal fun provideSchema(): AnalyticsSchema =
-        AnalyticsSchema(events = listOf(WorkoutSaved.Schema))
-}
-// shared/Koin.kt registers TrainingAnalyticsModule().module.
-
-// Exactly at the successful outcome of the owning operation:
-analytics.track(WorkoutSaved(SaveMode.Create, AnalyticsCount(exerciseCount)), flow, operationId)
-```
-
-В публичном коде реальной фичи применять explicitApi и её доменные типы. Пример сокращён для чтения. Для величин используются AnalyticsCount, DurationMillis и AnalyticsNumber; decimal допускает только finite. Boolean кодируется в Long 0/1. Enum хранит explicit analyticsCode, не enum.name. Free-form text намеренно не поддерживается. Для иной единицы измерения сначала вводится соответствующий проверяемый тип/ключ, затем схема; не подменять секунды миллисекундами.
-
-Имена схем — lower_snake_case, стабильны между платформами и локалями. Большие ID не включаются в название события. Смена смысла требует новой схемы/обсуждения миграции отчётов; версия сама по себе не делает изменение совместимым. Максимум 15 собственных параметров резервирует место для всех 10 возможных полей общего контекста.
+Feature catalog подключается через `<Feature>AnalyticsModule().module` до резолюции
+core, qualified @Single возвращает полный AnalyticsSchema. Built-in screen/dialog
+schemas повторно не регистрируются. Нет runtime мутаций или ручного production DI.
 
 ## Контекст
 
-- NavigationContext: текущий экран, предыдущий экран, известная причина перехода, активный диалог. Общие ScreenViewed/DialogViewed уже зарегистрированы. Для экранов есть атомарный presentScreen и opt-in lifecycle.trackScreenViews; фичи пока не подключены. SDK automatic screen reporting выключен в manifest/plist, consent при этом не включается.
-- FlowContext: FlowId, конкретный EntryPoint и исходный экран. Передаётся явно через сценарий и при необходимости сериализуется вместе с маршрутом/черновиком. Возврат на экран не меняет origin.
-- AnalyticsContext.launchSource: только известный способ внешнего запуска. Кампании/install attribution добавляются отдельной схемой после определения источника данных.
-- OperationId связывает попытку и результат. Он не гарантирует deduplication. Успех имеет одного владельца и отправляется после фактического успеха, без привязки к init/ViewModel/render.
+| Тип | Значение |
+|---|---|
+| NavigationContext | Видимый экран, известный referrer/reason, active dialog |
+| FlowContext | Стабильные FlowId, EntryPoint и origin сценария |
+| AnalyticsContext.launchSource | Подтверждённый способ внешнего запуска |
+| OperationId | Одна попытка и её terminal; не backend idempotency key |
 
-ScreenId/DialogId/EntryPoint содержат проверяемый стабильный code; фичи объявляют их как константы, не создают из пользовательского ввода. FlowId/OperationId/UserId — непрозрачные ID; синтаксическая проверка не доказывает приватность. UserId не должен быть email, именем, токеном или их хешем. Идентификаторы flow/operation не следует регистрировать как GA4 custom dimensions с высокой кардинальностью.
+ScreenId/DialogId/EntryPoint — валидируемые стабильные codes, не пользовательский
+ввод. FlowId/OperationId/UserId — непрозрачные ID; синтаксис не гарантирует privacy.
+UserId не может быть email, именем, token или их хешем. Flow/operation IDs не
+регистрируют как GA4 dimensions высокой кардинальности. Маршрут владеет своим
+screen-api ID, преобразованным в toolkit FlowId только у UI provider.
+Business entity/draft ID не является flow identity и не используется вместо него.
 
-## Политика сбора и identity
+Origin/entry не меняются при возврате на экран. Каждая попытка получает новый
+OperationId. screen_id в payload — поверхность в момент track; поздний результат
+не сохраняет видимость ушедшего экрана. Кампании/install attribution требуют
+отдельного источника данных и схемы; наличие URL не доказывает launch source.
 
-Ядро стартует с Unknown. Unknown и Denied ничего не отправляют и не буферизуют. SDK выключен конфигурацией платформ и получает Unknown при bootstrap. Пока фичи consent/auth не подключены, production analytics остаётся выключенной.
+## Consent, identity и worker
 
-Будущая интеграция consent должна передать подтверждённый выбор через updateCollection; сохранение/восстановление выбора относится к этой фиче, сейчас выбора и persistence нет. Firebase сохраняет setAnalyticsCollectionEnabled/setConsent между запусками и может переопределить значения manifest/plist. Перед включением production нужно спроектировать bootstrap вместе с хранением выбора, чтобы восстановленный SDK policy и политика ядра совпадали с самого старта. Одни static defaults не дают гарантии сброса ранее сохранённого разрешения до SDK auto-init. Текущий bootstrap дополнительно выключает SDK до первого потребителя аналитики.
+Ядро начинает с Unknown. Unknown/Denied ничего не отправляют и не буферизуют для
+replay. Сбор SDK выключен платформенными defaults и bootstrap до первого consumer.
+Consent UI/persistence пока отдельная задача: production сбор остаётся выключен
+до явного Granted. Feature integration не предоставляет это разрешение.
 
-Все рекламные consent-типы адаптеры оставляют Denied. Grant включает только analytics storage и collection. Denied/Unknown также очищают identity/свойства через явно зарегистрированные property keys. Изменение identity или политики сбора удаляет ожидающие события, чтобы не приписать их новому аккаунту. Даже изменение свойств того же пользователя очищает очередь — осознанная политика приоритета корректной атрибуции; dropped statuses доступны в debug.
+Firebase сохраняет collection/consent между запусками и может перекрыть manifest/plist.
+Будущая policy должна согласовать сохранённый выбор и bootstrap с auto-init;
+одни static defaults не сбрасывают прежнее разрешение. Grant включает только
+analytics storage/collection; advertising consent остаётся Denied.
+Unknown/Denied очищают identity/properties через зарегистрированные ключи.
 
-При удалении user property из продукта её старый ключ сохраняют в каталоге для явной очистки либо выполняют отдельную миграцию SDK. Простое удаление ключа из каталога не очистит уже сохранённое Firebase значение.
+Смена identity/collection очищает ожидающие события. Даже изменение properties
+того же пользователя очищает очередь ради атрибуции. При удалении property старый
+ключ оставляют для очистки либо делают SDK migration; удаление из каталога не
+удаляет уже сохранённое Firebase значение.
 
-Основные calls SDK выполняет один worker, уступающий dispatcher после 32 единиц работы; bootstrap выполняется до attach, shutdown disable — после join. Вызовы не пересекаются. updateCollection/updateIdentity меняют gate/очередь синхронно, применение к SDK происходит последовательно в worker. Уже начатый SDK-вызов невозможно отозвать; возвращение updateCollection не означает, что Firebase закончил применение. Буфер до attachSink ограничен 128 событиями, drop-new при переполнении. Нет собственного хранения на диске или обещания exactly-once. Успешный send означает только принятие локальным SDK. Если событие извлечено из очереди и до send потеряло актуальность, diagnostic — DiscardedBeforeSend; close также учитывает оставшиеся события.
+SDK calls сериализованы одним worker, уступающим dispatcher после 32 единиц.
+Bootstrap происходит до attach, shutdown disable — после join. Gate/очередь
+обновляются синхронно, SDK configuration применяется последовательно. Уже начатый
+call отозвать нельзя; возврат updateCollection не подтверждает SDK completion.
+Буфер до attachSink ограничен 128 событиями, overflow drop-new. Дискового хранения
+и exactly-once обещания нет. Send success — принятие локальным SDK, не delivery.
 
-Исключения send диагностируются, следующие события продолжают обрабатываться. Сбой конфигурации закрывает отправку и очищает очередь; bootstrap/tooling может вызвать retrySinkConfiguration для явной повторной настройки без автоматического replay. Реальная отмена worker остаётся отменой. CancellationException действующего синхронного sink считается transport failure; он не должен незаметно остановить весь worker. Закрытие завершает join/disable даже при отменённом caller. App-lifetime worker не закрывают при уходе экрана в background.
+Первый Granted применяет collection, затем identity; собственная очередь ждёт
+обе операции. Identity update временно не отзывает consent. Это последовательность,
+не атомарная транзакция автоматических SDK events.
 
-## Проверка новой фичи
+Send failure диагностируется, следующие события продолжаются. Configuration failure
+закрывает отправку и очищает очередь; retrySinkConfiguration выполняет явную
+повторную настройку без replay. Настоящая отмена worker сохраняется. Синхронная
+CancellationException активного sink — transport failure, не остановка worker.
+Close завершает join/disable даже при отменённом caller; background не закрывает
+app-lifetime worker. DiscardedBeforeSend обозначает уже извлечённое событие,
+потерявшее актуальность; close учитывает оставшуюся очередь.
 
-1. Карта фактов, обязательных значений, entry points и известных причин; назначить владельца каждого события.
-2. Зарегистрировать AnalyticsSchema в Koin с уникальным qualifier. Не менять central core.
-3. Проверить catalog и payload fixtures, optional values, ошибочные поля и границы типов.
-4. RecordingAnalyticsSink находится в core/commonTest и доступен только тестам с fixtures. Production и preview его не содержат.
-5. Проверить false successes, retries, back/restore, parallel flows, cold/warm external launch и account switch.
-6. Проверить Android/iOS и Swift compilation, payload fixtures и политику consent. Runtime/DebugView проверки выполняются только при отдельном разрешённом этапе; пользователь исключил Firebase-отправку из текущих проверок.
-7. Описать GA4 dimensions/metrics, funnel и условия измерения. Настройка Firebase/GA4/BigQuery отдельно от Kotlin-интеграции.
+## Операции и lifecycle
 
-Нет записи свободного текста, URLs с query, request bodies, exception messages или телесных/чувствительных значений по умолчанию. Они требуют отдельного решения в схеме. Аналитика не выводит психологическую причину закрытия приложения — только известные действия/ответы.
+Toolkit trackOperation вызывает четыре фабрики AnalyticsOperationEvents<T>:
+started/completed/failed/interrupted, сохраняет исходный result и error identity,
+измеряет monotonic duration вокруг block без времени фабрик. Reporting Exceptions
+start/completed не предотвращают выполнение/возврат; вторичная failure-reporting
+ошибка может быть suppressed. Caller cancellation проверяется, fatal Error не
+становится продуктовым failure. Coroutine/job/retry не создаются.
 
-Первый Granted включает SDK, затем устанавливает identity; очередь собственных событий ждёт завершения обеих операций. Identity update не отзывает consent временно. Это последовательность вызовов SDK, а не атомарная транзакция его автоматических событий.
+Feature API оборачивает цельную бизнес-операцию. Login/register включают приватную
+подготовку, SessionCheck не интерпретирует caller T. Обработанный бизнес-fallback
+означает completed execution, не восстановленную сессию. Текущие event versions и
+осознанные omissions находятся в authorization-coverage, без дублирования каталога.
 
-## Структура ядра и конфигурация
+Leaf один раз вызывает DI ScreenAnalytics.bind(lifecycle) с callback presentScreen.
+Один показ на RESUMED, включая уже resumed registration и foreground return;
+pause/destroy закрывает, destroy отписывает. Stateless internal @Single implementation
+обнаруживается CoreModule; callbacks хранят state отдельно для каждого bind.
+Render/container/VM не дублируют показы. PresentScreen атомарно меняет видимость и
+захватывает screen_view, сохраняя launch attribution; поздний close старой presentation
+не очищает новую. Destroy не означает пользовательский exit.
 
-Каждый сервис имеет публичные контракты в `api`, публичный `*Module` в корне `core` и закрытые реализации в `core/internal`. Папка `internal` подкреплена Kotlin-видимостью: engines, locks, catalog, configuration и diagnostic types объявлены `internal`. Shared подключает только `AnalyticsModule().module`, `CrashReportingModule().module`, `MessagingModule().module` и использует API bootstrap-контракты.
+Автоматические SDK screen events выключены в Android manifest
+`google_analytics_automatic_screen_reporting_enabled=false` и iOS Info.plist
+`FirebaseAutomaticScreenReportingEnabled=false`, отдельно от consent.
+[Официальные настройки Firebase](https://firebase.google.com/docs/analytics/screenviews).
 
-`AnalyticsModule` сам регистрирует внутреннюю `AnalyticsConfiguration` через `@Single`; её `expect/actual` factory находится в `analytics/core/internal`. Android читает `Application.applicationInfo.flags` (`FLAG_DEBUGGABLE`) из собственного Koin scope; отсутствие Application — ошибка wiring без fallback. iOS использует `Platform.isDebugBinary` связанного Kotlin framework. Xcode Debug/Release подключают соответствующий Debug/Release XCFramework. Модуля конфигурации приложения и параметра `analyticsDebug` у `Koin.init` больше нет.
+Persisted scenarios используют foundation RetainedAnalytics: consume → typed
+retention → validate → register. Feature provider владеет mapping/keys/serializer/
+create/save, не хранит owner. Полные примеры —
+[UI reference](../../.claude/skills/feature-analytics/references/ui-provider.md).
 
+## Конфигурация и проверки
 
-## Единый стандарт интеграции фич
+Сервисные api содержат public contracts, core — публичный Module и internal
+engines/locks/catalog/configuration/diagnostics. Shared подключает generated
+AnalyticsModule/CrashReportingModule/MessagingModule и bootstrap contracts.
+AnalyticsModule сам предоставляет internal AnalyticsConfiguration через @Single.
+Android получает debug из Application FLAG_DEBUGGABLE своего Koin scope; отсутствие
+Application — wiring error без fallback. iOS использует Platform.isDebugBinary
+связанного framework; Xcode configurations должны выбирать соответствующий XCFramework.
+App configuration module и runtime constructor args для generated modules не нужны.
 
-Обязательный шаблон: `feature-standard.md`, матрица: `feature-coverage-template.md`. Будущий первый эталон: `authorization-coverage.md`; пока он не реализован.
-
-- Создать FlowContext через `FlowContext.start` один раз в точке входа и передавать/сохранять его в маршруте или сценарии. Не создавать новый flow на каждый Render, шаг или повторную попытку.
-- Операции: `AnalyticsOperationEvents<T>` + `analytics.trackOperation(events, flow) { ... }`. Все четыре фабрики обязательны: started, completed, failed, interrupted. Completed классифицирует реальный типизированный result; `Result.failure` не объявляется success автоматически. Обвязка не запускает coroutine и вызывается внутри существующего safeLaunch/use-case.
-- Обычная ошибка и CancellationException пробрасываются без замены. Если фабрика error event нарушает контракт, её ошибка добавляется в suppressedExceptions исходной ошибки; successful-path schema defects распространяются в debug как ошибки разработки. Fatal Error не превращается в продуктовый failure.
-- Один вызов обвязки = одна попытка с новым OperationId; start/terminal разделяют ID и FlowContext. Длительность измеряется monotonic clock вокруг block, без времени event factories. Эти ID не являются backend idempotency keys.
-- Экраны: leaf component один раз регистрирует `lifecycle.trackScreenViews(analytics, navigation = { ... }, flow = { ... })`. Один показ на каждое RESUMED, включая foreground return. Родительский контейнер и Render не отправляют screen_view. NavigationContext каждый раз предоставляет владелец навигации, с актуальным referrer/reason.
-- Core presentScreen обновляет навигацию и кодирует screen_view в одном lock, сохраняя LaunchSource. ScreenPresentation.close очищает только текущую presentation; поздний pause/destroy старого компонента не меняет новый экран, даже если screen IDs совпадают. Lifecycle bridge закрывает presentation на pause/destroy.
-- Flow start/completion/exit остаются бизнес-событиями фичи: общий слой не выводит причины из onDestroy, смены lifecycle, пропавшего токена или закрытия приложения. Явный flow exit не равен interruption отдельной операции.
+Новая фича добавляет матрицу наблюдаемых фактов, catalog/payload fixtures и проверки
+actual owners. Проверяются retries, ошибки/cancellation/reporting failures,
+back/restore/foreground, independent flows, consent/identity и отсутствие sensitive
+fields. Recording sink находится в commonTest; production/preview его не содержат.
+Android host/iOS simulator tests и app/Swift compilation запускаются согласно
+текущим разрешениям. GA4 dimensions/funnels/BigQuery — отдельный этап от Kotlin wiring.
+Firebase delivery/sign-in и mapping/symbol uploads не входят в разрешение на builds/tests.

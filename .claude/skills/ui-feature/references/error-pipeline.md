@@ -1,8 +1,8 @@
 # Error Pipeline
 
-All errors flow through a **single path**. The UI never inspects exception types
-directly — by the time an error reaches the user, it has been logged, reported to
-Crashlytics, and translated into a UI-friendly dialog.
+All errors flow through a **single path**. UI analytics bindings may classify typed exceptions without replacing the
+existing error path. Reporting respects core collection policy; ErrorProvider
+translates failures into UI-friendly dialogs.
 
 ## The pipeline
 
@@ -11,7 +11,7 @@ throw inside safeLaunch
   → operationManager catches via CoroutineExceptionHandler
   → BaseViewModel.sendError(exception, onError)
   → AppLogger.General.error(...)                     // file log
-  → FirebaseProvider.recordException(...)            // crashlytics (firebaseEnabled only)
+  → CrashReporting.reportException(...)              // toolkit core collection policy
   → ErrorProvider.provide(exception, onError)
   → ErrorProviderImpl maps AppError → AppErrorState
   → DialogController.show(DialogConfig.ErrorDisplay(state, onClose = onError))
@@ -57,6 +57,7 @@ internal class ErrorProviderImpl(val dialogController: DialogController) : Error
 
 ```kotlin
 private val errorProvider by inject<ErrorProvider>()
+    private val crashReporting by inject<CrashReporting>()
 
 private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
     val log = buildString {
@@ -66,9 +67,7 @@ private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
         append("└──────────────────────────")
     }
     AppLogger.General.error(log)
-    // region firebase-conditional (firebaseEnabled = true only)
-    FirebaseProvider.recordException(exception)
-    // endregion firebase-conditional
+    crashReporting.reportException(exception)
     errorProvider.provide(exception, callback = onError)
 }
 ```
@@ -81,7 +80,10 @@ val handler = CoroutineExceptionHandler { _, t ->
 }
 ```
 
-`FirebaseProvider` is a static `object` from `:data-services:firebase` (not Koin-injected). When `firebaseEnabled = false`, strip the line + import between the `// region firebase-conditional` / `// endregion firebase-conditional` markers. The `onError` lambda is supplied by the call site (`onError = { ... }` on `safeLaunch`) and runs **after** the user dismisses the error dialog — useful for state cleanup ("reset the form on error").
+`CrashReporting` is injected from toolkit API; platform SDK adapters are attached
+by app shells. Reporting follows core collection policy. Analytics classifiers
+may inspect typed failures at the UI boundary, but preserve the original error
+path. The `onError` callback runs after dismissal and can clean up UI state.
 
 ## Authoring rules (MUST)
 

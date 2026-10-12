@@ -344,9 +344,13 @@ kotlin {
         implementation(projects.dataServices.backend)
         implementation(projects.dataServices.googleAuth)   // omit if Google Sign-In not selected in Step 0
         implementation(projects.dataServices.appleAuth)    // omit if Apple Sign-In not selected in Step 0
-        // region firebase-conditional (firebaseEnabled = true only)
-        api(projects.dataServices.firebase)   // exported to iOS for crash bridging
-        // endregion firebase-conditional
+        api(projects.toolkit.analytics.api)
+        implementation(projects.toolkit.analytics.core)
+        api(projects.toolkit.crashReporting.api)
+        implementation(projects.toolkit.crashReporting.core)
+        api(projects.toolkit.messaging.api)
+        implementation(projects.toolkit.messaging.core)
+        implementation(projects.analytics.authorization)
 
         // every data-feature module
         implementation(projects.dataFeatures.featureApi)
@@ -382,14 +386,12 @@ Notes:
   `ios.swiftpackage`) (which builds the XCFramework).
 - Decompose libraries are exposed via `api(...)` because `:androidApp` / `:iosApp`
   use Decompose types directly.
-- `:data-services:firebase` is exposed via `api(...)` because the iOS XCFramework
-  re-exports it (Swift code calls into it). When `firebaseEnabled = false` (Step 0
-  / `project-config.md`), strip the `api(projects.dataServices.firebase)` line
-  between the `// region firebase-conditional` / `// endregion firebase-conditional`
-  markers — the module is not scaffolded (see `launch.md` Step 3) and leaving the
-  line fails module resolution. Identical marker pattern is used in the ui-feature
-  skill (`../../ui-feature/references/base-classes.md` and
-  `../../ui-feature/references/module-structure.md`).
+- Toolkit analytics/crash-reporting/messaging APIs are exposed for the typed
+  ApplicationBootstrap and Swift adapters. Only API modules are exported by the
+  iOS convention; core/internal types stay hidden. Android Firebase transport
+  belongs only to androidApp. Register feature analytics implementation and UI
+  `<Feature>AnalyticsProvider`/classifier bindings in Koin using `.module`; follow
+  [feature-analytics](../../feature-analytics/SKILL.md).
 - `:data-services:google-auth` and `:data-services:apple-auth` are conditional on
   the auth methods selected in Step 0 — strip whichever line is unused.
   `:shared/Koin.kt` registers `GoogleAuthModule()` / `AppleAuthModule()` only for

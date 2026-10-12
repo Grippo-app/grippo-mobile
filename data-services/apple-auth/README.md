@@ -24,7 +24,9 @@ The module provides everything required to start and consume the Apple Sign-In U
   sheet.
 
 `AppleAccount` contains the authorization code only. `AppleAuthUiProvider.signIn()` returns
-`Result<AppleAccount>` so UI code can differentiate between user cancellations and actual errors.
+`Result<AppleAccount>` for provider/user outcomes. A user cancellation has
+`AppleAuthFailureReason.Cancelled`; coroutine cancellation propagates as
+`CancellationException` rather than being wrapped in `Result.failure`.
 Check `appleAuthProvider.isSupported` before rendering a "Continue with Apple" button – the
 provider reports `false` on Android and `true` on iOS.
 
@@ -48,8 +50,7 @@ modules(
 )
 ```
 
-- `AppleAuthModule` already bundles the required context/http/serialization modules – no extra DI
-  bindings are needed.
+- `AppleAuthModule` provides the zero-argument provider; it needs no context, HTTP or JSON bindings.
 - On logout call `AppleAuthProvider.signOut()` (no-op at the moment, but it keeps API parity).
 - Ensure the iOS capability from the section below is enabled before presenting the action to users.
 
@@ -106,7 +107,7 @@ suspend fun handleAppleLogin(context: AppleAuthUiContext) {
     result.onSuccess { account ->
         // Use account.authorizationCode in your domain layer.
     }.onFailure { error ->
-        // Show an error message / report to analytics
+        // Route the provider error through the existing UI error handler.
     }
 }
 ```

@@ -1,0 +1,23 @@
+# Общий механизм удержания аналитики — 2026-10-12
+
+Добавлен public RetainedAnalytics в UI foundation. provide<T, S> public inline
+reified T; все callbacks crossinline, context @PublishedApi internal. Механизм
+consume → retainedSimpleInstance<T> → validate → register сохраняет type-key
+сценария, latest save и отказ при нарушении identity без fallback replacement.
+
+AuthAnalyticsProvider использует его для Authorization/AuthorizationState и
+Session/FlowContext. Mapping, ID conversion/check и прежние StateKeeper keys
+остаются private/feature-owned. Helper локальный и owner-bound, не DI singleton.
+Foundation экспортирует serialization-core из-за public KSerializer; json остаётся
+implementation. Business/core/route contracts не менялись.
+
+Добавлены исходники RetainedAnalyticsTest: реальная рекреация с общим keeper,
+последующее изменение/latest save/fresh restore, разные scenario types,
+validation-before-registration и сохранение удержанного экземпляра. Существующие
+AuthAnalyticsProviderTest и generated DI фикстуры используют новый путь.
+
+Self-review: inline visibility, exact contract type, captures/owner lifetime,
+callback ordering, serializer bounds, dependency API, private keys и skill/examples.
+Статические проверки helper/provider/keys/dependency, YAML и git diff --check
+прошли. Сборки Android/iOS, KSP и тесты не запускались; компиляция/runtime
+не подтверждены. Общих extensions/base components или дополнительных factory нет.

@@ -21,6 +21,26 @@ Not this skill: domain models / `*Feature` interfaces (data-layer), `toState()`
 mappers (mappers), reusable widgets in `:design-system:components`
 (design-system), Koin module wiring (di-modules).
 
+## Analytics impact
+
+For feature implementation and behavior changes, also apply
+[feature-analytics](../feature-analytics/SKILL.md). Update the affected coverage
+matrix for routes, entry points, operations, validation and outcomes. Purely
+visual edits need an impact assessment, not new events. Business contracts determine
+requests, results, fallback and navigation; analytics decorates complete operations.
+Do not split use cases for reporting or branch business code on telemetry models.
+
+UI main depends on `:analytics:analytics-api`; feature implementations remain separate.
+The UI `analytics/` package contains an internal stateless `<Feature>AnalyticsProvider`
+with `provide<Scenario>` methods, a separate classifier when needed and annotated
+bindings. Obtain the scenario before retained ViewModel creation and pass the same
+instance to children/VM as `analytics`. Routes own their IDs; provider maps them,
+hides persistent keys and uses foundation `RetainedAnalytics` for saved scenarios.
+Leaf visibility binds once via DI `ScreenAnalytics.bind(lifecycle, present)`.
+Reporting exceptions cannot block business/navigation/lifecycle; cancellation and
+owner/state invariants stay explicit. Follow the linked canonical skill; do not add
+retention extensions or analytics base components.
+
 ## Required inputs
 
 - **Task file path** (`orchestrator/tasks/todo/TASK_*.md`).
@@ -73,8 +93,15 @@ mappers (mappers), reusable widgets in `:design-system:components`
 7. **For `:ui-core:state` work** — add `*State`/`*RowState`/`*EnumState`/
    `*FormatState` + `stub*()`; for a new error type, edit the
    `AppError` → `AppErrorState` → `ErrorProviderImpl` when-branch triad atomically.
-8. **Verify** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
-   assemble when `iosEnabled: true`). Build failures are yours to fix.
+8. **Integrate affected analytics** — apply the linked analytics skill before
+   completing behavior changes. Bind leaf visibility once; pass business blocks
+   from the existing error pipeline and report actual navigation transitions.
+   Keep the coverage matrix synchronized; do not scatter event construction
+   through Screens, Components, ViewModels and use cases.
+9. **Verify** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
+   assemble when `iosEnabled: true`). Apply the analytics skill's affected tests,
+   DI/restore/lifecycle checks and platform validation when analytics changes.
+   Build failures are yours to fix.
 
 ## Screen results and dialog-to-screen changes
 

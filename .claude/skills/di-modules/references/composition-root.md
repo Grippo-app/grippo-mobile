@@ -3,118 +3,60 @@
 `:shared/Koin.kt` is **the single source of truth** for which Koin modules are
 active. Everything that participates in DI is listed here by name.
 
-## File contents
+## Current composition and startup
 
-```kotlin
-public object Koin {
-    public fun init(
-        appDeclaration: KoinAppDeclaration = {},
-    ): KoinApplication = KoinPlatformTools.defaultContext().startKoin {
-        appDeclaration()
-        modules(
-            ContextModule().module,
-            DatabaseModule().module,
-            DataStoreModule().module,
-            BackendModule().module,
-            GoogleAuthModule().module,        // optional — register only for the chosen auth providers
-            AppleAuthModule().module,         // optional — register only for the chosen auth providers
-            CoreModule().module,
-            DialogModule().module,
-            AuthorizationFeatureModule().module,
-            ErrorModule().module,
-            UserFeatureModule().module,
-            // ... every feature module (one per :data-features:<feature>)
-            FeatureApiModule().module,
-            ConnectivityModule().module,
-            LinkOpenerModule().module,
-            NotificationManagerModule().module,
-            PermissionManagerModule().module,
-            ResourcesProviderModule().module,
-            SerializationModule().module,
-            HttpModule().module,
-            ImageLoaderModule().module,
-        )
-    }
-}
-```
+Use `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt` as the actual module
+list. `Koin.init` starts the single Koin context and returns `ApplicationBootstrap`
+with toolkit analytics/crashReporting/messaging startup contracts. Register
+annotated modules explicitly through `.module`, including service cores,
+feature analytics implementations and UI provider/classifier bindings. Components
+resolve their stateless `<Feature>AnalyticsProvider`; it injects the feature API and
+returns a scenario retained by that component context. Mutable scenarios are never
+app-scoped DI singletons.
 
-## Calling `Koin.init`
+Feature telemetry follows [feature-analytics](../../feature-analytics/SKILL.md).
+UI depends on `:analytics:analytics-api`; shared depends on `:analytics:<feature>`.
+Custom schemas use qualified `@Single` declarations and must be registered before
+Analytics is resolved. Do not add runtime module constructor parameters or
+manual production `module { single { ... } }` blocks.
 
 ### Android (`App.onCreate`)
 
 ```kotlin
-class App : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        Koin.init {
-            androidContext(this@App)
-            androidLogger()
-        }
-        FirebaseProvider.setup(
-            analytics = AndroidFirebaseAnalytics(core = FirebaseAnalytics.getInstance(this)),
-            crashlytics = AndroidFirebaseCrashlytics(core = FirebaseCrashlytics.getInstance()),
-            messaging = AndroidFirebaseMessaging(),
-        )
-    }
+val bootstrap = Koin.init {
+    androidContext(this@App)
+    androidLogger()
 }
+val analytics = AndroidFirebaseAnalytics(FirebaseAnalytics.getInstance(this))
+analytics.setCollection(AnalyticsCollection.Unknown)
+bootstrap.analytics.attachSink(analytics)
+bootstrap.crashReporting.attachSink(AndroidFirebaseCrashlytics(FirebaseCrashlytics.getInstance()))
+bootstrap.messaging.attachTokenProvider(AndroidFirebaseMessaging())
 ```
 
-- `androidContext(this@App)` registers the Android `Context` so `ContextModule`
-  can provide `NativeContext`.
-- `androidLogger()` enables Koin's Android log integration.
-- `FirebaseProvider.setup(analytics, crashlytics, messaging)` injects the platform
-  implementations into the static `FirebaseProvider` `object`. The provider is
-  **not** a Koin singleton — it's a hand-wired static, so `setup` is a separate
-  step after `Koin.init`.
+Only Android app depends on the Firebase transport module. Adapters implement
+toolkit contracts; features never call the SDK directly. Attaching an adapter
+does not authorize collection or runtime validation sends.
 
-### iOS (`iosApp/iOSApp.swift` + `iosApp/AppDelegate.swift`)
+### iOS (`AppDelegate`)
 
-`Koin.init` runs in `iOSApp.init`. Firebase configuration is **not** in
-`iOSApp.init` — it must run from
-`AppDelegate.application(_:didFinishLaunchingWithOptions:)`, because at the moment
-`iOSApp.init` fires, the `AppDelegate` is not yet attached to `UIApplication` and
-Firebase's delegate swizzling fails.
+AppDelegate initializes Koin once in its initializer and retains the returned
+ApplicationBootstrap. iOSApp hosts the root without a second Koin init.
+Configure Firebase from `application(_:didFinishLaunchingWithOptions:)`, after
+the delegate is attached, then attach Swift SDK adapters:
 
 ```swift
-@main
-struct iOSApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-
-    init() {
-        Koin().doInit(appDeclaration: { _ in })   // calls Kotlin's Koin.init {}
-    }
-    // ...
-}
-
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        FirebaseApp.configure()                    // iOS Firebase SDK directly
-        FirebaseProvider.shared.setup(
-            analytics: IosFirebaseAnalytics(),
-            crashlytics: IosFirebaseCrashlytics(),
-            messaging: IosFirebaseMessaging()
-        )
-        // ...
-        return true
-    }
-}
+FirebaseApp.configure()
+let analytics = IosFirebaseAnalytics()
+analytics.setCollection(collection: .unknown)
+bootstrap.analytics.attachSink(analyticsSink: analytics)
+bootstrap.crashReporting.attachSink(crashSink: IosFirebaseCrashlytics())
+bootstrap.messaging.attachTokenProvider(tokenProvider: IosFirebaseMessaging())
 ```
 
-- `Koin().doInit(appDeclaration: { _ in })` is the Kotlin/Native interop of
-  `Koin.init`. `Koin()` is the Swift accessor Kotlin Native generates for a Kotlin
-  `object` (calling it returns the singleton, **not** a fresh instance — Kotlin's
-  `object` semantics are preserved). `doInit(appDeclaration:)` is the renamed
-  export of `fun init(...)` — Kotlin Native prefixes Swift-reserved selector names
-  like `init` with `do` to avoid clashing with Swift's initializer syntax. The
-  closure parameter is the `KoinAppDeclaration` lambda — empty on iOS. If you
-  change the Kotlin function name from `init` to e.g. `start`, the Swift call
-  becomes `Koin().start(...)`.
-- `FirebaseProvider.shared.setup(...)` is the Swift name for the static
-  `FirebaseProvider.setup(...)` Kotlin function exposed via the `shared`
-  XCFramework.
+Current implementations: `iosApp/iosApp/AppDeletage.swift` and Android
+`androidApp/src/main/java/com/grippo/android/App.kt` (paths relative to repo root).
+Do not recreate a global Firebase provider or export Android transport to Swift.
 
 ## Order of modules
 
@@ -189,18 +131,12 @@ the module must be **reachable** as a dependency — the wholesale listing of ev
 module in `:shared/build.gradle.kts` is **intentional**. A single-implementation
 feature module missing from that list means `Koin.init` won't see it.
 
-## What `Koin.init` doesn't do
+## Startup responsibilities
 
-- **It doesn't start coroutines.** Subscriptions live in `RootViewModel.init`.
-- **It doesn't set up Firebase.** `FirebaseProvider.setup(analytics, crashlytics,
-  messaging)` is called separately on Android (`App.onCreate`, after `Koin.init`);
-  iOS calls `FirebaseApp.configure()` and `FirebaseProvider.shared.setup(...)`
-  from `AppDelegate.application(_:didFinishLaunchingWithOptions:)`.
-  `FirebaseProvider` is a static `object`, not a Koin singleton.
-- **It doesn't preload data.** First Repository call triggers the first DAO/HTTP
-  read.
-- **It doesn't decide the start screen.** `RootRouter.initialConfiguration =
-  RootRouter.Home` (or wherever) does.
+Koin resolves app-lifetime toolkit cores, which can own bounded workers. It does
+not configure Firebase, grant collection consent, preload feature data or decide
+navigation. App shells attach platform adapters after SDK initialization; the
+feature remains responsible for its business work and routes.
 
 ## Multiple Koin contexts
 

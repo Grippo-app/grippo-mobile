@@ -199,7 +199,13 @@ The root project rule is "default to writing no comments". The rules in this ski
 
 ## Architecture-shape
 
-- **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`. Narrow exceptions tolerated for SDK-style services that have no `:data-features:*` wrapper: `:data-services:firebase` (a UI VM may call `FirebaseProvider.logEvent(...)` for analytics), `:data-services:google-auth` and `:data-services:apple-auth` (consumed directly by `:ui-screen-features:authorization` to fetch ID tokens). Anything domain-shaped still goes through `:data-features:feature-api`.
+- **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`. Narrow exceptions tolerated for SDK-style services that have no `:data-features:*` wrapper: `:data-services:google-auth` and `:data-services:apple-auth` (consumed directly by `:ui-screen-features:authorization` to fetch ID tokens). Anything domain-shaped still goes through `:data-features:feature-api`.
+- **Feature UI/domain calls Firebase or constructs telemetry events directly.**
+  Apply [feature-analytics](../../feature-analytics/SKILL.md): UI main depends on
+  analytics-api and calls its facade; implementation owns internal matrices.
+  Reject UI/domain/services/SDK imports in analytics implementation, public
+  implementation types, manual production DI, scenario singletons, duplicate
+  leaf/container tracking and extra jobs/retries solely for instrumentation.
 - **`:data-features:feature-api` imports `:data-services:*`.** Pure contracts.
 - **`:toolkit:*` imports `:design-system:*`.** Toolkit is below. Sole exception: `:toolkit:date-utils` reads locale-aware format tokens from `:design-system:resources:provider` and `:design-system:core` — see the platform-build-toolkit skill, references/module-structure.md § directional dependency rules for the canonical list of tolerated exceptions.
 - **`:design-system:*` imports `:data-features:*`.** Design is pure UI.

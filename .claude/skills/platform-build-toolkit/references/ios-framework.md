@@ -32,7 +32,9 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
                                 libs.findLibrary("decompose.back.handler").get(),
                             ).forEach { exportedDep -> export(exportedDep) }
 
-                            export(project(":data-services:firebase"))
+                            export(project(":toolkit:analytics:api"))
+                            export(project(":toolkit:crash-reporting:api"))
+                            export(project(":toolkit:messaging:api"))
                         }
                     }
             }
@@ -67,7 +69,9 @@ export(libs.decompose.core)
 export(libs.decompose.essenty)
 export(libs.decompose.state.keeper)
 export(libs.decompose.back.handler)
-export(project(":data-services:firebase"))
+export(project(":toolkit:analytics:api"))
+export(project(":toolkit:crash-reporting:api"))
+export(project(":toolkit:messaging:api"))
 ```
 
 `export(...)` makes the dep's symbols **visible to Swift**. Without it, Swift would see Kotlin types from `:shared` that reference Decompose types, but the Decompose types themselves would be opaque.
@@ -180,14 +184,14 @@ The `-lsqlite3` linker opt isn't in the convention. Verify `IosSwiftPackageConve
 
 Swift sees the Kotlin-side `RootComponent`, but Decompose types are unknown. The Decompose deps aren't exported. Verify `export(libs.decompose.core)` and siblings are present.
 
-### "duplicate symbols" between Kotlin-Firebase and Swift-Firebase
+### SDK transport and Swift-visible contracts
 
-`:data-services:firebase` is `api`-exposed from `:shared` because the convention plugin's `export(project(":data-services:firebase"))` re-exports it. iOS Swift code calls into the Kotlin `FirebaseProvider`, which delegates to the iOS Firebase SDK initialized natively in Swift (`FirebaseApp.configure()`).
-
-If Swift also initializes Firebase from the Kotlin side, you'd get duplicate symbols. The reference convention is:
-
-- iOS: `FirebaseApp.configure()` in `iOSApp.swift` — initializes the iOS SDK.
-- Kotlin `:data-services:firebase` iOS implementation: empty stub. The Kotlin `FirebaseProvider` on iOS doesn't call into the iOS SDK (Swift handles it directly).
+Shared exports toolkit analytics/crash-reporting/messaging API contracts, not
+Android Firebase transport or internal implementations. Swift SDK adapters live
+in iosApp and are attached through ApplicationBootstrap. Initialize Firebase
+once in AppDelegate's didFinishLaunchingWithOptions, after delegate attachment.
+There is no Kotlin iOS Firebase provider/stub to scaffold. Verify exports against
+the actual IosSwiftPackageConventionPlugin and both framework headers.
 
 ### XCFramework is built but stale
 
@@ -200,4 +204,4 @@ The XCFramework artifact lands at `shared/build/XCFrameworks/<config>/shared.xcf
 - **Forgetting `-lsqlite3`.** Room link errors on iOS.
 - **Hardcoding Xcode build settings to override Kotlin defaults.** The Kotlin/Native plugin manages framework attributes.
 - **Per-arch binary distribution** (separate `.framework` per arch). Use the XCFramework — single artifact.
-- **iOS-specific Kotlin code that calls into the iOS Firebase SDK.** Let Swift handle that. Keep Kotlin's iOS Firebase impl empty.
+- **Exporting Android Firebase transport or creating iOS provider stubs.** Swift adapters implement toolkit startup contracts.

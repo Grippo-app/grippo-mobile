@@ -174,7 +174,7 @@ implementation(libs.android.firebase.crashlytics)
 implementation(libs.android.firebase.messaging)
 ```
 
-Firebase is **Android-only**. The BOM aligns library versions. `:data-services:firebase` provides the Kotlin-side `FirebaseProvider` interface; the actual SDK libs are pulled in here so the AGP plugin (`google-services`) can wire them.
+The Android SDK uses the BOM. `:data-services:firebase` provides Android toolkit adapters and the system FCM service; only Android app depends on it. iOS uses Swift SDK adapters. Shared and features depend on toolkit contracts, not Firebase.
 
 ### Other files in `:androidApp`
 
@@ -200,7 +200,7 @@ The composition root's build file. The only module that:
 
 - Applies **five** convention plugins.
 - Uses the `ios.swiftpackage.convention` to assemble the XCFramework.
-- Re-exports Decompose API + `:data-services:firebase` to Swift consumers.
+- Re-exports Decompose API + toolkit analytics/crash-reporting/messaging APIs to Swift consumers.
 
 ### Full file
 
@@ -251,9 +251,13 @@ kotlin {
         implementation(projects.dataServices.backend)
         implementation(projects.dataServices.googleAuth)
         implementation(projects.dataServices.appleAuth)
-        // region firebase-conditional (firebaseEnabled = true only)
-        api(projects.dataServices.firebase)
-        // endregion firebase-conditional
+        api(projects.toolkit.analytics.api)
+        implementation(projects.toolkit.analytics.core)
+        api(projects.toolkit.crashReporting.api)
+        implementation(projects.toolkit.crashReporting.core)
+        api(projects.toolkit.messaging.api)
+        implementation(projects.toolkit.messaging.core)
+        implementation(projects.analytics.authorization)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)
@@ -319,24 +323,21 @@ api(libs.decompose.state.keeper)
 
 Decompose's `ComponentContext`, `ChildStack`, `Value<T>`, `StackNavigation`, etc. appear in **`RootComponent`'s public API**. Both `:androidApp` (via `retainedComponent { RootComponent(componentContext) }`) and `:iosApp` (via the Swift bridge) need to see these types. `api` propagates them transitively.
 
-#### `:data-services:firebase`
+#### Toolkit startup APIs and feature telemetry
 
-```kotlin
-// region firebase-conditional (firebaseEnabled = true only)
-api(projects.dataServices.firebase)
-// endregion firebase-conditional
-```
+Shared exposes toolkit analytics/crash-reporting/messaging APIs used by
+ApplicationBootstrap and Swift adapters. The iOS convention exports those API
+modules; implementation/core types stay internal. Android Firebase transport is
+not a shared dependency or an XCFramework export.
 
-The iOS XCFramework re-exports `:data-services:firebase` so Swift code can call into the `FirebaseProvider` interface to bridge between iOS-native Firebase and the Kotlin shared layer. The convention plugin's `export(...)` line consumes this `api`:
-
-```kotlin
-// in IosSwiftPackageConventionPlugin
-export(project(":data-services:firebase"))
-```
+UI main uses `implementation(projects.analytics.analyticsApi)`; shared registers
+feature implementations such as `projects.analytics.authorization`. Follow
+[feature-analytics](../../feature-analytics/SKILL.md) for typed facades, matrices
+and generated modules. Add serialization/test dependencies only where needed.
 
 ### Anti-patterns
 
-- **`api` on everything.** Forbidden. Only Decompose API + `:data-services:firebase`. Adding more `api` deps creates hidden transitive coupling for `:androidApp` and `:iosApp`.
+- **`api` on everything.** Forbidden. Only Decompose API + toolkit analytics/crash-reporting/messaging APIs. Adding more `api` deps creates hidden transitive coupling for `:androidApp` and `:iosApp`.
 - **Single-implementation feature module missing from this list.** `Koin.init` won't see it.
 - **`compose.material3` / `compose.foundation` redeclared in feature modules** that already get them via `:design-system:components`. This template declares them in `:shared` because some shared Composables need them.
 - **Direct `androidx-*` deps** like `androidx.activity.compose` here. Those are Android-app-only (single platform) — they go in `:androidApp`, not `:shared`.

@@ -43,7 +43,7 @@ These are the pinned toolkit/build baseline for the project: language and runtim
 - Linker option `-lsqlite3` (required for Room/SQLite)
 - Keep the Kotlin/Native GC at the toolchain default. Enable an explicit GC mode only after profiling the generated project on its supported iOS versions.
 - `smallBinary = true` — smaller frameworks
-- Re-exports Decompose API + `:data-services:firebase` so Swift can see them
+- Re-exports Decompose API + toolkit analytics/crash-reporting/messaging APIs so Swift can see them
 
 ### Source-set layout
 
@@ -231,7 +231,7 @@ Any new dependency requires a deliberate decision. Steps:
 2. Add a `[versions]` entry.
 3. Add the `[libraries]` entry — prefer `version.ref` over inline versions.
 4. Reference it from the **module-level** `build.gradle.kts` via the type-safe accessor. Gradle splits each `-` in the catalog alias into a path separator — so `kotlinx-coroutines-core` becomes `libs.kotlinx.coroutines.core`, `androidx-core-splashscreen` becomes `libs.androidx.core.splashscreen`, and `decompose-back-handler` becomes `libs.decompose.back.handler`.
-5. If it must be exported through the iOS XCFramework (visible from Swift), add an `export(libs.find...)` line in `IosSwiftPackageConventionPlugin` — only do this if the public API of `:shared`/`:data-services:firebase` exposes types from that library to Swift.
+5. If it must be exported through the iOS XCFramework (visible from Swift), add an `export(libs.find...)` line in `IosSwiftPackageConventionPlugin` — only do this if the public API of `:shared` or its exported toolkit APIs exposes types from that library to Swift.
 
 ### Notable choices and why
 

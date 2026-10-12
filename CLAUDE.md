@@ -73,7 +73,7 @@ Groups:
 - `:backend` — `GrippoApi` (flat class with methods like `suspend fun <action>(body): Result<T>`), `BackendClient` (Ktor with Auth, Logging, ContentNegotiation, defaultRequest pointed at `https://grippo-app.com`), `TokenProvider` (Auth `Bearer` + refresh with mutex and retry-with-backoff), `ClientLogger`, `dto/<area>/*` — `@Serializable data class`, all fields nullable with `@SerialName`.
 - `:database` — Room `@Database(version = 5)`, all `@Entity`, DAOs, migrations, `models/*Pack` (`@Embedded` + `@Relation`), `converters/StringListConverter`, `DatabaseBuilder` (expect/actual), **`fallbackToDestructiveMigration(dropAllTables = true)` on both platforms — intentional**.
 - `:datastore` — wrapper over AndroidX DataStore.
-- `:google-auth` / `:apple-auth` — platform-specific wrappers for ID token.
+- `:google-auth` / `:apple-auth` — platform credential wrappers returning a Google ID token or Apple authorization code.
 - `:firebase` — Android `AnalyticsSink` / `CrashReportingSink` / `PushTokenProvider` adapters and the system FCM service. Only `:androidApp` depends on this transport module. Swift adapters live in `iosApp`; shared and features depend on toolkit contracts.
 
 ### `:data-features:*` — domain layer
@@ -85,11 +85,19 @@ Groups:
 
 7 modules, one per direction. No cross-direction dependencies. See **Mappers** section below.
 
+### `:analytics:*` — feature telemetry
+
+- `:analytics:analytics-api` defines one `<Feature>Analytics` entry point per feature, nested scenario contracts and sibling `models/` for typed facts/snapshots. `:analytics:<feature>` contains internal state/events/operations/schema matrices and a public annotated module. UI main depends on the API; shared wires implementations. Analytics implementations have no UI/routes/foundation, domain/use-case, service or SDK dependencies.
+- Analytics decorates complete business operations. It does not determine navigation, fallback or results; login/register keep preparation private. Routes own their identity types, mapped to toolkit IDs only at the UI provider boundary. Ordinary reporting exceptions cannot block business work/navigation/lifecycle; caller cancellation, fatal Errors and state/owner invariants stay explicit.
+- The UI feature's `analytics/` package contains a stateless internal `<Feature>AnalyticsProvider` with `provide<Scenario>` methods, separate classifier when needed and annotated bindings. Components obtain and pass the same retained scenario as `analytics`. Persisted scenarios use foundation `RetainedAnalytics`; keys/mapping/validation remain feature-owned. Leaf visibility uses DI `ScreenAnalytics`, whose internal stateless `@Single` implementation is discovered by `CoreModule`. Follow [feature-standard](tasks/analytics/feature-standard.md) and the [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep the coverage matrix current.
+
 ### `:toolkit:*` — platform-aware utilities
 
 - `:analytics:{api,core}`, `:crash-reporting:{api,core}`, `:messaging:{api,core}` — typed service contracts and bounded app-lifetime cores. Features inject consumer APIs; app shells use bootstrap interfaces. Messaging callback validation belongs to core, not the Firebase service.
 
-- Analytics feature integrations must follow `tasks/analytics/feature-standard.md` and include a coverage matrix based on `tasks/analytics/feature-coverage-template.md`. Create/carry a `FlowContext` at the real entry point; use `AnalyticsOperationEvents<T>` with `trackOperation` inside the existing coroutine for attempt outcomes and monotonic duration. Leaf components opt into `lifecycle.trackScreenViews` once during construction; every RESUMED activation counts as a view, including foreground return. Navigation owners supply actual referrer/reason; containers and Render do not send views. Register feature definitions using annotated qualified `@Single` providers and generated `.module`. Feature events, error classification and explicit flow exits belong to their fact owner; do not infer user intent from lifecycle destruction or exception text. Schema/payload fixtures and Android/iOS verification are required before claiming feature coverage. The shared wiring alone does not integrate a feature or grant collection consent.
+- For new features and feature behavior changes, apply [.claude/skills/feature-analytics/SKILL.md](.claude/skills/feature-analytics/SKILL.md), even when analytics is not explicitly requested. Pure styling changes require an impact assessment, not new events.
+
+
 
 - `:context` — `NativeContext` (expect/actual: Android holds `Context`, iOS — pure object), `ContextModule`.
 - `:http-client` — Ktor `HttpClient` with `responseValidator` + `ApiErrorParser` (translates HTTP into `AppError`).
@@ -141,9 +149,10 @@ The dependency graph is strictly directional. Violations break the architecture:
 
 Hard rules:
 
-- **A UI module (`:ui-screen-features:*`, `:ui-dialog-features:*`) does NOT depend** on `:data-services:*` directly — only via `:data-features:feature-api`.
+- **A UI module (`:ui-screen-features:*`, `:ui-dialog-features:*`) does NOT depend** on `:data-services:*` directly — only via `:data-features:feature-api`. The existing authorization credential flow is the exception for `:data-services:google-auth` and `:data-services:apple-auth`; Firebase transport stays app-owned.
 - **`:data-features:feature-api`** does not depend on `:data-services:*`. It is pure contracts + domain models.
 - **`:data-mappers:*`** depend on adjacent layers (`dto-to-entity` → `:data-services:backend` + `:data-services:database`), but **never on UI**.
+- **`:analytics:analytics-api`** defines pure feature telemetry contracts. UI main depends on this API; shared wires feature implementations. **`:analytics:<feature>`** does not depend on UI, data/domain, services, SDKs or toolkit core; use supplied business blocks and boundary classifiers.
 - **`:toolkit:*`** does not depend on the data layer or Firebase SDK. Service API modules contain pure contracts; core modules own state/queues and their Koin modules.
 - **`:design-system:*`** does not depend on the data layer. `AppTokens` are pure UI primitives.
 - `:shared` is the only module that imports "everything". `:androidApp`/`:iosApp` reach `RootComponent` and `Koin.init` only through `:shared`.
@@ -927,7 +936,11 @@ No explicit budgets in code. Default priorities:
 
 ## Testing strategy
 
-There are no test source sets or `*.kt` tests in the repo. Don't add without an explicit request.
+The repo has Android host and common KMP tests, including analytics, authorization,
+foundation, crash-reporting and messaging. Use `kotlin.multiplatform.test.convention`
+for KMP test source sets. Add focused tests for changed behavior and boundaries;
+avoid tests that merely duplicate implementation. Run affected suites and platform
+integration checks within the user's verification scope, and record actual results.
 
 ---
 
@@ -992,7 +1005,7 @@ There are no test source sets or `*.kt` tests in the repo. Don't add without an 
 - Catching exceptions inside a ViewModel manually (`try { ... } catch { ... }`) — let it flow through `safeLaunch` → `ErrorProvider`. Exception: domain logic (`Result.onSuccess { ... }` after `api.<x>()`).
 - Hardcoded strings in UI — only via `AppTokens.strings.res(Res.string.x)` (Composable) or `StringProvider.get(...)` (VM).
 - Storing `String` in State if the value depends on resources/locale — use `UiText`.
-- Direct Koin `get()` in Screen — DI goes only via `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component.
+- Direct Koin `get()` in Screen — forbidden. ViewModel dependencies resolve inside `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component. A Component may also resolve its stateless UI `<Feature>AnalyticsProvider` before ViewModel creation and `ScreenAnalytics` for leaf lifecycle binding; pass the same returned scenario to children/VM as `analytics`.
 - Accessing `Context`/`Activity` directly from `commonMain` — go through `:toolkit:context` (`NativeContext`).
 - Hidden coupling of feature modules via transitive `api` — list every needed dependency in your own `build.gradle.kts`.
 - Using `androidx.compose.ui.res.stringResource(...)` or `painterResource(R.drawable...)` — only Compose Multiplatform Resources (`Res.string.*` / `Res.drawable.*`).
@@ -1004,7 +1017,7 @@ There are no test source sets or `*.kt` tests in the repo. Don't add without an 
 
 ## Orchestrator workflow
 
-The `orchestrator/` tree is the agent workforce bound to this project (config: `orchestrator/project-config.md`; end-user entry: `orchestrator/README.md`). The detailed skills installed in `.claude/skills/` (11: `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, `launch-readiness`) are the source of truth for task execution; this file stays the high-level guide.
+The `orchestrator/` tree is the agent workforce bound to this project (config: `orchestrator/project-config.md`; end-user entry: `orchestrator/README.md`). The detailed skills installed in `.claude/skills/` (12: `feature-analytics`, `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, `launch-readiness`) are the source of truth for task execution; this file stays the high-level guide.
 
 - **Control surface**: `npm start` from the repo root → <http://localhost:8000/site/> (Node 22 workspace; `npm test` = fast verify suite).
 - **Task workflow**: tasks flow through the four-column kanban under `orchestrator/tasks/`: `backlog -> task-prep -> pending -> task-prep -> todo -> orchestrator -> done`. Drop free-text ideas in `backlog/`, run `task-prep`; if questions land in `pending/`, answer them and run `task-prep` again; then ask Claude to run the task once it is in `todo/`. The orchestrator moves the file to `done/` on success. See `orchestrator/tasks/README.md`.

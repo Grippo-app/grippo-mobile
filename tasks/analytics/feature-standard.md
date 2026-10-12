@@ -1,80 +1,214 @@
 # Единый стандарт аналитики фич
 
-Статус: общая обвязка реализована и проверена на Android/iOS; ни одна фича автоматически не подключается. Analytics consent по-прежнему обязателен. События до Granted не копятся для последующей отправки.
+Стандарт применяется при реализации и изменении поведения фич. Канонический скилл:
+[feature-analytics](../../.claude/skills/feature-analytics/SKILL.md).
+Текущий эталон — [авторизация](authorization-coverage.md); механика core описана в
+[integration-guide](integration-guide.md). Матрица фиксирует реальные факты и
+осознанные пропуски, а не обещание трекать каждое действие приложения.
 
-## Обязательная структура
+## Бизнес и аналитика
+
+Бизнес работает на бизнес-контрактах. Аналитика — декор поверх цельных операций
+и наблюдение уже известных фактов. Если убрать декоратор, запросы, fallback,
+навигация и результат блока остаются теми же.
+
+- Нельзя ветвить бизнес по аналитическим моделям, категории ошибки, snapshot или
+  delivery status; нельзя создавать бизнес-результаты в analytics-api.
+- Use case остаётся цельным. Login/register включают приватную подготовку;
+  публичные prepare/stage callbacks/ports ради таймингов не добавляются.
+- Generic T может сохранить результат без кастов и интерпретации. Детализацию,
+  требующую нового бизнес-контракта исключительно ради аналитики, лучше опустить.
+- Маршрут владеет своим ID. Когда это identity сценария, UI provider преобразует
+  value в toolkit FlowId; serialized shape и валидация сохраняются. Entity/draft ID
+  не подменяет flow ID; отсутствие route-flow identity не требует её добавления.
+- Обычные ошибки reporting не блокируют бизнес, навигацию и lifecycle, не заменяют
+  успешный результат или исходную бизнес-ошибку. Вторичная ошибка может быть
+  suppressed; caller cancellation и fatal Error сохраняют свою семантику.
+  Нарушения owner/state invariants и прямые schema checks остаются явными:
+  несовместимый snapshot не маскируется новым flow.
+
+## Слои и структура
 
 ```text
-<owning-feature>/analytics/
-  <Feature>AnalyticsModule.kt         публичный annotated DI module
-  <Feature>Event.kt                   internal конкретные события/схемы
-  <Feature>OperationEvents.kt         internal AnalyticsOperationEvents<T>
-  <Feature>Screen.kt                  internal стабильные ScreenId/DialogId
-  <Feature>EntryPoint.kt              internal точки входа
-  <Feature>Failure.kt                 internal typed этапы/категории
+analytics/
+  analytics-api/src/commonMain/.../<feature>/
+    <Feature>Analytics.kt              consumer API; nested scenario contracts
+    models/                            public facts/descriptors/snapshots
+  <feature>/src/commonMain/.../<feature>/
+    <Feature>AnalyticsModule.kt        annotated catalog registration
+    internal/
+      scenario/                        entry point и сценарии
+      state/                           flow/navigation state
+      models/                          encoding-only типы
+      events/                          sealed event families
+      operation/                       operation event factories
+      schema/                          schemas, keys и wire matrices
+ui-screen-features/<feature>/src/commonMain/.../<feature>/analytics/
+  <Feature>AnalyticsProvider.kt        stateless UI adapter
+  <Feature>FailureClassifierImpl.kt    при необходимости
+  <Feature>AnalyticsIntegrationModule.kt  существующие annotated bindings
+ui-core/foundation/src/commonMain/.../foundation/
+  analytics/ScreenAnalytics.kt         public lifecycle API
+  analytics/RetainedAnalytics.kt       owner-bound inline/reified mechanism
+  internal/analytics/ScreenAnalyticsImpl.kt  stateless DI implementation
 ```
 
-Это роли, а не требование создавать пустые файлы. Маленькую связанную модель можно держать вместе. Если контракт нужен между модулями, его минимальная публичная часть принадлежит существующему feature API. UI и data не зависят от реализаций друг друга; событие находится у владельца факта. Не добавлять отдельный Gradle-модуль для каждой фичи, универсальный Reason/Event или обёртку с методом на каждую кнопку.
+Это роли, не требование создавать пустые папки или файл на каждый event.
+Один самостоятельный тип на файл; связанные варианты sealed family остаются вместе.
+На фичу — один верхнеуровневый `<Feature>Analytics`, сценарии и необходимые classifier
+ports вложены. Consumer модели и immutable snapshots — в соседней models/.
+Encoding-only модели internal. Нет отдельного Factory, mode checks или unchecked casts.
 
-Фича получает Analytics через constructor injection. UI-компонент разрешает зависимости при retainedInstance; Render не содержит DI, Firebase, tracking или генерации ID. Core/Sink/Bootstrap не используются фичами.
+Stateless entry point — @Single, каждый factory call создаёт независимый mutable
+сценарий. Только annotated module публичен для composition root; реализация internal.
+UI main зависит от analytics-api, shared подключает implementations. Implementation
+зависит от analytics-api, toolkit consumer API и нужных KMP-библиотек; не зависит от
+UI/foundation/Essenty/routes, domain/use cases, services/SDKs или toolkit core/bootstrap.
+Pure implementation tests сохраняют эту границу; test-only dependency UI на реальную
+implementation допустима для DI/integration. Public signatures определяют api
+зависимости. Настройки Gradle — через convention plugins и type-safe accessors.
 
-## Контракт события
+## Операции и переходы
 
-Конкретный AnalyticsEvent принимает только бизнес-типы: enum/sealed с явным analyticsCode, проверяемые ID/единицы, ограниченный typed result. Кодирование чистое и bounded. Keys закрыты в companion; Schema один и тот же экземпляр во всех вызовах. Названия lower_snake_case, schema version задана явно. Пользовательские данные не участвуют в именах событий или параметров.
-
-До первой резолюции Analytics каждый `<Feature>AnalyticsModule().module` подключается в shared/Koin.kt. В модуле `@Single` + уникальный `@Named("<feature>_analytics")` регистрируют AnalyticsSchema с полным списком Schema. Built-in ScreenViewed/DialogViewed повторно не регистрировать. Полный каталог проверяет collisions, reserved names и лимиты при создании core.
-
-Не менять каталог runtime и не использовать ручной `module { single { ... } }` для новых модулей. Koin module не получает runtime параметры через constructor: установленная генерация .module не сохраняет их.
-
-## Сценарий и операция
-
-FlowContext.start вызывается в реальной точке входа. EntryPoint и originScreen неизменны на протяжении сценария; flow переносится между шагами и восстанавливается через состояние маршрута/черновика. Возврат из background не создаёт новый flow. Каждая новая реальная попытка получает новый OperationId через trackOperation; retry не переиспользует attempt ID. Параллельные сценарии имеют свои contexts.
+Consumer вызывает `trackOperation(typedDescription, block)` внутри существующего
+safeLaunch/use-case coroutine. API не получает features/use cases/SDK providers,
+не делает запросов, не создаёт scope/job/dispatcher/retry policy. Один callback
+содержит исходную бизнес-последовательность, без credentials/server split.
 
 ```kotlin
-// Внутри существующего safeLaunch, события задаёт фича:
-val result = analytics.trackOperation(operationEvents, flow) {
-    useCase.execute()
+val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
+    val credential = googleAuthProvider.getUiProvider(context).signIn().getOrThrow()
+    loginUseCase.loginGoogle(token = credential.token)
 }
-// Навигация следует за block, не определяет его success.
 ```
 
-AnalyticsOperationEvents<T> требует четыре чистые фабрики: started(), completed(result, duration), failed(error, duration), interrupted(duration). Completed получает возвращённый result, а не автоматически объявленный успех. Если use case возвращает Result, либо его failure раскрывается через getOrThrow в block, либо completed исчерпывающе кодирует success/failure. Нельзя назвать событие succeeded до подтверждения владельца бизнес-факта.
+Toolkit `AnalyticsOperationEvents<T>` имеет started/completed/failed/interrupted.
+Одна попытка определяет start/terminal с общим свежим OperationId; retry — новый.
+Ошибки reporting, consent и queue policy могут исключить отправку этих фактов.
+Timing monotonic вокруг блока. Если возвращается Result, failure раскрывается
+getOrThrow в бизнес-блоке либо его существующий результат классифицируется явно;
+completed не означает успех автоматически. Обработанный fallback означает завершение
+выполнения, не достижение желаемого исхода. SessionCheck не знает SplashDirection.
 
-Типизировать provider/user cancellation у провайдера. Она отличается от coroutine interruption при уничтожении экрана/отмене job. Не распознавать отмену или backend error по message/локализованному тексту; не передавать Throwable/message/URL/body в payload. Ошибка разбирается владельцем в категорию и этап. Она продолжает существующий путь safeLaunch → ErrorProvider/CrashReporting.
+SDK/user cancellation определяется конкретным типом и отличается от coroutine
+interruption. Не анализировать message и не вводить stage exceptions ради payload.
+Errors продолжают существующий safeLaunch → ErrorProvider/CrashReporting путь.
 
-Не оборачивать UI-кнопку и тот же use case одинаковыми attempt events. Для многоэтапного use case измерять разные факты: подтверждение авторизации, подготовку данных, push registration. Failure второго этапа не отменяет success первого. Явный выход из сценария фиксируется только известным действием, не по onDestroy; аварийное исчезновение восстанавливается в отчёте как отсутствие terminal event, без выдуманного exit reason.
-
-## Показы и навигация
+Синхронные переходы сообщаются реальным navigation owner через
+`trackTransition(FeatureTransition)`. Enum подходит для вариантов без данных;
+sealed family — когда вариант требует payload. Обязательная причина находится
+в Exit(reason), не в nullable аргументе универсального метода.
 
 ```kotlin
-// Один раз в init конечного Component, его child lifecycle:
-lifecycle.trackScreenViews(
-    analytics = analytics,
-    navigation = { navigationOwner.currentContext() },
-    flow = { restoredFlow },
-)
+analytics.trackTransition(AuthTransition.OpenRegistration)
+analytics.trackTransition(AuthTransition.BackToLogin)
+analytics.trackTransition(AuthTransition.Exit(ExitReason.UserBack))
 ```
 
-Каждый RESUMED — один screen_view, включая foreground return. Регистрация на уже RESUMED lifecycle даёт один начальный показ. Pause/destroy закрывает presentation и очищает текущую навигацию. Recomposition не является показом. Не регистрировать binding одновременно на контейнере и его leaf; overlays/dialogs имеют отдельно объявленную политику и DialogViewed.
+Dispatch exhaustive, без else/aliases для старых методов. Повтор текущего шага
+не создаёт StepChanged и не сбрасывает referrer/reason; exit deduplicated, closed
+flow не переоткрывается. Метод сообщает факт, не выполняет navigation.
+trackTransition, trackOperation и presentScreen имеют разные обязанности.
+Destroy сам по себе не подтверждает пользовательский выход.
 
-Navigation owner обязан передать фактические screen/referrer/reason при каждой активации: Initial, Action, Back, Restore, External. Referrer отсутствует, если неизвестен. Возврат из background — Restore; возврат navigation back — Back. LaunchSource описывает источник запуска, а EntryPoint — начало бизнес-сценария. Не выводить source notification только по наличию URL и не объявлять истечение сессии по отсутствию токена.
+## UI provider и persistence
 
-Свой NavigationContext API не генерирует маршруты и не подписывается на всё приложение: это opt-in binding. Прямой presentScreen применяется у UI-хоста с иной моделью видимости; возвращённую ScreenPresentation нужно close при потере видимости. Core сохраняет launch attribution и защищает новый экран от позднего закрытия старого presentation.
+В UI analytics/ находится internal stateless `<Feature>AnalyticsProvider` с методами
+`provide<Scenario>`, предоставляемый существующим annotated @Single binding.
+Constructor получает API; ComponentContext приходит только в методы.
+Route mapping — приватный именованный метод, ключи — const val внутри private
+companion. Provider не хранит UI owners или mutable scenarios и не строит события.
+Classifier при необходимости — отдельный internal файл с typed SDK/domain mapping;
+implementation получает только вложенный API port.
 
-Автоматический Firebase screen reporting отключён в Android manifest (`google_analytics_automatic_screen_reporting_enabled=false`) и iOS Info.plist (`FirebaseAutomaticScreenReportingEnabled=false`), чтобы он не дублировал ручной учёт. Ключи проверены по [официальной документации Firebase](https://firebase.google.com/docs/analytics/screenviews). Collection consent остаётся отдельной политикой.
+Persisted scenarios используют общий
+`RetainedAnalytics(context).provide<Scenario, Snapshot>(key, serializer, create, validate, save)`.
+Порядок: consume → retainedSimpleInstance по типу Scenario → identity validation →
+register save. Context локальный; helper не DI singleton. Explicit interface type
+защищает ключ от смены implementation. Один сценарий такого типа на owner;
+несколько требуют distinct owners/keys. Без persistence не выдумывать snapshots/keys.
+Нет custom holders, публичных retention extensions или base analytics components.
 
-Для операции originScreen берётся из FlowContext; screen_id в каждом payload — текущая активная поверхность на момент track. Поздний результат после ухода с экрана сохраняет flow/operation IDs, но не притворяется, что старый экран всё ещё виден.
+```kotlin
+// Component-владелец, до retained ViewModel:
+private val analytics = getKoin().get<AuthAnalyticsProvider>()
+    .provideAuthorization(componentContext, route)
+```
 
-## Матрица и проверки
+Этот экземпляр передаётся детям/VM как analytics. После recreation callbacks,
+navigation и StateKeeper.save используют его же; retained состояние актуальнее
+старого snapshot. Snapshot создаёт сценарий только без retained instance.
+Сохраняются wire shape, keys и необходимый legacy SerialName. Перед отправкой/rebinding
+проверяется соответствие route ID; несовпадение не даёт тихого replacement.
+Механика и executable examples:
+[UI reference](../../.claude/skills/feature-analytics/references/ui-provider.md).
 
-Перед интеграцией скопировать `feature-coverage-template.md`; заполнить триггеры, точку входа, owner, параметры, все outcomes и тест. Новое действие/route/outcome требует строки матрицы или явного объяснения, почему tracking не нужен. Изменение смысла события требует решения по схеме/отчётам; increment version сам по себе не мигрирует GA4.
+## Схемы, атрибуция и privacy
 
-Минимальные автоматические проверки:
+Schemas, keys, screen/entry codes централизованы в typed matrices. Payload принимает
+bounded enum/sealed facts, проверяемые ID/единицы, не свободные strings/maps с call site.
+Schema/Key instances совпадают с каталогом; lower_snake_case и версия заданы явно.
+Enum кодируется explicit analyticsCode, не name. Смена смысла требует решения по
+схеме/отчётам: increment version сам по себе не мигрирует GA4.
 
-1. Payload fixtures для каждого concrete event/outcome, обязательных/optional параметров; Schema и Key identity совпадают с каталогом.
-2. Полный feature catalog зарегистрирован при composition-root smoke test, нет collisions/budget overflow. Pure factories покрывают все допустимые typed variants; error mapping не анализирует текст.
-3. Operation: один start/terminal, правильный business success, retries, exception preservation, actual cancellation и shared IDs.
-4. Navigation: initial/back/restore, parent/leaf отсутствие дублей, pause/foreground, overlapping presentations и параллельные flows.
-5. Consent Unknown/Denied, identity switch и отсутствие чувствительных полей; Android/iOS core tests и app compilation.
+`<Feature>AnalyticsModule().module` подключается shared до первой резолюции Analytics.
+Qualified @Single регистрирует полный AnalyticsSchema; built-in screen/dialog schemas
+не повторяются. Каталог проверяет collisions/reserved names/budgets. Нет runtime
+мутаций каталога, module-constructor runtime args или ручного production module DSL.
 
-Матрица — обязательный артефакт ревью, но не автоматическое доказательство покрытия всего UI. Общая обвязка гарантирует механику подключённых вызовов; забытое подключение фичи должно выявляться её матрицей, fixtures и review. Сбор всех действий приложения и Firebase delivery не заявляются. Firebase runtime/send checks сейчас исключены пользователем.
+Flow стартует в фактической точке входа. Identity/entry/origin неизменны; referrer
+и Initial/Action/Back/Restore/External reason — наблюдаемые navigation факты.
+Unknown остаётся absent. Foreground не создаёт новый flow. LaunchSource отдельно
+от EntryPoint; наличие URL не доказывает notification, null token — истечение сессии.
+Restore обозначает повторную активацию существующей поверхности (включая foreground)
+или восстановление состояния; snapshot для foreground-reason не требуется.
+Поздний operation result сохраняет flow/operation ID, но не притворяется показом
+экрана, который уже закрыт.
+
+Consent/identity принадлежит core/application policy. Unknown/Denied ничего не
+буферизуют для replay; фича не включает сбор и не сбрасывает identity. Credentials,
+tokens/codes, input, error text, URLs и request/response bodies не попадают в payload.
+Cardinality и единицы документируются. Field validation, reference loads, internal
+stages и generic clicks добавляются под конкретный вопрос, а не по умолчанию.
+
+## Показы
+
+Leaf Component один раз разрешает ScreenAnalytics из DI:
+
+```kotlin
+getKoin().get<ScreenAnalytics>().bind(lifecycle) {
+    analytics.presentScreen(Step.Login)
+}
+```
+
+Public API в foundation, internal stateless @Single implementation через CoreModule.
+Каждый bind владеет своим callback/presentation. Resume создаёт показ, pause/destroy
+закрывает, destroy отписывает. На уже RESUMED lifecycle появляется начальный показ.
+Render/VM/container не дублируют binding; dialogs/overlays имеют отдельную политику.
+Позднее закрытие старой presentation не очищает новую. Старых extensions/overloads нет.
+SDK automatic screen reporting выключен manifest/plist; collection consent отдельно.
+
+## Матрица, review и проверки
+
+`feature-coverage-template.md` задаёт матрицу: фактический trigger, один owner,
+typed values, attribution, lifetime, outcomes и verifying tests. Новый behavior
+имеет строку либо объяснение omission. Проверять actual Directions/callbacks/use cases,
+а не только fixtures. Удалять obsolete API/schemas/helpers/bindings/tests/docs вместе.
+
+Review проверяет простоту, naming/files, границы, каталог/ключи, DI, retention,
+original errors/cancellation, reporting isolation и overhead. После исправлений —
+повторный review. Static scans не проверяют Kotlin types или implicit operator/
+serializer imports; нужны реальные контракты и, когда разрешено, компиляция.
+
+Проверки включают payload/outcome fixtures, retry/IDs, failure injection,
+independent owners, recreation → mutation → save → restore, mismatch до регистрации,
+back/foreground/leaf lifecycle и generated DI. Тестировать production helper и actual
+владельцев бизнес-запросов, не копию реализации. Snapshot/save/route-mismatch checks
+применяются при наличии этих контрактов; для неперсистентного сценария — direct
+retention/recreation и independent owners, без придуманного snapshot после завершения
+процесса. Запускать affected Android host/iOS
+simulator tests и platform integration checks в пределах указаний пользователя;
+изменения app wiring расширяют соответствующие проверки. YAML/links/examples
+проверяются отдельно. Фиксировать actual results/skips; исторические отчёты и
+статический аудит не подтверждают последующие builds/runtime. Firebase delivery,
+sign-in и mapping/symbol uploads требуют отдельного разрешения.

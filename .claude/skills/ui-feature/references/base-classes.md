@@ -24,7 +24,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 ) : InstanceKeeper.Instance, KoinComponent
 ```
 
-Implements `InstanceKeeper.Instance` so Decompose retains the instance across config changes; `onDestroy()` runs when the host component is destroyed. Implements `KoinComponent` for internal `by inject<...>()` (used for `OperationManager` and `ErrorProvider`). Project default is constructor injection. `FirebaseProvider` is referenced as a static `object` (not Koin) inside the exception handler when `firebaseEnabled = true`; when `false`, the `FirebaseProvider.recordException(...)` call MUST be omitted (region markers). `ResultManager` is injected by `BaseComponent`, not here.
+Implements `InstanceKeeper.Instance` so Decompose retains the instance across config changes; `onDestroy()` runs when the host component is destroyed. Implements `KoinComponent` for internal `by inject<...>()` (used for `OperationManager` and `ErrorProvider`). Project default is constructor injection. `CrashReporting` is injected from toolkit API inside the error pipeline; no SDK transport dependency is allowed. `ResultManager` is injected by `BaseComponent`, not here.
 
 ### Public / protected API
 
@@ -308,7 +308,7 @@ Declare `@Composable public expect fun X()` in commonMain; implement in androidM
 
 Target path: `src/commonMain/kotlin/com/<org>/<product>/core/foundation/BaseViewModel.kt`
 
-> **firebaseEnabled gate:** when `firebaseEnabled = false`, strip every line between `// region firebase-conditional` and `// endregion firebase-conditional` markers (both import and call site).
+> Error reporting depends on toolkit contracts, independently of the attached platform SDK adapter.
 
 ```kotlin
 package com.<org>.<product>.core.foundation
@@ -318,9 +318,7 @@ import com.<org>.<product>.core.error.provider.ErrorProvider
 import com.<org>.<product>.core.foundation.internal.operation.OperationManager
 import com.<org>.<product>.core.foundation.models.BaseDirection
 import com.<org>.<product>.core.foundation.models.BaseLoader
-// region firebase-conditional (firebaseEnabled = true only)
-import com.<org>.<product>.services.firebase.FirebaseProvider
-// endregion firebase-conditional
+import com.<org>.<product>.toolkit.crashreporting.CrashReporting
 import com.<org>.<product>.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -442,6 +440,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     internal fun detachActivation() { _activation.value = null }
 
     private val errorProvider by inject<ErrorProvider>()
+    private val crashReporting by inject<CrashReporting>()
 
     private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
         val log = buildString {
@@ -451,9 +450,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             append("└──────────────────────────")
         }
         AppLogger.General.error(log)
-        // region firebase-conditional (firebaseEnabled = true only)
-        FirebaseProvider.recordException(exception)
-        // endregion firebase-conditional
+        crashReporting.reportException(exception)
         errorProvider.provide(exception, callback = onError)
     }
 

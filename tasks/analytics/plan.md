@@ -105,3 +105,61 @@
 для устройства и симулятора. Фичи и Firebase runtime в этот этап не входят.
 
 Завершено: [отчёт рефакторинга](api-refactor-review.md).
+
+## Авторизация — интеграция по общему стандарту
+
+1. Контракты событий/этапов и qualified schema module.
+2. Server authentication отдельно от profile/data/push preparation.
+3. Typed session check/provider cancellation и UI error preservation.
+4. Сохранённый navigation flow и leaf lifecycle views.
+5. Schema/privacy/failure/restore tests, self-review loop, Android/iOS app builds.
+
+## Упрощение подключения авторизации
+
+Единый AuthAnalytics скрывает operation/context/navigation/state от Components/ViewModel.
+Контракты потребителя сгруппированы в AuthContracts; реализации — в analytics/internal.
+События объединены в четыре sealed семейства, схемы остаются централизованной матрицей.
+Сохраняем wire contract, consent, original UI errors, cancellation и domain preparation contract.
+Проверка: прежние schema/operation/navigation тесты + facade restoration/error boundary tests;
+Android Debug/Release и lint, iOS Simulator tests + Debug XCFramework и unsigned Swift builds.
+
+## Глубокий аудит после фасада
+
+Completed: audit scope/findings/evidence — authorization-audit.md. Event stage ownership,
+facade mode contracts, schema identity, stateless helper cleanup, shared domain preparation,
+minimal dependencies и OAuth cancellation/fatal boundaries проверены и исправлены.
+37 authorization tests на каждой платформе; Android Debug/Release, Shared XCFramework,
+lint и unsigned Swift Debug simulator/device прошли. Runtime/Firebase sends не запускались.
+
+## Упрощение границы подготовки авторизации
+
+По согласованному изменению удаляем telemetry contracts из feature-api.
+UseCase.prepare() остаётся обычной бизнес-операцией; AuthAnalytics измеряет её
+целиком. Внутренние Profile/Data/Push этапы не экспортируются ради трекинга.
+Новая семья auth_setup_* отделяет общий результат от прежних auth_preparation_*.
+Матрица: authorization-coverage.md; актуальная проверка: authorization-preparation-review.md.
+
+Упрощение завершено: 42 auth tests Android + 42 iOS, Android Debug/Release,
+shared Debug XCFramework, unsigned Swift Debug simulator/device и lint прошли.
+
+## Отдельный feature analytics layer
+
+Выделить :analytics:analytics-api и :analytics:authorization. UI main зависит только
+от API; shared регистрирует implementation + UI bindings. Ни business/use case,
+ни routes/lifecycle/StateKeeper/SDK types не переносить в implementation.
+Сохранить snapshots/flow identities и wire schemas. Разделить pure tests и UI
+integration tests, проверить Android/iOS и обновить standard/skill.
+Актуальный отчёт: analytics-layer-review.md.
+
+Слой перенесён и проверен: 24 implementation + 15 UI integration tests на каждой
+платформе, Android Debug/Release, XCFramework, unsigned Swift Debug simulator/device
+и lint без ошибок. Подробнее: analytics-layer-review.md.
+
+
+## Один consumer entry point на фичу
+
+AuthAnalytics становится stateless injectable entry point. Authorization/Session
+и все feature-owned contracts вложены в него; implementations internal и раздельны,
+без shared mode/casts. Сохраняем event wire contracts и persisted state shape.
+Обновить consumers, generated DI, standard/skill/coverage; выполнить self-review,
+Android tests/Debug/Release/lint и iOS tests/XCFramework/unsigned Swift builds.

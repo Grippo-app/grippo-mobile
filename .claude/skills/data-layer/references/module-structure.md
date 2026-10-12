@@ -322,9 +322,9 @@ UI is firewalled away.
 | `:data-services:backend` | `<Product>Api`, `BackendClient`, `TokenProvider`, `ClientLogger`, all DTOs | KMP + Koin + serialization |
 | `:data-services:database` | Room `@Database`, entities, DAOs, `*Pack` models, migrations, `DatabaseBuilder` | KMP + Koin + Room |
 | `:data-services:datastore` | AndroidX DataStore (preferences-core) wrapper | KMP + Koin |
-| `:data-services:firebase` | `FirebaseProvider` interface + Android impl (Analytics, Crashlytics, Messaging) | KMP + Koin |
+| `:data-services:firebase` | Android toolkit sink/token adapters + system FCM service | Android KMP transport |
 | `:data-services:google-auth` | Google Identity wrapper returning `idToken` (optional) | KMP + Koin + Compose |
-| `:data-services:apple-auth` | Apple sign-in wrapper returning `idToken` (optional) | KMP + Koin + Compose |
+| `:data-services:apple-auth` | Apple sign-in wrapper returning an authorization code (optional) | KMP + Koin + Compose |
 
 ### `:data-services:backend`
 
@@ -368,38 +368,30 @@ key-value preferences (theme, locale, debug toggles). **Not** for tokens or sens
 
 ### `:data-services:firebase`
 
-Exposes a platform-neutral `FirebaseProvider` **object** (not interface) plus three provider
-abstractions (`FirebaseAnalyticsProvider`, `FirebaseCrashlyticsProvider`,
-`FirebaseMessagingProvider`). Android implementations (`AndroidFirebaseAnalytics`, …) live in
-`androidMain` and wrap the actual Firebase SDKs; iOS implementations (`IosFirebaseAnalytics`, …)
-live in **Swift** under `iosApp/iosApp/` and are passed back into Kotlin via the same
-`FirebaseProvider.setup(...)` call.
+Android transport adapters implement toolkit `AnalyticsSink`, `CrashReportingSink`
+and `PushTokenProvider`. The system FCM service forwards callbacks to Messaging
+core. Only `:androidApp` depends on this module; shared, domain and UI do not.
+Swift SDK adapters live in iosApp. App shells attach them through the typed
+`ApplicationBootstrap` returned by `Koin.init`; toolkit cores own state/policy.
+This transport is not exported to Swift and does not provide a global facade.
 
-`FirebaseProvider.setup(analytics, crashlytics, messaging)` takes platform-specific instances:
-
-- Android: called once in `App.onCreate` with `Android*` wrappers built from
-  `FirebaseAnalytics.getInstance(this)` etc.
-- iOS: called once in `AppDelegate.application(_:didFinishLaunchingWithOptions:)` with `Ios*`
-  Swift implementations, after `FirebaseApp.configure()`.
-
-This module **does not** use Koin annotations. There is no `FirebaseModule`. `FirebaseProvider`
-is a singleton `object` that consumers (like `:ui-core:foundation`'s error pipeline) reference
-statically. `libs.koin.core` is in `commonMain` because the provider interfaces reference
-Koin's `Logger`-style types for crash reporting. `:toolkit:notification-manager` is added on
-`androidMain` so the Firebase Messaging service can hand incoming pushes to the local
-notification surface. This module is `api`-exposed from `:shared` because the iOS XCFramework
-re-exports it (the convention plugin does `export(project(":data-services:firebase"))`).
+Feature telemetry belongs to the independent analytics layer; apply
+[feature-analytics](../../feature-analytics/SKILL.md). Keep telemetry contracts,
+stages and observers out of domain feature-api/use cases. Analytics wraps caller
+blocks without taking ownership of data requests or routing.
 
 ### `:data-services:google-auth` / `:data-services:apple-auth`
 
-Optional, per-product. Wrap the platform Auth SDKs and expose a single
-`suspend fun getIdToken(): String?` method. Implementations live in `androidMain`
-(`androidx.credentials` + `googleid` library for Google; native Apple sign-in for Apple) and
-`iosMain` (`ASAuthorization` for Apple; Google handled differently or skipped).
+Optional, per-product. `getUiProvider(context).signIn()` returns
+`Result<GoogleAccount>` or `Result<AppleAccount>`. GoogleAccount carries the ID
+token; AppleAccount carries only the authorization code. Apple support is iOS-only.
+Implementations live in `androidMain` and `iosMain`; inspect their actual contracts
+before changing supported methods or platform behavior.
 
 These modules are consumed by `:ui-screen-features:authorization` directly — not by
 `:data-features:authorization`. The login screen drives the platform credential flow (no
-domain user exists yet), then hands the resulting ID token to `AuthorizationFeature.login(...)`.
+domain user exists yet), then passes the credential to the complete
+`LoginUseCase.loginGoogle(token)` or `LoginUseCase.loginApple(code)` operation.
 This is one of the documented carve-outs to the "UI MUST NOT depend on `:data-services:*`" rule.
 
 Both modules apply `compose.multiplatform.convention` (the Google flow uses

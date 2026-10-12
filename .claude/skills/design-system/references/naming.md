@@ -153,4 +153,4 @@ public fun stubNote(): Note = Note(...)
 - **`Manager`-suffixed classes for stateless services.** OK for `NotificationManager`,
   `PermissionManager` (stateful platform integrations). Not for `StringManager`.
 - **`Service` suffix for in-app helpers.** Reserved for platform-edge wrappers
-  (`FirebaseProvider`, not `FirebaseService`).
+  (use a meaningful adapter name such as `AndroidFirebaseAnalytics`).
