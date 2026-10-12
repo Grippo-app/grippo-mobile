@@ -61,7 +61,13 @@ class AuthSchemaTest {
         assertEquals(fixtures.keys, AuthEventSchema.all.map { it.name }.toSet())
         for (event in events) {
             assertSame(AuthEventSchema.all.single { it.name == event.schema.name }, event.schema)
-            assertEquals(if (event.schema.name == "auth_attempt_failed") 4 else if (event.schema.name.startsWith("auth_attempt_")) 3 else if (event.schema.name in listOf("auth_session_check_completed", "auth_session_check_failed")) 2 else 1, event.schema.version)
+            val expectedVersion = when {
+                event.schema.name == "auth_attempt_failed" -> 4
+                event.schema.name.startsWith("auth_attempt_") -> 3
+                event.schema.name.startsWith("auth_session_check_") -> 3
+                else -> 1
+            }
+            assertEquals(expectedVersion, event.schema.version)
             assertEquals(fixtures[event.schema.name], event.parameters().map { it.key.name })
             assertEquals(event.schema.parameters.size, event.parameters().size)
             event.parameters().zip(event.schema.parameters).forEach { (parameter, key) -> assertSame(key, parameter.key) }
