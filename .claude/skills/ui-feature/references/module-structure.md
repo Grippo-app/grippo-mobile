@@ -22,9 +22,12 @@ One module per top-level feature flow. Each owns:
 
 Build (typical): `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention` + `koin.annotation.convention`; namespace `com.<org>.<product>.ui.screen.features.<feature>`. **Mandatory deps** for any screen feature: `:ui-core:foundation`, `:ui-screen-features:screen-api`, `:design-system:core/components/resources/preview`, `:data-features:feature-api`, `:ui-dialog-features:dialog-api` (plus typically `:ui-core:state`, `:data-mappers:domain-to-state`, `:toolkit:dateUtils`, `compose.foundation`/`material3`, immutable-collections, datetime). `:compose-libs:*` only when actually used.
 
-An instrumented feature also depends on `:analytics:analytics-api`; shared registers
-its implementation. Its ViewModels use one typed feature service and foundation
-owns the common screen hook; see [feature analytics](../../feature-analytics/SKILL.md).
+Every new screen feature depends on `:analytics:analytics-api`; shared registers
+its implementation. Each independent screen must declare its ViewModel's
+screenPresentation; containers keep default null. ViewModels use one typed feature
+service and foundation owns the common screen binding. Apply the mandatory coverage
+gate in [feature analytics](../../feature-analytics/SKILL.md) before completion;
+existing-feature changes cover the affected scope.
 
 The single wider-data-layer carve-out is `:ui-screen-features:authorization` (adds `:data-services:google-auth`/`apple-auth` for the platform credential flow before a domain user exists). Firebase transport belongs to application bootstrap. Documented carve-out — do not copy to other features.
 

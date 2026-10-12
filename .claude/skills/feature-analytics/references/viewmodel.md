@@ -30,7 +30,8 @@ internal class LoginViewModel(
 }
 ```
 
-BaseViewModel offers an optional protected hook with default null. BaseComponent
+Every independent screen must declare this hook in its owning ViewModel.
+BaseViewModel offers a nullable protected hook with default null for containers. BaseComponent
 calls internal bindScreen(lifecycle) during its existing doOnCreate after the
 retained VM exists, before activation/navigation bridging. This avoids delivering
 an init navigation before its lifecycle is bound. Foundation ScreenAnalytics owns
@@ -44,6 +45,30 @@ override a graph as a screen just because it owns a router. VM knows neither
 Lifecycle nor ComponentContext and does not observe activationFlow for visibility.
 There is no extra scope/job, analytics retention/StateKeeper key or manual binding.
 Normal Component/retainedInstance/ViewModel lifecycle ownership is unchanged.
+
+## Screen classification
+
+An independent screen is a separately displayed page with its own content. Its VM
+must present the matching typed FeatureScreen; a child screen inside a stack or
+tab remains a screen. A host that only selects/renders child screens, forwards
+navigation or adds shared chrome stays a container with default null. A router,
+ViewModel, BaseComposeScreen wrapper or `*Screen.kt` filename alone proves neither
+role. A page with its own content can also own child navigation; review what is
+actually displayed. Container events/operations may still observe its real business
+callbacks; they do not justify a container screen_view.
+
+Authorization has eight screen hooks and three null-hook hosts:
+AuthViewModel, AuthProcessViewModel and ProfileCreationViewModel. The last adds
+shared progress decoration, not a separate page. The complete mapping is in
+[authorization coverage](../../../../tasks/analytics/authorization-coverage.md).
+Dialogs, pickers and overlays do not automatically become screens; their dedicated
+presentation telemetry needs the separate contract described below.
+
+Run the [mandatory screen coverage gate](../SKILL.md#mandatory-screen-coverage-gate)
+against actual routes, Component factories and rendered bodies before completion.
+A new feature needs an inventory of all its screens; a behavior change needs all
+screens in the affected scope. Missing hooks and container views emitted alongside their child screens block
+completion; default null is not a permitted screen omission.
 
 ## Direct typed facts and complete operations
 
@@ -74,7 +99,8 @@ val value = analytics.trackOperation(FeatureOperation.Save) {
 This second example is a generic pattern. Reuse the actual business operation and
 its result type; a returned Result.failure otherwise looks like a completed block.
 
-Emit in existing Contract→VM callbacks after busy guards. Text events compare
+Emit in existing Contract→VM callbacks after eligibility/busy guards. Rejected
+callbacks emit neither accepted intent nor operation events. Text events compare
 old/new status from existing validated UI state, using mapping in UI analytics/;
 equal status, including initial Empty→Empty, is omitted without a cache.
 Picker confirmations/clicks/selections remain distinct. Raw values are not encoded.

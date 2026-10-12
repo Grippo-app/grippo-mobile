@@ -55,7 +55,7 @@ validation/retry/navigation; analytics decorates complete operations.
 
 UI main depends on analytics-api. Inject one stateless service as `analytics` in
 the Component's normal retainedInstance VM construction. Feature analytics stays
-in VM callbacks/operations; each tracked leaf overrides optional screenPresentation.
+in VM callbacks/operations; every independent screen MUST override screenPresentation.
 BaseComponent calls internal VM.bindScreen during doOnCreate; foundation alone owns
 lifecycle binding/ScreenAnalytics/Initial→Restore. Graph hook stays null: no view
 or lifecycle service resolution. Components/routes/factories/Render need no analytics
@@ -133,8 +133,11 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    `*FormatState` + `stub*()`; for a new error type, edit the
    `AppError` → `AppErrorState` → `ErrorProviderImpl` when-branch triad atomically.
 8. **Integrate affected analytics** — apply the linked analytics skill before
-   completing behavior changes. Declare the optional leaf VM screenPresentation;
-   foundation binds its lifecycle. Decorate complete
+   completing behavior changes. Every independent screen MUST declare its VM
+   screenPresentation; containers keep default null. Run the canonical
+   [screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate)
+   across all screens of a new feature or all affected screens before completion.
+   Foundation binds the lifecycle. Decorate complete
    business blocks in the existing error pipeline and observe typed callbacks.
    Keep the coverage matrix synchronized; do not scatter event construction
    through Screens, Components, ViewModels and use cases.

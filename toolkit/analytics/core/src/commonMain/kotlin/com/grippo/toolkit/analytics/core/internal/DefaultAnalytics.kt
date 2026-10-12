@@ -21,8 +21,6 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,7 +56,6 @@ internal class DefaultAnalytics(
             for (ignored: Unit in wake) {
                 var processed = 0
                 while (true) {
-                    ensureActive()
                     val work = lock.withLock { nextWork() } ?: break
                     when (work) {
                         is Work.Configure -> configure(work)
@@ -239,11 +236,11 @@ internal class DefaultAnalytics(
             true
         } catch (_: Exception) {
             // A synchronous sink exception is a transport failure unless this worker was cancelled.
-            currentCoroutineContext().ensureActive()
+            yield()
             try {
                 work.sink.setCollection(AnalyticsCollection.Denied)
             } catch (_: Exception) {
-                currentCoroutineContext().ensureActive()
+                yield()
             }
             lock.withLock { record(AnalyticsDisposition.TransportFailure) }
             false
@@ -271,7 +268,7 @@ internal class DefaultAnalytics(
             work.sink.send(work.payload)
             lock.withLock { record(AnalyticsDisposition.AcceptedBySink, work.payload.name) }
         } catch (_: Exception) {
-            currentCoroutineContext().ensureActive()
+            yield()
             lock.withLock { record(AnalyticsDisposition.TransportFailure, work.payload.name) }
         }
     }

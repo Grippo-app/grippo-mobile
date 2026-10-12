@@ -26,7 +26,10 @@ fields/methods/pickers/experience остаются feature-specific.
 
 Feature event — описание наблюдения, не toolkit AnalyticsEvent. Internal
 implementation преобразует его через typed matrix в wire payload/schema.
-Encoding-only данные не выходят в API. Invalid field combinations исключены
+Encoding-only данные не выходят в API: public fact enums обычные, без AnalyticsCode
+и wire-string properties. Typed keys используют internal exhaustive enum encoders;
+field/action keys принимают закрытые типы, не открытый AnalyticsCode.
+Invalid field combinations исключены
 типами: credential fields отдельно от picker enum, fixed Name не выбирается caller.
 Нет string/map API, nullable bags, общих capability/scenario иерархий, aliases,
 файла/helper/method на кнопку или action-wrapper над прямыми параметрами.
@@ -66,7 +69,7 @@ Component constructors/routes/factories/Render не передают серви�
 analytics screen и не создают событий. В UI analytics/ остаётся только нужный
 input mapping; отдельный provider/route matrix/integration DI module не нужен.
 
-Leaf VM переопределяет optional protected BaseViewModel.screenPresentation:
+Каждый отдельный экран обязан переопределять BaseViewModel.screenPresentation в своём VM:
 `(NavigationReason) -> ScreenPresentation`, вызывая typed presentScreen.
 BaseComponent в existing doOnCreate получает retained VM и вызывает internal
 bindScreen(lifecycle) до attachActivation и navigator/eventListener. Foundation
@@ -74,7 +77,11 @@ ScreenAnalytics владеет per-binding reason и
 close; VM не хранит Lifecycle/ComponentContext и не подписывается на activationFlow
 ради screen views. Нет новых scope/jobs или ручного bind в фиче.
 
-Graph/container VM оставляет hook null: ни screen_view, ни resolution ScreenAnalytics.
+Graph/container VM обязан оставлять default null: ни screen_view, ни resolution ScreenAnalytics.
+Nullable hook в foundation нужен контейнерам; для отдельных экранов он обязателен.
+Роль определяется реально показанным UI: child-stack host и общий progress/chrome —
+контейнеры; отдельная страница, включая nested/tab screen, — экран. Наличие router,
+ViewModel, BaseComposeScreen или файла *Screen.kt само по себе роль не определяет.
 Обычная Component/retainedInstance/ViewModel ownership сохраняется; analytics
 StateKeeper/InstanceKeeper keys/snapshots/scenario retention отсутствуют.
 Существующие route IDs/entry points обслуживают навигацию, не telemetry.
@@ -88,7 +95,9 @@ presentation. Новый binding не восстанавливает flow/referr
 
 ## События и данные
 
-Прямые typed events находятся в существующем Contract→VM callback после busy guard.
+Прямые typed events находятся в существующем Contract→VM callback после всех
+existing eligibility/busy guards. Отклонённый callback не создаёт accepted intent
+или operation events; проверки охватывают обе ветки без изменения business guards.
 UI maps existing validation в bounded status в analytics/, не вводит новый validator.
 Text status emits только при смене old/new status; Empty→Empty не создаёт первый
 факт. Cache не нужен. Picker confirmations/clicks/selections не дедуплицируются.
@@ -122,6 +131,16 @@ outcomes. Не добавлять эти механизмы вместе с об
 фактический owner/trigger/typed data и instrumentation либо объяснённый omission.
 Новая фича/изменение поведения обновляет её; visual-only — impact assessment.
 Одна интеграция не означает покрытие всего приложения или Firebase delivery.
+
+Перед завершением новой фичи обязательно сверить все её реальные routes и rendered
+surfaces по цепочке route → Component → VM → FeatureScreen → screenPresentation.
+Для изменения существующей фичи сверить все экраны затронутого scope. Enum/матрица
+сами по себе не доказывают полноту; проверить factories, Render, nested/tab screens
+и альтернативные входы. Каждый экран имеет ровно один hook с правильным typed screen,
+каждый контейнер — null с объяснением. Пропущенный hook, неверный screen, enum без
+owner или screen views контейнера вместе с дочерним экраном блокируют завершение; omission это не отменяет.
+Dialog/overlay presentation остаётся отдельным scope. Полная процедура —
+[обязательная проверка](../../.claude/skills/feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 
 Self-review: naming/boundaries/DI/matrix/privacy/business isolation/overhead;
 исправить findings и повторить review. Удалять obsolete API/callers/helpers/tests/docs.

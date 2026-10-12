@@ -29,6 +29,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                         optIn("androidx.compose.animation.ExperimentalAnimationApi")
                         optIn("kotlin.time.ExperimentalTime")
                         optIn("kotlinx.cinterop.ExperimentalForeignApi")
+                        optIn("kotlin.experimental.ExperimentalNativeApi")
                         optIn("com.arkivanov.decompose.DelicateDecomposeApi")
                         optIn("androidx.compose.animation.ExperimentalSharedTransitionApi")
                         optIn("kotlin.uuid.ExperimentalUuidApi")

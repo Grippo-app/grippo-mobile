@@ -24,8 +24,8 @@ internal class ExperienceViewModel(
     }
 
     override fun onNextClick() {
-        analytics.trackEvent(AuthEvent.Experience.Control(ControlAction.Next))
         val experience = state.value.selected ?: return
+        analytics.trackEvent(AuthEvent.Experience.Control(ControlAction.Next))
         val direction = ExperienceDirection.ExcludedMuscles(
             experience = experience
         )

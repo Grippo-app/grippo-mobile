@@ -195,6 +195,7 @@ class ProfileSelectionViewModelTest {
             viewModel.onNextClick()
             runCurrent()
             assertTrue(directions.isEmpty())
+            assertTrue(recorder.events.isEmpty())
 
             viewModel.onExperienceClick(ExperienceEnumState.ADVANCED)
             assertEquals(ExperienceEnumState.ADVANCED, viewModel.state.value.selected)
@@ -204,7 +205,7 @@ class ProfileSelectionViewModelTest {
             val selection = recorder.events.single { it.event.schema.name == "auth_experience_selected" }
             assertEquals("advanced", selection.text("profile_experience"))
             assertEquals("profile_creation_experience", selection.text("interaction_screen"))
-            assertEquals(2, recorder.events.count { it.text("interaction_action") == "next" })
+            assertEquals(1, recorder.events.count { it.text("interaction_action") == "next" })
         }
     }
 
@@ -228,6 +229,7 @@ class ProfileSelectionViewModelTest {
         } finally {
             lifecycle.destroy()
             viewModel?.onDestroy()
+            runCurrent()
             stopKoin()
             Dispatchers.resetMain()
         }

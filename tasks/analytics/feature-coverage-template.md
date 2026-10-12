@@ -12,9 +12,18 @@ Stateless `<Feature>Analytics`: typed trackEvent + whole trackOperation + leaf v
 
 ## Маршруты
 
-| Route | Leaf / graph | FeatureScreen | Один binding / omission |
-|---|---|---|---|
-| <route> | <role> | <typed screen / absent for graph> | <actual leaf VM hook / graph null> |
+| Route / surface | Screen / container | Component → ViewModel | FeatureScreen | Hook / причина null |
+|---|---|---|---|---|
+| <actual route / rendered page> | <role> | <actual owners> | <typed screen / absent for container> | <screenPresentation / container null reason> |
+
+У каждого отдельного экрана обязателен ровно один screenPresentation в owning VM;
+контейнеры оставляют default null. Для новой фичи включить все её экраны, для
+изменения — все экраны затронутого scope. Сверить таблицу с routes, factories и
+Render, включая nested/tab screens и альтернативные входы; не выводить полноту
+только из FeatureScreen enum. Проверить отсутствие неверных screen identities,
+enum entries без owner и screen views контейнера вместе с дочерним экраном. Пропущенный screen hook
+блокирует завершение и не может быть оформлен как omission. См.
+[обязательную проверку](../../.claude/skills/feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 
 Initial — первый показ binding, Restore — последующая активация. Не приписывать
 процессу сохранённые flow/referrer; dialogs/overlays имеют отдельный declared scope.

@@ -16,6 +16,13 @@ public class AnalyticsParameterKey<T> private constructor(
     public companion object {
         public fun <T : AnalyticsCode> code(name: String, required: Boolean = true): AnalyticsParameterKey<T> =
             AnalyticsParameterKey(name, required) { AnalyticsValue.Text(it.analyticsCode) }
+        /** Encode closed observations without exposing their wire values in consumer models. */
+        public fun <T : Enum<T>> code(
+            name: String,
+            required: Boolean = true,
+            encode: (T) -> String,
+        ): AnalyticsParameterKey<T> =
+            AnalyticsParameterKey(name, required) { AnalyticsValue.Text(encode(it)) }
         public fun count(name: String, required: Boolean = true): AnalyticsParameterKey<AnalyticsCount> =
             AnalyticsParameterKey(name, required) { AnalyticsValue.Integer(it.value) }
         public fun duration(name: String, required: Boolean = true): AnalyticsParameterKey<DurationMillis> =

@@ -214,8 +214,7 @@ class SplashViewModelTest {
                 assertEquals(firstAttempt, analytics.events[1].operation)
                 assertEquals(retryAttempt, analytics.events[3].operation)
                 assertNotEquals(firstAttempt, retryAttempt)
-                val session = assertNotNull(analytics.events.first().flow)
-                assertTrue(analytics.events.all { it.flow == session })
+                assertTrue(analytics.events.all { it.flow == null })
             }
         }
     }

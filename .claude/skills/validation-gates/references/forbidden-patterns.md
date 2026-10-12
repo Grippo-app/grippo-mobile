@@ -244,7 +244,10 @@ The root project rule is "default to writing no comments". The rules in this ski
   Reject UI/domain/services/SDK imports in analytics implementation, public
   implementation types, manual production DI, analytics state/retention wrappers, duplicate
   leaf/container tracking and extra jobs/retries solely for instrumentation.
-  Review actual eligible VM callbacks and leaf hooks against coverage; preserve the
+  Review actual eligible VM callbacks and every independent screen's required hook
+  against actual routes/rendered surfaces and coverage; containers must keep null.
+  Reject missing/wrong hooks, ownerless screen enum entries and screen-hook omissions
+  under the canonical mandatory screen coverage gate. Preserve the
   whole business return/error contract. Result-returning calls unwrap inside the
   decorated block; direct-value throwing calls stay direct. Reject reporting errors
   replacing business results and shared host/config plumbing inferring dialog outcomes.

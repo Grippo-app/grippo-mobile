@@ -101,7 +101,7 @@ class CredentialViewModelTest {
             assertEquals(listOf("next", "done"), recorder.events
                 .filter { it.event.schema.name == "auth_keyboard_action" }
                 .map { it.text("keyboard_action") })
-            assertEquals(1, recorder.events.count { it.event.schema.name == "auth_submit_clicked" })
+            assertEquals(0, recorder.events.count { it.event.schema.name == "auth_submit_clicked" })
             assertTrue(recorder.names.none { it.startsWith("auth_attempt_") })
 
             viewModel.onEmailChange("")

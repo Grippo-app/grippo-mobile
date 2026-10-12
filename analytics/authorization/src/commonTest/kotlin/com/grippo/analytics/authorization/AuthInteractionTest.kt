@@ -371,6 +371,44 @@ class AuthInteractionTest {
     }
 
     @Test
+    fun everyPublicEnumValueKeepsItsStableEncodedPayload() {
+        assertEquals(
+            listOf("email", "password"),
+            encodedValues(CredentialField.entries.map { AuthEvent.Login.InputFocused(it) }, "input_field"),
+        )
+        assertEquals(
+            listOf("height", "weight"),
+            encodedValues(ProfilePicker.entries.map { AuthEvent.User.PickerOpened(it) }, "input_field"),
+        )
+        assertEquals(
+            listOf("empty", "invalid", "valid"),
+            encodedValues(
+                InputStatus.entries.map { AuthEvent.Login.InputChanged(CredentialField.Email, it) },
+                "input_status",
+            ),
+        )
+        assertEquals(
+            listOf("next", "done"),
+            encodedValues(
+                InputKeyboardAction.entries.map { AuthEvent.Login.KeyboardAction(CredentialField.Email, it) },
+                "keyboard_action",
+            ),
+        )
+        assertEquals(
+            listOf("back", "next"),
+            encodedValues(ControlAction.entries.map { AuthEvent.Experience.Control(it) }, "interaction_action"),
+        )
+        assertEquals(
+            listOf("beginner", "intermediate", "advanced", "pro"),
+            encodedValues(ProfileExperience.entries.map { AuthEvent.Experience.Selected(it) }, "profile_experience"),
+        )
+        assertEquals(
+            listOf("email", "google", "apple"),
+            encodedValues(Method.entries.map { AuthEvent.Login.Submit(it) }, "auth_method"),
+        )
+    }
+
+    @Test
     fun invalidSelectionEncodingCannotPreventFollowingBusinessWork() {
         val recorder = RecordingAuthAnalytics()
         val analytics = AuthAnalyticsImpl(recorder)
@@ -413,5 +451,13 @@ class AuthInteractionTest {
         assertSame(original, assertFailsWith<AssertionError> {
             AuthAnalyticsImpl(observer).trackEvent(AuthEvent.Login.Back)
         })
+    }
+
+    private fun encodedValues(events: List<AuthEvent>, key: String): List<String?> {
+        val recorder = RecordingAuthAnalytics()
+        val analytics = AuthAnalyticsImpl(recorder)
+        events.forEach(analytics::trackEvent)
+        assertEquals(events.size, recorder.events.size)
+        return recorder.events.map { it.text(key) }
     }
 }

@@ -1,6 +1,7 @@
 package com.grippo.analytics.authorization.internal
 
 import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.internal.encoding.AuthEncoding
 import com.grippo.analytics.authorization.internal.operation.AuthOperationEvents
 import com.grippo.analytics.authorization.internal.schema.AuthEventMatrix
 import com.grippo.analytics.authorization.models.AuthEvent
@@ -30,7 +31,7 @@ internal class AuthAnalyticsImpl(private val analytics: Analytics) : AuthAnalyti
 
     override fun presentScreen(screen: AuthScreen, reason: NavigationReason): ScreenPresentation {
         return analytics.presentScreen(
-            NavigationContext(screen = ScreenId(screen.analyticsCode), reason = reason)
+            NavigationContext(screen = ScreenId(AuthEncoding.code(screen)), reason = reason)
         )
     }
 }

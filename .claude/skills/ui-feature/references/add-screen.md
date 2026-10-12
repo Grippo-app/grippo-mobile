@@ -5,7 +5,7 @@
 > **Concrete example.** Identifiers below (`Note archive`, etc.) are illustrative; the steps apply to any feature.
 
 > **Analytics cross-cut:** apply [feature-analytics](../../feature-analytics/SKILL.md).
-> Examples below show MVI/navigation only. A tracked leaf declares screenPresentation
+> Examples below show MVI/navigation only. Every independent screen must declare screenPresentation
 > in its VM; its Component resolves analytics as a normal retained-VM dependency.
 > Reuse the feature API/implementation and update actual coverage; add no provider.
 
@@ -169,6 +169,9 @@ is ProfileRouter.NoteArchive -> Child.NoteArchive(
 ## 6. Verify
 Reconcile leaf/control/input/operation coverage and run the affected checks from
 the analytics skill within the user's verification scope. Record explicit skips.
+Run its [mandatory screen coverage gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate):
+verify all new/affected screens have their VM hook and all containers keep null.
+Missing screen hooks block completion.
 ```bash
 # Task names come from project-config (sharedFrameworkTask / androidAssembleTask) —
 # these are the template defaults; skip the framework task when iosEnabled: false.

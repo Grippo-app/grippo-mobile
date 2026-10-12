@@ -10,8 +10,8 @@ list. `Koin.init` starts the single Koin context and returns `ApplicationBootstr
 with toolkit analytics/crashReporting/messaging startup contracts. Register
 annotated modules explicitly through `.module`, including service cores,
 feature analytics implementations. Components resolve the stateless feature service
-inside normal retained VM construction. The leaf VM declares optional
-screenPresentation; BaseComponent/foundation binds it through ScreenAnalytics.
+inside normal retained VM construction. Every independent screen must declare
+screenPresentation in its VM; BaseComponent/foundation binds it through ScreenAnalytics.
 Graph default null produces no view or lifecycle-service resolution. Components/
 routes/factories/Render need no analytics wiring, provider or UI integration module.
 Existing retained VM ownership stays; no analytics scenario/snapshot keys.

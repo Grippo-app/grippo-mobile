@@ -16,7 +16,9 @@ Stay within the requested feature and verification scope.
 For a behavior change, inventory affected leaf/graph routes, callbacks, inputs and
 complete operations in the coverage matrix. Reuse or extend the feature's single
 API/implementation; wire only the affected VMs. Before completion reconcile the
-matrix with actual callers, record deliberate omissions and permitted checks.
+matrix with actual callers, record deliberate event omissions and permitted checks.
+For a new feature, inventory all its screens; for an existing feature, inventory
+all screens in the affected scope. Apply the mandatory screen coverage gate below.
 Current skill/standard/source define the contract; historical review reports do not.
 
 ## Small public API
@@ -32,6 +34,9 @@ Current skill/standard/source define the contract; historical review reports do 
   No generic capability hierarchy, scenario factories, snapshots or compatibility aliases.
 - Public feature events describe observations; they are not toolkit wire events.
   Internal implementation owns encoding, schemas, keys and stable wire codes.
+  Public fact enums are plain enums: no AnalyticsCode or wire-string properties.
+  Use typed keys with internal exhaustive enum encoders; field/action keys accept
+  closed types, not the open AnalyticsCode interface.
   No string event API, nullable parameter bag or helper/method/file per button.
 - Keep structurally invalid combinations out of constructor types: credential
   fields belong to credential events, picker events accept only picker enums,
@@ -49,6 +54,8 @@ Current skill/standard/source define the contract; historical review reports do 
 - Keep whole use cases; do not expose preparation/stages for timing or add a
   coroutine/job/dispatcher/retry solely for analytics. Submit intent and operation
   start are different facts. Emit after existing eligibility/busy guards.
+  Rejected callbacks emit neither accepted intent nor operation events; verify
+  both accepted and rejected paths without changing business guards.
 - Ordinary reporting exceptions cannot prevent business/lifecycle or replace
   success/errors. Isolate them in the implementation; fatal Error stays fatal.
 - ViewModels unwrap Result with `getOrThrow()` inside existing `safeLaunch`.
@@ -68,13 +75,15 @@ Current skill/standard/source define the contract; historical review reports do 
 - Inject the stateless feature service as `analytics` into the ViewModel through
   the Component's normal retainedInstance block, just like other dependencies.
   Do not pass it through Component constructors/routes/factories or emit outside VM.
-- A tracked leaf overrides optional BaseViewModel.screenPresentation with
+- Every independent screen MUST override BaseViewModel.screenPresentation with
   `(NavigationReason) -> ScreenPresentation`, calling typed presentScreen.
   BaseComponent binds it during doOnCreate before activation/navigation bridging.
   Foundation alone resolves ScreenAnalytics and supplies lifecycle/reason.
-- Graph/container VMs keep the default null hook: no screen binding or lifecycle
-  service resolution. VM stores no Lifecycle/ComponentContext; no activation-flow
-  observer, extra job, feature provider/route matrix or manual bind is needed.
+- Graph/container VMs MUST keep the default null hook: no container screen_view,
+  screen binding or lifecycle service resolution. VM stores no Lifecycle/ComponentContext.
+  No activation-flow observer, extra job, feature provider/route matrix or manual
+  bind is needed.
+  The nullable base API supports containers; screen coverage is not optional.
 - Keep normal Component retainedInstance/ViewModel lifecycle ownership. Analytics
   adds no StateKeeper/InstanceKeeper keys, holders, snapshots or scenario retention.
   Navigation IDs may remain for navigation; analytics does not consume them.
@@ -95,6 +104,31 @@ Current skill/standard/source define the contract; historical review reports do 
   requested scope defines a separate typed presentation contract and owner.
 - Keep only observed facts. Do not add transition/flow events, error classifiers,
   provider-cancel outcomes or extra orchestration for a more detailed funnel.
+
+## Mandatory screen coverage gate
+
+Before completing a new feature or an affected screen/navigation change:
+
+1. Enumerate actual routes and rendered surfaces, including nested/tab screens
+   and alternative entry paths. Trace each to its Component and retained ViewModel;
+   do not use only the FeatureScreen enum or coverage matrix as the inventory.
+2. Classify each surface: an independent screen needs exactly one correctly typed
+   screenPresentation in its owning VM, including Splash and standalone loading
+   pages without controls. A host that only renders child screens or
+   shared chrome is a container and keeps default null. Classify by actual UI,
+   not filename, base class or presence of a router. Dialogs/overlays follow their
+   separately scoped presentation contract, not this screen requirement.
+3. Reconcile route → surface → Component → VM → FeatureScreen → hook in coverage.
+   Record container rows with their null-hook reason. Verify normal retained-VM
+   injection and the shared foundation binding; add no feature lifecycle wiring.
+4. Reject missing hooks, wrong screen identities, screen enum entries with no
+   owner and container screen views emitted alongside their child screens.
+   Fix them within the task scope before marking the feature complete;
+   an omissions row cannot waive a required
+   screen hook. Record permitted checks and explicit unrun runtime checks.
+
+See [ViewModel integration](references/viewmodel.md#screen-classification) and the
+[coverage template](../../../tasks/analytics/feature-coverage-template.md).
 
 ## Schemas, privacy and checks
 

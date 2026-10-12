@@ -53,8 +53,13 @@ class AuthIntegrationTest {
                     Method.Apple -> login.loginApple(credential)
                 }
             })
+            val businessMethod = when (method) {
+                Method.Email -> "email"
+                Method.Google -> "google"
+                Method.Apple -> "apple"
+            }
             assertEquals(listOf(
-                method.analyticsCode, "profile", "excluded_muscles", "excluded_equipments",
+                businessMethod, "profile", "excluded_muscles", "excluded_equipments",
                 "exercise_examples", "weight_history", "goal", "push_fetch", "push_register",
             ), domain.calls)
             assertEquals(listOf("auth_attempt_started", "auth_attempt_succeeded"), recorder.names.takeLast(2))
@@ -75,7 +80,12 @@ class AuthIntegrationTest {
                     }
                 }
                 assertFalse(result)
-                assertEquals(listOf(method.analyticsCode, "profile", "push_fetch") +
+                val businessMethod = when (method) {
+                    Method.Email -> "email"
+                    Method.Google -> "google"
+                    Method.Apple -> "apple"
+                }
+                assertEquals(listOf(businessMethod, "profile", "push_fetch") +
                     if (token == null) emptyList() else listOf("push_register"), domain.calls)
                 assertEquals("auth_attempt_succeeded", recorder.names.last())
                 assertFalse(recorder.names.any { it.startsWith("auth_setup_") })

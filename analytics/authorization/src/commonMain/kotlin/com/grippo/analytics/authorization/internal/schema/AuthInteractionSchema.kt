@@ -1,28 +1,26 @@
 package com.grippo.analytics.authorization.internal.schema
 
-import com.grippo.analytics.common.models.InputStatus
-import com.grippo.analytics.common.models.InputKeyboardAction
-import com.grippo.analytics.authorization.models.ProfileExperience
+import com.grippo.analytics.authorization.internal.encoding.AuthEncoding
+import com.grippo.analytics.authorization.internal.models.InputField
+import com.grippo.analytics.authorization.internal.models.InteractionAction
 import com.grippo.analytics.authorization.models.AuthScreen
+import com.grippo.analytics.authorization.models.ProfileExperience
+import com.grippo.analytics.common.models.InputKeyboardAction
+import com.grippo.analytics.common.models.InputStatus
 import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameterKey
-import com.grippo.toolkit.analytics.schema.AnalyticsCode
 
 /** Interaction targets are explicit and independent of app-global screen state. */
 internal object AuthInteractionSchema {
-    val Screen = AnalyticsParameterKey.code<AuthScreen>("interaction_screen")
-    val Action = AnalyticsParameterKey.code<AnalyticsCode>("interaction_action")
-    val Field = AnalyticsParameterKey.code<AnalyticsCode>("input_field")
-    val Status = AnalyticsParameterKey.code<InputStatus>("input_status")
-    val KeyboardAction = AnalyticsParameterKey.code<InputKeyboardAction>("keyboard_action")
+    val Screen = AnalyticsParameterKey.code<AuthScreen>("interaction_screen", encode = AuthEncoding::code)
+    val Action = AnalyticsParameterKey.code<InteractionAction>("interaction_action")
+    val Field = AnalyticsParameterKey.code<InputField>("input_field")
+    val Status = AnalyticsParameterKey.code<InputStatus>("input_status", encode = AuthEncoding::code)
+    val KeyboardAction = AnalyticsParameterKey.code<InputKeyboardAction>("keyboard_action", encode = AuthEncoding::code)
     val Visible = AnalyticsParameterKey.flag("password_visible")
-    val Experience = AnalyticsParameterKey.code<ProfileExperience>("profile_experience")
+    val Experience = AnalyticsParameterKey.code<ProfileExperience>("profile_experience", encode = AuthEncoding::code)
     val Selected = AnalyticsParameterKey.flag("selected")
     val SelectedCount = AnalyticsParameterKey.count("selected_count")
-
-    val NameField: AnalyticsCode = object : AnalyticsCode {
-        override val analyticsCode: String = "name"
-    }
 
     val Clicked = AnalyticsEventSchema("auth_control_clicked", 1, listOf(Screen, Action))
     val Submitted = AnalyticsEventSchema("auth_submit_clicked", 1, listOf(Screen, AuthOperationSchema.Method))

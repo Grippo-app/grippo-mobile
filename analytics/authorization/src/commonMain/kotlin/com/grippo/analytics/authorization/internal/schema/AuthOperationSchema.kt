@@ -1,5 +1,6 @@
 package com.grippo.analytics.authorization.internal.schema
 
+import com.grippo.analytics.authorization.internal.encoding.AuthEncoding
 import com.grippo.analytics.authorization.internal.models.AuthAction
 import com.grippo.analytics.authorization.internal.models.ProfileAction
 import com.grippo.analytics.authorization.models.Method
@@ -7,7 +8,7 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameterKey
 
 internal object AuthOperationSchema {
-    val Method = AnalyticsParameterKey.code<Method>("auth_method")
+    val Method = AnalyticsParameterKey.code<Method>("auth_method", encode = AuthEncoding::code)
     val Action = AnalyticsParameterKey.code<AuthAction>("auth_action")
     val ProfileAction = AnalyticsParameterKey.code<ProfileAction>("profile_action")
     val Duration = AnalyticsParameterKey.duration("duration_ms")

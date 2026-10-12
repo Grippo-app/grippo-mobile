@@ -45,6 +45,11 @@ matrix against actual instrumentation and omissions. Review eligible ViewModel
 callbacks, whole-operation result/error/cancellation preservation and the shared
 foundation screen lifecycle before navigation delivery. Visual-only changes need
 an impact assessment, not new events. Use the existing reviewer gate and report.
+Apply its [mandatory screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate):
+check every screen of a new feature and every affected screen against actual
+routes/rendered surfaces and VM hooks. Missing/wrong hooks, ownerless screen enum
+entries or duplicate container/child views fail review; an omissions row cannot
+waive required screen coverage. Containers must keep default null.
 
 Two layers, both required; neither replaces the other.
 

@@ -334,7 +334,8 @@ UI main uses `implementation(projects.analytics.analyticsApi)`; shared registers
 feature implementations such as `projects.analytics.authorization` through their
 generated modules. Inject the stateless service as `analytics` in the Component's
 normal retained ViewModel construction; the VM owns typed facts, complete operation
-decorators and the optional leaf `screenPresentation` hook. Shared foundation owns
+decorators and the required independent-screen `screenPresentation` hook. Containers
+keep default null. Shared foundation owns
 lifecycle binding; feature UI needs no analytics provider or integration module.
 Follow [feature-analytics](../../feature-analytics/SKILL.md) for the API, internal
 matrices and affected coverage. Add serialization/test dependencies only where needed.

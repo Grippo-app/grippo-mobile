@@ -1,14 +1,14 @@
 package com.grippo.analytics.authorization.internal.schema
 
+import com.grippo.analytics.authorization.internal.encoding.AuthEncoding
 import com.grippo.analytics.authorization.internal.events.AuthPayloadEvent
+import com.grippo.analytics.authorization.internal.models.InputField
 import com.grippo.analytics.authorization.internal.models.InteractionAction
 import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.analytics.authorization.models.Method
-import com.grippo.analytics.common.models.ControlAction
 import com.grippo.analytics.common.models.InputKeyboardAction
 import com.grippo.analytics.common.models.InputStatus
-import com.grippo.toolkit.analytics.schema.AnalyticsCode
 import com.grippo.toolkit.analytics.schema.AnalyticsEvent
 import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
@@ -18,47 +18,71 @@ import com.grippo.toolkit.analytics.values.AnalyticsCount
 internal object AuthEventMatrix {
     fun event(event: AuthEvent): AnalyticsEvent {
         return when (event) {
-            AuthEvent.Splash.Back -> clicked(AuthScreen.Splash, ControlAction.Back)
+            AuthEvent.Splash.Back -> clicked(AuthScreen.Splash, InteractionAction.Back)
             is AuthEvent.Login -> login(event)
             is AuthEvent.Registration -> registration(event)
             is AuthEvent.User -> user(event)
             is AuthEvent.Experience -> experience(event)
             is AuthEvent.Muscles -> muscles(event)
             is AuthEvent.Equipments -> equipments(event)
-            AuthEvent.Completed.Back -> clicked(AuthScreen.Completed, ControlAction.Back)
+            AuthEvent.Completed.Back -> clicked(AuthScreen.Completed, InteractionAction.Back)
         }
     }
 
     private fun login(event: AuthEvent.Login): AnalyticsEvent {
         return when (event) {
-            is AuthEvent.Login.InputChanged -> inputChanged(AuthScreen.Login, event.field, event.status)
-            is AuthEvent.Login.InputFocused -> field(AuthInteractionSchema.InputFocused, AuthScreen.Login, event.field)
-            is AuthEvent.Login.InputCleared -> field(AuthInteractionSchema.InputCleared, AuthScreen.Login, event.field)
-            is AuthEvent.Login.KeyboardAction -> keyboard(AuthScreen.Login, event.field, event.action)
+            is AuthEvent.Login.InputChanged -> inputChanged(
+                AuthScreen.Login,
+                AuthEncoding.field(event.field),
+                event.status,
+            )
+            is AuthEvent.Login.InputFocused -> field(
+                AuthInteractionSchema.InputFocused,
+                AuthScreen.Login,
+                AuthEncoding.field(event.field),
+            )
+            is AuthEvent.Login.InputCleared -> field(
+                AuthInteractionSchema.InputCleared,
+                AuthScreen.Login,
+                AuthEncoding.field(event.field),
+            )
+            is AuthEvent.Login.KeyboardAction -> keyboard(
+                AuthScreen.Login,
+                AuthEncoding.field(event.field),
+                event.action,
+            )
             is AuthEvent.Login.PasswordVisibilityChanged -> visibility(AuthScreen.Login, event.visible)
             is AuthEvent.Login.Submit -> submitted(AuthScreen.Login, event.method)
             AuthEvent.Login.Register -> clicked(AuthScreen.Login, InteractionAction.Register)
-            AuthEvent.Login.Back -> clicked(AuthScreen.Login, ControlAction.Back)
+            AuthEvent.Login.Back -> clicked(AuthScreen.Login, InteractionAction.Back)
         }
     }
 
     private fun registration(event: AuthEvent.Registration): AnalyticsEvent {
         return when (event) {
-            is AuthEvent.Registration.InputChanged -> inputChanged(AuthScreen.Registration, event.field, event.status)
+            is AuthEvent.Registration.InputChanged -> inputChanged(
+                AuthScreen.Registration,
+                AuthEncoding.field(event.field),
+                event.status,
+            )
             is AuthEvent.Registration.InputFocused -> field(
                 AuthInteractionSchema.InputFocused,
                 AuthScreen.Registration,
-                event.field,
+                AuthEncoding.field(event.field),
             )
             is AuthEvent.Registration.InputCleared -> field(
                 AuthInteractionSchema.InputCleared,
                 AuthScreen.Registration,
-                event.field,
+                AuthEncoding.field(event.field),
             )
-            is AuthEvent.Registration.KeyboardAction -> keyboard(AuthScreen.Registration, event.field, event.action)
+            is AuthEvent.Registration.KeyboardAction -> keyboard(
+                AuthScreen.Registration,
+                AuthEncoding.field(event.field),
+                event.action,
+            )
             is AuthEvent.Registration.PasswordVisibilityChanged -> visibility(AuthScreen.Registration, event.visible)
             AuthEvent.Registration.Submit -> submitted(AuthScreen.Registration, Method.Email)
-            AuthEvent.Registration.Back -> clicked(AuthScreen.Registration, ControlAction.Back)
+            AuthEvent.Registration.Back -> clicked(AuthScreen.Registration, InteractionAction.Back)
         }
     }
 
@@ -66,27 +90,35 @@ internal object AuthEventMatrix {
         return when (event) {
             is AuthEvent.User.NameInputChanged -> inputChanged(
                 AuthScreen.User,
-                AuthInteractionSchema.NameField,
+                InputField.Name,
                 event.status,
             )
             AuthEvent.User.NameInputFocused -> field(
                 AuthInteractionSchema.InputFocused,
                 AuthScreen.User,
-                AuthInteractionSchema.NameField,
+                InputField.Name,
             )
             AuthEvent.User.NameInputCleared -> field(
                 AuthInteractionSchema.InputCleared,
                 AuthScreen.User,
-                AuthInteractionSchema.NameField,
+                InputField.Name,
             )
             is AuthEvent.User.NameKeyboardAction -> keyboard(
                 AuthScreen.User,
-                AuthInteractionSchema.NameField,
+                InputField.Name,
                 event.action,
             )
-            is AuthEvent.User.PickerOpened -> field(AuthInteractionSchema.PickerOpened, AuthScreen.User, event.field)
-            is AuthEvent.User.PickerConfirmed -> inputChanged(AuthScreen.User, event.field, event.status)
-            is AuthEvent.User.Control -> clicked(AuthScreen.User, event.action)
+            is AuthEvent.User.PickerOpened -> field(
+                AuthInteractionSchema.PickerOpened,
+                AuthScreen.User,
+                AuthEncoding.field(event.field),
+            )
+            is AuthEvent.User.PickerConfirmed -> inputChanged(
+                AuthScreen.User,
+                AuthEncoding.field(event.field),
+                event.status,
+            )
+            is AuthEvent.User.Control -> clicked(AuthScreen.User, AuthEncoding.action(event.action))
         }
     }
 
@@ -97,7 +129,7 @@ internal object AuthEventMatrix {
                 AuthScreen.Experience,
                 AuthInteractionSchema.Experience.value(event.value),
             )
-            is AuthEvent.Experience.Control -> clicked(AuthScreen.Experience, event.action)
+            is AuthEvent.Experience.Control -> clicked(AuthScreen.Experience, AuthEncoding.action(event.action))
         }
     }
 
@@ -109,7 +141,7 @@ internal object AuthEventMatrix {
                 event.selected,
                 event.selectedCount,
             )
-            is AuthEvent.Muscles.Control -> clicked(AuthScreen.ExcludedMuscles, event.action)
+            is AuthEvent.Muscles.Control -> clicked(AuthScreen.ExcludedMuscles, AuthEncoding.action(event.action))
         }
     }
 
@@ -121,11 +153,11 @@ internal object AuthEventMatrix {
                 event.selected,
                 event.selectedCount,
             )
-            is AuthEvent.Equipments.Control -> clicked(AuthScreen.MissingEquipments, event.action)
+            is AuthEvent.Equipments.Control -> clicked(AuthScreen.MissingEquipments, AuthEncoding.action(event.action))
         }
     }
 
-    private fun clicked(screen: AuthScreen, action: AnalyticsCode): AnalyticsEvent {
+    private fun clicked(screen: AuthScreen, action: InteractionAction): AnalyticsEvent {
         return payload(AuthInteractionSchema.Clicked, screen, AuthInteractionSchema.Action.value(action))
     }
 
@@ -133,7 +165,7 @@ internal object AuthEventMatrix {
         return payload(AuthInteractionSchema.Submitted, screen, AuthOperationSchema.Method.value(method))
     }
 
-    private fun inputChanged(screen: AuthScreen, field: AnalyticsCode, status: InputStatus): AnalyticsEvent {
+    private fun inputChanged(screen: AuthScreen, field: InputField, status: InputStatus): AnalyticsEvent {
         return payload(
             AuthInteractionSchema.InputChanged,
             screen,
@@ -142,11 +174,11 @@ internal object AuthEventMatrix {
         )
     }
 
-    private fun field(schema: AnalyticsEventSchema, screen: AuthScreen, field: AnalyticsCode): AnalyticsEvent {
+    private fun field(schema: AnalyticsEventSchema, screen: AuthScreen, field: InputField): AnalyticsEvent {
         return payload(schema, screen, AuthInteractionSchema.Field.value(field))
     }
 
-    private fun keyboard(screen: AuthScreen, field: AnalyticsCode, action: InputKeyboardAction): AnalyticsEvent {
+    private fun keyboard(screen: AuthScreen, field: InputField, action: InputKeyboardAction): AnalyticsEvent {
         return payload(
             AuthInteractionSchema.Keyboard,
             screen,

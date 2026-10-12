@@ -79,7 +79,7 @@ override fun onDestroy()
 - **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
 - **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. Unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
 - **Suspend helpers**: run in the caller's coroutine and propagate failures to its `safeLaunch`. No local catches, additional jobs, stage flags or recovery wrappers. Analytics decorates the business operation and preserves its original error. See [error rules](error-pipeline.md).
-- **`screenPresentation`** defaults to null. A tracked leaf VM overrides the reason-aware presenter; BaseComponent/foundation owns its lifecycle binding. Graph/null resolves no ScreenAnalytics. VM stores no Lifecycle/ComponentContext and adds no activationFlow visibility observer or scope. See [feature analytics](../../feature-analytics/SKILL.md).
+- **`screenPresentation`** defaults to null for containers. Every independent screen must override the reason-aware presenter; BaseComponent/foundation owns its lifecycle binding. Graph/null resolves no ScreenAnalytics. VM stores no Lifecycle/ComponentContext and adds no activationFlow visibility observer or scope. Verify every new/affected screen through the [mandatory screen coverage gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.
 
 ### Flow processing modes
@@ -182,7 +182,7 @@ override val viewModel = componentContext.retainedInstance {
 ```
 
 - Use `collectAsStateMultiplatform()`, **not** `collectAsState`.
-- All dependencies, including stateless feature analytics, are pulled via `getKoin().get()` inside `retainedInstance { ... }`, not threaded through the Component constructor. Feature analytics stays in the VM; its optional screenPresentation is bound by BaseComponent/foundation, not by the feature. See [feature analytics](../../feature-analytics/SKILL.md).
+- All dependencies, including stateless feature analytics, are pulled via `getKoin().get()` inside `retainedInstance { ... }`, not threaded through the Component constructor. Feature analytics stays in the VM; every independent screen's required screenPresentation is bound by BaseComponent/foundation. Containers keep default null. See [feature analytics](../../feature-analytics/SKILL.md).
 - Stack-owning components pass `this` to the Screen (`ProfileScreen(this, state, loaders, viewModel)`) so it can read `component.childStack`.
 
 ### Constructor parameters (MUST)

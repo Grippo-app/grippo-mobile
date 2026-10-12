@@ -339,6 +339,44 @@ class AnalyticsTest {
         core.close()
     }
 
+    @Test fun closingDuringASinkCallCancelsWithoutTransportFallback() = runTest {
+        for (closeDuringConfiguration in listOf(true, false)) {
+            val core = core(StandardTestDispatcher(testScheduler))
+            val collections = mutableListOf<AnalyticsCollection>()
+            var closeReturned = false
+            var sendCalls = 0
+            val closeDuringCall: () -> Nothing = {
+                launch(UnconfinedTestDispatcher(testScheduler)) {
+                    core.close()
+                    closeReturned = true
+                }
+                throw CancellationException("SDK call interrupted by shutdown")
+            }
+            val sink = object : AnalyticsSink {
+                override fun setCollection(collection: AnalyticsCollection) {
+                    collections.add(collection)
+                }
+                override fun setIdentity(identity: AnalyticsIdentityPayload) {
+                    if (closeDuringConfiguration) closeDuringCall()
+                }
+                override fun send(payload: AnalyticsPayload) {
+                    sendCalls++
+                    closeDuringCall()
+                }
+            }
+            core.attachSink(sink)
+            core.updateCollection(AnalyticsCollection.Granted)
+            core.track(Event(1))
+            core.track(Event(2))
+            advanceUntilIdle()
+            assertTrue(closeReturned)
+            assertEquals(listOf(AnalyticsCollection.Granted, AnalyticsCollection.Denied), collections)
+            assertEquals(if (closeDuringConfiguration) 0 else 1, sendCalls)
+            assertEquals(0, core.queuedEventCount())
+            assertTrue(core.diagnostics().none { it.disposition == AnalyticsDisposition.TransportFailure })
+        }
+    }
+
     @Test fun sameIdentityWithReorderedPropertiesPreservesPendingEvents() = runTest {
         val first = AnalyticsUserPropertyKey<Source>("first")
         val second = AnalyticsUserPropertyKey<Source>("second")

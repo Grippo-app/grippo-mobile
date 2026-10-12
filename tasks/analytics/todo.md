@@ -751,3 +751,49 @@ orchestrator known-gaps register остаются вне этого scope.
 Проверка: `python3 /tmp/validate-analytics-skills-strict.py`, `git diff --check`.
 Отчёт: `/tmp/analytics-skills-strict-verification.json`; diff относительно начала
 этого прохода: `/tmp/analytics-skills-strict-diff.patch`.
+
+
+## Строгое ревью аналитики — 2026-10-13
+
+- [x] Зафиксировать исходный dirty/staged tree и провести независимые API/matrix, UI/lifecycle и core/platform reviews; затем перекрёстно перепроверить исправления. Чужие изменения не сбрасывать/stage/commit.
+- [x] Перенести четыре accepted intent events после существующих eligibility guards (Login.Email, Registration, User.Next, Experience.Next); business bodies/guards/navigation/retry сохранить. Исправить прежние invalid-submit/Next и non-null flow test expectations.
+- [x] Убрать wire-code getters/AnalyticsCode из восьми public fact enums. Internal AuthEncoding exhaustively кодирует значения; InputField/InteractionAction закрывают key types, anonymous NameField удалён. Все 26 wire values и 22 schemas/versions сохранены; нового compatibility слоя нет.
+- [x] Добавить typed enum encoder overload, payload проверки всех enum values и meaningful key tests; убрать obsolete public-code test. Reusable toolkit AnalyticsCode factory сохранён.
+- [x] Удалить manual ensureActive в worker; cooperative yield остаётся на catch boundaries и прежнем fairness interval. Проверить active sink CancellationException и true owned shutdown во время configuration/send без лишнего fallback.
+- [x] Перенести iOS ExperimentalNativeApi opt-in в existing KotlinMultiplatformConventionPlugin. Debug configuration policy не менялась; generated/native compilation не запускалась.
+- [x] Исправить cleanup ProfileSelectionViewModelTest: завершить queued lifecycle/VM cancellation до stopKoin/resetMain. Добавить rejected User.Next в existing Component fixture; actual Login JVM regression проверяет invalid/eligible/busy/reporting-failure paths.
+- [x] Fresh cached strict JVM compilation и tests: Auth 19 + toolkit/API/core/foundation 62 = 81; actual Auth UI commonTests 36 + два isolated Login tests = 38. Общий результат 119; fixtures/substitutions/skips явно указаны в coverage.
+- [x] Red/green regression: exact baseline четырёх event positions с тем же Kotlin module-name даёт четыре AssertionError, без linkage/native failures; current artifact повторно проходит все 38 UI tests. Repository production sources не подменялись.
+- [x] External consumer: protected hook override и шесть negative cases, включая wire getters/invalid field/enum-key combinations. PSI 239 профильных файлов: syntax/local functions 0. Baseline source comparisons подтверждают неизменный бизнес и platform wiring.
+- [x] Уточнить canonical skill/reference/standard/guide и actual coverage: plain public enums, internal encoders/closed keys, accepted/rejected guard policy и изменение event population. YAML/local links/fences и git diff --check прошли.
+
+Команды: `python3 /tmp/analytics-strict-review-xiomnh55/verify-jvm.py`,
+`python3 /tmp/analytics-strict-review-xiomnh55/ui-jvm/verify-ui.py`,
+`python3 /tmp/analytics-strict-review-xiomnh55/verify-contract.py`,
+`python3 /tmp/analytics-strict-review-xiomnh55/verify-source.py`,
+`python3 /tmp/analytics-strict-review-xiomnh55/verify-docs.py`, `git diff --check`.
+Отчёты/логи этого прохода находятся в `/tmp/analytics-strict-review-xiomnh55/`;
+baseline manifest и exact before copies сохранены отдельно от предыдущих проверок.
+Подробный scope — [текущее покрытие](authorization-coverage.md#текущая-проверка).
+Android/iOS builds, Gradle/KSP/generated DI, rendered/native UI/SDK runtime и Firebase
+не запускались. Temporary UI harness substitutes не доказывают generated/platform
+integration; production collection по-прежнему ждёт application consent policy.
+
+## Проверка screenPresentation авторизации — 2026-10-13
+
+- [x] Независимо сверить все 11 Component→VM→Render цепочек: 8 отдельных экранов имеют correct fixed screenPresentation и retained analytics DI; пропусков нет.
+- [x] AuthViewModel/AuthProcessViewModel/ProfileCreationViewModel оставляют default null: child-stack hosts, у ProfileCreation только общий неинтерактивный progress indicator. Новых container screen_view и лишнего analytics DI не добавлять.
+- [x] Дополнить coverage корневым Auth host и объяснением surface/container distinction. Production sources не менялись; проверки этого прохода source-only и docs validation, прежние 119 runtime tests не запускались повторно. Android/iOS builds и Firebase не запускались.
+
+## Обязательное покрытие экранов в skills — 2026-10-13
+
+- [x] В canonical feature-analytics закрепить обязательный screenPresentation каждого отдельного экрана, включая splash и nested/tab pages; graph/container остаётся default null. Nullable foundation API не означает optional screen coverage.
+- [x] Перед завершением новой фичи сверять все её actual routes/factories/Render → Component → retained VM → FeatureScreen → hook; при изменении — весь affected screen scope. Missing/wrong hooks, enum без owner и container views вместе с child screens блокируют завершение, а не закрываются omission.
+- [x] Согласовать UI/DI/base-class/platform/planner/reviewer инструкции, project entrypoints, стандарт и coverage template. Dialog/overlay contract остаётся отдельным scope; filename/router/base class сами по себе не определяют screen.
+- [x] Независимый forward check новой Search-фичи выявил забытый Bootstrap и лишнюю SearchRoot identity; уточнение container/child duplicate views прошло повторное review. Markdown/YAML/links и рабочий diff проверены; исходники/конфигурация и foundation code examples не изменены.
+
+Это docs-only проход: Android/iOS builds, Gradle/KSP, runtime tests и Firebase
+не запускались. Свежий отчёт и diff относительно начала прохода:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/analytics-screen-skill-20261013-3k54vafl/verification.json`
+и `docs.patch` рядом. Прежние staged whitespace замечания в старых/deleted API
+файлах записаны отдельно; staging не менялся.

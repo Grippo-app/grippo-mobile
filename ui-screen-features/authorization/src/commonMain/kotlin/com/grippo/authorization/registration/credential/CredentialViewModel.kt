@@ -80,14 +80,14 @@ internal class CredentialViewModel(
             return
         }
 
-        analytics.trackEvent(AuthEvent.Registration.Submit)
-
         val snapshot = state.value
         val email = snapshot.email
         val password = snapshot.password
         if (email !is EmailFormatState.Valid || password !is PasswordFormatState.Valid) {
             return
         }
+
+        analytics.trackEvent(AuthEvent.Registration.Submit)
 
         safeLaunch(loader = CredentialLoader.RegisterButton) {
             val hasProfile = analytics.trackOperation(AuthOperation.Register) {

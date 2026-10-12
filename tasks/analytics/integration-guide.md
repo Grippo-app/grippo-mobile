@@ -9,8 +9,10 @@
 
 UI получает один stateless `<Feature>Analytics` из analytics-api: typed
 trackEvent, complete trackOperation и presentScreen. Public feature facts содержат
-прямые enum/status/Boolean/count параметры; internal matrix/schema создают toolkit
-wire events. Общие models — только reusable enums, без capability/scenario runtime.
+прямые enum/status/Boolean/count параметры; public enums не раскрывают wire-коды.
+Internal exhaustive encoders и typed matrix/schema создают toolkit wire events;
+field/action keys имеют закрытые типы. Общие models — только reusable enums,
+без capability/scenario runtime.
 Реализация в analytics/<feature> не импортирует UI/domain/SDK; shared подключает
 её generated module. Кодирование — синхронное, без IO. Toolkit API, core queue/state
 и platform sink adapters остаются отдельными слоями.
@@ -133,7 +135,7 @@ stage flags или recovery-обёртки. Cancellation остаётся отм
 
 Component resolves analytics в обычном retainedInstance block для VM. Все feature
 events/operations/screen declarations находятся в VM; constructors/routes/factories/
-Render не содержат analytics wiring. Leaf override optional BaseViewModel
+Render не содержат analytics wiring. Каждый отдельный экран обязан переопределять BaseViewModel
 screenPresentation: `(NavigationReason) -> ScreenPresentation`, вызывая typed
 presentScreen. BaseComponent во время existing doOnCreate вызывает internal
 VM.bindScreen(lifecycle) после создания retained VM, до attachActivation и
@@ -167,6 +169,10 @@ Application — wiring error без fallback. iOS использует Platform.
 связанного framework; Xcode configurations должны выбирать соответствующий XCFramework.
 App configuration module и runtime constructor args для generated modules не нужны.
 
+Перед завершением новой фичи сверить все её экраны с actual routes/Render/VM hooks;
+при изменении — все экраны затронутого scope. Контейнеры оставляют default null;
+пропуск hook или screen view контейнера вместе с дочерним экраном блокирует завершение, а не становится omission.
+См. [обязательную проверку](../../.claude/skills/feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 Новая фича описывает каждый leaf в screenPresentation своего VM, direct typed events для
 существующих controls/inputs и whole business operations. Text status compares
 existing old/new validation без cache; equal status omitted. Picker confirmations/

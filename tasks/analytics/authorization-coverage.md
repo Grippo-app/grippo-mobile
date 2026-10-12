@@ -3,9 +3,9 @@
 Scope 2026-10-13: typed stateless API в VM и общий foundation screen hook. Стандарт —
 [feature-standard](feature-standard.md); история и команды — [todo](todo.md).
 Прежние scenario/retention/provider проверки относятся к своим реализациям.
-Новый hook проверен изолированно: 78 JVM tests и три negative visibility cases.
-Android/iOS builds, Gradle/KSP/generated DI, actual Auth UI/native runtime и Firebase
-не входят в текущий запуск.
+Актуальные изолированные JVM/VM проверки перечислены ниже. Android/iOS builds,
+Gradle/KSP/generated DI, rendering/native SDK runtime и Firebase не входят
+в текущий запуск.
 
 ## Подключение
 
@@ -14,6 +14,9 @@ Android/iOS builds, Gradle/KSP/generated DI, actual Auth UI/native runtime и Fi
 - API — AuthAnalytics + models/ для AuthEvent/AuthOperation/AuthScreen и нужных
   credential/method/picker/experience enums. Общие InputStatus/InputKeyboardAction/
   ControlAction — common/models. Нет capability interfaces/action wrappers.
+- Восемь public enums не раскрывают wire-коды. Internal AuthEncoding содержит
+  exhaustive mappings; field/action keys ограничены InputField/InteractionAction.
+  Schema names/versions и wire values сохранены.
 - Implementation — internal AuthAnalyticsImpl, AuthPayloadEvent, AuthEventMatrix,
   AuthOperationEvents, typed schema/encoding models; public только annotated module.
   Нет UI/domain/services/SDK/core dependencies, flow state или classifiers.
@@ -35,16 +38,26 @@ Android/iOS builds, Gradle/KSP/generated DI, actual Auth UI/native runtime и Fi
 
 | Route | Роль / AuthScreen | Leaf VM hook |
 |---|---|---|
+| AuthComponent host | graph, без отдельного screen_view | AuthViewModel: отсутствует |
 | AuthRouter.Splash | leaf / Splash | SplashViewModel.screenPresentation |
-| AuthRouter.AuthProcess | graph, без view | отсутствует |
+| AuthRouter.AuthProcess | graph, без отдельного screen_view | AuthProcessViewModel: отсутствует |
 | AuthProcessRouter.Login | leaf / Login | LoginViewModel.screenPresentation |
 | AuthProcessRouter.Registration | leaf / Registration | CredentialViewModel.screenPresentation |
-| AuthRouter.ProfileCreation | graph, без view | отсутствует |
+| AuthRouter.ProfileCreation | graph, без отдельного screen_view | ProfileCreationViewModel: отсутствует |
 | ProfileCreationRouter.User | leaf / User | UserViewModel.screenPresentation |
 | ProfileCreationRouter.Experience | leaf / Experience | ExperienceViewModel.screenPresentation |
 | ProfileCreationRouter.ExcludedMuscles | leaf / ExcludedMuscles | ExcludedMusclesViewModel.screenPresentation |
 | ProfileCreationRouter.MissingEquipments | leaf / MissingEquipments | MissingEquipmentsViewModel.screenPresentation |
 | ProfileCreationRouter.Completed | leaf / Completed | ProfileCompletedViewModel.screenPresentation |
+
+Проверены все 11 Component→VM→Render цепочек: 8 leaves с fixed screenPresentation
+и analytics DI, 3 graph VM с default null. Наличие ViewModel, файла *Screen.kt или
+BaseComposeScreen само по себе не делает контейнер самостоятельным analytics screen.
+Auth/AuthProcess показывают child stack; ProfileCreation добавляет общий
+неинтерактивный индикатор прогресса поверх текущего child. Отдельной страницы
+у этих контейнеров нет. Их screen_view дал бы дополнительные показы и конкурирующий
+screen context при том же пользовательском экране. Если у контейнера появится
+самостоятельная страница или действие, покрытие оценивается по этой новой поверхности.
 
 8 leaves, один общий bind в foundation. Feature provider/route matrix/integration
 module удалены; Components/routes/factories/Render не содержат analytics wiring.
@@ -80,7 +93,11 @@ Cache/«первый edit всегда виден» больше нет; Empty�
 новые и прежние объёмы не считать напрямую сопоставимыми.
 
 Existing eligibility/busy guards стоят до intent event; analytics не меняет
-validation/доступность controls. Neutral optional Input callbacks сохраняют default
+validation/доступность controls. Rejected Login.Email/Registration.Submit/User.Next/
+Experience.Next не создают accepted intent или operation events. В этом проходе
+четыре event calls перенесены после прежних guards без изменения payload/schema;
+прежние counts, включавшие rejected callbacks, не считать сопоставимыми напрямую.
+Neutral optional Input callbacks сохраняют default
 focus/keyboard/clear behavior. Raw text/length/name/email/password/height/weight,
 selected entity IDs и exception text в payload не передаются. Programmatic Back
 после dialog dismiss не вызывает instrumented user Back callback.
@@ -126,29 +143,46 @@ adapters не менялись; Firebase delivery не проверяется э
 
 ## Текущая проверка
 
-Cached Kotlin 2.4.20 K2JVMCompiler с strict explicit API скомпилировал toolkit API
-(37 файлов), common API (3), Auth API (8), implementation (10) и 14 actual foundation
-production sources с Compose compiler plugin и настоящими cached dependencies.
+Строгий review 2026-10-13: три независимых направления (API/matrix, UI/lifecycle,
+core/adapters), исправления и повторное перекрёстное ревью. Сравнение с началом
+прохода подтверждает прежние business bodies/guards и wiring платформ.
 
-- AuthInteractionTest/AuthOperationsTest/AuthSchemaTest/AuthScreenTest/
-  CommonInteractionModelsTest — OK (19 tests).
-- Actual toolkit API/core + ScreenAnalyticsTest/ViewModelScreenAnalyticsTest —
-  OK (59 tests), всего 78. Foundation проверяет null hook без resolution binder,
-  retained VM с новым lifecycle, Initial/Restore/close и init navigation после bind.
-  Последние два foundation test sources перекомпилированы, 9 tests прошли повторно;
-  они входят в 78, а не прибавляются к ним. Unit-test DI constructs actual implementations.
+- Cached Kotlin 2.4.20 K2JVMCompiler с strict explicit API: toolkit API (37 файлов),
+  common API (3), Auth API (8), implementation (12), core с JVM lock actual и
+  foundation (14 actual production sources). Compose/Essenty/Decompose dependencies
+  взяты из локального cache. Auth — OK (19 tests), toolkit/API/core/foundation —
+  OK (62 tests), всего 81. Проверены все public enum wire values, schema/key
+  identity/versions, обычные reporting Exceptions, cancellation, очередь/concurrency,
+  fairness, shutdown во время SDK callback и screen lifecycle/null graph hook.
+- Actual Auth UI commonTests — OK (36 tests); две изолированные проверки actual
+  LoginViewModel дают ещё 2, итого UI — 38 и общий результат — 119.
+  Скомпилирован 221 production/fixture source и 11 test sources. Исполняются
+  настоящие VMs, use cases, validation, state/mappers, Components/navigation/lifecycle.
+  Rejected/eligible Login, Credential, User и Experience проверены отдельно;
+  busy guard и reporting-failure isolation Login не меняют бизнес/navigation.
+  Возврат четырёх прежних event positions в temporary baseline artifact вызывает
+  ровно четыре AssertionError; текущий artifact повторно проходит 38 tests.
+- Изолированный UI harness подменяет только generated resources/visual assets,
+  неисполняемые Render/platform composition signatures, Google/NativeContext JVM
+  actuals для email-only тестов и KSP extensions явной test DI composition настоящих
+  реализаций. Native credential actions/rendering не вызываются. Native Looper
+  diagnostic Decompose отключён через его settings для JVM; это не проверка
+  native main thread. Actual Apple Android no-platform implementation используется
+  только как dependency. Generated DI и platform SDK корректность этим не доказаны.
 - External consumer без friend paths: protected hook override компилируется;
-  три попытки обращения к internal bindScreen/protected screenPresentation/internal
-  implementation дают ожидаемый INVISIBLE_REFERENCE.
-- Kotlin PSI: 203 файла, syntax errors = 0, named local functions = 0.
-  75 source proofs подтверждают восемь прежних business VM bodies, 11 Component
-  plumbing changes, 55 byte-identical UI state/contract/screen/direction/loader
-  файлов и 44 callbacks. Два picker handlers unchanged apart from hook/imports.
-  404 protected toolkit core/data/native source hashes unchanged. BaseVM business
-  exact после снятия hook/imports, BaseComponent — после hook/necessary ordering.
+  internal binder/protected presenter/internal implementation закрыты.
+  Public fact wire getters отсутствуют; неверные credential/picker combinations
+  и другой enum в typed key дают ожидаемые compile errors (6 negative cases).
+- Kotlin PSI: 239 профильных файлов, syntax errors = 0, named local functions = 0.
+  Четыре production VM отличаются только положением event call после прежних
+  guards; остальные business/data/platform wiring sources сохранены. Native debug
+  opt-in перенесён в общую convention configuration, без изменения debug policy.
+- Skill frontmatter/metadata YAML, maintained Markdown links/fences и
+  git diff --check прошли. Canonical skill/standard уточняют plain public enums,
+  internal exhaustive encoders/closed keys и eligible/rejected callbacks.
 
-Команды и отчёты — в [todo](todo.md). Предыдущие 76/16 относятся к provider wiring.
-Не запускались AuthAnalyticsModuleTest/ScreenAnalyticsModuleTest и generated DI/
-catalog composition, Gradle/KSP, compilation/runtime actual Auth feature VM/
-Components/Compose screens, native SDK, Android/iOS builds или Firebase.
-Изолированные actual foundation lifecycle tests не подтверждают platform UI runtime.
+Команды и отчёты — в [todo](todo.md). Прежние 78/76/16 относятся к своим этапам.
+Не запускались Gradle/KSP/generated modules/catalog composition, Auth Screen.kt
+rendering, native SDK runtime, Android/iOS builds или Firebase. Изолированные
+JVM/Component fixtures не подтверждают платформенный UI runtime. Consent policy
+остаётся отдельной задачей: production сбор выключен до явного Granted.

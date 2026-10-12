@@ -90,14 +90,14 @@ internal class LoginViewModel(
             return
         }
 
-        analytics.trackEvent(AuthEvent.Login.Submit(Method.Email))
-
         val snapshot = state.value
         val email = snapshot.email
         val password = snapshot.password
         if (email !is EmailFormatState.Valid || password !is PasswordFormatState.Valid) {
             return
         }
+
+        analytics.trackEvent(AuthEvent.Login.Submit(Method.Email))
 
         safeLaunch(loader = LoginLoader.LoginByEmailButton) {
             val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Email)) {

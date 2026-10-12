@@ -249,7 +249,7 @@ internal class NoteEditorComponent(
 Rules:
 - `internal class`, extends `BaseComponent<Direction>(componentContext)`.
 - Constructor takes `componentContext` plus **callback lambdas** for every navigation action this Component cannot perform itself (typically: `back`, `close`, and any cross-feature nav).
-- `viewModel` is created via `componentContext.retainedInstance { <Name>ViewModel(getKoin().get(), ...) }`. All dependencies, including stateless analytics, resolve inside that block, not through Component constructors. VM owns typed events/operations and optional screenPresentation; BaseComponent/foundation binds it without feature wiring. See [feature analytics](../../feature-analytics/SKILL.md).
+- `viewModel` is created via `componentContext.retainedInstance { <Name>ViewModel(getKoin().get(), ...) }`. All dependencies, including stateless analytics, resolve inside that block, not through Component constructors. VM owns typed events/operations; every independent screen must declare screenPresentation, containers keep default null. BaseComponent/foundation binds it without feature wiring. See [feature analytics](../../feature-analytics/SKILL.md).
 - `eventListener` is `when (direction) { ... }` mapping every `Direction` subtype to a constructor lambda call (`back()`, `toSettings()`) or a child-component `navigation.push(...)` call if this is a parent component owning a stack.
 - `Render()` collects state + loaders multiplatform-safely and calls the `Screen` function.
 

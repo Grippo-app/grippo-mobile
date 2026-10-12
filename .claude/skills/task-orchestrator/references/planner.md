@@ -76,10 +76,13 @@ unresolved modified-file path goes under **Open assumptions**, not a guess.
 Resolve `<package-root>` from project-config inline (no placeholder in output).
 
 For behavior changes, include necessary updates to the existing analytics API /
-models, internal implementation / schema matrix, ViewModel callbacks / optional
-`screenPresentation` and affected coverage matrix in the normal builders' file
+models, internal implementation / schema matrix, ViewModel callbacks / required
+independent-screen `screenPresentation` and affected coverage matrix in the normal builders' file
 contracts. Discover their actual paths; reuse the shared foundation lifecycle
 binding described by the canonical skill.
+Plan its mandatory screen coverage gate for every screen of a new feature and
+every affected screen: actual routes/rendered surfaces → Components → VMs → hooks;
+containers keep null. Missing screen hooks are unfinished work, not omissions.
 
 **Sub-composable placement.** Non-`*Screen` UI (headers, cards, rows, banners) is
 created under `<sub-screen-package>/components/`, one cohesive composable per

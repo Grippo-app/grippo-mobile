@@ -48,6 +48,7 @@ class ProfileCreationComponentTest {
     fun leafViewModelsPresentScreensAndHardwareBackKeepsBusinessNavigation() = runTest {
         val recorder = RecordingAuthAnalytics()
         val businessCalls = mutableListOf<String>()
+        val dialogs = mutableListOf<DialogConfig>()
         val settings = TestSettings(businessCalls)
         val authorization = object : AuthorizationFeature by AuthorizationFixture() {
             override suspend fun deletePushToken(): Result<Unit> {
@@ -68,7 +69,9 @@ class ProfileCreationComponentTest {
                     single<Analytics> { recorder }
                     single { LogoutUseCase(authorization, settings) }
                     single<DialogController> { object : DialogController {
-                        override fun open(config: DialogConfig) = error("Unexpected dialog")
+                        override fun open(config: DialogConfig) {
+                            dialogs += config
+                        }
                     } }
                     single<MuscleFeature> { object : MuscleFeature {
                         override fun observeMuscles(): Flow<List<MuscleGroup>> = flowOf(emptyList())
@@ -92,11 +95,35 @@ class ProfileCreationComponentTest {
             runCurrent()
             val user = assertIs<ProfileCreationComponent.Child.User>(component.childStack.value.active.instance)
             val userViewModel = assertIs<UserViewModel>(user.component.instanceKeeper.get(typeOf<UserViewModel>()))
+            userViewModel.onNextClick()
+            runCurrent()
+            assertEquals(ProfileCreationRouter.User, component.childStack.value.active.configuration)
+            assertTrue(recorder.events.none { it.text("interaction_action") == "next" })
+
             userViewModel.onNameChange("Private name")
             userViewModel.onNameChange("Another private name")
             assertEquals(1, recorder.names.count { it == "auth_input_changed" })
+            userViewModel.onWeightPickerClick()
+            val weightPicker = assertIs<DialogConfig.WeightPicker>(dialogs.last())
+            weightPicker.onResult(0f)
+            userViewModel.onHeightPickerClick()
+            val heightPicker = assertIs<DialogConfig.HeightPicker>(dialogs.last())
+            heightPicker.onResult(0)
             userViewModel.onNextClick()
             runCurrent()
+            assertEquals(ProfileCreationRouter.User, component.childStack.value.active.configuration)
+            assertTrue(recorder.events.none { it.text("interaction_action") == "next" })
+
+            weightPicker.onResult(70f)
+            userViewModel.onNextClick()
+            runCurrent()
+            assertEquals(ProfileCreationRouter.User, component.childStack.value.active.configuration)
+            assertTrue(recorder.events.none { it.text("interaction_action") == "next" })
+
+            heightPicker.onResult(175)
+            userViewModel.onNextClick()
+            runCurrent()
+            assertEquals(1, recorder.events.count { it.text("interaction_action") == "next" })
             val experience = assertIs<ProfileCreationComponent.Child.Experience>(component.childStack.value.active.instance)
             val experienceViewModel = assertIs<ExperienceViewModel>(
                 experience.component.instanceKeeper.get(typeOf<ExperienceViewModel>())

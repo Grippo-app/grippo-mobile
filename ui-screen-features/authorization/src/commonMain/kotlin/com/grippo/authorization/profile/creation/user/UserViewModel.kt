@@ -95,11 +95,12 @@ internal class UserViewModel(
     }
 
     override fun onNextClick() {
-        analytics.trackEvent(AuthEvent.User.Control(ControlAction.Next))
         val current = state.value
         val name = (current.name as? NameFormatState.Valid) ?: return
         val weight = (current.weight as? WeightFormatState.Valid) ?: return
         val height = (current.height as? HeightFormatState.Valid) ?: return
+
+        analytics.trackEvent(AuthEvent.User.Control(ControlAction.Next))
 
         val direction = UserDirection.Experience(
             name = name.value,

@@ -230,8 +230,8 @@ VM's constructor. `BaseComponent` uses the same pattern for `ResultManager`
 Toolkit service cores expose consumer contracts. BaseViewModel injects
 CrashReporting; Components resolve the stateless feature analytics service as
 `analytics` inside normal retained VM construction. Annotated @Single binds the
-feature service; foundation supplies ScreenAnalytics for the optional leaf VM
-screenPresentation hook. BaseComponent owns the bind call during doOnCreate;
+feature service; foundation supplies ScreenAnalytics for every independent screen's
+required VM screenPresentation hook. BaseComponent owns the bind call during doOnCreate;
 graph null hook resolves no lifecycle service. VM knows no Lifecycle/ComponentContext.
 Existing retained VM ownership remains; no feature provider/integration module,
 analytics scenarios/keys/classifier bindings are needed.
