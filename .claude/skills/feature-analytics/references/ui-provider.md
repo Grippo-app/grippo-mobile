@@ -126,12 +126,10 @@ is for payloads only; navigation and error handling remain business-owned.
 Apply the [shared UI error rules](../../ui-feature/references/error-pipeline.md):
 let unhandled original errors reach analytics and `safeLaunch`. Pure `mapError`
 supplies only the standard dialog representation; it cannot recover or navigate.
-A documented business fallback may catch ordinary `Exception` outside the
-smallest decorated operation in the same coroutine, rethrowing
-`CancellationException` first. Never catch `Throwable`/fatal `Error`, include
-unrelated work or successful navigation, or add launches/wrappers/stage flags.
-Fallback execution stays outside the protected operation. Analytics records its
-original failure first; business result and navigation remain outside telemetry.
+ViewModels and their suspend helpers do not catch failures locally or add
+launches/wrappers/stage flags for recovery. Analytics records the original failure
+and propagates it to the shared pipeline; business result and navigation remain
+outside telemetry. Cancellation stays cancellation.
 `onError` runs after dialog dismissal. Keep telemetry classification separate
 from presentation mapping and report transitions at their actual navigation owner.
 

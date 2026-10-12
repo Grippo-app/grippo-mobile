@@ -29,8 +29,8 @@ Firebase delivery/sign-in/uploads не входят в текущие прове
   Направление выбирается только по бизнес-результату.
   Splash запускает class-level loadContent() из init: единственный safeLaunch с
   AppContent читает token, загружает muscle → equipment для no-session пути и
-  повторяется после dismiss. При token вызывает private suspend loadProfile():
-  узкий catch обычной ошибки только профиля возвращает на вход без диалога.
+  повторяется после dismiss. При token вызывает private suspend loadProfile()
+  в той же корутине; ошибка профиля проходит стандартный pipeline без local catch.
   Локальных named functions, дополнительных jobs и дублированных последовательностей нет.
 - 12 custom schemas зарегистрированы один раз qualified @Single через
   AuthAnalyticsModule().module в shared, built-in screen schema не дублируется.
@@ -57,17 +57,16 @@ LoginUseCase.loginEmail/loginGoogle/loginApple и RegisterUseCase.createAccount
 Splash принимает решения через бизнес-Boolean и SplashDirection. Единственный
 safeLaunch читает token; без token последовательно загружает muscle → equipment
 и открывает вход. Ошибки token/reference используют стандартный pipeline и
-повторяют эту последовательность только после закрытия диалога. Эти пути не
+повторяют эту последовательность только после закрытия диалога; эти пути не
 создают SessionCheck events. При token private suspend loadProfile работает в той
 же корутине; SessionCheck декорирует только hasProfile (cache или remote lookup).
-Узкий catch снаружи trackOperation обрабатывает обычный Exception только этой
-проверки: сначала failed с исходной FailureCategory, затем немедленный
-AuthProcess(SessionCheckFailed) без стандартного logger/crash/dialog пути.
-CancellationException повторно выбрасывается и даёт interrupted без fallback;
-fatal Error не перехватывается. Успех даёт completed, а Boolean затем выбирает
-Home/CreateProfile вне try и аналитики. Навигация, fallback и остальные запросы
-не входят в protected block; их ошибки сохраняют стандартный pipeline.
-Один VM job и loader AppContent охватывают весь startup; Profile loader удалён.
+Обычная ошибка проверки даёт failed с исходной FailureCategory и проходит
+logger → CrashReporting → ErrorProvider; Splash остаётся на месте до закрытия
+диалога, затем повторяет loadContent. Cancellation даёт interrupted без диалога
+или навигации; fatal Error не превращается в продуктовый failure.
+Успех даёт completed, а бизнес-Boolean затем выбирает Home/CreateProfile вне
+аналитики. Ошибка не ведёт на Home или вход. Локального catch нет.
+Один VM job и loader AppContent охватывают весь startup.
 Completed означает завершение блока, не подтверждённое восстановление сессии.
 Reporting Exceptions не блокируют block/result, transition/navigation или
 lifecycle; caller cancellation/fatal Error сохраняются.
@@ -92,12 +91,14 @@ Exit deduplicated.
 | SessionCheck (internal) | Создание retained Splash-сценария; сама операция начинается только при наличии token | absent |
 | LaunchWithoutSession | Splash получил null token | auth_splash |
 | TokenAbsent | Root получил null token вне Auth | absent |
-| SessionCheckFailed | Ошибка загрузки профиля в Splash → немедленный возврат на вход без диалога | auth_splash |
+| SessionCheckFailed | Только восстановленные legacy routes/snapshots; текущий Splash не создаёт этот вход | auth_splash |
 | ProfileSetupReturn | Возврат из ProfileCreation | profile_creation_user |
 | RestoredScenario | Legacy route без provenance | absent |
 
 Route сериализует собственный screen-api FlowId; только provider преобразует value
 в toolkit ID. Поле flowId, shape {value} и legacy SerialName сохранены.
+SessionCheckFailed route/API enum и wire code сохранены для совместимости
+восстановления; удаление текущего перехода не меняет SessionCheck failed events v3.
 Login/Registration используют общий immutable FlowContext. Snapshot хранит
 navigation/step/exited и legacy SerialName. Retained instance актуальнее snapshot;
 recreated owner регистрирует save того же instance. Независимые owners изолированы.
@@ -129,7 +130,7 @@ foreground return — Restore. Destroy не user exit; Render/containers не с
 - CredentialViewModelTest: actual registration/navigation/error pipeline при
   reporting failures и ошибке подготовки, Register/Email start/terminal.
 - SplashViewModelTest: actual requests/navigation/cached-profile short circuit,
-  немедленный profile fallback без диалога; token/reference errors через pipeline,
+  token/reference/profile errors через стандартный pipeline без перехода на вход,
   повтор только после dismiss, обязательные справочники для no-session пути,
   sequential loads/cancellation.
 - RetainedAnalyticsTest: actual helper type-key retention/latest save/validation order.

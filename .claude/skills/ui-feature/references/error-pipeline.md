@@ -103,8 +103,11 @@ It is not an immediate exception handler and cannot suppress the dialog or
 continue the failed business block. `CancellationException` never enters this
 pipeline or `mapError`; fatal `Error` is not transformed for presentation.
 
-Both `safeLaunch` overloads accept optional `mapError: (Throwable) -> Throwable`.
-Its default returns the original error. Use it only when a concrete boundary
+Keep the error contract unified across block and Flow `safeLaunch`: both expose
+`onError: () -> Unit = {}` and `mapError: (Throwable) -> Throwable = { it }`, with
+the same names, defaults and shared error pipeline. Pass either callback only
+when the operation needs it; otherwise use the defaults.
+`mapError` defaults to returning the original error. Use it only when a concrete boundary
 exception needs an existing `AppError` representation for the standard dialog.
 Keep it pure and non-throwing: no requests, state changes, navigation, reporting,
 retries or business fallback. Return unrecognized errors unchanged. Analytics,
@@ -147,34 +150,18 @@ or its helpers. Unwrap failed results with `getOrThrow()` inside `safeLaunch`.
 Foundation's loader cleanup via `try/finally` and service/domain error boundaries
 remain valid.
 
-## Explicit business fallback
+## Splash profile loading
 
-When an existing business policy requires immediate fallback for one operation,
-catch ordinary `Exception` around only that operation in the same coroutine.
-Rethrow `CancellationException` first. Never catch `Throwable` or fatal `Error`,
-or include unrelated requests, successful navigation or fallback execution in
-that protected block. Their failures must still reach the standard pipeline.
-Do not add launches, scopes, wrappers, stage flags or recovery extensions.
-A private suspend method is sufficient when the operation has a meaningful name.
-Keep recovery business-owned, outside analytics and presentation mapping.
-
-Splash has one `safeLaunch` with `AppContent`: token/reference failures use the
-standard pipeline and retry the complete sequence only after dismissal. With a
-token, it calls this private suspend method in that same coroutine:
+Splash has one `safeLaunch` with `AppContent`, started through class-level
+`loadContent()` from `init` and reused by `onError = ::loadContent`. Token,
+reference and profile failures all use the standard log/crash/dialog pipeline.
+Closing the dialog retries the complete sequence; failures do not navigate to
+authorization or Home. With a token, `loadProfile()` runs in that same coroutine:
 
 ```kotlin
 private suspend fun loadProfile() {
-    val hasProfile = try {
-        analytics.trackOperation(AuthOperation.SessionCheck) {
-            hasProfile()
-        }
-    } catch (error: CancellationException) {
-        throw error
-    } catch (_: Exception) {
-        navigateTo(
-            SplashDirection.AuthProcess(AuthorizationEntryPoint.SessionCheckFailed)
-        )
-        return
+    val hasProfile = analytics.trackOperation(AuthOperation.SessionCheck) {
+        hasProfile()
     }
 
     val destination = if (hasProfile) {
@@ -186,11 +173,10 @@ private suspend fun loadProfile() {
 }
 ```
 
-The catch surrounds only the profile check, outside `trackOperation`: analytics
-observes the original failure before fallback, rather than reporting a handled
-failure as completed. `hasProfile` is a business Boolean. Successful navigation
-and the fallback run outside the protected block, and cancellation/fatal errors
-are not converted to authorization. No second launch or loader is needed.
+`hasProfile` is a business Boolean: a cached or loaded profile leads to Home;
+confirmed absence leads to CreateProfile. Analytics decorates only the lookup
+and preserves its result/error. Cancellation propagates naturally; there is no
+local catch, second launch, extra loader or recovery wrapper.
 
 ## Only emits, not retries
 
@@ -204,11 +190,11 @@ before dismissal or an analytics retry policy.
 
 ## Anti-patterns (MUST avoid)
 
-- **Local catches that hide or present unhandled failures** — use `getOrThrow()` and the shared pipeline. Only a documented business fallback may use the narrowly scoped catch above; no arbitrary suppression or extra launch.
+- **Local catches that hide or present failures** — use `getOrThrow()` and the shared pipeline, including private suspend helpers; no suppression or extra launch.
 - **`Result.getOrNull()` in ViewModel** without handling `null` — silently drops failures.
 - **Returning `Result<T>` from a Feature observation** — observation must always succeed (cached data); errors are values for mutations only.
 - **Showing custom error dialogs** — use `DialogConfig.ErrorDisplay` via the pipeline.
-- **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it, and explicit fallback catches rethrow it first.
+- **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it.
 - **Recording an exception to Firebase manually** from a ViewModel — the pipeline does this; duplicates inflate Crashlytics.
 - **Throwing a replacement `AppError` in a ViewModel** — use pure `safeLaunch.mapError` for necessary UI presentation while preserving the original error for analytics/logging/crash reporting.
 

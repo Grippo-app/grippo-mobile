@@ -37,10 +37,8 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.
 - **Local exception handling that hides, replaces or presents unhandled failures
   in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Unwrap
-  with `getOrThrow()` inside `safeLaunch`. Only a documented business fallback may
-  catch ordinary `Exception` around its smallest operation in the same coroutine,
-  with `CancellationException` rethrown first and no `Throwable`/fatal `Error` catch.
-  Keep unrelated work and navigation outside it; see
+  with `getOrThrow()` inside `safeLaunch`, including private suspend helpers.
+  Do not add extra launches, recovery wrappers or stage flags; see
   [the error pipeline](../../ui-feature/references/error-pipeline.md).
 - **`async { }.await()`** to start a single piece of async work. Use `safeLaunch { ... }`. `async` is for parallel forks.
 
@@ -121,11 +119,8 @@ Screen-result rules are defined in the ui-feature skill,
 - **Local `try/catch`, `runCatching`, `Result.onFailure`, `recover`, `fold` or
   `getOrElse` that hide, replace or present unhandled failures in a ViewModel**,
   including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
-  Only an explicit business fallback may catch ordinary `Exception` around its
-  smallest operation in the existing coroutine, rethrowing `CancellationException`
-  first. Never catch `Throwable`/fatal `Error`, unrelated requests, successful
-  navigation or fallback execution. Catch outside analytics to preserve the
-  original failure event. No extra launches, scopes, wrappers or stage flags.
+  Private suspend helpers propagate original errors through the same pipeline;
+  no extra launches, scopes, recovery wrappers or stage flags.
   `Result.onSuccess` may consume data without hiding failures.
 - **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
   logging or crash reporting. Mapping only supplies a standard dialog representation
@@ -135,7 +130,7 @@ Screen-result rules are defined in the ui-feature skill,
 - **Custom error dialogs** outside `DialogConfig.ErrorDisplay`.
 - **Recording exceptions to Firebase manually.** Pipeline does it.
 - **`Result.getOrNull()` without handling `null`.** Silently drops failures.
-- **Consuming `CancellationException`.** Must propagate; shared error dispatch excludes it, and an explicit fallback catch rethrows it first.
+- **Consuming `CancellationException`.** Must propagate; shared error dispatch excludes it.
 - **Throwing raw `Throwable` from `validateResponse`.** Throw `AppError` subtypes. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
 
 ## State

@@ -119,13 +119,13 @@ ViewModel раскрывает Result.failure через getOrThrow; необр�
 сохраняют стандартный путь. Для известной SDK-ошибки pure safeLaunch.mapError
 меняет только представление диалога: аналитика, logger и CrashReporting сохраняют
 оригинал. onError вызывается после закрытия диалога.
-Явный бизнес-fallback допускает catch обычного Exception только вокруг минимальной
-операции в той же корутине, с первым catch CancellationException и повторным throw.
-Catch находится снаружи trackOperation: аналитика фиксирует исходный failure до
-fallback. Нельзя ловить Throwable/fatal Error, включать в try посторонние запросы,
-успешную навигацию или выполнение fallback. Их ошибки сохраняют стандартный путь.
-Результат и навигация остаются бизнес-решениями; новые launches/scopes, stage flags
-и обёртки не нужны. Не скрывать произвольные ошибки через catch/runCatching.
+Обе перегрузки safeLaunch — блочная и Flow — сохраняют единые onError/mapError,
+их значения по умолчанию и общий error pipeline; callbacks передаются по необходимости.
+ViewModel и private suspend helpers не перехватывают ошибки локально: исходная
+ошибка декорируемой операции продолжает путь через safeLaunch. Cancellation
+остаётся отменой. Результат и навигация остаются бизнес-решениями; не добавлять
+launches/scopes, stage flags или recovery-обёртки и не скрывать ошибки через
+catch/runCatching. Повтор полной операции после диалога задаёт её бизнес-владелец.
 Правила и примеры — [error pipeline](../../.claude/skills/ui-feature/references/error-pipeline.md).
 
 Синхронные переходы сообщаются реальным navigation owner через

@@ -199,10 +199,8 @@ Rules:
   present unhandled failures with local catches or result failure handlers.
   `Result.onSuccess` may consume successful data without hiding failures. Pure
   `mapError` changes only dialog presentation; `onError` runs after dismissal.
-  Only a documented business fallback may catch ordinary `Exception` around its
-  smallest operation in the same coroutine, rethrowing `CancellationException`
-  first. Keep successful navigation and unrelated work outside; no `Throwable`/
-  `Error` catches, telemetry-owned recovery, extra launches or wrappers. Follow
+  Suspend helpers propagate failures to the caller's `safeLaunch`; no local
+  catches, telemetry-owned recovery, extra launches or wrappers. Follow
   [the shared error rules](error-pipeline.md).
 
 (Full `BaseViewModel` API: `references/base-classes.md`.)
@@ -315,7 +313,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 | Direction | Nav intents only | State mutations, side effects |
 | Loader | Op tags | Anything else |
 | Contract | UI callbacks | Methods returning data, mutable state |
-| ViewModel | `update`, `navigateTo`, `safeLaunch`, `withLoader`, narrowly scoped documented business fallback | `viewModelScope`, `GlobalScope`, arbitrary local catches, Compose code |
+| ViewModel | `update`, `navigateTo`, `safeLaunch`, `withLoader` | `viewModelScope`, `GlobalScope`, local catches, Compose code |
 | Component | Decompose wiring, DI pulls, `eventListener` | UI rendering, business logic |
 | Screen | Composables, derived state via `remember` | State mutations, side effects beyond `LaunchedEffect` for non-nav purposes |
 
@@ -325,9 +323,8 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 - **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; each feature module exposes a single root component with its own internal stack. (`references/navigation.md`.)
 - **Dialogs** — a separate `SlotNavigation<DialogConfig>` parallel to the screen stack, hosted by `DialogComponent` in `:shared`. Dialogs return values via **typed callbacks inside `DialogConfig`** (`@Transient`), not via `ResultManager`. (`references/dialogs.md`.)
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.
-- **Error pipeline** — one path for unhandled failures from `safeLaunch`. A documented
-  business fallback may narrowly catch ordinary `Exception` in the same coroutine,
-  rethrowing cancellation first; no extra launch or wrapper. Presentation mapping
+- **Error pipeline** — one path for failures from `safeLaunch`, including suspend
+  helpers; no local catches, extra launches or recovery wrappers. Presentation mapping
   cannot change business results, cancellation or original analytics/log/crash
   failures. Read [error-pipeline.md](error-pipeline.md).
 - **Process-death restoration** — Decompose `StateKeeper` serializes the router stack; every `*Router` sealed class **and** every payload inside it must be `@Serializable`. (`references/process-death.md`.)

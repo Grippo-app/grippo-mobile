@@ -76,7 +76,7 @@ override fun onDestroy()
 - **`loaders`** is an `ImmutableSet` (multiple concurrent). `withLoader(MyLoader.X) { block() }` adds X, runs `block`, removes X on completion (success **or** failure via `try/finally`); `loader == null` runs without modifying the set. Useful inside `mapLatest`/`flatMapLatest` chains.
 - **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
 - **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. Unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
-- **Business fallback**: when an explicit operation needs immediate recovery, a private suspend method may catch ordinary `Exception` around only that operation within the existing coroutine. Rethrow `CancellationException` first, never catch `Throwable`/fatal `Error`, and keep unrelated work, successful navigation and fallback execution outside the protected block. Catch outside analytics so it observes the original failure. No extra launch, stage flags or recovery wrappers. See [error rules](error-pipeline.md#explicit-business-fallback).
+- **Suspend helpers**: run in the caller's coroutine and propagate failures to its `safeLaunch`. No local catches, additional jobs, stage flags or recovery wrappers. Analytics decorates the business operation and preserves its original error. See [error rules](error-pipeline.md).
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.
 
 ### Flow processing modes
@@ -106,7 +106,7 @@ Closes the navigator channel and cancels the VM's `coroutineScope`; `Flow.safeLa
 
 ### What MUST NOT be in a ViewModel
 
-- `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present unhandled failures; use `getOrThrow()` inside `safeLaunch`. Only a documented business fallback may use the narrow catch described above. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
+- `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present failures, including private helpers; use `getOrThrow()` inside `safeLaunch`. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
 
 ### Minimal VM template
 

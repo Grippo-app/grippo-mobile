@@ -255,14 +255,9 @@ dialogController.open(DialogConfig.ErrorDisplay(title = state.title(), error = s
 Unhandled failures use `getOrThrow()` inside the existing `safeLaunch`; do not
 hide, replace or present them through local `try/catch`, `runCatching` or result
 failure handlers. `Result.onSuccess` may consume data without hiding failure.
-An explicit business fallback may catch ordinary `Exception` around only the
-smallest operation that requires it, inside the same coroutine. Rethrow
-`CancellationException` first; never catch `Throwable` or fatal `Error`. Keep
-unrelated requests, successful navigation and fallback execution outside the
-protected block, so their failures retain the standard pipeline. Decorated
-operations throw their original failure before the business fallback handles it;
-analytics never determines recovery. Use a private suspend method when needed,
-without another launch, wrappers or stage flags.
+Private suspend helpers use the caller's coroutine and let failures reach
+`safeLaunch`; do not add recovery wrappers, extra launches or stage flags.
+Analytics observes the original failure without determining recovery.
 Necessary UI presentation mapping uses pure `mapError: (Throwable) -> Throwable`;
 unknown errors remain unchanged and analytics/logging/crash reporting keep the
 original error. Cancellation is not handled as an error; fatal errors are not
@@ -1035,7 +1030,7 @@ integration checks within the user's verification scope, and record actual resul
 - Direct dependency of a UI module on `:data-services:*` — only via `:data-features:*`.
 - Creating a Koin module via hand-written `module { ... }` DSL for a new module.
 - `LaunchedEffect(Unit)` for navigation — use `Direction` + `eventListener`.
-- Local `try/catch`, `runCatching` or result failure handlers that hide, replace or present unhandled failures in a ViewModel. Use `getOrThrow()` → `safeLaunch` → `ErrorProvider` and pure `mapError` only for dialog mapping. A documented business fallback may catch ordinary `Exception` around its smallest operation in the same coroutine, rethrowing `CancellationException` first; never catch `Throwable`/`Error`, unrelated work or navigation. No extra launches/wrappers or analytics-owned recovery. `onError` runs after dialog dismissal.
+- Local `try/catch`, `runCatching` or result failure handlers that hide, replace or present failures in a ViewModel, including private helpers. Use `getOrThrow()` → `safeLaunch` → `ErrorProvider` and pure `mapError` only for dialog mapping. No recovery wrappers, extra launches or analytics-owned recovery. `onError` runs after dialog dismissal.
 - Hardcoded strings in UI — only via `AppTokens.strings.res(Res.string.x)` (Composable) or `StringProvider.get(...)` (VM).
 - Storing `String` in State if the value depends on resources/locale — use `UiText`.
 - Direct Koin `get()` in Screen — forbidden. ViewModel dependencies resolve inside `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component. A Component may also resolve its stateless UI `<Feature>AnalyticsProvider` before ViewModel creation and `ScreenAnalytics` for leaf lifecycle binding; pass the same returned scenario to children/VM as `analytics`.

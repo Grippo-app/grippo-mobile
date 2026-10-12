@@ -38,15 +38,13 @@ Do not add `initialize`/`loadInitialData` helpers solely to hide orchestration.
 
 Follow the [shared error pipeline](references/error-pipeline.md): unwrap failures
 with `getOrThrow()` inside `safeLaunch`. Do not hide, replace or present unhandled
-failures with local catches, `runCatching` or result failure handlers. A documented
-business fallback may catch ordinary `Exception` around only its smallest operation
-in the same coroutine; rethrow `CancellationException` first and never catch
-`Throwable`/fatal `Error`. Keep unrelated requests, successful navigation and
-fallback execution outside the protected block. Put the catch outside analytics
-so the decorator observes the original failure. Use a private suspend method when
-needed, without extra launches, wrappers or stage flags. Pure `safeLaunch.mapError`
+failures with local catches, `runCatching` or result failure handlers, including
+private helpers. Suspend helpers run in the caller's coroutine and propagate
+failures without extra launches, recovery wrappers or stage flags. Pure `safeLaunch.mapError`
 changes only dialog presentation; `onError` runs after dismissal. Results, recovery
 and navigation stay business-owned, never in analytics or the mapper.
+Keep both hooks consistent across block and Flow `safeLaunch`; pass callbacks
+only where needed, following the shared error contract in the reference.
 
 ## Analytics impact
 
@@ -96,9 +94,8 @@ retention extensions or analytics base components.
    `<Name>Contract` (`@Immutable interface` + `companion object Empty`),
    `<Name>ViewModel` (`BaseViewModel<State,Direction,Loader>`, implements Contract;
    `safeLaunch` / `Flow.safeLaunch` / `withLoader` / `update {}` / `navigateTo`
-   with unhandled errors in the shared pipeline and only a narrowly scoped explicit
-   business fallback as described above — never `viewModelScope.launch`, `GlobalScope`
-   or arbitrary local catches),
+   with errors in the shared pipeline — never `viewModelScope.launch`, `GlobalScope`
+   or local catches),
    `<Name>Component` (`BaseComponent<Direction>`, `retainedInstance { getKoin().get() }`,
    `eventListener` maps every Direction subtype), `<Name>Screen`
    (`@Composable internal fun(state, loaders, contract)` in `BaseComposeScreen`,
@@ -201,7 +198,7 @@ file restates the patterns relevant to its topic under its own "Anti-patterns".
 
 - `mvi-contract-validator` — seven files present, correct shapes/suffixes.
 - `compose-stability-validator` — `@Immutable`/`@Stable`, immutable collections, no `var` in state.
-- `architecture-validator` — base-class usage, no `viewModelScope`/`GlobalScope` or arbitrary local catches; review documented business fallback scope and cancellation.
+- `architecture-validator` — base-class usage, no `viewModelScope`/`GlobalScope` or local catches; review the shared error pipeline and cancellation.
 - `naming-convention-validator` — State/Direction/Loader/Contract/Component/Screen naming.
 - `scope-leak-validator` — writes only files assigned in the plan section.
 - `acceptance-tracer` — every acceptance bullet traces to a touched file.

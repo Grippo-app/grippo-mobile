@@ -39,13 +39,11 @@ Removing reporting must leave the business block and its result unchanged.
 - Preserve the [shared UI error pipeline](../ui-feature/references/error-pipeline.md):
   ViewModels unwrap results with `getOrThrow()` inside `safeLaunch`. Unhandled
   errors retain that pipeline; pure `mapError` changes only dialog presentation,
-  and `onError` runs after dismissal. A documented business fallback may catch
-  ordinary `Exception` around only its smallest operation in the same coroutine,
-  rethrowing `CancellationException` first. Put the catch outside `trackOperation`
-  so analytics observes the original failure. Never catch `Throwable`/fatal `Error`,
-  include unrelated work or successful navigation, or add launches/wrappers/stage
-  flags for recovery. Fallback execution stays outside the protected operation;
-  its own failures remain unhandled. Keep recovery out of analytics and the mapper.
+  and `onError` runs after dismissal. Do not catch failures locally in a ViewModel
+  or its helpers, or add launches/wrappers/stage flags for recovery. Decorated
+  operations propagate original business errors to `safeLaunch`; cancellation
+  remains cancellation. Keep recovery out of analytics and the mapper. Both
+  `safeLaunch` overloads retain the same hooks, defaults and shared error pipeline.
 
 ## Layers and API
 

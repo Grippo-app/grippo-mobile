@@ -139,9 +139,8 @@ one place and use the existing VM scope. Follow [the project Kotlin rules](../..
 - **Use `?:` for fallbacks.** `amount ?: 0f`.
 - **Use `?.let { ... }`** for null-safe transformations.
 - **`runCatching { ... }`** at service/domain boundaries returning `Result`.
-  ViewModels use `getOrThrow()` inside `safeLaunch` for unhandled failures.
-  Only a documented business fallback may narrowly catch ordinary `Exception`
-  in the same coroutine, rethrowing cancellation first; follow the
+  ViewModels use `getOrThrow()` inside `safeLaunch`, including suspend helpers;
+  do not add local catches or recovery wrappers. Follow the
   [UI error rules](../../ui-feature/references/error-pipeline.md).
 
 ## Equality

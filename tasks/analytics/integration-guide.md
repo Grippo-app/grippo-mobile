@@ -101,8 +101,8 @@ start/completed не предотвращают выполнение/возвр�
 
 Feature API оборачивает цельную бизнес-операцию. Login/register включают приватную
 подготовку, SessionCheck не интерпретирует caller T. Текущий SessionCheck оборачивает
-только hasProfile; узкий бизнес-catch снаружи декоратора выполняет UI-fallback
-после failed, в той же корутине.
+только hasProfile; его исходная ошибка после failed проходит стандартный
+safeLaunch → logger/CrashReporting/ErrorProvider путь, без локального catch.
 Бизнес-fallback, уже обработанный внутри любого декорируемого блока, означал бы
 completed execution, а не желаемый исход. Текущие event versions и
 осознанные omissions находятся в authorization-coverage, без дублирования каталога.
@@ -116,12 +116,11 @@ completed execution, а не желаемый исход. Текущие event v
 ViewModel разворачивает Result через `getOrThrow()` внутри существующего `safeLaunch`.
 Необработанную исходную ошибку получают аналитика, log и crash reporting; чистый
 `mapError` меняет только представление стандартного диалога. `onError` выполняется
-после закрытия диалога. Явный бизнес-fallback допускает узкий catch обычного Exception
-вокруг минимальной операции в той же корутине, с первым catch CancellationException
-и повторным throw. Catch находится снаружи trackOperation, после исходного failure.
-Не ловить Throwable/fatal Error, не включать в try посторонние запросы, успешную
-навигацию или выполнение fallback; не добавлять launches/scopes, flags или обёртки.
-В mapper или аналитике нельзя прятать восстановление, fallback или навигацию; см.
+после закрытия диалога. Обе перегрузки safeLaunch сохраняют одинаковые onError/mapError,
+defaults и pipeline; callbacks передаются по необходимости. ViewModel и private
+suspend helpers не перехватывают ошибки локально и не добавляют launches/scopes,
+stage flags или recovery-обёртки. Cancellation остаётся отменой. В mapper или
+аналитике нельзя прятать восстановление, fallback или навигацию; см.
 [единый error pipeline](../../.claude/skills/ui-feature/references/error-pipeline.md).
 
 Leaf один раз вызывает DI ScreenAnalytics.bind(lifecycle) с callback presentScreen.
