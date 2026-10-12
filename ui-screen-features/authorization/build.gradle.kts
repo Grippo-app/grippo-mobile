@@ -1,8 +1,10 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
+    id("kotlin.multiplatform.test.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -10,7 +12,15 @@ kotlin {
         namespace = "com.grippo.ui.screen.features.authorization"
     }
 
+    sourceSets.commonTest.dependencies {
+        implementation(projects.analytics.authorization)
+        implementation(projects.toolkit.crashReporting.api)
+        implementation(libs.kotlinx.coroutines.test)
+        implementation(libs.kotlinx.serialization.json)
+    }
     sourceSets.commonMain.dependencies {
+        implementation(projects.analytics.analyticsApi)
+        implementation(libs.kotlinx.serialization.core)
         implementation(projects.uiCore.foundation)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.uiCore.state)

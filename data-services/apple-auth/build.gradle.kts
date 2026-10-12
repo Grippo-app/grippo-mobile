@@ -14,13 +14,7 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         implementation(libs.kotlinx.coroutines.core)
-        implementation(libs.kotlinx.serialization.json)
-        implementation(libs.ktor.client.core)
         implementation(libs.koin.core)
-
-        implementation(projects.toolkit.context)
-        implementation(projects.toolkit.httpClient)
-        implementation(projects.toolkit.serialization)
 
         implementation(libs.compose.runtime)
     }

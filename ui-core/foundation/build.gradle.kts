@@ -12,6 +12,10 @@ kotlin {
         namespace = "com.grippo.ui.core.foundation"
     }
 
+    sourceSets.commonTest.dependencies {
+        implementation(libs.kotlinx.coroutines.test)
+    }
+
     sourceSets.commonMain.dependencies {
         api(projects.toolkit.analytics.api)
         implementation(projects.toolkit.logger)
@@ -21,6 +25,7 @@ kotlin {
         api(libs.decompose.core)
         api(libs.decompose.extensions)
 
+        api(libs.kotlinx.serialization.core)
         implementation(libs.kotlinx.serialization.json)
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.immutable.collections)
