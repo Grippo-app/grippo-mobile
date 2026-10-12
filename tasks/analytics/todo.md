@@ -516,3 +516,238 @@ Gradle, Android/iOS builds, Kotlin test runners, KSP regeneration и Firebase se
 различает CancellationException активного SDK sink и реальную отмену worker.
 Оставшиеся worker guards вне operation decorator требуют отдельного пересмотра
 этого контракта; этот проход не утверждает отсутствие ensureActive во всём toolkit.
+
+## Унифицированные показы и действия авторизации — 2026-10-12
+
+- [x] Разделить владельцев: граф удерживает сценарий и сообщает реальные переходы; child factory связывает lifecycle каждого leaf через stateless AuthAnalyticsProvider. Все 8 leaf подключены, AuthProcess/ProfileCreation containers не создают views. Leaf components больше не получают lifecycle/retention services.
+- [x] Добавить закрытые семейства trackInteraction рядом с trackTransition/trackOperation: 35 вариантов по экранам, 44 реальных on*-callbacks восьми leaf ViewModel. Ввод, focus/clear/IME, password visibility, submit/control intent, picker open/confirmation, experience и selection описаны типизированными фактами.
+- [x] Оставить design-system callbacks нейтральными и optional; сохранить focus/keyboard/clear поведение. UI использует прежнюю validation, аналитика получает только bounded status/action/enum/count. Text status повтор дедуплицируется внутри сценария до кодирования; discrete clicks/picker confirmations не дедуплицируются. Raw values/length/body metrics/entity IDs не отправляются.
+- [x] Добавить самостоятельный retained ProfileCreation scenario и snapshot: отдельный flow, пять leaf steps, Forward/Back/Exit с внутренним кодированием Action/Back. Системный Back проходит через существующего владельца; неизвестный origin остаётся absent. Сохранить прежние auth/session keys, AuthorizationState wire shape и screen-api routes.
+- [x] Декорировать целые CreateProfile/Logout блоки без изменения бизнес-оркестрации. Navigation/results/retry/error handling остаются бизнес-логикой. Programmatic Back после error-dialog dismiss не создаёт ложное нажатие пользователя.
+- [x] Централизовать новые interaction/profile schemas, keys и codes во внутренних матрицах; catalog содержит 29 уникальных schemas (12 прежних + 10 interactions + 7 profile). Прежний AuthEventSchema побайтно сохранён; qualified annotated registration выполняется один раз.
+- [x] Добавить source fixtures typed payload/privacy/input dedup, profile lifecycle/restore/closed transitions/operations/errors/cancellation, UI mapping и callbacks. Расширить настоящий provider/DI integration fixture и добавить ProfileCreationComponentTest для реального childStack, hardware Back, foreground и полного Logout.
+- [x] Self-review и независимые review loops API/implementation и UI/provider/factories. Исправить пропущенную передачу сценария в MissingEquipmentsViewModel, исключить произвольные navigation reasons из public ProfileTransition и добавить недостающий Logout operation. После исправлений обязательных findings не осталось.
+- [x] Актуализировать canonical feature-analytics skill, UI provider reference, CLAUDE, feature standard, guide, coverage/template; перечислить реальные owners и явные omissions. Остальные фичи, external SDK/system surfaces и отдельная visibility внутренних picker/error dialogs не объявлены покрытыми.
+- [x] Статические проверки: 28/28 архитектурных checks; 15 legacy schema/snapshot/route files неизменны, duplicate top-level types отсутствуют, все 94 included Gradle modules имеют build files. Kotlin PSI разобрал 150 исходников: syntax errors = 0, named local functions = 0. Это синтаксический разбор, без компиляции проекта.
+- [x] Проверить 11 действующих документов и 37 локальных links/anchors, YAML двух skills и metadata, Markdown fences. Исправить противоречивые старые UI/DI rules о прямом ScreenAnalytics lookup и разграничить business-model mapping с bounded UI→telemetry mapping. Финальный git diff --check без ошибок.
+
+Отчёты: `/tmp/auth-unified-static-verification.json`,
+`/tmp/auth-analytics-syntax-result.txt`,
+`/tmp/analytics-standard-docs-verification.json`.
+В этом проходе Gradle, KSP, Kotlin test runners, Android/iOS builds и Firebase
+sends не запускались. Добавленные тесты не скомпилированы и не исполнены;
+source review, PSI и статические проверки не подтверждают runtime/type correctness.
+Предыдущие успешные платформенные проверки выше относятся к прежним изменениям.
+
+## Общие контракты аналитики и тонкая авторизация — 2026-10-12
+
+- [x] В существующем analytics-api добавить common/: три stateless контракта InteractionAnalytics/OperationAnalytics/TransitionAnalytics и шесть отдельных моделей InputAction/InputStatus/InputKeyboardAction/ControlAction/VisibilityChange/SelectionChange. Общие типы не зависят от авторизации, UI, domain или SDK и не добавляют runtime/DI слой.
+- [x] Сценарии AuthAnalytics наследуют только подходящие общие контракты с закрытыми feature types. Сократить AuthInteraction с 35 до 22 вариантов: feature wrappers описывают экран/поле/специфический intent, переиспользуя общие факты. Не расширять допустимые операции и переходы сценариев.
+- [x] Удалить старые authorization InputStatus/InputKeyboardAction, внутренние InteractionField/TextInput и повторные input encoders. Прямое использование закрытых CredentialField/ProfileField сохраняет wire codes.
+- [x] Дедуплицировать только InputAction.Changed по экрану/полю/status. Confirmed всегда отправляется и не записывает status cache; явное подтверждение не скрывает первый наблюдаемый текстовый ввод. Cache ограничен существующими enum targets сценария.
+- [x] Перевести шесть leaf ViewModel на общие факты, сохранив 44 on*-callbacks и два picker confirmations. Бизнес-операции, запросы, validation, error/retry/navigation/lifecycle и route snapshots не меняются; в события не добавлены сырые значения.
+- [x] Сохранить 29 schema names, versions, keys и wire codes. Feature implementation владеет матрицами и state; common содержит контракты и безопасные факты без универсального registry/runtime.
+- [x] Self-review и независимые review loops API/implementation и UI migration. После проверок обязательных findings не осталось.
+- [x] Изолированно скомпилировать реальные исходники cached Kotlin 2.4.20 JVM compiler с strict explicit API и serialization plugin: toolkit API 37 файлов, common API 9, Auth API 17, authorization implementation 27 и тестовый набор 7 файлов. Gradle/KSP/platform builds не запускались.
+- [x] Выполнить пять чистых JUnit classes: AuthNavigationTest/AuthOperationsTest/AuthInteractionTest/ProfileAnalyticsTest/CommonInteractionModelsTest — OK (32 tests), failures = 0. Проверены payload, Changed/Confirmed semantics, flow restoration, результат/ошибки/отмена операций и reporting isolation.
+- [x] Проверить типовые границы настоящим компилятором: корректный consumer общих контрактов компилируется; четыре неверных обращения (чужое поле, чужой экран, неподходящая операция, raw String вместо статуса) отвергнуты четырьмя diagnostics.
+- [x] Статические проверки 24/24: 659 защищённых business/UI/routes/lifecycle/transport/schema файлов неизменны; старые пути/конструкторы отсутствуют. Kotlin PSI: 156 файлов, syntax errors = 0, named local functions = 0.
+- [x] Обновить canonical skill, UI skill/reference, CLAUDE, standard, guide и coverage/template для common-first интеграции. Проверить 11 действующих документов, 38 локальных links/anchors, YAML двух skills/metadata через Ruby Psych и Markdown fences. Финальный git diff --check без ошибок.
+
+Команды: `python3 /tmp/auth-common-typecheck.py`, затем
+`python3 /tmp/auth-common-typecheck.py --tests-only` для уточнённого тестового
+набора. Первая попытка включала AuthSchemaTest и остановилась на отсутствующем
+generated KSP .module; этот класс исключён целиком, без подмены DI или stubs.
+Финальные пять compilation stages и 32 теста прошли. Тесты типовых границ
+запущены отдельно тем же cached compiler.
+
+Отчёты: `/tmp/auth-common-typecheck-result.json`,
+`/tmp/auth-common-junit-result.json`, `/tmp/auth-common-api-typecheck/junit.log`,
+`/tmp/auth-common-api-boundary-verification.json`,
+`/tmp/auth-common-static-verification.json`, `/tmp/auth-common-syntax-result.txt`,
+`/tmp/analytics-standard-docs-verification.json`.
+
+Проверка не включает AuthSchemaTest/generated DI/catalog composition,
+UI/foundation/Decompose/Compose/native fixtures, Gradle/KSP, Android/iOS builds
+или Firebase delivery. Изолированный JVM запуск не подтверждает платформенную
+интеграцию. quick_validate.py остаётся недоступен из-за отсутствия PyYAML;
+зависимости не устанавливались, YAML проверен Ruby Psych.
+
+## Повторный аудит общих контрактов и авторизации — 2026-10-12
+
+- [x] Независимо перепроверить common API/models, три Auth сценария, матрицы/схемы, input cache, generic results/error isolation, provider/DI/routes, graph retention и все восемь leaf с 44 callbacks и двумя picker results. Обязательных изменений UI/business flow не найдено.
+- [x] Исправить восстановление AuthorizationState: обе navigation slots должны принадлежать своим Login/Registration surfaces. Проверки выполняются вместе с route-flow invariant до state assignment/reporting; чужие referrers не запрещены как наблюдаемая attribution.
+- [x] Защитить terminal snapshot от позднего показа другого leaf после Exit. Показ возвращает прежнюю navigation/presentation, но не меняет закрытое состояние. Не добавлять новые runtime wrappers/locks/dispatchers.
+- [x] Добавить два regression tests: четыре некорректных restored snapshots и поздняя Registration activation после завершения. Независимое final review подтверждает совместимость валидных snapshots и отсутствие бизнес-привязок.
+- [x] Удалить неиспользуемый ProfileStep serializer; сохранить Serializable у реально сохраняемого Step, snapshot shape, SerialName, keys и wire-каталог. Явно описать существующий serial owner access для mutable scenarios.
+- [x] Отделить generated catalog test в AuthAnalyticsModuleTest от чистого AuthSchemaTest с 12 legacy wire fixtures. Убрать ставшие ненужными imports/пустые строки; не подменять generated DI. Pure fixture теперь компилируется и выполняется без KSP.
+- [x] Расширенный PSI scan нашёл локальную malformed factory в AnalyticsTest. Перенести её на уровень класса без изменения test cases; заново скомпилировать и выполнить соответствующий JVM набор.
+- [x] Актуализировать skill/standard для owner confinement, owned restored surfaces и стабильного terminal snapshot. Уточнить single-leaf binding без придуманного Step. Coverage хранит текущий результат проверки; история запусков остаётся в этом todo.
+- [x] Прямой cached Kotlin 2.4.20 JVM compiler с strict explicit API и serialization plugin: toolkit API 37 файлов, common API 9, Auth API 17, authorization implementation 27; после разделения fixtures скомпилированы 8 файлов Auth/common tests. Дополнительно компилируются actual shared toolkit core с JVM lock, три foundation analytics исходника и соответствующие test sources.
+- [x] AuthNavigationTest/AuthOperationsTest/AuthInteractionTest/ProfileAnalyticsTest/AuthSchemaTest/CommonInteractionModelsTest — OK (35 tests). AnalyticsOperationTest/FlowContextTest/AnalyticsTest/ScreenPresentationTest/AnalyticsParallelTest/AnalyticsConcurrencyTest/RetainedAnalyticsTest — OK (51 tests). После последнего test cleanup дополнительный набор выполнен снова. Всего 86 tests, оба актуальных JUnit scopes exit 0.
+- [x] Negative regression check: убрать две защиты только из временной копии AuthFlow, скомпилировать её и запустить реальный AuthNavigationTest — 10 tests, ровно два ожидаемых failures. В production исходниках защиты сохранены; текущий исправленный набор зелёный. Первый matcher ожидал старое имя одного теста: исправлен по реальному исходнику и проверен на сохранённом выводе, без повторного запуска.
+- [x] Финальные статические checks 36/36: 658 защищённых business/UI/routes/lifecycle/transport/schema файлов неизменны. Все source changes этого прохода ограничены согласованными fixes и test cleanup. PSI разобрал 242 исходника: syntax errors = 0, named local functions = 0.
+- [x] YAML двух skills и metadata, Markdown fences, 38 локальных links/anchors в 11 действующих документах и git diff --check прошли после финальной правки coverage.
+
+Команды: `python3 /tmp/analytics-deep-review-jvm.py`,
+`python3 /tmp/analytics-deep-review-jvm.py --tests-only --auth-only`,
+`python3 /tmp/analytics-deep-review-additional.py`,
+`python3 /tmp/analytics-deep-review-regression.py`,
+`python3 /tmp/validate-analytics-docs.py`,
+`python3 /tmp/analytics-deep-review-static.py`, `git diff --check`.
+PSI использует `/tmp/AuthAnalyticsSyntax.java` с cached compiler classpath и
+`/tmp/analytics-deep-review-syntax-input.txt`.
+
+Отчёты: `/tmp/analytics-deep-review-compilation.json`,
+`/tmp/analytics-deep-review-auth-tests.json`,
+`/tmp/analytics-deep-review-additional-tests.json`,
+`/tmp/analytics-deep-review-regression-result.json`,
+`/tmp/analytics-deep-review-static-result.json`,
+`/tmp/analytics-deep-review-syntax-result.txt`,
+`/tmp/analytics-standard-docs-verification.json`.
+JUnit logs: `/tmp/analytics-deep-review-jvm/junit.log` и
+`/tmp/analytics-deep-review-jvm/additional-tests.log`.
+
+Gradle/KSP, generated module/config/catalog composition tests,
+ScreenAnalyticsTest с generated DI dependency, actual UI component/ViewModel/Compose
+fixtures, native SDK adapters, Android/iOS builds и Firebase delivery не запускались.
+RetainedAnalyticsTest использует настоящую реализацию и cached Essenty/Decompose
+bytecode в обычной JVM; это не платформенный UI runtime. Существующий контракт
+отмены сервисного worker не менялся. quick_validate.py по-прежнему недоступен
+без PyYAML; зависимости не устанавливались, YAML проверен Ruby Psych.
+
+## Строгая иерархия аналитики и input API — 2026-10-12
+
+- [x] Независимо сверить common contracts/facts → feature scenario API/consumer descriptions → internal event families/matrices/schemas. Public descriptions не реализуют AnalyticsEvent и не раскрывают schemas/keys; новое runtime/DI обобщение не требуется.
+- [x] Закрыть недопустимые input combinations типами: InputAction.Text включает Changed/Focused/Cleared/Keyboard, Confirmed находится вне Text; Login/Registration принимают только Text. User.Input фиксирует Name, отдельный PickerConfirmed принимает Confirmed, а PickerOpened/PickerConfirmed — только ProfilePicker Height/Weight. Constructor guards/casts для этих пар не добавлены.
+- [x] Убрать ставший encoding-only public Name и лишний ProfileField root. Один internal AuthInteractionSchema.NameField instance используется matrix/cache; User text и picker descriptions разделены. AuthInteraction содержит 23 варианта вместо 22; wire catalog по-прежнему 29 schemas.
+- [x] Обновить UI callers и pure fixtures, сохранив 44 Contract callbacks и два picker results. Business requests/validation/navigation/error/retry/lifecycle остаются прежними; обратное снятие telemetry-only изменений UserViewModel побайтно воспроизводит исходный business code.
+- [x] Заново скомпилировать реальные финальные исходники cached Kotlin 2.4.20 JVM compiler с strict explicit API: toolkit API 37 файлов, common API 9, Auth API 17, authorization implementation 27, test sources 8. Auth/common JUnit — OK (35 tests); дополнительный actual toolkit API/core/RetainedAnalytics набор в этом проходе — OK (51 tests), итого 86.
+- [x] External consumer без friend paths: valid client компилируется; 25/25 negative cases дают точные ожидаемые diagnostics для scenario/action/field/subtype/sealed/internal boundaries. Это compiler checks, не дополнительные runtime tests.
+- [x] Kotlin PSI: 258 actual files, syntax errors = 0, named local functions = 0. Проверить сохранность 29 уникальных schema names/keys/versions/codes: AuthEventSchema/ProfileEventSchema unchanged; AuthInteractionSchema после удаления только нового internal NameField совпадает с исходной matrix.
+- [x] Отдельный final static audit прошёл 28/28 checks: 650 защищённых business/UI routes/lifecycle/platform source files неизменны. UI diff ограничен UserViewModel imports/typed constructor calls; analytics changes не добавляют бизнес-оркестрацию или runtime wrappers.
+- [x] Актуализировать canonical skill, feature standard, UI provider reference и coverage: structurally valid consumer facts отделены от internal wire events; fixed Name не выходит в API. Self-review и независимые final reviews новых subtypes/examples/callers не выявили оставшихся обязательных findings.
+- [x] YAML двух skills и metadata через Ruby Psych, 38 local links/anchors, Markdown fences в 11 действующих документах и git diff --check прошли.
+
+Команды: `python3 /tmp/analytics-deep-review-jvm.py --auth-only`,
+`python3 /tmp/analytics-deep-review-additional.py`,
+`python3 /tmp/analytics-hierarchy-contract-check.py`,
+`python3 /tmp/analytics-hierarchy-static-check.py`,
+`python3 /tmp/validate-analytics-docs.py`, `git diff --check`.
+PSI использует `/tmp/AuthAnalyticsSyntax.java` и
+`/tmp/analytics-hierarchy-syntax-input.txt`.
+Reports: `/tmp/analytics-deep-review-compilation.json`,
+`/tmp/analytics-deep-review-auth-tests.json`,
+`/tmp/analytics-deep-review-additional-tests.json`,
+`/tmp/analytics-hierarchy-contract-result.json`,
+`/tmp/analytics-hierarchy-syntax-result.txt`,
+`/tmp/analytics-hierarchy-static-result.json`,
+`/tmp/analytics-standard-docs-verification.json`.
+JUnit logs: `/tmp/analytics-deep-review-jvm/junit.log` и
+`/tmp/analytics-deep-review-jvm/additional-tests.log`.
+
+Не запускались Android/iOS builds, Gradle/KSP/generated DI/catalog composition,
+actual UI component/ViewModel/Compose runtime, полный ViewModel typecheck,
+native SDK adapters или Firebase delivery. PSI/source comparisons не подменяют
+typecheck/runtime. quick_validate.py недоступен без PyYAML; зависимости не
+устанавливались, YAML проверен установленным Ruby Psych. История предыдущих
+проходов выше не переписана.
+
+## Stateless упрощение интеграции — 2026-10-13
+
+- [x] Заменить сценарии/capability contracts на один stateless AuthAnalytics: typed trackEvent(AuthEvent), generic trackOperation(AuthOperation, whole block), presentScreen(AuthScreen, reason). Прямые закрытые event/operation families, восемь screen enums и необходимые feature enums; common содержит только InputStatus/InputKeyboardAction/ControlAction.
+- [x] Убрать action wrappers, flow/session/profile snapshots и retention keys/holders, classifiers, transition/flow events и статусный cache. Не трогать navigation-owned FlowId/entryPoint и обычный Component retainedInstance/ViewModel lifecycle.
+- [x] Упростить AuthAnalyticsProvider до provideScreen(context, typed screen/route): shared service + один foundation lifecycle binding. Сохранить восемь leaf и три factory sites, exhaustive route matrices. Первый activation Initial, последующие Restore, без saved process/referrer provenance.
+- [x] Сохранить 44 Contract callbacks и два picker results. Text InputChanged сравнивает existing old/new validation status, equal Empty→Empty/Valid→Valid omitted без cache; picker confirmations/clicks/selections остаются distinct. Raw text/credentials/body values/selected IDs не добавлены.
+- [x] Сохранить whole login/register/session-check/create-profile/logout business blocks, original T/errors/cancellation и reporting isolation. Удаление telemetry-only изменений восстанавливает normalized business bodies восьми leaf/graph; 55 UI state/screen/contract/direction/loader файлов byte-identical. 11 Auth VM не содержат local recovery catch/manual ensureActive/новых scope wrappers.
+- [x] Custom catalog содержит 22 schemas: 10 interaction + 12 operation. Удалены шесть flow schemas, auth_attempt_cancelled и failure_category; failed versions повышены до attempt=5/session=4/profile=2. Это сознательное сокращение funnel/error детализации, не миграция прежних отчётов. InputChanged population изменилась при прежних payload/schema v1.
+- [x] API/implementation сократились с 53 production файлов / 1579 строк до 21 / 614. Core queue/consent/SDK transport/bootstrap не менялись; 574 защищённых data/public routes/shared/native/core SDK файлов unchanged.
+- [x] Cached Kotlin 2.4.20 K2JVMCompiler с strict explicit API скомпилировал actual toolkit API 37 файлов, common API 3, Auth API 8, implementation 10. Все текущие compiler logs без warnings/errors; production copies/stubs не подменялись.
+- [x] AuthInteractionTest/AuthOperationsTest/AuthSchemaTest/AuthScreenTest/CommonInteractionModelsTest — OK (19 tests). Actual toolkit API/core, ScreenAnalyticsTest и AuthAnalyticsProviderTest lifecycle assertion bodies — OK (57 tests). Всего 76 tests, оба JUnit scopes exit 0.
+- [x] Provider tests используют actual provider/routes/API/implementation/foundation ScreenAnalytics и cached Essenty/Decompose bytecode. Только generated DI resolution заменён прямой конструкцией actual классов во временном ProviderTestFactory; это не проверка KSP modules.
+- [x] External consumer без friend paths: valid client компилируется; 16/16 negative cases дают точные ожидаемые diagnostics для wrong field/status/method/screen/event/operation types, sealed и internal boundaries. Kotlin PSI разобрал 206 файлов: syntax errors = 0, named local functions = 0.
+- [x] Переписать canonical skill/standard/provider reference/coverage и связанные UI/DI/error правила под простой API. Удалить старые нормативные требования к scenarios/classifiers/route-ID telemetry mapping. Business dependencies по-прежнему разрешаются внутри retained VM; только stateless analytics передаёт factory после leaf binding. Исторические этапы не переписывать.
+- [x] Expanded docs validator: YAML двух skills и metadata через Ruby Psych, 54 local links/anchors, закрытые Markdown fences в 17 действующих документах, git diff --check. Повторный quick_validate.py остановился только на отсутствующем PyYAML; зависимости не устанавливались.
+
+Команды: `python3 /tmp/analytics-simple-jvm.py`,
+`python3 /tmp/analytics-simple-jvm.py --tests-only`,
+`python3 /tmp/analytics-simple-contract-check.py`,
+`python3 /tmp/validate-analytics-docs.py`, `git diff --check`.
+PSI использует `/tmp/AuthAnalyticsSyntax.java` с
+`/tmp/analytics-simple-syntax-input.txt`.
+Отчёты: `/tmp/analytics-simple-compilation.json`,
+`/tmp/analytics-simple-auth-tests.json`, `/tmp/analytics-simple-additional-tests.json`,
+`/tmp/analytics-simple-contract-result.json`, `/tmp/analytics-simple-syntax-result.txt`,
+`/tmp/analytics-simple-protected-result.json`,
+`/tmp/analytics-simple-verified-source-manifest.json`,
+`/tmp/analytics-simple-ui-result.json`,
+`/tmp/auth-stateless-ui-source-verification.json`,
+`/tmp/analytics-standard-docs-verification.json`.
+JUnit logs: `/tmp/analytics-simple-jvm/junit.log` и
+`/tmp/analytics-simple-jvm/additional-tests.log`.
+
+Не запускались AuthAnalyticsModuleTest/ScreenAnalyticsModuleTest и generated
+module/config/catalog composition, Gradle/KSP, полный ViewModel typecheck,
+остальные actual UI/Compose fixtures/native SDK runtime, Android/iOS builds
+или Firebase delivery. Изолированный JVM lifecycle scope не подтверждает
+платформенный UI runtime. Прежние 86/25 и платформенные проверки выше относятся
+к своим версиям. quick_validate.py недоступен без PyYAML; зависимости не
+устанавливались, skill YAML проверяется Ruby Psych.
+
+## ViewModel screen hook вместо feature provider — 2026-10-13
+
+- [x] Оставить один stateless AuthAnalytics с прежними typed trackEvent/trackOperation/presentScreen. Вся feature instrumentation находится в VM; Component resolves analytics=getKoin().get() внутри обычного retainedInstance, как остальные зависимости.
+- [x] Удалить AuthAnalyticsProvider/AuthAnalyticsRoutes/AuthAnalyticsIntegrationModule и shared registration. Components/routes/factories/Render больше не передают analytics или выбирают telemetry screen; в UI analytics/ остаётся AuthInputMapping.
+- [x] Восемь leaf VM объявляют screenPresentation lambda с fixed AuthScreen. Graph VM сохраняет default null: ни view, ни resolution ScreenAnalytics. VM не хранит Lifecycle/ComponentContext и не добавляет activationFlow observer/scope.
+- [x] Foundation BaseViewModel предлагает optional protected `(NavigationReason) -> ScreenPresentation` hook и internal bindScreen. BaseComponent during doOnCreate binds retained VM, attachActivation, затем navigator/eventListener: init navigation не доставляется до binding. ScreenAnalytics владеет per-binding Initial/Restore и pause/destroy close; API + internal @Single через CoreModule.
+- [x] Обновить canonical skill/standard/coverage/template/guide и UI/DI/constructor правила под общую foundation интеграцию. references/ui-provider.md заменён references/viewmodel.md, current links обновлены. Исключение для factory-provided Component analytics удалено; исторические provider проверки выше сохранены.
+- [x] Cached Kotlin 2.4.20 K2JVMCompiler с strict explicit API: toolkit API 37 файлов, common API 3, Auth API 8, implementation 10; actual foundation 14 production files с Compose compiler plugin и real cached dependencies. JVM-only lock/logger actuals используются для изолированного JVM scope; production sources не заменялись копиями.
+- [x] Auth/common — OK (19 tests); toolkit API/core + ScreenAnalyticsTest/ViewModelScreenAnalyticsTest — OK (59 tests), всего 78. Последние два foundation test files перекомпилированы, все 9 foundation tests прошли повторно; это subset общего 78. Null graph без binder DI, retained VM/new lifecycle, Initial/Restore/close и init-navigation ordering проверяются actual BaseVM/BaseComponent/ScreenAnalytics.
+- [x] External consumer без friend paths: protected screenPresentation override компилируется; internal bindScreen/protected screenPresentation/internal implementation дают три ожидаемых INVISIBLE_REFERENCE diagnostics.
+- [x] Kotlin PSI: 203 files, syntax errors = 0, named local functions = 0. 75 UI source proofs: восемь VM business bodies и 11 Component plumbing transformations exact, 55 protected UI файлов byte-identical, 44 callbacks и два picker handlers сохранены. 404 core/data/native source hashes unchanged; BaseVM business exact after hook/import removal, BaseComponent exact after hook/necessary ordering removal.
+- [x] Независимый review нашёл старые drop-in BaseVM/BaseComponent fences в ui-feature reference. Обе копии синхронизированы с actual source, кроме `<org>/<product>` package placeholders. Остальной reference content не менялся этим исправлением.
+- [x] В 25 исторических review/audit/verification отчётах добавить explicit historical/superseded note со ссылками на текущие standard/coverage. Остальной контент каждого сохранён byte-for-byte; старые результаты не переписаны как текущие.
+- [x] Expanded docs validator: YAML двух skills + metadata через Ruby Psych, 107 local links/anchors, закрытые fences в 42 документах и git diff --check. Current reference renamed viewmodel.md; obsolete normative provider/factory exception rules отсутствуют.
+
+Android/iOS builds, Gradle/KSP/generated modules, native SDK/UI runtime и Firebase
+не входят в этот проход. Actual foundation/common тесты используют real cached
+Essenty/Decompose/Compose bytecode и explicit actual implementation test DI,
+а не generated modules. AuthAnalyticsModuleTest/ScreenAnalyticsModuleTest,
+full actual Auth feature VM/Component/Compose compilation/runtime не запускались.
+Исторические 76/16 относятся к provider реализации. quick_validate.py недоступен
+без PyYAML; dependencies не устанавливались, YAML проверен Ruby Psych.
+
+Команды: `python3 /tmp/analytics-vm-hook-jvm.py`,
+`python3 /tmp/analytics-vm-hook-jvm.py --foundation-only`,
+`python3 /tmp/analytics-vm-hook-final-foundation.py`,
+`python3 /tmp/analytics-vm-hook-contract-check.py`,
+`python3 /tmp/validate-analytics-docs.py`, `git diff --check`.
+Отчёты: `/tmp/analytics-vm-hook-compilation.json`,
+`/tmp/analytics-vm-hook-auth-tests.json`, `/tmp/analytics-vm-hook-additional-tests.json`,
+`/tmp/analytics-vm-hook-foundation-final-tests.json`,
+`/tmp/analytics-vm-hook-contract-verification.json`,
+`/tmp/analytics-vm-hook-syntax-verification.json`,
+`/tmp/analytics-vm-hook-source-verification.json`,
+`/tmp/analytics-vm-hook-document-source-sync.json`,
+`/tmp/analytics-vm-hook-public-route-verification.json`,
+`/tmp/analytics-standard-docs-verification.json`.
+JUnit logs: `/tmp/analytics-vm-hook-jvm/junit.log`,
+`/tmp/analytics-vm-hook-jvm/additional-tests.log`,
+`/tmp/analytics-vm-hook-jvm/foundation-final-tests.log`.
+
+## Строгая актуализация skills — 2026-10-13
+
+- [x] Canonical feature-analytics + VM reference/metadata согласованы с текущим stateless API, VM-only instrumentation и foundation hook. Typed facts/schema/privacy/coverage обязательны; бизнес сохраняет цельные операции, реальные return/error contracts и свой error pipeline.
+- [x] UI/DI/data/platform/prep/planner/reviewer инструкции направляют в один canonical skill. Старый raw Firebase API/iOS no-op пример удалён; business layers не получают analytics dependencies. Дополнительные providers, retention, scopes/jobs/caches не требуются.
+- [x] Независимая оценка Search и изменения login validation/picker выявила неоднозначность Result и shared config callbacks; исправлено. VM-owned onResult остаётся допустимым, shared plumbing не создаёт событий; dedicated dialog views/close имеют explicit scope/omission.
+- [x] Противоречивые dialog/process-death примеры синхронизированы с actual API и host: open/openings/Session, in-memory configs, title/content comparison, dismiss-before-result и serializer=null. Документы не обещают отсутствующую iOS persistence.
+- [x] Frontmatter и metadata проверены Ruby Psych с эквивалентными quick_validate checks, Markdown fences/новые ссылки и source examples сверены. git diff --check прошёл; 238 профильных code/config hashes неизменны, BaseVM/BaseComponent reference copies совпадают с source.
+
+Это docs-only проход: Android/iOS builds, Gradle/KSP и runtime tests не запускались;
+прежние 78 tests относятся к предыдущему этапу. quick_validate.py не запускается
+без PyYAML; зависимости не устанавливались. Две прежние ссылки на внешний
+orchestrator known-gaps register остаются вне этого scope.
+
+Проверка: `python3 /tmp/validate-analytics-skills-strict.py`, `git diff --check`.
+Отчёт: `/tmp/analytics-skills-strict-verification.json`; diff относительно начала
+этого прохода: `/tmp/analytics-skills-strict-diff.patch`.

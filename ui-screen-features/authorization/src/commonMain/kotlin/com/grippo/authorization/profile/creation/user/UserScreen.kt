@@ -86,6 +86,9 @@ internal fun UserScreen(
 
         InputName(
             value = state.name,
+            onFocused = contract::onNameFocused,
+            onClear = contract::onNameCleared,
+            onDone = contract::onNameKeyboardDone,
             onValueChange = contract::onNameChange
         )
 

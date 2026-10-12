@@ -15,6 +15,7 @@ internal class ExcludedMusclesComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ExcludedMusclesViewModel(
+            analytics = getKoin().get(),
             muscleFeature = getKoin().get(),
         )
     }

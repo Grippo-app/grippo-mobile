@@ -38,11 +38,12 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     init {
         lifecycle.doOnCreate {
+            viewModel.bindScreen(lifecycle)
+            viewModel.attachActivation(lifecycle.asActiveFlow())
+
             viewModel.navigator
                 .onEach(::eventListener)
                 .launchIn(coroutineScope)
-
-            viewModel.attachActivation(lifecycle.asActiveFlow())
         }
 
         lifecycle.doOnDestroy {

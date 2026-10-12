@@ -38,6 +38,8 @@ protected suspend fun <T> withLoader(loader: LOADER?, block: suspend () -> T): T
 public val navigator: Flow<DIRECTION>
 protected fun navigateTo(destination: DIRECTION)
 
+protected open val screenPresentation: ((NavigationReason) -> ScreenPresentation)? = null
+
 protected enum class Processing {
     WhileActive,
     Infinity,
@@ -77,6 +79,7 @@ override fun onDestroy()
 - **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
 - **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. Unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
 - **Suspend helpers**: run in the caller's coroutine and propagate failures to its `safeLaunch`. No local catches, additional jobs, stage flags or recovery wrappers. Analytics decorates the business operation and preserves its original error. See [error rules](error-pipeline.md).
+- **`screenPresentation`** defaults to null. A tracked leaf VM overrides the reason-aware presenter; BaseComponent/foundation owns its lifecycle binding. Graph/null resolves no ScreenAnalytics. VM stores no Lifecycle/ComponentContext and adds no activationFlow visibility observer or scope. See [feature analytics](../../feature-analytics/SKILL.md).
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.
 
 ### Flow processing modes
@@ -157,11 +160,11 @@ protected abstract suspend fun eventListener(direction: DIRECTION)
 
 ### Lifecycle wiring (built in)
 
-On **create**: collect `viewModel.navigator` into `eventListener`; `viewModel.attachActivation(lifecycle.asActiveFlow())`. On **destroy**: `viewModel.detachActivation()`, `resultManager.clear()`, cancel the Component's own scope. The Component holds its **own** `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)` used only for navigator collection and result subscriptions — **not** the VM's scope.
+On **create**: obtain the retained VM, call `bindScreen(lifecycle)`, attach activation, then collect navigator into eventListener. Binding precedes delivery of navigation emitted by VM init. On **destroy**: detach activation, clear ResultManager, cancel the Component's scope. ScreenAnalytics closes presentation on pause/destroy. The Component's `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)` serves navigator/result subscriptions, not screen analytics or the VM's business work.
 
 ### `eventListener`
 
-`when (direction) { ... }` over every `Direction` subtype (compiler-enforced exhaustive). Each branch maps to a constructor-injected lambda (`back`, `toX`) **or** a nav op on this Component's own `StackNavigation` (for a stack-owning feature root). It is `suspend` — you can call `dialogController.show(...)` inside.
+`when (direction) { ... }` over every `Direction` subtype (compiler-enforced exhaustive). Each branch maps to a constructor-injected lambda (`back`, `toX`) **or** a nav op on this Component's own `StackNavigation` (for a stack-owning feature root). It is `suspend`. Ordinary screen ViewModels call the non-suspending `DialogController.open(config)`; nested dialog Components forward semantic directions through typed constructor callbacks, and the host uses the originating step's Session. See [dialogs.md](dialogs.md).
 
 ### `Render` & ViewModel creation (MUST)
 
@@ -179,12 +182,12 @@ override val viewModel = componentContext.retainedInstance {
 ```
 
 - Use `collectAsStateMultiplatform()`, **not** `collectAsState`.
-- Dependencies pulled via `getKoin().get()` inside `retainedInstance { ... }` — **not** threaded through the Component constructor.
+- All dependencies, including stateless feature analytics, are pulled via `getKoin().get()` inside `retainedInstance { ... }`, not threaded through the Component constructor. Feature analytics stays in the VM; its optional screenPresentation is bound by BaseComponent/foundation, not by the feature. See [feature analytics](../../feature-analytics/SKILL.md).
 - Stack-owning components pass `this` to the Screen (`ProfileScreen(this, state, loaders, viewModel)`) so it can read `component.childStack`.
 
 ### Constructor parameters (MUST)
 
-A Component's constructor takes **only**: `componentContext`; **navigation callbacks** (`back`, `close`, `toX`); **initial route parameters** the parent route carries (`initialRange`, `userId`). **Forbidden** in ctor params: Feature interfaces, UseCases, DialogControllers, repositories — those come from Koin.
+A Component's constructor takes only `componentContext`, **navigation callbacks** (`back`, `close`, `toX`), and **initial route parameters** (`initialRange`, `userId`). **Forbidden** in ctor params: Feature interfaces, UseCases, DialogControllers, repositories and analytics services — those come from Koin inside retained VM construction.
 
 ### Result observation
 
@@ -269,7 +272,7 @@ Notes: `Column` (not `Box`/`LazyColumn`); **no** `fillMaxSize()` (content drives
 
 - **Every top-level Screen is wrapped in `BaseComposeScreen`** — both stack and dialog screens.
 - **Background color from `AppTokens`** — `AppTokens.colors.background.screen` for stack screens; `AppTokens.colors.background.dialog` for dialog screens.
-- **Dialog screens reuse `BaseComposeScreen`** (`ScreenBackground.Color(...background.dialog)`), laying out `Spacer(AppTokens.dp.dialog.top)` → centered title `Text` → body → `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`, horizontal padding `AppTokens.dp.dialog.horizontalPadding`. No dialog uses `BottomSheetToolbar`.
+- **Leaf dialog screens reuse `BaseComposeScreen`** (`ScreenBackground.Color(...background.dialog)`), laying out `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`, horizontal padding `AppTokens.dp.dialog.horizontalPadding`. They add no toolbar or duplicate title: the shared host renders `BottomSheetToolbar` from the active config's `title: UiText`, with Back for nested steps and Close for the entire session.
 
 ### What it does NOT do
 
@@ -346,10 +349,14 @@ Target path: `src/commonMain/kotlin/com/<org>/<product>/core/foundation/BaseView
 package com.<org>.<product>.core.foundation
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.<org>.<product>.core.error.provider.ErrorProvider
+import com.<org>.<product>.core.foundation.analytics.ScreenAnalytics
 import com.<org>.<product>.core.foundation.internal.operation.OperationManager
 import com.<org>.<product>.core.foundation.models.BaseDirection
 import com.<org>.<product>.core.foundation.models.BaseLoader
+import com.<org>.<product>.toolkit.analytics.context.NavigationReason
+import com.<org>.<product>.toolkit.analytics.lifecycle.ScreenPresentation
 import com.<org>.<product>.toolkit.crashreporting.CrashReporting
 import com.<org>.<product>.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
@@ -374,6 +381,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
@@ -504,6 +512,16 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         _activation.value = null
     }
 
+    // ------------ SCREEN ANALYTICS API ------------
+
+    /** Declare only on an instrumented screen. Foundation binds each component lifecycle. */
+    protected open val screenPresentation: ((NavigationReason) -> ScreenPresentation)? = null
+
+    internal fun bindScreen(lifecycle: Lifecycle) {
+        val present = screenPresentation ?: return
+        get<ScreenAnalytics>().bind(lifecycle, present)
+    }
+
     // ------------ ERROR API ------------
 
     private val errorProvider by inject<ErrorProvider>()
@@ -584,9 +602,14 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     init {
         lifecycle.doOnCreate {
-            viewModel.navigator.onEach(::eventListener).launchIn(coroutineScope)
+            viewModel.bindScreen(lifecycle)
             viewModel.attachActivation(lifecycle.asActiveFlow())
+
+            viewModel.navigator
+                .onEach(::eventListener)
+                .launchIn(coroutineScope)
         }
+
         lifecycle.doOnDestroy {
             viewModel.detachActivation()
             resultManager.clear()
@@ -596,10 +619,21 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     protected abstract suspend fun eventListener(direction: DIRECTION)
 
-    protected fun <T : BaseResult> observeResult(key: ResultKey<T>, onResult: suspend (T) -> Unit) {
+    /**
+     * Register once per key on the main thread when constructing the component.
+     * Observes until destruction, including while hidden. Keep the handler short.
+     */
+    protected fun <T : BaseResult> observeResult(
+        key: ResultKey<T>,
+        onResult: suspend (T) -> Unit
+    ) {
         resultManager.observeResult(key, onResult)
     }
 
+    /**
+     * Sends to current observers without replay; returns before handlers finish.
+     * Destruction cancels pending sends without retracting results already in the buffer.
+     */
     protected fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
         resultManager.sendResult(key, data)
     }
@@ -607,13 +641,24 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
     @Composable
     public abstract fun Render()
 
+
     private fun Lifecycle.asActiveFlow(): Flow<Boolean> = callbackFlow {
         trySend(state == Lifecycle.State.RESUMED)
+
         val cb = object : Lifecycle.Callbacks {
-            override fun onResume() { trySend(true).isSuccess }
-            override fun onPause() { trySend(false).isSuccess }
-            override fun onDestroy() { close() }
+            override fun onResume() {
+                trySend(true).isSuccess
+            }
+
+            override fun onPause() {
+                trySend(false).isSuccess
+            }
+
+            override fun onDestroy() {
+                close()
+            }
         }
+
         subscribe(cb)
         awaitClose { unsubscribe(cb) }
     }.distinctUntilChanged()

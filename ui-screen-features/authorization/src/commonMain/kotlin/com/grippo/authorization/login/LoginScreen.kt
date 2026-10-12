@@ -104,6 +104,9 @@ internal fun LoginScreen(
 
         InputEmail(
             value = state.email,
+            onFocused = contract::onEmailFocused,
+            onClear = contract::onEmailCleared,
+            onNext = contract::onEmailKeyboardNext,
             onValueChange = contract::onEmailChange
         )
 
@@ -111,6 +114,9 @@ internal fun LoginScreen(
 
         InputPassword(
             value = state.password,
+            onFocused = contract::onPasswordFocused,
+            onVisibilityChange = contract::onPasswordVisibilityChange,
+            onDone = contract::onPasswordKeyboardDone,
             onValueChange = contract::onPasswordChange
         )
 

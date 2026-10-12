@@ -39,6 +39,13 @@ run on an unknown footprint (fail-closed, do not pass by default).
 Review coroutine changes against the [project coroutine rules](references/forbidden-patterns.md#coroutines),
 including the prohibition on adding manual `ensureActive()` checks in production.
 
+For feature behavior changes, the semantic reviewer reads
+[feature-analytics](../feature-analytics/SKILL.md) and assesses the affected coverage
+matrix against actual instrumentation and omissions. Review eligible ViewModel
+callbacks, whole-operation result/error/cancellation preservation and the shared
+foundation screen lifecycle before navigation delivery. Visual-only changes need
+an impact assessment, not new events. Use the existing reviewer gate and report.
+
 Two layers, both required; neither replaces the other.
 
 1. **Machine validators** — emit `validator-finding`. The three always-on
@@ -74,12 +81,14 @@ Routing rules (frozen):
 
 ## References to read
 
-This skill carries its OWN core validator rules. Integration validators also defer to the owning
-Figma/backend skill references named below.
+This skill carries its OWN core validator rules. Integration validators and
+feature-specific semantic review also defer to the owning skill references below.
 
 - Reference routing (validator/topic → file): `references/index.md`.
 - Anti-patterns reference (owned; routing target for `anti-pattern-scanner` and the
   reviewer): `references/forbidden-patterns.md`.
+- Feature behavior analytics impact, coverage and semantic checks:
+  [feature-analytics](../feature-analytics/SKILL.md).
 - Stop-and-ask escalation points (owned; for `scope-leak-validator` + reviewer):
   `references/when-to-stop-and-ask.md`.
 - Review/verify gate selectors (`codexEnabled` / `verifyEnabled`):

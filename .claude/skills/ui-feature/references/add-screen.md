@@ -4,6 +4,11 @@
 
 > **Concrete example.** Identifiers below (`Note archive`, etc.) are illustrative; the steps apply to any feature.
 
+> **Analytics cross-cut:** apply [feature-analytics](../../feature-analytics/SKILL.md).
+> Examples below show MVI/navigation only. A tracked leaf declares screenPresentation
+> in its VM; its Component resolves analytics as a normal retained-VM dependency.
+> Reuse the feature API/implementation and update actual coverage; add no provider.
+
 > **Figma-enabled (`figmaEnabled: true`) + a `## Design` bullet:** the builder's design-cache gate applies BEFORE any file from this recipe is written — read the cached spec/mock and stop on unmapped components (see SKILL.md "Stop and ask"). This recipe owns the code shape; that gate owns when you may start.
 
 > **Build to the pulled design — not your own interpretation (mandatory for a `figmaEnabled` screen).** The pull session already wrote this screen's design to the cache — you build to THAT, you do not invent a layout. For each `## Design` bullet, read the pulled value spec `orchestrator/.cache/figma/screens/<stem>/<Screen>.spec.json` (it drives the element inventory, layout, paddings/gaps, corner radii, fills/tokens, and text styles — build every one to match) AND look at the oracle mock `orchestrator/.cache/figma/screens/<stem>/<Screen>.png` (it drives the overall appearance and which content/sections actually exist — reproduce the design's structure and its representative content). Do NOT build a different, simpler, or made-up screen. **Inventing a different layout or fabricating screen content is the ROOT cause of a failed screenshot comparison:** the gate judges the built screen against THIS design, so build to THIS design. Per dark theme, consult the dark spec/oracle (`<Screen>.dark.spec.json` / `<Screen>.dark.png`) too. (Golden invariant: you read these PULLED cache files — you never call Figma/MCP yourself; only the pull session does.)
@@ -162,19 +167,25 @@ is ProfileRouter.NoteArchive -> Child.NoteArchive(
 `ProfileOverviewComponent.eventListener`: `is ProfileOverviewDirection.OpenNoteArchive -> toNoteArchive(direction.initialRange)`. `toNoteArchive: (DateRange) -> Unit` is passed via the Component ctor from `ProfileComponent.createChild`.
 
 ## 6. Verify
+Reconcile leaf/control/input/operation coverage and run the affected checks from
+the analytics skill within the user's verification scope. Record explicit skips.
 ```bash
 # Task names come from project-config (sharedFrameworkTask / androidAssembleTask) —
 # these are the template defaults; skip the framework task when iosEnabled: false.
 ./gradlew :shared:assembleSharedDebugXCFramework
 ./gradlew :androidApp:assembleDebug
 ```
-Both must build green. Visually verify the new screen in a debug run.
+When permitted, both must build green. Visually verify in a permitted debug run.
 
 ## What you did NOT have to do
 - No new Koin module (`NoteFeature` is already provided).
 - No new mapper module (`.toState()` goes in `:data-mappers:domain-to-state/note/`).
 - No `:shared/Koin.kt` change.
 - No `RootRouter` change (the new route is in `ProfileRouter`, not at root level).
+
+These statements describe the MVI example with existing dependencies. A missing
+feature analytics implementation still needs its normal module/shared registration
+under the canonical skill; never create a UI integration module to replace it.
 
 ## Common mistakes (MUST avoid)
 - **Forgetting `@Serializable` on the new `Router` subtype.** Crashes on process death.

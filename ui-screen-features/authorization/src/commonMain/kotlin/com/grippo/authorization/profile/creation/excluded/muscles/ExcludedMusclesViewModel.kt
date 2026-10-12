@@ -1,17 +1,27 @@
 package com.grippo.authorization.profile.creation.excluded.muscles
 
+import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.models.AuthEvent
+import com.grippo.analytics.authorization.models.AuthScreen
+import com.grippo.analytics.common.models.ControlAction
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.state.muscles.toState
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 internal class ExcludedMusclesViewModel(
+    private val analytics: AuthAnalytics,
     muscleFeature: MuscleFeature,
 ) : BaseViewModel<ExcludedMusclesState, ExcludedMusclesDirection, ExcludedMusclesLoader>(
     ExcludedMusclesState()
 ), ExcludedMusclesContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(AuthScreen.ExcludedMuscles, reason)
+    }
 
     init {
         muscleFeature
@@ -49,6 +59,7 @@ internal class ExcludedMusclesViewModel(
 
     override fun onGroupClick(id: String) {
         update { it.copy(selectedGroupId = id) }
+        analytics.trackEvent(AuthEvent.Muscles.GroupSelected)
     }
 
     override fun onSelect(id: String) {
@@ -60,9 +71,14 @@ internal class ExcludedMusclesViewModel(
             }
             it.copy(selectedMuscleIds = selectedMuscleIds)
         }
+        val selectedIds = state.value.selectedMuscleIds
+        analytics.trackEvent(
+            AuthEvent.Muscles.SelectionChanged(id in selectedIds, selectedIds.size)
+        )
     }
 
     override fun onNextClick() {
+        analytics.trackEvent(AuthEvent.Muscles.Control(ControlAction.Next))
         val current = state.value
         val excludedMuscleIds = current.suggestions
             .flatMap { it.muscles }
@@ -75,6 +91,7 @@ internal class ExcludedMusclesViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(AuthEvent.Muscles.Control(ControlAction.Back))
         navigateTo(ExcludedMusclesDirection.Back)
     }
 }

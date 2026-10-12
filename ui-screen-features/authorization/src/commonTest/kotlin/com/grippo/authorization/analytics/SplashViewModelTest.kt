@@ -65,17 +65,17 @@ class SplashViewModelTest {
         val crashes = mutableListOf<Throwable>()
         val directions = mutableListOf<SplashDirection>()
         val dismissCallbacks = mutableListOf<() -> Unit>()
-        val analytics = RecordingAuthAnalytics()
+        val recorder = RecordingAuthAnalytics()
         val reporting = if (rejectReporting) {
-            object : Analytics by analytics {
+            object : Analytics by recorder {
                 override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
                     throw IllegalStateException("Reporting failed")
                 }
             }
         } else {
-            analytics
+            recorder
         }
-        val scenario = factory(reporting).session()
+        val analytics = factory(reporting)
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         startKoin { modules(CoreModule().module, module {
             single<ErrorProvider> { object : ErrorProvider {
@@ -93,12 +93,12 @@ class SplashViewModelTest {
         }) }
         var viewModel: SplashViewModel? = null
         try {
-            val splash = SplashViewModel(scenario, data, data, domain, domain)
+            val splash = SplashViewModel(analytics, data, data, domain, domain)
             viewModel = splash
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 splash.navigator.collect { directions += it }
             }
-            verify(splash, analytics, errors, directions, dismissCallbacks)
+            verify(splash, recorder, errors, directions, dismissCallbacks)
             assertEquals(errors, crashes, "Dialogs and crash reporting must receive the same original failures")
         } finally {
             viewModel?.onDestroy()
@@ -187,7 +187,7 @@ class SplashViewModelTest {
                     listOf("auth_session_check_started", "auth_session_check_failed"),
                     analytics.names,
                 )
-                assertEquals("timeout", analytics.events.last().text("failure_category"))
+                assertTrue(analytics.events.last().event.parameters().none { it.key.name.startsWith("failure_") })
                 assertNull(analytics.events.last().text("session_outcome"))
 
                 val profileRequestsBeforeRetry = domain.calls.size

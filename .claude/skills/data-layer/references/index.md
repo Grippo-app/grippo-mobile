@@ -1,7 +1,8 @@
 # Data-layer references — routing table
 
-Self-contained reference pack for the `data-layer` skill. These files carry the skill's own
-normative rules and read no external rule docs at runtime — a builder reads here.
+Reference pack for data mechanics. Feature behavior changes additionally assess
+[canonical analytics impact/coverage](../../feature-analytics/SKILL.md); instrumentation
+belongs to ViewModels rather than business layers.
 
 Route by task kind; each row lists the file to read first, then any supporting files.
 
@@ -9,6 +10,7 @@ Route by task kind; each row lists the file to read first, then any supporting f
 |---|---|---|
 | New data feature (full recipe) | [`cookbook-data-feature.md`](cookbook-data-feature.md) | [`module-structure.md`](module-structure.md), [`repositories.md`](repositories.md) |
 | Repository shape / data flow (UI → network) | [`repositories.md`](repositories.md) | [`module-structure.md`](module-structure.md) |
+| Feature behavior analytics impact / business boundary | [feature-analytics](../../feature-analytics/SKILL.md) | [`repositories.md`](repositories.md) |
 | `:data-features:*` module shape, feature-api split, domain enums / sealed types / strict typing | [`module-structure.md`](module-structure.md) | [`repositories.md`](repositories.md) |
 | Add endpoint + DTO (full recipe) | [`cookbook-endpoint.md`](cookbook-endpoint.md) | [`dtos-and-api.md`](dtos-and-api.md), [`backend-client.md`](backend-client.md) |
 | `<Product>Api` flat shape, `request<T>` helper, DTO rules | [`dtos-and-api.md`](dtos-and-api.md) | [`backend-client.md`](backend-client.md) |

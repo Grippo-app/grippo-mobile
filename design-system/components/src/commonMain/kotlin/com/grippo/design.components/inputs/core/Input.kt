@@ -79,6 +79,7 @@ internal fun Input(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
+    onFocused: () -> Unit = {},
 ) {
     val colors = AppTokens.colors
     val shape = RoundedCornerShape(AppTokens.dp.input.radius)
@@ -164,7 +165,13 @@ internal fun Input(
                 .background(color = backgroundColor, shape = shape)
                 .border(width = AppTokens.dp.input.borderWidth, color = borderColor, shape = shape)
                 .heightIn(min = height)
-                .onFocusChanged { hasFocus.value = it.hasFocus }
+                .onFocusChanged { focus ->
+                    val wasFocused = hasFocus.value
+                    hasFocus.value = focus.hasFocus
+                    if (focus.hasFocus && !wasFocused) {
+                        onFocused()
+                    }
+                }
                 .animateContentSize(),
             value = tfv,
             cursorBrush = SolidColor(contentColor),

@@ -9,10 +9,12 @@ Use `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt` as the actual modul
 list. `Koin.init` starts the single Koin context and returns `ApplicationBootstrap`
 with toolkit analytics/crashReporting/messaging startup contracts. Register
 annotated modules explicitly through `.module`, including service cores,
-feature analytics implementations and UI provider/classifier bindings. Components
-resolve their stateless `<Feature>AnalyticsProvider`; it injects the feature API and
-returns a scenario retained by that component context. Mutable scenarios are never
-app-scoped DI singletons.
+feature analytics implementations. Components resolve the stateless feature service
+inside normal retained VM construction. The leaf VM declares optional
+screenPresentation; BaseComponent/foundation binds it through ScreenAnalytics.
+Graph default null produces no view or lifecycle-service resolution. Components/
+routes/factories/Render need no analytics wiring, provider or UI integration module.
+Existing retained VM ownership stays; no analytics scenario/snapshot keys.
 
 Feature telemetry follows [feature-analytics](../../feature-analytics/SKILL.md).
 UI depends on `:analytics:analytics-api`; shared depends on `:analytics:<feature>`.

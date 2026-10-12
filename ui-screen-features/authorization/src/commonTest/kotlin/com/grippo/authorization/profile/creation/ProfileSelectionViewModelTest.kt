@@ -6,6 +6,11 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.arkivanov.essenty.lifecycle.destroy
 import com.arkivanov.essenty.lifecycle.resume
+import com.grippo.authorization.analytics.RecordingAuthAnalytics
+import com.grippo.authorization.analytics.factory
+import com.grippo.authorization.profile.creation.experience.ExperienceDirection
+import com.grippo.authorization.profile.creation.experience.ExperienceViewModel
+import com.grippo.toolkit.analytics.transport.AnalyticsValue
 import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesDirection
 import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesViewModel
 import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsDirection
@@ -88,7 +93,9 @@ class ProfileSelectionViewModelTest {
             override suspend fun getMuscles(): Result<Unit> = error("Unexpected catalog request")
         }
 
-        withActiveViewModel(create = { ExcludedMusclesViewModel(feature) }) { viewModel, directions ->
+        val recorder = RecordingAuthAnalytics()
+        val analytics = factory(recorder)
+        withActiveViewModel(create = { ExcludedMusclesViewModel(analytics, feature) }) { viewModel, directions ->
             val initial = listOf(muscles("initial", "first", "second"))
             groups.emit(initial)
             runCurrent()
@@ -118,6 +125,14 @@ class ProfileSelectionViewModelTest {
             runCurrent()
             assertTrue(viewModel.state.value.selectedMuscleIds.isEmpty())
             assertEquals(null, viewModel.state.value.selectedGroupId)
+            val selections = recorder.events.filter { it.event.schema.name == "auth_selection_changed" }
+            assertEquals(listOf(1L, 0L), selections.map { captured ->
+                (captured.event.parameters().single { it.key.name == "selected_count" }.value as AnalyticsValue.Integer).value
+            })
+            assertTrue(recorder.events.flatMap { it.event.parameters() }.none { parameter ->
+                val value = parameter.value
+                value is AnalyticsValue.Text && value.value in setOf("initial", "replacement", "first", "second", "third")
+            })
         }
     }
 
@@ -129,7 +144,9 @@ class ProfileSelectionViewModelTest {
             override suspend fun getEquipments(): Result<Unit> = error("Unexpected catalog request")
         }
 
-        withActiveViewModel(create = { MissingEquipmentsViewModel(feature) }) { viewModel, directions ->
+        val recorder = RecordingAuthAnalytics()
+        val analytics = factory(recorder)
+        withActiveViewModel(create = { MissingEquipmentsViewModel(analytics, feature) }) { viewModel, directions ->
             val initial = listOf(equipments("initial", "first", "second"))
             groups.emit(initial)
             runCurrent()
@@ -159,6 +176,35 @@ class ProfileSelectionViewModelTest {
             runCurrent()
             assertTrue(viewModel.state.value.selectedEquipmentIds.isEmpty())
             assertEquals(null, viewModel.state.value.selectedGroupId)
+            val selections = recorder.events.filter { it.event.schema.name == "auth_selection_changed" }
+            assertEquals(listOf(1L, 0L), selections.map { captured ->
+                (captured.event.parameters().single { it.key.name == "selected_count" }.value as AnalyticsValue.Integer).value
+            })
+            assertTrue(recorder.events.flatMap { it.event.parameters() }.none { parameter ->
+                val value = parameter.value
+                value is AnalyticsValue.Text && value.value in setOf("initial", "replacement", "first", "second", "third")
+            })
+        }
+    }
+
+    @Test
+    fun experienceSelectionReportsBoundedFactsWithoutChoosingBusinessNavigation() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val analytics = factory(recorder)
+        withActiveViewModel(create = { ExperienceViewModel(analytics) }) { viewModel, directions ->
+            viewModel.onNextClick()
+            runCurrent()
+            assertTrue(directions.isEmpty())
+
+            viewModel.onExperienceClick(ExperienceEnumState.ADVANCED)
+            assertEquals(ExperienceEnumState.ADVANCED, viewModel.state.value.selected)
+            viewModel.onNextClick()
+            runCurrent()
+            assertEquals(ExperienceDirection.ExcludedMuscles(ExperienceEnumState.ADVANCED), directions.single())
+            val selection = recorder.events.single { it.event.schema.name == "auth_experience_selected" }
+            assertEquals("advanced", selection.text("profile_experience"))
+            assertEquals("profile_creation_experience", selection.text("interaction_screen"))
+            assertEquals(2, recorder.events.count { it.text("interaction_action") == "next" })
         }
     }
 

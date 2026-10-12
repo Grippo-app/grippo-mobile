@@ -227,15 +227,18 @@ shared by every VM. Feature deps (Features, UseCases, Controllers) come via the
 VM's constructor. `BaseComponent` uses the same pattern for `ResultManager`
 (`by inject<ResultManager> { parametersOf(coroutineScope) }`).
 
-Toolkit service cores are Koin-managed and expose consumer API contracts.
-BaseViewModel injects `CrashReporting`; feature UI uses its typed analytics
-facade through its UI `<Feature>AnalyticsProvider` in `analytics/`, backed by
-`:analytics:analytics-api`. Provider/classifier bindings are annotated @Single;
-component-owned scenarios are retained, not singleton bindings. App shells attach SDK adapters using
-the instance-bound ApplicationBootstrap returned by Koin.init. SDK transport
-stays out of feature and domain modules; no static provider lookup.
+Toolkit service cores expose consumer contracts. BaseViewModel injects
+CrashReporting; Components resolve the stateless feature analytics service as
+`analytics` inside normal retained VM construction. Annotated @Single binds the
+feature service; foundation supplies ScreenAnalytics for the optional leaf VM
+screenPresentation hook. BaseComponent owns the bind call during doOnCreate;
+graph null hook resolves no lifecycle service. VM knows no Lifecycle/ComponentContext.
+Existing retained VM ownership remains; no feature provider/integration module,
+analytics scenarios/keys/classifier bindings are needed.
+App shells attach SDK adapters through ApplicationBootstrap returned by Koin.init;
+transport stays out of feature/domain modules.
 See [feature-analytics](../../feature-analytics/SKILL.md) and
-[composition-root.md](composition-root.md) for the current module/lifetime rules.
+[composition-root.md](composition-root.md) for module/lifetime rules.
 
 ## What stays out of Koin
 

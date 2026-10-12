@@ -87,9 +87,9 @@ Groups:
 
 ### `:analytics:*` — feature telemetry
 
-- `:analytics:analytics-api` defines one `<Feature>Analytics` entry point per feature, nested scenario contracts and sibling `models/` for typed facts/snapshots. `:analytics:<feature>` contains internal state/events/operations/schema matrices and a public annotated module. UI main depends on the API; shared wires implementations. Analytics implementations have no UI/routes/foundation, domain/use-case, service or SDK dependencies.
-- Analytics decorates complete business operations. It does not determine navigation, fallback or results; login/register keep preparation private. Routes own their identity types, mapped to toolkit IDs only at the UI provider boundary. Ordinary reporting exceptions cannot block business work/navigation/lifecycle; caller cancellation, fatal Errors and state/owner invariants stay explicit.
-- The UI feature's `analytics/` package contains a stateless internal `<Feature>AnalyticsProvider` with `provide<Scenario>` methods, separate classifier when needed and annotated bindings. Components obtain and pass the same retained scenario as `analytics`. Persisted scenarios use foundation `RetainedAnalytics`; keys/mapping/validation remain feature-owned. Leaf visibility uses DI `ScreenAnalytics`, whose internal stateless `@Single` implementation is discovered by `CoreModule`. Follow [feature-standard](tasks/analytics/feature-standard.md) and the [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep the coverage matrix current.
+- `:analytics:analytics-api` defines one stateless `<Feature>Analytics` service with typed `trackEvent`, complete generic `trackOperation` and typed `presentScreen`. Sibling `models/` hold closed event/operation families, screens and necessary feature enums; common/models reuses InputStatus/InputKeyboardAction/ControlAction. Public feature events are observations, not toolkit wire events. `:analytics:<feature>` keeps implementation/encoding/schema matrices internal and exposes one annotated module. UI main depends on the API; shared wires implementations. No feature analytics factories, snapshots, classifiers or capability hierarchy; no UI/domain/service/SDK dependencies in implementations.
+- Analytics decorates complete business operations. It does not determine navigation, fallback or results; login/register keep preparation private. Route identity types remain navigation-owned and do not enter the stateless analytics service. Ordinary reporting exceptions cannot block business work/navigation/lifecycle; caller cancellation and fatal Errors remain unchanged.
+- Feature analytics lives in ViewModels: inject the stateless service as `analytics` inside the Component's normal retainedInstance construction. A tracked leaf overrides optional protected BaseViewModel.screenPresentation `(NavigationReason) -> ScreenPresentation`; BaseComponent calls internal VM.bindScreen(lifecycle) during existing doOnCreate after obtaining the retained VM. Foundation ScreenAnalytics owns Initial/Restore and pause/destroy close. Graph VMs keep the null hook: no binding or lifecycle service resolution. Components/routes/factories/Render add no analytics parameters, events or lifecycle wiring; UI analytics/ retains only needed input mapping. Keep normal VM lifecycle ownership and no analytics state/retention keys. Text status uses existing old/new validation, without a cache. Follow [feature-standard](tasks/analytics/feature-standard.md) and [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep actual coverage and omissions current.
 
 ### `:toolkit:*` — platform-aware utilities
 
@@ -152,7 +152,7 @@ Hard rules:
 - **A UI module (`:ui-screen-features:*`, `:ui-dialog-features:*`) does NOT depend** on `:data-services:*` directly — only via `:data-features:feature-api`. The existing authorization credential flow is the exception for `:data-services:google-auth` and `:data-services:apple-auth`; Firebase transport stays app-owned.
 - **`:data-features:feature-api`** does not depend on `:data-services:*`. It is pure contracts + domain models.
 - **`:data-mappers:*`** depend on adjacent layers (`dto-to-entity` → `:data-services:backend` + `:data-services:database`), but **never on UI**.
-- **`:analytics:analytics-api`** defines pure feature telemetry contracts. UI main depends on this API; shared wires feature implementations. **`:analytics:<feature>`** does not depend on UI, data/domain, services, SDKs or toolkit core; use supplied business blocks and boundary classifiers.
+- **`:analytics:analytics-api`** defines pure feature telemetry contracts. UI main depends on this API; shared wires feature implementations. **`:analytics:<feature>`** does not depend on UI, data/domain, services, SDKs or toolkit core; observe typed facts and decorate supplied complete business blocks.
 - **`:toolkit:*`** does not depend on the data layer or Firebase SDK. Service API modules contain pure contracts; core modules own state/queues and their Koin modules.
 - **`:design-system:*`** does not depend on the data layer. `AppTokens` are pure UI primitives.
 - `:shared` is the only module that imports "everything". `:androidApp`/`:iosApp` reach `RootComponent` and `Koin.init` only through `:shared`.
@@ -267,8 +267,8 @@ transformed. `onError` runs only after dialog dismissal. See the
 ### `BaseComponent<DIRECTION : BaseDirection>`
 
 - Delegates `ComponentContext`, is a `KoinComponent`. Created in the parent component via `<X>Component(componentContext = ..., closeCallback = ..., navCallback = ...)`.
-- `protected abstract val viewModel: BaseViewModel<*, DIRECTION, *>`. Created via `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` — **dependencies are pulled via `getKoin().get()`**, not via the Component constructor.
-- On `lifecycle.doOnCreate` — subscribes to `viewModel.navigator` and calls `eventListener(direction)`; calls `viewModel.attachActivation(lifecycle.asActiveFlow())`.
+- `protected abstract val viewModel: BaseViewModel<*, DIRECTION, *>`. Created via `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }`. All dependencies, including stateless feature analytics, resolve via `getKoin().get()` inside that block, not via Component constructor.
+- On `lifecycle.doOnCreate` — obtains the retained VM, calls its optional bindScreen(lifecycle), then attachActivation(lifecycle.asActiveFlow()), and finally subscribes to navigator/eventListener. Binding precedes delivery of navigation already emitted by VM init.
 - On `lifecycle.doOnDestroy` — `detachActivation`, `resultManager.clear`, cancels coroutineScope.
 - `protected abstract suspend fun eventListener(direction: DIRECTION)` — navigation handler; usually `when (direction) { ... }`. `Back/Close` map to constructor lambdas (`back()`/`close()`), nested routes — to `navigation.push(...)` of the root Component.
 - `protected fun observeResult<T>(key: ResultKey<T>, onResult)` / `sendResult(key, data)` — cross-component communication on top of the Decompose stack (without threading callbacks down).
@@ -298,7 +298,7 @@ public sealed class ProfileRouter : BaseRouter {
 }
 ```
 
-Decompose `childStack(serializer = RootRouter.serializer(), initialConfiguration = ..., key = "RootComponent", childFactory = ::createChild)`. `StateKeeper` serializes the router into `Bundle`/iOS state — therefore **all Routers and payloads inside them (`StageState`, etc.) must be `@Serializable`**.
+Decompose `childStack(serializer = RootRouter.serializer(), initialConfiguration = ..., key = "RootComponent", childFactory = ::createChild)` supports screen-route restoration when the platform shell supplies saved StateKeeper state — therefore **all Routers and payloads inside them (`StageState`, etc.) must be `@Serializable`**. Android uses `retainedComponent`; the current iOS shell supplies no persisted StateKeeper archive. See [platform limits](.claude/skills/ui-feature/references/process-death.md).
 
 `Deeplink` — a simple `enum class Deeplink(val key: String)` with `fromKey(key)`. Handled in `RootViewModel` (`enqueueDeeplink` for cold start / `applyDeeplink` for warm / `parseDeeplink` to map to a Direction).
 
@@ -484,7 +484,10 @@ Migrations — `Migration<N>To<N+1>` objects in `migrations/`, collected in `Dat
 
 ### Mappers
 
-7 directions = 7 modules. Package names = `<source>.<target>.<area>`:
+Business-model conversions use 7 directions = 7 modules. Package names =
+`<source>.<target>.<area>`. UI→telemetry status/enum mapping is a different boundary:
+keep it in the feature UI `analytics/` package, using existing UI validation without
+raw values, domain conversions or inline mapping in ViewModel/Screen:
 
 | Module | Package prefix | Purpose |
 |---|---|---|
@@ -696,7 +699,7 @@ init {
 - Direction — `internal sealed interface <Feature>Direction : BaseDirection` with `data object`/`data class` subtypes.
 - Loader — `@Immutable internal sealed interface <Feature>Loader : BaseLoader` with `@Immutable data object` subtypes.
 - Contract — `@Immutable internal interface <Feature>Contract { ...; companion object Empty : <Feature>Contract { ... } }`. Empty — for preview.
-- Use case — `public class <Verb><Noun>UseCase(...)` with one `public suspend fun execute(...): Result<T>`.
+- New use case convention — `public class <Verb><Noun>UseCase(...)` with one `public suspend fun execute(...): Result<T>`. Preserve existing complete APIs, including direct-value throwing auth use cases; analytics must not reshape them.
 
 ### Packages
 
@@ -721,7 +724,7 @@ init {
   `onError`, rather than duplicated or declared locally.
 - Coroutines — **only** `safeLaunch` / `Flow.safeLaunch`. No `viewModelScope.launch`, `runBlocking`, `GlobalScope`.
 - Collections in State and Loaders — **only** `kotlinx-collections-immutable` (`ImmutableList`, `ImmutableSet`, `PersistentList`). No `List`/`Set`/`MutableList` in `@Immutable` classes.
-- Errors from a use case — `Result<T>`, `.getOrThrow()` inside `safeLaunch`, the exception bubbles to `BaseViewModel.sendError` → `ErrorProvider`.
+- Unwrap a Result-returning call with `.getOrThrow()` inside `safeLaunch` (inside the decorated block when tracked); existing direct-value throwing calls remain direct. Original exceptions bubble to `BaseViewModel.sendError` → `ErrorProvider`.
 - Every `@Composable internal fun <X>Screen` takes three arguments in the same order: `state, loaders, contract` (sometimes also `component` for the cross-feature navigator).
 - `@AppPreview` + `PreviewContainer` for previews. Preview always uses `<X>Contract.Empty` and stub data (`stub*()` functions from `:ui-core:state`).
 - `remember(...)` for derived button state (`val buttonState = remember(loaders, state.x, state.y) { when { ... } }`).
@@ -1026,14 +1029,14 @@ integration checks within the user's verification scope, and record actual resul
 - Named local function declarations inside `init`, constructors, functions or lambdas. Methods/functions belong at class/file scope; callbacks and DSL lambdas remain allowed.
 - Mutable collections (`MutableList`, `mutableStateListOf`, `mutableMapOf`) in `@Immutable` state.
 - Business logic in `Component`, `Screen`, mappers, or DTOs. Logic — in `ViewModel` or domain layer (`*Repository`/`*UseCase`/`*FeatureImpl`).
-- Mapping outside `:data-mappers:*`. Inline conversion in ViewModel/Screen — forbidden.
+- Business-model DTO/Entity/Domain/State conversions outside `:data-mappers:*`, including inline conversion in ViewModel/Screen — forbidden. UI→telemetry fact mapping (existing validation state/enum → bounded analytics status/code) stays in the feature UI `analytics/` package; call that mapping from the VM rather than embedding it there. This does not permit business conversions or validation changes for analytics.
 - Direct dependency of a UI module on `:data-services:*` — only via `:data-features:*`.
 - Creating a Koin module via hand-written `module { ... }` DSL for a new module.
 - `LaunchedEffect(Unit)` for navigation — use `Direction` + `eventListener`.
 - Local `try/catch`, `runCatching` or result failure handlers that hide, replace or present failures in a ViewModel, including private helpers. Use `getOrThrow()` → `safeLaunch` → `ErrorProvider` and pure `mapError` only for dialog mapping. No recovery wrappers, extra launches or analytics-owned recovery. `onError` runs after dialog dismissal.
 - Hardcoded strings in UI — only via `AppTokens.strings.res(Res.string.x)` (Composable) or `StringProvider.get(...)` (VM).
 - Storing `String` in State if the value depends on resources/locale — use `UiText`.
-- Direct Koin `get()` in Screen — forbidden. ViewModel dependencies resolve inside `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component. A Component may also resolve its stateless UI `<Feature>AnalyticsProvider` before ViewModel creation and `ScreenAnalytics` for leaf lifecycle binding; pass the same returned scenario to children/VM as `analytics`.
+- Direct Koin `get()` in Screen — forbidden. All ViewModel dependencies, including `analytics`, resolve inside `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component. Feature analytics stays in VM callbacks/operations and optional screenPresentation; only foundation binds lifecycle/resolves ScreenAnalytics. No feature provider/route matrix, analytics constructor parameter in Component, manual bind or activationFlow visibility observer.
 - Accessing `Context`/`Activity` directly from `commonMain` — go through `:toolkit:context` (`NativeContext`).
 - Hidden coupling of feature modules via transitive `api` — list every needed dependency in your own `build.gradle.kts`.
 - Using `androidx.compose.ui.res.stringResource(...)` or `painterResource(R.drawable...)` — only Compose Multiplatform Resources (`Res.string.*` / `Res.drawable.*`).

@@ -88,7 +88,7 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **`getKoin().get()` in a Composable.** Wrong layer.
 - **Module hand-DSL** unless it is in tests, listed in `diHandWrittenModules`, or the built-in `FeatureApiModule` UseCase-aggregator (see the di-modules skill, references/annotations.md).
 - **`@Factory` for stateless services.** Use `@Single`.
-- **A Koin-injectable type as a `*Component` constructor parameter.** A Decompose `*Component` receives only its `ComponentContext`, navigation args, and `() -> Unit` callbacks. Feature interfaces, UseCases, `DialogController`, repositories, managers, and auth/link providers are Koin-injectable and must be resolved via `getKoin().get()` inside the component's own `componentContext.retainedInstance { <X>ViewModel(...) }` block — never threaded through the constructor down to the ViewModel. See the ui-feature skill, references/base-classes.md § `BaseComponent`.
+- **A Koin-injectable type as a `*Component` constructor parameter.** Feature interfaces, UseCases, `DialogController`, repositories, managers, auth/link providers and analytics services resolve via `getKoin().get()` inside `componentContext.retainedInstance { <X>ViewModel(...) }`, not through Component constructors. Components receive context and navigation args/callbacks only. Analytics stays in VM, with lifecycle binding only in foundation; no feature provider/route matrix or manual bind. See [feature analytics](../../feature-analytics/SKILL.md) and the ui-feature base-classes reference.
 
 ## Navigation
 
@@ -237,12 +237,17 @@ The root project rule is "default to writing no comments". The rules in this ski
 ## Architecture-shape
 
 - **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`. Narrow exceptions tolerated for SDK-style services that have no `:data-features:*` wrapper: `:data-services:google-auth` and `:data-services:apple-auth` (consumed directly by `:ui-screen-features:authorization` to fetch ID tokens). Anything domain-shaped still goes through `:data-features:feature-api`.
-- **Feature UI/domain calls Firebase or constructs telemetry events directly.**
+- **Feature UI/domain calls Firebase or constructs toolkit wire events directly.**
   Apply [feature-analytics](../../feature-analytics/SKILL.md): UI main depends on
-  analytics-api and calls its facade; implementation owns internal matrices.
+  analytics-api and constructs typed feature facts for trackEvent; only the
+  implementation constructs toolkit AnalyticsEvent payloads and owns matrices.
   Reject UI/domain/services/SDK imports in analytics implementation, public
-  implementation types, manual production DI, scenario singletons, duplicate
+  implementation types, manual production DI, analytics state/retention wrappers, duplicate
   leaf/container tracking and extra jobs/retries solely for instrumentation.
+  Review actual eligible VM callbacks and leaf hooks against coverage; preserve the
+  whole business return/error contract. Result-returning calls unwrap inside the
+  decorated block; direct-value throwing calls stay direct. Reject reporting errors
+  replacing business results and shared host/config plumbing inferring dialog outcomes.
 - **`:data-features:feature-api` imports `:data-services:*`.** Pure contracts.
 - **`:toolkit:*` imports `:design-system:*`.** Toolkit is below. Sole exception: `:toolkit:date-utils` reads locale-aware format tokens from `:design-system:resources:provider` and `:design-system:core` — see the platform-build-toolkit skill, references/module-structure.md § directional dependency rules for the canonical list of tolerated exceptions.
 - **`:design-system:*` imports `:data-features:*`.** Design is pure UI.

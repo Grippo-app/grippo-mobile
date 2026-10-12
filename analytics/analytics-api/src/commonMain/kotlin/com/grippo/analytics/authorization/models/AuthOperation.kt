@@ -1,12 +1,10 @@
 package com.grippo.analytics.authorization.models
 
-/** Closed operation descriptions; decorators preserve the caller’s business result. */
+/** Complete business operations; telemetry never determines their results or recovery. */
 public sealed interface AuthOperation {
-    public sealed interface Attempt : AuthOperation
-
-    public data class Login(public val method: Method) : Attempt
-
-    public data object Register : Attempt
-
+    public data class Login(public val method: Method) : AuthOperation
+    public data object Register : AuthOperation
     public data object SessionCheck : AuthOperation
+    public data object CreateProfile : AuthOperation
+    public data object Logout : AuthOperation
 }

@@ -47,7 +47,7 @@ Usage in state: `val title: UiText = UiText.Res(Res.string.foo)`; with args `UiT
 
 ### Serialization (MUST)
 
-`UiText` is `@Stable` **only** — **not** `@Serializable` (wraps a non-serializable `StringResource`). Safe inside in-memory `*State` data classes, but **must not** appear inside a `*Router` payload or a `DialogConfig` field. For copy crossing a serialized boundary, carry the `StringResource` (or a plain `String` for verbatim) and wrap to `UiText` at render time.
+`UiText` is `@Stable` **only** — **not** `@Serializable` (wraps a non-serializable `StringResource`). Safe inside in-memory `*State` data classes and `DialogConfig` fields (`title` is required), but **must not** appear inside a serialized `*Router` payload. For copy crossing a serialized boundary, carry a serializable resource identifier (or a plain `String` for verbatim) and wrap to `UiText` at render time. Dialog configs are live session data, not a serialized boundary; see [dialogs.md](dialogs.md).
 
 ### `UiText` anti-patterns (MUST avoid)
 
@@ -57,11 +57,11 @@ Usage in state: `val title: UiText = UiText.Res(Res.string.foo)`; with args `UiT
 - `uiText.text(stringProvider)` from a `@Composable` — use the `@Composable` `text()`.
 - `UiText.Str` for a localized `strings.xml` value — use `UiText.Res`.
 - Wrapping a `String?` as `UiText.Str(it)` — use `UiText?` and null-check at render.
-- `UiText` inside a `*Router`/`DialogConfig` field — carry the `StringResource` instead.
+- `UiText` inside a serialized `*Router` field — carry a serializable identifier or a plain `String` instead. Live `DialogConfig` fields may use `UiText`.
 
 ## `*FormatState` — form-field state
 
-Form fields (email, password, amount, date) are **sealed `*FormatState`** classes with `Empty`/`Invalid`/`Valid` subtypes. All `*FormatState` types are `@Immutable @Serializable` so they survive process death inside `*Router` payloads or `DialogConfig` configs.
+Form fields (email, password, amount, date) are **sealed `*FormatState`** classes with `Empty`/`Invalid`/`Valid` subtypes. All `*FormatState` types are `@Immutable @Serializable` so they can survive process death inside serialized `*Router` payloads. Using one in a live dialog does not restore the dialog session.
 
 ```kotlin
 @Immutable
@@ -105,7 +105,7 @@ ViewModel: `update { it.copy(amount = AmountFormatState.of(raw)) }`; read the pa
 
 Compose: feed `value = state.amount` to the input; compute button enablement from `state.amount is AmountFormatState.Valid`.
 
-`display` + `value` are separate so the user's raw typing is preserved (`"72.5"` vs `"72.50"`); round-tripping would lose formatting. `@Serializable` keeps them safe inside `*Router`/`DialogConfig`.
+`display` + `value` are separate so the user's raw typing is preserved (`"72.5"` vs `"72.50"`); round-tripping would lose formatting. `@Serializable` keeps them safe inside serialized `*Router` payloads; dialog configs remain in memory.
 
 ### `*FormatState` rules (MUST) & anti-patterns
 
@@ -150,14 +150,14 @@ For screens with discrete modes (Loading/Loaded/Empty/Error), use an `@Immutable
 
 ### Process-death safety (MUST)
 
-If the state appears inside a `*Router` payload or `DialogConfig`, it **must be `@Serializable`**, and every field inside must also be serializable:
+If the state appears inside a serialized `*Router` payload, it **must be `@Serializable`**, and every field inside must also be serializable:
 - Primitives, `String`, `enum` — natively `@Serializable`.
 - `LocalDateTime` / `LocalDate` / `Duration` — covered by `kotlinx-serialization` + `kotlinx-datetime`.
 - `DateRange` / `*FormatState` — declared `@Serializable` in `:toolkit:date-utils` / `:ui-core:state`.
 - `ImmutableList<T>` — the project's custom `ImmutableListSerializer` (in `:ui-core:state`), opted in per field: `@Serializable(with = ImmutableListSerializer::class)`. No `ImmutableMap` serializer ships; model a map as a list of records or a regular `Map`.
-- `UiText` — `@Stable` only, **not** `@Serializable`. Do not put it in a router/dialog payload; store the `StringResource` or a plain `String`.
+- `UiText` — `@Stable` only, **not** `@Serializable`. Do not put it in a serialized router payload; store a serializable identifier or a plain `String`. It is allowed in live dialog configs.
 
-If the state doesn't cross a router/dialog boundary (lives in the VM, rebuilt from data sources on restart), `@Serializable` is **not required** (harmless to add).
+If the state doesn't cross a serialized router boundary (lives in the VM, rebuilt from data sources on restart), `@Serializable` is **not required** (harmless to add). A `DialogConfig` field alone adds no serialization requirement: sessions, steps and callbacks are discarded on process death.
 
 ### Sub-state pattern
 

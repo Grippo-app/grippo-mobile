@@ -8,6 +8,12 @@ import com.grippo.services.google.auth.GoogleAuthUiContext
 internal interface LoginContract {
     fun onEmailChange(value: String)
     fun onPasswordChange(value: String)
+    fun onEmailFocused()
+    fun onPasswordFocused()
+    fun onPasswordVisibilityChange(visible: Boolean)
+    fun onEmailCleared()
+    fun onEmailKeyboardNext()
+    fun onPasswordKeyboardDone()
     fun onLoginByEmailClick()
     fun onLoginByGoogleClick(context: GoogleAuthUiContext)
     fun onLoginByAppleClick(context: AppleAuthUiContext)
@@ -18,6 +24,12 @@ internal interface LoginContract {
     companion object Empty : LoginContract {
         override fun onEmailChange(value: String) {}
         override fun onPasswordChange(value: String) {}
+        override fun onEmailFocused() {}
+        override fun onPasswordFocused() {}
+        override fun onPasswordVisibilityChange(visible: Boolean) {}
+        override fun onEmailCleared() {}
+        override fun onEmailKeyboardNext() {}
+        override fun onPasswordKeyboardDone() {}
         override fun onLoginByEmailClick() {}
         override fun onLoginByGoogleClick(context: GoogleAuthUiContext) {}
         override fun onLoginByAppleClick(context: AppleAuthUiContext) {}

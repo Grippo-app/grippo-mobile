@@ -15,6 +15,5 @@ kotlin {
     }
     sourceSets.commonTest.dependencies {
         implementation(libs.kotlinx.coroutines.test)
-        implementation(libs.kotlinx.serialization.json)
     }
 }

@@ -16,7 +16,7 @@ import kotlin.time.TimeSource
 @Throws(Exception::class)
 public suspend fun <T> Analytics.trackOperation(
     events: AnalyticsOperationEvents<T>,
-    flow: FlowContext,
+    flow: FlowContext? = null,
     block: suspend () -> T,
 ): T {
     return executeTrackedOperation(events, flow, TimeSource.Monotonic, block)

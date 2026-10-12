@@ -30,12 +30,16 @@ public fun InputEmail(
     modifier: Modifier = Modifier,
     value: EmailFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.email_placeholder),
+    onFocused: () -> Unit = {},
+    onClear: () -> Unit = {},
+    onNext: () -> Unit = {},
     onValueChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
+        onFocused = onFocused,
         value = value.display,
         maxLines = 1,
         minLines = 1,
@@ -56,7 +60,10 @@ public fun InputEmail(
                 visible = value.display.isNotEmpty(),
                 icon = AppTokens.icons.Cancel,
                 tint = color,
-                onClick = { onValueChange("") },
+                onClick = {
+                    onValueChange("")
+                    onClear()
+                },
             )
         },
         placeholder = PlaceHolder.OverInput(
@@ -64,6 +71,7 @@ public fun InputEmail(
         ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)
+            onNext()
         },
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,

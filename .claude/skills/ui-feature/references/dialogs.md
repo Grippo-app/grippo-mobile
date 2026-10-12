@@ -4,12 +4,18 @@ Dialogs (bottom sheets) live in a **parallel** navigation graph, not in the main
 screen stack: they can be shown over any screen and dismissed independently of
 stack changes.
 
+Current contracts: [DialogController / DialogProvider](../../../../ui-dialog-features/dialog-api/src/commonMain/kotlin/com/grippo/dialog.api/DialogController.kt)
+and [DialogConfig](../../../../ui-dialog-features/dialog-api/src/commonMain/kotlin/com/grippo/dialog.api/DialogConfig.kt).
+The host [DialogViewModel](../../../../shared/src/commonMain/kotlin/com/grippo/shared/dialog/DialogViewModel.kt)
+and [session bridge](../../../../shared/src/commonMain/kotlin/com/grippo/shared/dialog/SessionDialogNavigation.kt)
+own session changes and callback ordering.
+
 ## Two parallel navigators
 
 ```
 RootComponent
   ├── stack: StackNavigation<RootRouter>         // screens
-  └── dialog: SlotNavigation<DialogConfig>       // bottom sheets (one at a time)
+  └── dialog: SlotNavigation<DialogSession>      // bottom sheets (one at a time)
 ```
 
 Both render as siblings inside `RootComponent.Render()` (not nested inside `RootScreen`):
@@ -24,115 +30,137 @@ override fun Render() {
 }
 ```
 
-A **slot** navigator shows **at most one** child at a time. Multi-step bottom
-sheets manage their own internal stack (push/pop without dismissing the sheet).
+A **slot** navigator shows **at most one** child at a time. The shared
+`DialogContentComponent` renders its `StackNavigation<DialogStep>` for in-sheet
+push/pop. Both navigators use `serializer = null`: live sessions and callbacks
+are retained during ordinary recreation, but are not restored after process death.
 
-## `DialogConfig` — the dialog identity
+## `DialogConfig` — in-memory content and callbacks
 
-`@Serializable sealed class` in `:ui-dialog-features:dialog-api`:
+Plain sealed class in `:ui-dialog-features:dialog-api` (abridged shape):
 
 ```kotlin
-@Serializable
 public sealed class DialogConfig(
-    @Transient public open val onDismiss: (() -> Unit)? = null,
+    public open val onDismiss: (() -> Unit)? = null,
     public open val dismissBySwipe: Boolean = true,
 ) {
-    public abstract val key: String
+    public abstract val title: UiText
 
-    protected fun buildKey(vararg parts: Any?): String = buildString {
-        parts.forEachIndexed { index, part ->
-            if (index > 0) append('|')
-            val value = part?.toString() ?: "<null>"
-            append(value.length); append(':'); append(value)
-        }
-    }
+    public data class WeightPicker(
+        public override val title: UiText,
+        val initial: Float?,
+        val onResult: (value: Float) -> Unit = {},
+    ) : DialogConfig()
 
-    @Serializable
-    public data class AmountPicker(
-        val initial: Double?,
-        @Transient val onResult: (value: Double) -> Unit = {},
-    ) : DialogConfig(onDismiss = null, dismissBySwipe = true) {
-        override val key: String get() = buildKey("AmountPicker", initial)
-    }
-
-    @Serializable
     public data class Confirmation(
-        val title: String,
-        val description: String?,
-        @Transient val onResult: () -> Unit = {},
-    ) : DialogConfig(onDismiss = null, dismissBySwipe = false) {
-        override val key: String get() = buildKey("Confirmation", title, description)
-    }
+        override val title: UiText,
+        val description: UiText?,
+        val onResult: () -> Unit = {},
+    ) : DialogConfig()
 
-    @Serializable
     public data class ErrorDisplay(
+        public override val title: UiText,
         val error: AppErrorState,
-        @Transient val onClose: () -> Unit = {},
-    ) : DialogConfig(onDismiss = onClose, dismissBySwipe = true) {
-        override val key: String get() = buildKey("ErrorDisplay", error)
-    }
-    // ... one per dialog flow
+        val onClose: () -> Unit = {},
+    ) : DialogConfig(onDismiss = onClose)
 }
 ```
 
 Rules (MUST):
-- **`@Serializable` on the sealed class and every subtype.** `SlotNavigation` serializes the active config on process death.
-- **`@Transient` on every callback** (`onResult`, `onConfirm`, `onCancel`, `onDismiss`). Lambdas cannot serialize; they're rehydrated to no-ops on process death — intentional.
-- **`key: String`** uniquely identifies the dialog instance. `buildKey(...)` is length-prefixed (`"3:Foo|5:hello"`) to avoid `|` collisions; `null` parts → `<null>` (length 6). `buildKey` is a `protected` member — call it from subtype `get()` only.
-- **No `@Transient` on data fields.** Inputs (`initial: Double?`, `title: String`) are serialized so the dialog can restart after process death with the same starting values.
-- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class; subtypes override them via super-class arguments (`ErrorDisplay` wires `onDismiss = onClose`; `Confirmation` sets `dismissBySwipe = false`).
+- **Keep configs and callbacks in memory.** No `@Serializable` / `@Transient` or process-death callback restoration is required; sessions use `serializer = null`.
+- **Caller-owned `title: UiText`** supplies the shared host toolbar. Keep input data as ordinary typed fields and callbacks as live closures.
+- **Update `hasSameContentAs` for every new subtype/content field.** The existing exhaustive comparison checks title first, compares typed content and excludes callbacks. Session navigation uses it to reject duplicate content already in the stack.
+- **Runtime identity belongs to the host.** `DialogSession` / `DialogStep` IDs preserve live child instances; configs have no `key` / `buildKey` contract.
+- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class; subtypes supply them through super-class arguments (`ErrorDisplay` wires `onDismiss = onClose`). Set swipe policy only when the requested behavior needs it.
 
 ## `DialogController` + `DialogProvider`
 
 ```kotlin
-public interface DialogController { public fun show(config: DialogConfig) }
-public interface DialogProvider { public val dialog: Flow<DialogConfig> }
+public interface DialogController {
+    public fun open(config: DialogConfig)
+
+    public interface Session {
+        public fun push(config: DialogConfig)
+        public fun replaceCurrent(config: DialogConfig)
+        public fun back()
+        public fun close()
+    }
+}
+public interface DialogProvider { public val openings: Flow<DialogConfig> }
 ```
 
-Impl in `:ui-dialog-features:dialog-api` (`@Single(binds = [DialogController::class, DialogProvider::class])`), using a buffered `Channel<DialogConfig>` to relay `show(...)` to the consumer. There is **no `dismiss()`** on the controller — dismissal is owned by `DialogComponent`/`DialogContentComponent` via their own back/`onBack`. Do not invent a `dismiss()`.
+The internal implementation in `:ui-dialog-features:dialog-api` is
+`@Single(binds = [DialogController::class, DialogProvider::class])`, with a conflated
+`Channel<DialogConfig>` exposed as `openings`. `DialogModule` is the existing public
+`@Module @ComponentScan`, registered through its generated module in shared.
 
-The controller is injected into ViewModels via Koin; a VM calls `dialogController.show(DialogConfig.X(...))`.
+Inject the controller into ordinary caller ViewModels and call
+`dialogController.open(DialogConfig.X(...))` to start a new sheet session. An existing
+session closes before the pending opening starts; `open` never implicitly pushes a step.
+There is **no `dismiss()`** on this controller.
+
+The host supplies `Session` bound to the originating session and active step.
+Use its methods on the UI thread; calls from inactive/removed steps are ignored.
+`push` retains the current step, `replaceCurrent` replaces it, `back` returns to
+the previous step or closes at the root, and `close` closes the entire session.
 
 ## `DialogComponent` / `DialogContentComponent` shape
 
 Two components, both in `:shared/dialog/...`:
-1. **`DialogComponent`** owns the **outer** slot (`SlotNavigation<DialogConfig>`), holding at most one child (a `DialogContentComponent`). Its `DialogViewModel` consumes `DialogProvider.dialog` and updates `DialogState.sessionConfig` / `innerConfigs`; a reconciliation loop activates/dismisses the slot to match state.
-2. **`DialogContentComponent`** owns the **inner** stack (`StackNavigation<DialogConfig>`) powering multi-step bottom sheets — opening a second dialog from inside a first pushes onto this inner stack instead of closing the sheet.
+1. **`DialogComponent`** owns the **outer** slot (`SlotNavigation<DialogSession>`), holding at most one child (a `DialogContentComponent`). Its retained `DialogViewModel` consumes `DialogProvider.openings` and owns `session`, `stack`, `phase` and `pending`; a reconciliation loop projects this state into the slot and inner stack.
+2. **`DialogContentComponent`** renders the **inner** stack (`StackNavigation<DialogStep>`). Each step has a host-owned runtime ID and config; `navigationFor(step)` supplies the session-bound bridge. Both navigators use `serializer = null`.
 
-Pending callbacks (`router.onResult(value)`) are captured into a `pendingResult` lambda that `DialogContentViewModel.onBack(pendingResult)` invokes through the outer `DialogViewModel` — guaranteeing the sheet is dismissed **before** the callback runs.
+The bridge's internal `finish(pendingResult)` passes a result closure to the owning
+`DialogViewModel`. At the root it hides/releases the sheet before running callbacks;
+for a nested step it pops that step while the sheet remains visible. In both cases
+the removed config's `onDismiss` runs before the pending result. The dialog feature
+does not resolve or construct this bridge.
 
 ## In-sheet navigation
 
-A dialog flow may "open another dialog" without closing the sheet: the consumer VM calls `dialogController.show(<NextConfig>)`, `DialogViewModel.innerConfigs` grows, and the reconcile pushes onto `DialogContentComponent.navigation`. Each step is a fully independent dialog feature (own `Component`/`ViewModel`/`Screen` under `:ui-dialog-features:<x>`). Single-step dialogs don't model a "step" enum. If a dialog truly is multi-mode (radio-button-like, no nested navigation), model the mode inside the dialog's own `State` as a `sealed interface` — separate from cross-dialog navigation.
+Nested opening uses the originating step's `Session.push(config)` or
+`replaceCurrent(config)`. For a feature that emits semantic directions, its Component
+forwards typed callbacks and the shared host selects the next config/title using that
+step's session handle. Do not inject the global controller merely to push a nested step.
+Each step remains an independent dialog feature (own Component/ViewModel/Screen).
+Single-step dialogs need no step enum; a true multi-mode dialog models its mode in
+its own State, separately from navigation.
 
 ## Returning a result
 
 Default — **callback in `DialogConfig`** (local, explicit, scoped to one call site):
 
 ```kotlin
-dialogController.show(
-    DialogConfig.AmountPicker(
-        initial = 72.0,
-        onResult = { value -> update { it.copy(amount = AmountFormatState.of(value)) } }
+dialogController.open(
+    DialogConfig.WeightPicker(
+        title = existingTitle,
+        initial = state.value.weight.value,
+        onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
     )
 )
 ```
 
-`AmountPickerViewModel.onApplyClick()` calls `onResult(value)` then `navigateTo(AmountPickerDirection.Close)`.
+The picker VM emits a result Direction; its Component forwards the value through
+the existing `onResult` callback. The shared child factory translates that callback
+into `dialogNavigation.finish { router.onResult(value) }` and plain Back into
+`dialogNavigation.finish(null)`.
 
-When the caller and responder are in **different lifecycle scopes**, use `ResultManager` (`references/results.md`).
+Dialogs keep these typed config callbacks. Separate screen results use
+`ResultManager` (`references/results.md`); a dialog result does not require a relay.
 
 ## Dismissal behavior
 
-- `onDismiss` — invoked from `DialogViewModel.onRelease(config)` once the sheet finishes hiding, **however** it closed. Use for analytics/cleanup that must run exactly once per session. The success callback (`onResult`/`onConfirm`) runs **before** `onDismiss` on the same release tick; on a swipe-away only `onDismiss` fires.
-- `dismissBySwipe` — set `false` for confirmation-style dialogs where dismissal must be explicit. Controls both the swipe gesture and the back-press capture inside `ModalBottomSheetProperties`.
+- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session, promotes any pending global opening, calls remaining configs' `onDismiss` from top to bottom, then invokes the top step's pending result. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
+- **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order; the sheet stays open. `replaceCurrent` dismisses the replaced config after updating the stack and does not create a result.
+- **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
+- **`dismissBySwipe`:** governs swipe/scrim hiding for the active config. Hardware/toolbar Back still follows the stack; toolbar Close closes the session. It does not turn a generic dismissal into a typed outcome.
 
 ## Rules summary (MUST)
 
 - **One `DialogConfig` per dialog flow.** Don't multiplex configs for similar flows.
-- **All inputs serializable, all callbacks `@Transient`.**
+- **Configs and callbacks stay live in memory; sessions are not restored after process death.**
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
-- **Cross-dialog flows use `DialogContentComponent`'s inner `StackNavigation<DialogConfig>`.** Re-issuing `dialogController.show(<NextConfig>)` from an active sheet pushes onto the inner stack.
+- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` always starts a new session.
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
 - **Dialogs do not invoke `:data-features:feature-api`** for the data they collect — they build a value and hand it back via `onResult`; the caller persists it.
 - **Exception**: confirmation dialogs that invoke a side effect themselves (e.g. delete confirmation calling `feature.delete()` before dismissing) depend on `:data-features:feature-api`. Document the exception in the dialog's package-level comment.
@@ -140,6 +168,11 @@ When the caller and responder are in **different lifecycle scopes**, use `Result
 ---
 
 # Recipe — Add a Dialog (e.g. `:ui-dialog-features:tag-picker`)
+
+> Apply [feature-analytics](../../feature-analytics/SKILL.md) for behavior changes.
+> Examples below show dialog/MVI mechanics. Open/result facts belong to existing
+> owning-VM callbacks; dedicated dialog presentation/close tracking is a separate
+> declared scope. Schema availability does not mean automatic instrumentation.
 
 > Figma-enabled (`figmaEnabled: true`) + a `## Design` bullet: the design-cache gate applies BEFORE any file is written (see SKILL.md "Stop and ask").
 
@@ -194,9 +227,17 @@ internal class TagPickerViewModel(initial: String) :
     BaseViewModel<TagPickerState, TagPickerDirection, TagPickerLoader>(
         TagPickerState(current = initial),
     ), TagPickerContract {
-    override fun onValueChange(value: String) { update { it.copy(current = value) } }
-    override fun onApplyClick() { navigateTo(TagPickerDirection.BackWithResult(state.value.current)) }
-    override fun onCloseClick() { navigateTo(TagPickerDirection.Back) }
+    override fun onValueChange(value: String) {
+        update { it.copy(current = value) }
+    }
+
+    override fun onApplyClick() {
+        navigateTo(TagPickerDirection.BackWithResult(state.value.current))
+    }
+
+    override fun onCloseClick() {
+        navigateTo(TagPickerDirection.Back)
+    }
 }
 ```
 
@@ -212,7 +253,9 @@ public class TagPickerComponent(
         TagPickerViewModel(initial = initial)
     }
     private val backCallback = BackCallback(onBack = viewModel::onCloseClick)
-    init { backHandler.register(backCallback) }
+    init {
+        backHandler.register(backCallback)
+    }
     override suspend fun eventListener(direction: TagPickerDirection) {
         when (direction) {
             is TagPickerDirection.BackWithResult -> onResult.invoke(direction.value)
@@ -227,28 +270,42 @@ public class TagPickerComponent(
 }
 ```
 
-`TagPickerScreen.kt` — **no toolbar** (neither `Toolbar` nor `BottomSheetToolbar`). Use `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))` and lay out the `Column`: `Spacer(AppTokens.dp.dialog.top)` → centered title `Text` (style `h2()`, `textAlign = Center`) → body → `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding is `AppTokens.dp.dialog.horizontalPadding`. Include an `@AppPreview private fun ...Preview()` wrapped in `PreviewContainer { ... }` with `Contract.Empty`. Pick a real input control from `:design-system:components`/`:compose-libs` (the template uses custom `*WheelPicker`, not Material3 `Slider`). Dialog sub-composables that break out go in a `components/` subfolder, one per file.
+`TagPickerScreen.kt` — **no toolbar or duplicate title**: the shared host renders
+`BottomSheetToolbar` using the active config's `title: UiText`. Use
+`BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))`
+with `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.bottom)`
+→ `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding is
+`AppTokens.dp.dialog.horizontalPadding`. Include an `@AppPreview private fun
+...Preview()` wrapped in `PreviewContainer { ... }` with `Contract.Empty`. Pick a
+real input control from `:design-system:components`/`:compose-libs` (the template
+uses custom `*WheelPicker`, not Material3 `Slider`). Extracted dialog UI lives in
+`components/`, one cohesive composable per file.
 
 ### 4. Add the `DialogConfig` subtype in `:ui-dialog-features:dialog-api`
 ```kotlin
-@Serializable
 public data class TagPicker(
+    public override val title: UiText,
     val initial: String,
-    @Transient val onResult: (String) -> Unit = { },
-) : DialogConfig(onDismiss = null, dismissBySwipe = true) {
-    override val key: String get() = buildKey("TagPicker", initial)
-}
+    val onResult: (String) -> Unit = { },
+) : DialogConfig()
 ```
 
+Add `is TagPicker -> other is TagPicker && initial == other.initial` to the
+existing exhaustive `hasSameContentAs` comparison. Its common title comparison
+already runs first; exclude `onResult` and other callbacks from content equality.
+
 ### 5. Wire in `DialogContentComponent.createChild` (in `:shared`)
-`DialogContentComponent` exposes **no `dismiss()`**. Close from a child via `viewModel.onBack(pendingResult)` — non-null lambda fires the host callback after dismissal, `null` for silent dismissal:
+The existing `createChild(step: DialogStep, context)` obtains `router = step.config`
+and `dialogNavigation = navigationFor(step)`. Add the branch using that bound
+bridge; `finish` removes the active step or closes at the root, then runs the
+caller callback after `onDismiss`:
 ```kotlin
 is DialogConfig.TagPicker -> Child.TagPicker(
     TagPickerComponent(
         componentContext = context,
         initial = router.initial,
-        onResult = { value -> viewModel.onBack { router.onResult.invoke(value) } },
-        back = { viewModel.onBack(null) },
+        onResult = { value -> dialogNavigation.finish { router.onResult.invoke(value) } },
+        back = { dialogNavigation.finish(null) },
     )
 )
 // + a matching `data class TagPicker(override val component: TagPickerComponent) : Child(component)`
@@ -259,11 +316,12 @@ is DialogConfig.TagPicker -> Child.TagPicker(
 implementation(projects.uiDialogFeatures.tagPicker)
 ```
 
-### 7. Use the dialog from any ViewModel
+### 7. Open a new session from a caller ViewModel
 ```kotlin
 override fun onPickTagClick() {
-    dialogController.show(
+    dialogController.open(
         DialogConfig.TagPicker(
+            title = existingTitle,
             initial = state.value.selectedTagId,
             onResult = { newTagId -> update { it.copy(selectedTagId = newTagId) } }
         )
@@ -272,21 +330,28 @@ override fun onPickTagClick() {
 ```
 
 ### Verify
+Update affected callback/operation coverage and declared presentation omissions;
+run allowed analytics checks and record no-build/test restrictions.
 ```bash
 ./gradlew :shared:assembleSharedDebugXCFramework
 ./gradlew :androidApp:assembleDebug
 ```
-Run, trigger the dialog, confirm the result callback fires.
+When permitted, run, trigger the dialog and confirm the result callback fires.
 
 ### What you did NOT have to do
 - No new Koin module (dialog features don't usually declare DI).
 - No `:shared/Koin.kt` edit.
-- No `RootRouter` change (dialogs live in `SlotNavigation<DialogConfig>`).
+- No `RootRouter` change (dialogs live in the shared `SlotNavigation<DialogSession>`).
+
+These statements assume existing dependencies. A new feature analytics
+implementation follows its normal module/shared registration; a UI provider or
+integration module is not part of the dialog recipe.
 
 ### Common mistakes (MUST avoid)
-- **`onResult` not `@Transient`.** Lambdas can't serialize.
-- **`initial` not a regular field.** Inputs are serialized so the picker resumes with the same starting value.
-- **`buildKey` collisions.** Two configs with the same key are treated as the same dialog. Include enough discriminator data (`buildKey("TagPicker", initial, screenId)`).
+- **Serializing live dialog callbacks/configs.** Both host navigators use `serializer = null`; preserve ordinary retained ownership without process-death restoration.
+- **Missing `title` or typed input fields.** Configs carry caller-owned `UiText` and the current starting values.
+- **Forgetting `hasSameContentAs`.** Every new subtype/content field needs a typed comparison excluding callbacks; host runtime IDs remain separate from content.
 - **Forgetting to wire in `DialogContentComponent.createChild`.** Showing the config crashes at runtime.
-- **Wrapping in `Column { ... }` or using `Toolbar`/`BottomSheetToolbar`.** No dialog ships a toolbar — use the `BaseComposeScreen(...background.dialog)` + `Spacer`/title/body/`Spacer` convention. Horizontal padding is `AppTokens.dp.dialog.horizontalPadding`, not `contentPadding.content`.
-- **Inventing a `DialogController.dismiss()`.** It only exposes `show(config)`. Emit `Direction.BackWithResult(value)` / `Direction.Back`; the `createChild` wiring translates that into `viewModel.onBack { router.onResult.invoke(value) }`.
+- **Redundant outer `Column`, toolbar or duplicate host title in a leaf dialog.** Use the `BaseComposeScreen(...background.dialog)` + `Spacer`/body/`Spacer` convention. The host owns `BottomSheetToolbar`; leaf horizontal padding is `AppTokens.dp.dialog.horizontalPadding`, not `contentPadding.content`.
+- **Using global `open` for nested navigation.** It starts a new session; use the originating step's `Session.push` / `replaceCurrent` for in-sheet navigation.
+- **Inventing `DialogController.dismiss()` or `DialogContentViewModel.onBack`.** Emit `Direction.BackWithResult(value)` / `Direction.Back`; the existing child factory calls its bound `dialogNavigation.finish` with the pending result or null.

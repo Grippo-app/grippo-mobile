@@ -1,0 +1,185 @@
+package com.grippo.analytics.authorization.internal.schema
+
+import com.grippo.analytics.authorization.internal.events.AuthPayloadEvent
+import com.grippo.analytics.authorization.internal.models.InteractionAction
+import com.grippo.analytics.authorization.models.AuthEvent
+import com.grippo.analytics.authorization.models.AuthScreen
+import com.grippo.analytics.authorization.models.Method
+import com.grippo.analytics.common.models.ControlAction
+import com.grippo.analytics.common.models.InputKeyboardAction
+import com.grippo.analytics.common.models.InputStatus
+import com.grippo.toolkit.analytics.schema.AnalyticsCode
+import com.grippo.toolkit.analytics.schema.AnalyticsEvent
+import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
+import com.grippo.toolkit.analytics.schema.AnalyticsParameter
+import com.grippo.toolkit.analytics.values.AnalyticsCount
+
+/** One exhaustive mapping from public facts to the declared wire catalog. */
+internal object AuthEventMatrix {
+    fun event(event: AuthEvent): AnalyticsEvent {
+        return when (event) {
+            AuthEvent.Splash.Back -> clicked(AuthScreen.Splash, ControlAction.Back)
+            is AuthEvent.Login -> login(event)
+            is AuthEvent.Registration -> registration(event)
+            is AuthEvent.User -> user(event)
+            is AuthEvent.Experience -> experience(event)
+            is AuthEvent.Muscles -> muscles(event)
+            is AuthEvent.Equipments -> equipments(event)
+            AuthEvent.Completed.Back -> clicked(AuthScreen.Completed, ControlAction.Back)
+        }
+    }
+
+    private fun login(event: AuthEvent.Login): AnalyticsEvent {
+        return when (event) {
+            is AuthEvent.Login.InputChanged -> inputChanged(AuthScreen.Login, event.field, event.status)
+            is AuthEvent.Login.InputFocused -> field(AuthInteractionSchema.InputFocused, AuthScreen.Login, event.field)
+            is AuthEvent.Login.InputCleared -> field(AuthInteractionSchema.InputCleared, AuthScreen.Login, event.field)
+            is AuthEvent.Login.KeyboardAction -> keyboard(AuthScreen.Login, event.field, event.action)
+            is AuthEvent.Login.PasswordVisibilityChanged -> visibility(AuthScreen.Login, event.visible)
+            is AuthEvent.Login.Submit -> submitted(AuthScreen.Login, event.method)
+            AuthEvent.Login.Register -> clicked(AuthScreen.Login, InteractionAction.Register)
+            AuthEvent.Login.Back -> clicked(AuthScreen.Login, ControlAction.Back)
+        }
+    }
+
+    private fun registration(event: AuthEvent.Registration): AnalyticsEvent {
+        return when (event) {
+            is AuthEvent.Registration.InputChanged -> inputChanged(AuthScreen.Registration, event.field, event.status)
+            is AuthEvent.Registration.InputFocused -> field(
+                AuthInteractionSchema.InputFocused,
+                AuthScreen.Registration,
+                event.field,
+            )
+            is AuthEvent.Registration.InputCleared -> field(
+                AuthInteractionSchema.InputCleared,
+                AuthScreen.Registration,
+                event.field,
+            )
+            is AuthEvent.Registration.KeyboardAction -> keyboard(AuthScreen.Registration, event.field, event.action)
+            is AuthEvent.Registration.PasswordVisibilityChanged -> visibility(AuthScreen.Registration, event.visible)
+            AuthEvent.Registration.Submit -> submitted(AuthScreen.Registration, Method.Email)
+            AuthEvent.Registration.Back -> clicked(AuthScreen.Registration, ControlAction.Back)
+        }
+    }
+
+    private fun user(event: AuthEvent.User): AnalyticsEvent {
+        return when (event) {
+            is AuthEvent.User.NameInputChanged -> inputChanged(
+                AuthScreen.User,
+                AuthInteractionSchema.NameField,
+                event.status,
+            )
+            AuthEvent.User.NameInputFocused -> field(
+                AuthInteractionSchema.InputFocused,
+                AuthScreen.User,
+                AuthInteractionSchema.NameField,
+            )
+            AuthEvent.User.NameInputCleared -> field(
+                AuthInteractionSchema.InputCleared,
+                AuthScreen.User,
+                AuthInteractionSchema.NameField,
+            )
+            is AuthEvent.User.NameKeyboardAction -> keyboard(
+                AuthScreen.User,
+                AuthInteractionSchema.NameField,
+                event.action,
+            )
+            is AuthEvent.User.PickerOpened -> field(AuthInteractionSchema.PickerOpened, AuthScreen.User, event.field)
+            is AuthEvent.User.PickerConfirmed -> inputChanged(AuthScreen.User, event.field, event.status)
+            is AuthEvent.User.Control -> clicked(AuthScreen.User, event.action)
+        }
+    }
+
+    private fun experience(event: AuthEvent.Experience): AnalyticsEvent {
+        return when (event) {
+            is AuthEvent.Experience.Selected -> payload(
+                AuthInteractionSchema.ExperienceSelected,
+                AuthScreen.Experience,
+                AuthInteractionSchema.Experience.value(event.value),
+            )
+            is AuthEvent.Experience.Control -> clicked(AuthScreen.Experience, event.action)
+        }
+    }
+
+    private fun muscles(event: AuthEvent.Muscles): AnalyticsEvent {
+        return when (event) {
+            AuthEvent.Muscles.GroupSelected -> clicked(AuthScreen.ExcludedMuscles, InteractionAction.GroupSelected)
+            is AuthEvent.Muscles.SelectionChanged -> selection(
+                AuthScreen.ExcludedMuscles,
+                event.selected,
+                event.selectedCount,
+            )
+            is AuthEvent.Muscles.Control -> clicked(AuthScreen.ExcludedMuscles, event.action)
+        }
+    }
+
+    private fun equipments(event: AuthEvent.Equipments): AnalyticsEvent {
+        return when (event) {
+            AuthEvent.Equipments.GroupSelected -> clicked(AuthScreen.MissingEquipments, InteractionAction.GroupSelected)
+            is AuthEvent.Equipments.SelectionChanged -> selection(
+                AuthScreen.MissingEquipments,
+                event.selected,
+                event.selectedCount,
+            )
+            is AuthEvent.Equipments.Control -> clicked(AuthScreen.MissingEquipments, event.action)
+        }
+    }
+
+    private fun clicked(screen: AuthScreen, action: AnalyticsCode): AnalyticsEvent {
+        return payload(AuthInteractionSchema.Clicked, screen, AuthInteractionSchema.Action.value(action))
+    }
+
+    private fun submitted(screen: AuthScreen, method: Method): AnalyticsEvent {
+        return payload(AuthInteractionSchema.Submitted, screen, AuthOperationSchema.Method.value(method))
+    }
+
+    private fun inputChanged(screen: AuthScreen, field: AnalyticsCode, status: InputStatus): AnalyticsEvent {
+        return payload(
+            AuthInteractionSchema.InputChanged,
+            screen,
+            AuthInteractionSchema.Field.value(field),
+            AuthInteractionSchema.Status.value(status),
+        )
+    }
+
+    private fun field(schema: AnalyticsEventSchema, screen: AuthScreen, field: AnalyticsCode): AnalyticsEvent {
+        return payload(schema, screen, AuthInteractionSchema.Field.value(field))
+    }
+
+    private fun keyboard(screen: AuthScreen, field: AnalyticsCode, action: InputKeyboardAction): AnalyticsEvent {
+        return payload(
+            AuthInteractionSchema.Keyboard,
+            screen,
+            AuthInteractionSchema.Field.value(field),
+            AuthInteractionSchema.KeyboardAction.value(action),
+        )
+    }
+
+    private fun visibility(screen: AuthScreen, visible: Boolean): AnalyticsEvent {
+        return payload(
+            AuthInteractionSchema.PasswordVisibilityChanged,
+            screen,
+            AuthInteractionSchema.Visible.value(visible),
+        )
+    }
+
+    private fun selection(screen: AuthScreen, selected: Boolean, count: Int): AnalyticsEvent {
+        return payload(
+            AuthInteractionSchema.SelectionChanged,
+            screen,
+            AuthInteractionSchema.Selected.value(selected),
+            AuthInteractionSchema.SelectedCount.value(AnalyticsCount(count.toLong())),
+        )
+    }
+
+    private fun payload(
+        schema: AnalyticsEventSchema,
+        screen: AuthScreen,
+        vararg parameters: AnalyticsParameter,
+    ): AnalyticsEvent {
+        return AuthPayloadEvent(schema, buildList(parameters.size + 1) {
+            add(AuthInteractionSchema.Screen.value(screen))
+            addAll(parameters)
+        })
+    }
+}

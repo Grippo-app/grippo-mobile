@@ -2,9 +2,9 @@
 name: data-layer
 description: >-
   Build the data layer for a KMP feature — add a data feature, repository, DTO,
-  domain model/enum, persist data, add or extend an endpoint on <Product>Api,
+  domain model/enum, persist data, add or extend an endpoint on the product API,
   add/extend a Room entity, DAO, or migration, or store a DataStore preference.
-  Use when a task introduces a new domain concept the UI needs as a <X>Feature,
+  Use when a task introduces a new domain concept the UI needs as a feature interface,
   adds/changes a backend endpoint + DTO, changes a Room schema (new column,
   index, table, type change), persists a key-value preference, or touches
   auth/token storage. Covers the repository + feature-api split, observe/get/
@@ -77,14 +77,16 @@ scope.
 
 ## References to read
 
-This skill is self-contained — it carries its own rules and reads no external rule docs
-at runtime. Read the reference pack under [`references/`](references/index.md). The full
-routing table (topic → file) lives in [`references/index.md`](references/index.md).
+Data mechanics live in [`references/`](references/index.md). For feature behavior
+changes, also assess [analytics impact/coverage](../feature-analytics/SKILL.md).
+Business layers retain their existing contracts without analytics dependencies;
+any feature instrumentation belongs to the owning ViewModel.
 
 | Task kind | Read first |
 |---|---|
 | New data feature | [`references/cookbook-data-feature.md`](references/cookbook-data-feature.md); [`references/repositories.md`](references/repositories.md) |
 | Repository shape / data flow | [`references/repositories.md`](references/repositories.md); [`references/module-structure.md`](references/module-structure.md) |
+| Feature behavior analytics impact / business boundary | [feature-analytics](../feature-analytics/SKILL.md), [`references/repositories.md`](references/repositories.md) |
 | Endpoint + DTO | [`references/cookbook-endpoint.md`](references/cookbook-endpoint.md); [`references/dtos-and-api.md`](references/dtos-and-api.md), [`references/backend-client.md`](references/backend-client.md) |
 | Room entity / DAO / migration | [`references/cookbook-room-migration.md`](references/cookbook-room-migration.md); [`references/persistence-room.md`](references/persistence-room.md) |
 | DataStore preference | [`references/datastore.md`](references/datastore.md); [`references/module-structure.md`](references/module-structure.md) |

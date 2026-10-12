@@ -26,12 +26,16 @@ public fun InputName(
     modifier: Modifier = Modifier,
     value: NameFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.name_placeholder),
+    onFocused: () -> Unit = {},
+    onClear: () -> Unit = {},
+    onDone: () -> Unit = {},
     onValueChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
+        onFocused = onFocused,
         value = value.display,
         maxLines = 1,
         minLines = 1,
@@ -44,7 +48,10 @@ public fun InputName(
                 visible = value.display.isNotEmpty(),
                 icon = AppTokens.icons.Cancel,
                 tint = color,
-                onClick = { onValueChange("") },
+                onClick = {
+                    onValueChange("")
+                    onClear()
+                },
             )
         },
         placeholder = PlaceHolder.OverInput(
@@ -52,6 +59,7 @@ public fun InputName(
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)
+            onDone()
         },
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,

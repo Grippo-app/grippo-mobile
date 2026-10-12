@@ -48,29 +48,33 @@ only where needed, following the shared error contract in the reference.
 
 ## Analytics impact
 
-For feature implementation and behavior changes, also apply
-[feature-analytics](../feature-analytics/SKILL.md). Update the affected coverage
-matrix for routes, entry points, operations, validation and outcomes. Purely
-visual edits need an impact assessment, not new events. Business contracts determine
-requests, results, fallback and navigation; analytics decorates complete operations.
-Do not split use cases for reporting or branch business code on telemetry models.
+For behavior changes apply [feature-analytics](../feature-analytics/SKILL.md) and
+update route/control/input/complete-operation coverage with actual omissions.
+Visual-only edits need an impact assessment. Business owns requests/results/
+validation/retry/navigation; analytics decorates complete operations.
 
-UI main depends on `:analytics:analytics-api`; feature implementations remain separate.
-The UI `analytics/` package contains an internal stateless `<Feature>AnalyticsProvider`
-with `provide<Scenario>` methods, a separate classifier when needed and annotated
-bindings. Obtain the scenario before retained ViewModel creation and pass the same
-instance to children/VM as `analytics`. Routes own their IDs; provider maps them,
-hides persistent keys and uses foundation `RetainedAnalytics` for saved scenarios.
-Leaf visibility binds once via DI `ScreenAnalytics.bind(lifecycle, present)`.
-Reporting exceptions cannot block business/navigation/lifecycle; cancellation and
-owner/state invariants stay explicit. Follow the linked canonical skill; do not add
-retention extensions or analytics base components.
+UI main depends on analytics-api. Inject one stateless service as `analytics` in
+the Component's normal retainedInstance VM construction. Feature analytics stays
+in VM callbacks/operations; each tracked leaf overrides optional screenPresentation.
+BaseComponent calls internal VM.bindScreen during doOnCreate; foundation alone owns
+lifecycle binding/ScreenAnalytics/Initial→Restore. Graph hook stays null: no view
+or lifecycle service resolution. Components/routes/factories/Render need no analytics
+wiring; VM knows no Lifecycle/ComponentContext or activationFlow visibility observer.
+Normal retained VM ownership stays; no feature provider/snapshot/retention helper.
+
+Direct typed trackEvent facts use existing callbacks after busy guards. UI bounded
+status mapping stays in analytics/, business-model conversions in data-mappers.
+Text status compares old/new existing validation, without a cache; picker/click/
+selection facts remain distinct. No raw values or analytics-owned validation.
+Reporting Exceptions cannot block business/lifecycle; original errors/cancellation
+remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
 
 ## Required inputs
 
 - **Task file path** (`orchestrator/tasks/todo/TASK_*.md`).
 - **Target module + names** — feature module, PascalCase screen/dialog name,
-  route payload type(s), output type (dialogs).
+  serializable route payload type(s) for screens; initial payload, `title: UiText`
+  and typed output callbacks for an in-memory dialog session.
 - **The `*Feature` / `*UseCase`** the ViewModel reads from — MUST already exist in
   `:data-features:feature-api`.
 - **The `*State` model + `stub*()`** the Screen previews — MUST already exist in
@@ -103,31 +107,42 @@ retention extensions or analytics base components.
    Screen-specific sub-composables go in a sibling `components/` folder, one per
    file, entity composables bound to their `*State` as one param.
 4. **For a dialog**: no toolbar, `ScreenBackground.Color(...background.dialog)`;
-   add the `@Serializable DialogConfig.<Name>` subtype (callbacks `@Transient`)
-   and the `DialogContentComponent.createChild` branch; callable via
-   `DialogController.show(...)`.
-5. **Wire navigation** — add the `@Serializable` Router subtype + `createChild`
-   branch + inner `sealed class Child` entry (Decompose `ChildStack` for screens,
-   `SlotNavigation` for dialogs). Cross-feature jumps go through
+   add a plain `DialogConfig.<Name>` subtype with the required `title: UiText`,
+   live typed callbacks, and its typed `hasSameContentAs` branch (compare content,
+   exclude callbacks). Add the `DialogContentComponent.createChild` branch and
+   `Child` entry. The host's step-bound navigation delivers results through
+   `finish { router.onResult(value) }` and Back through `finish(null)`.
+   Ordinary screen ViewModels open it via `DialogController.open(...)`; nested
+   features emit semantic directions and forward typed constructor callbacks so
+   the host chooses the config/title and uses the originating `Session`.
+5. **Wire screen navigation** — add the `@Serializable` Router subtype +
+   `createChild` branch + inner `sealed class Child` entry (Decompose `ChildStack`).
+   Dialogs use the existing session slot and internal step stack; follow
+   [dialogs.md](references/dialogs.md). Cross-feature jumps go through
    `:ui-screen-features:screen-api` + constructor-threaded callbacks (the
    `RootDirection` → `RootContract` → `RootViewModel` → `RootComponent.eventListener`
    chain), never direct feature-to-feature imports. Deeplinks add the `Deeplink`
    enum entry + `RootViewModel.parseDeeplink` branch.
-6. **Honor process-death** — all `*Router`/payloads/`DialogConfig` `@Serializable`,
-   no lambdas in routes, state rebuilt in `init {}` via Flow re-subscription,
+6. **Honor process-death** — all screen `*Router`/payloads `@Serializable`, no
+   lambdas in routes, state rebuilt in `init {}` via Flow re-subscription,
    range/filter state lives in the route, `key = "..."` on `childStack`.
+   Dialog configs/callbacks remain in memory; the session slot and step stack use
+   `serializer = null` and are not restored. Read
+   [process-death.md](references/process-death.md).
 7. **For `:ui-core:state` work** — add `*State`/`*RowState`/`*EnumState`/
    `*FormatState` + `stub*()`; for a new error type, edit the
    `AppError` → `AppErrorState` → `ErrorProviderImpl` when-branch triad atomically.
 8. **Integrate affected analytics** — apply the linked analytics skill before
-   completing behavior changes. Bind leaf visibility once; pass business blocks
-   from the existing error pipeline and report actual navigation transitions.
+   completing behavior changes. Declare the optional leaf VM screenPresentation;
+   foundation binds its lifecycle. Decorate complete
+   business blocks in the existing error pipeline and observe typed callbacks.
    Keep the coverage matrix synchronized; do not scatter event construction
    through Screens, Components, ViewModels and use cases.
-9. **Verify** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
+9. **Verify within the user's scope** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
    assemble when `iosEnabled: true`). Apply the analytics skill's affected tests,
-   DI/restore/lifecycle checks and platform validation when analytics changes.
-   Build failures are yours to fix.
+   DI/leaf-lifecycle checks and platform validation when analytics changes.
+   Honor explicit no-build/test restrictions and record unrun checks.
+   Build failures in the permitted scope are yours to fix.
 
 ## Screen results and dialog-to-screen changes
 
@@ -171,9 +186,10 @@ and present it as an existing project convention.
 
 ## References to read
 
-This skill is **self-contained** — it carries its own rules under `references/`
-and reads no external rule docs at runtime. Start with `references/index.md`
-(the routing table); it maps each task-kind to the reference file(s) to read.
+The UI mechanics are **self-contained** under `references/`. Feature behavior
+also requires the canonical [feature-analytics skill](../feature-analytics/SKILL.md).
+Start with `references/index.md` (the routing table); it maps each task-kind to
+the reference file(s) to read.
 
 | task-kind | read |
 |---|---|

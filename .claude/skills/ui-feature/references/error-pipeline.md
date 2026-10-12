@@ -1,7 +1,7 @@
 # Error Pipeline
 
-Unhandled errors flow through a **single path**. UI analytics bindings may classify typed exceptions without replacing the
-existing error path. Reporting respects core collection policy; ErrorProvider
+Unhandled errors flow through a **single path**. Analytics observes the original
+operation error without classifying it or changing recovery. Reporting respects core collection policy; ErrorProvider
 translates failures into UI-friendly dialogs.
 
 ## The default pipeline
@@ -96,9 +96,9 @@ val handler = CoroutineExceptionHandler { _, t ->
 ```
 
 `CrashReporting` is injected from toolkit API; platform SDK adapters are attached
-by app shells. Reporting follows core collection policy. Analytics classifiers
-may inspect typed failures at the UI boundary, but preserve the original error
-path. With the standard pipeline, `onError` runs after dismissal and can clean up UI state.
+by app shells. Reporting follows core collection policy. Analytics operation
+decoration preserves the original error path. With the standard pipeline,
+`onError` runs after dismissal and can clean up UI state.
 It is not an immediate exception handler and cannot suppress the dialog or
 continue the failed business block. `CancellationException` never enters this
 pipeline or `mapError`; fatal `Error` is not transformed for presentation.

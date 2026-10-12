@@ -10,7 +10,7 @@ import kotlinx.coroutines.CancellationException
 
 internal suspend fun <T> Analytics.executeTrackedOperation(
     events: AnalyticsOperationEvents<T>,
-    flow: FlowContext,
+    flow: FlowContext?,
     timeSource: TimeSource,
     block: suspend () -> T,
 ): T {

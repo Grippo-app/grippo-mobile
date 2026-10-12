@@ -1,5 +1,11 @@
 # Авторизация и аналитика: повторный статический аудит — 2026-10-12
 
+> Исторический отчёт: описывает реализацию и проверки этого этапа, включая
+> позднее заменённые API/provider/retention. Текущие правила —
+> [feature-standard](feature-standard.md), фактическое покрытие и scope —
+> [авторизация](authorization-coverage.md). Результаты ниже не подтверждают
+> последующие изменения.
+
 ## Исправления
 
 - AnalyticsProviderTest использовал expected.analyticsCode у consumer EntryPoint,

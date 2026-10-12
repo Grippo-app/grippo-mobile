@@ -1,38 +1,58 @@
-# Матрица аналитики: <Feature>
+# <Фича>: матрица аналитики
 
-Статус: proposal / implemented / verified. Owner module: <path>. Catalog module/qualifier: <module>/<name>. Verification report: <path>.
+Дата/scope: <текущее изменение>. Стандарт — [feature-standard](feature-standard.md).
+Stateless `<Feature>Analytics`: typed trackEvent + whole trackOperation + leaf views.
 
-## Контекст сценария
+## Подключение
 
-| Точка входа | Реальный триггер | originScreen | Где создаётся/сохраняется FlowContext |
+- API/models: <path>; internal implementation/matrix/schema: <path>.
+- Leaf ViewModels/screenPresentation: <paths>; feature implementation registration: <path>.
+- Component retained VM injects analytics как остальные deps; foundation binds hook.
+- Обычный retainedInstance/ViewModel lifecycle сохраняется; analytics state/keys отсутствуют.
+
+## Маршруты
+
+| Route | Leaf / graph | FeatureScreen | Один binding / omission |
 |---|---|---|---|
-| <typed entry> | <observed fact> | <known screen or null> | <owner> |
+| <route> | <role> | <typed screen / absent for graph> | <actual leaf VM hook / graph null> |
 
-## События и исходы
+Initial — первый показ binding, Restore — последующая активация. Не приписывать
+процессу сохранённые flow/referrer; dialogs/overlays имеют отдельный declared scope.
 
-| Триггер | Typed event / wire name | Owner / точное место | Параметры и типы | Flow / operation | Outcomes | Тест |
-|---|---|---|---|---|---|---|
-| <action/activation> | <concrete class / stable name> | <single owner> | <required/optional typed values> | <new/reused ID> | <success/failure/cancel/interruption> | <fixture/scenario> |
+## Controls и inputs
 
-## Поверхности и переходы
-
-| Leaf screen / dialog | ScreenId / DialogId | Referrer и источник reason | Visibility binding | Back / restore / external test |
+| Callback / trigger | Typed FeatureEvent / wire name | Owner | Safe facts / omission | Check |
 |---|---|---|---|---|
-| <surface> | <constant> | <navigation owner> | <single binding> | <test> |
+| <existing callback> | <closed direct description> | <Contract→VM> | <enum/status/Boolean/count> | <actual fixture> |
 
-## Явные исключения из tracking
+Text status compares existing old/new validation: same status omitted, без cache.
+Picker confirmations/clicks/selections always distinct. Нет raw values/length/body
+measurements/entity IDs. Eligibility guards и keyboard/focus поведение прежние.
+Проверить invalid/busy callbacks и смену validation semantics/population. Dialog
+open/result — owning VM; dedicated views/close — explicit omission либо отдельно
+запрошенный typed contract/owner. onDismiss не означает cancellation/confirmation.
 
-| Действие/поле | Почему не собирается |
-|---|---|
-| <typing, sensitive field, container> | <reason> |
+## Complete operations
 
-## Приёмка
+| Business block | Typed FeatureOperation / wire family | Owner | Results/errors | Check |
+|---|---|---|---|---|
+| <whole existing sequence> | <operation> | <existing coroutine> | <preserved caller T/error/cancellation> | <actual fixture> |
 
-- [ ] У каждого факта один owner; completed и business success различаются явно.
-- [ ] Строгие события и причины; все фабрики operation events реализованы.
-- [ ] Annotated qualified definitions зарегистрированы через .module; fixtures прошли.
-- [ ] Для persisted сценариев Flow переносится и восстанавливается; для остальных отсутствие persistence обосновано. Повторные попытки получают новые operation IDs.
-- [ ] Referrer/reason достоверны, показ только у leaf; foreground policy соблюдается.
-- [ ] Проверены применимые errors/cancellation, независимые flows, retries, consent и account switch; неприменимые сценарии отмечены с причиной.
-- [ ] Личные/чувствительные значения исключены; нет свободных exception messages.
-- [ ] Android/iOS проверки прошли, ограничения записаны.
+OperationId/duration/start-terminal создаёт toolkit. Analytics не решает navigation,
+validation/retry/fallback; programmatic navigation не fake user click.
+Указать actual return/error contract: existing Result.getOrThrow внутри block или
+direct-value throwing call. Сохранить цельную последовательность и исходную ошибку.
+
+## Omissions и версии
+
+Перечислить сознательно пропущенные события/данные и report migration при смене
+schema semantics. Не добавлять flow/restore/classifier plumbing ради матрицы.
+Reference loads/provider/system internals/overlay details/other features — только
+если scope явно включает их. Catalog и wire parameters не дублировать по слоям.
+
+## Проверка
+
+Actual commands/results: <paths>. Payload/business isolation/reporting failures/
+cancellation/leaf VM hooks/eligible callbacks/lifecycle: <run scopes>. YAML/links/examples: <results>.
+Explicit unrun: <Gradle/KSP/platform/UI/native/Firebase>. Test source/PSI/static
+review не означает runtime success; исторические результаты не подтверждают diff.

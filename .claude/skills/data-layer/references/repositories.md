@@ -123,9 +123,13 @@ internal class NoteFeatureImpl(
 
 For most features, `FeatureImpl` is a thin pass-through to `Repository`. The layer exists for
 cases where the Feature composes **multiple** repositories, adds **post-fetch logic**
-(analytics, side effects, cache warming), or exposes **cross-domain UseCases**. When the
+(business side effects, cache warming), or exposes **cross-domain UseCases**. When the
 Feature does nothing beyond delegation, that's fine — the layer is consistent across the
 codebase.
+
+Feature telemetry follows [feature-analytics](../../feature-analytics/SKILL.md):
+the ViewModel decorates complete existing business operations. Repository, Feature
+and UseCase layers keep their business contracts and add no analytics dependencies.
 
 ---
 
@@ -385,7 +389,7 @@ ViewModel.safeLaunch(loader = MyLoader.FetchA) { feature.getA().getOrThrow() }
                                                           ↓
                                             ErrorProvider.provide(exception, onError)
                                                           ↓
-                                  DialogController.show(DialogConfig.ErrorDisplay(...))
+                                  DialogController.open(DialogConfig.ErrorDisplay(...))
                                                           ↓
                                   loader removed from loaders StateFlow
 ```
@@ -435,7 +439,7 @@ profile in one call). Both layers cost minimally and keep the seven-file convent
 - **`@Single` on a Repository without `binds = [...]`** — the interface won't be wired.
 - **Inline mappers in ViewModel or Repository** (`val entity = NoteEntity(id = dto.id ?: ..., ...)`) — mappers live in their dedicated `:data-mappers:*` modules.
 - **`Repository` exposed publicly.** It must be `internal` — only the `<X>Feature` interface escapes the module.
-- **Triggering side effects (analytics, logs) inside a mapper.** Mappers are pure; side effects live in Repository/Feature/VM.
+- **Feature telemetry or business side effects inside a mapper.** Mappers perform directional conversion with the documented `AppLogger.Mapping` diagnostics. Feature telemetry belongs in ViewModels; business side effects stay in their owning business layers.
 - **`getKoin().get()` inside the Repository.** Constructor-inject everything.
 - **Writing to DAO before `api.onSuccess { ... }`.** Speculative writes leave the cache inconsistent on failure.
 - **`suspend fun observeX()`** — observe is hot; if you need to block on first emission, use `observeX().first()` at the call site.

@@ -84,6 +84,9 @@ internal fun CredentialScreen(
 
         InputEmail(
             value = state.email,
+            onFocused = contract::onEmailFocused,
+            onClear = contract::onEmailCleared,
+            onNext = contract::onEmailKeyboardNext,
             onValueChange = contract::onEmailChange
         )
 
@@ -91,6 +94,9 @@ internal fun CredentialScreen(
 
         InputPassword(
             value = state.password,
+            onFocused = contract::onPasswordFocused,
+            onVisibilityChange = contract::onPasswordVisibilityChange,
+            onDone = contract::onPasswordKeyboardDone,
             onValueChange = contract::onPasswordChange
         )
 

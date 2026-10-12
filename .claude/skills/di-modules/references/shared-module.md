@@ -389,8 +389,9 @@ Notes:
 - Toolkit analytics/crash-reporting/messaging APIs are exposed for the typed
   ApplicationBootstrap and Swift adapters. Only API modules are exported by the
   iOS convention; core/internal types stay hidden. Android Firebase transport
-  belongs only to androidApp. Register feature analytics implementation and UI
-  `<Feature>AnalyticsProvider`/classifier bindings in Koin using `.module`; follow
+  belongs only to androidApp. Register feature analytics implementation using
+  `.module`; ScreenAnalytics comes from foundation CoreModule, without a feature
+  provider/integration module. Follow
   [feature-analytics](../../feature-analytics/SKILL.md).
 - `:data-services:google-auth` and `:data-services:apple-auth` are conditional on
   the auth methods selected in Step 0 — strip whichever line is unused.

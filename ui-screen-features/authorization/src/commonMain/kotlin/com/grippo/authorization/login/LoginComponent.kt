@@ -4,15 +4,11 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.analytics.authorization.AuthAnalytics
-import com.grippo.analytics.authorization.models.Step
 import com.grippo.core.foundation.BaseComponent
-import com.grippo.core.foundation.analytics.ScreenAnalytics
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class LoginComponent(
     componentContext: ComponentContext,
-    analytics: AuthAnalytics.Authorization,
     private val toRegistration: (email: String?) -> Unit,
     private val toHome: () -> Unit,
     private val toCreateProfile: () -> Unit,
@@ -21,7 +17,7 @@ internal class LoginComponent(
 
     override val viewModel = componentContext.retainedInstance {
         LoginViewModel(
-            analytics = analytics,
+            analytics = getKoin().get(),
             loginUseCase = getKoin().get(),
             googleAuthProvider = getKoin().get(),
             appleAuthProvider = getKoin().get(),
@@ -32,9 +28,6 @@ internal class LoginComponent(
 
     init {
         backHandler.register(backCallback)
-        getKoin().get<ScreenAnalytics>().bind(lifecycle) {
-            analytics.presentScreen(Step.Login)
-        }
     }
 
     override suspend fun eventListener(direction: LoginDirection) {

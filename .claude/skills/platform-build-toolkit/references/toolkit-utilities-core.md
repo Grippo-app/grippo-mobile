@@ -375,7 +375,7 @@ Consumers `inject<Json>(named("strict"))`. But weigh the cost — two configs me
 - **`Json.Default`** in production code — has `encodeDefaults = false` and other quirks.
 - **`Json { isLenient = false; ignoreUnknownKeys = false }`** — strict modes break on backend evolution.
 - **Multiple `Json` instances created inline** in different services. Single source of truth.
-- **`@Transient` on serialized fields you actually want to send.** `@Transient` skips serialization; for non-serialized callback lambdas it's correct (see the ui-feature skill, references/dialogs.md), but for data fields it's a bug.
+- **`@Transient` on serialized fields you actually want to send.** It skips serialization; use it only for deliberately excluded runtime fields. Current DialogConfig callbacks live in an in-memory session rather than a serialized config; see [dialog rules](../../ui-feature/references/dialogs.md).
 
 ## :toolkit:logger
 

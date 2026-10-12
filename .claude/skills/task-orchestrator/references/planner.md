@@ -18,6 +18,9 @@ match it exactly.
    the recipes for builders the plan listed.
 3. Module placement rules — the owning skill's `references/module-structure.md` (`ui-feature/`, `data-layer/`, `platform-build-toolkit/`).
 4. the design-system skill, references/naming.md + references/packages.md — naming + package-root rules.
+5. For feature behavior changes, [feature-analytics](../../feature-analytics/SKILL.md)
+   and the affected coverage matrix, even without a tracking request. Visual-only
+   changes need an impact assessment, not new events.
 
 ## Inputs the orchestrator passes (3 required + 2 optional)
 
@@ -71,6 +74,12 @@ and **Files to modify** (full path, one-line change, owning builder). Use the
 **live** paths from context-finder excerpts; do not invent paths — an
 unresolved modified-file path goes under **Open assumptions**, not a guess.
 Resolve `<package-root>` from project-config inline (no placeholder in output).
+
+For behavior changes, include necessary updates to the existing analytics API /
+models, internal implementation / schema matrix, ViewModel callbacks / optional
+`screenPresentation` and affected coverage matrix in the normal builders' file
+contracts. Discover their actual paths; reuse the shared foundation lifecycle
+binding described by the canonical skill.
 
 **Sub-composable placement.** Non-`*Screen` UI (headers, cards, rows, banners) is
 created under `<sub-screen-package>/components/`, one cohesive composable per
@@ -182,6 +191,9 @@ excerpts. For each new/modified behavior, ask which generic category has a
 each tied to a named symbol/path and tagged with its category (never name a
 product concept): **empty**, **null**, **boundary**, **error**, **ordering**,
 **concurrency**, **wrong-condition**.
+
+Carry applicable analytics semantic checks from the canonical skill into this
+existing reviewer-check block alongside the affected coverage matrix.
 
 **Flag invented rules (spec-gap).** Whenever an edge-case exists because the task
 did NOT state the governing rule (sort key/direction/tie-break, boundary

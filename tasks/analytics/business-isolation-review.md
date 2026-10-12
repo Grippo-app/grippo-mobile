@@ -1,5 +1,11 @@
 # Изоляция бизнеса от аналитики — 2026-10-12
 
+> Исторический отчёт: описывает реализацию и проверки этого этапа, включая
+> позднее заменённые API/provider/retention. Текущие правила —
+> [feature-standard](feature-standard.md), фактическое покрытие и scope —
+> [авторизация](authorization-coverage.md). Результаты ниже не подтверждают
+> последующие изменения.
+
 1. RegisterUseCase.createAccount выполняет register + private prepare и возвращает
    Boolean. CredentialViewModel измеряет один полный attempt. Удалены Preparation
    API, фабрика, события, outcome и четыре setup схемы. Теперь 12 schemas:

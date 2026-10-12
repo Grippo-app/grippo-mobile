@@ -1,5 +1,9 @@
 package com.grippo.authorization.profile.creation.completed
 
+import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.models.AuthEvent
+import com.grippo.analytics.authorization.models.AuthOperation
+import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
@@ -7,9 +11,11 @@ import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.state.domain.user.toDomain
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.ImmutableList
 
 internal class ProfileCompletedViewModel(
+    private val analytics: AuthAnalytics,
     name: String,
     weight: Float,
     height: Int,
@@ -22,6 +28,10 @@ internal class ProfileCompletedViewModel(
     ProfileCompletedState
 ), ProfileCompletedContract {
 
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(AuthScreen.Completed, reason)
+    }
+
     init {
         val mappedExperience = experience?.toDomain()
 
@@ -30,22 +40,26 @@ internal class ProfileCompletedViewModel(
         } else {
             safeLaunch(
                 loader = ProfileCompletedLoader.ProfileCreation,
-                onError = ::onBack
+                onError = {
+                    navigateTo(ProfileCompletedDirection.Back)
+                }
             ) {
-                val profile = CreateUserProfile(
-                    name = name,
-                    weight = weight,
-                    height = height,
-                    experience = mappedExperience,
-                    excludeEquipmentIds = missingEquipmentIds.toList(),
-                    excludeMuscleIds = excludedMuscleIds.toList()
-                )
+                analytics.trackOperation(AuthOperation.CreateProfile) {
+                    val profile = CreateUserProfile(
+                        name = name,
+                        weight = weight,
+                        height = height,
+                        experience = mappedExperience,
+                        excludeEquipmentIds = missingEquipmentIds.toList(),
+                        excludeMuscleIds = excludedMuscleIds.toList()
+                    )
 
-                createProfileUseCase.execute(profile)
+                    createProfileUseCase.execute(profile)
 
-                localSettingsFeature
-                    .setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration)
-                    .getOrThrow()
+                    localSettingsFeature
+                        .setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration)
+                        .getOrThrow()
+                }
 
                 navigateTo(ProfileCompletedDirection.Home)
             }
@@ -53,6 +67,7 @@ internal class ProfileCompletedViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(AuthEvent.Completed.Back)
         navigateTo(ProfileCompletedDirection.Back)
     }
 }

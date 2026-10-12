@@ -13,7 +13,9 @@ adopts the lookup directly.
 
 The normative rules live inside the installed implementation skills under
 `orchestrator/skills/<skill>/references/`; this dispatcher routes to those skill
-homes. This table maps each topic to its owning skill reference.
+homes. Feature analytics has one canonical source in
+`.claude/skills/feature-analytics/`; route directly there. This table maps each
+topic to its owning skill reference.
 
 ## Quick keyword → skill-reference map
 
@@ -27,6 +29,7 @@ homes. This table maps each topic to its owning skill reference.
 | ResultManager, ResultEmitter, sendResult, observeResult | `ui-feature/references/results.md` + `ui-feature/references/base-classes.md` |
 | Decompose, ChildStack, StackNavigation, SlotNavigation | `ui-feature/references/navigation.md` |
 | Dialog, DialogConfig, DialogController, BottomSheet | `ui-feature/references/dialogs.md` |
+| Analytics, telemetry, trackEvent, trackOperation, screenPresentation, ScreenAnalytics, coverage matrix | [.claude/skills/feature-analytics/SKILL.md](../../feature-analytics/SKILL.md) + [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
 | BackendClient, TokenProvider, Auth | `data-layer/references/backend-client.md` + `data-layer/references/auth-session.md` |
 | `<Product>Api` (flat API class), DTO, @SerialName, all-nullable | `data-layer/references/dtos-and-api.md` |
 | Database, @Database, exportSchema | `data-layer/references/persistence-room.md` |
@@ -55,6 +58,10 @@ homes. This table maps each topic to its owning skill reference.
 
 (All skill-reference paths are relative to `orchestrator/skills/` unless noted.)
 
+For feature behavior changes, return the canonical analytics pointer even without
+an analytics keyword so normal builders assess impact and update affected
+coverage. Visual-only changes route to the impact assessment, not new events.
+
 ## How to answer a lookup
 
 1. Match against the table above (substring, case-insensitive).
@@ -62,8 +69,8 @@ homes. This table maps each topic to its owning skill reference.
    entries with a one-line distinguisher.
 3. If none match, `grep -rni "<keyword>" orchestrator/skills/*/references/` and
    return the top 3 hits with file + line range.
-4. For each hit, return: the file path (clickable
-   `[reference](orchestrator/skills/<skill>/references/<file>.md)`), the section
+4. For each hit, return: the exact file path (clickable; analytics uses its
+   canonical `.claude/skills/feature-analytics/` path), the section
    heading, and a line range (3–10 lines that capture the answer, not the whole
    file).
 

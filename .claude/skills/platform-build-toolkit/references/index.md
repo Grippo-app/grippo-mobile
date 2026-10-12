@@ -1,8 +1,8 @@
 # references — platform-build-toolkit
 
-Self-contained reference pack for the `platform-build-toolkit` skill. These files
-carry their **own** build-time rules — the skill reads no external rule docs at
-runtime. Read the routing table below to find the file for your task.
+Reference pack for platform/build mechanics. Feature telemetry additionally follows
+the [canonical analytics skill](../../feature-analytics/SKILL.md); SDK adapters stay
+app-owned. Read the routing table below to find the file for your task.
 
 ## Routing — topic → file
 

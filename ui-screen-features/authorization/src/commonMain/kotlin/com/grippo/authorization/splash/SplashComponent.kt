@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.authorization.analytics.AuthAnalyticsProvider
 import com.grippo.core.foundation.BaseComponent
-import com.grippo.core.foundation.analytics.ScreenAnalytics
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.AuthorizationEntryPoint
 
@@ -18,11 +16,9 @@ internal class SplashComponent(
     private val back: () -> Unit
 ) : BaseComponent<SplashDirection>(componentContext) {
 
-    private val analytics = getKoin().get<AuthAnalyticsProvider>().provideSession(componentContext)
-
     override val viewModel = componentContext.retainedInstance {
         SplashViewModel(
-            analytics = analytics,
+            analytics = getKoin().get(),
             equipmentFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             authorizationFeature = getKoin().get(),
@@ -34,9 +30,6 @@ internal class SplashComponent(
 
     init {
         backHandler.register(backCallback)
-        getKoin().get<ScreenAnalytics>().bind(lifecycle) {
-            analytics.presentScreen()
-        }
     }
 
     override suspend fun eventListener(direction: SplashDirection) {

@@ -3,17 +3,27 @@
 > Examples use `Note` / `Tag` / `User` as the generic `<Entity>`. Substitute your domain.
 
 Navigation is built on Decompose (`com.arkivanov.decompose`). Each `Component`
-owns its own UI subtree and lifecycle; navigation is **type-safe** (routes are
-`@Serializable sealed class`); state survives **process death** because Decompose's
-`StateKeeper` serializes the entire router stack.
+owns its own UI subtree and lifecycle; screen navigation is **type-safe** (routes are
+`@Serializable sealed class`). Decompose's `StateKeeper` serializes the screen
+router stack for restoration where the platform shell supplies saved state;
+see [process-death.md](process-death.md) for platform limits. Dialog sessions use
+in-memory configs and are not restored.
 
 ## Three layers of navigation
 
 1. **`RootComponent`** in `:shared` — owns the **primary** `StackNavigation<RootRouter>`. Routes between top-level features (`Auth`, `Home`, `Notes`, `Profile`, `NoteDetail`, `Debug`).
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
-3. **`DialogComponent`** in `:shared` — owns a **slot** navigator (`SlotNavigation<DialogConfig>`) parallel to the screen stack. (`references/dialogs.md`.)
+3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
 
 There is **no** other navigation mechanism. No global event bus for navigation, no Compose Navigation, no Voyager.
+
+An ordinary screen ViewModel uses `DialogController.open(config)` to start a new
+sheet session, closing any existing session first. The host supplies the
+originating step's `DialogController.Session` for nested `push`,
+`replaceCurrent`, `back` and `close`; it ignores inactive or removed steps.
+Nested features emit semantic directions and forward typed constructor callbacks;
+the host chooses the config/title and connects results. Do not inject a Session
+from Koin or serialize it with a screen route.
 
 ## `*Router` sealed classes
 

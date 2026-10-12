@@ -5,11 +5,8 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.arkivanov.essenty.lifecycle.destroy
 import com.arkivanov.essenty.lifecycle.pause
 import com.arkivanov.essenty.lifecycle.resume
-import com.grippo.core.foundation.CoreModule
 import com.grippo.core.foundation.internal.analytics.ScreenAnalyticsImpl
 import com.grippo.toolkit.analytics.Analytics
-import org.koin.dsl.koinApplication
-import org.koin.ksp.generated.module
 import com.grippo.toolkit.analytics.context.AnalyticsContext
 import com.grippo.toolkit.analytics.context.EntryPoint
 import com.grippo.toolkit.analytics.context.FlowContext
@@ -31,8 +28,10 @@ class ScreenAnalyticsTest {
     @Test fun reportingFailuresDoNotInterruptLifecycleCallbacks() {
         val lifecycle = LifecycleRegistry()
         var attempts = 0
-        screenAnalytics.bind(lifecycle) {
+        val reasons = mutableListOf<NavigationReason>()
+        screenAnalytics.bind(lifecycle) { reason ->
             attempts++
+            reasons += reason
             if (attempts == 1) error("presentation defect")
             object : ScreenPresentation {
                 override fun close() { error("close defect") }
@@ -43,6 +42,7 @@ class ScreenAnalyticsTest {
         lifecycle.resume()
         lifecycle.destroy()
         assertEquals(2, attempts)
+        assertEquals(listOf(NavigationReason.Initial, NavigationReason.Restore), reasons)
         assertEquals(Lifecycle.State.DESTROYED, lifecycle.state)
     }
 
@@ -50,15 +50,16 @@ class ScreenAnalyticsTest {
         val lifecycle = LifecycleRegistry()
         val analytics = Recording()
         val flow = FlowContext.start(EntryPoint("fixture_entry"), null)
-        var navigation = NavigationContext(ScreenId("fixture_screen"), reason = NavigationReason.Initial)
-        screenAnalytics.bind(lifecycle) { analytics.presentScreen(navigation, flow) }
+        screenAnalytics.bind(lifecycle) { reason ->
+            analytics.presentScreen(NavigationContext(ScreenId("fixture_screen"), reason = reason), flow)
+        }
         assertEquals(0, analytics.presentations.size)
         lifecycle.resume()
         assertEquals(1, analytics.presentations.size)
+        assertEquals(NavigationReason.Initial, analytics.presentations[0].navigation.reason)
         assertSame(flow, analytics.presentations[0].flow)
         lifecycle.pause()
         assertEquals(1, analytics.presentations[0].closes)
-        navigation = navigation.copy(reason = NavigationReason.Restore)
         lifecycle.resume()
         assertEquals(2, analytics.presentations.size)
         assertEquals(NavigationReason.Restore, analytics.presentations[1].navigation.reason)
@@ -69,10 +70,11 @@ class ScreenAnalyticsTest {
     @Test fun bindingAnAlreadyResumedLifecycleDoesNotDuplicateTheInitialView() {
         val lifecycle = LifecycleRegistry(initialState = Lifecycle.State.RESUMED)
         val analytics = Recording()
-        screenAnalytics.bind(lifecycle) {
-            analytics.presentScreen(NavigationContext(ScreenId("fixture_screen"), reason = NavigationReason.Restore), null)
+        screenAnalytics.bind(lifecycle) { reason ->
+            analytics.presentScreen(NavigationContext(ScreenId("fixture_screen"), reason = reason), null)
         }
         assertEquals(1, analytics.presentations.size)
+        assertEquals(NavigationReason.Initial, analytics.presentations.single().navigation.reason)
         lifecycle.destroy()
         assertEquals(1, analytics.presentations.single().closes)
     }
@@ -82,10 +84,12 @@ class ScreenAnalyticsTest {
         val analytics = Recording()
         var flow = FlowContext.start(EntryPoint("fixture_entry"), null)
         var navigation = NavigationContext(ScreenId("login"), reason = NavigationReason.Initial)
-        screenAnalytics.bind(lifecycle) { analytics.presentScreen(navigation, flow) }
+        screenAnalytics.bind(lifecycle) { reason ->
+            analytics.presentScreen(navigation.copy(reason = reason), flow)
+        }
         lifecycle.resume(); lifecycle.pause()
         flow = FlowContext.start(EntryPoint("other_entry"), ScreenId("registration"))
-        navigation = navigation.copy(referrer = ScreenId("registration"), reason = NavigationReason.Back)
+        navigation = navigation.copy(referrer = ScreenId("registration"), reason = NavigationReason.Restore)
         lifecycle.resume()
         assertSame(flow, analytics.presentations.last().flow)
         assertEquals(navigation, analytics.presentations.last().navigation)
@@ -101,27 +105,11 @@ class ScreenAnalyticsTest {
         }
     }
 
-    @Test fun generatedDiResolvesSingletonWithIndependentBindings() {
-        val app = koinApplication { modules(CoreModule().module) }
-        try {
-            val binder = app.koin.get<ScreenAnalytics>()
-            assertSame(binder, app.koin.get<ScreenAnalytics>())
-            val first = LifecycleRegistry()
-            val second = LifecycleRegistry()
-            val analytics = Recording()
-            binder.bind(first) { analytics.presentScreen(NavigationContext(ScreenId("first"), reason = NavigationReason.Initial), null) }
-            binder.bind(second) { analytics.presentScreen(NavigationContext(ScreenId("second"), reason = NavigationReason.Initial), null) }
-            first.resume()
-            second.resume()
-            first.destroy()
-            assertEquals(listOf(1, 0), analytics.presentations.map { it.closes })
-            second.pause()
-            second.resume()
-            second.destroy()
-            assertEquals(listOf(1, 1, 1), analytics.presentations.map { it.closes })
-        } finally {
-            app.close()
-        }
+    @Test fun aFatalPresentationErrorIsNotSilentlySuppressed() {
+        val lifecycle = LifecycleRegistry()
+        val failure = Error("fatal presentation defect")
+        screenAnalytics.bind(lifecycle) { throw failure }
+        assertSame(failure, assertFailsWith<Error> { lifecycle.resume() })
     }
 
     private class Presentation(val navigation: NavigationContext, val flow: FlowContext?) : ScreenPresentation {

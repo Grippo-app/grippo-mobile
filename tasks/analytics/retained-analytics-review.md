@@ -1,5 +1,11 @@
 # Общий механизм удержания аналитики — 2026-10-12
 
+> Исторический отчёт: описывает реализацию и проверки этого этапа, включая
+> позднее заменённые API/provider/retention. Текущие правила —
+> [feature-standard](feature-standard.md), фактическое покрытие и scope —
+> [авторизация](authorization-coverage.md). Результаты ниже не подтверждают
+> последующие изменения.
+
 Добавлен public RetainedAnalytics в UI foundation. provide<T, S> public inline
 reified T; все callbacks crossinline, context @PublishedApi internal. Механизм
 consume → retainedSimpleInstance<T> → validate → register сохраняет type-key

@@ -1,7 +1,8 @@
 # validation-gates — reference routing
 
-Self-contained rule pack for the validation/review gate. These files carry the
-skill's OWN rules — the gate reads no external rule docs at runtime.
+Rule pack for the validation/review gate. These files carry the skill's OWN core
+rules; integration and feature-specific semantic review read the owning skills
+routed below.
 
 ## Validator / topic → reference file
 
@@ -32,13 +33,17 @@ Always-on three run on every task; conditional validators run when the
 
 | reviewer | role | rule source |
 |---|---|---|
-| `internal-reviewer` | semantic + logic-correctness review | [forbidden-patterns.md](forbidden-patterns.md) (semantic) + reviewer-only register below |
+| `internal-reviewer` | semantic + logic-correctness review | [forbidden-patterns.md](forbidden-patterns.md) (semantic) + reviewer-only register below; affected feature behavior also uses [feature-analytics](../../feature-analytics/SKILL.md) |
 | official Codex plugin `/codex:review` | external native review; parent normalizes its result to `reviewer-output` | same as above |
 
 The reviewer is the pipeline's **only logic-correctness gate** and the only place
 the reviewer-only gaps are enforced. Reviewer selection is governed by
 [config-gates.md](config-gates.md) § `codexEnabled`; the runtime-verify gate by
 § `verifyEnabled`.
+
+Feature behavior review includes the affected analytics coverage matrix and the
+canonical skill's semantic checks in the existing reviewer scope. Visual-only
+changes need an impact assessment, not new events.
 
 ## Reviewer-only rules (no mechanical validator)
 

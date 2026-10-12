@@ -1,9 +1,9 @@
 # task-orchestrator references — routing table
 
-Self-contained reference pack for the `task-orchestrator` skill — the run-loop
-spine. These files carry the skill's own procedure, so a parent adopting the
-orchestrator role reads **only** these references + the frozen contracts at
-runtime.
+Reference pack for the `task-orchestrator` run-loop mechanics. Read these
+references and the frozen contracts for the procedure; owning implementation
+skills supply feature rules. Feature behavior changes also require the canonical
+analytics skill routed below.
 
 Each numeric cap and frozen mechanic is pinned in the contracts under
 `orchestrator/contracts/`; cite those (don't re-derive).
@@ -18,6 +18,7 @@ Each numeric cap and frozen mechanic is pinned in the contracts under
 | Step 1a — inputs-resolver verdict (HIGH→BLOCK, MEDIUM→carry), signal scan + consumer-side miss handling | [`run-loop.md`](run-loop.md) §1a | (routed via `validation-gates`) |
 | Step 1b — screen-design pre-flight (cache / census / spec / evidence) | [`run-loop.md`](run-loop.md) §1b | — |
 | Step 2a — implementation-planner → file-level contract | [`planner.md`](planner.md) | [`planner-output.md`](../../../contracts/planner-output.md) |
+| Feature behavior — analytics impact, affected coverage, normal builder and reviewer scope | [feature-analytics](../../feature-analytics/SKILL.md) → [`planner.md`](planner.md), [validation-gates routing](../../validation-gates/references/index.md) | Existing planner / reviewer contracts |
 | Step 3 — builders + Step 3.5 diff-sanity (candidate diff) | [`run-loop.md`](run-loop.md) §3, §3.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) (footprint = candidate diff) |
 | Step 4 — validator wave, dedup `(file, rule_id)`, adjudication, rotation + outer-reentry caps | [`validator-routing.md`](validator-routing.md) §4 | [`validation-run.md`](../../../contracts/validation-run.md); [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 4.5 — assemble gate, 2-consecutive-FAIL cap | [`validator-routing.md`](validator-routing.md) §4.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |

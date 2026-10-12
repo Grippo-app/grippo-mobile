@@ -1,5 +1,11 @@
 # Стандарт интеграции аналитики в skills — 2026-10-12
 
+> Исторический отчёт: описывает реализацию и проверки этого этапа, включая
+> позднее заменённые API/provider/retention. Текущие правила —
+> [feature-standard](feature-standard.md), фактическое покрытие и scope —
+> [авторизация](authorization-coverage.md). Результаты ниже не подтверждают
+> последующие изменения.
+
 Canonical source: .claude/skills/feature-analytics/SKILL.md. Полная перепись вместо
 append-only дополнений. Linked references/ui-provider.md содержит детали UI wiring,
 DI, typed retention, persistence и meaningful tests, без нового runtime framework.

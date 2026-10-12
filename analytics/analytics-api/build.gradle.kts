@@ -1,7 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    alias(libs.plugins.kotlin.serialization)
+    id("kotlin.multiplatform.test.convention")
 }
 
 kotlin {

@@ -7,11 +7,13 @@
 
 ## Границы и схемы
 
-UI получает `<Feature>Analytics` из analytics-api. Реализация в analytics/<feature>
-использует toolkit Analytics; shared подключает generated modules. Она не знает
-Firebase, AnalyticsSink/Bootstrap, UI или domain. Кодирование событий — чистая
-синхронная функция без IO. Analytics API, core state/queue и платформенные sink
-adapters разделены.
+UI получает один stateless `<Feature>Analytics` из analytics-api: typed
+trackEvent, complete trackOperation и presentScreen. Public feature facts содержат
+прямые enum/status/Boolean/count параметры; internal matrix/schema создают toolkit
+wire events. Общие models — только reusable enums, без capability/scenario runtime.
+Реализация в analytics/<feature> не импортирует UI/domain/SDK; shared подключает
+её generated module. Кодирование — синхронное, без IO. Toolkit API, core queue/state
+и platform sink adapters остаются отдельными слоями.
 
 `Analytics.track` принимает AnalyticsEvent, optional FlowContext/OperationId.
 Сырые имена/maps остаются в декларациях и транспортном payload. Event использует
@@ -29,7 +31,7 @@ reporting exceptions. Прямые проверки остаются строг�
 выключен. Изменение смысла требует решения по отчётам, не только новой версии.
 
 Feature catalog подключается через `<Feature>AnalyticsModule().module` до резолюции
-core, qualified @Single возвращает полный AnalyticsSchema. Built-in screen/dialog
+core, @Single с уникальным qualifier фичи возвращает полный AnalyticsSchema. Built-in screen/dialog
 schemas повторно не регистрируются. Нет runtime мутаций или ручного production DI.
 
 ## Контекст
@@ -44,9 +46,9 @@ schemas повторно не регистрируются. Нет runtime му�
 ScreenId/DialogId/EntryPoint — валидируемые стабильные codes, не пользовательский
 ввод. FlowId/OperationId/UserId — непрозрачные ID; синтаксис не гарантирует privacy.
 UserId не может быть email, именем, token или их хешем. Flow/operation IDs не
-регистрируют как GA4 dimensions высокой кардинальности. Маршрут владеет своим
-screen-api ID, преобразованным в toolkit FlowId только у UI provider.
-Business entity/draft ID не является flow identity и не используется вместо него.
+регистрируют как GA4 dimensions высокой кардинальности.
+Текущая авторизация не передаёт FlowContext/FlowId в аналитику. Её route IDs/
+entry points остаются navigation concerns; entity/draft ID не становится telemetry ID.
 
 Origin/entry не меняются при возврате на экран. Каждая попытка получает новый
 OperationId. screen_id в payload — поверхность в момент track; поздний результат
@@ -102,13 +104,13 @@ interrupted и пробрасывается без подмены. Возвра�
 отменённым, даже если несуспендящий блок успел завершиться. Fatal Error не
 становится продуктовым failure. Coroutine/job/retry не создаются.
 
-Feature API оборачивает цельную бизнес-операцию. Login/register включают приватную
-подготовку, SessionCheck не интерпретирует caller T. Текущий SessionCheck оборачивает
-только hasProfile; его исходная ошибка после failed проходит стандартный
-safeLaunch → logger/CrashReporting/ErrorProvider путь, без локального catch.
-Бизнес-fallback, уже обработанный внутри любого декорируемого блока, означал бы
-completed execution, а не желаемый исход. Текущие event versions и
-осознанные omissions находятся в authorization-coverage, без дублирования каталога.
+Feature API оборачивает цельную бизнес-операцию без factories/classifier/state.
+Login/register включают private preparation; SessionCheck оборачивает только
+hasProfile и не интерпретирует caller T. Ошибка проходит обычный safeLaunch →
+logger/CrashReporting/ErrorProvider путь. Current Auth operations оставляют только
+started/completed/failed/interrupted, duration и OperationId; SDK cancel отдельно
+не классифицируется. Business fallback, уже обработанный внутри блока, означает
+completed execution. Versions/omissions — в authorization-coverage.
 
 `safeLaunch`/`trackOperation` и бизнес-блоки остаются multiline, короткие `update`
 и простые Flow transformations — compact. Named local functions внутри `init`,
@@ -116,7 +118,10 @@ completed execution, а не желаемый исход. Текущие event v
 повторяемого после диалога, используется private метод класса из `init`/`onError`,
 без дублирования запросов и нового scope; см. [Kotlin-стиль](../../CLAUDE.md#kotlin).
 
-ViewModel разворачивает Result через `getOrThrow()` внутри существующего `safeLaunch`.
+ViewModel разворачивает Result через `getOrThrow()` внутри существующего `safeLaunch`,
+а при decoration — внутри tracked block. Direct-value throwing use cases остаются
+прямыми вызовами; возвращённый Result.failure не становится failed execution сам.
+Существующий return/error contract не меняется ради аналитики.
 Необработанную исходную ошибку получают аналитика, log и crash reporting; чистый
 `mapError` меняет только представление стандартного диалога. `onError` выполняется
 после закрытия диалога. Обе перегрузки safeLaunch сохраняют одинаковые onError/mapError,
@@ -126,23 +131,30 @@ stage flags или recovery-обёртки. Cancellation остаётся отм
 аналитике нельзя прятать восстановление, fallback или навигацию; см.
 [единый error pipeline](../../.claude/skills/ui-feature/references/error-pipeline.md).
 
-Leaf один раз вызывает DI ScreenAnalytics.bind(lifecycle) с callback presentScreen.
-Один показ на RESUMED, включая уже resumed registration и foreground return;
-pause/destroy закрывает, destroy отписывает. Stateless internal @Single implementation
-обнаруживается CoreModule; callbacks хранят state отдельно для каждого bind.
-Render/container/VM не дублируют показы. PresentScreen атомарно меняет видимость и
-захватывает screen_view, сохраняя launch attribution; поздний close старой presentation
-не очищает новую. Destroy не означает пользовательский exit.
+Component resolves analytics в обычном retainedInstance block для VM. Все feature
+events/operations/screen declarations находятся в VM; constructors/routes/factories/
+Render не содержат analytics wiring. Leaf override optional BaseViewModel
+screenPresentation: `(NavigationReason) -> ScreenPresentation`, вызывая typed
+presentScreen. BaseComponent во время existing doOnCreate вызывает internal
+VM.bindScreen(lifecycle) после создания retained VM, до attachActivation и
+navigator/eventListener. Graph default null означает
+отсутствие screen binding и resolution ScreenAnalytics.
+
+Foundation ScreenAnalytics bind принимает reason-aware presenter, владеет flag
+Initial→Restore и closes на pause/destroy. Новый binding не восстанавливает
+flow/referrer. Stateless @Single implementation обнаруживается CoreModule; VM
+не хранит Lifecycle/ComponentContext и не наблюдает activationFlow ради views.
+Existing retainedInstance/ViewModel lifecycle остаётся; новых scopes/jobs нет.
+Поздний close старой presentation не очищает новую. Destroy не означает user exit.
 
 Автоматические SDK screen events выключены в Android manifest
 `google_analytics_automatic_screen_reporting_enabled=false` и iOS Info.plist
 `FirebaseAutomaticScreenReportingEnabled=false`, отдельно от consent.
 [Официальные настройки Firebase](https://firebase.google.com/docs/analytics/screenviews).
 
-Persisted scenarios используют foundation RetainedAnalytics: consume → typed
-retention → validate → register. Feature provider владеет mapping/keys/serializer/
-create/save, не хранит owner. Полные примеры —
-[UI reference](../../.claude/skills/feature-analytics/references/ui-provider.md).
+Feature analytics не использует StateKeeper/InstanceKeeper keys, snapshots,
+retention helpers или сохранённую funnel continuity. Примеры подключения —
+[ViewModel reference](../../.claude/skills/feature-analytics/references/viewmodel.md).
 
 ## Конфигурация и проверки
 
@@ -155,10 +167,16 @@ Application — wiring error без fallback. iOS использует Platform.
 связанного framework; Xcode configurations должны выбирать соответствующий XCFramework.
 App configuration module и runtime constructor args для generated modules не нужны.
 
-Новая фича добавляет матрицу наблюдаемых фактов, catalog/payload fixtures и проверки
-actual owners. Проверяются retries, ошибки/cancellation/reporting failures,
-back/restore/foreground, independent flows, consent/identity и отсутствие sensitive
-fields. Recording sink находится в commonTest; production/preview его не содержат.
-Android host/iOS simulator tests и app/Swift compilation запускаются согласно
-текущим разрешениям. GA4 dimensions/funnels/BigQuery — отдельный этап от Kotlin wiring.
-Firebase delivery/sign-in и mapping/symbol uploads не входят в разрешение на builds/tests.
+Новая фича описывает каждый leaf в screenPresentation своего VM, direct typed events для
+существующих controls/inputs и whole business operations. Text status compares
+existing old/new validation без cache; equal status omitted. Picker confirmations/
+clicks/selections distinct. Neutral design-system callbacks не зависят от analytics.
+Catalog/payload и actual business/lifecycle fixtures проверяют покрытие и omissions.
+Dialog/picker open/result наблюдает owning VM, включая переданный config onResult;
+shared host/config plumbing не создаёт события,
+onDismiss не доказывает cancel/confirmation. Built-in dialog schemas не означают
+automatic lifecycle tracking: dedicated views/close имеют explicit omission либо
+отдельно запрошенный typed contract и owner.
+Historical/PSI/static checks не подтверждают generated DI/platform/UI runtime;
+запускать affected checks по текущим разрешениям. GA4 reports/BigQuery и Firebase
+sends/sign-in/uploads — отдельный scope.

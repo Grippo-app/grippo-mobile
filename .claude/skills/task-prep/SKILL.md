@@ -45,6 +45,13 @@ does not change direct task-prep invocations.
 
 ## Workflow
 
+For feature behavior changes, read [feature-analytics](../feature-analytics/SKILL.md)
+even when tracking was not requested. Identify the affected coverage matrix and
+existing analytics API, internal implementation and ViewModel integration so
+their necessary updates enter the normal builder footprint. Carry the impact and
+coverage requirements into the task's existing inputs and acceptance anchors.
+Visual-only changes need an impact assessment, not new events.
+
 1. **Pre-flight + authority + lock** — verify the required references and select exactly one guarded writer authority: inherited site session, exact caller-owned standby lease receipt (verify it; never reacquire or release it; renew only as specified in `references/prep-flow.md`), or a newly acquired prep-owned direct lease. Run the edit-marker guard. If the caller supplied a complete task-lock receipt, verify its exact `stem`/`stage`/`runId`/`sessionId`/`lockHash`; otherwise acquire one no-clobber generation through `task-lock.mjs`. A standby acquire passes the caller receipt's exact `sessionId`, `leaseId`, and private `token`; the helper verifies that capability before and after publication without persisting or returning the token. Retain the complete lock receipt privately. For Mode B inline, first validate pending state, helper-persist the prompt's exact answer bytes through `persist-answers --input -`, require the matching receipt, and re-read exact byte/SHA-256 equality; then re-run canonical validation and retain its fresh revision for analysis and any second transition. `persist-answers` permits only Answer-body changes in the current round and rejects answer markup that changes the CommonMark-visible question/Answer heading identity; `ask` is reserved for a newly generated round and enforces the generation counters. Never analyze inline answers before that durable first transaction, and never reuse its pre-persistence revision. For every other input, validate the exact current stem plus fresh INDEX and retain the mutation `sourceRevision`. Emit `phase-start`. Never write or delete lock bytes directly.
 2. **Classify (Step 1)** — reuse the change-kind taxonomy from `references/intake-classification.md` verbatim (do not re-derive); record the builder kinds implied + which prerequisite scaffolds exist.
 3. **Builder order** — order builders low-layer → high per `orchestrator/contracts/builder-order.md`: toolkit/compose-lib FIRST, then data-service-scaffold → data-feature → ui-core-state → mapper → feature-module-scaffold → screen/dialog → cross-feature-nav → resource → app-shell LAST. Prepend missing prerequisites (`feature-module-scaffold` before `screen`, `ui-core-state` before `mapper`/`screen`, `data-service-scaffold` before `endpoint`/`room-migration`).
@@ -71,13 +78,14 @@ does not change direct task-prep invocations.
 
 ## References to read
 
-Self-contained reference pack — the prep MECHANICS live in `references/`. Read
-**only** these references + the frozen contracts at runtime; this skill reads no
-external rule docs. Route via `references/index.md`.
+The prep MECHANICS live in `references/` and the frozen contracts. Route via
+`references/index.md`; feature behavior changes also read the owning analytics
+skill below.
 
 | topic | read |
 |---|---|
 | Routing table + file map (start here) | `references/index.md` |
+| Feature behavior / visual-only analytics impact and affected coverage | [feature-analytics](../feature-analytics/SKILL.md) |
 | Change-kind taxonomy + prerequisites + **builder order** + validator gate + intake plan | `references/intake-classification.md` |
 | Full prep flow (Modes A/B, pre-flight, lock, journal, gap analysis, questions, Mode B convergence, canonical INDEX publication, output blocks) | `references/prep-flow.md` |
 | Promoted todo shape — acceptance Automated/Manual split, automation anchors, defensive bullets | `references/acceptance-anchors.md` |

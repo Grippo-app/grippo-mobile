@@ -1,10 +1,14 @@
 package com.grippo.core.foundation
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.grippo.core.error.provider.ErrorProvider
+import com.grippo.core.foundation.analytics.ScreenAnalytics
 import com.grippo.core.foundation.internal.operation.OperationManager
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.foundation.models.BaseLoader
+import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 import com.grippo.toolkit.crashreporting.CrashReporting
 import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
@@ -29,6 +33,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
@@ -157,6 +162,16 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     internal fun detachActivation() {
         _activation.value = null
+    }
+
+    // ------------ SCREEN ANALYTICS API ------------
+
+    /** Declare only on an instrumented screen. Foundation binds each component lifecycle. */
+    protected open val screenPresentation: ((NavigationReason) -> ScreenPresentation)? = null
+
+    internal fun bindScreen(lifecycle: Lifecycle) {
+        val present = screenPresentation ?: return
+        get<ScreenAnalytics>().bind(lifecycle, present)
     }
 
     // ------------ ERROR API ------------

@@ -1,151 +1,223 @@
 package com.grippo.analytics.authorization
 
-import com.grippo.analytics.authorization.internal.scenario.AuthAnalyticsImpl
+import com.grippo.analytics.authorization.internal.AuthAnalyticsImpl
 import com.grippo.analytics.authorization.models.AuthOperation
-import com.grippo.analytics.authorization.models.EntryPoint
-import com.grippo.analytics.authorization.models.FailureCategory
 import com.grippo.analytics.authorization.models.Method
 import com.grippo.toolkit.analytics.Analytics
-import com.grippo.toolkit.analytics.context.*
+import com.grippo.toolkit.analytics.context.FlowContext
+import com.grippo.toolkit.analytics.context.OperationId
 import com.grippo.toolkit.analytics.schema.AnalyticsEvent
-import kotlin.test.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.*
+import com.grippo.toolkit.analytics.transport.AnalyticsValue
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 
 class AuthOperationsTest {
-    private suspend fun suspendFailure(error: Exception): String = throw error
+    private val operations = listOf(
+        AuthOperation.Login(Method.Email),
+        AuthOperation.Login(Method.Google),
+        AuthOperation.Login(Method.Apple),
+        AuthOperation.Register,
+        AuthOperation.SessionCheck,
+        AuthOperation.CreateProfile,
+        AuthOperation.Logout,
+    )
 
-    @Test fun allMethodsReturnWholeLoginResultAndNeverEncodeCredentials() = runTest {
-        for (method in Method.entries) {
-            val recorder = RecordingAuthAnalytics()
-            val facade = authorization(recorder)
-            var serverValue: String? = null
-            assertTrue(facade.trackOperation(AuthOperation.Login(method)) {
-                val credential = "secret_token"
-                serverValue = credential
-                true
+    @Test
+    fun everyOperationReturnsTheExactBusinessValueAndSharesOneFreshOutcomeId() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val analytics = AuthAnalyticsImpl(recorder)
+        val result = Any()
+        operations.forEach { operation ->
+            assertSame(result, analytics.trackOperation(operation) {
+                result
             })
-            assertEquals("secret_token", serverValue)
-            assertEquals(listOf("auth_flow_started", "auth_attempt_started", "auth_attempt_succeeded"), recorder.names)
-            assertTrue(recorder.events.all { it.flow?.id == facade.save().flow.id })
-            assertFalse(recorder.events.flatMap { it.event.parameters() }.any { "secret" in it.value.toString() })
+        }
+        val expectedNames = listOf(
+            "auth_attempt_started", "auth_attempt_succeeded",
+            "auth_attempt_started", "auth_attempt_succeeded",
+            "auth_attempt_started", "auth_attempt_succeeded",
+            "auth_attempt_started", "auth_attempt_succeeded",
+            "auth_session_check_started", "auth_session_check_completed",
+            "profile_operation_started", "profile_operation_completed",
+            "profile_operation_started", "profile_operation_completed",
+        )
+        assertEquals(expectedNames, recorder.names)
+        recorder.events.chunked(2).forEach { pair ->
+            assertNotNull(pair.first().operation)
+            assertEquals(pair.first().operation, pair.last().operation)
+            assertNull(pair.first().flow)
+            assertNull(pair.last().flow)
+            val duration = pair.last().event.parameters().last().value as AnalyticsValue.Integer
+            assertTrue(duration.value >= 0)
+        }
+        assertEquals(operations.size, recorder.events.mapNotNull { it.operation }.distinct().size)
+        assertEquals("register", recorder.events[6].text("auth_action"))
+        assertEquals("email", recorder.events[6].text("auth_method"))
+        assertEquals("create", recorder.events[10].text("profile_action"))
+        assertEquals("logout", recorder.events[12].text("profile_action"))
+    }
+
+    @Test
+    fun businessErrorsKeepTheirIdentityWithoutPrivateTextOrClassification() = runTest {
+        operations.forEach { operation ->
+            val recorder = RecordingAuthAnalytics()
+            val original = IllegalStateException("private credential token cancelled network")
+            assertSame(original, assertFailsWith<IllegalStateException> {
+                AuthAnalyticsImpl(recorder).trackOperation(operation) {
+                    throw original
+                }
+            })
+            assertEquals(2, recorder.events.size)
+            assertTrue(recorder.names.last().endsWith("_failed"))
+            assertEquals(recorder.events.first().operation, recorder.events.last().operation)
+            assertTrue(recorder.events.all { it.flow == null })
+            val parameters = recorder.events.flatMap { it.event.parameters() }
+            assertTrue(parameters.none { it.key.name in setOf("failure_category", "failure_stage", "session_outcome") })
+            assertTrue(parameters.none { "private" in it.value.toString() || "token" in it.value.toString() })
         }
     }
-    @Test fun providerCancellationNeverCallsServerAndPreservesOriginal() = runTest {
-        val recorder = RecordingAuthAnalytics()
-        val facade = authorization(recorder)
-        val original = TestFailure(FailureCategory.Unexpected, cancelled = true)
-        var called = false
-        assertSame(original, assertFailsWith<TestFailure> {
-            facade.trackOperation(AuthOperation.Login(Method.Apple)) {
-                val credential = suspendFailure(original)
-                called = true
-                assertNotNull(credential)
-            }
-        })
-        assertFalse(called)
-        assertEquals("auth_attempt_cancelled", recorder.names.last())
-    }
-    @Test fun exceptionTextDoesNotDetermineCancellation() = runTest {
-        val recorder = RecordingAuthAnalytics()
-        val original = IllegalStateException("cancelled secret")
-        assertSame(original, assertFailsWith<IllegalStateException> {
-            authorization(recorder).trackOperation(AuthOperation.Login(Method.Google)) {
-                throw original
-            }
-        })
-        assertEquals("auth_attempt_failed", recorder.names.last())
-        assertNull(recorder.events.last().text("failure_stage"))
-        assertEquals("unexpected", recorder.events.last().text("failure_category"))
-    }
-    @Test fun serverRetryHasExactlyOneTerminalAndFreshIds() = runTest {
-        val recorder = RecordingAuthAnalytics()
-        val facade = authorization(recorder)
-        assertFailsWith<TestFailure> {
-            facade.trackOperation(AuthOperation.Login(Method.Email)) {
-                throw TestFailure(FailureCategory.Rejected)
-            }
+
+    @Test
+    fun thrownCoroutineCancellationRemainsInterruptionForEveryOperation() = runTest {
+        operations.forEach { operation ->
+            val recorder = RecordingAuthAnalytics()
+            val original = CancellationException("private cancellation")
+            assertSame(original, assertFailsWith<CancellationException> {
+                AuthAnalyticsImpl(recorder).trackOperation(operation) {
+                    throw original
+                }
+            })
+            assertEquals(2, recorder.events.size)
+            assertTrue(recorder.names.last().endsWith("_interrupted"))
+            assertEquals(recorder.events.first().operation, recorder.events.last().operation)
         }
-        facade.trackOperation(AuthOperation.Login(Method.Email)) {}
-        val attempts = recorder.events.drop(1)
-        assertEquals(listOf("auth_attempt_started", "auth_attempt_failed", "auth_attempt_started", "auth_attempt_succeeded"), attempts.map { it.event.schema.name })
-        assertEquals(attempts[0].operation, attempts[1].operation)
-        assertEquals(attempts[2].operation, attempts[3].operation)
-        assertNotEquals(attempts[0].operation, attempts[2].operation)
-        assertNull(attempts[1].text("failure_stage"))
     }
-    @Test fun cancellationInEachWholeOperationProducesInterruption() = runTest {
-        for (operation in listOf("attempt", "session")) {
+
+    @Test
+    fun cancellationOfCallerProducesOneInterruptedOutcome() = runTest {
+        operations.forEach { operation ->
             val recorder = RecordingAuthAnalytics()
             val job = launch {
-                when (operation) {
-                    "attempt" -> authorization(recorder).trackOperation(AuthOperation.Login(Method.Google)) {
-                        awaitCancellation()
-                    }
-                    "session" -> session(recorder).trackOperation(AuthOperation.SessionCheck) { awaitCancellation() }
+                AuthAnalyticsImpl(recorder).trackOperation(operation) {
+                    awaitCancellation()
                 }
             }
-            runCurrent(); job.cancelAndJoin()
-            val events = recorder.events.filter { it.operation != null }
-            assertEquals(2, events.size)
-            assertTrue(events.last().event.schema.name.endsWith("_interrupted"))
-            assertEquals(events.first().operation, events.last().operation)
+            runCurrent()
+            job.cancelAndJoin()
+            assertEquals(2, recorder.events.size)
+            assertTrue(recorder.names.last().endsWith("_interrupted"))
+            assertEquals(recorder.events.first().operation, recorder.events.last().operation)
         }
     }
-    @Test fun thrownCancellationRemainsInterruptionWithActiveCaller() = runTest {
+
+    @Test
+    fun userRetryStartsANewOperationWithoutHiddenRetryOrDuplicateTerminals() = runTest {
         val recorder = RecordingAuthAnalytics()
-        val original = CancellationException("private")
-        assertSame(original, assertFailsWith<CancellationException> {
-            authorization(recorder).trackOperation(AuthOperation.Login(Method.Google)) {
+        val analytics = AuthAnalyticsImpl(recorder)
+        var businessCalls = 0
+        assertFailsWith<IllegalArgumentException> {
+            analytics.trackOperation(AuthOperation.Register) {
+                businessCalls++
+                throw IllegalArgumentException("rejected")
+            }
+        }
+        assertEquals(1, businessCalls)
+        analytics.trackOperation(AuthOperation.Register) {
+            businessCalls++
+        }
+        assertEquals(2, businessCalls)
+        assertEquals(
+            listOf("auth_attempt_started", "auth_attempt_failed", "auth_attempt_started", "auth_attempt_succeeded"),
+            recorder.names,
+        )
+        assertNotEquals(recorder.events[0].operation, recorder.events[2].operation)
+    }
+
+    @Test
+    fun oneStatelessFacadeSupportsConcurrentOperationsWithIndependentIds() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val analytics = AuthAnalyticsImpl(recorder)
+        val release = CompletableDeferred<Unit>()
+        val jobs = listOf(AuthOperation.Login(Method.Email), AuthOperation.CreateProfile).map { operation ->
+            async {
+                analytics.trackOperation(operation) {
+                    release.await()
+                }
+            }
+        }
+        runCurrent()
+        release.complete(Unit)
+        jobs.awaitAll()
+        val groups = recorder.events.groupBy { it.operation }
+        assertEquals(2, groups.size)
+        groups.values.forEach { events ->
+            assertEquals(2, events.size)
+            assertTrue(events.first().event.schema.name.endsWith("_started"))
+            assertTrue(events.last().event.schema.name.endsWith("_succeeded") || events.last().event.schema.name.endsWith("_completed"))
+            assertTrue(events.all { it.flow == null })
+        }
+    }
+
+    @Test
+    fun reportingFailureAtStartOrCompletionCannotReplaceTheBusinessResult() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val observer = object : Analytics by recorder {
+            override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
+                recorder.track(event, flow, operation)
+                throw IllegalStateException("reporting failure")
+            }
+        }
+        val result = Any()
+        assertSame(result, AuthAnalyticsImpl(observer).trackOperation(AuthOperation.SessionCheck) {
+            result
+        })
+        assertEquals(listOf("auth_session_check_started", "auth_session_check_completed"), recorder.names)
+    }
+
+    @Test
+    fun failedReportingCannotReplaceOriginalBusinessException() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val defect = IllegalStateException("encoding defect")
+        val original = IllegalArgumentException("business failure")
+        val observer = object : Analytics by recorder {
+            override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
+                recorder.track(event, flow, operation)
+                if (event.schema.name == "profile_operation_failed") throw defect
+            }
+        }
+        assertSame(original, assertFailsWith<IllegalArgumentException> {
+            AuthAnalyticsImpl(observer).trackOperation(AuthOperation.CreateProfile) {
                 throw original
             }
         })
-        currentCoroutineContext().ensureActive()
-        assertEquals("auth_attempt_interrupted", recorder.names.last())
-    }
-    @Test fun parallelScenariosDoNotMixContexts() = runTest {
-        val recorder = RecordingAuthAnalytics()
-        val first = authorization(recorder); val second = authorization(recorder)
-        val release = CompletableDeferred<Unit>()
-        val jobs = listOf(first, second).map { facade ->
-            async {
-                facade.trackOperation(AuthOperation.Login(Method.Email)) { release.await() }
-            }
-        }
-        runCurrent(); release.complete(Unit); jobs.awaitAll()
-        val contexts = listOf(first.save().flow, second.save().flow)
-        assertNotEquals(contexts[0].id, contexts[1].id)
-        val attempts = contexts.map { context -> recorder.events.filter { it.flow == context && it.operation != null } }
-        attempts.forEach { assertEquals(2, it.size); assertEquals(it[0].operation, it[1].operation) }
-        assertNotEquals(attempts[0][0].operation, attempts[1][0].operation)
-    }
-    @Test fun sessionReturnsBusinessValueUnchangedAndPreservesErrors() = runTest {
-        val recorder = RecordingAuthAnalytics()
-        val result = Any()
-        assertSame(result, session(recorder).trackOperation(AuthOperation.SessionCheck) { result })
-        assertEquals(listOf("auth_session_check_started", "auth_session_check_completed"), recorder.names)
-        assertNull(recorder.events.last().text("session_outcome"))
-        val original = TestFailure(FailureCategory.Timeout)
-        assertSame(original, assertFailsWith<TestFailure> {
-            session(recorder).trackOperation(AuthOperation.SessionCheck) { throw original }
-        })
-        assertEquals("auth_session_check_failed", recorder.names.last())
-        assertEquals("timeout", recorder.events.last().text("failure_category"))
-        assertNull(recorder.events.last().text("failure_stage"))
-    }
-    @Test fun reportingDefectStaysAttachedToOriginalBusinessException() = runTest {
-        val recorder = RecordingAuthAnalytics()
-        val defect = IllegalStateException("encoding defect")
-        val original = TestFailure(FailureCategory.Timeout)
-        val analytics = object : Analytics by recorder {
-            override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
-                recorder.track(event, flow, operation)
-                if (event.schema.name == "auth_attempt_failed") throw defect
-            }
-        }
-        val facade = AuthAnalyticsImpl(analytics, TestClassifier).authorization(EntryPoint.TokenAbsent, FlowId.create(), null)
-        assertSame(original, assertFailsWith<TestFailure> { facade.trackOperation(AuthOperation.Register) { throw original } })
         assertTrue(original.suppressedExceptions.any { it === defect })
+        assertEquals(2, recorder.events.size)
     }
 
+    @Test
+    fun fatalBusinessErrorsAreNotClassifiedAsRecoverableFailures() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val original = AssertionError("fatal")
+        assertSame(original, assertFailsWith<AssertionError> {
+            AuthAnalyticsImpl(recorder).trackOperation(AuthOperation.Logout) {
+                throw original
+            }
+        })
+        assertEquals(listOf("profile_operation_started"), recorder.names)
+    }
 }

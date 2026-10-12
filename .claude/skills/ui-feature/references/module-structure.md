@@ -22,13 +22,17 @@ One module per top-level feature flow. Each owns:
 
 Build (typical): `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention` + `koin.annotation.convention`; namespace `com.<org>.<product>.ui.screen.features.<feature>`. **Mandatory deps** for any screen feature: `:ui-core:foundation`, `:ui-screen-features:screen-api`, `:design-system:core/components/resources/preview`, `:data-features:feature-api`, `:ui-dialog-features:dialog-api` (plus typically `:ui-core:state`, `:data-mappers:domain-to-state`, `:toolkit:dateUtils`, `compose.foundation`/`material3`, immutable-collections, datetime). `:compose-libs:*` only when actually used.
 
-The single wider-data-layer carve-out is `:ui-screen-features:authorization` (adds `:data-services:google-auth`/`apple-auth` for the platform credential flow before a domain user exists). Firebase transport belongs to the app shell; UI uses toolkit/feature analytics APIs. Documented carve-out — do not copy to other features.
+An instrumented feature also depends on `:analytics:analytics-api`; shared registers
+its implementation. Its ViewModels use one typed feature service and foundation
+owns the common screen hook; see [feature analytics](../../feature-analytics/SKILL.md).
+
+The single wider-data-layer carve-out is `:ui-screen-features:authorization` (adds `:data-services:google-auth`/`apple-auth` for the platform credential flow before a domain user exists). Firebase transport belongs to application bootstrap. Documented carve-out — do not copy to other features.
 
 ## `:ui-dialog-features:*`
 
 ### `:ui-dialog-features:dialog-api` (the contract module)
 
-Houses: `DialogConfig` (`@Serializable sealed class DialogConfig(@Transient open val onDismiss: (() -> Unit)? = null, open val dismissBySwipe: Boolean = true) { abstract val key: String }`, each subtype with a `@Transient onResult`); `DialogController` (`interface { fun show(config: DialogConfig) }` — **no `dismiss()`**, do not invent one); `DialogProvider` (`interface { val dialog: Flow<DialogConfig> }`); `DialogControllerImpl` (`@Single(binds = [DialogController::class, DialogProvider::class])`, buffered `Channel`); `DialogModule` (`@Module @ComponentScan public class DialogModule` — lives **here**, `:shared/Koin.kt` lists `DialogModule().module`); `Constants.kt` (`DIALOG_EXIT_ANIMATION_DURATION = 300.milliseconds`); the `buildKey(...)` helper (length-prefixed, `protected`).
+Houses: in-memory `DialogConfig` (plain sealed class with caller-owned `title: UiText`, live `onDismiss`/result callbacks and `dismissBySwipe`; exhaustive `hasSameContentAs` compares typed content, excluding callbacks); `DialogController.open(config)` starts a new session after any current session closes. Its host-supplied `Session` exposes `push` / `replaceCurrent` / `back` / `close`, bound to the originating active step on the UI thread. `DialogProvider.openings: Flow<DialogConfig>` relays global openings through internal `DialogControllerImpl` (`@Single(binds = [DialogController::class, DialogProvider::class])`, conflated `Channel`). `DialogModule` is the existing public `@Module @ComponentScan`, registered in `:shared/Koin.kt` via its generated `.module`. `Constants.kt` exposes `DIALOG_EXIT_ANIMATION_DURATION = 300.milliseconds`. Configs have no serialization, transient callbacks or `key` / `buildKey` contract; shared host `DialogSession` / `DialogStep` IDs preserve live instances, and both navigators use `serializer = null` without process-death session restoration.
 
 Build: same plugins as screen-api; namespace `com.<org>.<product>.ui.dialog.features.dialog.api`; deps `uiCore.foundation`, `uiCore.state`, `toolkit.dateUtils`, serialization-json, datetime, `compose.foundation`. (`:ui-core:state` carries `AppErrorState`; `:ui-core:error:error-provider` is intentionally **not** depended on here.)
 
@@ -36,11 +40,15 @@ Build: same plugins as screen-api; namespace `com.<org>.<product>.ui.dialog.feat
 
 One module per bottom-sheet flow (`amount-picker`, `date-picker`, `confirmation`, `error-display`, ...). Identical to a screen feature **except**:
 - Component ctor params are typically `(componentContext, initial, onResult, back, close)`.
-- Ships **no** toolbar (neither `Toolbar` nor `BottomSheetToolbar`) — `BaseComposeScreen(ScreenBackground.Color(...background.dialog))` with `Spacer(AppTokens.dp.dialog.top)`, centered title `Text`, body, `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())`. The `BottomSheetToolbar` belongs to the outer `:shared/dialog/DialogScreen.kt` host.
+- Ships **no** toolbar or duplicate title — `BaseComposeScreen(ScreenBackground.Color(...background.dialog))` with `Spacer(AppTokens.dp.dialog.top)`, body, `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())`. The outer `:shared/dialog/DialogScreen.kt` host renders `BottomSheetToolbar` using the active config's `title: UiText`.
 - Content rendered inside a `ModalBottomSheet` managed by `DialogComponent`, not the feature.
-- The dialog feature **never** holds a `StackNavigation` of its own; in-sheet multi-step flows use the outer `DialogContentComponent` inner `StackNavigation<DialogConfig>`. State is for mode/data, not navigation.
+- The dialog feature **never** holds a `StackNavigation` of its own; in-sheet multi-step flows use the shared `DialogContentComponent` inner `StackNavigation<DialogStep>` and the originating step's `DialogController.Session`. State is for mode/data, not navigation.
 
 Build (typical): same plugins; namespace `com.<org>.<product>.ui.dialog.features.<feature>`; deps `uiCore.foundation`, `uiCore.state`, `designSystem.core/resources.provider/components/preview`, `compose.foundation`/`material3`, immutable-collections. Dialog features do **not** depend on `:data-features:feature-api` unless they read/write domain data (rare).
+
+Analytics-api is added only for explicitly instrumented dialog scope with a typed
+contract and VM owner. A dialog module/config does not automatically track views;
+caller open/result facts belong to the owning screen VM.
 
 ## File layout for a feature
 
@@ -99,7 +107,7 @@ Direct symbol import between feature modules is **forbidden**. (Full recipe in `
 The heart of MVI (full API: `references/base-classes.md`). Exposes `BaseViewModel`/`BaseComponent`/`BaseComposeScreen`, the marker interfaces, `ResultKey`/`ResultKeys`, `OperationManager`/`OperationManagerImpl`, `ResultManager`/`ResultEmitter`, `CoreModule`, `collectAsStateMultiplatform()`, `platformAnimation()`/`platformStackAnimator()`. Build: KMP+Compose+Koin; namespace `com.<org>.<product>.ui.core.foundation`. Only `decompose.core`/`decompose.extensions` are `api`-exposed (public `Base*` types reference `ComponentContext`/`ChildStack`). Toolkit `CrashReporting` API is injected for the error pipeline; foundation does not import the Firebase transport. This module does **not** depend on `:design-system:*` — base classes never read tokens.
 
 ### `:ui-core:state`
-Reusable UI state data classes + formatters: `UiText`, `*FormatState`, `AppErrorState` (package `core.state.error` — UI mirror of `AppError`, consumed by `DialogConfig.ErrorDisplay`, produced by `ErrorProviderImpl`), product-specific reusable state, `stub*()` factories. Every class `@Immutable`/`@Stable`; every collection immutable; resource-dependent strings as `UiText`; `stub*()` next to the class. Build: KMP+Compose + serialization alias (because `*FormatState`/`DateFormat` are `@Serializable` for `*Router`/`DialogConfig`); namespace `com.<org>.<product>.ui.core.state`.
+Reusable UI state data classes + formatters: `UiText`, `*FormatState`, `AppErrorState` (package `core.state.error` — UI mirror of `AppError`, consumed by `DialogConfig.ErrorDisplay`, produced by `ErrorProviderImpl`), product-specific reusable state, `stub*()` factories. Every class `@Immutable`/`@Stable`; every collection immutable; resource-dependent strings as `UiText`; `stub*()` next to the class. Build: KMP+Compose + serialization alias (because `*FormatState`/`DateFormat` are `@Serializable` for `*Router` payloads; dialog configs stay in memory); namespace `com.<org>.<product>.ui.core.state`.
 
 ### `:ui-core:error:error-provider`
 Pure types only — `AppError` (sealed: `Network.{NoInternet, Timeout, Expected, Unexpected}`, `Expected`, `Unknown`; extends `Exception(message, cause)`) + `ErrorProvider` interface. **No DI**, deps-free. `AppErrorState` lives in `:ui-core:state`, **not** here — keeping this module UI-free lets `:data-services:*`/`:toolkit:http-client` reference `AppError` without UI.

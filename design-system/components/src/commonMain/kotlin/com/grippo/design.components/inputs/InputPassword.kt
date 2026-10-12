@@ -37,6 +37,9 @@ public fun InputPassword(
     modifier: Modifier = Modifier,
     value: PasswordFormatState,
     placeholder: String = AppTokens.strings.res(Res.string.password_placeholder_default),
+    onFocused: () -> Unit = {},
+    onVisibilityChange: (Boolean) -> Unit = {},
+    onDone: () -> Unit = {},
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -45,6 +48,7 @@ public fun InputPassword(
 
     Input(
         modifier = modifier,
+        onFocused = onFocused,
         value = value.display,
         enabled = true,
         maxLines = 1,
@@ -57,6 +61,7 @@ public fun InputPassword(
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)
+            onDone()
         },
         leading = { color ->
             Icon(
@@ -73,13 +78,19 @@ public fun InputPassword(
                     visible = !passwordVisible,
                     icon = AppTokens.icons.EyeOn,
                     tint = color,
-                    onClick = { passwordVisible = true },
+                    onClick = {
+                        passwordVisible = true
+                        onVisibilityChange(true)
+                    },
                 )
                 InputTrailingIconButton(
                     visible = passwordVisible,
                     icon = AppTokens.icons.EyeOff,
                     tint = color,
-                    onClick = { passwordVisible = false },
+                    onClick = {
+                        passwordVisible = false
+                        onVisibilityChange(false)
+                    },
                 )
             }
         },

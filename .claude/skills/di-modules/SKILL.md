@@ -57,6 +57,12 @@ singleton-vs-factory state is out of scope.
 6. **No `getKoin().get()` in a Composable.** Deps flow Component → ViewModel;
    `BaseViewModel` field-injects only its infrastructure deps. Composables read
    `AppTokens.*` and `viewModel.state` — no `koinInject` in screens.
+7. **Feature analytics follows the [canonical skill](../feature-analytics/SKILL.md).**
+   Wire one stateless internal `@Single(binds = [<Feature>Analytics::class])`
+   implementation through its generated module in shared. Its complete catalog
+   uses a unique feature qualifier and registers before core resolution.
+   Components resolve the service only while constructing the retained VM;
+   foundation's CoreModule owns ScreenAnalytics. No UI analytics provider/module.
 
 ## Stop and ask
 
@@ -69,9 +75,9 @@ singleton-vs-factory state is out of scope.
 
 ## References to read
 
-This skill is **self-contained** — its normative rules live in
-[`references/`](references/index.md), and it reads no external rule docs at
-runtime. Read the routing table there for your task kind.
+DI mechanics live in [`references/`](references/index.md). Feature analytics also
+requires the canonical skill above; do not infer telemetry architecture from a
+generic DI example. Read the routing table for your task kind.
 
 | Task kind | Read first |
 |---|---|
@@ -81,6 +87,7 @@ runtime. Read the routing table there for your task kind.
 | `FeatureApiModule` hand-DSL carve-out | [`references/annotations.md`](references/annotations.md) § "FeatureApiModule — the one hand-DSL exception" |
 | Composition root / `Koin.init` / module order / add-a-module checklist | [`references/composition-root.md`](references/composition-root.md) |
 | `:shared` composition root, `Koin.kt` responsibilities, `RootComponent`/`RootViewModel`, `:shared/build.gradle.kts` | [`references/shared-module.md`](references/shared-module.md) |
+| Feature analytics service/catalog and foundation hook | [canonical skill](../feature-analytics/SKILL.md), [`references/composition-root.md`](references/composition-root.md) |
 
 ## Validators / gates
 

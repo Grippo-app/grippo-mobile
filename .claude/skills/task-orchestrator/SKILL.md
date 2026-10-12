@@ -164,8 +164,10 @@ self-review.
 
 ## References to read
 
-This skill is self-contained — it carries its own rules and reads **only** these
-references + the frozen contracts at runtime.
+Run-loop mechanics live in these references and the frozen contracts. Owning
+implementation skills supply feature rules; behavior changes also route to
+[canonical feature analytics](../feature-analytics/SKILL.md) for impact/coverage
+through the existing planner and reviewer.
 
 - Routing table (loop step / topic → reference file + frozen contract):
   `references/index.md`.

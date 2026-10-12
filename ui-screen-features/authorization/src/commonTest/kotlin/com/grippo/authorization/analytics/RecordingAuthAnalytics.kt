@@ -12,7 +12,9 @@ internal class RecordingAuthAnalytics : Analytics {
     data class Captured(val event: AnalyticsEvent, val flow: FlowContext?, val operation: OperationId?) {
         fun text(key: String): String? = (event.parameters().singleOrNull { it.key.name == key }?.value as? AnalyticsValue.Text)?.value
     }
-    data class View(val navigation: NavigationContext, val flow: FlowContext?)
+    data class View(val navigation: NavigationContext, val flow: FlowContext?) {
+        var closes = 0
+    }
     val events = mutableListOf<Captured>()
     val views = mutableListOf<View>()
     val names get() = events.map { it.event.schema.name }
@@ -20,8 +22,9 @@ internal class RecordingAuthAnalytics : Analytics {
         events += Captured(event, flow, operation)
     }
     override fun presentScreen(navigation: NavigationContext, flow: FlowContext?): ScreenPresentation {
-        views += View(navigation, flow)
-        return object : ScreenPresentation { override fun close() = Unit }
+        val view = View(navigation, flow)
+        views += view
+        return object : ScreenPresentation { override fun close() { view.closes++ } }
     }
     override fun updateContext(context: AnalyticsContext) = Unit
     override fun updateIdentity(identity: AnalyticsIdentity) = Unit

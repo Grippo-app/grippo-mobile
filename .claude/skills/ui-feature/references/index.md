@@ -1,8 +1,8 @@
 # ui-feature references — routing table
 
-Self-contained reference pack. A builder reading the file(s) below for its
-task-kind gets the full normative rules — no external rule docs are read at
-runtime.
+Reference pack for UI mechanics. Behavior changes also read the canonical
+[feature-analytics skill](../../feature-analytics/SKILL.md); its rules are maintained
+there rather than duplicated in each recipe.
 
 ## task-kind / topic → read
 
@@ -21,6 +21,7 @@ runtime.
 | Compose / stability / previews / lists / modifiers | `compose-rules.md` → `base-classes.md` (§ BaseComposeScreen) |
 | Base classes (`BaseViewModel`/`BaseComponent`/`BaseComposeScreen`/models/`OperationManager`/platform helpers) | `base-classes.md` |
 | ViewModel data flow (observe vs get, `safeLaunch`) | `results.md` (§ ViewModel data flow) |
+| Analytics impact, typed VM events/operations, optional screen hook and coverage | [feature-analytics](../../feature-analytics/SKILL.md) → [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
 | Widgets shared across features | `module-structure.md` (§ `:compose-libs:*`) — graduate to design-system instead |
 
 ## reference files
@@ -43,6 +44,8 @@ runtime.
 
 Every task-kind: the architecture cross-cuts (MVI, dialogs, error pipeline,
 Decompose nav, process-death) are summarized at the foot of `mvi-contract.md`.
+Behavior changes also assess/update affected analytics coverage; visual-only edits
+assess impact. Screen/component examples show MVI mechanics, not complete telemetry.
 The forbidden-patterns surface (the validation-gates skill,
 references/forbidden-patterns.md) is owned by that skill, not this one — each reference file restates
 the patterns relevant to its topic under its own "Anti-patterns" heading.

@@ -1,17 +1,27 @@
 package com.grippo.authorization.profile.creation.missing.equipments
 
+import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.models.AuthEvent
+import com.grippo.analytics.authorization.models.AuthScreen
+import com.grippo.analytics.common.models.ControlAction
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.domain.state.equipment.toState
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 internal class MissingEquipmentsViewModel(
+    private val analytics: AuthAnalytics,
     equipmentFeature: EquipmentFeature,
 ) : BaseViewModel<MissingEquipmentsState, MissingEquipmentsDirection, MissingEquipmentsLoader>(
     MissingEquipmentsState()
 ), MissingEquipmentsContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(AuthScreen.MissingEquipments, reason)
+    }
 
     init {
         equipmentFeature
@@ -49,6 +59,7 @@ internal class MissingEquipmentsViewModel(
 
     override fun onGroupClick(id: String) {
         update { it.copy(selectedGroupId = id) }
+        analytics.trackEvent(AuthEvent.Equipments.GroupSelected)
     }
 
     override fun onEquipmentClick(id: String) {
@@ -60,9 +71,14 @@ internal class MissingEquipmentsViewModel(
             }
             it.copy(selectedEquipmentIds = selectedEquipmentIds)
         }
+        val selectedIds = state.value.selectedEquipmentIds
+        analytics.trackEvent(
+            AuthEvent.Equipments.SelectionChanged(id in selectedIds, selectedIds.size)
+        )
     }
 
     override fun onNextClick() {
+        analytics.trackEvent(AuthEvent.Equipments.Control(ControlAction.Next))
         val current = state.value
         val missingEquipmentIds = current.suggestions
             .flatMap { it.equipments }
@@ -75,6 +91,7 @@ internal class MissingEquipmentsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(AuthEvent.Equipments.Control(ControlAction.Back))
         navigateTo(MissingEquipmentsDirection.Back)
     }
 }

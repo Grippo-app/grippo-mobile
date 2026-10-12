@@ -1,6 +1,9 @@
 # Toolkit utilities (platform services) — connectivity, notification-manager, permission-manager, link-opener, theme, localization, image-loader
 
-Per-module specifications for the platform-service `:toolkit:*` modules: API surfaces, options, usage, build configuration, Koin wiring, rules, and anti-patterns. Self-contained reference — reads no external rule docs at runtime.
+Per-module specifications for platform-service APIs, usage, build configuration,
+Koin wiring and anti-patterns. Feature telemetry follows the
+[canonical analytics skill](../../feature-analytics/SKILL.md); these service APIs
+do not define instrumentation ownership.
 
 ## :toolkit:connectivity
 
@@ -342,7 +345,7 @@ internal class NoteViewModel(
                     // show inline message; user may try again
                 }
                 PermissionStatus.DeniedPermanently -> {
-                    dialogController.show(DialogConfig.OpenSettingsPrompt)
+                    dialogController.open(settingsPromptConfig)
                 }
             }
         }
@@ -351,6 +354,9 @@ internal class NoteViewModel(
 ```
 
 Request permission **at the moment the user wants the feature**, not at app start. Boot-time permission requests cause permission fatigue.
+
+`settingsPromptConfig` denotes an existing caller-owned `DialogConfig`, such as a
+`Confirmation` with localized title/description and the existing settings action.
 
 ### `AppPermission.Notifications` Android specifics
 
@@ -443,7 +449,12 @@ public data class LinkOpenResult(
 )
 ```
 
-`isOpened` reports whether the system actually launched a handler; `resolvedHandler` exposes the Android package that resolved the intent (null on iOS). Most callers ignore the result — it's there so analytics / diagnostics can record which app handled a deeplink.
+`isOpened` reports whether the system actually launched a handler; `resolvedHandler`
+exposes the Android package that resolved the intent (null on iOS). Most callers
+ignore the result. Feature telemetry may observe the bounded `isOpened` Boolean
+through a typed event in the owning ViewModel, following
+[feature-analytics](../../feature-analytics/SKILL.md). Raw URLs and `resolvedHandler`
+never enter feature events; telemetry does not determine business fallback.
 
 ### Implementations
 
@@ -532,7 +543,7 @@ kotlin {
 ### Anti-patterns
 
 - **Custom in-app browsers** via `WebView`/`WKWebView`. Use the system browser unless there's a strong reason (e.g. OAuth flows handled in `CustomTabs`).
-- **Branching loudly on `LinkOpenResult.isOpened`.** Most call sites can ignore it; reserve it for analytics / diagnostics.
+- **Branching loudly on `LinkOpenResult.isOpened`.** Most call sites can ignore it; preserve the existing advisory fallback. A ViewModel may observe the Boolean for telemetry without changing that behavior.
 
 ## :toolkit:theme & :toolkit:localization
 

@@ -14,7 +14,10 @@ internal class MissingEquipmentsComponent(
 ) : BaseComponent<MissingEquipmentsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        MissingEquipmentsViewModel(equipmentFeature = getKoin().get())
+        MissingEquipmentsViewModel(
+            analytics = getKoin().get(),
+            equipmentFeature = getKoin().get(),
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)

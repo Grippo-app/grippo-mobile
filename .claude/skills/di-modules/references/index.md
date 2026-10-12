@@ -1,8 +1,8 @@
 # DI-modules references — routing table
 
-Self-contained reference pack for the `di-modules` skill. These files carry the
-skill's own normative rules, so a builder reads here at runtime and needs no
-external rule docs.
+Reference pack for DI mechanics. Feature analytics additionally follows the
+[canonical analytics skill](../../feature-analytics/SKILL.md); generic binding
+examples do not define its ownership or lifecycle.
 
 Route by task kind; each row lists the file to read first, then any supporting files.
 
@@ -18,6 +18,7 @@ Route by task kind; each row lists the file to read first, then any supporting f
 | KSP / `KOIN_CONFIG_CHECK` convention-plugin config | [`annotations.md`](annotations.md) § "Configuration" | — |
 | `FeatureApiModule` hand-DSL exception (verbatim template) | [`annotations.md`](annotations.md) § "FeatureApiModule — the one hand-DSL exception" | — |
 | Composition root, `Koin.init`, explicit module listing, order | [`composition-root.md`](composition-root.md) | [`shared-module.md`](shared-module.md) |
+| Feature analytics service/catalog and foundation hook | [canonical analytics skill](../../feature-analytics/SKILL.md) | [`composition-root.md`](composition-root.md) |
 | Adding a module — checklist / wire a feature in `:shared` | [`composition-root.md`](composition-root.md) § "Adding a module — checklist" | [`shared-module.md`](shared-module.md) |
 | When tests want a different module / multiple Koin contexts | [`composition-root.md`](composition-root.md) § "When tests want a different module" | — |
 | How `BaseViewModel` / `RootViewModel` / `RootComponent` consume Koin | [`koin-overview.md`](koin-overview.md) § "How BaseViewModel itself uses Koin" | [`shared-module.md`](shared-module.md) |

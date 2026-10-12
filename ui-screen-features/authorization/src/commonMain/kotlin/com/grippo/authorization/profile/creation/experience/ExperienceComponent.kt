@@ -15,7 +15,7 @@ internal class ExperienceComponent(
 ) : BaseComponent<ExperienceDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ExperienceViewModel()
+        ExperienceViewModel(analytics = getKoin().get())
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)

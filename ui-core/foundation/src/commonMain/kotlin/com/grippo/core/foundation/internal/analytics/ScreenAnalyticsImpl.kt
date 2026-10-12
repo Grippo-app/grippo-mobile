@@ -2,6 +2,7 @@ package com.grippo.core.foundation.internal.analytics
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.grippo.core.foundation.analytics.ScreenAnalytics
+import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 import org.koin.core.annotation.Single
 
@@ -9,15 +10,18 @@ import org.koin.core.annotation.Single
 @Single(binds = [ScreenAnalytics::class])
 internal class ScreenAnalyticsImpl : ScreenAnalytics {
 
-    override fun bind(lifecycle: Lifecycle, present: () -> ScreenPresentation) {
+    override fun bind(lifecycle: Lifecycle, present: (NavigationReason) -> ScreenPresentation) {
         check(lifecycle.state != Lifecycle.State.DESTROYED) { "Cannot track a destroyed screen" }
 
         lifecycle.subscribe(object : Lifecycle.Callbacks {
+            private var hasPresented = false
             private var presentation: ScreenPresentation? = null
 
             override fun onResume() {
+                val reason = if (hasPresented) NavigationReason.Restore else NavigationReason.Initial
+                hasPresented = true
                 presentation = try {
-                    present()
+                    present(reason)
                 } catch (_: Exception) {
                     null
                 }

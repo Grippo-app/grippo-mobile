@@ -51,9 +51,12 @@
   fetched range but whose primary key isn't present in the fresh page. Prevents
   "deleted on another device" rows from lingering across cross-device deletes.
   Used in `data-feature` paged-list flows.
-- **DialogConfig** — a concrete subtype of the `@Serializable sealed class
-  DialogConfig`, identifying a bottom sheet, its inputs, and its result callback
-  (`@Transient`). Configs are shown via `DialogController.show(config)`.
+- **DialogConfig** — a plain sealed configuration carrying a bottom sheet's
+  localized title, inputs and live callbacks. `DialogController.open(config)`
+  starts an independent session through `DialogProvider.openings`; in-sheet
+  navigation uses `DialogController.Session`. Runtime session/step IDs supply
+  navigation identity. Configs and callbacks remain in memory and are not restored
+  after process death.
 - **DialogController** — the singleton that bridges any ViewModel to the
   `DialogComponent`'s slot navigator.
 - **ResultKey<T : BaseResult>** — a typed key for cross-component results.

@@ -245,7 +245,7 @@ public fun List<TagResponse>.toDomain(detail: TagDetail): List<Tag> =
 
 Use this direction when:
 
-- The data is **one-shot** (analytics, reports, summaries) — no caching benefit.
+- The data is **one-shot** (reports, summaries) — no caching benefit.
 - The data has no canonical entity (transient computed result, e.g. a one-off
   report DTO).
 

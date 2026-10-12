@@ -34,6 +34,17 @@ import kotlinx.coroutines.test.runTest
 class AnalyticsOperationTest {
     private val flow = FlowContext.start(EntryPoint("fixture_entry"), ScreenId("fixture_screen"))
 
+    @Test fun operationsWithoutAFlowKeepTheResultAndUseAFreshPairedId() = runTest {
+        val analytics = Recording()
+        assertEquals(7, analytics.trackOperation(Events()) { 7 })
+        assertEquals(8, analytics.trackOperation(Events()) { 8 })
+        assertEquals(listOf(null, null, null, null), analytics.entries.map { it.flow })
+        assertEquals(analytics.entries[0].operation, analytics.entries[1].operation)
+        assertEquals(analytics.entries[2].operation, analytics.entries[3].operation)
+        assertNotEquals(null, analytics.entries[0].operation)
+        assertNotEquals(analytics.entries[0].operation, analytics.entries[2].operation)
+    }
+
     @Test fun completionSharesIdsAndMeasuresTheOperationWithoutFactoryTime() = runTest {
         val clock = TestTimeSource()
         val analytics = Recording()

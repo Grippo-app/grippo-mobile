@@ -23,6 +23,7 @@ internal class ProfileCompletedComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileCompletedViewModel(
+            analytics = getKoin().get(),
             name = name,
             weight = weight,
             height = height,

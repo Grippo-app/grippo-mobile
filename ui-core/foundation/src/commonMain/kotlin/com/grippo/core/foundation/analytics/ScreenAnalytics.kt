@@ -1,9 +1,10 @@
 package com.grippo.core.foundation.analytics
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 
-/** Bind once at the leaf. Each RESUMED activation presents a screen; pause/destroy closes it. */
+/** Each resume presents a screen: Initial on first activation, Restore afterwards. Pause/destroy closes it. */
 public interface ScreenAnalytics {
-    public fun bind(lifecycle: Lifecycle, present: () -> ScreenPresentation)
+    public fun bind(lifecycle: Lifecycle, present: (NavigationReason) -> ScreenPresentation)
 }

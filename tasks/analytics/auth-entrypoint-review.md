@@ -1,5 +1,11 @@
 # Один consumer entry point авторизации
 
+> Исторический отчёт: описывает реализацию и проверки этого этапа, включая
+> позднее заменённые API/provider/retention. Текущие правила —
+> [feature-standard](feature-standard.md), фактическое покрытие и scope —
+> [авторизация](authorization-coverage.md). Результаты ниже не подтверждают
+> последующие изменения.
+
 ## Итоговый контракт
 
 `analytics/analytics-api/.../authorization/AuthAnalytics.kt` — единственный

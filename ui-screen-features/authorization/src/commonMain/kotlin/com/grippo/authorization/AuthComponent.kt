@@ -71,7 +71,6 @@ public class AuthComponent(
             is AuthRouter.AuthProcess -> AuthProcess(
                 AuthProcessComponent(
                     componentContext = context,
-                    route = router,
                     toHome = viewModel::toHome,
                     toProfileCreation = viewModel::toProfileCreation,
                     close = viewModel::onBack

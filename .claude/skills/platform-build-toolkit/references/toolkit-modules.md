@@ -633,23 +633,50 @@ This template uses a mix; for the new project, pick the right tool per service.
 
 ### Common patterns
 
-#### Empty iOS implementation
+#### Typed transport and native SDK adapters
 
-When a service is Android-only by intent (e.g. Firebase Analytics is set up natively on iOS in Swift), expose an interface in `commonMain` and implement it as a no-op on iOS:
+Analytics uses the shared `:toolkit:analytics:api` contract on both platforms:
 
 ```kotlin
-// commonMain
-public interface FirebaseAnalyticsService {
-    public fun logEvent(name: String, params: Map<String, String>)
-}
-
-// iosMain
-internal class IosFirebaseAnalytics : FirebaseAnalyticsService {
-    override fun logEvent(name: String, params: Map<String, String>) {
-        // no-op; iOS uses native SDK
-    }
+public interface AnalyticsSink {
+    public fun setCollection(collection: AnalyticsCollection)
+    public fun setIdentity(identity: AnalyticsIdentityPayload)
+    public fun send(payload: AnalyticsPayload)
 }
 ```
+
+Core owns collection/identity policy and submission; app shells attach native SDK
+adapters through the `ApplicationBootstrap` returned by `Koin.init`. Android startup:
+
+```kotlin
+val bootstrap = Koin.init {
+    androidContext(this@App)
+    androidLogger()
+}
+
+val analytics = AndroidFirebaseAnalytics(FirebaseAnalytics.getInstance(this))
+analytics.setCollection(AnalyticsCollection.Unknown)
+bootstrap.analytics.attachSink(analytics)
+```
+
+The iOS AppDelegate retains the bootstrap from `Koin().doInit(appDeclaration: { _ in })`
+in its initializer. During `didFinishLaunchingWithOptions`, configure Firebase and
+attach the Swift adapter, which implements `AnalyticsSink` and submits to the native SDK:
+
+```swift
+FirebaseApp.configure()
+let analytics = IosFirebaseAnalytics()
+analytics.setCollection(collection: .unknown)
+bootstrap.analytics.attachSink(analyticsSink: analytics)
+```
+
+Current sources: [AnalyticsSink](../../../../toolkit/analytics/api/src/commonMain/kotlin/com/grippo/toolkit/analytics/transport/AnalyticsSink.kt),
+[ApplicationBootstrap](../../../../shared/src/commonMain/kotlin/com/grippo/shared/bootstrap/ApplicationBootstrap.kt),
+[Android startup](../../../../androidApp/src/main/java/com/grippo/android/App.kt),
+[iOS startup](../../../../iosApp/iosApp/AppDeletage.swift) and
+[Swift adapter](../../../../iosApp/iosApp/IosFirebaseAnalytics.swift).
+Feature code uses the stateless typed service from
+[feature-analytics](../../feature-analytics/SKILL.md); transport remains app-owned.
 
 #### Lazy platform setup
 

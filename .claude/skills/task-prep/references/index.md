@@ -35,6 +35,7 @@ task-prep reads these to classify, but they are owned by other skills — not pa
 | read for | source |
 |---|---|
 | Recipe recognition (which builder a backlog maps to) | the implementation skills (ui-feature/data-layer/design-system/mappers) recipe references |
+| Feature behavior / visual-only analytics impact, affected coverage and builder footprint | [canonical feature analytics](../../feature-analytics/SKILL.md) |
 | Escalation triggers (when to stop and ask) | `../../validation-gates/references/when-to-stop-and-ask.md` |
 | Project context flags (`figmaEnabled`, locales, framework name) | `orchestrator/project-config.md` |
 | Screen cache + component census contract | `screensPrompt` in `orchestrator/site/scripts/figma-actions.js` (the authoring contract — no markdown mirror) |

@@ -210,18 +210,22 @@ class AnalyticsTest {
     @Test fun malformedPayloadsAndWrongDefinitionInstancesAreRejected() = runTest {
         val core = core(StandardTestDispatcher(testScheduler))
         val sink = Sink(); core.attachSink(sink); core.updateCollection(AnalyticsCollection.Granted)
-        fun malformed(definition: AnalyticsEventSchema, parameters: List<AnalyticsParameter>) = object : AnalyticsEvent {
-            override val schema = definition
-            override fun parameters() = parameters
-        }
-        core.track(malformed(Event.Schema, emptyList()))
-        core.track(malformed(Event.Schema, Event().parameters() + Event.Count.value(AnalyticsCount(1))))
-        core.track(malformed(Event.Schema, Event().parameters() + AnalyticsParameterKey.count("other").value(AnalyticsCount(1))))
-        core.track(malformed(AnalyticsEventSchema("test_event", 1, Event.Schema.parameters), Event().parameters()))
+        core.track(malformedEvent(Event.Schema, emptyList()))
+        core.track(malformedEvent(Event.Schema, Event().parameters() + Event.Count.value(AnalyticsCount(1))))
+        core.track(malformedEvent(Event.Schema, Event().parameters() + AnalyticsParameterKey.count("other").value(AnalyticsCount(1))))
+        core.track(malformedEvent(AnalyticsEventSchema("test_event", 1, Event.Schema.parameters), Event().parameters()))
         advanceUntilIdle()
         assertTrue(sink.payloads.isEmpty())
         assertEquals(4, core.diagnostics().count { it.disposition == AnalyticsDisposition.InvalidEvent })
         core.close()
+    }
+
+    private fun malformedEvent(
+        definition: AnalyticsEventSchema,
+        parameters: List<AnalyticsParameter>,
+    ): AnalyticsEvent = object : AnalyticsEvent {
+        override val schema = definition
+        override fun parameters(): List<AnalyticsParameter> = parameters
     }
 
     @Test fun invalidEnumValuesAndIdentityPropertiesAreRejected() = runTest {

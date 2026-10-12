@@ -32,26 +32,29 @@ internal class ProfileCreationComponent(
 
     override suspend fun eventListener(direction: ProfileCreationDirection) {
         when (direction) {
-            ProfileCreationDirection.ToExperience -> navigation.push(
-                ProfileCreationRouter.Experience
-            )
+            ProfileCreationDirection.ToExperience -> navigation.push(ProfileCreationRouter.Experience)
 
-            ProfileCreationDirection.ToExcludedMuscles -> navigation.push(
-                ProfileCreationRouter.ExcludedMuscles
-            )
+            ProfileCreationDirection.ToExcludedMuscles -> navigation.push(ProfileCreationRouter.ExcludedMuscles)
 
-            ProfileCreationDirection.ToMissingEquipments -> navigation.push(
-                ProfileCreationRouter.MissingEquipments
-            )
+            ProfileCreationDirection.ToMissingEquipments -> navigation.push(ProfileCreationRouter.MissingEquipments)
 
-            ProfileCreationDirection.ToCompleted -> navigation.push(
-                ProfileCreationRouter.Completed
-            )
+            ProfileCreationDirection.ToCompleted -> navigation.push(ProfileCreationRouter.Completed)
 
-            ProfileCreationDirection.ToHome -> toHome.invoke()
-            ProfileCreationDirection.Close -> close.invoke()
-            ProfileCreationDirection.Back -> navigation.pop()
-            ProfileCreationDirection.ToLogin -> toLogin.invoke()
+            ProfileCreationDirection.ToHome -> {
+                toHome.invoke()
+            }
+
+            ProfileCreationDirection.Close -> {
+                close.invoke()
+            }
+
+            ProfileCreationDirection.Back -> {
+                navigation.pop()
+            }
+
+            ProfileCreationDirection.ToLogin -> {
+                toLogin.invoke()
+            }
         }
     }
 
@@ -66,9 +69,9 @@ internal class ProfileCreationComponent(
     internal val childStack: Value<ChildStack<ProfileCreationRouter, Child>> = childStack(
         source = navigation,
         serializer = ProfileCreationRouter.serializer(),
-        initialStack = { listOf(ProfileCreationRouter.User) },
+        initialConfiguration = ProfileCreationRouter.User,
         key = "ProfileCreationComponent",
-        handleBackButton = true,
+        handleBackButton = false,
         childFactory = ::createChild,
     )
 

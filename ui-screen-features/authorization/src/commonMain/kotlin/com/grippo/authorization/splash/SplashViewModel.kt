@@ -1,28 +1,36 @@
 package com.grippo.authorization.splash
 
 import com.grippo.analytics.authorization.AuthAnalytics
+import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthOperation
+import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.screen.api.AuthorizationEntryPoint
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.firstOrNull
 
 internal class SplashViewModel(
-    private val analytics: AuthAnalytics.Session,
+    private val analytics: AuthAnalytics,
     private val muscleFeature: MuscleFeature,
     private val equipmentFeature: EquipmentFeature,
     private val authorizationFeature: AuthorizationFeature,
     private val userFeature: UserFeature
 ) : BaseViewModel<SplashState, SplashDirection, SplashLoader>(SplashState), SplashContract {
 
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(AuthScreen.Splash, reason)
+    }
+
     init {
         loadContent()
     }
 
     override fun onBack() {
+        analytics.trackEvent(AuthEvent.Splash.Back)
         navigateTo(SplashDirection.Back)
     }
 

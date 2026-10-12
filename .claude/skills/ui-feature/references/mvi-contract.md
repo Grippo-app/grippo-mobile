@@ -132,6 +132,11 @@ Rules:
 
 ### `<Name>ViewModel.kt`
 
+This generic scaffold assumes a new `DialogConfig.AmountPicker` subtype and its
+localized title resource are added through [dialogs.md](dialogs.md). It is not
+an existing production API: give the subtype `title: UiText` and a typed
+`hasSameContentAs` branch comparing its initial value, excluding callbacks.
+
 ```kotlin
 internal class NoteEditorViewModel(
     private val tagFeature: TagFeature,
@@ -161,8 +166,9 @@ internal class NoteEditorViewModel(
 
     override fun onAmountPickerClick() {
         val current = (state.value.amount as? AmountFormatState.Valid)?.value
-        dialogController.show(
+        dialogController.open(
             DialogConfig.AmountPicker(
+                title = UiText.Res(Res.string.amount_picker_title),
                 initial = current,
                 onResult = { newValue ->
                     update { it.copy(amount = AmountFormatState.of(newValue)) }
@@ -243,7 +249,7 @@ internal class NoteEditorComponent(
 Rules:
 - `internal class`, extends `BaseComponent<Direction>(componentContext)`.
 - Constructor takes `componentContext` plus **callback lambdas** for every navigation action this Component cannot perform itself (typically: `back`, `close`, and any cross-feature nav).
-- `viewModel` is created via `componentContext.retainedInstance { <Name>ViewModel(getKoin().get(), ...) }`. Dependencies are pulled from Koin — **not** threaded through the Component constructor.
+- `viewModel` is created via `componentContext.retainedInstance { <Name>ViewModel(getKoin().get(), ...) }`. All dependencies, including stateless analytics, resolve inside that block, not through Component constructors. VM owns typed events/operations and optional screenPresentation; BaseComponent/foundation binds it without feature wiring. See [feature analytics](../../feature-analytics/SKILL.md).
 - `eventListener` is `when (direction) { ... }` mapping every `Direction` subtype to a constructor lambda call (`back()`, `toSettings()`) or a child-component `navigation.push(...)` call if this is a parent component owning a stack.
 - `Render()` collects state + loaders multiplatform-safely and calls the `Screen` function.
 
@@ -295,7 +301,7 @@ Rules:
 
 | Concern | File | Why separated |
 |---|---|---|
-| What the user sees | `State` | Immutable; recomposable; survives process death (if `@Serializable`) |
+| What the user sees | `State` | Immutable; recomposable; rebuilt by the VM; serialized when used in a screen route payload |
 | What the user can do | `Contract` | Stable callback set; testable in isolation; previewable |
 | What the screen is doing | `Loader` | Multiple concurrent loaders coexist; UI shows specific spinners |
 | Where to go next | `Direction` | Decouples VM from navigation library; testable in isolation |
@@ -321,10 +327,10 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 
 - **MVI** — every screen/dialog is this seven-file package; `Screen` is the only UI file; non-`*Screen` UI goes in `components/`.
 - **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; each feature module exposes a single root component with its own internal stack. (`references/navigation.md`.)
-- **Dialogs** — a separate `SlotNavigation<DialogConfig>` parallel to the screen stack, hosted by `DialogComponent` in `:shared`. Dialogs return values via **typed callbacks inside `DialogConfig`** (`@Transient`), not via `ResultManager`. (`references/dialogs.md`.)
+- **Dialogs** — `DialogComponent` in `:shared` hosts a separate `SlotNavigation<DialogSession>` parallel to the screen stack; its content uses the internal `StackNavigation<DialogStep>`. Both use `serializer = null`. Plain `DialogConfig` carries the required `title: UiText`, typed content and live callbacks; `hasSameContentAs` compares content/titles excluding callbacks. Ordinary screen ViewModels call `DialogController.open`; nested features forward semantic directions and typed callbacks to the host's step-bound Session. The host removes the step or closes the root sheet, invokes dismissal callbacks, then delivers the pending typed result. These sessions are not restored after process death. See [dialogs.md](dialogs.md).
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.
 - **Error pipeline** — one path for failures from `safeLaunch`, including suspend
   helpers; no local catches, extra launches or recovery wrappers. Presentation mapping
   cannot change business results, cancellation or original analytics/log/crash
   failures. Read [error-pipeline.md](error-pipeline.md).
-- **Process-death restoration** — Decompose `StateKeeper` serializes the router stack; every `*Router` sealed class **and** every payload inside it must be `@Serializable`. (`references/process-death.md`.)
+- **Process-death restoration** — Decompose `StateKeeper` serializes screen router stacks; every `*Router` sealed class **and** every payload inside it must be `@Serializable`. Restoration requires saved state from the platform shell; live dialog sessions are excluded. See [process-death.md](process-death.md) for the implemented platform behavior.
