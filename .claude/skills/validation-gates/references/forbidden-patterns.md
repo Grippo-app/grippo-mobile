@@ -7,12 +7,41 @@
 
 Things you must not do — refuse to write them, refuse to commit them. Listed roughly by layer.
 
+## Kotlin structure
+
+- **Named local functions** declared inside `init`, constructors, another function
+  or a lambda. Declare methods at class scope or functions at file scope. Ordinary
+  callbacks, lambdas and DSLs remain allowed; do not confuse them with declarations.
+- **Compressed business/control blocks**, including one-line `safeLaunch` or
+  `trackOperation` bodies. Keep them multiline. Short single-expression `update`
+  and simple Flow transformations stay compact; expand long/multi-operation blocks.
+  Follow [the project Kotlin style](../../../../CLAUDE.md#kotlin).
+- **Duplicating startup requests solely to keep them literally in `init`** when
+  the same complete operation must run after error-dialog dismissal. Use one
+  private class-level operation called from `init` and `onError`, in the existing
+  VM scope. Do not introduce a local function, new scope or retry loop.
+
 ## Coroutines
 
+- **Manual `ensureActive()` checks in production**, including
+  `currentCoroutineContext().ensureActive()`, `CoroutineContext`, `CoroutineScope`
+  and `Job` overloads or helpers hiding the call. The project does not use this
+  pattern: it adds unwanted cancellation boilerplate. Do not replace it with
+  equivalent manual Job checks. Use owned scopes and cooperative cancellable APIs;
+  keep `CancellationException` propagation intact. Non-suspending workers must
+  provide cancellation through their execution design. When removing existing
+  checks, preserve cancellation before work and after late SDK results; do not
+  turn cancellation into success/fallback or weaken the tests that verify it.
 - **`viewModelScope.launch`, `lifecycleScope.launch`, `GlobalScope.launch`, `CoroutineScope(...).launch`** inside a `BaseViewModel`. Only `safeLaunch` / `Flow.safeLaunch()`.
 - **`runBlocking { ... }`** anywhere in production. Tests only.
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.
-- **`try { ... } catch (e: Throwable) { ... }`** inside a VM. Two carve-outs only: (1) `Result.onSuccess { ... }` / `runCatching { ... }` at a domain boundary (collapsing a thrown exception into a `Result`), or (2) the VM genuinely wants to recover and **not** show an error to the user — rare, requires a code comment explaining why (see the ui-feature skill, references/error-pipeline.md § Authoring rules). Otherwise let errors flow through `safeLaunch` → `ErrorProvider`.
+- **Local exception handling that hides, replaces or presents unhandled failures
+  in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Unwrap
+  with `getOrThrow()` inside `safeLaunch`. Only a documented business fallback may
+  catch ordinary `Exception` around its smallest operation in the same coroutine,
+  with `CancellationException` rethrown first and no `Throwable`/fatal `Error` catch.
+  Keep unrelated work and navigation outside it; see
+  [the error pipeline](../../ui-feature/references/error-pipeline.md).
 - **`async { }.await()`** to start a single piece of async work. Use `safeLaunch { ... }`. `async` is for parallel forks.
 
 ## Collections in state
@@ -89,11 +118,24 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Errors
 
-- **Manual `try/catch` in VM** to hide errors. Use the pipeline (for the two permitted carve-outs see § Coroutines above).
+- **Local `try/catch`, `runCatching`, `Result.onFailure`, `recover`, `fold` or
+  `getOrElse` that hide, replace or present unhandled failures in a ViewModel**,
+  including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
+  Only an explicit business fallback may catch ordinary `Exception` around its
+  smallest operation in the existing coroutine, rethrowing `CancellationException`
+  first. Never catch `Throwable`/fatal `Error`, unrelated requests, successful
+  navigation or fallback execution. Catch outside analytics to preserve the
+  original failure event. No extra launches, scopes, wrappers or stage flags.
+  `Result.onSuccess` may consume data without hiding failures.
+- **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
+  logging or crash reporting. Mapping only supplies a standard dialog representation
+  for known exceptions; return unknown errors unchanged and preserve cancellation/fatal errors.
+- **Using `safeLaunch.onError` as an immediate handler.** It runs after the error
+  dialog is dismissed, not when the exception is thrown, and does not suppress the dialog.
 - **Custom error dialogs** outside `DialogConfig.ErrorDisplay`.
 - **Recording exceptions to Firebase manually.** Pipeline does it.
 - **`Result.getOrNull()` without handling `null`.** Silently drops failures.
-- **Catching `CancellationException`.** Must propagate.
+- **Consuming `CancellationException`.** Must propagate; shared error dispatch excludes it, and an explicit fallback catch rethrows it first.
 - **Throwing raw `Throwable` from `validateResponse`.** Throw `AppError` subtypes. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
 
 ## State

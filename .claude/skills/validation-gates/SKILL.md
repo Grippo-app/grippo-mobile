@@ -36,6 +36,9 @@ run on an unknown footprint (fail-closed, do not pass by default).
 
 ## Workflow
 
+Review coroutine changes against the [project coroutine rules](references/forbidden-patterns.md#coroutines),
+including the prohibition on adding manual `ensureActive()` checks in production.
+
 Two layers, both required; neither replaces the other.
 
 1. **Machine validators** — emit `validator-finding`. The three always-on

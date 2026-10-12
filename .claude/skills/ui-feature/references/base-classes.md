@@ -38,18 +38,22 @@ protected suspend fun <T> withLoader(loader: LOADER?, block: suspend () -> T): T
 public val navigator: Flow<DIRECTION>
 protected fun navigateTo(destination: DIRECTION)
 
-protected enum class Processing { WhileActive, Infinity }
+protected enum class Processing {
+    WhileActive,
+    Infinity,
+}
 protected fun safeLaunch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-    processing: Processing = Processing.Infinity,
     loader: LOADER? = null,
     onError: (() -> Unit) = {},
+    mapError: (Throwable) -> Throwable = { it },
     block: suspend CoroutineScope.() -> Unit,
 ): Job
 protected fun <T> Flow<T>.safeLaunch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     processing: Processing = Processing.WhileActive,
     onError: (() -> Unit) = {},
+    mapError: (Throwable) -> Throwable = { it },
 ): Job
 
 override fun onDestroy()
@@ -57,18 +61,32 @@ override fun onDestroy()
 
 ### Rules
 
+- Follow [Kotlin block style](../../../../CLAUDE.md#kotlin): business/control bodies
+  and `safeLaunch`/`trackOperation` stay multiline; short single-expression `update`
+  and simple Flow transformations remain compact. No named local functions inside
+  `init`, constructors, other functions or lambdas; methods/functions belong at
+  class/file scope. Ordinary callbacks and DSL lambdas remain allowed.
+- `init` normally starts startup requests/subscriptions directly through
+  `safeLaunch`/Flow. A complete operation reused for initial loading and a retry
+  after dialog dismissal belongs in a private class-level method called by `init`
+  and `onError`. Do not duplicate its request sequence or use a local declaration.
+  Other helpers must represent meaningful business operations, not hide startup.
+  Reuse the existing VM scope and follow the [error rules](error-pipeline.md).
 - **`state`** is read-only outside the VM. `update { it.copy(...) }` is the **only** mutator (atomic compare-and-swap; thread-safe). **Never** capture `state.value` before a slow op then `update { it.copy(... = capturedValue + ...) }` — a concurrent update is lost; the lambda receives the **current** value.
 - **`loaders`** is an `ImmutableSet` (multiple concurrent). `withLoader(MyLoader.X) { block() }` adds X, runs `block`, removes X on completion (success **or** failure via `try/finally`); `loader == null` runs without modifying the set. Useful inside `mapLatest`/`flatMapLatest` chains.
 - **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
-- **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. On a non-`CancellationException` throw: log + Firebase (if enabled) + `ErrorProvider.provide(exception, callback = onError)` (the `onError` fires when the dialog is dismissed). Default `Processing.Infinity` runs to completion regardless of lifecycle.
+- **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. Unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
+- **Business fallback**: when an explicit operation needs immediate recovery, a private suspend method may catch ordinary `Exception` around only that operation within the existing coroutine. Rethrow `CancellationException` first, never catch `Throwable`/fatal `Error`, and keep unrelated work, successful navigation and fallback execution outside the protected block. Catch outside analytics so it observes the original failure. No extra launch, stage flags or recovery wrappers. See [error rules](error-pipeline.md#explicit-business-fallback).
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.
-- **`Processing.WhileActive` has no effect in the block form** — lifecycle gating applies only to `Flow.safeLaunch()`. Use `Processing.Infinity` (default) for blocks.
 
-### Processing modes
+### Flow processing modes
+
+Only `Flow.safeLaunch()` accepts `processing`; both modes use the existing VM scope
+and cancel when the ViewModel is destroyed.
 
 | Mode | When |
 |---|---|
-| `Infinity` | Critical work that must complete: form submission, save, sign-up. Default for `safeLaunch { }`. |
+| `Infinity` | Streams that must remain subscribed off-screen until cancellation. |
 | `WhileActive` | Streams that pause off-screen: list observers, real-time stats. Default for `Flow.safeLaunch()`. |
 
 ### Dispatchers (SHOULD)
@@ -78,14 +96,17 @@ override fun onDestroy()
 ### `onDestroy`
 
 ```kotlin
-override fun onDestroy() { _navigator.close(); coroutineScope.cancel() }
+override fun onDestroy() {
+    _navigator.close()
+    coroutineScope.cancel()
+}
 ```
 
 Closes the navigator channel and cancels the VM's `coroutineScope`; `Flow.safeLaunch()` subscriptions cancel automatically.
 
 ### What MUST NOT be in a ViewModel
 
-- `@Composable` functions. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Manual `try/catch` (except `Result.onSuccess`/`runCatching` at a domain boundary). `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
+- `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present unhandled failures; use `getOrThrow()` inside `safeLaunch`. Only a documented business fallback may use the narrow catch described above. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
 
 ### Minimal VM template
 
@@ -95,12 +116,23 @@ internal class FooViewModel(private val barFeature: BarFeature) :
     init {
         barFeature.observeBars()
             .map { it.toState() }
-            .onEach { update { state -> state.copy(items = it) } }
+            .onEach { items -> update { it.copy(items = items) } }
             .safeLaunch()
     }
-    override fun onRefreshClick() { safeLaunch(loader = FooLoader.Refresh) { barFeature.getBars().getOrThrow() } }
-    override fun onItemClick(id: String) { navigateTo(FooDirection.OpenDetail(id)) }
-    override fun onBack() { navigateTo(FooDirection.Back) }
+
+    override fun onRefreshClick() {
+        safeLaunch(loader = FooLoader.Refresh) {
+            barFeature.getBars().getOrThrow()
+        }
+    }
+
+    override fun onItemClick(id: String) {
+        navigateTo(FooDirection.OpenDetail(id))
+    }
+
+    override fun onBack() {
+        navigateTo(FooDirection.Back)
+    }
 }
 ```
 
@@ -349,19 +381,30 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     state: STATE,
 ) : InstanceKeeper.Instance, KoinComponent {
 
+    // ------------ STATE API ------------
+
     private val _state: MutableStateFlow<STATE> = MutableStateFlow(state)
     public val state: StateFlow<STATE> = _state.asStateFlow()
 
     protected fun update(updateFunc: (STATE) -> STATE) {
-        _state.update { currentState -> updateFunc.invoke(currentState) }
+        _state.update(updateFunc)
     }
+
+    // ------------ LOADER API ------------
 
     private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
     public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
 
-    protected suspend fun <T> withLoader(loader: LOADER?, block: suspend () -> T): T {
+    protected suspend fun <T> withLoader(
+        loader: LOADER?,
+        block: suspend () -> T
+    ): T {
         addLoader(loader)
-        return try { block() } finally { removeLoader(loader) }
+        return try {
+            block()
+        } finally {
+            removeLoader(loader)
+        }
     }
 
     private fun addLoader(loader: LOADER?) {
@@ -374,58 +417,76 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         _loaders.update { (it - loader).toPersistentSet() }
     }
 
+    // ------------ NAVIGATION API ------------
+
     private val _navigator = Channel<DIRECTION>(Channel.CONFLATED)
     public val navigator: Flow<DIRECTION> = _navigator.receiveAsFlow()
 
-    protected fun navigateTo(destination: DIRECTION) { _navigator.trySend(destination) }
+    protected fun navigateTo(destination: DIRECTION) {
+        _navigator.trySend(destination)
+    }
 
-    protected enum class Processing { WhileActive, Infinity }
+    // ------------ COROUTINE API ------------
+
+    protected enum class Processing {
+        WhileActive,
+        Infinity,
+    }
 
     private val coroutineScope: CoroutineScope = CoroutineScope(
         context = SupervisorJob() + Dispatchers.Main.immediate
     )
 
-    private val operationManager by inject<OperationManager> { parametersOf(coroutineScope) }
+    private val operationManager by inject<OperationManager> {
+        parametersOf(coroutineScope)
+    }
 
     protected fun <T> Flow<T>.safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         processing: Processing = Processing.WhileActive,
         onError: (() -> Unit) = {},
+        mapError: (Throwable) -> Throwable = { it },
     ): Job {
         val flow = when (processing) {
             Processing.WhileActive -> operationManager.whileActive(this@safeLaunch, activation)
             Processing.Infinity -> this@safeLaunch
         }
-        val job = operationManager.launch(
+
+        return operationManager.launch(
             dispatcher = dispatcher,
-            onError = { t -> sendError(t, onError) },
-            block = { flow.collect() }
+            onError = { exception ->
+                sendError(exception, onError, mapError)
+            },
+            block = {
+                flow.collect()
+            }
         )
-        return job
     }
 
     protected fun safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-        processing: Processing = Processing.Infinity,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
+        mapError: (Throwable) -> Throwable = { it },
         block: suspend CoroutineScope.() -> Unit,
     ): Job {
         addLoader(loader)
+
         val job = operationManager.launch(
             dispatcher = dispatcher,
-            onError = { t -> sendError(t, onError) }
-        ) {
-            when (processing) {
-                Processing.WhileActive,
-                Processing.Infinity -> block()
-            }
+            onError = { exception ->
+                sendError(exception, onError, mapError)
+            },
+            block = block,
+        )
+
+        job.invokeOnCompletion {
+            removeLoader(loader)
         }
-        job.invokeOnCompletion { removeLoader(loader) }
         return job
     }
-    // Note: Processing.WhileActive has no effect in the block form — lifecycle gating only applies to
-    // Flow.safeLaunch(). Use Processing.Infinity (the default) for blocks.
+
+    // ------------ ACTIVATION API ------------
 
     private val _activation = MutableStateFlow<Flow<Boolean>?>(null)
     internal val activation: Flow<Boolean> = _activation
@@ -434,15 +495,25 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         .distinctUntilChanged()
 
     internal fun attachActivation(activationFlow: Flow<Boolean>) {
-        _activation.value = activationFlow.distinctUntilChanged().onCompletion { emit(false) }
+        _activation.value = activationFlow
+            .distinctUntilChanged()
+            .onCompletion { emit(false) }
     }
 
-    internal fun detachActivation() { _activation.value = null }
+    internal fun detachActivation() {
+        _activation.value = null
+    }
+
+    // ------------ ERROR API ------------
 
     private val errorProvider by inject<ErrorProvider>()
     private val crashReporting by inject<CrashReporting>()
 
-    private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
+    private suspend fun sendError(
+        exception: Throwable,
+        onError: () -> Unit,
+        mapError: (Throwable) -> Throwable,
+    ) {
         val log = buildString {
             append("─────── ViewModel error ──────\n")
             append("│ message: ${exception.message}\n")
@@ -451,8 +522,15 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         }
         AppLogger.General.error(log)
         crashReporting.reportException(exception)
-        errorProvider.provide(exception, callback = onError)
+        val displayError = if (exception is Exception) {
+            mapError(exception)
+        } else {
+            exception
+        }
+        errorProvider.provide(displayError, callback = onError)
     }
+
+    // ------------ RELEASE API ------------
 
     override fun onDestroy() {
         _navigator.close()
@@ -670,7 +748,11 @@ internal class OperationManagerImpl(
         block: suspend CoroutineScope.() -> Unit
     ): Job {
         val handler = CoroutineExceptionHandler { _, t ->
-            if (t !is CancellationException) coroutineScope.launch { onError(t) }
+            if (t !is CancellationException) {
+                coroutineScope.launch {
+                    onError(t)
+                }
+            }
         }
         return coroutineScope.launch(
             dispatcher + handler + SupervisorJob(coroutineScope.coroutineContext[Job])

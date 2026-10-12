@@ -100,9 +100,29 @@ start/completed не предотвращают выполнение/возвр�
 становится продуктовым failure. Coroutine/job/retry не создаются.
 
 Feature API оборачивает цельную бизнес-операцию. Login/register включают приватную
-подготовку, SessionCheck не интерпретирует caller T. Обработанный бизнес-fallback
-означает completed execution, не восстановленную сессию. Текущие event versions и
+подготовку, SessionCheck не интерпретирует caller T. Текущий SessionCheck оборачивает
+только hasProfile; узкий бизнес-catch снаружи декоратора выполняет UI-fallback
+после failed, в той же корутине.
+Бизнес-fallback, уже обработанный внутри любого декорируемого блока, означал бы
+completed execution, а не желаемый исход. Текущие event versions и
 осознанные omissions находятся в authorization-coverage, без дублирования каталога.
+
+`safeLaunch`/`trackOperation` и бизнес-блоки остаются multiline, короткие `update`
+и простые Flow transformations — compact. Named local functions внутри `init`,
+конструкторов, функций и лямбд запрещены; callbacks/DSL разрешены. Для startup,
+повторяемого после диалога, используется private метод класса из `init`/`onError`,
+без дублирования запросов и нового scope; см. [Kotlin-стиль](../../CLAUDE.md#kotlin).
+
+ViewModel разворачивает Result через `getOrThrow()` внутри существующего `safeLaunch`.
+Необработанную исходную ошибку получают аналитика, log и crash reporting; чистый
+`mapError` меняет только представление стандартного диалога. `onError` выполняется
+после закрытия диалога. Явный бизнес-fallback допускает узкий catch обычного Exception
+вокруг минимальной операции в той же корутине, с первым catch CancellationException
+и повторным throw. Catch находится снаружи trackOperation, после исходного failure.
+Не ловить Throwable/fatal Error, не включать в try посторонние запросы, успешную
+навигацию или выполнение fallback; не добавлять launches/scopes, flags или обёртки.
+В mapper или аналитике нельзя прятать восстановление, fallback или навигацию; см.
+[единый error pipeline](../../.claude/skills/ui-feature/references/error-pipeline.md).
 
 Leaf один раз вызывает DI ScreenAnalytics.bind(lifecycle) с callback presentScreen.
 Один показ на RESUMED, включая уже resumed registration и foreground return;

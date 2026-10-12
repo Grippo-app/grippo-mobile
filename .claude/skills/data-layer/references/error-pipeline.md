@@ -160,7 +160,9 @@ override suspend fun saveNote(note: Note): Result<String> {
 ```
 
 The Repository returns `Result` / lets exceptions propagate via `runCatching` — never
-catch-and-swallow, never return a DTO. Error translation is the ViewModel's job.
+catch-and-swallow, never return a DTO. ViewModels unwrap with `getOrThrow()` inside
+`safeLaunch`; the shared pipeline presents errors. See the
+[UI error rules](../../ui-feature/references/error-pipeline.md).
 
 ---
 

@@ -13,6 +13,10 @@ description: >-
 
 # Data layer
 
+Follow the [project coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines):
+do not add manual `ensureActive()` checks or wrappers in production. Preserve
+caller cancellation through suspend APIs, exception handling and `Result` boundaries.
+
 Operational entrypoint for data-layer work. The UI sees only the `<X>Feature`
 interface in `:data-features:feature-api`; the impl, repository, `<Product>Api`,
 Room, and DataStore live below it. This is the routing map, not new rules.

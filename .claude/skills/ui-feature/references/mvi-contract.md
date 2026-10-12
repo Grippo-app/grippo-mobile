@@ -184,11 +184,26 @@ Rules:
 - `internal class`, extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
 - Constructor takes only `Feature` / `UseCase` / `Controller` types — **no** raw services (`<Product>Api`, `Database`, ...).
 - Initial state in the `BaseViewModel` constructor.
-- `init { }` block: subscribe to `Flow`s using `.safeLaunch()` (extension); kick off any initial loads with `safeLaunch(loader = ...) { ... }`.
+- `init { }` starts Flow subscriptions and startup loads through `safeLaunch`. A
+  complete startup operation reused after error-dialog dismissal may be a private
+  class-level method called from `init` and `onError`; do not duplicate the sequence.
+  No named local functions inside `init`, constructors, functions or lambdas.
+  Ordinary callback/DSL lambdas remain allowed.
+- Keep business/control blocks, `safeLaunch` and `trackOperation` multiline. Short
+  single-expression `update`/simple Flow transformations stay compact; expand long
+  expressions and multi-operation blocks. Follow [Kotlin style](../../../../CLAUDE.md#kotlin).
 - Mutate state via `update { it.copy(...) }`. Never assign to a `var`.
 - Emit navigation via `navigateTo(Direction.Foo)`.
 - Run async work via `safeLaunch { ... }` or `Flow.safeLaunch()`. **Never** `viewModelScope.launch`, `GlobalScope`, or raw `CoroutineScope`.
-- Catch exceptions **only** for domain-level success/failure (`result.onSuccess { ... }`); raw `try/catch` is forbidden — errors flow through `safeLaunch` → `ErrorProvider` automatically.
+- Unwrap failed results with `getOrThrow()` inside `safeLaunch`; do not hide or
+  present unhandled failures with local catches or result failure handlers.
+  `Result.onSuccess` may consume successful data without hiding failures. Pure
+  `mapError` changes only dialog presentation; `onError` runs after dismissal.
+  Only a documented business fallback may catch ordinary `Exception` around its
+  smallest operation in the same coroutine, rethrowing `CancellationException`
+  first. Keep successful navigation and unrelated work outside; no `Throwable`/
+  `Error` catches, telemetry-owned recovery, extra launches or wrappers. Follow
+  [the shared error rules](error-pipeline.md).
 
 (Full `BaseViewModel` API: `references/base-classes.md`.)
 
@@ -300,7 +315,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 | Direction | Nav intents only | State mutations, side effects |
 | Loader | Op tags | Anything else |
 | Contract | UI callbacks | Methods returning data, mutable state |
-| ViewModel | `update`, `navigateTo`, `safeLaunch`, `withLoader` | `viewModelScope`, `GlobalScope`, raw `try/catch`, Compose code |
+| ViewModel | `update`, `navigateTo`, `safeLaunch`, `withLoader`, narrowly scoped documented business fallback | `viewModelScope`, `GlobalScope`, arbitrary local catches, Compose code |
 | Component | Decompose wiring, DI pulls, `eventListener` | UI rendering, business logic |
 | Screen | Composables, derived state via `remember` | State mutations, side effects beyond `LaunchedEffect` for non-nav purposes |
 
@@ -310,5 +325,9 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 - **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; each feature module exposes a single root component with its own internal stack. (`references/navigation.md`.)
 - **Dialogs** — a separate `SlotNavigation<DialogConfig>` parallel to the screen stack, hosted by `DialogComponent` in `:shared`. Dialogs return values via **typed callbacks inside `DialogConfig`** (`@Transient`), not via `ResultManager`. (`references/dialogs.md`.)
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.
-- **Error pipeline** — one path for all errors from any `safeLaunch`; manual `try/catch` inside a ViewModel is forbidden (two carve-outs). (`references/error-pipeline.md`.)
+- **Error pipeline** — one path for unhandled failures from `safeLaunch`. A documented
+  business fallback may narrowly catch ordinary `Exception` in the same coroutine,
+  rethrowing cancellation first; no extra launch or wrapper. Presentation mapping
+  cannot change business results, cancellation or original analytics/log/crash
+  failures. Read [error-pipeline.md](error-pipeline.md).
 - **Process-death restoration** — Decompose `StateKeeper` serializes the router stack; every `*Router` sealed class **and** every payload inside it must be `@Serializable`. (`references/process-death.md`.)

@@ -63,6 +63,34 @@ State classes use **default constructor values** for the initial state; the View
 constructs them with `NotesListState()`. A `companion object Empty` is the **Contract**
 convention (see `naming.md`), not the State convention.
 
+## Function scope and block layout
+
+Named local function declarations inside `init`, constructors, another function or
+lambda are forbidden. Declare methods at class scope or functions at file scope.
+Ordinary callbacks, lambdas and DSLs remain allowed.
+
+Keep function/`init`/control-flow bodies and business blocks such as `safeLaunch`
+and `analytics.trackOperation` multiline, even for a single business call. Short
+single-expression state updates and simple Flow transformations stay compact:
+
+```kotlin
+update { it.copy(value = value) }
+items.map { it.toState() }
+items.filter { it.isSelected }
+items.onEach { update { state -> state.copy(items = it) } }
+flows.flatMapLatest { it }
+
+safeLaunch {
+    feature.getItems().getOrThrow()
+}
+```
+
+Expand long expressions and blocks with several operations. Empty defaults such as
+`onError = {}` may remain inline. `init` normally starts requests/subscriptions;
+a complete startup operation reused after error-dialog dismissal belongs in a
+private class-level method called from `init` and `onError`. Keep its sequence in
+one place and use the existing VM scope. Follow [the project Kotlin rules](../../../../CLAUDE.md#kotlin).
+
 ## Imports
 
 - **No wildcard imports.** `import com.foo.bar.*` is forbidden. Use specific imports.
@@ -110,8 +138,11 @@ convention (see `naming.md`), not the State convention.
   `requireNotNull(value) { "msg" }`.
 - **Use `?:` for fallbacks.** `amount ?: 0f`.
 - **Use `?.let { ... }`** for null-safe transformations.
-- **`runCatching { ... }`** for Result types. `try/catch` only in narrow domain-recovery
-  cases.
+- **`runCatching { ... }`** at service/domain boundaries returning `Result`.
+  ViewModels use `getOrThrow()` inside `safeLaunch` for unhandled failures.
+  Only a documented business fallback may narrowly catch ordinary `Exception`
+  in the same coroutine, rethrowing cancellation first; follow the
+  [UI error rules](../../ui-feature/references/error-pipeline.md).
 
 ## Equality
 

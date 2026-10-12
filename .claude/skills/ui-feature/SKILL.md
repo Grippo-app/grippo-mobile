@@ -21,6 +21,33 @@ Not this skill: domain models / `*Feature` interfaces (data-layer), `toState()`
 mappers (mappers), reusable widgets in `:design-system:components`
 (design-system), Koin module wiring (di-modules).
 
+Follow the [project coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines):
+do not add manual `ensureActive()` checks or wrappers in production. Keep work in
+the existing `safeLaunch`/Flow pipeline and preserve cancellation propagation.
+
+Follow the [Kotlin block style](../../../CLAUDE.md#kotlin): keep `safeLaunch`,
+`trackOperation`, business/control bodies and multi-operation blocks multiline.
+Short single-expression `update` and simple Flow transformations stay compact;
+expand long expressions. No named local functions inside `init`, constructors,
+other functions or lambdas; declare methods/functions at class/file scope.
+Callbacks and DSL lambdas remain allowed. `init` normally starts requests and
+subscriptions directly through `safeLaunch`/Flow. A complete startup operation
+reused after error-dialog dismissal may be a private class-level method called
+from `init` and `onError`; do not duplicate its sequence or use a local function.
+Do not add `initialize`/`loadInitialData` helpers solely to hide orchestration.
+
+Follow the [shared error pipeline](references/error-pipeline.md): unwrap failures
+with `getOrThrow()` inside `safeLaunch`. Do not hide, replace or present unhandled
+failures with local catches, `runCatching` or result failure handlers. A documented
+business fallback may catch ordinary `Exception` around only its smallest operation
+in the same coroutine; rethrow `CancellationException` first and never catch
+`Throwable`/fatal `Error`. Keep unrelated requests, successful navigation and
+fallback execution outside the protected block. Put the catch outside analytics
+so the decorator observes the original failure. Use a private suspend method when
+needed, without extra launches, wrappers or stage flags. Pure `safeLaunch.mapError`
+changes only dialog presentation; `onError` runs after dismissal. Results, recovery
+and navigation stay business-owned, never in analytics or the mapper.
+
 ## Analytics impact
 
 For feature implementation and behavior changes, also apply
@@ -69,7 +96,9 @@ retention extensions or analytics base components.
    `<Name>Contract` (`@Immutable interface` + `companion object Empty`),
    `<Name>ViewModel` (`BaseViewModel<State,Direction,Loader>`, implements Contract;
    `safeLaunch` / `Flow.safeLaunch` / `withLoader` / `update {}` / `navigateTo`
-   only — never `viewModelScope.launch`, `GlobalScope`, raw `try/catch`),
+   with unhandled errors in the shared pipeline and only a narrowly scoped explicit
+   business fallback as described above — never `viewModelScope.launch`, `GlobalScope`
+   or arbitrary local catches),
    `<Name>Component` (`BaseComponent<Direction>`, `retainedInstance { getKoin().get() }`,
    `eventListener` maps every Direction subtype), `<Name>Screen`
    (`@Composable internal fun(state, loaders, contract)` in `BaseComposeScreen`,
@@ -172,7 +201,7 @@ file restates the patterns relevant to its topic under its own "Anti-patterns".
 
 - `mvi-contract-validator` — seven files present, correct shapes/suffixes.
 - `compose-stability-validator` — `@Immutable`/`@Stable`, immutable collections, no `var` in state.
-- `architecture-validator` — base-class usage, no `viewModelScope`/`GlobalScope`/raw `try/catch`.
+- `architecture-validator` — base-class usage, no `viewModelScope`/`GlobalScope` or arbitrary local catches; review documented business fallback scope and cancellation.
 - `naming-convention-validator` — State/Direction/Loader/Contract/Component/Screen naming.
 - `scope-leak-validator` — writes only files assigned in the plan section.
 - `acceptance-tracer` — every acceptance bullet traces to a touched file.

@@ -295,3 +295,154 @@
 - [x] Финальные source boundary/obsolete-symbol checks и git diff --check; зафиксировать warnings/limits без Firebase sends/sign-in/uploads.
 
 Отчёт: [full-review-verification.md](full-review-verification.md).
+
+## Читаемость ViewModel — 2026-10-12
+
+- [x] Упростить чтение Login/Credential/Splash, сохранив цельные операции, SDK-ошибки и выбор направления по бизнес-результату.
+- [x] Оставить muscle → equipment напрямую в Splash init/safeLaunch; развернуть непустые Kotlin-блоки.
+- [x] Почистить профильные ViewModel авторизации и профиля; убрать промежуточные коллекции и mutable-копию для toggle без изменения правил выбора.
+- [x] Удалить повторную обработку save result в TrainingCompleted; развернуть блоки TrainingRecording без изменения исполняемого содержимого.
+- [x] Обновить Kotlin style, UI/analytics skills, стандарт и coverage; проверить YAML, 19 локальных ссылок и Markdown fences.
+- [x] Self-review и независимый повторный review; git diff --check.
+- [x] Android host tests: authorization 25, profile 3, training 20; iOS simulator authorization tests 25; failures/errors/skipped = 0.
+- [x] iOS simulator compilation authorization/profile/training; повторить training tests/compilation после последней правки форматирования.
+
+Первая проверка остановилась на внутренней ошибке incremental Kotlin compiler
+в compileAndroidHostTest. Очистка только build-результатов authorization и повтор
+прошли успешно; Gradle-настройки не менялись. Полные приложения, Firebase sends и
+SDK sign-in в этом проходе не проверялись.
+
+## Единая обработка ошибок ViewModel — 2026-10-12
+
+- [x] Проверить все 58 feature/root/dialog ViewModel и общий BaseViewModel; убрать локальные catches и Result failure подмены.
+- [x] Добавить чистый safeLaunch.mapError только для диалога; сохранять исходную ошибку для аналитики, logger и CrashReporting, а onError — после dismiss.
+- [x] Splash повторяет полную загрузку только после закрытия ошибки; запросы остаются в init, обязательные справочники нельзя пропустить. Старый SessionCheckFailed остаётся только для saved routes.
+- [x] Login сохраняет SDK presentation mapping без локального catch; TrainingCompleted использует исходную ошибку общего pipeline, лишний StringProvider и три строковых ресурса удалены.
+- [x] Обновить UI/analytics skills, error pipeline, стандарт и coverage; убрать старые carve-outs локальной обработки ошибок.
+- [x] Self-review, независимое повторное review, XML/YAML/Markdown проверки и git diff --check.
+- [x] Android host tests: foundation 24, analytics authorization 19, UI authorization 27, training 20; iOS simulator: foundation 13, analytics authorization 19, UI authorization 27. Failures/errors/skipped = 0.
+- [x] Android/iOS simulator compilation shared со всеми потребителями BaseViewModel; Gradle BUILD SUCCESSFUL (5m 42s).
+
+Первые проверки выявили недостающий coroutines-test в foundation commonTest и
+конфликт имени переменной в Splash test fixture; оба исправлены. Проверка SDK
+sign-in, Firebase sends и полные app builds не входят в этот проход.
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :analytics:authorization:testAndroidHostTest :analytics:authorization:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :ui-screen-features:training:testAndroidHostTest :ui-screen-features:training:compileKotlinIosSimulatorArm64 :shared:compileAndroidMain :shared:compileKotlinIosSimulatorArm64 --offline`.
+Лог: `/tmp/viewmodel-error-pipeline-verification.log`. Сохранились прежние warnings
+global opt-ins, expect/actual beta и deprecated BackHandler; новых настроек сборки
+или подавления warnings не добавлялось.
+
+## Уточнение поведения Splash — 2026-10-12
+
+Пользователь уточнил: ошибка загрузки профиля должна немедленно возвращать на
+вход без диалога. Этот пункт заменяет соответствующее поведение предыдущего
+прохода; `SessionCheckFailed` снова имеет активный источник в Splash.
+
+- [x] Добавить узкий foundation `withErrorRecovery`, без нового scope/job: обычное Exception возвращает бизнес-fallback, CancellationException/Error и ошибка recovery распространяются.
+- [x] В Splash восстановление охватывает только профиль; токен и обязательные muscle → equipment сохраняют общий pipeline и повтор после закрытия диалога. Запросы справочников остаются в init/safeLaunch.
+- [x] Бизнес возвращает SplashDirection; аналитика остаётся декоратором и фиксирует completed execution при обработанном fallback. Формат событий и версии схем не меняются.
+- [x] Обновить UI/analytics skills, validation rules, стандарт, guide, coverage и точный BaseViewModel drop-in.
+- [x] Добавить тесты прямого профильного fallback, observeUser failure, cancellation/destruction и foundation recovery; сохранить token/reference dialog/retry checks.
+- [x] Self-review и независимый повторный review; YAML/links/fences/drop-in checks и git diff --check.
+- [x] Android host tests: foundation 28, analytics authorization 19, UI authorization 30; iOS simulator: foundation 17, analytics authorization 19, UI authorization 30. Failures/errors/skipped = 0.
+- [x] Android/iOS simulator compilation shared; Gradle BUILD SUCCESSFUL (8m 47s, 1988 tasks).
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :analytics:authorization:testAndroidHostTest :analytics:authorization:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :shared:compileAndroidMain :shared:compileKotlinIosSimulatorArm64 --offline`.
+Лог: `/tmp/splash-profile-recovery-verification.log`.
+
+Сохранились прежние предупреждения global opt-ins, expect/actual beta и deprecated
+BackHandler. Firebase delivery/sign-in/uploads и полные app builds не выполнялись.
+
+## Два запуска Splash — 2026-10-12
+
+Пользователь выбрал два `safeLaunch` и упрощение SessionCheck ради чистоты кода.
+Этот проход заменяет предыдущий вариант с `withErrorRecovery`.
+
+- [x] Удалить helper из BaseViewModel, Splash, тестов и активных инструкций.
+- [x] Добавить optional `safeLaunch.handleError` для явной немедленной обработки обычных исключений без log/crash/dialog; сохранить стандартное поведение по умолчанию и post-dismiss `onError`.
+- [x] Сохранить cancellation; fatal Error из операции обходит custom handler/mapError, а обычная ошибка handler идёт через стандартный pipeline.
+- [x] Разделить token/no-session/reference и profile launches в init; сохранить последовательные обязательные muscle → equipment, обычный retry после dismiss и прямой профильный возврат на вход.
+- [x] Использовать разные AppContent/Profile loaders и отображение любого активного loader.
+- [x] SessionCheck декорирует только бизнес-hasProfile при имеющемся token; профильная ошибка даёт failed до UI fallback. Token/no-session/reference paths не создают session events.
+- [x] Поднять четыре SessionCheck schemas до v3 и обновить fixture; явно разделять прежние и новые population/duration/terminal outcomes в отчётах по schema_version.
+- [x] Обновить UI/analytics skills, error rules, стандарт, guide, coverage и точный BaseViewModel drop-in; проверить YAML/39 links/fences.
+- [x] Self-review и независимый повторный review API, error policies, loaders, lifecycle, tests и документации.
+- [x] Android host tests: foundation 29, analytics authorization 19, UI authorization 30; iOS simulator: foundation 18, analytics authorization 19, UI authorization 30. Failures/errors/skipped = 0.
+- [x] Android/iOS simulator shared compilation и финальный diff-check; Gradle BUILD SUCCESSFUL (6m 47s, 1984 tasks).
+
+Первый gate остановился на выводе типа setOf в новом тесте loader; явно задан
+общий SplashLoader. Production-код и настройки сборки из-за этого не менялись.
+Первый лог: `/tmp/splash-two-launches-verification.log`.
+Повторный лог: `/tmp/splash-two-launches-verification-final.log`.
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :analytics:authorization:testAndroidHostTest :analytics:authorization:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :shared:compileAndroidMain :shared:compileKotlinIosSimulatorArm64 --offline`.
+Сохранились прежние global opt-in/expect-actual/BackHandler warnings. Firebase
+delivery/sign-in/uploads и полные app builds не выполнялись.
+
+## Область функций и компактные лямбды — 2026-10-12
+
+Этот проход уточняет прежнее правило форматирования: короткие state updates и
+простые Flow transformations не нужно разворачивать. Named local functions
+запрещены; callbacks/DSL остаются разрешены.
+
+- [x] Перенести Splash loadContent/loadProfile на уровень private методов класса; init вызывает loadContent, повтор использует тот же метод. Сохранить обе error policies, loaders, последовательность запросов и SessionCheck v3.
+- [x] Удалить локальную обёртку finish из DialogContentComponent; вызывать существующий dialogNavigation.finish напрямую, сохраняя отложенные results.
+- [x] Свернуть короткие update/Flow лямбды в foundation и 11 затронутых ViewModel; 54 правки ViewModel отличаются от исходников только whitespace.
+- [x] Обновить Kotlin/UI/analytics skills, validation rules, стандарт, guide и coverage; убрать прежний carve-out для локальной startup-функции.
+- [x] Self-review и независимый повторный review поведения Splash, dialog callbacks и форматирования; YAML, 44 ссылки, fences и точный BaseViewModel drop-in проверены.
+- [x] Android host tests: foundation 29, UI authorization 30, profile 3, training 20, shared 24 — всего 106; iOS simulator: foundation 18, UI authorization 30 — всего 48. Failures/errors/skipped = 0.
+- [x] Android/iOS simulator compilation shared и затронутых модулей; Gradle BUILD SUCCESSFUL (1m 23s, 2117 tasks); git diff --check.
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :ui-screen-features:profile:testAndroidHostTest :ui-screen-features:training:testAndroidHostTest :shared:testAndroidHostTest :shared:compileKotlinIosSimulatorArm64 --offline`.
+Лог: `/tmp/analytics-local-functions-verification.log`.
+
+Изменённый UI/foundation/shared scope проверен на локальные объявления функций;
+это не массовая миграция остальных старых модулей. Сохранились прежние
+global opt-in/expect-actual/BackHandler warnings. Firebase sends/sign-in/uploads
+и полные app builds в этом проходе не выполнялись.
+
+## Все ViewModel: структурная чистота — 2026-10-12
+
+- [x] Прочитать все 59 production ViewModel-файлов (58 конкретных и BaseViewModel): 23 dialog, 21 screen вне authorization, 11 authorization, 3 shared, 1 foundation.
+- [x] Подтвердить отсутствие named local functions; companion libraryResultKey и обычные callbacks не являются локальными объявлениями. Не вводить новые helper layers.
+- [x] Почистить 19 файлов: короткие state updates/Flow predicates компактны, business/control/multi-operation blocks развёрнуты; сложные атомарные updates не разбивать.
+- [x] Удалить пустой Root connectivity observer/handler и его constructor injection; сохранить Home → deeplink → clear порядок навигации. Connectivity module не удалять.
+- [x] Убрать одноразовый notification forwarding helper, устаревший FlowPreview opt-in и 7 init-only constructor properties; сохранить параметры и существующее DI.
+- [x] Упростить foundation update/Flow return/block forwarding; полностью удалить no-op processing только у блочного safeLaunch. Flow lifecycle modes и общий error/loader/cancellation pipeline сохранить.
+- [x] Обновить API в CLAUDE и base-classes; проверить 10 локальных ссылок, fences и точный BaseViewModel drop-in.
+- [x] Self-review и независимое ревью всех 59 исходников/19 изменённых файлов относительно снимка начала прохода; порядок запросов, результатов, callbacks и error policies сохранён.
+- [x] Android host tests: foundation 29, authorization 30, exercises 10, main 11, profile 3, training 20, shared 24 — всего 127. iOS simulator: foundation 18, authorization 30 — всего 48. Failures/errors/skipped = 0; training reports новее последней source правки.
+- [x] Android Debug assemble.
+- [x] iOS Shared Debug XCFramework (simulator + device) и финальный diff-check; Gradle BUILD SUCCESSFUL (7m 55s, 3218 tasks).
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :ui-screen-features:exercises:testAndroidHostTest :ui-screen-features:main:testAndroidHostTest :ui-screen-features:profile:testAndroidHostTest :ui-screen-features:training:testAndroidHostTest :shared:testAndroidHostTest :androidApp:assembleDebug :shared:assembleSharedDebugXCFramework --offline`.
+Лог: `/tmp/all-viewmodels-cleanup-verification.log`.
+
+Сохранились прежние global opt-in/expect-actual/BackHandler/smallBinary warnings и
+предупреждение о ненужном safe call в существующем training test. Новых Gradle
+настроек или suppressions не добавлено; Firebase sends/sign-in/uploads не выполнялись.
+
+Analytics impact: операции, transitions, attribution и payload не менялись;
+authorization coverage сохраняет фактическое поведение. Рефакторинг сохраняет
+бизнес- и error-семантику. Отдельные прежние необработанные Result в Home
+(getTrainings, getExerciseExamples, setHomeWelcomeStatus) и StartTraining
+(getTrainings) отмечены как отдельный поведенческий вопрос: изменение их error
+policy не включено в этот структурный проход.
+
+## Один запуск Splash — 2026-10-12
+
+Этот проход заменяет прежнее решение с двумя `safeLaunch` и `handleError`.
+
+- [x] Сделать `loadProfile` private suspend методом внутри единственного `safeLaunch`; сохранить непрерывный `AppContent` loader и последовательные запросы справочников.
+- [x] Ограничить try только проверкой профиля снаружи аналитического декоратора: обычная Exception возвращает на вход без диалога, CancellationException пробрасывается. Успешная навигация, ошибки токена/справочников и fatal Error сохраняют стандартный путь.
+- [x] Удалить неиспользуемые `SplashLoader.Profile` и foundation `handleError`, включая тесты удалённого API; сохранить mapError и post-dismiss onError.
+- [x] Проверить профильный fallback, отмену/уничтожение, loader, token/reference dialog и retry; добавить проверки fatal профильной ошибки и отказа reporting при бизнес-успехе/ошибке.
+- [x] Обновить skills, стандарт, guide и coverage. SessionCheck сохраняет профильную границу v3 и исходную ошибку до fallback; схемы/параметры не менялись.
+- [x] Self-review и независимый review; YAML, 12 Markdown-файлов, 44 локальные ссылки, fences, точный BaseViewModel drop-in и Splash example, отсутствие устаревших active API и финальный diff-check.
+- [x] Android host tests: foundation 25, UI authorization 32 — всего 57. iOS simulator: foundation 14, UI authorization 32 — всего 46. Failures/errors/skipped = 0.
+- [x] Android/iOS simulator shared compilation; Gradle BUILD SUCCESSFUL (3m 5s, 1977 tasks).
+
+Команда: `./gradlew :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test :ui-screen-features:authorization:testAndroidHostTest :ui-screen-features:authorization:iosSimulatorArm64Test :shared:compileAndroidMain :shared:compileKotlinIosSimulatorArm64 --offline`.
+Лог: `/tmp/splash-single-launch-verification.log`.
+Сохранилось прежнее предупреждение deprecated BackHandler. Полные app builds и
+Firebase sends/sign-in/uploads в этом проходе не выполнялись.

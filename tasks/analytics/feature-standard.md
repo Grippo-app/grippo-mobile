@@ -75,6 +75,27 @@ safeLaunch/use-case coroutine. API не получает features/use cases/SDK 
 не делает запросов, не создаёт scope/job/dispatcher/retry policy. Один callback
 содержит исходную бизнес-последовательность, без credentials/server split.
 
+По [Kotlin-стилю](../../CLAUDE.md#kotlin) `safeLaunch`, `trackOperation`, бизнес-
+и управляющие блоки развёрнуты, даже с одним вызовом. Короткие single-expression
+`update` и простые Flow transformations остаются в одну строку; длинные выражения
+и несколько операций разворачиваются. Named local functions внутри `init`,
+конструкторов, других функций и лямбд запрещены; методы/функции — на уровне
+класса/файла. Обычные callbacks, lambdas и DSL разрешены.
+Startup обычно запускается из `init`. Цельная операция, повторяемая после закрытия
+диалога ошибки, оформляется private методом класса и вызывается из `init`/`onError`,
+без дублирования запросов или нового scope. Обёртки только ради аналитики не нужны.
+
+```kotlin
+val hasProfile = analytics.trackOperation(AuthOperation.SessionCheck) {
+    hasProfile()
+}
+```
+
+Ручные `ensureActive()` / `currentCoroutineContext().ensureActive()` и скрывающие
+их обёртки в production запрещены как лишняя обвязка. Отмена сохраняется устройством
+исполнения и распространением `CancellationException`; применять
+[общее правило проекта](../../.claude/skills/validation-gates/references/forbidden-patterns.md#coroutines).
+
 ```kotlin
 val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
     val credential = googleAuthProvider.getUiProvider(context).signIn().getOrThrow()
@@ -88,11 +109,24 @@ Toolkit `AnalyticsOperationEvents<T>` имеет started/completed/failed/interr
 Timing monotonic вокруг блока. Если возвращается Result, failure раскрывается
 getOrThrow в бизнес-блоке либо его существующий результат классифицируется явно;
 completed не означает успех автоматически. Обработанный fallback означает завершение
-выполнения, не достижение желаемого исхода. SessionCheck не знает SplashDirection.
+выполнения, не достижение желаемого исхода. SessionCheck сохраняет caller T;
+его текущий бизнес-блок возвращает Boolean проверки профиля, не SplashDirection.
 
 SDK/user cancellation определяется конкретным типом и отличается от coroutine
 interruption. Не анализировать message и не вводить stage exceptions ради payload.
-Errors продолжают существующий safeLaunch → ErrorProvider/CrashReporting путь.
+Необработанные ошибки продолжают существующий safeLaunch → ErrorProvider/CrashReporting путь.
+ViewModel раскрывает Result.failure через getOrThrow; необработанные ошибки
+сохраняют стандартный путь. Для известной SDK-ошибки pure safeLaunch.mapError
+меняет только представление диалога: аналитика, logger и CrashReporting сохраняют
+оригинал. onError вызывается после закрытия диалога.
+Явный бизнес-fallback допускает catch обычного Exception только вокруг минимальной
+операции в той же корутине, с первым catch CancellationException и повторным throw.
+Catch находится снаружи trackOperation: аналитика фиксирует исходный failure до
+fallback. Нельзя ловить Throwable/fatal Error, включать в try посторонние запросы,
+успешную навигацию или выполнение fallback. Их ошибки сохраняют стандартный путь.
+Результат и навигация остаются бизнес-решениями; новые launches/scopes, stage flags
+и обёртки не нужны. Не скрывать произвольные ошибки через catch/runCatching.
+Правила и примеры — [error pipeline](../../.claude/skills/ui-feature/references/error-pipeline.md).
 
 Синхронные переходы сообщаются реальным navigation owner через
 `trackTransition(FeatureTransition)`. Enum подходит для вариантов без данных;

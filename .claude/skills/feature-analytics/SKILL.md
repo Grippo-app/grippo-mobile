@@ -36,6 +36,16 @@ Removing reporting must leave the business block and its result unchanged.
   fallback facts. Preserve original business exceptions and caller cancellation;
   secondary reporting errors may be suppressed. Fatal `Error` remains fatal.
   State/owner invariant checks and direct schema validation remain explicit.
+- Preserve the [shared UI error pipeline](../ui-feature/references/error-pipeline.md):
+  ViewModels unwrap results with `getOrThrow()` inside `safeLaunch`. Unhandled
+  errors retain that pipeline; pure `mapError` changes only dialog presentation,
+  and `onError` runs after dismissal. A documented business fallback may catch
+  ordinary `Exception` around only its smallest operation in the same coroutine,
+  rethrowing `CancellationException` first. Put the catch outside `trackOperation`
+  so analytics observes the original failure. Never catch `Throwable`/fatal `Error`,
+  include unrelated work or successful navigation, or add launches/wrappers/stage
+  flags for recovery. Fallback execution stays outside the protected operation;
+  its own failures remain unhandled. Keep recovery out of analytics and the mapper.
 
 ## Layers and API
 
@@ -71,6 +81,17 @@ Removing reporting must leave the business block and its result unchanged.
 - Keep the full existing sequence inside its `safeLaunch`/use-case coroutine.
   Analytics receives no feature/use-case/SDK providers, fetches no data, and adds
   no scope, job, dispatcher or retry policy.
+  Follow the [Kotlin block style](../../../CLAUDE.md#kotlin): keep the business
+  block expanded across lines even when it contains a single business call.
+  Short single-expression `update`/simple Flow transformations remain compact.
+  No named local functions inside `init`, constructors, functions or lambdas;
+  ordinary callbacks/DSLs are allowed. Startup requests normally start in `init`;
+  a complete operation reused after dialog dismissal belongs in a private
+  class-level method called from `init` and `onError`, using the existing VM scope.
+  Do not duplicate its sequence or introduce helpers solely for analytics.
+- Follow the [project coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines):
+  do not add manual `ensureActive()` checks or wrappers in production, including
+  analytics decorators. Preserve caller cancellation through the execution design.
 - Use toolkit `trackOperation` and `AnalyticsOperationEvents<T>` for timing and IDs.
   Every attempt defines one start/terminal pair; retries receive fresh IDs.
   Reporting errors, consent and queue policy can prevent delivery of either fact. A returned
@@ -117,7 +138,13 @@ Removing reporting must leave the business block and its result unchanged.
   through annotated `@Single`; use an internal object when stateless. Map concrete
   types to bounded categories, with explicit Unexpected for unknown errors.
 - Bind leaf visibility once through DI:
-  `getKoin().get<ScreenAnalytics>().bind(lifecycle) { analytics.presentScreen(step) }`.
+
+  ```kotlin
+  getKoin().get<ScreenAnalytics>().bind(lifecycle) {
+      analytics.presentScreen(step)
+  }
+  ```
+
   Omit step for a single-surface scenario. Foundation's stateless internal
   `ScreenAnalyticsImpl` is discovered by `CoreModule`; per-binding callbacks own
   presentations. No screen state in the singleton, legacy extensions, render/VM

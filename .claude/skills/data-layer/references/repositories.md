@@ -439,4 +439,6 @@ profile in one call). Both layers cost minimally and keep the seven-file convent
 - **`getKoin().get()` inside the Repository.** Constructor-inject everything.
 - **Writing to DAO before `api.onSuccess { ... }`.** Speculative writes leave the cache inconsistent on failure.
 - **`suspend fun observeX()`** — observe is hot; if you need to block on first emission, use `observeX().first()` at the call site.
-- **Catching exceptions inside the Repository.** Let them propagate via `runCatching`/`Result`. Error handling is the ViewModel's job (via `ErrorProvider`).
+- **Catching exceptions inside the Repository.** Return failures via `Result`;
+  ViewModels unwrap them inside `safeLaunch` and use the shared error pipeline,
+  rather than local exception handlers. See [UI error rules](../../ui-feature/references/error-pipeline.md).

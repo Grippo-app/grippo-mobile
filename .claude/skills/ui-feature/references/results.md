@@ -108,8 +108,8 @@ not the ViewModel or Composable.
 - `ResultManager.observeResult` starts with `CoroutineStart.UNDISPATCHED` to
   subscribe before returning. Register once per key in Component `init` on Main,
   not from Render, repeated click handlers or repeated lifecycle callbacks.
-- `sendResult` launches with `UNDISPATCHED` and checks `ensureActive()` before
-  emission. It may suspend; do not treat UNDISPATCHED as synchronous completion.
+- `sendResult` launches with `UNDISPATCHED` and prevents emission from an already
+  cancelled sender. It may suspend; do not treat UNDISPATCHED as synchronous completion.
 - `BaseComponent` uses `Main.immediate`; observers remain subscribed while the
   component is hidden. On destruction, subscriptions and pending sends are canceled.
   Cancellation does not retract a result already committed to the shared buffer.

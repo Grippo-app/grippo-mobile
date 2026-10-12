@@ -1,23 +1,23 @@
 # Error Pipeline
 
-All errors flow through a **single path**. UI analytics bindings may classify typed exceptions without replacing the
+Unhandled errors flow through a **single path**. UI analytics bindings may classify typed exceptions without replacing the
 existing error path. Reporting respects core collection policy; ErrorProvider
 translates failures into UI-friendly dialogs.
 
-## The pipeline
+## The default pipeline
 
 ```
 throw inside safeLaunch
   → operationManager catches via CoroutineExceptionHandler
-  → BaseViewModel.sendError(exception, onError)
+  → BaseViewModel.sendError(exception, onError, mapError)
   → AppLogger.General.error(...)                     // file log
   → CrashReporting.reportException(...)              // toolkit core collection policy
-  → ErrorProvider.provide(exception, onError)
+  → ErrorProvider.provide(mapError(exception), onError) // UI presentation only
   → ErrorProviderImpl maps AppError → AppErrorState
-  → DialogController.show(DialogConfig.ErrorDisplay(state, onClose = onError))
+  → DialogController.open(DialogConfig.ErrorDisplay(title, state, onClose = onError))
 ```
 
-Every step is automatic. The ViewModel author writes only:
+Every unhandled failure follows this path automatically. The ViewModel author writes only:
 
 ```kotlin
 safeLaunch(loader = MyLoader.Fetch) {
@@ -46,7 +46,9 @@ internal class ErrorProviderImpl(val dialogController: DialogController) : Error
             is AppError.Unknown -> AppErrorState.Unknown
             else -> AppErrorState.Unknown
         }
-        dialogController.show(DialogConfig.ErrorDisplay(error = state, onClose = callback))
+        dialogController.open(
+            DialogConfig.ErrorDisplay(title = state.title(), error = state, onClose = callback)
+        )
     }
 }
 ```
@@ -57,9 +59,13 @@ internal class ErrorProviderImpl(val dialogController: DialogController) : Error
 
 ```kotlin
 private val errorProvider by inject<ErrorProvider>()
-    private val crashReporting by inject<CrashReporting>()
+private val crashReporting by inject<CrashReporting>()
 
-private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
+private suspend fun sendError(
+    exception: Throwable,
+    onError: () -> Unit,
+    mapError: (Throwable) -> Throwable,
+) {
     val log = buildString {
         append("─────── ViewModel error ──────\n")
         append("│ message: ${exception.message}\n")
@@ -68,7 +74,12 @@ private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
     }
     AppLogger.General.error(log)
     crashReporting.reportException(exception)
-    errorProvider.provide(exception, callback = onError)
+    val displayError = if (exception is Exception) {
+        mapError(exception)
+    } else {
+        exception
+    }
+    errorProvider.provide(displayError, callback = onError)
 }
 ```
 
@@ -76,20 +87,40 @@ The `CancellationException` filter lives one layer up, in `OperationManagerImpl`
 
 ```kotlin
 val handler = CoroutineExceptionHandler { _, t ->
-    if (t !is CancellationException) coroutineScope.launch { onError(t) }
+    if (t !is CancellationException) {
+        coroutineScope.launch {
+            onError(t)
+        }
+    }
 }
 ```
 
 `CrashReporting` is injected from toolkit API; platform SDK adapters are attached
 by app shells. Reporting follows core collection policy. Analytics classifiers
 may inspect typed failures at the UI boundary, but preserve the original error
-path. The `onError` callback runs after dismissal and can clean up UI state.
+path. With the standard pipeline, `onError` runs after dismissal and can clean up UI state.
+It is not an immediate exception handler and cannot suppress the dialog or
+continue the failed business block. `CancellationException` never enters this
+pipeline or `mapError`; fatal `Error` is not transformed for presentation.
+
+Both `safeLaunch` overloads accept optional `mapError: (Throwable) -> Throwable`.
+Its default returns the original error. Use it only when a concrete boundary
+exception needs an existing `AppError` representation for the standard dialog.
+Keep it pure and non-throwing: no requests, state changes, navigation, reporting,
+retries or business fallback. Return unrecognized errors unchanged. Analytics,
+logging and crash reporting must receive the original exception; only
+`ErrorProvider` receives the presentation mapping.
 
 ## Authoring rules (MUST)
 
 ```kotlin
 // Good — errors flow through the pipeline; onError cleans up after the dialog is dismissed
-safeLaunch(loader = MyLoader.SavingForm, onError = { update { it.copy(isSubmitted = false) } }) {
+safeLaunch(
+    loader = MyLoader.SavingForm,
+    onError = {
+        update { it.copy(isSubmitted = false) }
+    },
+) {
     val body = state.value.form.toDomain()
     feature.save(body).getOrThrow()
     navigateTo(MyDirection.Close)
@@ -97,7 +128,7 @@ safeLaunch(loader = MyLoader.SavingForm, onError = { update { it.copy(isSubmitte
 ```
 
 ```kotlin
-// BAD — manual catch swallows the error path (no Firebase, no dialog)
+// BAD — manual catch bypasses the shared error path
 safeLaunch {
     try {
         feature.save(...).getOrThrow()
@@ -108,21 +139,78 @@ safeLaunch {
 }
 ```
 
-The **only** legitimate `try/catch` inside a ViewModel is when you genuinely want to recover and **not** show an error to the user — rare, warrants a code comment explaining why. `Result.onSuccess { ... } / .onFailure { ... }` and `runCatching { ... }` at a domain boundary (collapsing a thrown exception into a `Result`) are the same carve-out expressed at the type level. Both carve-outs are the documented exceptions.
+Do not hide, replace or present unhandled failures through local catches,
+`runCatching`, `Result.onFailure`, `recover`, `fold` or `getOrElse` in a ViewModel
+or its helpers. Unwrap failed results with `getOrThrow()` inside `safeLaunch`.
+`Result.onSuccess` may consume successful data without hiding failure. Use pure
+`mapError` only for dialog presentation and `onError` only after dismissal.
+Foundation's loader cleanup via `try/finally` and service/domain error boundaries
+remain valid.
+
+## Explicit business fallback
+
+When an existing business policy requires immediate fallback for one operation,
+catch ordinary `Exception` around only that operation in the same coroutine.
+Rethrow `CancellationException` first. Never catch `Throwable` or fatal `Error`,
+or include unrelated requests, successful navigation or fallback execution in
+that protected block. Their failures must still reach the standard pipeline.
+Do not add launches, scopes, wrappers, stage flags or recovery extensions.
+A private suspend method is sufficient when the operation has a meaningful name.
+Keep recovery business-owned, outside analytics and presentation mapping.
+
+Splash has one `safeLaunch` with `AppContent`: token/reference failures use the
+standard pipeline and retry the complete sequence only after dismissal. With a
+token, it calls this private suspend method in that same coroutine:
+
+```kotlin
+private suspend fun loadProfile() {
+    val hasProfile = try {
+        analytics.trackOperation(AuthOperation.SessionCheck) {
+            hasProfile()
+        }
+    } catch (error: CancellationException) {
+        throw error
+    } catch (_: Exception) {
+        navigateTo(
+            SplashDirection.AuthProcess(AuthorizationEntryPoint.SessionCheckFailed)
+        )
+        return
+    }
+
+    val destination = if (hasProfile) {
+        SplashDirection.Home
+    } else {
+        SplashDirection.CreateProfile
+    }
+    navigateTo(destination)
+}
+```
+
+The catch surrounds only the profile check, outside `trackOperation`: analytics
+observes the original failure before fallback, rather than reporting a handled
+failure as completed. `hasProfile` is a business Boolean. Successful navigation
+and the fallback run outside the protected block, and cancellation/fatal errors
+are not converted to authorization. No second launch or loader is needed.
 
 ## Only emits, not retries
 
-The pipeline **shows** the error and runs the optional `onError` callback. It does **not** auto-retry. Retries (with backoff, max attempts) belong inside the Repository for transient infrastructure errors (`TokenProvider.retryWithBackoff`) — **not** inside the ViewModel.
+The pipeline shows the error and runs `onError` after dialog dismissal. It does
+not automatically retry or resume the failed block. Infrastructure retries with
+backoff and attempt limits belong in the Repository (`TokenProvider.retryWithBackoff`).
+A feature may explicitly continue or retry its business operation from `onError`
+after the user dismisses the dialog. Relaunch the complete required sequence through
+`safeLaunch` in the existing ViewModel scope; do not add a new scope, a retry loop
+before dismissal or an analytics retry policy.
 
 ## Anti-patterns (MUST avoid)
 
-- **`try/catch` in ViewModel** to "log and ignore" — bypasses Firebase, hides bugs.
+- **Local catches that hide or present unhandled failures** — use `getOrThrow()` and the shared pipeline. Only a documented business fallback may use the narrowly scoped catch above; no arbitrary suppression or extra launch.
 - **`Result.getOrNull()` in ViewModel** without handling `null` — silently drops failures.
 - **Returning `Result<T>` from a Feature observation** — observation must always succeed (cached data); errors are values for mutations only.
 - **Showing custom error dialogs** — use `DialogConfig.ErrorDisplay` via the pipeline.
-- **Catching `CancellationException`** — never; it must propagate to cancel parent jobs.
+- **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it, and explicit fallback catches rethrow it first.
 - **Recording an exception to Firebase manually** from a ViewModel — the pipeline does this; duplicates inflate Crashlytics.
-- **Using `AppError.Expected` from a UI module** — only domain code throws `AppError`; UI surfaces it via the pipeline.
+- **Throwing a replacement `AppError` in a ViewModel** — use pure `safeLaunch.mapError` for necessary UI presentation while preserving the original error for analytics/logging/crash reporting.
 
 ## The error triad (`:ui-core:state` work)
 

@@ -219,10 +219,14 @@ Full API which **must** be used instead of manual coroutines/channels:
 | `protected suspend fun <T> withLoader(loader: LOADER?, block: suspend () -> T): T` | Add loader for the duration of the block. Use in `mapLatest`/`flatMapLatest` chains. |
 | `navigator: Flow<DIRECTION>` | Internal `Channel<DIRECTION>(CONFLATED)`. **Intentionally conflated**: rapid events may collapse. |
 | `protected fun navigateTo(destination: DIRECTION)` | Emit a Direction. |
-| `protected fun safeLaunch(dispatcher = Dispatchers.Main.immediate, processing = Processing.Infinity, loader = null, onError = {}, block)` | The only way to start a coroutine. Defaults to `Infinity`. |
-| `protected fun <T> Flow<T>.safeLaunch(dispatcher = Dispatchers.Main.immediate, processing = Processing.WhileActive, onError = {})` | Stream subscription. Defaults to `WhileActive` — stream sleeps 1s after the screen leaves RESUMED. |
-| `protected enum class Processing { WhileActive, Infinity }` | `WhileActive` suppresses upstream when the screen is not RESUMED. |
+| `protected fun safeLaunch(dispatcher, loader, onError, mapError, block)` | Single-operation launcher in the owned VM scope, until completion or cancellation/destruction. Defaults to `Main.immediate`, no loader, no dismissal callback, identity error mapping and the standard error pipeline. |
+| `protected fun <T> Flow<T>.safeLaunch(dispatcher, processing, onError, mapError)` | Stream subscription. Defaults to `Main.immediate`, `WhileActive`, no dismissal callback, identity error mapping and the standard error pipeline. Stream sleeps 1s after the screen leaves RESUMED. |
+| `protected enum class Processing { WhileActive, Infinity }` | Flow subscription modes only; `WhileActive` suppresses upstream when the screen is not RESUMED. |
 | `attachActivation(flow)` / `detachActivation()` | Managed automatically by `BaseComponent` via lifecycle. |
+
+Manual `ensureActive()` / `currentCoroutineContext().ensureActive()` checks are
+forbidden in production as unwanted cancellation boilerplate. Preserve owned
+scopes and cancellation propagation; follow the [project coroutine rules](.claude/skills/validation-gates/references/forbidden-patterns.md#coroutines).
 
 When to use which dispatcher:
 
@@ -230,25 +234,40 @@ When to use which dispatcher:
 - `Dispatchers.IO` — explicit heavy IO **inside** the ViewModel (rare; usually IO is already in `Repository`/`BackendClient.invoke`).
 - `Dispatchers.Default` — CPU-heavy work (sorting, mapping large collections).
 
-Error pipeline (single path, from any `safeLaunch`):
+Error pipeline (single path for unhandled failures, from any `safeLaunch`):
 
 ```
 throw inside safeLaunch
     ↓
 operationManager catches via CoroutineExceptionHandler
     ↓
-BaseViewModel.sendError(exception, onError)
+BaseViewModel.sendError(exception, onError, mapError)
     ↓
 AppLogger.General.error(...)            // file log
 CrashReporting.reportException(...)              // common core → platform Crashlytics adapter
-ErrorProvider.provide(exception, onError)
+ErrorProvider.provide(mapError(exception), onError) // UI presentation only
     ↓
 ErrorProviderImpl maps AppError → AppErrorState
     ↓
 dialogController.open(DialogConfig.ErrorDisplay(title = state.title(), error = state, onClose = onError))
 ```
 
-Catching exceptions manually inside a ViewModel is **forbidden** (exception: domain logic such as `result.onSuccess { ... }` after `api.call()`).
+Unhandled failures use `getOrThrow()` inside the existing `safeLaunch`; do not
+hide, replace or present them through local `try/catch`, `runCatching` or result
+failure handlers. `Result.onSuccess` may consume data without hiding failure.
+An explicit business fallback may catch ordinary `Exception` around only the
+smallest operation that requires it, inside the same coroutine. Rethrow
+`CancellationException` first; never catch `Throwable` or fatal `Error`. Keep
+unrelated requests, successful navigation and fallback execution outside the
+protected block, so their failures retain the standard pipeline. Decorated
+operations throw their original failure before the business fallback handles it;
+analytics never determines recovery. Use a private suspend method when needed,
+without another launch, wrappers or stage flags.
+Necessary UI presentation mapping uses pure `mapError: (Throwable) -> Throwable`;
+unknown errors remain unchanged and analytics/logging/crash reporting keep the
+original error. Cancellation is not handled as an error; fatal errors are not
+transformed. `onError` runs only after dialog dismissal. See the
+[canonical error rules](.claude/skills/ui-feature/references/error-pipeline.md).
 
 ### `BaseComponent<DIRECTION : BaseDirection>`
 
@@ -692,6 +711,19 @@ init {
 
 ### Kotlin
 
+- Keep function/`init`/control-flow bodies and business blocks such as `safeLaunch`
+  and `analytics.trackOperation` multiline, even for a single business call.
+  Keep short single-expression state updates and simple Flow transformations
+  compact: `update { it.copy(value = value) }`, `.map { it.toState() }`,
+  `.filter { it.isSelected }`, `.onEach { update { state -> state.copy(items = it) } }`,
+  `.flatMapLatest { it }`. Expand long expressions or blocks with several operations.
+  Empty defaults such as `onError = {}` can remain inline.
+- No named local function declarations inside `init`, constructors, another
+  function or a lambda. Declare methods at class scope or functions at file scope.
+  Ordinary callbacks, lambdas and DSLs remain allowed. `init` usually starts
+  subscriptions/requests directly; a startup operation reused after error-dialog
+  dismissal belongs in a private class-level method, called from `init` and
+  `onError`, rather than duplicated or declared locally.
 - Coroutines — **only** `safeLaunch` / `Flow.safeLaunch`. No `viewModelScope.launch`, `runBlocking`, `GlobalScope`.
 - Collections in State and Loaders — **only** `kotlinx-collections-immutable` (`ImmutableList`, `ImmutableSet`, `PersistentList`). No `List`/`Set`/`MutableList` in `@Immutable` classes.
 - Errors from a use case — `Result<T>`, `.getOrThrow()` inside `safeLaunch`, the exception bubbles to `BaseViewModel.sendError` → `ErrorProvider`.
@@ -815,7 +847,7 @@ Example: `:ui-dialog-features:rating-picker`.
    ) : DialogConfig()
    ```
    Add its branch to the exhaustive `hasSameContentAs` comparison, comparing `initial` and excluding `onResult` (the common title comparison already runs first).
-5. In `:shared/dialog/content/DialogContentComponent`, add the child factory. Deliver `onResult` through the local step-bound `finish { router.onResult(value) }` helper, and route Back through `finish()`.
+5. In `:shared/dialog/content/DialogContentComponent`, add the child factory. Resolve the step-bound `dialogNavigation = navigationFor(step)`, deliver `onResult` directly through `dialogNavigation.finish { router.onResult(value) }`, and route Back through `dialogNavigation.finish(null)`. No named local helper.
 6. Open from an ordinary screen ViewModel with `dialogController.open(DialogConfig.RatingPicker(title = UiText.Str("Rating"), initial = 5, onResult = { v -> update { ... } }))`. For nested opening, emit a feature-specific intention (for example `PickRating(initial)`) and let the host construct and push the config. Do not add a dialog-api dependency to the initiating feature.
 
 ### 4. Add a new data feature module
@@ -996,13 +1028,14 @@ integration checks within the user's verification scope, and record actual resul
 ## Anti-patterns (refuse to write)
 
 - Direct `viewModelScope.launch`, `runBlocking`, `GlobalScope.launch`, `CoroutineScope().launch`. Only `safeLaunch` / `Flow.safeLaunch`.
+- Named local function declarations inside `init`, constructors, functions or lambdas. Methods/functions belong at class/file scope; callbacks and DSL lambdas remain allowed.
 - Mutable collections (`MutableList`, `mutableStateListOf`, `mutableMapOf`) in `@Immutable` state.
 - Business logic in `Component`, `Screen`, mappers, or DTOs. Logic — in `ViewModel` or domain layer (`*Repository`/`*UseCase`/`*FeatureImpl`).
 - Mapping outside `:data-mappers:*`. Inline conversion in ViewModel/Screen — forbidden.
 - Direct dependency of a UI module on `:data-services:*` — only via `:data-features:*`.
 - Creating a Koin module via hand-written `module { ... }` DSL for a new module.
 - `LaunchedEffect(Unit)` for navigation — use `Direction` + `eventListener`.
-- Catching exceptions inside a ViewModel manually (`try { ... } catch { ... }`) — let it flow through `safeLaunch` → `ErrorProvider`. Exception: domain logic (`Result.onSuccess { ... }` after `api.<x>()`).
+- Local `try/catch`, `runCatching` or result failure handlers that hide, replace or present unhandled failures in a ViewModel. Use `getOrThrow()` → `safeLaunch` → `ErrorProvider` and pure `mapError` only for dialog mapping. A documented business fallback may catch ordinary `Exception` around its smallest operation in the same coroutine, rethrowing `CancellationException` first; never catch `Throwable`/`Error`, unrelated work or navigation. No extra launches/wrappers or analytics-owned recovery. `onError` runs after dialog dismissal.
 - Hardcoded strings in UI — only via `AppTokens.strings.res(Res.string.x)` (Composable) or `StringProvider.get(...)` (VM).
 - Storing `String` in State if the value depends on resources/locale — use `UiText`.
 - Direct Koin `get()` in Screen — forbidden. ViewModel dependencies resolve inside `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component. A Component may also resolve its stateless UI `<Feature>AnalyticsProvider` before ViewModel creation and `ScreenAnalytics` for leaf lifecycle binding; pass the same returned scenario to children/VM as `analytics`.

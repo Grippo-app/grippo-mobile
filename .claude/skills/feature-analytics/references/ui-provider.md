@@ -64,7 +64,9 @@ fun provideSession(context: ComponentContext): AuthAnalytics.Session =
         key = SESSION_STATE_KEY,
         serializer = FlowContext.serializer(),
         create = analytics::session,
-        save = { scenario -> scenario.save() },
+        save = { scenario ->
+            scenario.save()
+        },
     )
 ```
 
@@ -103,7 +105,12 @@ invented key or empty snapshot.
 
 ## Operations and transitions
 
-Keep the original business block inside the existing safeLaunch:
+Keep the original business block multiline inside the existing safeLaunch.
+Short single-expression `update` and simple Flow transformations may stay compact.
+No named local function declarations inside `init`, constructors, functions or
+lambdas; methods/functions belong at class/file scope. Ordinary callbacks and
+DSL lambdas remain allowed. A complete startup operation reused after dismissal
+belongs in a private class-level method, without extra scopes or duplication:
 
 ```kotlin
 val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
@@ -115,6 +122,18 @@ val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
 `hasProfile` belongs to the use case. Login/register include private preparation;
 SessionCheck preserves caller `T` without knowing SplashDirection. Failure mapping
 is for payloads only; navigation and error handling remain business-owned.
+
+Apply the [shared UI error rules](../../ui-feature/references/error-pipeline.md):
+let unhandled original errors reach analytics and `safeLaunch`. Pure `mapError`
+supplies only the standard dialog representation; it cannot recover or navigate.
+A documented business fallback may catch ordinary `Exception` outside the
+smallest decorated operation in the same coroutine, rethrowing
+`CancellationException` first. Never catch `Throwable`/fatal `Error`, include
+unrelated work or successful navigation, or add launches/wrappers/stage flags.
+Fallback execution stays outside the protected operation. Analytics records its
+original failure first; business result and navigation remain outside telemetry.
+`onError` runs after dialog dismissal. Keep telemetry classification separate
+from presentation mapping and report transitions at their actual navigation owner.
 
 Navigation owners report observed facts with the closed transition model:
 

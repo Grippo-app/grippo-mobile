@@ -227,12 +227,15 @@ shared by every VM. Feature deps (Features, UseCases, Controllers) come via the
 VM's constructor. `BaseComponent` uses the same pattern for `ResultManager`
 (`by inject<ResultManager> { parametersOf(coroutineScope) }`).
 
-**Firebase is not Koin-managed.** `FirebaseProvider` is a `public object` (static
-singleton) initialized once per platform (`App.onCreate` on Android, `AppDelegate`
-on iOS). Anything that needs Crashlytics or Analytics — including
-`BaseViewModel.sendError` — calls `FirebaseProvider.recordException(...)` /
-`FirebaseProvider.logEvent(...)` directly. No `inject<FirebaseProvider>()`, no
-Koin module.
+Toolkit service cores are Koin-managed and expose consumer API contracts.
+BaseViewModel injects `CrashReporting`; feature UI uses its typed analytics
+facade through its UI `<Feature>AnalyticsProvider` in `analytics/`, backed by
+`:analytics:analytics-api`. Provider/classifier bindings are annotated @Single;
+component-owned scenarios are retained, not singleton bindings. App shells attach SDK adapters using
+the instance-bound ApplicationBootstrap returned by Koin.init. SDK transport
+stays out of feature and domain modules; no static provider lookup.
+See [feature-analytics](../../feature-analytics/SKILL.md) and
+[composition-root.md](composition-root.md) for the current module/lifetime rules.
 
 ## What stays out of Koin
 
