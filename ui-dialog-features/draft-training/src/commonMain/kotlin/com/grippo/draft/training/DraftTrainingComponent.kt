@@ -16,6 +16,7 @@ public class DraftTrainingComponent(
 
     override val viewModel: DraftTrainingViewModel = componentContext.retainedInstance {
         DraftTrainingViewModel(
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get()
         )
     }

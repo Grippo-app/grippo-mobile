@@ -1,5 +1,7 @@
 package com.grippo.performance.trend.details
 
+import com.grippo.analytics.performance.trend.details.PerformanceTrendDetailsAnalytics
+import com.grippo.analytics.performance.trend.details.models.PerformanceTrendDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 public class PerformanceTrendDetailsViewModel(
     range: DateRange,
     metricType: PerformanceMetricTypeState,
+    private val analytics: PerformanceTrendDetailsAnalytics,
     trainingFeature: TrainingFeature,
     private val userFeature: UserFeature,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
@@ -88,6 +91,7 @@ public class PerformanceTrendDetailsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(PerformanceTrendDetailsEvent.DismissRequested)
         navigateTo(PerformanceTrendDetailsDirection.Back)
     }
 }

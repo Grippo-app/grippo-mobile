@@ -15,7 +15,7 @@ public class GoalSetupSuggestionComponent(
 ) : BaseComponent<GoalSetupSuggestionDirection>(componentContext) {
 
     override val viewModel: GoalSetupSuggestionViewModel = componentContext.retainedInstance {
-        GoalSetupSuggestionViewModel()
+        GoalSetupSuggestionViewModel(analytics = getKoin().get())
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)

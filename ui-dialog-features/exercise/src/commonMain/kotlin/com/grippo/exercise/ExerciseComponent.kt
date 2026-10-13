@@ -17,6 +17,7 @@ public class ExerciseComponent(
     override val viewModel: ExerciseViewModel = componentContext.retainedInstance {
         ExerciseViewModel(
             id = id,
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
         )
     }

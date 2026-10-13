@@ -10,6 +10,7 @@ internal interface IterationPickerContract {
     fun onAssistWeightChange(value: String)
     fun onRepetitionsChange(value: String)
     fun onPreviousIterationClick()
+    fun onRepetitionSuggestionClick(value: Int)
     fun onIterationClick(id: String)
     fun onSubmit()
     fun onBack()
@@ -22,6 +23,7 @@ internal interface IterationPickerContract {
         override fun onAssistWeightChange(value: String) {}
         override fun onRepetitionsChange(value: String) {}
         override fun onPreviousIterationClick() {}
+        override fun onRepetitionSuggestionClick(value: Int) {}
         override fun onIterationClick(id: String) {}
         override fun onSubmit() {}
         override fun onBack() {}

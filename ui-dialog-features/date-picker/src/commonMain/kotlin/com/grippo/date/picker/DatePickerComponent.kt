@@ -21,6 +21,7 @@ public class DatePickerComponent(
         DatePickerViewModel(
             initial = initial,
             limitations = limitations,
+            analytics = getKoin().get(),
         )
     }
 

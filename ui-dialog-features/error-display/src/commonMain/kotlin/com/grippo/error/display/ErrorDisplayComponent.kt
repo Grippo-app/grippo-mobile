@@ -17,6 +17,7 @@ public class ErrorDisplayComponent(
     override val viewModel: ErrorDisplayViewModel = componentContext.retainedInstance {
         ErrorDisplayViewModel(
             error = error,
+            analytics = getKoin().get(),
         )
     }
 

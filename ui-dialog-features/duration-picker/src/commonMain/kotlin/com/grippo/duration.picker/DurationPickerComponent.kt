@@ -7,6 +7,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DurationFormatState
+import org.koin.core.component.get
 
 public class DurationPickerComponent(
     componentContext: ComponentContext,
@@ -16,7 +17,10 @@ public class DurationPickerComponent(
 ) : BaseComponent<DurationPickerDirection>(componentContext) {
 
     override val viewModel: DurationPickerViewModel = componentContext.retainedInstance {
-        DurationPickerViewModel(initial)
+        DurationPickerViewModel(
+            initial = initial,
+            analytics = getKoin().get(),
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onDismiss)

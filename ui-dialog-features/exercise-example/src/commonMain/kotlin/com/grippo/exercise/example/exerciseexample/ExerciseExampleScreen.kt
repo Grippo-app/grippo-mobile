@@ -71,11 +71,11 @@ internal fun ExerciseExampleScreen(
     contract: ExerciseExampleContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    var selectedTab by rememberSaveable(state.example?.value?.id) { mutableStateOf(ExerciseExampleTab.Information) }
+    var selectedTab by rememberSaveable(state.example?.value?.id) { mutableStateOf(ExerciseExampleTabState.Information) }
     val tabs = remember {
         persistentListOf(
-            ExerciseExampleTab.Information to UiText.Res(Res.string.exercise_example_information),
-            ExerciseExampleTab.Achievements to UiText.Res(Res.string.achievements),
+            ExerciseExampleTabState.Information to UiText.Res(Res.string.exercise_example_information),
+            ExerciseExampleTabState.Achievements to UiText.Res(Res.string.achievements),
         )
     }
 
@@ -128,7 +128,10 @@ internal fun ExerciseExampleScreen(
                     modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding).fillMaxWidth(),
                     items = tabs,
                     selected = selectedTab,
-                    onSelect = { selectedTab = it },
+                    onSelect = {
+                        selectedTab = it
+                        contract.onTabSelected(it)
+                    },
                     style = SegmentStyle.Outline,
                     segmentWidth = SegmentWidth.EqualFill,
                 )
@@ -136,7 +139,7 @@ internal fun ExerciseExampleScreen(
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
                 when (selectedTab) {
-                    ExerciseExampleTab.Information -> {
+                    ExerciseExampleTabState.Information -> {
                         ExampleDescriptionText(
                             modifier = Modifier
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
@@ -170,7 +173,7 @@ internal fun ExerciseExampleScreen(
                                 )
                             }
                     }
-                    ExerciseExampleTab.Achievements -> {
+                    ExerciseExampleTabState.Achievements -> {
                         if (ExerciseExampleLoader.RecentExercises in loaders || ExerciseExampleLoader.Achievements in loaders) {
                             UserDetailsShimmer()
                         } else {
@@ -293,8 +296,6 @@ private fun UserDetailsShimmer() {
         }
     }
 }
-
-private enum class ExerciseExampleTab { Information, Achievements }
 
 @AppPreview
 @Composable

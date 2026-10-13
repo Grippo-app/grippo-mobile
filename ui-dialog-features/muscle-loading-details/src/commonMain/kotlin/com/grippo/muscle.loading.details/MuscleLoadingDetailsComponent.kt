@@ -17,6 +17,7 @@ public class MuscleLoadingDetailsComponent(
     override val viewModel: MuscleLoadingDetailsViewModel = componentContext.retainedInstance {
         MuscleLoadingDetailsViewModel(
             range = range,
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get()
         )

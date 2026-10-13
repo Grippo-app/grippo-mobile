@@ -39,6 +39,10 @@ internal object TrainingEventMatrix {
             InteractionAction.ExerciseBack -> "exercise_back"
             InteractionAction.ExerciseIterationOpened -> "exercise_iteration_opened"
             InteractionAction.ExerciseIterationConfirmed -> "exercise_iteration_confirmed"
+            InteractionAction.CompletionConfirmationDurationOpened -> "completion_confirmation_duration_opened"
+            InteractionAction.CompletionConfirmationDurationSelected -> "completion_confirmation_duration_selected"
+            InteractionAction.CompletionConfirmationConfirm -> "completion_confirmation_confirm"
+            InteractionAction.CompletionConfirmationBack -> "completion_confirmation_back"
             InteractionAction.CompletedSummaryOpened -> "completed_summary_opened"
             InteractionAction.CompletedExerciseOpened -> "completed_exercise_opened"
             InteractionAction.CompletedBack -> "completed_back"
@@ -77,6 +81,10 @@ internal object TrainingEventMatrix {
         TrainingEvent.Exercise.Back -> InteractionAction.ExerciseBack
         TrainingEvent.Exercise.IterationOpened -> InteractionAction.ExerciseIterationOpened
         TrainingEvent.Exercise.IterationConfirmed -> InteractionAction.ExerciseIterationConfirmed
+        TrainingEvent.CompletionConfirmation.DurationOpened -> InteractionAction.CompletionConfirmationDurationOpened
+        TrainingEvent.CompletionConfirmation.DurationSelected -> InteractionAction.CompletionConfirmationDurationSelected
+        TrainingEvent.CompletionConfirmation.Confirm -> InteractionAction.CompletionConfirmationConfirm
+        TrainingEvent.CompletionConfirmation.Back -> InteractionAction.CompletionConfirmationBack
         TrainingEvent.Completed.SummaryOpened -> InteractionAction.CompletedSummaryOpened
         TrainingEvent.Completed.ExerciseOpened -> InteractionAction.CompletedExerciseOpened
         TrainingEvent.Completed.Back -> InteractionAction.CompletedBack

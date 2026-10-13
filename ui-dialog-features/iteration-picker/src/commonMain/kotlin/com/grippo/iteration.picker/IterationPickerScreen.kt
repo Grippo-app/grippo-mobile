@@ -71,12 +71,15 @@ import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.iteration_picker_last_time
 import com.grippo.design.resources.provider.volume_placeholder
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 
 @Composable
 internal fun IterationPickerScreen(
     state: IterationPickerState,
+    loaders: ImmutableSet<IterationPickerLoader>,
     contract: IterationPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
@@ -151,7 +154,7 @@ internal fun IterationPickerScreen(
                             SuggestionChip(
                                 value = repetitions.toString(),
                                 isSelected = state.value.repetitions.value == repetitions,
-                                onClick = { contract.onRepetitionsChange(repetitions.toString()) }
+                                onClick = { contract.onRepetitionSuggestionClick(repetitions) }
                             )
                         }
                     } else {
@@ -422,6 +425,7 @@ private fun PickerPreview(components: ExerciseExampleComponentsState) {
                 focus = IterationFocusState.UNIDENTIFIED,
                 example = stubExerciseExample().copy(components = components)
             ),
+            loaders = persistentSetOf(),
             contract = IterationPickerContract.Empty
         )
     }

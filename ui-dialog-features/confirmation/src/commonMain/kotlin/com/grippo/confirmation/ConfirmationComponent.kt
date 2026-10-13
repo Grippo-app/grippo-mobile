@@ -17,7 +17,8 @@ public class ConfirmationComponent(
 
     override val viewModel: ConfirmationViewModel = componentContext.retainedInstance {
         ConfirmationViewModel(
-            description = description
+            description = description,
+            analytics = getKoin().get(),
         )
     }
 

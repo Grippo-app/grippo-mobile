@@ -1,5 +1,8 @@
 package com.grippo.exercise.example.exerciseexample
 
+import com.grippo.analytics.exercise.example.ExerciseExampleAnalytics
+import com.grippo.analytics.exercise.example.models.ExerciseExampleEvent
+import com.grippo.analytics.exercise.example.models.ExerciseExampleOperation
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.achievements.Achievement
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -15,10 +18,12 @@ import com.grippo.domain.state.metrics.distribution.toState
 import com.grippo.domain.state.metrics.performance.toState
 import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.exercise.example.exerciseexample.analytics.toAnalytics
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleViewModel(
+    private val analytics: ExerciseExampleAnalytics,
     id: String,
     mode: ExerciseExampleModeState,
     private val exerciseExampleFeature: ExerciseExampleFeature,
@@ -36,17 +41,23 @@ public class ExerciseExampleViewModel(
             .safeLaunch()
 
         safeLaunch {
-            exerciseExampleFeature.getExerciseExampleById(id).getOrThrow()
+            analytics.trackOperation(ExerciseExampleOperation.LoadExample) {
+                exerciseExampleFeature.getExerciseExampleById(id).getOrThrow()
+            }
         }
 
         safeLaunch(loader = ExerciseExampleLoader.RecentExercises) {
-            val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
-            provideRecentExercises(exercises)
+            analytics.trackOperation(ExerciseExampleOperation.LoadRecentExercises) {
+                val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
+                provideRecentExercises(exercises)
+            }
         }
 
         safeLaunch(loader = ExerciseExampleLoader.Achievements) {
-            val exercises = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
-            provideAchievements(exercises)
+            analytics.trackOperation(ExerciseExampleOperation.LoadAchievements) {
+                val exercises = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
+                provideAchievements(exercises)
+            }
         }
     }
 
@@ -86,11 +97,17 @@ public class ExerciseExampleViewModel(
         update { current -> current.copy(example = exampleState, muscleLoad = muscleLoad) }
     }
 
+    override fun onTabSelected(value: ExerciseExampleTabState) {
+        analytics.trackEvent(ExerciseExampleEvent.TabSelected(value.toAnalytics()))
+    }
+
     override fun onDismiss() {
+        analytics.trackEvent(ExerciseExampleEvent.DismissRequested)
         navigateTo(ExerciseExampleDirection.Back)
     }
 
     override fun onAction() {
+        analytics.trackEvent(ExerciseExampleEvent.ActionClicked)
         navigateTo(ExerciseExampleDirection.Action)
     }
 }

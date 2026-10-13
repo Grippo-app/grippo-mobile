@@ -1,5 +1,7 @@
 package com.grippo.date.picker
 
+import com.grippo.analytics.date.picker.DatePickerAnalytics
+import com.grippo.analytics.date.picker.models.DatePickerEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.toolkit.date.utils.DateRange
@@ -8,6 +10,7 @@ import kotlinx.datetime.LocalDateTime
 public class DatePickerViewModel(
     initial: DateTimeFormatState,
     limitations: DateRange,
+    private val analytics: DatePickerAnalytics,
 ) : BaseViewModel<DatePickerState, DatePickerDirection, DatePickerLoader>(
     DatePickerState(
         value = initial,
@@ -20,10 +23,13 @@ public class DatePickerViewModel(
     }
 
     override fun onSubmitClick() {
+        if (state.value.value !is DateTimeFormatState.Valid) return
+        analytics.trackEvent(DatePickerEvent.Submit)
         navigateTo(DatePickerDirection.BackWithResult(state.value.value))
     }
 
     override fun onDismiss() {
+        analytics.trackEvent(DatePickerEvent.Dismiss)
         navigateTo(DatePickerDirection.Back)
     }
 }

@@ -32,7 +32,18 @@ internal data class TrainingsState(
     val period: TrainingsTimelinePeriod = TrainingsTimelinePeriod.Monthly(),
     val date: DateRange,
     @Transient val limitations: DateRange = DateTimeUtils.trailingYear(),
-)
+) {
+    fun selectRange(range: DateRange): TrainingsState = copy(
+        date = range,
+        period = when (period) {
+            is TrainingsTimelinePeriod.Daily -> TrainingsTimelinePeriod.Daily()
+            is TrainingsTimelinePeriod.Monthly -> TrainingsTimelinePeriod.Monthly.from(
+                range = range,
+                timeline = persistentListOf(),
+            )
+        },
+    )
+}
 
 @Immutable
 @Serializable

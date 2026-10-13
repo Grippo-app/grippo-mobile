@@ -9,6 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
+import org.koin.core.component.get
 
 public class IterationPickerComponent(
     componentContext: ComponentContext,
@@ -31,6 +32,7 @@ public class IterationPickerComponent(
             iterationSuggestions = suggestions,
             focus = focus,
             previousIteration = previousIteration,
+            analytics = getKoin().get(),
         )
     }
 
@@ -52,6 +54,7 @@ public class IterationPickerComponent(
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
-        IterationPickerScreen(state.value, viewModel)
+        val loaders = viewModel.loaders.collectAsStateMultiplatform()
+        IterationPickerScreen(state.value, loaders.value, viewModel)
     }
 }

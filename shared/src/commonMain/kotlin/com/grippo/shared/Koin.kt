@@ -1,8 +1,22 @@
 package com.grippo.shared
 
 import com.grippo.analytics.authorization.AuthAnalyticsModule
+import com.grippo.analytics.confirmation.ConfirmationAnalyticsModule
+import com.grippo.analytics.goal.setup.suggestion.GoalSetupSuggestionAnalyticsModule
+import com.grippo.analytics.error.display.ErrorDisplayAnalyticsModule
+import com.grippo.analytics.exercise.example.ExerciseExampleAnalyticsModule
+import com.grippo.analytics.exercise.ExerciseAnalyticsModule
 import com.grippo.analytics.home.HomeAnalyticsModule
+import com.grippo.analytics.date.picker.DatePickerAnalyticsModule
+import com.grippo.analytics.draft.training.DraftTrainingAnalyticsModule
 import com.grippo.analytics.profile.ProfileAnalyticsModule
+import com.grippo.analytics.duration.picker.DurationPickerAnalyticsModule
+import com.grippo.analytics.iteration.picker.IterationPickerAnalyticsModule
+import com.grippo.analytics.month.picker.MonthPickerAnalyticsModule
+import com.grippo.analytics.menu.picker.MenuPickerAnalyticsModule
+import com.grippo.analytics.muscle.loading.details.MuscleLoadingDetailsAnalyticsModule
+import com.grippo.analytics.performance.trend.details.PerformanceTrendDetailsAnalyticsModule
+import com.grippo.analytics.height.picker.HeightPickerAnalyticsModule
 import com.grippo.analytics.exercises.ExercisesAnalyticsModule
 import com.grippo.analytics.training.TrainingAnalyticsModule
 import com.grippo.analytics.trainings.TrainingsAnalyticsModule
@@ -55,9 +69,23 @@ public object Koin {
                 AuthAnalyticsModule().module,
                 ProfileAnalyticsModule().module,
                 ExercisesAnalyticsModule().module,
+                DurationPickerAnalyticsModule().module,
+                IterationPickerAnalyticsModule().module,
+                MonthPickerAnalyticsModule().module,
+                MenuPickerAnalyticsModule().module,
+                MuscleLoadingDetailsAnalyticsModule().module,
+                HeightPickerAnalyticsModule().module,
+                PerformanceTrendDetailsAnalyticsModule().module,
                 TrainingAnalyticsModule().module,
                 TrainingsAnalyticsModule().module,
                 HomeAnalyticsModule().module,
+                DatePickerAnalyticsModule().module,
+                DraftTrainingAnalyticsModule().module,
+                ConfirmationAnalyticsModule().module,
+                GoalSetupSuggestionAnalyticsModule().module,
+                ErrorDisplayAnalyticsModule().module,
+                ExerciseExampleAnalyticsModule().module,
+                ExerciseAnalyticsModule().module,
                 CrashReportingModule().module,
                 MessagingModule().module,
                 ContextModule().module,

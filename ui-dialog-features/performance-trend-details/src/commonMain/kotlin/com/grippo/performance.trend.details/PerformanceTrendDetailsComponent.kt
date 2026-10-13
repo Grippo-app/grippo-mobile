@@ -20,6 +20,7 @@ public class PerformanceTrendDetailsComponent(
         PerformanceTrendDetailsViewModel(
             range = range,
             metricType = metricType,
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             userFeature = getKoin().get(),
             performanceTrendUseCase = getKoin().get()

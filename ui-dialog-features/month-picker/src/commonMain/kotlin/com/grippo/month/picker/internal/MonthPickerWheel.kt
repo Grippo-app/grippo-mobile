@@ -23,6 +23,7 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
 
@@ -42,9 +43,6 @@ internal fun MonthWheelPicker(
             else -> initial
         }
     }
-
-    val baseHour = remember(resolvedInitial) { resolvedInitial.hour }
-    val baseMinute = remember(resolvedInitial) { resolvedInitial.minute }
 
     var selectedYear by remember { mutableStateOf(resolvedInitial.year) }
     var selectedMonth by remember { mutableStateOf(resolvedInitial.month) }
@@ -70,21 +68,16 @@ internal fun MonthWheelPicker(
 
         val dayRange = validDayRange(selectedYear, selectedMonth, limitations)
         val day = dayRange.first
-        val dt = runCatching {
-            LocalDateTime(
-                year = selectedYear,
-                month = selectedMonth,
-                day = day,
-                hour = baseHour,
-                minute = baseMinute
-            )
-        }.getOrNull()
+        val dt = LocalDateTime(
+            date = LocalDate(selectedYear, selectedMonth, day),
+            time = resolvedInitial.time,
+        ).coerceIn(limitations.from, limitations.to)
 
-        dt?.takeIf { it in limitations.from..limitations.to }?.let(select)
+        select(dt)
     }
 
-    val monthState = rememberLazyListState()
-    val yearState = rememberLazyListState()
+    val monthState = rememberLazyListState(initialFirstVisibleItemIndex = months.indexOf(selectedMonth))
+    val yearState = rememberLazyListState(initialFirstVisibleItemIndex = years.indexOf(selectedYear))
 
     val monthColumn = WheelColumn(
         id = "month",

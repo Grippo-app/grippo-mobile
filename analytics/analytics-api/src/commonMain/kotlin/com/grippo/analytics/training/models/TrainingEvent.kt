@@ -34,6 +34,12 @@ public sealed interface TrainingEvent {
         public data object IterationOpened : Exercise
         public data object IterationConfirmed : Exercise
     }
+    public sealed interface CompletionConfirmation : TrainingEvent {
+        public data object DurationOpened : CompletionConfirmation
+        public data object DurationSelected : CompletionConfirmation
+        public data object Confirm : CompletionConfirmation
+        public data object Back : CompletionConfirmation
+    }
     public sealed interface Completed : TrainingEvent {
         public data object SummaryOpened : Completed
         public data object ExerciseOpened : Completed

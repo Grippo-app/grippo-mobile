@@ -11,6 +11,7 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        implementation(projects.analytics.analyticsApi)
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.dataMappers.domainToState)

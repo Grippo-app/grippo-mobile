@@ -7,6 +7,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.menu.PickerMenuItem
+import org.koin.core.component.get
 
 public class MenuPickerComponent(
     componentContext: ComponentContext,
@@ -18,6 +19,7 @@ public class MenuPickerComponent(
     override val viewModel: MenuPickerViewModel = componentContext.retainedInstance {
         MenuPickerViewModel(
             items = items,
+            analytics = getKoin().get(),
         )
     }
 

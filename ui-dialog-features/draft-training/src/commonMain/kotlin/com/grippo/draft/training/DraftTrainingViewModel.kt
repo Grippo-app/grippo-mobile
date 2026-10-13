@@ -1,5 +1,8 @@
 package com.grippo.draft.training
 
+import com.grippo.analytics.draft.training.DraftTrainingAnalytics
+import com.grippo.analytics.draft.training.models.DraftTrainingEvent
+import com.grippo.analytics.draft.training.models.DraftTrainingOperation
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.training.TrainingFeature
@@ -10,6 +13,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 public class DraftTrainingViewModel(
+    private val analytics: DraftTrainingAnalytics,
     private val trainingFeature: TrainingFeature
 ) : BaseViewModel<DraftTrainingState, DraftTrainingDirection, DraftTrainingLoader>(
     DraftTrainingState()
@@ -42,17 +46,22 @@ public class DraftTrainingViewModel(
     }
 
     override fun onContinue() {
+        analytics.trackEvent(DraftTrainingEvent.ContinueClicked)
         navigateTo(DraftTrainingDirection.Continue)
     }
 
     override fun onStartNew() {
+        analytics.trackEvent(DraftTrainingEvent.StartNewClicked)
         safeLaunch {
-            trainingFeature.deleteDraftTraining().getOrThrow()
+            analytics.trackOperation(DraftTrainingOperation.DeleteDraft) {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+            }
             navigateTo(DraftTrainingDirection.StartNew)
         }
     }
 
     override fun onBack() {
+        analytics.trackEvent(DraftTrainingEvent.Back)
         navigateTo(DraftTrainingDirection.Back)
     }
 }

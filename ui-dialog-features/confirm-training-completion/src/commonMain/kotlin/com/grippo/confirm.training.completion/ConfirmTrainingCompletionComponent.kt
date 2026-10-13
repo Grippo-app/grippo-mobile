@@ -20,6 +20,7 @@ public class ConfirmTrainingCompletionComponent(
     override val viewModel: ConfirmTrainingCompletionViewModel = componentContext.retainedInstance {
         ConfirmTrainingCompletionViewModel(
             initial = initial,
+            analytics = getKoin().get(),
         )
     }
 

@@ -8,6 +8,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.toolkit.date.utils.DateRange
+import org.koin.core.component.get
 
 public class MonthPickerComponent(
     componentContext: ComponentContext,
@@ -21,6 +22,7 @@ public class MonthPickerComponent(
         MonthPickerViewModel(
             initial = initial,
             limitations = limitations,
+            analytics = getKoin().get(),
         )
     }
 

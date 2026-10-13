@@ -1,16 +1,20 @@
 package com.grippo.muscle.loading.details
 
+import com.grippo.analytics.muscle.loading.details.MuscleLoadingDetailsAnalytics
+import com.grippo.analytics.muscle.loading.details.models.MuscleLoadingDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.distribution.toState
+import com.grippo.muscle.loading.details.analytics.toAnalytics
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.coroutines.flow.onEach
 
 public class MuscleLoadingDetailsViewModel(
     range: DateRange,
+    private val analytics: MuscleLoadingDetailsAnalytics,
     trainingFeature: TrainingFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
 ) : BaseViewModel<MuscleLoadingDetailsState, MuscleLoadingDetailsDirection, MuscleLoadingDetailsLoader>(
@@ -25,6 +29,7 @@ public class MuscleLoadingDetailsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(MuscleLoadingDetailsEvent.DismissRequested)
         navigateTo(MuscleLoadingDetailsDirection.Back)
     }
 
@@ -42,6 +47,7 @@ public class MuscleLoadingDetailsViewModel(
     }
 
     override fun onSelectMode(value: MuscleLoadingDetailsShowingMode) {
+        analytics.trackEvent(MuscleLoadingDetailsEvent.ModeSelected(value.toAnalytics()))
         update { it.copy(mode = value) }
     }
 }

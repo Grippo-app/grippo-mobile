@@ -23,7 +23,9 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.Month
 
 @Composable
@@ -45,9 +47,7 @@ internal fun DateWheelPicker(
         }
     }
 
-    // Preserve hour/minute from resolved initial
-    val baseHour = remember(value) { value.hour }
-    val baseMinute = remember(value) { value.minute }
+    val time = value.time
 
     var selectedYear by remember { mutableStateOf(value.year) }
     var selectedMonth by remember { mutableStateOf(value.month) }
@@ -95,25 +95,28 @@ internal fun DateWheelPicker(
         }
     }
 
-    // Emit only valid selections (hour/min preserved from baseInitial)
-    LaunchedEffect(selectedYear, selectedMonth, selectedDay, daysInMonth) {
+    // Date selection keeps the complete time, including precision at range bounds.
+    LaunchedEffect(selectedYear, selectedMonth, selectedDay, daysInMonth, time, limitations) {
         val safeDay = selectedDay.coerceIn(daysInMonth.first(), daysInMonth.last())
         val dt = runCatching {
             LocalDateTime(
-                year = selectedYear,
-                month = selectedMonth,
-                day = safeDay,
-                hour = baseHour,
-                minute = baseMinute
+                date = LocalDate(selectedYear, selectedMonth, safeDay),
+                time = time,
             )
         }.getOrNull()
 
         dt?.takeIf { it in limitations.from..limitations.to }?.let(select)
     }
 
-    val dayState = rememberLazyListState()
-    val monthState = rememberLazyListState()
-    val yearState = rememberLazyListState()
+    val dayState = rememberLazyListState(
+        initialFirstVisibleItemIndex = daysInMonth.indexOf(selectedDay).coerceAtLeast(0),
+    )
+    val monthState = rememberLazyListState(
+        initialFirstVisibleItemIndex = selectedMonth.ordinal,
+    )
+    val yearState = rememberLazyListState(
+        initialFirstVisibleItemIndex = years.indexOf(selectedYear).coerceAtLeast(0),
+    )
 
     val dayColumn = WheelColumn(
         id = "day",
@@ -126,8 +129,7 @@ internal fun DateWheelPicker(
                 month = selectedMonth,
                 day = d,
                 limitations = limitations,
-                hour = baseHour,
-                minute = baseMinute
+                time = time,
             )
         },
         itemContent = { d, valid ->
@@ -212,12 +214,11 @@ private fun checkDayValidity(
     month: Month,
     day: Int,
     limitations: DateRange,
-    hour: Int,
-    minute: Int,
+    time: LocalTime,
 ): Boolean {
     if (!checkMonthValidity(year, month, limitations)) return false
     val dt =
-        runCatching { LocalDateTime(year, month, day, hour, minute) }.getOrNull() ?: return false
+        runCatching { LocalDateTime(LocalDate(year, month, day), time) }.getOrNull() ?: return false
     return dt in limitations.from..limitations.to
 }
 
