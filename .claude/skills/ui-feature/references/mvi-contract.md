@@ -68,7 +68,7 @@ Rules:
 - Properties: `val`. No `var`.
 - Collections: `ImmutableList`/`ImmutableSet`/`PersistentList` (kotlinx-collections-immutable).
 - Strings: `UiText` if the value depends on resources/locale; `String` if it's a verbatim user input or a non-localizable identifier.
-- Form fields: `*FormatState` (`EmailFormatState.Valid("a@b.com", "a@b.com")`, ...).
+- Form fields: `*FormatState` (`EmailFormatState.of("a@b.com")`, ...).
 - Provide an initial state via default values on every property — `<X>State()` is the "empty" instance used as `BaseViewModel`'s initial state and for previews.
 - **No** direct domain model storage if a transformation is required — map via `:data-mappers:domain-to-state` to a UI-friendly shape.
 - **No flat scalar piles.** Cluster related primitives into sub-states, fixed value sets into enums, a lifecycle of booleans into a sealed interface (see `references/state.md`).
@@ -126,7 +126,8 @@ internal interface NoteEditorContract {
 Rules:
 - `@Immutable interface`, `internal`.
 - Methods: `onXxx*()` — past or present tense, describes a UI event ("user tapped X").
-- All return `Unit` (or rarely `Boolean` for short-circuit cases).
+- Action callbacks MUST return Unit. Boolean is permitted only for a synchronous
+  handled/consumed input-event protocol; it MUST NOT query UI/business data.
 - `companion object Empty` provides no-op defaults for previews.
 - **No** methods that return data — UI reads data from `State`, never from the contract.
 
@@ -206,7 +207,8 @@ Rules:
 - Run async work via `safeLaunch { ... }` or `Flow.safeLaunch()`. **Never** `viewModelScope.launch`, `GlobalScope`, or raw `CoroutineScope`.
 - Unwrap failed results with `getOrThrow()` inside `safeLaunch`; do not hide or
   present unhandled failures with local catches or result failure handlers.
-  `Result.onSuccess` may consume successful data without hiding failures. Pure
+  `Result.onSuccess` alone does not propagate failures: unwrap the returned Result
+  with `getOrThrow()` inside `safeLaunch` before treating the operation as complete. Pure
   `mapError` changes only dialog presentation; `onError` runs after dismissal.
   Suspend helpers propagate failures to the caller's `safeLaunch`; no local
   catches, telemetry-owned recovery, extra launches or wrappers. Follow
@@ -329,7 +331,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 ## Architecture cross-cuts (always-on)
 
 - **MVI** — every screen/dialog is this seven-file package; `Screen` is the only UI file; non-`*Screen` UI goes in `components/`.
-- **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; each feature module exposes a single root component with its own internal stack. (`references/navigation.md`.)
+- **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; multi-screen features expose a container root with an internal stack; a single-screen feature may expose its screen Component directly. (`references/navigation.md`.)
 - **Dialogs** — `DialogComponent` in `:shared` hosts a separate `SlotNavigation<DialogSession>` parallel to the screen stack; its content uses the internal `StackNavigation<DialogStep>`. Both use `serializer = null`. Plain `DialogConfig` carries the required `title: UiText`, typed content and live callbacks; `hasSameContentAs` compares content/titles excluding callbacks. Ordinary screen ViewModels call `DialogController.open`; nested features forward semantic directions and typed callbacks to the host's step-bound Session. The host removes the step or closes the root sheet, invokes dismissal callbacks, then delivers the pending typed result. These sessions are not restored after process death. See [dialogs.md](dialogs.md).
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.
 - **Error pipeline** — one path for failures from `safeLaunch`, including suspend

@@ -82,3 +82,104 @@ delivery have not been exercised manually; successful compilation would not prov
 
 Incomplete required hydration uses the shared Network.IncompleteResponse type and
 standard ErrorProvider mapping. No new screen/state owner or event payload is added.
+
+## Authorization analytics
+
+Reviewed and reconciled with actual routes, rendered surfaces, Components and VMs
+on 2026-10-13. This section covers authorization and its profile-creation children.
+
+| Route / surface | Component → ViewModel | AuthScreen / wire identity | Hook |
+|---|---|---|---|
+| AuthRouter.Splash / launch loading | SplashComponent → SplashViewModel | Splash / auth_splash | Typed screenPresentation |
+| AuthProcessRouter.Login | LoginComponent → LoginViewModel | Login / auth_login | Typed screenPresentation |
+| AuthProcessRouter.Registration / optional email seed | RegistrationComponent → RegistrationViewModel | Registration / auth_registration | Typed screenPresentation |
+| ProfileCreationRouter.User | UserComponent → UserViewModel | User / profile_creation_user | Typed screenPresentation |
+| ProfileCreationRouter.Experience | ExperienceComponent → ExperienceViewModel | Experience / profile_creation_experience | Typed screenPresentation |
+| ProfileCreationRouter.ExcludedMuscles | ExcludedMusclesComponent → ExcludedMusclesViewModel | ExcludedMuscles / profile_creation_excluded_muscles | Typed screenPresentation |
+| ProfileCreationRouter.MissingEquipments | MissingEquipmentsComponent → MissingEquipmentsViewModel | MissingEquipments / profile_creation_missing_equipments | Typed screenPresentation |
+| ProfileCreationRouter.Completed / profile creation loading | ProfileCompletedComponent → ProfileCompletedViewModel | Completed / profile_creation_completed | Typed screenPresentation |
+| Auth graph | AuthComponent → AuthViewModel | Default null | Child stack host |
+| AuthProcess graph | AuthProcessComponent → AuthProcessViewModel | Default null | Login/Registration stack host |
+| ProfileCreation graph | ProfileCreationComponent → ProfileCreationViewModel | Default null | Child stack and shared progress chrome |
+
+AuthProcess entry reasons (LaunchWithoutSession, TokenAbsent, SessionCheckFailed,
+ProfileSetupReturn and legacy RestoredScenario) share the Login owner; route identity and entry reason are not telemetry.
+Splash can navigate to Home, AuthProcess or ProfileCreation. Successful login or
+registration can navigate to Home or ProfileCreation; these paths do not add
+screen owners. Restored stacks use the same retained factories and typed hooks.
+All eight leaf factories resolve AuthAnalytics only inside retainedInstance.
+BaseComponent binds the VM hook before activation/navigation bridging; foundation
+owns Initial/Restore and close on pause/destroy. Containers resolve no screen service.
+
+| Owner | Observed callbacks / inputs | Complete operations and eligibility |
+|---|---|---|
+| SplashViewModel | Back | SessionCheck wraps hasProfile only when a session token exists; cache hit and remote lookup both complete normally; startup retry remains business-owned |
+| LoginViewModel | Email/password status transitions, focus, email clear, Next/Done IME, password visibility, submit by Email/Google/Apple, Register, Back | Login includes the whole use case and provider sign-in for Google/Apple; submit follows busy guard and email/password validity for Email; Register follows busy guard |
+| RegistrationViewModel | Email/password status transitions, focus, email clear, Next/Done IME, password visibility, Submit, Back | Register wraps createAccount including private preparation; submit follows busy and validity guards |
+| UserViewModel | Name status transitions/focus/clear/Done; Height/Weight picker open and accepted confirmation; Next, Back | Logout wraps execute on accepted Back; picker open and Back follow busy guard; Next also requires valid name/weight/height |
+| ExperienceViewModel | Experience selection, Next, Back | Next requires selected experience; no business operation |
+| ExcludedMusclesViewModel | Group click, item toggle (selected flag/count), Next, Back | Catalog observations rebuild state without interaction events; no business operation |
+| MissingEquipmentsViewModel | Group click, item toggle (selected flag/count), Next, Back | Catalog observations rebuild state without interaction events; no business operation |
+| ProfileCompletedViewModel | Back | CreateProfile includes full use case and welcome-status write; absent experience navigates back without an operation; error navigation follows existing dismissal pipeline |
+| Container VMs | No synthetic navigation/click facts | No analytics operations |
+
+Text status events compare existing old/new validation status, omit equal statuses
+(including Empty → Empty) and keep no cache. Clear is a separate callback from its
+resulting status transition. Picker confirmations fire for each accepted result,
+including unchanged values; opening and confirmation remain separate facts.
+Selection counts describe selected/available items, not the complementary exclusion
+list. Repeated group/experience clicks remain observed callbacks.
+
+### Reporting decision
+
+From this change, AuthEvent.User.PickerConfirmed encodes `auth_picker_confirmed`
+version 1 with interaction_screen, input_field and input_status. It no longer
+encodes `auth_input_changed`. `auth_input_changed` version 2 has the same parameter
+shape as version 1 but a narrower population: text validation-status transitions
+for email/password/name only. Existing version-1 height/weight rows represent
+accepted picker results, not validation transitions. Reports spanning releases
+must count picker confirmations as version-1 auth_input_changed filtered to
+height/weight plus auth_picker_confirmed; text-transition reports must filter to
+email/password/name across both versions. Do not compare unfiltered input-change
+counts across the version boundary. No dual emission or historical rewriting is
+performed. Existing field/action wire codes are unchanged by exhaustive encoding.
+
+### Omissions and privacy
+
+No dedicated picker/dialog view or close contract, dismissal/provider-cancel reason,
+error classifier, session-presence/profile-presence result, group/item ID, route
+entry attribution or transition/funnel event is emitted. No-session catalog fetches
+are not SessionCheck operations. Programmatic startup, retry, restoration and
+navigation do not fabricate user clicks. Password has no clear button/callback.
+Focus reports actual UI focus, including focus movement, without inferred intent.
+Consent/identity/transport remain app/core-owned. Payloads contain only bounded
+codes, booleans, counts and durations; no raw input/length, email/name, measurements,
+credentials/tokens, entity IDs, exception messages, URLs or request/response bodies.
+
+### State impact and verification
+
+This repair changes only internal event encoding/schema and coverage documentation.
+It introduces no screen, callback, editable field, navigation change or state owner.
+UserViewModel still updates its accepted picker input before emitting the typed
+confirmation; UserComponent saves name/weight/height through UserDraft and
+UserState.serializer(). No telemetry state or restoration callback replay is added.
+Existing LoginDraft/RegistrationDraft exclude passwords and provider availability;
+profile parent draft, experience and catalog selections remain owned by their
+existing local StateKeeper suppliers. No archive/schema migration is needed.
+
+Source review covers the eight leaf hooks, three null container hooks, retained
+injection, catalog registration, actual callback eligibility, complete operation
+blocks, reporting isolation and cancellation propagation. Static verification
+checks the dedicated picker mapping, complete schema catalog, exhaustive encoding
+with unchanged codes and diff whitespace. No automated test infrastructure was
+introduced. Manual device restoration, payload delivery, lifecycle timing and
+reporting-failure injection were not run; source checks do not prove runtime behavior.
+
+Authorization repair verification on 2026-10-13: `git diff --check` and inline
+source invariants passed (preserved enum codes, dedicated picker schema/mapping/
+catalog, eight unique leaf hooks and three null containers).
+`:analytics:authorization:compileKotlinIosSimulatorArm64` passed, with unresolved
+global opt-in marker warnings for libraries absent from this pure module. The first
+sandboxed attempt could not write the Gradle wrapper cache lock; the permitted
+retry completed successfully. Android compilation, full app/generated DI builds
+and device runtime checks were not run for this repair.

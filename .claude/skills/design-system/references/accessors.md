@@ -131,18 +131,6 @@ plural string is actually needed.
 - **Variable fonts** can be a single file (`manrope.ttf`) but the project uses one
   file per weight for compatibility.
 
-## Why a wrapper
-
-`AppTokens.strings.res(Res.string.foo)` is one character longer than
-`stringResource(Res.string.foo)`. The win:
-
-- All resource access flows through `AppTokens` — same entry point as colors, dp,
-  typography.
-- A future change (e.g. fallback to a default locale, instrumentation hook for missing
-  strings) lands in one place.
-- New contributors learn one pattern ("everything visual comes from `AppTokens`") instead
-  of two ("strings from `stringResource`, colors from `AppTokens.colors`").
-
 ## Anti-patterns
 
 - **`androidx.compose.ui.res.stringResource(R.string.foo)`** — Android-only, breaks iOS

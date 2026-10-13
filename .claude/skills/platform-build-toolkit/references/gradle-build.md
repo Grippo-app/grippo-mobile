@@ -13,6 +13,6 @@ specific plugin under `build-logic/convention/`. These files own the current mod
 - No dependency/version changes to silence a warning without authorized scope. Review warnings in
   permitted build output and report what was actually run.
 
-When builds are authorized, existing targets include `:androidApp:assembleDebug` and
+When builds are needed within task scope, existing targets include `:androidApp:assembleDebug` and
 `:shared:assembleSharedDebugXCFramework`. Inspect source before claiming any target or output exists;
-never report an unrun task as passing. Do not add automated test infrastructure.
+never report an unrun task as passing. Follow the [project verification policy](../../../../CLAUDE.md#verification-policy).

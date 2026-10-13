@@ -11,7 +11,9 @@ in-memory configs and are not restored.
 
 ## Three layers of navigation
 
-1. **`RootComponent`** in `:shared` — owns the **primary** `StackNavigation<RootRouter>`. Routes between top-level features (`Auth`, `Home`, `Notes`, `Profile`, `NoteDetail`, `Debug`).
+1. **RootComponent** in shared owns the primary StackNavigation<RootRouter>.
+   Inspect the current RootRouter and child factory; the domain names in the
+   abbreviated examples below are illustrative, not a current route catalog.
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
 
@@ -207,7 +209,7 @@ For result-back navigation (feature A opens B, expects a result), use `ResultMan
 - **Direct feature-to-feature import.** Forbidden. Use `screen-api` + callbacks.
 - **Lambda parameter in a `Router` payload.** Routes are `@Serializable`; lambdas aren't.
 - **Skipping the `RootDirection` step.** Calling `RootRouter.push(...)` directly from a feature VM has no path.
-- **Forgetting to thread the callback** through every layer (`createChild` → child component constructor → child VM).
+- **Forgetting to thread the callback** through every layer (`createChild` → child component constructor → its eventListener).
 - **Adding a `toX(...)` on `<Feature>Contract`** when it could be a constructor lambda. `Contract` is for the UI's own callbacks, not cross-feature routing.
 
 ## Animations

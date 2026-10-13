@@ -202,6 +202,9 @@ where to get them — that's a per-project decision. Common sources:
 
 ### 2. Author the `ImageVector`
 
+The abbreviated block below is a structural excerpt, not a complete icon. The
+finished asset MUST contain real, nonempty path data from the chosen source.
+
 ```kotlin
 package com.grippo.design.resources.provider.icons
 
@@ -319,7 +322,7 @@ All resource modules must compile and the generated accessors (`Res.string.*`,
 
 - **Hardcoded strings** in Composables. Always extract.
 - **Single-locale features.** Add every key to every `supportedLocales` file; use an English
-  fallback only when the task explicitly authorizes it.
+  fallback only if the user explicitly overrides the all-locale translation policy.
 - **Resource keys in feature modules.** Centralize in `:design-system:resources:provider`.
 - **`stringResource(R.string.foo)`** from `androidx.compose.ui.res`. Android-only.
 - **Adding monochrome icons as drawables** (`ic_*.xml` / `ic_*.svg`). Author them as

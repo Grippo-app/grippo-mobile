@@ -113,10 +113,11 @@ internal object AuthEventMatrix {
                 AuthScreen.User,
                 AuthEncoding.field(event.field),
             )
-            is AuthEvent.User.PickerConfirmed -> inputChanged(
+            is AuthEvent.User.PickerConfirmed -> payload(
+                AuthInteractionSchema.PickerConfirmed,
                 AuthScreen.User,
-                AuthEncoding.field(event.field),
-                event.status,
+                AuthInteractionSchema.Field.value(AuthEncoding.field(event.field)),
+                AuthInteractionSchema.Status.value(event.status),
             )
             is AuthEvent.User.Control -> clicked(AuthScreen.User, AuthEncoding.action(event.action))
         }

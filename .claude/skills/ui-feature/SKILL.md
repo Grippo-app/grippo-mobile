@@ -1,6 +1,6 @@
 ---
 name: ui-feature
-description: Build the product UI layer of the KMP app — add a screen, sub-screen, tab, bottom-sheet dialog, picker, or modal; wire Decompose navigation (ChildStack / SlotNavigation, cross-feature jumps, deeplinks); author the seven-file MVI contract (State / Direction / Loader / Contract / ViewModel / Component / Screen); add `:ui-core:state` UI models, `*FormatState`, `stub*()` previews, and the error-pipeline triad; handle process-death restoration. Triggers on "MVI", "Compose screen", "Decompose component", "BaseViewModel", "ViewModel", "UI state", "navigation", "dialog", "feature module".
+description: Implement and review Grippo screens, dialogs, UI state and Decompose navigation using the seven-file MVI pattern and canonical analytics/preservation gates.
 ---
 
 Build Grippo UI features using the current source and the topic references below.
@@ -8,7 +8,8 @@ Build Grippo UI features using the current source and the topic references below
 ## When to use
 
 - Add a new sub-screen inside an existing `:ui-screen-features:<feature>` module.
-- Scaffold a brand-new feature module (root component + first screen).
+- Scaffold a feature module: expose one screen Component directly for a single page;
+  use a container root and child stack for multiple screens.
 - Add a bottom-sheet dialog / picker / modal under `:ui-dialog-features:<name>`.
 - Add the `:ui-core:state` UI models (`*State` / `*RowState` / `*EnumState` /
   `*FormatState` + `stub*()`) a screen or mapper binds to, or the error triad.
@@ -65,21 +66,10 @@ update route/control/input/complete-operation coverage with actual omissions.
 Visual-only edits need an impact assessment. Business owns requests/results/
 validation/retry/navigation; analytics decorates complete operations.
 
-UI main depends on analytics-api. Inject one stateless service as `analytics` in
-the Component's normal retainedInstance VM construction. Feature analytics stays
-in VM callbacks/operations; every independent screen MUST override screenPresentation.
-BaseComponent calls internal VM.bindScreen during doOnCreate; foundation alone owns
-lifecycle binding/ScreenAnalytics/Initial→Restore. Graph hook stays null: no view
-or lifecycle service resolution. Components/routes/factories/Render need no analytics
-wiring; VM knows no Lifecycle/ComponentContext or activationFlow visibility observer.
-Normal retained VM ownership stays; analytics adds no provider/snapshot/retention helper.
-
-Direct typed trackEvent facts use existing callbacks after busy guards. UI bounded
-status mapping stays in analytics/, business-model conversions in data-mappers.
-Text status compares old/new existing validation, without a cache; picker/click/
-selection facts remain distinct. No raw values or analytics-owned validation.
-Reporting Exceptions cannot block business/lifecycle; original errors/cancellation
-remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
+The canonical analytics skill owns API shape, typed fact mapping, error isolation,
+screen classification and foundation lifecycle binding. Components resolve the
+stateless service only during retained VM construction; screen hooks and coverage
+are mandatory, containers keep null. Do not duplicate those specifications here.
 
 ## Required inputs
 
@@ -87,10 +77,11 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
 - **Target module + names** — feature module, PascalCase screen/dialog name,
   serializable route payload type(s) for screens; initial payload, `title: UiText`
   and typed output callbacks for an in-memory dialog session.
-- **The `*Feature` / `*UseCase`** the ViewModel reads from — MUST already exist in
-  `:data-features:feature-api`.
-- **Reusable UI models + `stub*()`** the Screen previews — MUST already exist in
-  `:ui-core:state` (or run that workflow first). The owning screen's MVI State is
+- **The `*Feature` / `*UseCase`** the ViewModel reads from — inspect the existing contract in
+  `:data-features:feature-api`; implement a missing contract through data-layer when
+  that work is within the authorized task, otherwise resolve the scope first.
+- **Reusable UI models + `stub*()`** the Screen previews — reuse existing models in
+  `:ui-core:state` or create the required model/stub through the workflow below. The owning screen's MVI State is
   created alongside its other six files, not in `:ui-core:state`.
 - **Implementation plan** (if present): its agreed file list and names constrain the change. Plan wins on names/paths; this skill wins on methodology.
 
@@ -101,8 +92,9 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    `BLOCKED: required reading missing — <list>` and stop.
 2. **Within authorized module/navigation scope, scaffold if the feature module doesn't exist** — create the module,
    `settings.gradle.kts` include, `build.gradle.kts`, the `public` feature-root
-   component (bare-name, or `<Feature>Root*` only when a sub-screen reuses the
-   feature name), and the `RootRouter` entry. Then the screen work chains on.
+   entry Component and the necessary RootRouter entry. For one screen the public
+   Component owns its seven MVI files and screenPresentation directly; for multiple
+   screens use a container root and child stack, following current naming.
 3. **For a screen/dialog: write the seven MVI files** (same package, siblings) —
    `<Name>State` (`@Immutable`, defaults-in-ctor, no `companion Empty` on State),
    `<Name>Direction` (`sealed interface : BaseDirection`, nav intents only),
@@ -171,8 +163,9 @@ its companion object and passes `resultKey` to the producer; the producer uses
 `sendResult → back`. No Back in receiver observers, result relays or hidden
 selection/navigation flags.
 
-When converting a dialog to a screen, follow the existing screen feature-root,
-subgraph, seven-file MVI and visibility patterns. Route through `screen-api`,
+When converting a dialog to a screen, follow the seven-file MVI and visibility
+patterns. Expose a single screen directly; use a container/subgraph only for an
+actual multi-screen flow. Route through `screen-api`,
 update all callers/dependencies/config entries, use screen toolbar/background/
 spacing/insets from the design system, and preserve all existing modes and states.
 Remove obsolete dialog names, resources and integration points within the migration
@@ -183,9 +176,9 @@ and present it as an existing project convention.
 
 - Required reading file missing → `BLOCKED: required reading missing — <list>`.
 - A referenced `<X>Feature` / `<X>UseCase` doesn't exist in `:data-features:feature-api`
-  → stop; needs data-layer first.
+  → apply data-layer first when authorized; ask only for unresolved contract or scope decisions.
 - A referenced `<X>State` / `stub<X>()` missing in `:ui-core:state`
-  → `BLOCKED: <X>State / stub<X>() missing in :ui-core:state — needs the :ui-core:state workflow first`.
+  → create the required model/stub within authorized UI-state scope before the screen.
 - An unresolved product shape, navigation outcome or supplied design ambiguity:
   ask the user a simple quiz with a recommended choice. Inspect the actual Figma
   node or supplied artifact when design fidelity is required; do not invent its states.
@@ -226,4 +219,5 @@ shared error handling and cancellation. Trace each acceptance criterion to its
 implementation. Apply the mandatory analytics and preservation gates before completion.
 Fix findings and review the resulting diff again. Run permitted static/manual checks
 and builds within the user's scope; report evidence and unverified runtime scenarios.
-Add no automated tests, infrastructure or production verification hooks.
+MUST follow CLAUDE.md Verification policy: automated tests/infrastructure require
+an explicit user request; verification-only production hooks remain forbidden.

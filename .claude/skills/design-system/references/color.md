@@ -149,20 +149,8 @@ avatar gradient endpoint without theme branches in the component.
    `AppColor` slot must exist in **every** implementation.
 4. Use it via `AppTokens.colors.<group>.<slot>` in Composables.
 
-If a new slot doesn't fit any existing group, add a new group — but ask first whether it's
-really needed; the existing groups are exhaustive for most cases.
-
-## Product-specific groups
-
-Grippo has product-tied groups (e.g. domain-specific palettes attached to
-feature pages and charts) alongside the structural groups. When forking these
-requirements:
-
-- Keep the **structural** groups (`button`, `input`, `background`, `dialog`, `text`,
-  `divider`, `semantic`, `overlay`, `border`, `brand`, `icon`, `toggle`, `segment`,
-  `palette`).
-- Drop the project's product-specific groups.
-- Add new product-specific groups as needed (`payment.success`, `tournament.banner`, ...).
+If a demanded slot does not fit an existing group, add a group within authorized
+scope. Ask only when its meaning or scope remains unresolved.
 
 ## Rules
 
@@ -186,16 +174,16 @@ Two reasons:
    `border.default` might reuse `divider.default`, or `icon.disabled` can be derived from
    `text.disabled`). A `data class` constructor would require duplicating values; an
    interface lets the impl chose.
-2. **Preview overrides** are easier — pass an alternative `AppColor` implementation to
-   a `PreviewContainer` variant.
+2. Each implementation satisfies the same contract. Current PreviewContainer
+   selects the theme internally; it accepts no AppColor override.
 
 ## Reading colors at the call site
 
 ```kotlin
 Surface(
     color = AppTokens.colors.background.card,
-    shape = RoundedCornerShape(AppTokens.dp.input.radius),
-    border = BorderStroke(width = 1.dp, color = AppTokens.colors.border.default),
+    shape = RoundedCornerShape(AppTokens.dp.focusFrame.radius),
+    border = BorderStroke(width = AppTokens.dp.focusFrame.borderWidth, color = AppTokens.colors.border.default),
 ) {
     Text(
         text = AppTokens.strings.res(Res.string.label),

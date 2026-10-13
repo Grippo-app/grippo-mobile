@@ -118,7 +118,9 @@ Screen-result rules are defined in the ui-feature skill,
   including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
   Private suspend helpers propagate original errors through the same pipeline;
   no extra launches, scopes, recovery wrappers or stage flags.
-  `Result.onSuccess` may consume data without hiding failures.
+  `Result.onSuccess` alone does not propagate failure. The required Result MUST
+  be unwrapped with `getOrThrow()` inside the owned error pipeline or propagated
+  to a caller that handles it; failure MUST NOT be silently discarded.
 - **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
   logging or crash reporting. Mapping only supplies a standard dialog representation
   for known exceptions; return unknown errors unchanged and preserve cancellation/fatal errors.
@@ -140,7 +142,10 @@ Screen-result rules are defined in the ui-feature skill,
   inputs for one-time population; see
   [the draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 - **`String` for localizable values.** Use `UiText`.
-- **`String` for form fields.** Use `*FormatState`.
+- **Raw `String` where an existing suitable `*FormatState` supports the input**
+  (email, password, name, text, amount or date). MUST reuse its validation/display
+  contract. A plain query may remain String only when no existing formatter fits
+  its behavior. A new formatter requires a real unmet need, not a new class per field.
 - **`var` in state classes.** All `val`.
 - **Mutable collections in state.** Immutable only.
 - **State that duplicates a sub-state**'s field. Derive locally.
@@ -159,16 +164,17 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Logging
 
-- **`println(...)`** in production. Use `AppLogger`.
+- **`println(...)` outside the logging sink implementation** in production.
+  Consumers MUST use `AppLogger`; its existing stdout sink may use println.
 - **`android.util.Log.*`** in `commonMain`. Doesn't compile.
 - **Calling `AppLogger.General.error(...)` after a Ktor exception.** Pipeline already logs.
 - **Skipping `AppLogger.Mapping.log(value) { msg }`** in DTO → Entity / Domain mappers. Required.
 
 ## Verification infrastructure
 
-- **Automated test sources, folders, runners, fixtures, dependencies or screenshot
-  automation introduced without an explicit user request.** The project deliberately
-  has none. Use actual source/diff review and permitted static/manual checks.
+- **Verification that violates the canonical
+  [project verification policy](../../../../CLAUDE.md#verification-policy)**, including
+  test sources/infrastructure introduced without an explicit user request.
 - **Verification-only production hooks or global fake modes.** Keep constructor
   injection and module boundaries clean; do not add flags, singleton resets or
   reflection scaffolding for checks.

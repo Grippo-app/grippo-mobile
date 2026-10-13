@@ -161,8 +161,9 @@ idiomatic for "compute on every call".
 
 1. Confirm the design lists this size + weight in the type scale.
 2. If a size that hasn't been used appears, add a method following the naming pattern.
-3. Add the method to `AppTypography`. **Don't** modify existing methods (they're committed
-   UI dimensions).
+3. Add the demanded method to `AppTypography`. Change an existing token only when
+   its semantic role is part of the authorized design change; review every affected
+   consumer in both themes and enlarged-font states.
 
 ## What MUST NOT happen
 

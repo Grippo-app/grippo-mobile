@@ -7,7 +7,7 @@ description: Change Grippo Feature/Repository/UseCase contracts, API-backed data
 
 Read `CLAUDE.md`, the actual affected Feature/UseCase/Repository and callers before editing.
 UI consumes public contracts in `:data-features:feature-api`; FeatureImpl and Repository
-implementations remain internal. Do not add analytics dependencies to the business layer.
+implementations MUST remain internal. MUST NOT add analytics dependencies to the business layer.
 
 ## Workflow
 
@@ -17,26 +17,27 @@ implementations remain internal. Do not add analytics dependencies to the busine
    Verify authoritative fields/method/path first. Never invent transport shape.
 3. Keep conversions in the seven directional modules using [mappers](../mappers/SKILL.md).
    Domain closed sets are typed; transport/storage retain wire values.
-4. API-backed cache mutations follow confirmed server success; local drafts and preferences
-   follow their owning Repository contract. Required hydration failure cannot become success.
+4. MUST apply [operation outcome and cache rules](references/error-pipeline.md) to required
+   hydration, partial success and reconciliation; local drafts/preferences keep their owner contract.
 5. Use [DI](../di-modules/SKILL.md) for bindings. Add only dependencies the implementation uses.
 6. For changed feature behavior apply [analytics](../feature-analytics/SKILL.md) and
    [state preservation](../state-preservation/SKILL.md); business code stays telemetry-free.
 
 ## Decisions and gates
 
-- Resolve unclear domain shapes and partial-success policies with the user before implementing them.
-- Confirm existing authorization before new modules, schema/migration changes or auth/network-core changes.
-  An existing request covering the change is sufficient; do not request it again.
+- MUST resolve unclear domain shapes and partial-success policies with the user before implementing them.
+- MUST keep module, schema/migration and auth/network-core changes within authorized scope.
+  Necessary steps of an authorized task do not need repeated consent; scope expansion or
+  a locked architectural decision requires a question under `CLAUDE.md`.
 - Response and request DTO fields, including collections, are nullable with `= null` and
   explicit unchanged wire keys. Existing source deviations do not weaken this standard;
   unrelated DTO cleanup requires its own scope. Request validity is enforced before sending.
-- Preserve caller cancellation at suspend Result boundaries. Bare `runCatching`/`mapCatching`
+- MUST preserve caller cancellation at suspend Result boundaries. Bare `runCatching`/`mapCatching`
   can capture cancellation; do not copy them as a compliant pattern or add generic wrappers/
   manual `ensureActive()` checks. Review actual callees and retain the declared error contract.
-- Before completion review ownership, required outcomes, cache reconciliation, UTC conversion,
-  privacy and cancellation in source/diff. No automated test sources/infrastructure.
-  Run only permitted static/manual checks and builds within the user's scope; report unverified behavior.
+- Before completion MUST review ownership, required outcomes, cache reconciliation, UTC conversion,
+  privacy and cancellation in source/diff. MUST apply `CLAUDE.md` Verification policy, including
+  its explicit-user-request exception for automated tests; report unverified behavior.
 
 Read the relevant reference only:
 [repositories](references/repositories.md), [operation errors](references/error-pipeline.md),

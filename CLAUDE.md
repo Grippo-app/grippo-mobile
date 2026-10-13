@@ -49,7 +49,7 @@ Groups:
 - `:design-system:components` — atomic Composables (`Button`, `Toolbar`, `Input*`, `WeightHistoryChart`, ...).
 - `:design-system:resources:provider` — `Res.string.*` (Compose Multiplatform Resources), `interface StringProvider`, `interface AppColor`/`AppDp`/`AppTypography`/`AppString`/`AppDrawable`/`AppIcon`.
 - `:design-system:resources:provider-impl` — `ResourcesProviderModule` + `StringProviderImpl`.
-- `:design-system:preview` — `@AppPreview` (multi-preview annotation: phone EN big + UK small), `PreviewContainer` (CompositionLocalProvider + Coil preview handler + `AppTheme(darkTheme = true)`).
+- `:design-system:preview` — `@AppPreview` (multi-preview annotation: phone EN big + UK small), `PreviewContainer` (CompositionLocalProvider + Coil preview handler + `AppTheme(darkTheme = isSystemInDarkTheme())`).
 
 ### UI core
 
@@ -89,8 +89,7 @@ Groups:
 ### `:analytics:*` — feature telemetry
 
 - `:analytics:analytics-api` defines one stateless `<Feature>Analytics` service with typed `trackEvent`, complete generic `trackOperation` and typed `presentScreen` as implemented by the current scope. Screen-only integration exposes presentScreen and its enum; event/operation APIs and models accompany actual instrumentation, with no empty scaffolding. Sibling `models/` hold closed event/operation families, screens and necessary feature enums; common/models reuses InputStatus/InputKeyboardAction/ControlAction. Public feature events are observations, not toolkit wire events. `:analytics:<feature>` keeps implementation/encoding/schema matrices internal and exposes one annotated module. UI main depends on the API; shared wires implementations. No feature analytics factories, snapshots, classifiers or capability hierarchy; no UI/domain/service/SDK dependencies in implementations.
-- Analytics decorates complete business operations. It does not determine navigation, fallback or results; login/register keep preparation private. Route identity types remain navigation-owned and do not enter the stateless analytics service. Ordinary reporting exceptions cannot block business work/navigation/lifecycle; caller cancellation and fatal Errors remain unchanged.
-- Feature analytics lives in ViewModels: inject the stateless service as `analytics` inside the Component's normal retainedInstance construction. Every independent screen must override protected BaseViewModel.screenPresentation `(NavigationReason) -> ScreenPresentation`; BaseComponent calls internal VM.bindScreen(lifecycle) during existing doOnCreate after obtaining the retained VM. Foundation ScreenAnalytics owns Initial/Restore and pause/destroy close. Graph/container VMs must keep the default null hook: no binding or lifecycle service resolution. Components/routes/factories/Render add no analytics parameters, events or lifecycle wiring; UI analytics/ retains only needed input mapping. Keep normal VM lifecycle ownership and no analytics state/retention keys. Text status uses existing old/new validation, without a cache. Follow the [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep actual coverage and event omissions current. Before completion apply the canonical screen coverage gate to every screen of a new feature and every affected screen; missing hooks or duplicate container/child views block completion.
+- Feature behavior changes MUST apply the canonical [feature-analytics skill](.claude/skills/feature-analytics/SKILL.md), including its screen coverage gate and affected coverage matrix. Independent screens require their VM's `screenPresentation`; containers keep null. Visual-only changes require an impact assessment. The skill owns API, event, operation, privacy and lifecycle rules; this overview does not redefine them.
 
 ### `:toolkit:*` — platform-aware utilities
 
@@ -152,7 +151,7 @@ Hard rules:
 
 - **A UI module (`:ui-screen-features:*`, `:ui-dialog-features:*`) does NOT depend** on `:data-services:*` directly — only via `:data-features:feature-api`. The existing authorization credential flow is the exception for `:data-services:google-auth` and `:data-services:apple-auth`; Firebase transport stays app-owned.
 - **`:data-features:feature-api`** does not depend on `:data-services:*`. It is pure contracts + domain models.
-- **`:data-mappers:*`** depend on adjacent layers (`dto-to-entity` → `:data-services:backend` + `:data-services:database`), but **never on UI**.
+- **`:data-mappers:*`** depend on adjacent layers (`dto-to-entity` → `:data-services:backend` + `:data-services:database`), and `domain-to-state` / `state-to-domain` may depend on `:ui-core:state`. They MUST NOT depend on UI feature implementations or Compose widgets, or on another mapper direction.
 - **`:analytics:analytics-api`** defines pure feature telemetry contracts. UI main depends on this API; shared wires feature implementations. **`:analytics:<feature>`** does not depend on UI, data/domain, services, SDKs or toolkit core; observe typed facts and decorate supplied complete business blocks.
 - **`:toolkit:*`** does not depend on the data layer or Firebase SDK. Service API modules contain pure contracts; core modules own state/queues and their Koin modules.
 - **`:design-system:*`** does not depend on the data layer. `AppTokens` are pure UI primitives.
@@ -162,7 +161,7 @@ Hard rules:
 
 ## Convention plugin matrix
 
-A module-level `build.gradle.kts` contains **only** `plugins { id("...convention") }` and `kotlin { sourceSets.commonMain.dependencies { ... } }`. All settings live in convention plugins.
+Module builds MUST use convention plugins and the version catalog. Shared SDK/toolchain/opt-in configuration belongs in conventions; module dependencies and existing module-specific Android namespaces remain local. Inspect the actual script before editing; do not copy historical overrides as permission to duplicate global settings.
 
 | Module type | Plugins to apply |
 |---|---|
@@ -263,7 +262,7 @@ dialogController.open(DialogConfig.ErrorDisplay(title = state.title(), error = s
 
 Unhandled failures use `getOrThrow()` inside the existing `safeLaunch`; do not
 hide, replace or present them through local `try/catch`, `runCatching` or result
-failure handlers. `Result.onSuccess` may consume data without hiding failure.
+failure handlers. `Result.onSuccess` alone does not propagate failure. A required Result MUST be unwrapped with `getOrThrow()` or propagated to a caller that handles it; success-side effects do not waive that requirement.
 Private suspend helpers use the caller's coroutine and let failures reach
 `safeLaunch`; do not add recovery wrappers, extra launches or stage flags.
 Analytics observes the original failure without determining recovery.
@@ -309,27 +308,13 @@ public sealed class ProfileRouter : BaseRouter {
 
 Decompose `childStack(serializer = RootRouter.serializer(), initialConfiguration = ..., key = "RootComponent", childFactory = ::createChild)` supports screen-route restoration when the platform shell supplies saved StateKeeper state — therefore **all Routers and payloads inside them (`StageState`, etc.) must be `@Serializable`**. Android uses `retainedComponent`; iOS restores a consumed, validated checkpoint saved after entering background. An abrupt active-process termination has no guaranteed checkpoint. See [platform policy](.claude/skills/ui-feature/references/process-death.md#ios-specifics).
 
-For every new or changed feature, apply the mandatory
-[state-preservation skill](.claude/skills/state-preservation/SKILL.md). Inventory
-user-owned inputs/selections/current filters and parent drafts; preserve nonsecret
-editable state through a typed foundation `PersistenceKey` named `DRAFT` in a
-private companion object at the bottom of the owning Component. Components use
-protected BaseComponent.restoreState/saveState; no separate metadata file or matrix.
-Keep archive addresses stable; do not bind drafts with raw StateKeeper consume/register.
-Use a local lazy supplier and typed VM initialState. Rebuild catalogs/provider
-availability; omit passwords, credentials,
-loaders, jobs and telemetry. Restore parent data before children; a fresh child
-without its own archive uses already accepted parent values as ordinary business
-initial inputs. Retained VM and local draft take priority over those inputs/defaults.
-Do not copy unfinished drafts of destroyed children into parent/global state.
-Verify a real archive roundtrip and Back/pop/re-entry with fresh Components/VMs;
-no generic BaseViewModel persistence, extra providers or per-edit navigation updates.
-Data-backed forms persist actual values, without edit flags or previous-source
-caches. Fresh forms populate once; restored full snapshots keep their values,
-including Empty/null/default. Later source updates rebuild presentation, while the
-open form keeps its current draft. Values may remain stale under this policy.
-Catalogs preserve known choices and seed only new IDs. See the canonical skill's
-[synchronization policy](.claude/skills/state-preservation/SKILL.md#data-backed-form-synchronization).
+For every new or changed feature, MUST apply the canonical
+[state-preservation skill](.claude/skills/state-preservation/SKILL.md), including
+its ownership inventory and preservation gate. Nonsecret user-owned drafts use
+local StateKeeper; data-backed presentation is rebuilt, secrets/runtime state
+are excluded. The skill owns archive keys, restoration precedence and form
+synchronization. [Process-death restoration](.claude/skills/ui-feature/references/process-death.md)
+owns implementation examples and platform limits.
 
 `Deeplink` — a simple `enum class Deeplink(val key: String)` with `fromKey(key)`. Handled in `RootViewModel` (`enqueueDeeplink` for cold start / `applyDeeplink` for warm / `parseDeeplink` to map to a Direction).
 
@@ -390,7 +375,7 @@ The detailed rules are in [.claude/skills/ui-feature/references/results.md](.cla
 
 ## Data layer (full path from UI to network)
 
-A UI module depends **only** on `:data-features:feature-api` and `:ui-core:state` (plus its own design-system pieces). UseCase or `*Feature` is injected into the ViewModel via Koin.
+For data-layer access, UI MUST depend on public `:data-features:feature-api` contracts, with only the existing authorization credential exceptions documented above. This restriction does not exclude UI state, foundation, design-system, mapper or analytics API dependencies. UseCase or `*Feature` is injected into the ViewModel via Koin.
 
 ```
 ViewModel
@@ -404,20 +389,13 @@ ViewModel
 
 ### Repository pattern
 
-Use the actual [TrainingRepositoryImpl](data-features/trainings/src/commonMain/kotlin/com/grippo/data.features.trainings/data/TrainingRepositoryImpl.kt).
-Range reconciliation uses raw server IDs, including IDs of incomplete records.
-Validate required parents and children before replacing a cached training.
-For `getTrainings`, update valid records, retain incomplete ones and return a
-failure for incomplete list hydration. Set/update retain their existing successful
-server-write outcome even when optional readback cannot hydrate the cache.
-If any server ID is missing, skip range deletion. A valid empty response clears
-the requested range.
-
-Standard patterns:
-- **Observe** returns `Flow<Domain>` from DAO. Never from API.
-- **Get/Set/Update/Delete** returns `Result<T>`, hits the API, on success updates the DAO. UI writes `withLoader { feature.getTrainings(...).getOrThrow() }`.
-- **Range reconciliation**: after `getTrainings`, delete everything in range except what the server returned (`deleteByCreatedAtRangeExceptIds`). Removes "deleted on another device" drift.
-- **Drafts** live only in DB (`draftTrainingDao`), never go to the server.
+Repository owns API-backed cache consistency and returns domain models, never DTOs.
+Observations use existing DAO Flows; commands preserve their declared Result or
+throwing contract. Local training drafts remain DB-owned and are not sent to the server.
+MUST apply the canonical [repository rules](.claude/skills/data-layer/references/repositories.md)
+and [operation/error rules](.claude/skills/data-layer/references/error-pipeline.md)
+for hydration, partial success, cancellation and range reconciliation. A filtered
+mapped collection alone is not proof of complete server data.
 
 ### Backend layer
 
@@ -479,7 +457,7 @@ public data class TrainingPack(
 )
 ```
 
-Migrations — `Migration<N>To<N+1>` objects in `migrations/`, collected in `DatabaseMigrations.all`. **Do not touch without a request** — already shipped in production.
+Migrations — `Migration<N>To<N+1>` objects in `migrations/`, collected in `DatabaseMigrations.all`. MUST assess shipped-schema compatibility and the canonical [scope policy](#scope-discipline); changes necessary to the authorized task need no repeat approval.
 
 `DatabaseBuilder` (expect/actual):
 - Android: `Room.databaseBuilder<Database>(context, name = dbFile.absolutePath).addMigrations(...).fallbackToDestructiveMigration(dropAllTables = true).setQueryCoroutineContext(Dispatchers.IO).build()` + `openHelper.writableDatabase` (warm up).
@@ -514,12 +492,9 @@ public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
         ?: return null
     return ExerciseEntity(id = entityId, name = entityName, /* ... */)
 }
-
-public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> =
-    mapNotNull { it.toEntityOrNull() }
 ```
 
-`AppLogger.Mapping.log(value) { msg }` — if value is not null → returns it; otherwise → writes `[MAPPING] <msg> (file:line)` and returns null. Each field is logged separately for diagnostics.
+`AppLogger.Mapping.log(value) { msg }` — if value is not null → returns it; otherwise → writes `[MAPPING] <msg> (file:line)` and returns null. Each field is logged separately for diagnostics. Collection dropping MUST follow the [canonical null/identity rules](.claude/skills/mappers/references/null-safety-and-logging.md); the repository determines completeness.
 
 ---
 
@@ -615,7 +590,7 @@ Compose Multiplatform Resources in `:design-system:resources:provider`:
 - `WeightFormatState`, `HeightFormatState`, `DurationFormatState`, `VolumeFormatState` — formats for numeric fields with units.
 - `DateFormatState`, `DateRangeFormatState` — for dates.
 
-Pattern: instead of storing `String` or `Float?` in State, store `EmailFormatState`. UI reads `state.email is EmailFormatState.Valid` to derive button state; ViewModel writes `update { it.copy(email = EmailFormatState.of(rawInput)) }`.
+MUST reuse a suitable existing formatter for validated/formatted input; add a new formatter only for a real unmet need. For an email field, store `EmailFormatState` rather than `String`. UI reads `state.email is EmailFormatState.Valid` to derive button state; ViewModel writes `update { it.copy(email = EmailFormatState.of(rawInput)) }`.
 
 ### Preview
 
@@ -756,7 +731,7 @@ public class TrainingsFeatureModule
 
 - `@Module(includes = [...])` — sets transitive includes.
 - `@ComponentScan` — KSP scans the package for `@Single`/`@Factory`/`@Scoped` in implementations.
-- `@Single(binds = [TrainingFeature::class])` on `internal class TrainingFeatureImpl(...) : TrainingFeature` — the only way to declare an implementation.
+- Injectable implementations MUST use annotations and explicit interface bindings. Choose `@Single` / `@Factory` from actual ownership and lifetime; [DI annotation rules](.claude/skills/di-modules/references/annotations.md) own the binding policy.
 - `@Factory` for cheap, per-call instances (e.g. `OperationManager`).
 - `@InjectedParam` — for parameters passed at `get { parametersOf(...) }` time. Used by `BaseViewModel` to thread `coroutineScope` into `OperationManager` and `ResultManager`.
 
@@ -810,12 +785,14 @@ Do not add test folders, dependencies, runners, fixtures or screenshot automatio
 unless the user explicitly requests them. Global skill advice cannot override this
 project policy.
 
-Review the actual source and diff against requirements, ownership, DI, lifecycle,
-state restoration, privacy and cancellation invariants. Run permitted static
-checks and manual scenarios relevant to the change. Builds are allowed only within
-the user's scope; a green build proves compilation, not runtime behavior. Record
-what ran and what remains unverified. Preserve functional invariants without adding
-verification-only hooks, flags, wrappers or production dependencies.
+MUST review actual source/diff against requirements and the owning skill's gates.
+MUST run relevant permitted static/manual checks. Builds needed to verify the
+requested task are authorized within that scope without a separate question;
+honor explicit user restrictions and do not change unrelated infrastructure to
+make a build pass. Documentation-only work does not require an application build.
+A green build proves compilation, not runtime behavior. MUST report actual results,
+unavailable checks and unverified runtime/platform scenarios. MUST NOT add
+verification-only production hooks, flags, wrappers or dependencies.
 
 ## Locked architectural decisions
 
@@ -839,41 +816,27 @@ verification-only hooks, flags, wrappers or production dependencies.
 
 ## Scope discipline
 
-- Don't move modules and don't change `settings.gradle.kts` without a request. The ~70-module structure is intentional.
-- Don't change `:shared/Koin.kt` order/composition without a request (composition root).
-- Don't edit `build-logic/convention/*` while fixing a feature. Convention plugins are a separate task.
-- Don't change `gradle/libs.versions.toml` library versions silently.
-- Don't touch Room migrations (`Migration*To*.kt`) without an explicit request.
-- Don't edit `secure/` or `local.properties`.
-- Don't edit `TokenProvider` token-refresh logic without a request (it has mutex + circuit breaker + retry).
-- Don't introduce new `@OptIn` in source files — add globally in `KotlinMultiplatformConventionPlugin`.
-- Don't add a new CompositionLocal outside `:design-system:core` / `:design-system:resources:provider`.
+MUST preserve unrelated working-tree changes. Existing explicit or implied task
+authorization covers necessary callers, routing, DI/module registration and coherent
+migrations. MUST NOT ask for repeat approval of those steps. MUST ask when a change
+expands scope, revises a locked architectural decision, or needs an unresolved
+product/backend fact that affects correctness. Silence is not acceptance.
 
----
+Before changing shared foundation, public routes, modules, Room schemas/migrations,
+dependencies/conventions, app shells, network/auth core, tokens, CompositionLocals
+or DialogConfig, assess that boundary against the authorized outcome. Necessary
+changes are permitted; unrelated cleanup and silent library upgrades are not.
+DialogConfig content changes MUST update its typed `hasSameContentAs` comparison.
+MUST NOT edit `secure/` or `local.properties` as incidental cleanup. Global opt-ins
+belong in conventions; new CompositionLocals belong in the owning design modules.
 
 ## When to stop and ask
 
-The following changes need to be within the user's authorized scope. Existing
-explicit or implied authorization is sufficient: do not ask again for a necessary
-step of the requested feature/migration. Ask in this chat if the change expands
-scope, changes a locked decision or requires an unresolved product/API decision.
-Use short questions with alternatives and an evidence-supported recommendation;
-when no recommendation is defensible, state which information is missing.
-Do not send messages to external people/services without explicit instructions.
-
-
-- Any new module or removal of an existing one.
-- Changes to `BaseViewModel`, `BaseComponent`, `BaseScreen`, `OperationManager`, `ErrorProvider`, `ResultManager`.
-- Changes to `RootComponent`/`RootRouter` or public `*Router` sealed classes in `:ui-screen-features:screen-api`.
-- A new Room migration or `@Entity` schema change.
-- A new dependency in `gradle/libs.versions.toml`.
-- Any change to `:androidApp`/`:iosApp` shell beyond obvious bug fixes.
-- Changes to DTOs in `:data-services:backend/dto/...` — this is a backend contract, sync with `grippo-backend` manually.
-- Changes to `BackendClient`/`TokenProvider`/`HttpModule` (network core).
-- Adding a field to `DialogConfig` (must update its typed `hasSameContentAs` comparison).
-- Adding a new CompositionLocal or a new `AppToken` (colors/dp/typography).
-
----
+Use a short self-contained quiz with 2–3 alternatives and an evidence-supported
+recommendation. Honor a request for extra quizzes, but do not manufacture uncertainty
+or repeat answered questions. Continue independent work while an answer is pending;
+MUST NOT implement dependent behavior until a required answer arrives. External
+messages require explicit user authorization. See [scope questions](.claude/skills/validation-gates/references/when-to-stop-and-ask.md).
 
 ## Anti-patterns (refuse to write)
 
@@ -907,18 +870,21 @@ defines completion checks. Work directly with repository source and the user's
 request. No task-board runtime, generated machine reports or bootstrap scaffold
 is required.
 
-Self-review actual source/diff, obtain independent review, fix blocking findings
-and review the changed area again. Repeated unresolved findings require a clear
-question or limitation, not an endless loop or invented PASS. Keep every affected
-screen's analytics coverage and field preservation assessment current. Reports
-must distinguish source review, successful builds and unverified runtime behavior.
+MUST self-review actual source/diff and fix blocking findings. Behavior,
+architecture and changes spanning multiple owners also require independent review
+when delegation is authorized. Small isolated editorial changes may finish with
+self-review. Re-review each corrected area; recurring unresolved findings need a
+clear cause/question or capability limitation. MUST disclose unavailable independent
+review rather than claim it happened. Reports distinguish source review, successful
+builds and unverified runtime behavior. [task-orchestrator](.claude/skills/task-orchestrator/SKILL.md)
+owns the execution/review loop; [validation-gates](.claude/skills/validation-gates/SKILL.md)
+owns cross-cut completion checks.
 
 ### Backend contract rules
 
-Before changing endpoints, wire keys, payload meaning or required request values,
-verify an authoritative backend API/source contract and record its revision/source.
-Do not invent fields, types or endpoints. The chosen nullable DTO standard applies
-to both responses and request bodies, including collections; it does not change
-server requirements. A Kotlin-nullability-only alignment may preserve existing
-verified wire keys and call-site values without redefining the API. Missing
-contract details that affect wire behavior must be resolved before implementation.
+Backend owns wire behavior. MUST apply [backend-contract-client](.claude/skills/backend-contract-client/SKILL.md)
+before changes affecting endpoints, keys, serialization, payload meaning or required
+request values. It owns the evidence gate and bounded exception for Kotlin-only
+nullability alignment. DTO properties and collections remain nullable with `= null`;
+collection element types follow the verified backend contract. This Kotlin standard
+does not relax server requirements.

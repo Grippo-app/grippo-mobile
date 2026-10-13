@@ -117,8 +117,8 @@ Interactive/structural Material3 components (`Button`, `TextField`, `Card`, `Too
 // ❌ in a feature module
 import androidx.compose.material3.Button
 // ✅
-import com.grippo.design.components.Button
-Button(onClick = ..., content = ButtonContent.Text(text = "Click"))
+import com.grippo.design.components.button.Button
+Button(onClick = ..., content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.apply)))
 ```
 **Exception — unwrapped Material3 primitives** imported directly in feature modules: `androidx.compose.material3.Text` (styles via `AppTokens.typography.*`, colors via `AppTokens.colors.*`), `androidx.compose.material3.Icon` (`tint` via `AppTokens.colors.*`), `rememberTooltipState` + tooltip primitives. Any other `material3.*` symbol → add a wrapper to `:design-system:components` first.
 

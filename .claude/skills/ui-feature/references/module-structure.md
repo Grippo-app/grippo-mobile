@@ -13,12 +13,16 @@ Build: `android.library.convention` + `kotlin.multiplatform.convention` + `compo
 ### `:ui-screen-features:<feature>`
 
 One module per top-level feature flow. Each owns:
-- A **feature-root component** with its own `StackNavigation<<Feature>Router>`. Naming:
+- A public entry Component. Multi-screen flows use a container root with
+  StackNavigation<FeatureRouter>; a single-screen feature can expose its screen
+  Component directly, with seven MVI files and its own screenPresentation. Naming:
   - **Bare-name** (`<Feature>Component`/`<Feature>Screen`/`<Feature>ViewModel`) — the default. Examples: `:profile` (`ProfileComponent`), `:debug` (`DebugComponent`), `:authorization` (`AuthComponent`).
   - **`<Feature>Root*`** — reserved for features whose first sub-screen reuses the feature name. Example: `:home` (root `HomeRootComponent`; sub-screen package `home/HomeComponent`).
   - The root component is `public` (consumed from `:shared`); all sub-screen components are `internal`.
 - One package per sub-screen (`com.grippo.<feature>.<subscreen>`) with the **seven MVI files**.
-- A feature-root `Screen` composable that delegates to per-sub-screen `Render()` via `ChildStack`. Single-screen features still ship one (keeps the door open for adding sub-screens without renaming).
+- A multi-screen feature-root Screen delegates to child Render() through ChildStack.
+  A single-screen feature may expose its public Component directly, as Debug does;
+  do not create an empty graph solely for hypothetical future screens.
 
 Build (typical): `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention` + `koin.annotation.convention`; namespace is owned by the Android convention. **Dependencies follow actual usage**, not a blanket scaffold: `:ui-core:foundation`, `:ui-screen-features:screen-api`, `:design-system:core/components/resources/preview`, `:data-features:feature-api`, `:ui-dialog-features:dialog-api` (plus typically `:ui-core:state`, `:data-mappers:domain-to-state`, `:toolkit:dateUtils`, `compose.foundation`/`material3`, immutable-collections, datetime). `:compose-libs:*` only when actually used.
 
@@ -37,7 +41,10 @@ The single wider-data-layer carve-out is `:ui-screen-features:authorization` (ad
 
 Houses: in-memory `DialogConfig` (plain sealed class with caller-owned `title: UiText`, live `onDismiss`/result callbacks and `dismissBySwipe`; exhaustive `hasSameContentAs` compares typed content, excluding callbacks); `DialogController.open(config)` starts a new session after any current session closes. Its host-supplied `Session` exposes `push` / `replaceCurrent` / `back` / `close`, bound to the originating active step on the UI thread. `DialogProvider.openings: Flow<DialogConfig>` relays global openings through internal `DialogControllerImpl` (`@Single(binds = [DialogController::class, DialogProvider::class])`, conflated `Channel`). `DialogModule` is the existing public `@Module @ComponentScan`, registered in `:shared/Koin.kt` via its generated `.module`. `Constants.kt` exposes `DIALOG_EXIT_ANIMATION_DURATION = 300.milliseconds`. Configs have no serialization, transient callbacks or `key` / `buildKey` contract; shared host `DialogSession` / `DialogStep` IDs preserve live instances, and both navigators use `serializer = null` without process-death session restoration.
 
-Build: same plugins as screen-api; namespace `com.grippo.ui.dialog.features.dialog.api`; deps `uiCore.foundation`, `uiCore.state`, `toolkit.dateUtils`, serialization-json, datetime, `compose.foundation`. (`:ui-core:state` carries `AppErrorState`; `:ui-core:error:error-provider` is intentionally **not** depended on here.)
+Build: Android/KMP/Compose conventions plus `koin.annotation.convention`;
+namespace `com.grippo.ui.dialog.features.dialog.api`; dependencies `uiCore.foundation`,
+`uiCore.state`, `toolkit.dateUtils`, datetime and `libs.compose.foundation`.
+The current in-memory dialog API has no serialization plugin/json dependency. (`:ui-core:state` carries `AppErrorState`; `:ui-core:error:error-provider` is intentionally **not** depended on here.)
 
 ### `:ui-dialog-features:<dialog>`
 
@@ -74,7 +81,7 @@ ui-screen-features/profile/
 
 Screen feature (`*Root*` root — only when a sub-screen shares the feature name): `home/HomeRootComponent.kt` ... `HomeRootScreen.kt`, with sub-screen package `home/home/HomeComponent.kt` ...
 
-Dialog feature: `ui-dialog-features/amount-picker/src/commonMain/kotlin/com/grippo/amount/picker/AmountPickerComponent.kt` ... `AmountPickerDirection.kt` (Back, Close only — no nav), `AmountPickerLoader.kt` (usually empty), `AmountPickerScreen.kt`.
+Dialog feature: `ui-dialog-features/amount-picker/src/commonMain/kotlin/com/grippo/amount/picker/AmountPickerComponent.kt` ... `AmountPickerDirection.kt` (typed result, Back and semantic navigation intents as required), `AmountPickerLoader.kt` (usually empty), `AmountPickerScreen.kt`.
 
 ## Rules summary (MUST)
 
@@ -92,7 +99,9 @@ Two `:ui-screen-features:*` modules cannot import each other. If feature A needs
 1. The route is declared in `:ui-screen-features:screen-api` (public `<B>Router` sealed class).
 2. `RootDirection` adds an entry; `RootViewModel` exposes a callback (`fun toB(...)`).
 3. Feature A's `RootComponent` receives the callback via its constructor (threaded from `:shared`'s `RootComponent.createChild`).
-4. Feature A's ViewModel calls the callback; `RootComponent.eventListener` translates `RootDirection.B` into `navigation.push(RootRouter.B(...))`.
+4. Feature A's ViewModel emits a Direction; its Component invokes the constructor
+   callback. RootViewModel emits RootDirection.B and RootComponent.eventListener
+   translates it into navigation.push(RootRouter.B(...)).
 
 Direct symbol import between feature modules is **forbidden**. (Full recipe in `references/navigation.md`.)
 

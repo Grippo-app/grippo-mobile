@@ -9,8 +9,8 @@ import com.grippo.toolkit.analytics.schema.AnalyticsParameterKey
 
 internal object AuthOperationSchema {
     val Method = AnalyticsParameterKey.code<Method>("auth_method", encode = AuthEncoding::code)
-    val Action = AnalyticsParameterKey.code<AuthAction>("auth_action")
-    val ProfileAction = AnalyticsParameterKey.code<ProfileAction>("profile_action")
+    val Action = AnalyticsParameterKey.code<AuthAction>("auth_action", encode = AuthEncoding::code)
+    val ProfileAction = AnalyticsParameterKey.code<ProfileAction>("profile_action", encode = AuthEncoding::code)
     val Duration = AnalyticsParameterKey.duration("duration_ms")
 
     val AttemptStarted = AnalyticsEventSchema("auth_attempt_started", 3, listOf(Method, Action))

@@ -49,5 +49,5 @@ Review actual changed source and every necessary caller for token ownership,
 resource parity, icon data, stability, naming, previews and module boundaries.
 Review design fidelity and downstream input/focus behavior where affected.
 Fix findings, inspect the resulting diff again and record evidence and unverified
-states. Run only permitted static/manual checks and scoped builds; add no tests,
-recording infrastructure or production verification hooks. Report changes and limits.
+states. MUST follow CLAUDE.md Verification policy, including the explicit-user-request
+exception for automated tests. Add no verification-only production hooks. Report changes and limits.

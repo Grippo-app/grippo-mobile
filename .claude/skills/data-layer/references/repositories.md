@@ -7,12 +7,9 @@ Feature interfaces and UseCases live in `data-features/feature-api/`.
   the public contract; a composing UseCase owns complete domain operations spanning Features.
 - Observation returns domain Flow from the authoritative local owner. One-shot methods preserve
   their actual Result/throwing shape; do not mechanically convert all methods into one pattern.
-- API-backed writes update the cache only after server success. Local drafts/preferences do not
-  require fictional server confirmation. Keep multi-row consistency in the existing transaction boundary.
-- Reconcile only the requested range and owner. Distinguish a confirmed empty server collection
-  from missing/invalid payload; dropping malformed rows must not silently justify deleting valid cache.
-- A server save, cache hydration and cleanup may form one required operation. Read the UseCase
-  and caller before choosing success. Optional refresh requires an explicit partial-success policy.
+- MUST apply the canonical [operation outcome/cache rules](error-pipeline.md) before API-backed
+  cache writes, range reconciliation or deciding that optional readback failure is nonblocking.
+  Local drafts/preferences follow their owner contract; they do not require server confirmation.
 - Repository never leaks DTO/Entity through Feature contracts. Compose directional mapper calls
   here rather than making mapper modules depend on each other.
 

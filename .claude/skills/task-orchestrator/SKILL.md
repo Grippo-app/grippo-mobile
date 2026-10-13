@@ -16,7 +16,7 @@ The coordinating agent may implement work; a separate reviewer supplies independ
 2. Implement the smallest coherent slice that meets a concrete acceptance outcome.
    Update every necessary caller within an authorized migration, rather than leaving
    incompatible callers for a hypothetical follow-up.
-3. Delegate only when the user or applicable instructions authorize agents. Give
+3. MUST delegate only when the user or applicable instructions authorize agents. Give
    each agent a clear outcome, file ownership, prerequisites and verification limits.
    Keep dependent edits sequential; resolve shared-file ownership before writing.
    Subagents must not expand scope or delegate without authorization.
@@ -24,25 +24,27 @@ The coordinating agent may implement work; a separate reviewer supplies independ
    lifecycle and cancellation. Apply each owning skill's mandatory completion gate.
    Feature work also requires analytics screen/control/operation coverage and the
    preservation inventory; a build cannot replace either source gate.
-5. Obtain independent review from a permitted reviewer that did not author that
-   area. Provide requirements, changed files, decisions and actual checks; ask for
-   concrete defects with file/line evidence and severity. A writer's self-review
+5. MUST obtain independent review for behavior, architecture or multi-owner changes
+   from a permitted reviewer that did not author that area. Small isolated editorial
+   changes require self-review only. Provide requirements, changed files, decisions
+   and actual checks; ask for concrete defects with file/line evidence and severity. A writer's self-review
    is useful but does not count as independent review.
 6. Resolve every blocking finding and re-review the changed area. Repeat while
    new actionable evidence appears. If the same unresolved finding returns twice,
    stop dependent work, identify the cause and ask a concise question or report
    the missing capability. Do not loop endlessly or redefine a failure as a pass.
-7. Run authorized source/manual/build checks on the resulting revision. If fixes
+7. MUST run relevant source/manual checks on the resulting revision. Builds needed
+   to verify the task are permitted within its scope without repeated consent. If fixes
    change checked code, repeat only checks affected by those fixes. Unavailable
    checks remain unverified with their reason; no fabricated machine reports.
 
 ## Completion gate
 
 - Requested outcomes and relevant edge/error/cancellation paths are accounted for.
-- Owning semantic gates pass source review; independent review has no unaccepted
-  blocking findings. Explicitly retained behavior is recorded as an accepted risk,
-  never as a fixed finding or PASS. If independent review is unavailable, report that limitation
-  explicitly rather than claiming the review loop completed.
+- Owning semantic gates MUST pass source review; required independent review
+  MUST have no unaccepted blocking findings. Explicitly retained behavior is recorded as an accepted risk,
+  never as a fixed finding or PASS. If required independent review is unavailable,
+  MUST report that limitation explicitly rather than claiming the review loop completed.
 - Every changed caller, dependency and resource is reconciled; no obsolete helper
   or broken reference remains in the changed scope.
 - Actual verification results and runtime/platform limitations are recorded.
@@ -50,5 +52,5 @@ The coordinating agent may implement work; a separate reviewer supplies independ
   risks. No commit, push, deployment or external message is implied by this skill.
 
 Use [validation-gates](../validation-gates/SKILL.md) for cross-cut review. Keep
-local reports proportionate to the task; there is no required report schema,
-board transition, install scaffold or task file format.
+reports proportionate to the task. Follow the canonical
+[verification policy](../../../CLAUDE.md#verification-policy).

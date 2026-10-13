@@ -146,7 +146,8 @@ safeLaunch {
 Do not hide, replace or present unhandled failures through local catches,
 `runCatching`, `Result.onFailure`, `recover`, `fold` or `getOrElse` in a ViewModel
 or its helpers. Unwrap failed results with `getOrThrow()` inside `safeLaunch`.
-`Result.onSuccess` may consume successful data without hiding failure. Use pure
+`Result.onSuccess` alone does not propagate failures. Unwrap the returned Result
+with `getOrThrow()` inside `safeLaunch` before treating the operation as complete. Use pure
 `mapError` only for dialog presentation and `onError` only after dismissal.
 Foundation's loader cleanup via `try/finally` and service/domain error boundaries
 remain valid.

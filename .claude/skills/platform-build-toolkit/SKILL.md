@@ -17,21 +17,22 @@ startup signatures come from current source; do not copy a generic project templ
   in the design-system/features. Shells initialize DI/root/platform adapters and stay thin.
 - Module builds use existing convention plugins. SDK/toolchain/global opt-ins and common configuration
   belong in `build-logic/convention/`, versions in `gradle/libs.versions.toml`, modules in settings.gradle.kts.
-  Do not duplicate or silently override them in feature scripts.
+  MUST NOT duplicate or silently override them in feature scripts.
 - New modules, dependencies, convention changes and nontrivial shell/Xcode changes require the user's
   scope to cover them. Existing authorization suffices; a feature request does not authorize unrelated
   infrastructure cleanup or version changes.
-- Platform APIs preserve required Android/iOS actuals and lifecycle/disposal. Never pass Android
+- Platform APIs MUST preserve required Android/iOS actuals and lifecycle/disposal. MUST NOT pass Android
   Context into common code or add platform SDK dependencies to shared contracts.
 - Use existing AppLogger categories and sinks; inspect actual build-mode behavior.
   Preserve cancellation without new generic wrappers/manual ensureActive checks.
 
 ## Completion gate
 
-Review dependency direction, convention/alias usage, public API/export compatibility, platform actuals,
-startup ownership and privacy/cancellation. No automated test sources/infrastructure. Run static/manual
-checks relevant to the change; builds only within authorized user scope. A green build proves compilation,
-not runtime startup or restoration. Record checks run and absent platform/runtime verification.
+MUST review dependency direction, convention/alias usage, public API/export compatibility, platform actuals,
+startup ownership and privacy/cancellation. Follow the canonical
+[verification policy](../../../CLAUDE.md#verification-policy). Run relevant static/manual
+checks; builds needed within task scope do not require separate consent. Record actual checks
+and absent platform/runtime verification.
 
 Read [build wiring](references/gradle-build.md), [conventions/catalog](references/convention-plugins.md),
 [toolkit ownership](references/toolkit-utilities-core.md), [platform utilities](references/toolkit-utilities-platform.md)

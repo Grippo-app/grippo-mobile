@@ -87,10 +87,9 @@ Per-locale variants live in `values-XX/strings.xml`:
 
 ### Resource scope
 
-Strings should be **stable enough to translate**. Adding `error_42_title` and removing it
-in the next sprint wastes translator effort. If a string is truly ephemeral (e.g. an
-in-progress feature flag), keep it English-only initially and translate when the feature
-stabilizes.
+Every new user-facing string MUST have a translation in every supported locale.
+Ephemeral or unfinished features follow the same rule. Do not silently use English
+as a translation fallback. Inspect the actual locale directories before editing.
 
 ## `plurals.xml`
 
@@ -202,8 +201,7 @@ screens) might have their own resource sub-module. The default is **one shared m
 ## Adding a resource
 
 1. Add the key + English value to `values/strings.xml`.
-2. Add the same key to **every** `values-<locale>/strings.xml` with an initial English
-   fallback or the translation.
+2. Add the same key to **every** `values-<locale>/strings.xml` with its translation.
 3. Compose Resources regenerates `Res.string.your_new_key`.
 4. Use it: `AppTokens.strings.res(Res.string.your_new_key)` (UI) or
    `stringProvider.get(Res.string.your_new_key)` (VM).

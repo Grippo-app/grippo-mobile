@@ -122,7 +122,9 @@ dialog configs remain in memory.
 
 ### `*FormatState` rules (MUST) & anti-patterns
 
-Rules: one `*FormatState` per form-field type (not per screen); absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
+Rules: reuse a suitable existing `*FormatState`. Add a formatter only when the field
+needs genuinely different parsing, validation or display semantics, not merely
+because it belongs to another screen; absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
 
 Anti-patterns: `String` for an email/password/amount field; `Double?` for an amount (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
 
@@ -159,7 +161,8 @@ the ViewModel. Store actual draft values and needed display data; follow the
 
 ### Nullability
 
-`UiText?` for optional description; `*FormatState` subtypes for form fields (not `String?`); nullable domain refs when optional (`val user: User? = null`).
+`UiText?` for optional description; reuse suitable `*FormatState` subtypes for validated/formatted fields; plain
+nonsecret free text without formatting/validation may remain String; nullable domain refs when optional (`val user: User? = null`).
 
 ### Sealed-interface states
 
@@ -210,7 +213,7 @@ public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
 ### State anti-patterns (MUST avoid)
 
 - `var` fields in state (always `val`).
-- `String` for localizable values (use `UiText`); `String` for form fields (use `*FormatState`).
+- `String` for localizable values (use `UiText`); raw String replacing an existing suitable formatter (reuse `*FormatState`).
 - `List<T>` in state (use `ImmutableList<T>`).
 - `MutableStateFlow<S>` exposed as a state field (state holders are in the VM; state classes are pure data).
 - `@Composable` content in state (e.g. `val icon: @Composable () -> Unit`).

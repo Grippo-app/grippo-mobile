@@ -13,3 +13,6 @@ locate accessible source or resolve missing evidence with the user.
   documentation/source; external effects require authorization covering those effects.
 - Record field absence/null/empty semantics when relevant. Mobile nullable DTO discipline is a
   defensive serialization standard and does not mean required server request values may be omitted.
+
+For the precise wire-change trigger and bounded Kotlin-nullability-only exception, MUST use
+[the canonical evidence rule](../SKILL.md#evidence-trigger-canonical).

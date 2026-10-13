@@ -65,6 +65,7 @@ The top of nearly every screen.
 @Composable
 public fun BottomSheetToolbar(
     modifier: Modifier = Modifier,
+    title: String,
     allowBack: Boolean,
     onBack: () -> Unit,
     onClose: () -> Unit,
@@ -74,7 +75,7 @@ public fun BottomSheetToolbar(
 Rendered **once** by the shared dialog host (`:shared/.../dialog/DialogScreen.kt`) at the
 top of every `ModalBottomSheet`. Individual `:ui-dialog-features:*` `<X>Screen.kt` files do
 **not** include their own `BottomSheetToolbar` — they only contribute the body content
-(title `Text` + form + buttons) inside a
+(form and buttons, without a duplicate title) inside a
 `BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog))`. Shows an
 animated back arrow (when `allowBack`, driven by the internal dialog stack depth) and a
 close button.
@@ -220,9 +221,9 @@ public fun InputEmail(
 )
 ```
 
-ViewModel translates the raw `String` to `*FormatState.of(...)` on every change. Add a new
-specialized input by composing the internal `Input` core with a domain-specific
-`*FormatState` rather than parameterizing a generic `InputText`.
+ViewModel translates input through the suitable existing `*FormatState.of(...)`.
+Reuse a matching formatter and input component. Add a formatter only for genuinely
+different parsing, validation or display needs; another screen alone is insufficient.
 
 ## `EmptyState`
 

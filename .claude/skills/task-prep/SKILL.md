@@ -7,14 +7,15 @@ description: Clarify a Grippo repository task, resolve inputs and order implemen
 
 Read [project conventions](../../../CLAUDE.md) and the actual affected source.
 Produce enough scope and acceptance criteria to implement the user's request.
-Do not invent product behavior, backend contracts or absent infrastructure.
+MUST NOT invent product behavior, backend contracts or absent infrastructure.
 
 ## Required decisions
 
 - Identify the intended behavior, affected modules/platforms and exclusions.
 - Distinguish confirmed requirements, source-supported defaults and open decisions.
-- Existing user authorization covers necessary changes within that scope. Ask only
-  for new scope, changed locked decisions or missing information that affects correctness.
+- Existing user authorization covers necessary router, DI and module changes within
+  that scope. MUST ask only for new scope, changed locked decisions or missing
+  information that affects correctness.
 - Ask in this chat with 2–3 plain alternatives and a grounded recommended choice.
   If none is defensible, say what evidence is missing. Honor a user request for
   extra quizzes; do not manufacture uncertainty or ask the same question twice.
@@ -40,7 +41,8 @@ Do not invent product behavior, backend contracts or absent infrastructure.
    callbacks/operations and user-owned fields/parent drafts before implementation.
    Keep inventories in the task's existing record or report, with explicit omissions.
 6. Define permitted source/manual/build checks and what they can establish.
-   Do not add test infrastructure without an explicit request.
+   MUST follow the canonical [verification policy](../../../CLAUDE.md#verification-policy).
+   Builds needed within task scope do not require separate consent.
 
 ## Preparation gate
 

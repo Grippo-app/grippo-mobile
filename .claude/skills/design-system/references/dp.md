@@ -199,9 +199,9 @@ semantic group rather than reintroducing a flat scale.
    - Yes → derive (e.g. `val Card.padding = Padding.large`).
    - No → assign a raw `Dp` (e.g. `val Toolbar.height = 56.dp`).
 
-Don't add private base scale entries — extend the existing scales sparingly. The base
-sequence (`tiny, extraSmall, small, medium, large, xLarge, ...`) is the design grid;
-adding entries dilutes the discipline.
+Reuse the private base scales. Add a base-scale entry only for an authorized
+design-grid change with concrete consumers; isolated dimensions belong in their
+semantic group.
 
 ## Anti-patterns
 

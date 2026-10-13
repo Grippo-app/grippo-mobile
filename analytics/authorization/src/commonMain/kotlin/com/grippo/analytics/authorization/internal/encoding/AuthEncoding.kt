@@ -1,7 +1,9 @@
 package com.grippo.analytics.authorization.internal.encoding
 
+import com.grippo.analytics.authorization.internal.models.AuthAction
 import com.grippo.analytics.authorization.internal.models.InputField
 import com.grippo.analytics.authorization.internal.models.InteractionAction
+import com.grippo.analytics.authorization.internal.models.ProfileAction
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.analytics.authorization.models.CredentialField
 import com.grippo.analytics.authorization.models.Method
@@ -55,6 +57,39 @@ internal object AuthEncoding {
         return when (value) {
             InputKeyboardAction.Next -> "next"
             InputKeyboardAction.Done -> "done"
+        }
+    }
+
+    fun code(value: AuthAction): String {
+        return when (value) {
+            AuthAction.Login -> "login"
+            AuthAction.Register -> "register"
+        }
+    }
+
+    fun code(value: InputField): String {
+        return when (value) {
+            InputField.Email -> "email"
+            InputField.Password -> "password"
+            InputField.Name -> "name"
+            InputField.Height -> "height"
+            InputField.Weight -> "weight"
+        }
+    }
+
+    fun code(value: InteractionAction): String {
+        return when (value) {
+            InteractionAction.Back -> "back"
+            InteractionAction.Next -> "next"
+            InteractionAction.Register -> "register"
+            InteractionAction.GroupSelected -> "group_selected"
+        }
+    }
+
+    fun code(value: ProfileAction): String {
+        return when (value) {
+            ProfileAction.Create -> "create"
+            ProfileAction.Logout -> "logout"
         }
     }
 

@@ -15,5 +15,5 @@ crashReporting and messaging contracts accept platform SDK adapters.
 - Inspect `androidApp/src/main/java/com/grippo/android/App.kt`,
   `iosApp/iosApp/AppDeletage.swift` and `shared/.../bootstrap/ApplicationBootstrap.kt` for current
   constructor names and attachment calls rather than retaining copied startup implementations.
-- Every independent screen supplies the VM screenPresentation hook. Container VMs keep default null;
-  only foundation binds lifecycle/owns ScreenAnalytics. Do not add DI lifecycle wiring to routes/render.
+- For screen services MUST apply [feature analytics](../../feature-analytics/SKILL.md).
+  DI wiring MUST NOT introduce feature-owned lifecycle binding in routes/render.

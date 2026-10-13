@@ -14,6 +14,6 @@ The current deliverable is a static `shared.xcframework`; source owns exports/li
   manually copied framework is current or claim a successful Xcode build from source review.
 - Preserve SQLite linkage and required exported Decompose/toolkit API contracts when relevant.
 
-When authorized, `:shared:assembleSharedDebugXCFramework` verifies framework compilation.
+When needed within task scope, `:shared:assembleSharedDebugXCFramework` verifies framework compilation.
 Swift startup/linking and restoration remain unverified unless their permitted scenarios were run.
 Do not touch secure configuration or unrelated shell behavior as a framework fix.
