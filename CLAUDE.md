@@ -405,32 +405,14 @@ ViewModel
 
 ### Repository pattern
 
-`TrainingRepositoryImpl` (sample):
-
-```kotlin
-@Single(binds = [TrainingRepository::class])
-internal class TrainingRepositoryImpl(
-    private val api: GrippoApi,
-    private val trainingDao: TrainingDao,
-    private val draftTrainingDao: DraftTrainingDao,
-) : TrainingRepository {
-
-    override fun observeTrainings(start, end): Flow<List<Training>> =
-        trainingDao.get(from = DateTimeUtils.toUtcIso(start), to = DateTimeUtils.toUtcIso(end))
-            .map { it.toDomain() }   // Pack -> Domain via :entity-to-domain
-
-    override suspend fun getTrainings(start, end): Result<Unit> {
-        val response = api.getTrainings(startUtc, endUtc)
-        response.onSuccess { r ->
-            val actualIds = r.mapNotNull { provideTraining(it) }
-            // Reconcile cache: delete stale rows in range, keep what server returned
-            if (actualIds.isEmpty()) trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
-            else trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
-        }
-        return response.map {}
-    }
-}
-```
+Use the actual [TrainingRepositoryImpl](data-features/trainings/src/commonMain/kotlin/com/grippo/data.features.trainings/data/TrainingRepositoryImpl.kt).
+Range reconciliation uses raw server IDs, including IDs of incomplete records.
+Validate required parents and children before replacing a cached training.
+For `getTrainings`, update valid records, retain incomplete ones and return a
+failure for incomplete list hydration. Set/update retain their existing successful
+server-write outcome even when optional readback cannot hydrate the cache.
+If any server ID is missing, skip range deletion. A valid empty response clears
+the requested range.
 
 Standard patterns:
 - **Observe** returns `Flow<Domain>` from DAO. Never from API.
