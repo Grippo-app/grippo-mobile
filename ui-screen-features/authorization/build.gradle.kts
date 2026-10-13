@@ -4,6 +4,7 @@ plugins {
     id("kotlin.multiplatform.test.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {

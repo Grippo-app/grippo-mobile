@@ -18,6 +18,12 @@ drives one task end-to-end. It must run at top level: it spawns builders,
 validators, and a reviewer, and a sub-agent cannot spawn sub-agents.
 Operational entrypoint — this skill routes, it does not redefine the loop.
 
+The full loop applies only to a task in a configured orchestrator workspace with
+the scaffold, scripts and required inputs below. The mobile checkout installs
+skills/contracts, not that runtime. Ordinary authorized feature work still applies
+the owning skills' analytics/state-preservation gates and permitted verification;
+do not require a task board, invent machine PASS reports or create the scaffold.
+
 ## When to use
 
 A `todo/TASK_<N>_<title>.md` must reach "done": green build, validators clean,
@@ -168,6 +174,8 @@ Run-loop mechanics live in these references and the frozen contracts. Owning
 implementation skills supply feature rules; behavior changes also route to
 [canonical feature analytics](../feature-analytics/SKILL.md) for impact/coverage
 through the existing planner and reviewer.
+New or changed features also route to [state-preservation](../state-preservation/SKILL.md)
+for field ownership and supported restoration checks through those same roles.
 
 - Routing table (loop step / topic → reference file + frozen contract):
   `references/index.md`.

@@ -12,3 +12,11 @@ containers keep default null. Apply the skill's mandatory screen coverage gate
 to every screen of a new feature and every affected screen before completion.
 
 The project analytics skill has one source in `.claude/skills/feature-analytics`.
+
+When implementing or changing a feature, read and apply
+`.claude/skills/state-preservation/SKILL.md`. Inventory every new feature screen
+or affected existing state owner: required nonsecret user input, selection,
+current filters and parent drafts must use the existing local StateKeeper pattern.
+Rebuild data-backed state and exclude secrets/runtime state. Apply the mandatory
+preservation gate, including fresh-Component archive restoration tests within the
+user's permitted scope; changes with no state impact need only an assessment.

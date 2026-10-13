@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.onEach
 internal class ExcludedMusclesViewModel(
     private val analytics: AuthAnalytics,
     muscleFeature: MuscleFeature,
+    initialState: ExcludedMusclesState = ExcludedMusclesState(),
 ) : BaseViewModel<ExcludedMusclesState, ExcludedMusclesDirection, ExcludedMusclesLoader>(
-    ExcludedMusclesState()
+    initialState
 ), ExcludedMusclesContract {
 
     override val screenPresentation = { reason: NavigationReason ->
@@ -32,15 +33,16 @@ internal class ExcludedMusclesViewModel(
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
+        if (suggestions.isEmpty()) {
+            update { it.copy(suggestions = suggestions) }
+            return
+        }
         val allIds = suggestions
             .flatMap { it.muscles }
             .map { it.value.id }
 
         update { previous ->
-            val knownIds = previous.suggestions
-                .flatMap { it.muscles }
-                .map { it.value.id }
-                .toSet()
+            val knownIds = previous.knownMuscleIds.toSet()
             val selectedIds = previous.selectedMuscleIds.toSet()
             val selectedMuscleIds = allIds
                 .filter { it in selectedIds || it !in knownIds }
@@ -52,6 +54,7 @@ internal class ExcludedMusclesViewModel(
             previous.copy(
                 suggestions = suggestions,
                 selectedMuscleIds = selectedMuscleIds,
+                knownMuscleIds = allIds.toPersistentList(),
                 selectedGroupId = selectedGroupId
             )
         }
@@ -65,9 +68,9 @@ internal class ExcludedMusclesViewModel(
     override fun onSelect(id: String) {
         update {
             val selectedMuscleIds = if (id in it.selectedMuscleIds) {
-                it.selectedMuscleIds.removing(id)
+                it.selectedMuscleIds.toPersistentList().removing(id)
             } else {
-                it.selectedMuscleIds.adding(id)
+                it.selectedMuscleIds.toPersistentList().adding(id)
             }
             it.copy(selectedMuscleIds = selectedMuscleIds)
         }
@@ -80,9 +83,7 @@ internal class ExcludedMusclesViewModel(
     override fun onNextClick() {
         analytics.trackEvent(AuthEvent.Muscles.Control(ControlAction.Next))
         val current = state.value
-        val excludedMuscleIds = current.suggestions
-            .flatMap { it.muscles }
-            .map { it.value.id } - current.selectedMuscleIds
+        val excludedMuscleIds = current.knownMuscleIds - current.selectedMuscleIds
 
         val direction = ExcludedMusclesDirection.MissingEquipment(
             excludedMuscleIds = excludedMuscleIds

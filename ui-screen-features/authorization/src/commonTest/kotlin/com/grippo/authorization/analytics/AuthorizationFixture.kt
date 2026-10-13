@@ -39,6 +39,7 @@ internal class AuthorizationFixture : AuthorizationFeature, UserFeature, Exclude
             else failures[PreparationRequest.Profile] = value
         }
     var beforeProfile: suspend () -> Unit = {}
+    var beforeWeightHistory: suspend () -> Unit = {}
     var hasProfile = true
     var pushToken: String? = "secret_push"
     var tokenFlow: Flow<String?> = flowOf("secret_session")
@@ -46,7 +47,7 @@ internal class AuthorizationFixture : AuthorizationFeature, UserFeature, Exclude
     val calls = mutableListOf<String>()
     var credential: String? = null
     fun loginUseCase() = LoginUseCase(this, this, this, this, this, this, this)
-    fun registerUseCase() = RegisterUseCase(this, this, this, this, this, this)
+    fun registerUseCase() = RegisterUseCase(this, this, this, this, this, this, this)
     fun failAt(request: PreparationRequest, error: Exception) {
         failures[request] = error
     }
@@ -83,7 +84,11 @@ internal class AuthorizationFixture : AuthorizationFeature, UserFeature, Exclude
     override suspend fun getExcludedMuscles() = request(PreparationRequest.ExcludedMuscles, Unit)
     override suspend fun getExcludedEquipments() = request(PreparationRequest.ExcludedEquipments, Unit)
     override suspend fun getExerciseExamples() = request(PreparationRequest.ExerciseExamples, Unit)
-    override suspend fun getWeightHistory() = request(PreparationRequest.WeightHistory, Unit)
+    override suspend fun getWeightHistory(): Result<Unit> {
+        calls += PreparationRequest.WeightHistory.call
+        beforeWeightHistory()
+        return result(PreparationRequest.WeightHistory, Unit)
+    }
     override suspend fun getGoal() = request(PreparationRequest.Goal, true)
     override suspend fun logout(): Unit = error("Unused fixture call")
     override suspend fun deletePushToken(): Result<Unit> = error("Unused fixture call")

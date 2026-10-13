@@ -1,5 +1,11 @@
 # Convention plugins (build-logic)
 
+The sources below describe the bootstrap template. In this existing mobile
+checkout, actual `build-logic` plugins and `CLAUDE.md` take precedence: tests use
+`kotlin.multiplatform.test.convention` with additional libraries in test source
+sets. The template's capability/screenshot plugins are not installed here; do not
+require them or create them for ordinary feature regressions.
+
 Every module's `build.gradle.kts` is **declarative**: only `plugins { id("...convention") }` and `kotlin { ... }`. All configuration lives in convention plugins under `:build-logic:convention`. This reference is the self-contained spec for that wiring — the plugin matrix, each convention plugin's verbatim Kotlin, the build-logic helpers, the minimal module-script shape, and the anti-patterns.
 
 ## Plugin matrix

@@ -9,6 +9,10 @@
 > in its VM; its Component resolves analytics as a normal retained-VM dependency.
 > Reuse the feature API/implementation and update actual coverage; add no provider.
 
+> **State preservation:** apply [state-preservation](../../state-preservation/SKILL.md).
+> Classify user-owned drafts and current filters before implementation; verify a
+> fresh-component archive roundtrip. Route inputs seed state; restored drafts win.
+
 > **Figma-enabled (`figmaEnabled: true`) + a `## Design` bullet:** the builder's design-cache gate applies BEFORE any file from this recipe is written — read the cached spec/mock and stop on unmapped components (see SKILL.md "Stop and ask"). This recipe owns the code shape; that gate owns when you may start.
 
 > **Build to the pulled design — not your own interpretation (mandatory for a `figmaEnabled` screen).** The pull session already wrote this screen's design to the cache — you build to THAT, you do not invent a layout. For each `## Design` bullet, read the pulled value spec `orchestrator/.cache/figma/screens/<stem>/<Screen>.spec.json` (it drives the element inventory, layout, paddings/gaps, corner radii, fills/tokens, and text styles — build every one to match) AND look at the oracle mock `orchestrator/.cache/figma/screens/<stem>/<Screen>.png` (it drives the overall appearance and which content/sections actually exist — reproduce the design's structure and its representative content). Do NOT build a different, simpler, or made-up screen. **Inventing a different layout or fabricating screen content is the ROOT cause of a failed screenshot comparison:** the gate judges the built screen against THIS design, so build to THIS design. Per dark theme, consult the dark spec/oracle (`<Screen>.dark.spec.json` / `<Screen>.dark.png`) too. (Golden invariant: you read these PULLED cache files — you never call Figma/MCP yourself; only the pull session does.)
@@ -24,11 +28,16 @@ ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/not
 
 ## 2. Create the seven files
 
-`ProfileNoteArchiveState.kt` — defaults in ctor; State is **not** `@Serializable` (the StateKeeper serializes Routers, not feature state); **no `companion object Empty` on State** (Empty belongs on Contract):
+`ProfileNoteArchiveState.kt` — preserve the user-selected range; rebuild items from
+data Flows. Use the module's serialization plugin and the existing
+[Component business state preservation](process-death.md#editable-form-drafts).
+**No `companion object Empty` on State** (Empty belongs on Contract):
 ```kotlin
 @Immutable
+@Serializable
 internal data class ProfileNoteArchiveState(
-    val range: DateRangeFormatState = DateRangeFormatState.of(DateRangePresets.last30Days()),
+    val range: DateRangeFormatState = DateRangeFormatState.Empty(),
+    @Transient
     val items: PersistentList<NoteState> = persistentListOf(),
 )
 ```
@@ -54,18 +63,22 @@ internal sealed interface ProfileNoteArchiveLoader : BaseLoader {
 `ProfileNoteArchiveViewModel.kt`:
 ```kotlin
 internal class ProfileNoteArchiveViewModel(
-    initialRange: DateRange,
     private val noteFeature: NoteFeature,
+    initialState: ProfileNoteArchiveState = ProfileNoteArchiveState(),
 ) : BaseViewModel<ProfileNoteArchiveState, ProfileNoteArchiveDirection, ProfileNoteArchiveLoader>(
-    ProfileNoteArchiveState(range = DateRangeFormatState.of(initialRange)),
+    initialState,
 ), ProfileNoteArchiveContract {
     init {
-        noteFeature.observeNotes(initialRange.from, initialRange.to)
+        state.map { it.range.value }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .flatMapLatest { range -> noteFeature.observeNotes(range.from, range.to) }
             .map { it.toState() }
             .onEach { items -> update { it.copy(items = items) } }
             .safeLaunch()
         safeLaunch(loader = ProfileNoteArchiveLoader.LoadHistory) {
-            noteFeature.getNotes(initialRange.from, initialRange.to).getOrThrow()
+            val range = state.value.range.value ?: return@safeLaunch
+            noteFeature.getNotes(range.from, range.to).getOrThrow()
         }
     }
     override fun onBack() { navigateTo(ProfileNoteArchiveDirection.Back) }
@@ -81,6 +94,8 @@ internal class ProfileNoteArchiveViewModel(
 
 `ProfileNoteArchiveComponent.kt`:
 ```kotlin
+import com.<org>.<product>.core.foundation.models.PersistenceKey
+
 internal class ProfileNoteArchiveComponent(
     componentContext: ComponentContext,
     initialRange: DateRange,
@@ -88,7 +103,14 @@ internal class ProfileNoteArchiveComponent(
     private val toNote: (String) -> Unit,
 ) : BaseComponent<ProfileNoteArchiveDirection>(componentContext) {
     override val viewModel: ProfileNoteArchiveViewModel = componentContext.retainedInstance {
-        ProfileNoteArchiveViewModel(initialRange = initialRange, noteFeature = getKoin().get())
+        ProfileNoteArchiveViewModel(
+            noteFeature = getKoin().get(),
+            initialState = restoreState(DRAFT)
+                ?: ProfileNoteArchiveState(range = DateRangeFormatState.of(initialRange)),
+        )
+    }
+    init {
+        saveState(DRAFT) { viewModel.state.value }
     }
     override suspend fun eventListener(direction: ProfileNoteArchiveDirection) {
         when (direction) {
@@ -100,6 +122,10 @@ internal class ProfileNoteArchiveComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         ProfileNoteArchiveScreen(state.value, loaders.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("NoteArchiveDraft", ProfileNoteArchiveState.serializer())
     }
 }
 ```
@@ -172,6 +198,9 @@ the analytics skill within the user's verification scope. Record explicit skips.
 Run its [mandatory screen coverage gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate):
 verify all new/affected screens have their VM hook and all containers keep null.
 Missing screen hooks block completion.
+Apply the [mandatory preservation gate](../../state-preservation/SKILL.md#mandatory-preservation-gate)
+to current range/drafts and rebuilt items; confirm restored values, Back and secret
+exclusion in the user's permitted verification scope.
 ```bash
 # Task names come from project-config (sharedFrameworkTask / androidAssembleTask) —
 # these are the template defaults; skip the framework task when iosEnabled: false.

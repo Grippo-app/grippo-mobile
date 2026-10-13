@@ -8,8 +8,7 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.grippo.core.foundation.internal.result.ResultManager
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.foundation.models.BaseResult
-import com.grippo.core.foundation.models.ComponentIdentifier
-import com.grippo.core.foundation.models.NoneIdentifier
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +27,6 @@ import org.koin.core.parameter.parametersOf
 
 public abstract class BaseComponent<DIRECTION : BaseDirection>(
     componentContext: ComponentContext,
-    private val identifier: ComponentIdentifier = NoneIdentifier,
 ) : ComponentContext by componentContext, KoinComponent {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -54,6 +52,15 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
     }
 
     protected abstract suspend fun eventListener(direction: DIRECTION)
+
+    /** Consume a local draft only when constructing a fresh retained ViewModel. */
+    protected fun <T : Any> restoreState(key: PersistenceKey<T>): T? =
+        stateKeeper.consume(key.key, key.serializer)
+
+    /** Register once during construction; the supplier is read when StateKeeper saves. */
+    protected fun <T : Any> saveState(key: PersistenceKey<T>, supplier: () -> T) {
+        stateKeeper.register(key.key, key.serializer, supplier)
+    }
 
     /**
      * Register once per key on the main thread when constructing the component.

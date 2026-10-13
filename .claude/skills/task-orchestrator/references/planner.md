@@ -21,6 +21,10 @@ match it exactly.
 5. For feature behavior changes, [feature-analytics](../../feature-analytics/SKILL.md)
    and the affected coverage matrix, even without a tracking request. Visual-only
    changes need an impact assessment, not new events.
+6. For new or changed features, [state-preservation](../../state-preservation/SKILL.md):
+   inventory affected drafts, current selections/filters and parent inputs; plan
+   their owners and supported archive checks. Do not add persistence for fields
+   classified as rebuilt or runtime only.
 
 ## Inputs the orchestrator passes (3 required + 2 optional)
 

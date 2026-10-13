@@ -841,3 +841,254 @@ Baseline uses only the original LogoutUseCase snapshot in a temporary artifact;
 working-tree sources were not reverted for the regression check. Existing draft
 process-restoration limitation is recorded in [coverage](authorization-coverage.md#текущая-проверка),
 not implemented as part of this cleanup. Substitutions/excluded checks: `ui-jvm/tests.json`.
+
+
+## Восстановление черновика создания профиля — 2026-10-13
+
+- [x] Сохранить parent business draft до восстановления childStack и latest editable inputs/selection четырёх leaf через локальные StateKeeper suppliers; передать initialState новым retained VMs, без providers/BaseVM framework/route replacement/jobs.
+- [x] Сериализовать только draft: существующие FormatState, experience, immutable ID lists/group; suggestions оставить transient, каталоги получать из прежних Flows. Пустая выдача не стирает выбор; known IDs сохраняют deselections и прежний выбор новых элементов.
+- [x] Сохранить navigation contracts, DI, восемь leaf hooks и три null containers, typed schemas/events и whole operation boundaries; saving/restoring не создаёт пользовательских событий.
+- [x] Добавить пять реальных save→JSON→destroy→fresh context/InstanceKeeper regression cases: unfinished/invalid inputs, accepted pickers, Experience/Back, оба каталога empty/changed/partial selections, Next before catalog, точный Completed profile/operation cancellation и Home.
+- [x] Fresh strict explicit API production compilation (227 sources) и 49 isolated JVM tests passed. Все пять новых regressions падают на snapshot прежнего production; рабочие файлы не откатывались. Независимый review production/test wiring, exact scope и diff проверен.
+- [x] Уточнить process-death skill: editable business drafts принадлежат Component, analytics persistence отсутствует; Android supplied-state и current iOS cold-start границы явны. Android/iOS builds, Gradle/KSP, rendering/native SDK и Firebase не запускать.
+
+Команды: `python3 /tmp/profile-draft-restoration-20261013-6gacna0_/ui-baseline-jvm/verify-ui.py`,
+`python3 /tmp/profile-draft-restoration-20261013-6gacna0_/ui-jvm/verify-ui.py`,
+`python3 /tmp/profile-draft-restoration-20261013-6gacna0_/ui-jvm/verify-ui.py --tests-only`,
+`git diff --check`. Baseline applies the original authorization commonMain snapshot
+only inside a temporary compiler artifact; new tests run against real old Components.
+Logs, source manifests and substitutions: `ui-jvm/`, `ui-baseline-jvm/` and
+`baseline.json` in that directory. Current coverage records the supported saved-state
+scope; adding an iOS shell archive bridge is a separate change.
+
+
+## Полный аудит сохранения состояния auth — 2026-10-13
+
+- [x] Классифицировать все 11 VM/State/Component owners, route seeds, editable поля, selections, принятые picker results и parent drafts. Проверить прежние пять profile suppliers; пустым graph/Splash/Completed State не добавлять snapshots.
+- [x] Добавить LoginDraft и RegistrationDraft через локальный consume/register и typed initialState. Сохранять exact Invalid/Empty email; последний draft имеет приоритет над route prefill. Password/provider availability исключить из архива, availability вычислять заново.
+- [x] Добавить четыре portable commonTest cases (три настоящих RegistrationComponent restore + LoginState privacy) и два isolated JVM actual Login/AuthProcess restore/Back cases; no native provider constructors в commonTest.
+- [x] Проверить материализованный serialized payload на secrets, отмену старой операции, отсутствие replay/duplicate submit/events, новый явный submit с повторным вводом пароля и прежний whole use-case порядок.
+- [x] Fresh strict explicit-API JVM compilation: 227 production/fixture sources, 18 test sources; 55 cases passed (48 repository, семь temporary). Пять component regressions падают на pre-fix snapshot; рабочие исходники не откатывать. True Google fixture availability проверяет runtime recomputation.
+- [x] Создать canonical state-preservation skill; связать его с AGENTS/CLAUDE, UI workflow/recipe, planner/lookup и reviewer gate. Убрать старое правило обновлять route на каждый filter edit; current draft принадлежит Component.
+- [x] Независимое review production/tests/skill и forward check, field inventory, Markdown/YAML/link checks и exact scope verification. Android/iOS builds, Gradle/KSP, rendering/native SDK runtime и Firebase не запускать; current iOS supplied-archive limitation явно сохранить.
+
+Команды: `python3 /tmp/auth-state-preservation-20261013-7u7aujdw/ui-baseline-jvm/verify-ui.py`,
+`python3 /tmp/auth-state-preservation-20261013-7u7aujdw/ui-jvm/verify-ui.py`,
+`python3 /tmp/auth-state-preservation-20261013-7u7aujdw/verify-source-docs.py`,
+`git diff --check`. Scripts/logs/before snapshots/manifest находятся в новом
+temporary directory. Actual scope и owner inventory —
+[текущая проверка](authorization-coverage.md#текущая-проверка).
+Standalone quick_validate требует отсутствующий PyYAML; verify-source-docs
+выполняет его фактическую логику с Ruby Psych YAML parser, без установки packages.
+Все четыре затронутых skill frontmatter и 56 local Markdown links проверены.
+
+
+## Типизированные draft keys в foundation — 2026-10-13
+
+- [x] Проверить фактические usages ComponentIdentifier/NoneIdentifier: пустой неиспользуемый marker/параметр, без consumer/result/state semantics. Удалить хвост и ложные docs.
+- [x] Добавить final invariant StateKey<T> с внутренними immutable key/serializer; protected BaseComponent.restoreState/saveState напрямую consume/register существующего local StateKeeper. Никакого нового service/DI, reflection, fallback, coroutine или BaseVM persistence framework.
+- [x] Собрать семь typed descriptors в internal authorization/state/AuthStateKeys; прежние literal archive addresses и serializers сохранить. Перевести семь Components, убрать private draft companions; порядок parent/children, defaults, lifetime, State/VM/business/routes/analytics не менять.
+- [x] Добавить пять actual-component regressions: lazy latest snapshot/fresh VM/no replay, sibling-context isolation, retained-memory precedence, strict duplicate registration, literal legacy archive restore/resave.
+- [x] Fresh strict JVM compilation: foundation 14 и auth/fixture 228 sources. Foundation 14 tests + auth 55 = 69 passed. External consumer без friend paths проходит; шесть negative contract checks дают ожидаемые compiler diagnostics.
+- [x] Independent foundation/UI review, canonical state-preservation/UI/examples/foundation drop-in/template docs, compatibility/source scope/links/skill validation. Android/iOS builds, Gradle/KSP, rendering/native SDK runtime и Firebase не запускать.
+
+Команды: `python3 /tmp/component-state-keys-20261013-6f6p5hnb/verify-foundation.py --foundation-only`,
+`python3 /tmp/component-state-keys-20261013-6f6p5hnb/ui-jvm/verify-ui.py`,
+`python3 /tmp/component-state-keys-20261013-6f6p5hnb/verify-contract.py`,
+`python3 /tmp/component-state-keys-20261013-6f6p5hnb/verify-source-docs.py`,
+`git diff --check`. Actual compiler diagnostics, source manifests, tests and baseline
+находятся в новом temporary directory. Skill-creator validator использует Ruby
+Psych adapter вместо отсутствующего PyYAML; зависимости не устанавливались.
+Current owner inventory/limitations: [coverage](authorization-coverage.md#текущая-проверка).
+
+## Итоговый аудит auth — 2026-10-13
+
+- [x] Независимо проверить все 11 MVI/route/Component/VM/Render chains, DI, guards,
+  восемь leaf hooks/три null hosts, 44 callbacks/два picker results, 22 schemas,
+  complete operations/error isolation и семь typed draft owners.
+- [x] Исправить User logout race/loader и continue eligibility; проверить отказ
+  повторных действий, cancellation/destroy, обычный error pipeline и telemetry.
+- [x] Исправить required CreateProfile Boolean outcomes, Register weight-history
+  hydration/DI и Delete mandatory cleanup; добавить реальные failure/cancel tests.
+- [x] Закрыть transport body/header/bearer-prefix logging; сохранить refresh
+  orchestration и проверить actual configured client/DTO/parser/file logger.
+  Исправить ResponseValidator fatal propagation; проверить actual MockEngine
+  identity, ordinary mappings и success response. В existing ResponseValidatorTest
+  добавлен один durable regression: текущие четыре cases green, before падает
+  только на fatal identity; новый test plugin/dependency не нужен.
+- [x] Исправить Google/Apple native ownership/cancel-before-start/cancel request,
+  fail-closed crypto RNG, всегда S256, Android signOut cancellation/fatal; убрать
+  unused iOS server config из provider/secure-sync/plist/README.
+- [x] Исправить password keyboard и подтвердить compile точного options блока;
+  проверить actual pure SHA/PKCE на reference/boundary inputs.
+- [x] Согласовать скиллы: реальные graph/leaf/MVI/DI/ResultKey/test-plugin правила,
+  UseCase outcomes/cleanup/hydration, отсутствие вымышленных machine gates для
+  checkout без orchestrator. Проверить YAML/links/drop-ins/frozen contracts.
+  Forward-review новой фичи выявил и закрыл network cancellation/fatal example
+  и неточные FormatState display/value обещания.
+- [x] Fresh strict JVM compilation + **157 JUnit cases**; before UI/domain дают
+  по три expected regression failures; actual full FeatureApiModule runtime
+  resolution/execution и external StateKey type/visibility/finality contracts.
+- [x] Повторный независимый review и detailed [итоговый отчёт](authorization-review.md).
+  Platform builds/native UI/generated KSP/Firebase не запускать; подтверждённую
+  backend error-message leak, Unknown collection и iOS archive gap явно записать.
+- [ ] Отложено вне текущего scope: внешняя backend-правка фиксированного Google
+  error message. Пользователь выбрал «Пока только mobile»; кандидат не применять
+  без новой явной инструкции. Он проверен в шести isolated scenarios;
+  `grippo-backend` находится вне текущего writable workspace.
+
+Audit directory:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/auth-final-audit-20261013-vak1tm19/`.
+Команды ниже запускаются с этим directory как cwd:
+
+```sh
+python3 verify-foundation.py
+python3 ui-user-baseline-jvm/verify-ui.py
+python3 ui-domain-baseline-jvm/verify-ui.py
+python3 ui-jvm/verify-ui.py
+python3 verify-contract.py
+python3 verify-domain-module.py
+python3 transport-baseline-jvm/run-actual.py
+python3 transport-jvm/run-actual.py
+python3 response-validator-jvm/run.py
+python3 response-validator-jvm/run.py --before
+python3 keyboard-options-jvm/verify-keyboard-options.py
+python3 verify-pkce.py
+python3 native-auth-source-checks.py
+node google-verification-message-repro.js
+node external-backend-google-candidate/verify-google-error.cjs
+python3 verify-source-docs.py
+```
+
+Baseline commands ожидаемо падают на проверках поведения/privacy; production и
+test compilation у них проходят. Working-tree источники ради red checks не
+откатывались. Initial old-ALL transport baseline hang и первоначальный INFO/4xx
+control timeout не выдаются за regression proof; финальный before transport
+проверяет только actual persisted bearer prefix. Scope/substitutions/exclusions
+хранятся в harness reports. `git diff --check` выполняется из repository cwd.
+
+
+## Метаданные сохранения по владельцам — 2026-10-13
+
+- [x] Переименовать final invariant StateKey в PersistenceKey без alias и новых
+  lifecycle/storage/API wrappers; protected restoreState/saveState остаются прежними.
+- [x] Разнести семь Draft descriptors в adjacent `<Owner>Persistence.kt` у своих
+  владельцев; удалить central AuthStateKeys и пустую metadata state папку.
+  Прежние literal addresses и State serializers сохранить точно.
+- [x] Согласовать canonical skills/examples/drop-ins и текущий coverage/review.
+- [x] Fresh strict JVM compilation, существующие foundation/auth restoration tests
+  и external consumer type/visibility/finality checks; Android/iOS builds не запускать.
+- [x] Независимое exact-diff review и source/compatibility/Markdown/skill validation.
+
+Fresh before snapshot и проверочные артефакты:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/screen-persistence-20261013-xpw8zson/`.
+
+**81 существующий JUnit case прошёл**: 14 foundation и 67 auth UI/domain/error.
+External PersistenceKey consumer compile success, шесть ожидаемых compiler rejects
+по type/visibility/finality. Все семь legacy addresses/serializers и прежние State
+совпадают. Проверены 12 fresh source/artifact manifests; UI содержит 234
+production/fixture inputs и 19 test inputs. Canonical validation: семь skills,
+17 Markdown документов, 82 local links, 23 anchor и четыре source examples.
+Exact baseline scope — 30 путей; независимое ревью без findings, git diff --check
+прошёл. Полный прежний audit из 157 cases здесь не повторяется.
+
+Команды выполняются из fresh audit directory выше:
+
+```sh
+python3 verify-foundation.py --main-only
+python3 verify-foundation.py --foundation-only
+python3 ui-jvm/verify-ui.py
+python3 verify-contract.py
+python3 verify-source.py
+python3 verify-docs.py
+python3 verify-final.py
+```
+
+Prerequisite/foundation/UI jars построены заново из текущего repo. Cached dependency
+bytecode и прежние KSP/resource/render/date/Google fail-fast substitutes записаны
+в manifests и ui-jvm/tests.json; no platform runtime claims. Android/iOS builds,
+Gradle/KSP, rendering/native SDK UI и Firebase не запускались.
+
+
+## Ключи сохранения в компонентах — 2026-10-13
+
+- [x] Перенести семь PersistenceKey descriptors в private companion object в самом
+  низу owning Component; restoreState(DRAFT)/saveState(DRAFT), exact legacy addresses
+  и serializers. Удалить семь отдельных *Persistence.kt, без новых wrappers/DI.
+- [x] Актуализировать canonical skill, CLAUDE и UI примеры под bottom companion.
+- [x] Независимое exact-diff review: State/VM/routes/business/analytics/foundation
+  API и retained/lazy supplier/parent-before-child behavior прежние.
+- [x] Разрешённая targeted JVM compilation/tests текущих Component sources и
+  skill/Markdown/example validation. Android/iOS builds, Gradle/KSP/native SDK UI
+  и Firebase не запускать. Исторические результаты не выдавать за текущий run.
+
+Fresh baseline/before/artifacts:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/component-persistence-20261013-ff1x42e_/`.
+
+Текущий run: **67 auth UI/domain/error JUnit cases прошли**, 227 production/fixture
+и 19 test inputs. Unchanged prerequisites переиспользованы с current source SHA +
+artifact SHA verification; production/test auth jars скомпилированы заново в own
+outputs. Foundation/external suites предыдущего прохода здесь не повторяются.
+Canonical checks: семь skills, 17 документов, четыре source-примера и local links/
+anchors; exact baseline scope — 23 пути. Review без findings; git diff --check прошёл.
+
+Команды из fresh directory выше:
+
+```sh
+python3 ui-jvm/verify-ui.py
+python3 verify-source.py
+python3 verify-docs.py
+python3 verify-final.py
+```
+
+Substitutions/exclusions задокументированы в ui-jvm/tests.json. Нативные/platform/
+rendering/generated KSP проверки этим JVM результатом не подтверждаются.
+
+
+## Повторный аудит сохранения auth — 2026-10-13
+
+- [x] Проверить 11 owners: семь drafts, 18 сохраняемых полей, семь transient полей,
+  private bottom companions, стабильные addresses/serializers, lazy suppliers,
+  retained priority и parent restore до childStack. Пароли в archive не сохранять.
+- [x] Исправить потерю принятого parent выбора при Back/pop/re-entry в Experience,
+  ExcludedMuscles и MissingEquipments. Только обычные business initial inputs
+  внутри существующего restore fallback; без новых wrappers/storage/State/VM logic.
+- [x] Три repository regressions в существующем test file: parent seed, второй
+  JSON/fresh restore более нового local draft, empty-first catalogs, отсутствие
+  synthetic events и повторного create на re-entry. Before даёт три ожидаемых
+  behavioral failures; текущий набор проходит.
+- [x] Актуализировать пять canonical документов и перепроверить skills/examples/
+  links/fences. Независимое source/test/canon review и git diff --check.
+- [x] **84 JUnit cases прошли**: 70 actual UI/domain/error и 14 actual foundation.
+  UI compilation заново: 227 production/fixture inputs, 19 test inputs; unchanged
+  prerequisites и foundation source/test bytecode проверены по current source SHA
+  и artifact SHA. Foundation JUnit выполнен заново, без повторного compilation.
+
+Fresh baseline/before/scripts/reports:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/auth-persistence-audit-20261013-yqs3zm1q/`.
+
+Команды из этой папки:
+
+```sh
+python3 ui-after-jvm/verify-ui.py
+python3 ui-after-jvm/verify-ui.py --tests-only
+python3 ui-jvm/verify-ui.py
+python3 ui-jvm/verify-ui.py --tests-only
+python3 verify-foundation-cached.py
+python3 verify-docs.py
+python3 verify-final.py
+```
+
+ui-jvm собирает before production variant: только четыре изменённых Components
+берутся из immutable before snapshots, остальные sources и финальные tests текущие.
+Source/artifact SHA подтверждаются отдельно. Полный запуск и --tests-only ожидаемо
+падают в трёх новых сценариях; fixture generation имеет фиксированный source order.
+Production sources working tree ради этих проверок не откатывались.
+Fresh authored scope: четыре Components, один существующий test file, пять canon
+docs и три task records. Отдельное параллельное изменение TokenProvider записано
+в final report и не относится к auth-state исправлению.
+UI substitutes/exclusions прежние и перечислены в ui-after-jvm/tests.json;
+foundation reuse checks — foundation-cached/tests.json. Android/iOS builds,
+Gradle/KSP/generated DI, rendering/native SDK UI и Firebase не запускались.
+Current iOS shell по-прежнему не предоставляет архив StateKeeper; common checks
+проверяют восстановление из supplied archive, не iOS app-shell process restart.

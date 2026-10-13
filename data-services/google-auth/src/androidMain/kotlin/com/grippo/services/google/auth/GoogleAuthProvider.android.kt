@@ -6,6 +6,7 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import com.grippo.toolkit.context.NativeContext
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 
 public actual class GoogleAuthProvider actual constructor(
@@ -54,6 +55,9 @@ public actual class GoogleAuthProvider actual constructor(
         runCatching {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
         }.getOrElse { error ->
+            if (error is CancellationException || error !is Exception) {
+                throw error
+            }
             throw GoogleAuthException.CredentialManagerFailed(
                 message = "Failed to clear Google credential state",
                 cause = error,

@@ -14,13 +14,11 @@ import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.toolkit.analytics.context.NavigationReason
 
 internal class RegistrationViewModel(
-    email: String?,
     private val analytics: AuthAnalytics,
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    initialState: RegistrationState = RegistrationState(),
 ) : BaseViewModel<RegistrationState, RegistrationDirection, RegistrationLoader>(
-    RegistrationState(
-        email = EmailFormatState.of(email)
-    )
+    initialState
 ), RegistrationContract {
 
     override val screenPresentation = { reason: NavigationReason ->

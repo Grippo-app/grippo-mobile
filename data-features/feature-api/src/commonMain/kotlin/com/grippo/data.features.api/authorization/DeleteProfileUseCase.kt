@@ -8,7 +8,7 @@ public class DeleteProfileUseCase(
     private val userFeature: UserFeature
 ) {
     public suspend fun execute() {
-        localSettingsFeature.clear()
+        localSettingsFeature.clear().getOrThrow()
         userFeature.deleteProfile().getOrThrow()
     }
 }

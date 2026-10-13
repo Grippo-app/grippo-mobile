@@ -14,7 +14,8 @@ adopts the lookup directly.
 The normative rules live inside the installed implementation skills under
 `orchestrator/skills/<skill>/references/`; this dispatcher routes to those skill
 homes. Feature analytics has one canonical source in
-`.claude/skills/feature-analytics/`; route directly there. This table maps each
+`.claude/skills/feature-analytics/`; state preservation has one canonical gate in
+`.claude/skills/state-preservation/`. Route directly there. This table maps each
 topic to its owning skill reference.
 
 ## Quick keyword → skill-reference map
@@ -28,6 +29,7 @@ topic to its owning skill reference.
 | OperationManager, CoroutineExceptionHandler | `ui-feature/references/base-classes.md` |
 | ResultManager, ResultEmitter, sendResult, observeResult | `ui-feature/references/results.md` + `ui-feature/references/base-classes.md` |
 | Decompose, ChildStack, StackNavigation, SlotNavigation | `ui-feature/references/navigation.md` |
+| StateKeeper, draft, process death, restoration, current input/selection/filter | [.claude/skills/state-preservation/SKILL.md](../../state-preservation/SKILL.md) + [implementation](../../ui-feature/references/process-death.md) |
 | Dialog, DialogConfig, DialogController, BottomSheet | `ui-feature/references/dialogs.md` |
 | Analytics, telemetry, trackEvent, trackOperation, screenPresentation, ScreenAnalytics, coverage matrix | [.claude/skills/feature-analytics/SKILL.md](../../feature-analytics/SKILL.md) + [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
 | BackendClient, TokenProvider, Auth | `data-layer/references/backend-client.md` + `data-layer/references/auth-session.md` |
@@ -61,6 +63,9 @@ topic to its owning skill reference.
 For feature behavior changes, return the canonical analytics pointer even without
 an analytics keyword so normal builders assess impact and update affected
 coverage. Visual-only changes route to the impact assessment, not new events.
+For every new or changed feature, also return the state-preservation pointer,
+even without a persistence keyword. Fields with no preservation impact require
+an assessment rather than new snapshots.
 
 ## How to answer a lookup
 
@@ -79,7 +84,8 @@ coverage. Visual-only changes route to the impact assessment, not new events.
 ```
 ## "<keyword>" → top matches
 
-### 1. [<reference title>](orchestrator/skills/<skill>/references/<file>.md:<lines>)
+### 1. <reference title>
+**Path:** <absolute project root>/.claude/skills/<skill>/references/<file>.md:<line>
 **Section:** <##/### heading>
 **Excerpt:**
 > <quote, 1–3 lines>

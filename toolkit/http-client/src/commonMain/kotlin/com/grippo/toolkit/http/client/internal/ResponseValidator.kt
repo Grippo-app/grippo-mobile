@@ -48,6 +48,9 @@ internal fun HttpClientConfig<*>.responseValidator(
     }
 
     handleResponseExceptionWithRequest { cause, _ ->
+        if (cause !is Exception) {
+            throw cause
+        }
         when (cause) {
             is CancellationException -> throw cause
             is AppError -> throw cause

@@ -15,7 +15,6 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.headers
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.AuthScheme
@@ -29,6 +28,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.koin.core.annotation.Single
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 
 @Single
 internal class TokenProvider(
@@ -69,7 +69,7 @@ internal class TokenProvider(
             if (!accessToken.isNullOrBlank()) {
                 val bearer = "Bearer $accessToken"
                 append("Authorization", bearer)
-                logInfo { "Set Authorization header: ${bearer.take(25)}..." }
+                logInfo { "Set Authorization header" }
             } else {
                 logWarn { "No access token available to add" }
             }
@@ -90,7 +90,7 @@ internal class TokenProvider(
         logInfo { "⏳ Waiting for another request to refresh token..." }
 
         return try {
-            withTimeout(REFRESH_WAIT_TIMEOUT_MS) {
+            withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
                 refreshMutex.withLock {
                     val token = getCurrentToken()
 
@@ -100,7 +100,7 @@ internal class TokenProvider(
                     }
 
                     lastRefreshError?.let {
-                        logError { "⛔ Refresh failed previously: ${it.message}" }
+                        logError { "⛔ Refresh failed previously: ${it::class.simpleName}" }
                         throw it
                     }
 
@@ -119,7 +119,7 @@ internal class TokenProvider(
         logInfo { "Starting exclusive token refresh..." }
 
         return try {
-            withTimeout(REFRESH_WAIT_TIMEOUT_MS) {
+            withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
                 refreshMutex.withLock {
                     lastRefreshError = null
 
@@ -153,7 +153,7 @@ internal class TokenProvider(
                         logInfo { "Token refresh successful" }
                         true
                     } catch (e: Throwable) {
-                        logError { "Refresh call failed: ${e.message}" }
+                        logError { "Refresh call failed: ${e::class.simpleName}" }
                         handleRefreshFailure(e)
                     }
                 }
@@ -181,11 +181,7 @@ internal class TokenProvider(
             logDebug { "Refresh response received: ${it.status.value}" }
         }.let { response ->
             if (response.status == HttpStatusCode.Unauthorized) {
-                val errorBody = runCatching { response.bodyAsText() }.getOrNull()
-                logWarn {
-                    val suffix = errorBody?.takeIf { it.isNotBlank() }?.let { ": $it" } ?: ""
-                    "🚫 Refresh rejected with HTTP 401$suffix"
-                }
+                logWarn { "🚫 Refresh rejected with HTTP 401" }
                 throw RefreshUnauthorizedException("Refresh token was rejected by backend")
             }
 
@@ -197,7 +193,7 @@ internal class TokenProvider(
         lastRefreshError = e
         lastKnownInvalidAccessToken = null
 
-        logWarn { "🧨 Refresh failed — error will propagate to all waiting requests (${e::class.simpleName}: ${e.message})" }
+        logWarn { "🧨 Refresh failed — error will propagate to all waiting requests (${e::class.simpleName})" }
 
         when (e) {
             is CancellationException -> {
@@ -253,9 +249,9 @@ internal class TokenProvider(
                 return block()
             } catch (e: Throwable) {
                 if (e is RefreshUnauthorizedException) throw e
-                logWarn { "Retry $attempt failed: ${e.message}" }
+                logWarn { "Retry $attempt failed: ${e::class.simpleName}" }
             }
-            delay(currentDelay)
+            delay(currentDelay.milliseconds)
             currentDelay = (currentDelay * factor).toLong()
         }
         return block()

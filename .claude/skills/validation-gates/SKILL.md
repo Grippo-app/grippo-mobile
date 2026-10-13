@@ -16,6 +16,12 @@ description: >-
 Owns the VALIDATORS + reviewers and the anti-patterns rule set.
 Operational entrypoint — this skill routes, it does not redefine the gates.
 
+The machine-validator pipeline below applies to configured orchestrator tasks.
+For ordinary repository work, review the authorized scope against these semantic
+rules and the owning skills; run permitted checks and record unavailable/unrun
+checks. This checkout installs reference contracts, not the orchestrator runtime.
+Do not require its scaffold or report machine gates as passed without execution.
+
 ## When to use
 
 A task has produced code (builders ran) and must clear the gate before it is
@@ -27,9 +33,11 @@ Do NOT use this skill to *write* product code — it only validates and reviews.
 
 ## Required inputs
 
-- The task spec (acceptance criteria, footprint) and its `task-intake` kind tags.
+- The task spec or authorized review scope (acceptance criteria, footprint);
+  include `task-intake` kind tags for an orchestrator task.
 - The produced change set (files touched) for the task.
-- The planner's `Behavioral edge-cases` list — the reviewer's per-task check items.
+- The planner's `Behavioral edge-cases` list for an orchestrator task; otherwise
+  derive relevant checks from the authorized scope and actual source.
 
 If acceptance criteria or the change set are missing, **stop** — a gate cannot
 run on an unknown footprint (fail-closed, do not pass by default).
@@ -51,7 +59,13 @@ routes/rendered surfaces and VM hooks. Missing/wrong hooks, ownerless screen enu
 entries or duplicate container/child views fail review; an omissions row cannot
 waive required screen coverage. Containers must keep default null.
 
-Two layers, both required; neither replaces the other.
+For new or changed features, also apply the mandatory
+[state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
+Reconcile affected fields with their owners, saved drafts, rebuilt sources and
+runtime exclusions; review fresh-component archive tests and secret omission.
+Follow the user's verification scope and report actual shell limitations.
+
+For a configured orchestrator task, two layers are required; neither replaces the other.
 
 1. **Machine validators** — emit `validator-finding`. The three always-on
    validators (`build-validator`, `scope-leak-validator`, `acceptance-tracer`)
@@ -72,9 +86,10 @@ Routing rules (frozen):
 - `suggestion_only` / advisory findings are not routed as blocking; high-severity
   = `Critical|Major` (validators) / `Blocker|Critical|Major` per finding severity.
 - **A missing required report fails the gate.**
-- **Keep the reviewer-only gap register** — `orchestrator/skills/_index/known-gaps.md`
-  lists every rule no validator catches mechanically. These MUST be carried as
-  explicit reviewer-check items; losing one silently is a behavior regression.
+- **Keep reviewer-only checks explicit.** This checkout's applicable rules are
+  flagged in [forbidden-patterns.md](references/forbidden-patterns.md) and the
+  owning skills. A configured orchestrator additionally requires its
+  `orchestrator/skills/_index/known-gaps.md` register; verify that input exists.
 
 ## Stop and ask
 
@@ -102,8 +117,8 @@ feature-specific semantic review also defer to the owning skill references below
   surface): `references/screenshot-fidelity-gate.md`.
 - Spec-fidelity gate (`figma-spec-validator` procedure + the `spec-<stem>.json`
   report final evidence requires): `references/spec-fidelity-gate.md`.
-- Reviewer-only gap register (MUST stay enforced):
-  `orchestrator/skills/_index/known-gaps.md`.
+- Reviewer-only rules in `references/forbidden-patterns.md` and owning skills;
+  configured orchestrator tasks also require their `known-gaps.md` register.
 - Per-validator frozen contracts: `orchestrator/contracts/agents/<validator>.md`.
 
 ## Validators / gates

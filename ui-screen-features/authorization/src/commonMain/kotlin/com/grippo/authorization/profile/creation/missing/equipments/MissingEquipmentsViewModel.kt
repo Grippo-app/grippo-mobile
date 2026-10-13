@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.onEach
 internal class MissingEquipmentsViewModel(
     private val analytics: AuthAnalytics,
     equipmentFeature: EquipmentFeature,
+    initialState: MissingEquipmentsState = MissingEquipmentsState(),
 ) : BaseViewModel<MissingEquipmentsState, MissingEquipmentsDirection, MissingEquipmentsLoader>(
-    MissingEquipmentsState()
+    initialState
 ), MissingEquipmentsContract {
 
     override val screenPresentation = { reason: NavigationReason ->
@@ -32,15 +33,16 @@ internal class MissingEquipmentsViewModel(
 
     private fun provideEquipments(list: List<EquipmentGroup>) {
         val suggestions = list.toState()
+        if (suggestions.isEmpty()) {
+            update { it.copy(suggestions = suggestions) }
+            return
+        }
         val allIds = suggestions
             .flatMap { it.equipments }
             .map { it.id }
 
         update { previous ->
-            val knownIds = previous.suggestions
-                .flatMap { it.equipments }
-                .map { it.id }
-                .toSet()
+            val knownIds = previous.knownEquipmentIds.toSet()
             val selectedIds = previous.selectedEquipmentIds.toSet()
             val selectedEquipmentIds = allIds
                 .filter { it in selectedIds || it !in knownIds }
@@ -52,6 +54,7 @@ internal class MissingEquipmentsViewModel(
             previous.copy(
                 suggestions = suggestions,
                 selectedEquipmentIds = selectedEquipmentIds,
+                knownEquipmentIds = allIds.toPersistentList(),
                 selectedGroupId = selectedGroupId
             )
         }
@@ -65,9 +68,9 @@ internal class MissingEquipmentsViewModel(
     override fun onEquipmentClick(id: String) {
         update {
             val selectedEquipmentIds = if (id in it.selectedEquipmentIds) {
-                it.selectedEquipmentIds.removing(id)
+                it.selectedEquipmentIds.toPersistentList().removing(id)
             } else {
-                it.selectedEquipmentIds.adding(id)
+                it.selectedEquipmentIds.toPersistentList().adding(id)
             }
             it.copy(selectedEquipmentIds = selectedEquipmentIds)
         }
@@ -80,9 +83,7 @@ internal class MissingEquipmentsViewModel(
     override fun onNextClick() {
         analytics.trackEvent(AuthEvent.Equipments.Control(ControlAction.Next))
         val current = state.value
-        val missingEquipmentIds = current.suggestions
-            .flatMap { it.equipments }
-            .map { it.id } - current.selectedEquipmentIds
+        val missingEquipmentIds = current.knownEquipmentIds - current.selectedEquipmentIds
 
         val direction = MissingEquipmentsDirection.Completed(
             missingEquipmentIds = missingEquipmentIds

@@ -14,8 +14,12 @@ public class CreateProfileUseCase(
     private val weightHistoryFeature: WeightHistoryFeature,
 ) {
     public suspend fun execute(profile: CreateUserProfile) {
-        userFeature.createProfile(profile).getOrThrow()
-        userFeature.getUser().getOrThrow()
+        check(userFeature.createProfile(profile).getOrThrow()) {
+            "Profile could not be created"
+        }
+        check(userFeature.getUser().getOrThrow()) {
+            "Created profile could not be loaded"
+        }
         excludedMusclesFeature.getExcludedMuscles().getOrThrow()
         excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
         exerciseExampleFeature.getExerciseExamples().getOrThrow()

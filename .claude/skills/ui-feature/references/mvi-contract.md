@@ -188,7 +188,10 @@ internal class NoteEditorViewModel(
 
 Rules:
 - `internal class`, extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
-- Constructor takes only `Feature` / `UseCase` / `Controller` types — **no** raw services (`<Product>Api`, `Database`, ...).
+- Constructor receives `Feature` / `UseCase` / `Controller` dependencies, typed
+  feature analytics and necessary route inputs or restored `initialState`.
+  No direct API/DAO/repository dependencies. Authorization's documented
+  Google/Apple credential-provider exception stays local to that feature.
 - Initial state in the `BaseViewModel` constructor.
 - `init { }` starts Flow subscriptions and startup loads through `safeLaunch`. A
   complete startup operation reused after error-dialog dismissal may be a private
@@ -301,7 +304,7 @@ Rules:
 
 | Concern | File | Why separated |
 |---|---|---|
-| What the user sees | `State` | Immutable; recomposable; rebuilt by the VM; serialized when used in a screen route payload |
+| What the user sees | `State` | Immutable; recomposable; initialized from saved drafts/route inputs, with data-backed fields rebuilt by the VM |
 | What the user can do | `Contract` | Stable callback set; testable in isolation; previewable |
 | What the screen is doing | `Loader` | Multiple concurrent loaders coexist; UI shows specific spinners |
 | Where to go next | `Direction` | Decouples VM from navigation library; testable in isolation |

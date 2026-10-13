@@ -150,7 +150,6 @@ Decompose component base. Delegates `ComponentContext`; owns the `ViewModel` via
 ```kotlin
 public abstract class BaseComponent<DIRECTION : BaseDirection>(
     componentContext: ComponentContext,
-    private val identifier: ComponentIdentifier = NoneIdentifier,
 ) : ComponentContext by componentContext, KoinComponent
 
 protected abstract val viewModel: BaseViewModel<*, DIRECTION, *>
@@ -187,7 +186,19 @@ override val viewModel = componentContext.retainedInstance {
 
 ### Constructor parameters (MUST)
 
-A Component's constructor takes only `componentContext`, **navigation callbacks** (`back`, `close`, `toX`), and **initial route parameters** (`initialRange`, `userId`). **Forbidden** in ctor params: Feature interfaces, UseCases, DialogControllers, repositories and analytics services — those come from Koin inside retained VM construction.
+A Component's constructor takes only `componentContext`, **navigation callbacks** (`back`, `close`, `toX`), and **ordinary initial business inputs** from a route or accepted parent flow (`initialRange`, `userId`, accepted selection). **Forbidden** in ctor params: Feature interfaces, UseCases, DialogControllers, repositories and analytics services — those come from Koin inside retained VM construction.
+
+### Business draft preservation
+
+Use protected `restoreState(PersistenceKey<T>): T?` inside the existing retainedInstance
+factory and `saveState(PersistenceKey<T>, supplier: () -> T)` once during construction.
+The latter registers a lazy supplier; the shell's StateKeeper.save reads current
+VM state. Keep defaults/route seeds explicit at the owning Component and restore
+parent data before children. Define `val DRAFT = PersistenceKey("stable address", State.serializer())`
+in a private companion object at the bottom of the owning Component. Use the typed
+helpers; no separate metadata file, feature-wide matrix, raw draft consume/register
+or identifier-derived keys.
+See [state-preservation](../../state-preservation/SKILL.md) for the mandatory gate.
 
 ### Result observation
 
@@ -235,7 +246,7 @@ public class ProfileComponent(
 }
 ```
 
-Pop/back is wired through `BackCallback(onBack = viewModel::onBack)` + `backHandler.register(...)`, not by inspecting `navigation.popOrNull()` in `eventListener` — the VM owns back semantics. This stack-owning Component is the only component in a feature with a stack; sub-components don't.
+Pop/back is wired through `BackCallback(onBack = viewModel::onBack)` + `backHandler.register(...)`, not by inspecting `navigation.popOrNull()` in `eventListener` — the VM owns back semantics. Nested graph Components may own their own stacks, as AuthProcess and ProfileCreation do. Each graph handles its own navigation; leaf Components delegate navigation through callbacks.
 
 ---
 
@@ -287,7 +298,7 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 - **`BaseRouter`** — `public interface BaseRouter`. Nav route marker in `:ui-screen-features:screen-api`. `@Serializable` on the sealed class and every subtype; subtypes carry only serializable payloads.
 - **`BaseResult`** + `Result<T>` — `Result<T : Any>(val data: T) : BaseResult` wraps every payload carried through `ResultManager`. Action protocols are plain sealed interfaces nested inside the producer's `*Router.<Screen>` (no `BaseResult` extension); `sendResult` wraps them in `Result<T>`.
 - **`ResultKey<T : BaseResult>(val key: String)`** + `ResultKeys.create(key)` — typed channel identifiers; equal by string. **One `ResultKey` per protocol, not per subtype.** The receiver defines the key in its companion object and passes an explicit `resultKey: ResultKey<Result<Payload>>` on the producer route; scope by receiver identity when multiple instances can coexist (see `references/results.md`).
-- **`ComponentIdentifier`** + `NoneIdentifier` — distinguishes multiple **live instances of the same producer** in one stack. Default `NoneIdentifier`; most components leave it.
+- **`PersistenceKey<T : Any>`** — final invariant draft descriptor: stable local archive address and matching serializer. The owning Component defines `val DRAFT` in its bottom private companion object and calls protected `restoreState(DRAFT)` / `saveState(DRAFT, supplier)`. It does not identify a live instance or result channel; child ComponentContexts isolate equal keys. No separate metadata file or matrix.
 
 ### Rules (MUST)
 
@@ -572,8 +583,7 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.<org>.<product>.core.foundation.internal.result.ResultManager
 import com.<org>.<product>.core.foundation.models.BaseDirection
 import com.<org>.<product>.core.foundation.models.BaseResult
-import com.<org>.<product>.core.foundation.models.ComponentIdentifier
-import com.<org>.<product>.core.foundation.models.NoneIdentifier
+import com.<org>.<product>.core.foundation.models.PersistenceKey
 import com.<org>.<product>.core.foundation.models.Result
 import com.<org>.<product>.core.foundation.models.ResultKey
 import kotlinx.coroutines.CoroutineScope
@@ -592,7 +602,6 @@ import org.koin.core.parameter.parametersOf
 
 public abstract class BaseComponent<DIRECTION : BaseDirection>(
     componentContext: ComponentContext,
-    private val identifier: ComponentIdentifier = NoneIdentifier,
 ) : ComponentContext by componentContext, KoinComponent {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -618,6 +627,15 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
     }
 
     protected abstract suspend fun eventListener(direction: DIRECTION)
+
+    /** Consume a local draft only when constructing a fresh retained ViewModel. */
+    protected fun <T : Any> restoreState(key: PersistenceKey<T>): T? =
+        stateKeeper.consume(key.key, key.serializer)
+
+    /** Register once during construction; the supplier is read when StateKeeper saves. */
+    protected fun <T : Any> saveState(key: PersistenceKey<T>, supplier: () -> T) {
+        stateKeeper.register(key.key, key.serializer, supplier)
+    }
 
     /**
      * Register once per key on the main thread when constructing the component.
@@ -728,20 +746,21 @@ public interface BaseLoader
 package com.<org>.<product>.core.foundation.models
 public interface BaseRouter
 
-// BaseResult.kt
+// PersistenceKey.kt
 package com.<org>.<product>.core.foundation.models
-public interface BaseResult
-public data class Result<T : Any>(val data: T) : BaseResult
-public data class ResultKey<T : BaseResult>(val key: String) { override fun toString(): String = key }
-public object ResultKeys {
-    public fun <T : BaseResult> create(key: String): ResultKey<T> = ResultKey(key)
-}
-
-// ComponentIdentifier.kt
-package com.<org>.<product>.core.foundation.models
-public interface ComponentIdentifier
-public data object NoneIdentifier : ComponentIdentifier
+import kotlinx.serialization.KSerializer
+/** Stable archive address and serializer for one typed, component-owned draft. */
+public class PersistenceKey<T : Any>(
+    internal val key: String,
+    internal val serializer: KSerializer<T>,
+)
 ```
+
+Reuse the existing [BaseResult.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/models/BaseResult.kt)
+and [ResultKeySerializer.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/models/ResultKeySerializer.kt).
+ResultKey's custom serializer writes only its address, allowing non-serializable
+Action protocols in serializable routes. Do not replace it with a plain data class
+or a generated payload serializer; see [results.md](results.md#resultkey-serialization).
 
 ## OperationManager.kt + OperationManagerImpl.kt + CoreModule.kt
 

@@ -61,13 +61,19 @@ Usage in state: `val title: UiText = UiText.Res(Res.string.foo)`; with args `UiT
 
 ## `*FormatState` — form-field state
 
-Form fields (email, password, amount, date) are **sealed `*FormatState`** classes with `Empty`/`Invalid`/`Valid` subtypes. All `*FormatState` types are `@Immutable @Serializable` so they can survive process death inside serialized `*Router` payloads. Using one in a live dialog does not restore the dialog session.
+Form fields (email, password, amount, date) are **sealed `*FormatState`** classes with `Empty`/`Invalid`/`Valid` subtypes. Concrete `*FormatState` types are `@Immutable @Serializable`; permitted nonsecret fields can cross serialized route or business-draft boundaries. Using one in a live dialog does not restore the dialog session.
+
+Serialization support is not permission to persist secrets. PasswordFormatState
+may remain in runtime VM state, but password fields are `@Transient` with Empty
+defaults in saved drafts and never belong in route payloads. Preserve nonsecret
+invalid/empty display values, not only their validated value; apply
+[state-preservation](../../state-preservation/SKILL.md).
 
 ```kotlin
 @Immutable
 public sealed interface FormatState<T> {
-    public val display: String   // the raw text as the user typed it. Always present.
-    public val value: T?         // the parsed value (Double, String, LocalDate, ...). Present only when valid.
+    public val display: String   // current formatter display; may be normalized.
+    public val value: T?         // parsed/supplied value; may also be present in Invalid.
     public interface Valid<T> : FormatState<T>
     public interface Invalid<T> : FormatState<T>
     public interface Empty<T> : FormatState<T>
@@ -83,8 +89,8 @@ Example (`AmountFormatState : FormatState<Double>`) has `abstract val unit: Stri
 
 ### Factories
 
-- `of(display: String, …)` — used by the UI's `onValueChange`. Parses the string; `Empty` if blank, `Valid` if parseable + in range, `Invalid` otherwise.
-- `of(value: T?, …)` — used to initialize from a domain value. Always `Valid` (or `Empty` if null).
+- `of(display: String, …)` — used by the UI's `onValueChange`. Applies the concrete formatter's parsing, validation, normalization and empty-value rules; it may change the display string.
+- Typed-value `of(value, …)` — initializes from domain values or accepted picker results through the same existing limits. It may return `Invalid` for out-of-range values; nullable overloads return `Empty` for null. A supplied typed value is not automatically valid.
 
 Factories vary per type (not every formatter exposes both). Date types take a `range`/`format`; `EmailFormatState` only accepts `value`.
 
@@ -105,11 +111,18 @@ ViewModel: `update { it.copy(amount = AmountFormatState.of(raw)) }`; read the pa
 
 Compose: feed `value = state.amount` to the input; compute button enablement from `state.amount is AmountFormatState.Valid`.
 
-`display` + `value` are separate so the user's raw typing is preserved (`"72.5"` vs `"72.50"`); round-tripping would lose formatting. `@Serializable` keeps them safe inside serialized `*Router` payloads; dialog configs remain in memory.
+`display` + `value` preserve the current formatter state, including invalid or
+empty input, rather than reconstructing it from only a valid value. Display policy
+belongs to the existing factory: `WeightFormatState.of("72.50")` normalizes the
+display to `"72.5"`, while an unparseable `"abc"` remains invalid display. Exact
+draft restoration means the latest state after that factory, not every original
+keypress. Do not add raw numeric-string persistence or another validator to force
+verbatim retention. Serialization applies only to permitted nonsecret fields;
+dialog configs remain in memory.
 
 ### `*FormatState` rules (MUST) & anti-patterns
 
-Rules: one `*FormatState` per form-field type (not per screen); always start in `Empty()` (not `Invalid("")`); `of(...)` is the **only** construction path (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
+Rules: one `*FormatState` per form-field type (not per screen); absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
 
 Anti-patterns: `String` for an email/password/amount field; `Double?` for an amount (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
 
@@ -150,14 +163,21 @@ For screens with discrete modes (Loading/Loaded/Empty/Error), use an `@Immutable
 
 ### Process-death safety (MUST)
 
-If the state appears inside a serialized `*Router` payload, it **must be `@Serializable`**, and every field inside must also be serializable:
+If state appears inside a serialized `*Router` payload or an explicit Component
+business draft, it **must be `@Serializable`**, and every persisted field must also
+be serializable:
 - Primitives, `String`, `enum` — natively `@Serializable`.
 - `LocalDateTime` / `LocalDate` / `Duration` — covered by `kotlinx-serialization` + `kotlinx-datetime`.
 - `DateRange` / `*FormatState` — declared `@Serializable` in `:toolkit:date-utils` / `:ui-core:state`.
 - `ImmutableList<T>` — the project's custom `ImmutableListSerializer` (in `:ui-core:state`), opted in per field: `@Serializable(with = ImmutableListSerializer::class)`. No `ImmutableMap` serializer ships; model a map as a list of records or a regular `Map`.
 - `UiText` — `@Stable` only, **not** `@Serializable`. Do not put it in a serialized router payload; store a serializable identifier or a plain `String`. It is allowed in live dialog configs.
 
-If the state doesn't cross a serialized router boundary (lives in the VM, rebuilt from data sources on restart), `@Serializable` is **not required** (harmless to add). A `DialogConfig` field alone adds no serialization requirement: sessions, steps and callbacks are discarded on process death.
+If state crosses no serialization boundary (lives in the VM, rebuilt from data
+sources on restart), `@Serializable` is **not required**. For explicit business
+drafts, keep rebuilt suggestions/presentation fields transient with defaults;
+follow [process-death.md](process-death.md#editable-form-drafts). A `DialogConfig`
+field alone adds no serialization requirement: sessions, steps and callbacks are
+discarded on process death.
 
 ### Sub-state pattern
 

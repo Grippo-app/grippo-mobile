@@ -55,8 +55,9 @@ public fun InputPassword(
         minLines = 1,
         error = value.toInputError(),
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
-            capitalization = KeyboardCapitalization.Sentences,
+            keyboardType = KeyboardType.Password,
+            capitalization = KeyboardCapitalization.None,
+            autoCorrectEnabled = false,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions {

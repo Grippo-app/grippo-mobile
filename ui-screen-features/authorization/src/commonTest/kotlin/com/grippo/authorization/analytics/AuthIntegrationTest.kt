@@ -118,7 +118,7 @@ class AuthIntegrationTest {
                     domain.registerUseCase().createAccount("secret", "private")
                 })
                 val expected = mutableListOf("register", "profile")
-                if (profile) expected += listOf("excluded_muscles", "excluded_equipments", "exercise_examples", "goal")
+                if (profile) expected += listOf("excluded_muscles", "excluded_equipments", "exercise_examples", "weight_history", "goal")
                 expected += "push_fetch"
                 if (token != null) expected += "push_register"
                 assertEquals(expected, domain.calls)
@@ -134,7 +134,7 @@ class AuthIntegrationTest {
                 add(PreparationRequest.ExcludedMuscles)
                 add(PreparationRequest.ExcludedEquipments)
                 add(PreparationRequest.ExerciseExamples)
-                if (!register) add(PreparationRequest.WeightHistory)
+                add(PreparationRequest.WeightHistory)
                 add(PreparationRequest.Goal)
                 add(PreparationRequest.PushFetch)
                 add(PreparationRequest.PushRegister)
@@ -181,6 +181,39 @@ class AuthIntegrationTest {
             assertEquals("auth_attempt_interrupted", recorder.names.last())
         }
     }
+    @Test
+    fun cancellationDuringWeightHistoryStopsBothPreparationsBeforeGoalAndPush() = runTest {
+        for (register in listOf(false, true)) {
+            val recorder = RecordingAuthAnalytics()
+            val analytics = factory(recorder)
+            val domain = AuthorizationFixture().apply { beforeWeightHistory = { awaitCancellation() } }
+            val operation: AuthOperation =
+                if (register) AuthOperation.Register else AuthOperation.Login(Method.Email)
+            val job = launch {
+                analytics.trackOperation(operation) {
+                    if (register) {
+                        domain.registerUseCase().createAccount("secret", "private")
+                    } else {
+                        domain.loginUseCase().loginEmail("secret", "private")
+                    }
+                }
+            }
+            runCurrent()
+            assertEquals(listOf(
+                if (register) "register" else "email", "profile", "excluded_muscles",
+                "excluded_equipments", "exercise_examples", "weight_history",
+            ), domain.calls)
+            assertEquals(listOf("auth_attempt_started"), recorder.names)
+
+            job.cancelAndJoin()
+            assertTrue(job.isCancelled)
+            assertEquals(listOf("auth_attempt_started", "auth_attempt_interrupted"), recorder.names)
+            assertNotNull(recorder.events.first().operation)
+            assertEquals(recorder.events.first().operation, recorder.events.last().operation)
+            assertTrue(domain.calls.none { it in listOf("goal", "push_fetch", "push_register") })
+        }
+    }
+
     @Test
     fun navigationIdentityRejectsInvalidValuesIndependentlyOfAnalytics() {
         for (invalid in listOf("", "x".repeat(65), "has space", "has/slash")) {

@@ -4,4 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader
 
 @Immutable
-internal sealed interface UserLoader : BaseLoader
+internal sealed interface UserLoader : BaseLoader {
+    @Immutable
+    data object Logout : UserLoader
+}

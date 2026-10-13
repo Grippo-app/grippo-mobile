@@ -5,7 +5,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.formatters.EmailFormatState
 
 internal class RegistrationComponent(
     componentContext: ComponentContext,
@@ -18,14 +20,16 @@ internal class RegistrationComponent(
     override val viewModel = componentContext.retainedInstance {
         RegistrationViewModel(
             analytics = getKoin().get(),
-            email = email,
-            registerUseCase = getKoin().get()
+            registerUseCase = getKoin().get(),
+            initialState = restoreState(DRAFT)
+                ?: RegistrationState(email = EmailFormatState.of(email)),
         )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
     }
 
@@ -42,5 +46,9 @@ internal class RegistrationComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         RegistrationScreen(state.value, loaders.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("RegistrationDraft", RegistrationState.serializer())
     }
 }

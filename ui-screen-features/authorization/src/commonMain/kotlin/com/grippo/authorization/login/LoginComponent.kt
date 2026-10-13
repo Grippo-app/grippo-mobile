@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class LoginComponent(
@@ -21,12 +22,15 @@ internal class LoginComponent(
             loginUseCase = getKoin().get(),
             googleAuthProvider = getKoin().get(),
             appleAuthProvider = getKoin().get(),
+            initialState = restoreState(DRAFT)
+                ?: LoginState(),
         )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
     }
 
@@ -44,5 +48,9 @@ internal class LoginComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         LoginScreen(state.value, loaders.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())
     }
 }

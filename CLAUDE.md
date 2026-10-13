@@ -52,7 +52,7 @@ Groups:
 
 ### UI core
 
-- `:ui-core:foundation` — `BaseViewModel`, `BaseComponent`, `BaseScreen`, `OperationManager`, `ResultManager`/`ResultEmitter` (cross-component results), `BaseDirection`/`BaseLoader`/`BaseRouter`/`BaseResult`/`ComponentIdentifier`, `collectAsStateMultiplatform` (expect/actual).
+- `:ui-core:foundation` — `BaseViewModel`, `BaseComponent`, `BaseScreen`, `OperationManager`, `ResultManager`/`ResultEmitter` (cross-component results), `BaseDirection`/`BaseLoader`/`BaseRouter`/`BaseResult`/`PersistenceKey`, `collectAsStateMultiplatform` (expect/actual).
 - `:ui-core:state` — reusable UI data classes (`MuscleLoadSummaryState`, `DigestState`, `TrainingStreakState`, formatters: `WeightFormatState`, `EmailFormatState`, `PasswordFormatState`, `DateFormatState`, `UiText`, etc.). Each class is `@Immutable`; many have a `stub*()` function.
 - `:ui-core:error:error-provider` (`ErrorProvider` interface, `AppError` sealed) and `:ui-core:error:error-provider-impl` (`ErrorProviderImpl` maps `AppError` → `AppErrorState` → shows `DialogConfig.ErrorDisplay`).
 
@@ -71,6 +71,7 @@ Groups:
 ### `:data-services:*` — low-level services and DTOs
 
 - `:backend` — `GrippoApi` (flat class with methods like `suspend fun <action>(body): Result<T>`), `BackendClient` (Ktor with Auth, Logging, ContentNegotiation, defaultRequest pointed at `https://grippo-app.com`), `TokenProvider` (Auth `Bearer` + refresh with mutex and retry-with-backoff), `ClientLogger`, `dto/<area>/*` — `@Serializable data class`, all fields nullable with `@SerialName`.
+- Transport/local logs must exclude passwords, authorization codes, provider/ID/access/refresh tokens and Authorization headers, including secret prefixes or hashes. Auth traffic logs may contain method/path/status, without request/response bodies or headers.
 - `:database` — Room `@Database(version = 5)`, all `@Entity`, DAOs, migrations, `models/*Pack` (`@Embedded` + `@Relation`), `converters/StringListConverter`, `DatabaseBuilder` (expect/actual), **`fallbackToDestructiveMigration(dropAllTables = true)` on both platforms — intentional**.
 - `:datastore` — wrapper over AndroidX DataStore.
 - `:google-auth` / `:apple-auth` — platform credential wrappers returning a Google ID token or Apple authorization code.
@@ -299,6 +300,22 @@ public sealed class ProfileRouter : BaseRouter {
 ```
 
 Decompose `childStack(serializer = RootRouter.serializer(), initialConfiguration = ..., key = "RootComponent", childFactory = ::createChild)` supports screen-route restoration when the platform shell supplies saved StateKeeper state — therefore **all Routers and payloads inside them (`StageState`, etc.) must be `@Serializable`**. Android uses `retainedComponent`; the current iOS shell supplies no persisted StateKeeper archive. See [platform limits](.claude/skills/ui-feature/references/process-death.md).
+
+For every new or changed feature, apply the mandatory
+[state-preservation skill](.claude/skills/state-preservation/SKILL.md). Inventory
+user-owned inputs/selections/current filters and parent drafts; preserve nonsecret
+editable state through a typed foundation `PersistenceKey` named `DRAFT` in a
+private companion object at the bottom of the owning Component. Components use
+protected BaseComponent.restoreState/saveState; no separate metadata file or matrix.
+Keep archive addresses stable; do not bind drafts with raw StateKeeper consume/register.
+Use a local lazy supplier and typed VM initialState. Rebuild catalogs/provider
+availability; omit passwords, credentials,
+loaders, jobs and telemetry. Restore parent data before children; a fresh child
+without its own archive uses already accepted parent values as ordinary business
+initial inputs. Retained VM and local draft take priority over those inputs/defaults.
+Do not copy unfinished drafts of destroyed children into parent/global state.
+Verify a real archive roundtrip and Back/pop/re-entry with fresh Components/VMs;
+no generic BaseViewModel persistence, extra providers or per-edit navigation updates.
 
 `Deeplink` — a simple `enum class Deeplink(val key: String)` with `fromKey(key)`. Handled in `RootViewModel` (`enqueueDeeplink` for cold start / `applyDeeplink` for warm / `parseDeeplink` to map to a Direction).
 
@@ -1048,12 +1065,24 @@ integration checks within the user's verification scope, and record actual resul
 
 ## Orchestrator workflow
 
-The `orchestrator/` tree is the agent workforce bound to this project (config: `orchestrator/project-config.md`; end-user entry: `orchestrator/README.md`). The detailed skills installed in `.claude/skills/` (12: `feature-analytics`, `task-prep`, `task-orchestrator`, `ui-feature`, `design-system`, `data-layer`, `mappers`, `di-modules`, `platform-build-toolkit`, `validation-gates`, `backend-contract-client`, `launch-readiness`) are the source of truth for task execution; this file stays the high-level guide.
+The implementation/review skills are installed in `.claude/skills/`; their
+pipeline contracts are reference records in `.claude/contracts/`. This checkout
+does not contain the `orchestrator/` runtime, task board, project-config or gate
+scripts. Do not claim its machine gates ran or introduce that scaffold for
+ordinary feature work.
 
-- **Control surface**: `npm start` from the repo root → <http://localhost:8000/site/> (Node 22 workspace; `npm test` = fast verify suite).
-- **Task workflow**: tasks flow through the four-column kanban under `orchestrator/tasks/`: `backlog -> task-prep -> pending -> task-prep -> todo -> orchestrator -> done`. Drop free-text ideas in `backlog/`, run `task-prep`; if questions land in `pending/`, answer them and run `task-prep` again; then ask Claude to run the task once it is in `todo/`. The orchestrator moves the file to `done/` on success. See `orchestrator/tasks/README.md`.
-- **Figma**: disabled for this project (`figmaEnabled: false`) — there is no Figma library; the `orchestrator/figma/` sidecar stays dormant.
+Use the user's authorized scope and the owning skills' mandatory semantic gates,
+including analytics coverage and state preservation. Run permitted checks and
+record unavailable/unrun checks. The task-orchestrator loop, task-board transitions,
+machine reports and Figma/backend gate commands apply only in a separately
+configured orchestrator workspace with the required inputs and tools.
 
 ### Backend contract rules
 
-The validated current generation (resolve exact inventory and area paths with `npm run --silent contract:paths` in `orchestrator/api-contract/`) is the contract of record for endpoint paths, methods, field names, types, nullability, and enums. Consult it before writing or changing any DTO / `GrippoApi` method / mapper; never invent endpoints or fields. The all-nullable defensive DTO discipline stays regardless of what the spec declares. When the backend changes, refresh the snapshot in the Backend tab or with typed `contract:probe` then the matching `contract:refresh-*`, and act on `backend-contract-drift` findings instead of patching blind. Until the first snapshot is published via Integrations → Backend (Test + Refresh), endpoint/DTO work is BLOCKED by the drift gate — the Swagger at `grippo-backend`'s `/docs` is the source it will bind.
+Verify the authoritative backend contract before changing DTOs, `GrippoApi`
+methods or mappers; never invent endpoints, fields, types or nullability. A
+configured orchestrator's validated snapshot and `contract:paths` resolve its
+inventory; its probe/refresh/drift gates require that workspace. Without it,
+use an available authoritative contract and resolve missing details before
+changing the API. Keep the all-nullable defensive response DTO discipline
+regardless of what the spec declares.

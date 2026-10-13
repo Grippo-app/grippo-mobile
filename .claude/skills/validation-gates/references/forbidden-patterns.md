@@ -2,8 +2,8 @@
 
 > This skill **owns** this rule set — it is the rule source for `anti-pattern-scanner`
 > and the reviewer. The list below is the complete rule set; the
-> forbidden-patterns list must not lose entries. Reviewer-only items (no mechanical
-> validator) are additionally registered in `../../_index/known-gaps.md`.
+> forbidden-patterns list must not lose entries. Reviewer-only items are flagged
+> inline; a configured orchestrator also requires its external known-gaps register.
 
 Things you must not do — refuse to write them, refuse to commit them. Listed roughly by layer.
 
@@ -46,7 +46,7 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 
 - **`List<T>`, `Set<T>`, `Map<T>`** (Kotlin defaults). Not Compose-stable.
 - **`mutableListOf()`, `mutableStateListOf()`, `mutableMapOf()`** in state. Mutable types break immutability discipline.
-- **`buildList { ... }`** if the result is stored in state without `.toImmutableList()`. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **`buildList { ... }`** if the result is stored in state without `.toImmutableList()`. *(Reviewer-only.)*
 
 ## Compose
 
@@ -60,8 +60,8 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **`MaterialTheme.colorScheme.*`** in feature code. Use `AppTokens.colors.*`.
 - **`androidx.compose.material3.Button`** in feature code. Use `:design-system:components/Button`.
 - **`@Composable` calls from a `BaseViewModel`.** VMs don't know Compose.
-- **Flat-scalar explosion of a domain entity in a composable signature.** A composable that renders an entity takes its `*State` model as one parameter, not `name: String, surname: String, avatarUrl: String, …` mirroring the model. Exception: domain-agnostic primitives in `:design-system:components` / `:compose-libs:*` (Button, Chip) stay slot/enum-driven. See the ui-feature skill, references/compose-rules.md § "Entity composables". Not mechanically greppable — reviewer-enforced (see `../../_index/known-gaps.md` → pattern-orphans).
-- **Non-`*Screen` UI placed flat beside the seven MVI files**, or inlined into a fat `*Screen.kt`, instead of the sub-screen's `components/` subfolder (one cohesive composable per file). See the ui-feature skill, references/module-structure.md § "File layout for a feature". Reviewer-enforced (see `../../_index/known-gaps.md` → pattern-orphans).
+- **Flat-scalar explosion of a domain entity in a composable signature.** A composable that renders an entity takes its `*State` model as one parameter, not `name: String, surname: String, avatarUrl: String, …` mirroring the model. Exception: domain-agnostic primitives in `:design-system:components` / `:compose-libs:*` (Button, Chip) stay slot/enum-driven. See the ui-feature skill, references/compose-rules.md § "Entity composables". Not mechanically greppable — reviewer-enforced.
+- **Non-`*Screen` UI placed flat beside the seven MVI files**, or inlined into a fat `*Screen.kt`, instead of the sub-screen's `components/` subfolder (one cohesive composable per file). See the ui-feature skill, references/module-structure.md § "File layout for a feature". Reviewer-enforced.
 
 ## Data layer
 
@@ -78,7 +78,7 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **Skipping range reconciliation** (`deleteByCreatedAtRangeExceptIds`). "Deleted on another device" rows linger.
 - **Bypassing `BackendClient`** with a raw `HttpClient.request { ... }`. All HTTP goes through `<Product>Api → BackendClient`.
 - **Direct `Context` import in `commonMain`**. Use `NativeContext` from `:toolkit:context`.
-- **Subgrouping `<Product>Api`** into `AuthApi`, `NotesApi`, etc. Flat is intentional. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **Subgrouping `<Product>Api`** into `AuthApi`, `NotesApi`, etc. Flat is intentional. *(Reviewer-only.)*
 
 ## Dependency Injection
 
@@ -88,7 +88,7 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **`getKoin().get()` in a Composable.** Wrong layer.
 - **Module hand-DSL** unless it is in tests, listed in `diHandWrittenModules`, or the built-in `FeatureApiModule` UseCase-aggregator (see the di-modules skill, references/annotations.md).
 - **`@Factory` for stateless services.** Use `@Single`.
-- **A Koin-injectable type as a `*Component` constructor parameter.** Feature interfaces, UseCases, `DialogController`, repositories, managers, auth/link providers and analytics services resolve via `getKoin().get()` inside `componentContext.retainedInstance { <X>ViewModel(...) }`, not through Component constructors. Components receive context and navigation args/callbacks only. Analytics stays in VM, with lifecycle binding only in foundation; no feature provider/route matrix or manual bind. See [feature analytics](../../feature-analytics/SKILL.md) and the ui-feature base-classes reference.
+- **A Koin-injectable type as a `*Component` constructor parameter.** Feature interfaces, UseCases, `DialogController`, repositories, managers, auth/link providers and analytics services resolve via `getKoin().get()` inside `componentContext.retainedInstance { <X>ViewModel(...) }`, not through Component constructors. Components receive context, navigation callbacks and ordinary initial business inputs from a route or accepted parent flow. Analytics stays in VM, with lifecycle binding only in foundation; no feature provider/route matrix or manual bind. See [feature analytics](../../feature-analytics/SKILL.md) and the ui-feature base-classes reference.
 
 ## Navigation
 
@@ -107,11 +107,11 @@ Screen-result rules are defined in the ui-feature skill,
   queued/immediate dispatch for result-driven navigation.
 
 
-- **Compose Navigation alongside Decompose.** One nav library only. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **Compose Navigation alongside Decompose.** One nav library only. *(Reviewer-only.)*
 - **`LaunchedEffect(Unit) { navigate(...) }`.** Direction + eventListener.
 - **Routes carrying lambdas.** Not serializable; crash on backgrounding.
 - **Routes without `@Serializable`.** Same.
-- **Mutable routes** (with `var` fields). Routes are `data class` / `data object`. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **Mutable routes** (with `var` fields). Routes are `data class` / `data object`. *(Reviewer-only.)*
 - **Cross-feature import**: `:ui-screen-features:home` importing from `:ui-screen-features:profile`. Use `:ui-screen-features:screen-api`.
 
 ## Errors
@@ -131,7 +131,7 @@ Screen-result rules are defined in the ui-feature skill,
 - **Recording exceptions to Firebase manually.** Pipeline does it.
 - **`Result.getOrNull()` without handling `null`.** Silently drops failures.
 - **Consuming `CancellationException`.** Must propagate; shared error dispatch excludes it.
-- **Throwing raw `Throwable` from `validateResponse`.** Throw `AppError` subtypes. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **Throwing raw `Throwable` from `validateResponse`.** Throw `AppError` subtypes. *(Reviewer-only.)*
 
 ## State
 
@@ -140,7 +140,7 @@ Screen-result rules are defined in the ui-feature skill,
 - **`var` in state classes.** All `val`.
 - **Mutable collections in state.** Immutable only.
 - **State that duplicates a sub-state**'s field. Derive locally.
-- **Flat scalar pile.** 15+ primitive fields, or booleans encoding one lifecycle (`isRunning` + `hasCompletedTest` + `activePhase`). Group clusters into sub-states, fixed sets into enums, the lifecycle into a sealed interface. See the ui-feature skill, references/state.md § "No flat scalar piles". Reviewer-enforced (see `../../_index/known-gaps.md` → pattern-orphans).
+- **Flat scalar pile.** 15+ primitive fields, or booleans encoding one lifecycle (`isRunning` + `hasCompletedTest` + `activePhase`). Group clusters into sub-states, fixed sets into enums, the lifecycle into a sealed interface. See the ui-feature skill, references/state.md § "No flat scalar piles". Reviewer-enforced.
 
 ## Build
 
@@ -151,20 +151,27 @@ Screen-result rules are defined in the ui-feature skill,
 - **`@OptIn(...)` for globally-opted-in experimentals**. Already in `KotlinMultiplatformConventionPlugin`.
 - **`api(...)` everywhere.** Default is `implementation`.
 - **`mavenLocal()`** in production builds.
-- **Multiple `Json` instances** with different configs. One `:toolkit:serialization` singleton. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **Multiple `Json` instances** with different configs. One `:toolkit:serialization` singleton. *(Reviewer-only.)*
 
 ## Logging
 
 - **`println(...)`** in production. Use `AppLogger`.
 - **`android.util.Log.*`** in `commonMain`. Doesn't compile.
-- **Logging PII** (full tokens, emails). Truncate or hash. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **Logging credentials or personal input**, including passwords, authorization
+  codes, provider/ID/access/refresh tokens and Authorization headers. Secret
+  prefixes and hashes are not permitted substitutes. Auth transport/local logs
+  use method/path/status without request/response bodies or headers. *(Reviewer-only.)*
 - **Calling `AppLogger.General.error(...)` after a Ktor exception.** Pipeline already logs.
 - **Skipping `AppLogger.Mapping.log(value) { msg }`** in DTO → Entity / Domain mappers. Required.
 
 ## Testing
 
 - **Production code that requires test-only setup.** Architecture must be test-friendly without backflips: constructor injection and boundary interfaces, never `if (isTest)`, public singleton resets, global fake modes or reflection into private state.
-- **Test dependencies added by hand or outside a test-bearing module.** Capabilities arrive only through the opt-in `*.test.convention` plugins; production source sets, publications and the XCFramework stay test-free.
+- **Test libraries in production source sets or production publications.** Test-bearing
+  KMP modules use the existing `kotlin.multiplatform.test.convention`; additional
+  test dependencies belong in their test source sets, as auth/foundation do.
+  Do not require absent capability plugins or introduce a new test framework
+  merely to add a focused regression. The XCFramework stays test-free.
 - **A test that merely restates the implementation.** Expected values derive from the acceptance contract, not from copying the production formula; a test that would still pass on the old bug proves nothing.
 - **`assertTrue(true)`/non-null-only assertions, sleeps, retry-until-pass, shared mutable fixtures, real network or production databases in tests.**
 - **Weakening or deleting an existing assertion to make a change green.** A removed contract needs an owner decision, not a quieter test.
@@ -174,9 +181,9 @@ Screen-result rules are defined in the ui-feature skill,
 
 - **Hardcoded strings in Composables.** Extract.
 - **Missing keys in a locale's `strings.xml`.** Translator might miss; runtime falls back to English.
-- **PNG icons for vector candidates.** Use SVG/vector. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **PNG icons for vector candidates.** Use SVG/vector. *(Reviewer-only.)*
 - **Resource files in feature modules.** Centralize in `:design-system:resources:provider`.
-- **`@JvmStatic`** in `commonMain`. JVM-only. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **`@JvmStatic`** in `commonMain`. JVM-only. *(Reviewer-only.)*
 
 ## Inline `ImageVector.Builder` placeholders in `:design-system:components/*.kt`
 
@@ -186,7 +193,7 @@ When `AppTokens.icons` has no real icons yet, the temptation in a widget's `@Pre
 - They live in `:design-system:components`, but `ImageVector` authoring belongs in `:design-system:resources:provider/icons/` — splits ownership.
 - They block `Find Usages` on real icons: `AppTokens.icons.Bell` will never surface a `<Widget>.kt` placeholder that's "kind of" an icon.
 
-**Do instead:** either (a) add the real icon to `AppIcon` first (one `resource-builder` task), then use `AppTokens.icons.<Name>` in the preview, or (b) skip the icon-bearing preview variant entirely until a real icon exists. This pattern is reviewer-enforced (see `../../_index/known-gaps.md` → pattern-orphans); the grep `ImageVector.Builder(` under `:design-system:components/` is the suggested manual check.
+**Do instead:** either (a) add the real icon to `AppIcon` first (one `resource-builder` task), then use `AppTokens.icons.<Name>` in the preview, or (b) skip the icon-bearing preview variant entirely until a real icon exists. This pattern is reviewer-enforced; the grep `ImageVector.Builder(` under `:design-system:components/` is the suggested manual check.
 
 ## Deprecation
 
@@ -195,7 +202,7 @@ New code uses the **newest non-experimental API available in the current codebas
 - **`@Deprecated`-annotated API in a new call site** when a non-deprecated alternative exists in the codebase. If only the deprecated form is available (replacement unstable), write the call AND record it in `## Outcome` → `### Caveats` with a one-line reason; add a `// why:` line at the site.
 - **Pre-Compose / pre-Decompose / pre-Koin-annotation patterns.** No `android.view.View` subclassing, no XML layouts, no `androidx.fragment.app.Fragment`, no `androidx.lifecycle.ViewModel`, no hand-written `module { single { ... } }` Koin DSL outside the `diHandWrittenModules` allowlist in project-config or the built-in `FeatureApiModule` UseCase-aggregator (see the di-modules skill, references/annotations.md).
 - **Deprecated coroutines APIs.** Use `Flow.collect(collector)` / `flow.onEach { ... }.launchIn(scope)`. Forbidden: the deprecated `Flow.collect { suspending-lambda }` overload, `kotlinx.coroutines.experimental.*`, the old reactive-streams adapters in `kotlinx-coroutines-reactive`.
-- **`Channel` for UI / data observation** where a `Flow`-equivalent exists. Channels are for cross-coroutine handoff and one-shot signals; observation is `Flow`. *(Reviewer-only — see ../../_index/known-gaps.md → pattern-orphans.)*
+- **`Channel` for UI / data observation** where a `Flow`-equivalent exists. Channels are for cross-coroutine handoff and one-shot signals; observation is `Flow`. *(Reviewer-only.)*
 - **Material1 / Material2 widgets or `MaterialTheme.*` in feature code.** Use `:design-system:components` + `AppTokens.*`. See § Compose above for the specific imports.
 - **Code that requires the old API surface of a library when the catalog pins a newer version.** `gradle/libs.versions.toml` is authoritative — write against the pinned version, not against a remembered older one. Bumps to the catalog are off-limits unless the task explicitly targets them.
 - **Introducing a new `@Deprecated` annotation in a feature task.** Deprecating an existing symbol changes the public contract and routes consumers through a follow-up cycle; that belongs to a dedicated task, not to a feature task that happens to touch the file.
@@ -212,7 +219,7 @@ The orchestrator writes a structured `## Outcome` appendix to every task it move
 - **`## Outcome` section in a `backlog/`, `pending/`, or `todo/` file.** Forbidden — the appendix only belongs in `done/`. `task-intake` rejects todo files that carry the trailer; `task-prep` rejects backlog/pending files that do.
 - **`partially-completed` task in `done/` without a matching `### Follow-ups` bullet.** A partial completion means something wasn't delivered; the missing piece must exist as a follow-up task (backlog or todo). An orphan `partially-completed` status is a record of failure with no path forward.
 
-*(The `## Outcome appendix` shape is self-enforced — see ../../_index/known-gaps.md → self-enforced.)*
+*(The `## Outcome appendix` shape is self-enforced.)*
 
 ## Orchestrator scope
 
@@ -221,7 +228,7 @@ The orchestrator coordinates. It does not write product code, and it is never it
 - **Orchestrator inline-write of product code.** Forbidden. If `task-intake` returns a task that does not map to any builder skill, the orchestrator escalates with `BLOCKED: no builder maps to this task` and offers the user three options (extend the catalog / split the task / reject). It does NOT silently write the code itself. This rule has no exception for "trivial" or "one-line" code — trivial product code is still product code.
 - **Self-review as fallback for external review.** Forbidden. When the configured reviewer (Codex or `internal-reviewer`) is unavailable, the orchestrator escalates per the `codexEnabled` policy. It never performs an inline review pass of its own. Self-review by the agent that coordinated writing the code yields zero independence — the writer's blind spots become the reviewer's blind spots and the pass means nothing.
 
-*(`## Orchestrator scope` is self-enforced — see ../../_index/known-gaps.md → self-enforced.)*
+*(`## Orchestrator scope` is self-enforced.)*
 
 ## Comments
 

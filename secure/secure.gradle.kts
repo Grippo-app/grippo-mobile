@@ -69,7 +69,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
         val iosClientId = requireProp(googleProps, Keys.iosClientId, propsFile)
         requireProp(googleProps, Keys.androidClientId, propsFile)
 
-        val gidServerClientId = webClientId
         val gidRedirectUri = buildGidRedirectUri(iosClientId)
         val gidReversedClientId = buildGidReversedClientId(iosClientId)
 
@@ -88,12 +87,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
             file = iosInfoPlistFile,
             keyName = "GIDClientID",
             value = iosClientId
-        )
-
-        replacePlistKeyStringOrError(
-            file = iosInfoPlistFile,
-            keyName = "GIDServerClientID",
-            value = gidServerClientId
         )
 
         replacePlistKeyStringOrError(

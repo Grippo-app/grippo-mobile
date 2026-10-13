@@ -70,8 +70,6 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>219092892396-mpf1aus9irglcq1i89ec4vq2332qhoov.apps.googleusercontent.com</string>
-	<key>GIDServerClientID</key>
-	<string>219092892396-amtjf3mh2t72sfv2dblffvgss7443i6i.apps.googleusercontent.com</string>
 	<key>GIDRedirectURI</key>
 	<string>com.googleusercontent.apps.219092892396-mpf1aus9irglcq1i89ec4vq2332qhoov:/oauthredirect</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

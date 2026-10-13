@@ -108,10 +108,12 @@ internal fun UserScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        val buttonState = remember(loaders, state.name) {
-            when (state.name) {
-                is NameFormatState.Invalid -> ButtonState.Disabled
-                is NameFormatState.Empty -> ButtonState.Disabled
+        val buttonState = remember(loaders, state.name, state.weight, state.height) {
+            when {
+                loaders.isNotEmpty() -> ButtonState.Disabled
+                state.name !is NameFormatState.Valid -> ButtonState.Disabled
+                state.weight !is WeightFormatState.Valid -> ButtonState.Disabled
+                state.height !is HeightFormatState.Valid -> ButtonState.Disabled
                 else -> ButtonState.Enabled
             }
         }

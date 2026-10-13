@@ -16,6 +16,7 @@ import com.grippo.authorization.profile.creation.experience.ExperienceComponent
 import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsComponent
 import com.grippo.authorization.profile.creation.user.UserComponent
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.ProfileCreationRouter
 
@@ -27,7 +28,10 @@ internal class ProfileCreationComponent(
 ) : BaseComponent<ProfileCreationDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ProfileCreationViewModel()
+        ProfileCreationViewModel(
+            initialState = restoreState(DRAFT)
+                ?: ProfileCreationState(),
+        )
     }
 
     override suspend fun eventListener(direction: ProfileCreationDirection) {
@@ -63,6 +67,7 @@ internal class ProfileCreationComponent(
     private val backCallback = BackCallback(onBack = viewModel::onClose)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
     }
 
@@ -88,6 +93,7 @@ internal class ProfileCreationComponent(
             ProfileCreationRouter.Experience -> Child.Experience(
                 ExperienceComponent(
                     componentContext = context,
+                    experience = viewModel.state.value.experience,
                     toExcludedMuscles = viewModel::toExcludedMusclesWithExperience,
                     back = viewModel::onBack
                 ),
@@ -96,6 +102,7 @@ internal class ProfileCreationComponent(
             ProfileCreationRouter.ExcludedMuscles -> Child.ExcludedMuscles(
                 ExcludedMusclesComponent(
                     componentContext = context,
+                    excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
                     toMissingEquipment = viewModel::toMissingEquipmentWithMuscles,
                     back = viewModel::onBack
                 ),
@@ -104,6 +111,7 @@ internal class ProfileCreationComponent(
             ProfileCreationRouter.MissingEquipments -> Child.MissingEquipments(
                 MissingEquipmentsComponent(
                     componentContext = context,
+                    missingEquipmentIds = viewModel.state.value.missingEquipmentIds,
                     toCompleted = viewModel::toCompletedWithEquipment,
                     back = viewModel::onBack
                 ),
@@ -147,5 +155,9 @@ internal class ProfileCreationComponent(
 
         data class Completed(override val component: ProfileCompletedComponent) :
             Child(component)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("ProfileCreationDraft", ProfileCreationState.serializer())
     }
 }

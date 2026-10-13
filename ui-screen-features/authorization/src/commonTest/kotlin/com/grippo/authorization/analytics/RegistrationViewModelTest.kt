@@ -181,7 +181,7 @@ class RegistrationViewModelTest {
         }
         var viewModel: RegistrationViewModel? = null
         try {
-            val registration = RegistrationViewModel(null, analytics, domain.registerUseCase())
+            val registration = RegistrationViewModel(analytics, domain.registerUseCase())
             viewModel = registration
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 registration.navigator.collect { directions += it }

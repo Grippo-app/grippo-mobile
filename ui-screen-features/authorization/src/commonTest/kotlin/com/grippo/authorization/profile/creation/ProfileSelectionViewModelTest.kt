@@ -139,8 +139,12 @@ class ProfileSelectionViewModelTest {
 
             groups.emit(emptyList())
             runCurrent()
-            assertTrue(viewModel.state.value.selectedMuscleIds.isEmpty())
-            assertEquals(null, viewModel.state.value.selectedGroupId)
+            assertTrue(viewModel.state.value.suggestions.isEmpty())
+            assertEquals(listOf("third"), viewModel.state.value.selectedMuscleIds)
+            assertEquals("replacement", viewModel.state.value.selectedGroupId)
+            groups.emit(listOf(muscles("replacement", "second", "third")))
+            runCurrent()
+            assertEquals(listOf("third"), viewModel.state.value.selectedMuscleIds)
             val selections = recorder.events.filter { it.event.schema.name == "auth_selection_changed" }
             assertEquals(listOf(0L to 1L, 1L to 2L, 0L to 1L, 0L to 0L), selections.map { captured ->
                 val parameters = captured.event.parameters()
@@ -220,8 +224,12 @@ class ProfileSelectionViewModelTest {
 
             groups.emit(emptyList())
             runCurrent()
-            assertTrue(viewModel.state.value.selectedEquipmentIds.isEmpty())
-            assertEquals(null, viewModel.state.value.selectedGroupId)
+            assertTrue(viewModel.state.value.suggestions.isEmpty())
+            assertEquals(listOf("third"), viewModel.state.value.selectedEquipmentIds)
+            assertEquals("replacement", viewModel.state.value.selectedGroupId)
+            groups.emit(listOf(equipments("replacement", "second", "third")))
+            runCurrent()
+            assertEquals(listOf("third"), viewModel.state.value.selectedEquipmentIds)
             val selections = recorder.events.filter { it.event.schema.name == "auth_selection_changed" }
             assertEquals(listOf(0L to 1L, 1L to 2L, 0L to 1L, 0L to 0L), selections.map { captured ->
                 val parameters = captured.event.parameters()

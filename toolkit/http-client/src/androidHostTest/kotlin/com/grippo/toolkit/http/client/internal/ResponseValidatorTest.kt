@@ -14,8 +14,7 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
+import kotlin.test.assertSame
 
 class ResponseValidatorTest {
     @Test
@@ -54,10 +53,26 @@ class ResponseValidatorTest {
             val error = assertFailsWith<AppError.Network.Unexpected> {
                 client.get("https://example.test/error")
             }
-            assertIs<IllegalStateException>(error.cause)
-            assertEquals(failure.message, error.cause?.message)
+            assertSame(failure, error.cause)
         } finally {
             client.close()
+        }
+    }
+
+    @Test
+    fun fatalAndNonExceptionTransportFailuresPropagateUnchanged() = runTest {
+        for (original in listOf(Error("fatal transport failure"), Throwable("non-Exception transport failure"))) {
+            val client = HttpClient(MockEngine { throw original }) {
+                responseValidator(ApiErrorParser(Json))
+            }
+            try {
+                val observed = assertFailsWith<Throwable> {
+                    client.get("https://example.test/error")
+                }
+                assertSame(original, observed)
+            } finally {
+                client.close()
+            }
         }
     }
 }

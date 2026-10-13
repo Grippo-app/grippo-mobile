@@ -8,6 +8,7 @@ import com.arkivanov.essenty.lifecycle.pause
 import com.arkivanov.essenty.lifecycle.resume
 import com.grippo.analytics.authorization.AuthAnalyticsModule
 import com.grippo.authorization.profile.creation.ProfileCreationComponent
+import com.grippo.authorization.profile.creation.completed.ProfileCompletedDirection
 import com.grippo.authorization.profile.creation.completed.ProfileCompletedLoader
 import com.grippo.authorization.profile.creation.completed.ProfileCompletedViewModel
 import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesViewModel
@@ -19,6 +20,7 @@ import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.CoreModule
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
+import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.Equipment
@@ -49,11 +51,13 @@ import com.grippo.toolkit.crashreporting.values.CrashDiagnosticCode
 import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -423,6 +427,11 @@ class ProfileCreationComponentTest {
                 user.navigator.collect { directions += it }
             }
             user.onBack()
+            assertEquals(1, user.loaders.value.size)
+            user.onBack()
+            user.onWeightPickerClick()
+            user.onHeightPickerClick()
+            assertEquals(listOf("auth_control_clicked"), recorder.names)
             runCurrent()
 
             assertEquals(listOf("push_delete", "settings_clear"), calls)
@@ -522,6 +531,285 @@ class ProfileCreationComponentTest {
             Dispatchers.resetMain()
         }
         assertTrue(assertNotNull(navigationJob).isCompleted)
+    }
+
+    @Test
+    fun pendingUserLogoutRejectsRepeatedBackNextAndPickerOpens() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val pending = CompletableDeferred<Unit>()
+        val calls = mutableListOf<String>()
+        val directions = mutableListOf<UserDirection>()
+        val dialogs = mutableListOf<DialogConfig>()
+        var logoutJob: Job? = null
+        val authorization = object : AuthorizationFeature by AuthorizationFixture() {
+            override suspend fun deletePushToken(): Result<Unit> {
+                calls += "push_delete"
+                logoutJob = currentCoroutineContext()[Job]
+                pending.await()
+                return Result.success(Unit)
+            }
+
+            override suspend fun logout() {
+                calls += "logout"
+            }
+        }
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val application = startKoin {
+            modules(CoreModule().module, AuthAnalyticsModule().module, module {
+                single<Analytics> { recorder }
+                single { LogoutUseCase(authorization, TestSettings(calls)) }
+                single<DialogController> { object : DialogController {
+                    override fun open(config: DialogConfig) { dialogs += config }
+                } }
+            })
+        }
+        var viewModel: UserViewModel? = null
+        try {
+            val user = UserViewModel(application.koin.get(), application.koin.get(), application.koin.get())
+            viewModel = user
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                user.navigator.collect { directions += it }
+            }
+            user.onNameChange("Valid name")
+            user.onBack()
+            assertEquals(1, user.loaders.value.size)
+            val acceptedEvents = recorder.events.toList()
+
+            user.onBack()
+            user.onNextClick()
+            user.onWeightPickerClick()
+            user.onHeightPickerClick()
+            assertEquals(acceptedEvents, recorder.events)
+            assertTrue(dialogs.isEmpty())
+            assertTrue(directions.isEmpty())
+            runCurrent()
+
+            assertEquals(listOf("push_delete"), calls)
+            assertEquals(1, user.loaders.value.size)
+            assertTrue(assertNotNull(logoutJob).isActive)
+            val pendingEvents = recorder.events.toList()
+            user.onBack()
+            user.onNextClick()
+            user.onWeightPickerClick()
+            user.onHeightPickerClick()
+            runCurrent()
+            assertEquals(pendingEvents, recorder.events)
+            assertEquals(listOf("push_delete"), calls)
+            assertTrue(dialogs.isEmpty())
+            assertTrue(directions.isEmpty())
+
+            pending.complete(Unit)
+            runCurrent()
+            assertEquals(listOf("push_delete", "settings_clear", "logout"), calls)
+            assertEquals(listOf<UserDirection>(UserDirection.Back), directions)
+            assertTrue(user.loaders.value.isEmpty())
+            assertTrue(assertNotNull(logoutJob).isCompleted)
+            assertEquals(listOf("auth_input_changed", "auth_control_clicked", "profile_operation_started", "profile_operation_completed"), recorder.names)
+            val operations = recorder.events.filter { it.text("profile_action") == "logout" }
+            assertNotNull(operations.first().operation)
+            assertEquals(operations.first().operation, operations.last().operation)
+            assertTrue(recorder.views.isEmpty())
+        } finally {
+            viewModel?.onDestroy()
+            runCurrent()
+            stopKoin()
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun destroyingUserDuringLogoutCancelsBusinessAndClearsLoaderWithoutUiError() = runTest {
+        val recorder = RecordingAuthAnalytics()
+        val pending = CompletableDeferred<Unit>()
+        val calls = mutableListOf<String>()
+        val errors = mutableListOf<Throwable>()
+        val crashes = mutableListOf<Throwable>()
+        val directions = mutableListOf<UserDirection>()
+        var logoutJob: Job? = null
+        val authorization = object : AuthorizationFeature by AuthorizationFixture() {
+            override suspend fun deletePushToken(): Result<Unit> {
+                calls += "push_delete"
+                logoutJob = currentCoroutineContext()[Job]
+                pending.await()
+                return Result.success(Unit)
+            }
+
+            override suspend fun logout() {
+                calls += "logout"
+            }
+        }
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val application = startKoin {
+            modules(CoreModule().module, AuthAnalyticsModule().module, module {
+                single<Analytics> { recorder }
+                single { LogoutUseCase(authorization, TestSettings(calls)) }
+                single<DialogController> { object : DialogController {
+                    override fun open(config: DialogConfig) = error("Unexpected dialog")
+                } }
+                single<ErrorProvider> { object : ErrorProvider {
+                    override suspend fun provide(exception: Throwable, callback: () -> Unit) {
+                        errors += exception
+                    }
+                } }
+                single<CrashReporting> { object : CrashReporting {
+                    override fun reportException(throwable: Throwable, context: CrashReportContext) {
+                        crashes += throwable
+                    }
+                    override fun logBreadcrumb(code: CrashDiagnosticCode) = Unit
+                } }
+            })
+        }
+        var viewModel: UserViewModel? = null
+        var navigationJob: Job? = null
+        try {
+            val user = UserViewModel(application.koin.get(), application.koin.get(), application.koin.get())
+            viewModel = user
+            navigationJob = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                user.navigator.collect { directions += it }
+            }
+            user.onBack()
+            runCurrent()
+            assertEquals(listOf("push_delete"), calls)
+            assertEquals(1, user.loaders.value.size)
+            assertTrue(assertNotNull(logoutJob).isActive)
+
+            user.onDestroy()
+            runCurrent()
+            assertTrue(assertNotNull(logoutJob).isCancelled)
+            assertTrue(user.loaders.value.isEmpty())
+            assertTrue(assertNotNull(navigationJob).isCompleted)
+            pending.complete(Unit)
+            runCurrent()
+            assertEquals(listOf("push_delete"), calls)
+            assertTrue(directions.isEmpty())
+            assertTrue(errors.isEmpty())
+            assertTrue(crashes.isEmpty())
+            assertEquals(listOf("auth_control_clicked", "profile_operation_started", "profile_operation_interrupted"), recorder.names)
+            val operations = recorder.events.filter { it.text("profile_action") == "logout" }
+            assertNotNull(operations.first().operation)
+            assertEquals(operations.first().operation, operations.last().operation)
+            assertTrue(recorder.views.isEmpty())
+        } finally {
+            viewModel?.onDestroy()
+            runCurrent()
+            stopKoin()
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun completedRejectsFalseProfileCreationBeforePreparationAndWelcome() = runTest {
+        assertRejectedProfileCompletion(created = false)
+    }
+
+    @Test
+    fun completedRejectsFalseProfileReloadBeforePreparationAndWelcome() = runTest {
+        assertRejectedProfileCompletion(created = true)
+    }
+
+    private fun TestScope.assertRejectedProfileCompletion(created: Boolean) {
+        val recorder = RecordingAuthAnalytics()
+        val domain = AuthorizationFixture()
+        val calls = mutableListOf<String>()
+        val errors = mutableListOf<Throwable>()
+        val crashes = mutableListOf<Throwable>()
+        val errorDismissals = mutableListOf<() -> Unit>()
+        val directions = mutableListOf<ProfileCompletedDirection>()
+        val welcomes = mutableListOf<HomeWelcomeStatus>()
+        val userFeature = object : UserFeature by domain {
+            override suspend fun createProfile(profile: CreateUserProfile): Result<Boolean> {
+                calls += "create_profile"
+                return Result.success(created)
+            }
+
+            override suspend fun getUser(): Result<Boolean> {
+                calls += "profile"
+                return Result.success(false)
+            }
+        }
+        val settings = object : LocalSettingsFeature by TestSettings(calls) {
+            override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit> {
+                welcomes += value
+                return Result.success(Unit)
+            }
+        }
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val application = startKoin {
+            modules(CoreModule().module, AuthAnalyticsModule().module, module {
+                single<Analytics> { recorder }
+                single<ErrorProvider> { object : ErrorProvider {
+                    override suspend fun provide(exception: Throwable, callback: () -> Unit) {
+                        errors += exception
+                        errorDismissals += callback
+                    }
+                } }
+                single<CrashReporting> { object : CrashReporting {
+                    override fun reportException(throwable: Throwable, context: CrashReportContext) {
+                        crashes += throwable
+                    }
+                    override fun logBreadcrumb(code: CrashDiagnosticCode) = Unit
+                } }
+            })
+        }
+        var viewModel: ProfileCompletedViewModel? = null
+        try {
+            val completed = ProfileCompletedViewModel(
+                analytics = application.koin.get(),
+                name = "Private name",
+                weight = 84.6f,
+                height = 187,
+                experience = ExperienceEnumState.BEGINNER,
+                excludedMuscleIds = persistentListOf("muscle"),
+                missingEquipmentIds = persistentListOf("equipment"),
+                createProfileUseCase = CreateProfileUseCase(userFeature, domain, domain, domain, domain),
+                localSettingsFeature = settings,
+            )
+            viewModel = completed
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                completed.navigator.collect { directions += it }
+            }
+            runCurrent()
+
+            assertEquals(if (created) listOf("create_profile", "profile") else listOf("create_profile"), calls)
+            assertTrue(domain.calls.isEmpty())
+            assertTrue(welcomes.isEmpty())
+            assertTrue(directions.isEmpty())
+            val original = assertIs<IllegalStateException>(errors.single())
+            assertEquals(if (created) "Created profile could not be loaded" else "Profile could not be created", original.message)
+            assertSame(original, crashes.single())
+            assertTrue(completed.loaders.value.isEmpty())
+            assertEquals(listOf("profile_operation_started", "profile_operation_failed"), recorder.names)
+            assertNotNull(recorder.events.first().operation)
+            assertEquals(recorder.events.first().operation, recorder.events.last().operation)
+
+            errorDismissals.single().invoke()
+            runCurrent()
+            assertEquals(listOf<ProfileCompletedDirection>(ProfileCompletedDirection.Back), directions)
+            assertEquals(listOf("profile_operation_started", "profile_operation_failed"), recorder.names)
+        } finally {
+            viewModel?.onDestroy()
+            runCurrent()
+            stopKoin()
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun deletingProfilePreservesSettingsFailureAndNeverCallsDestructiveDelete() = runTest {
+        val original = IllegalStateException("Local settings cleanup failed")
+        val calls = mutableListOf<String>()
+        val userFeature = object : UserFeature by AuthorizationFixture() {
+            override suspend fun deleteProfile(): Result<Unit> {
+                calls += "delete_profile"
+                return Result.success(Unit)
+            }
+        }
+        val useCase = DeleteProfileUseCase(TestSettings(calls, Result.failure(original)), userFeature)
+
+        assertSame(original, assertFailsWith<IllegalStateException> {
+            useCase.execute()
+        })
+        assertEquals(listOf("settings_clear"), calls)
     }
 
     private fun TestScope.assertScreenCycle(

@@ -26,8 +26,9 @@ internal class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val googleAuthProvider: GoogleAuthProvider,
     private val appleAuthProvider: AppleAuthProvider,
+    initialState: LoginState = LoginState(),
 ) : BaseViewModel<LoginState, LoginDirection, LoginLoader>(
-    LoginState(
+    initialState.copy(
         isGoogleLoginAvailable = googleAuthProvider.isSupported,
         isAppleLoginAvailable = appleAuthProvider.isSupported,
     )

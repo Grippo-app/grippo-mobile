@@ -24,8 +24,9 @@ import com.grippo.toolkit.analytics.context.NavigationReason
 internal class UserViewModel(
     private val analytics: AuthAnalytics,
     private val dialogController: DialogController,
-    private val logoutUseCase: LogoutUseCase
-) : BaseViewModel<UserState, UserDirection, UserLoader>(UserState()),
+    private val logoutUseCase: LogoutUseCase,
+    initialState: UserState = UserState(),
+) : BaseViewModel<UserState, UserDirection, UserLoader>(initialState),
     UserContract {
 
     override val screenPresentation = { reason: NavigationReason ->
@@ -33,6 +34,10 @@ internal class UserViewModel(
     }
 
     override fun onWeightPickerClick() {
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
+
         analytics.trackEvent(AuthEvent.User.PickerOpened(ProfilePicker.Weight))
         val dialog = DialogConfig.WeightPicker(
             title = UiText.Res(Res.string.weight_picker_title),
@@ -52,6 +57,10 @@ internal class UserViewModel(
     }
 
     override fun onHeightPickerClick() {
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
+
         analytics.trackEvent(AuthEvent.User.PickerOpened(ProfilePicker.Height))
         val dialog = DialogConfig.HeightPicker(
             title = UiText.Res(Res.string.height_picker_title),
@@ -95,6 +104,10 @@ internal class UserViewModel(
     }
 
     override fun onNextClick() {
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
+
         val current = state.value
         val name = (current.name as? NameFormatState.Valid) ?: return
         val weight = (current.weight as? WeightFormatState.Valid) ?: return
@@ -111,8 +124,12 @@ internal class UserViewModel(
     }
 
     override fun onBack() {
+        if (loaders.value.isNotEmpty()) {
+            return
+        }
+
         analytics.trackEvent(AuthEvent.User.Control(ControlAction.Back))
-        safeLaunch {
+        safeLaunch(loader = UserLoader.Logout) {
             analytics.trackOperation(AuthOperation.Logout) {
                 logoutUseCase.execute()
             }

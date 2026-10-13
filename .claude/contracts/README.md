@@ -1,9 +1,10 @@
-# orchestrator/contracts — frozen pipeline contracts
+# Installed orchestrator contract references
 
 Stable mechanical shapes of the orchestrator pipeline. Each `*.md` pins a
 shape or invariant so the skills can share one explicit contract. These files
-are reference records rather than generated artifacts. Structural drift is
-guarded by `orchestrator/skills/checks/` and `orchestrator/lint.sh`.
+are reference records rather than generated artifacts. A configured orchestrator
+guards structural drift with its `orchestrator/skills/checks/` and
+`orchestrator/lint.sh`; those runtime tools are not installed in this checkout.
 
 ## Contract roster
 
@@ -23,10 +24,10 @@ guarded by `orchestrator/skills/checks/` and `orchestrator/lint.sh`.
 | `launch-sequence` | drift | `launch.md` (Step 0–14 + half-steps) | FROZEN ✓ |
 | `agents/<agent>.md` ×39 | roster | frozen per-role capability contracts | FROZEN ✓ |
 
-The skills cite the frozen contracts and 39 per-role records by name. The
-guard surface is the skill gate suite plus `orchestrator/lint.sh`.
+The skills cite these frozen contracts and per-role records by name. Their runtime
+gate suite applies only in a configured orchestrator workspace; installed records
+alone do not establish that a gate ran.
 
-`outcome-shape.json` is different in kind: it is the one LIVE machine-read data
-contract here. Its consumers load it at runtime, so editing it changes the
-board badge, the Task Details result projection, and the ship gate at once —
-which is the point.
+`outcome-shape.json` is machine-read data in a configured orchestrator. Its board,
+Task Details and ship-gate consumers read it at runtime. The installed copy here
+does not create those consumers.

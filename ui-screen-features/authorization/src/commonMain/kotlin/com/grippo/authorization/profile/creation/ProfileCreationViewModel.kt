@@ -4,11 +4,11 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.toPersistentList
 
-internal class ProfileCreationViewModel :
-    BaseViewModel<ProfileCreationState, ProfileCreationDirection, ProfileCreationLoader>(
-        ProfileCreationState()
-    ),
-    ProfileCreationContract {
+internal class ProfileCreationViewModel(
+    initialState: ProfileCreationState = ProfileCreationState(),
+) : BaseViewModel<ProfileCreationState, ProfileCreationDirection, ProfileCreationLoader>(
+    initialState
+), ProfileCreationContract {
 
     override fun onClose() {
         navigateTo(ProfileCreationDirection.Close)

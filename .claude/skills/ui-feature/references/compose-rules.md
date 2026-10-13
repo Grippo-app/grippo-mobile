@@ -59,6 +59,14 @@ Every `<Name>Screen.kt`: `@Composable internal fun <Name>Screen(component: <Name
 ### `@ReadOnlyComposable` (SHOULD)
 For getters that only read CompositionLocals and never affect recomposition. `AppTokens` is a `@Stable object`; each token (`colors`/`typography`/`dp`/...) is a regular `public val` with `@Composable @ReadOnlyComposable get` (not an extension property) — skips recomposition-scope bookkeeping.
 
+### Secret input keyboard
+
+Reuse InputPassword with `KeyboardType.Password`,
+`KeyboardCapitalization.None` and `autoCorrectEnabled = false`, including while
+the value is visible. Preserve its existing focus, visibility and IME callbacks
+and default focus-clearing behavior; keyboard actions do not implicitly submit.
+Keep callbacks neutral and do not add a separate input framework.
+
 ## Side effects
 
 - **`LaunchedEffect`** — key on whatever should re-trigger it. `LaunchedEffect(Unit)` is **forbidden for navigation** (navigation goes via `Direction` + `eventListener`); it is **acceptable** only for one-time side effects depending on no input (e.g. collecting a `snapshotFlow` for the composable's lifetime). If it depends on any value — even an implicit one like the system locale — key on that value.

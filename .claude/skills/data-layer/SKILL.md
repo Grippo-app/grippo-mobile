@@ -2,12 +2,12 @@
 name: data-layer
 description: >-
   Build the data layer for a KMP feature — add a data feature, repository, DTO,
-  domain model/enum, persist data, add or extend an endpoint on the product API,
+  domain model/enum, compose or change UseCase operations, persist data, add or extend an endpoint on the product API,
   add/extend a Room entity, DAO, or migration, or store a DataStore preference.
   Use when a task introduces a new domain concept the UI needs as a feature interface,
   adds/changes a backend endpoint + DTO, changes a Room schema (new column,
   index, table, type change), persists a key-value preference, or touches
-  auth/token storage. Covers the repository + feature-api split, observe/get/
+  auth/token storage or composing business behavior/outcomes. Covers the repository + feature-api split, observe/get/
   mutate shape, DTO↔Entity↔Domain boundary, and the migration authorization gate.
 ---
 
@@ -20,10 +20,15 @@ caller cancellation through suspend APIs, exception handling and `Result` bounda
 Operational entrypoint for data-layer work. The UI sees only the `<X>Feature`
 interface in `:data-features:feature-api`; the impl, repository, `<Product>Api`,
 Room, and DataStore live below it. This is the routing map, not new rules.
+UseCase composition also belongs here: preserve actual return/error contracts,
+required outcomes and data hydration without analytics dependencies. Storage and
+endpoint steps apply only when those layers change.
 
 ## When to use
 
 - Add a new `:data-features:<name>` module (new domain concept the UI consumes).
+- Compose or change a UseCase's complete business operation, outcome checks,
+  required cleanup or alternate-path data hydration.
 - Add or extend an endpoint + DTO on the flat `<Product>Api`.
 - Add or change a Room entity / DAO, or write a migration (schema delta).
 - Persist a small key-value preference via DataStore on the owning Repository.
@@ -31,12 +36,14 @@ Room, and DataStore live below it. This is the routing map, not new rules.
 
 ## Required inputs
 
-- **Task file path** and the **feature name** (domain noun).
+- **Authorized task scope** and the feature/operation name; include a task file
+  for a configured orchestrator task.
 - **Domain models** the feature exposes (strict-typed: enums for closed sets,
   `LocalDateTime`/`Duration` for timestamps/numbers — never raw `String`).
-- **API surface** (`observe* : Flow`, `get* : Result<Unit>`, verb mutations
-  `: Result<T>`) and which **endpoints** are needed.
-- **Persistence** — Room entity/DAO? DataStore preference (name, type, owner
+- **Actual API surface and outcome semantics** — Flow observations, Result-returning
+  Feature methods, or throwing Unit/T commands. Identify required endpoints only
+  when changing endpoint behavior.
+- **Affected persistence, if any** — Room entity/DAO? DataStore preference (name, type, owner
   Repository)? Migration (schema delta + `prelaunch` state)?
 - For endpoints, the **contract source** (see Step 1 of the endpoint recipe).
 
@@ -44,6 +51,12 @@ If domain shape is unclear, stop and ask — inventing a domain shape is out of
 scope.
 
 ## Workflow
+
+For composing operations read [UseCase contracts](references/error-pipeline.md#authoring-rules--usecase-should)
+and the actual callees first. A successful Result wrapper does not establish a
+successful business outcome; required payload/cleanup failures must stop later
+work. Verify complete operations and alternate-path hydration within the user's
+scope, without adding analytics types, new storage or test infrastructure.
 
 1. **Server owns the contract.** Confirm the endpoint is live before defining
    the DTO; check `backendContractEnabled` + the inventory snapshot. Mobile does
@@ -86,6 +99,7 @@ any feature instrumentation belongs to the owning ViewModel.
 |---|---|
 | New data feature | [`references/cookbook-data-feature.md`](references/cookbook-data-feature.md); [`references/repositories.md`](references/repositories.md) |
 | Repository shape / data flow | [`references/repositories.md`](references/repositories.md); [`references/module-structure.md`](references/module-structure.md) |
+| UseCase composition / outcomes / cleanup / alternate-path hydration | [`references/error-pipeline.md`](references/error-pipeline.md); [`references/repositories.md`](references/repositories.md) |
 | Feature behavior analytics impact / business boundary | [feature-analytics](../feature-analytics/SKILL.md), [`references/repositories.md`](references/repositories.md) |
 | Endpoint + DTO | [`references/cookbook-endpoint.md`](references/cookbook-endpoint.md); [`references/dtos-and-api.md`](references/dtos-and-api.md), [`references/backend-client.md`](references/backend-client.md) |
 | Room entity / DAO / migration | [`references/cookbook-room-migration.md`](references/cookbook-room-migration.md); [`references/persistence-room.md`](references/persistence-room.md) |
@@ -94,6 +108,10 @@ any feature instrumentation belongs to the owning ViewModel.
 | `:data-services:*` rules / anti-patterns | [`references/module-structure.md`](references/module-structure.md); [`references/repositories.md`](references/repositories.md) |
 
 ## Validators / gates
+
+The validator roster below applies to configured orchestrator tasks. Ordinary
+repository work requires the relevant semantic reviews and permitted verification,
+without unavailable machine reports or builds outside the authorized scope.
 
 - `data-layer-validator` — repository/feature split, observe/get/mutate shape,
   no DTO leak, no speculative DAO writes.
@@ -106,13 +124,17 @@ any feature instrumentation belongs to the owning ViewModel.
 
 ## Output contract
 
-Builders return the normalized envelope in
-[`orchestrator/contracts/builder-report.md`](../../contracts/builder-report.md)
+For configured orchestrator tasks, builders return the normalized envelope in
+[`builder-report.md`](../../contracts/builder-report.md)
 (`agent`, `status`, `files_touched`, `produced_signatures`, `assumptions`, `blockers`,
-`scope_deviations`, `handoff`). When an implementation plan is passed, its
+`scope_deviations`, `handoff`). When that configured task supplies a plan, its
 per-builder section (per
-[`orchestrator/contracts/planner-output.md`](../../contracts/planner-output.md))
+[`planner-output.md`](../../contracts/planner-output.md))
 is authoritative for file paths and names; this skill's recipes define the
 methodology. Owned builders: `data-feature-builder`,
 `data-service-scaffold-builder`, `room-migration-builder` (each `Read, Edit,
 Write, Bash, Grep, Glob`, `sonnet`).
+
+For ordinary repository tasks, report the behavior changed, touched files and
+actual verification/limitations; do not require unavailable orchestrator files
+or machine reports.

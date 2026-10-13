@@ -46,6 +46,15 @@ and navigation stay business-owned, never in analytics or the mapper.
 Keep both hooks consistent across block and Flow `safeLaunch`; pass callbacks
 only where needed, following the shared error contract in the reference.
 
+## State preservation
+
+For new and changed features apply
+[state-preservation](../state-preservation/SKILL.md). Its mandatory gate inventories
+all new screens or affected state owners, preserves nonsecret editable drafts,
+rebuilds data-backed state and verifies actual archive restoration. Empty container
+state needs no supplier. The implementation pattern stays in
+[process-death.md](references/process-death.md).
+
 ## Analytics impact
 
 For behavior changes apply [feature-analytics](../feature-analytics/SKILL.md) and
@@ -60,7 +69,7 @@ BaseComponent calls internal VM.bindScreen during doOnCreate; foundation alone o
 lifecycle binding/ScreenAnalytics/Initial→Restore. Graph hook stays null: no view
 or lifecycle service resolution. Components/routes/factories/Render need no analytics
 wiring; VM knows no Lifecycle/ComponentContext or activationFlow visibility observer.
-Normal retained VM ownership stays; no feature provider/snapshot/retention helper.
+Normal retained VM ownership stays; analytics adds no provider/snapshot/retention helper.
 
 Direct typed trackEvent facts use existing callbacks after busy guards. UI bounded
 status mapping stays in analytics/, business-model conversions in data-mappers.
@@ -71,14 +80,16 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
 
 ## Required inputs
 
-- **Task file path** (`orchestrator/tasks/todo/TASK_*.md`).
+- **Authorized task scope**; include `orchestrator/tasks/todo/TASK_*.md` only for
+  a configured orchestrator task. Ordinary feature work needs no task-board scaffold.
 - **Target module + names** — feature module, PascalCase screen/dialog name,
   serializable route payload type(s) for screens; initial payload, `title: UiText`
   and typed output callbacks for an in-memory dialog session.
 - **The `*Feature` / `*UseCase`** the ViewModel reads from — MUST already exist in
   `:data-features:feature-api`.
-- **The `*State` model + `stub*()`** the Screen previews — MUST already exist in
-  `:ui-core:state` (or run the `:ui-core:state` workflow first).
+- **Reusable UI models + `stub*()`** the Screen previews — MUST already exist in
+  `:ui-core:state` (or run that workflow first). The owning screen's MVI State is
+  created alongside its other six files, not in `:ui-core:state`.
 - **Implementation plan** (if present): its per-builder section is authoritative
   for file list + names. Plan wins on names/paths; this skill wins on methodology.
 
@@ -100,7 +111,8 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    `safeLaunch` / `Flow.safeLaunch` / `withLoader` / `update {}` / `navigateTo`
    with errors in the shared pipeline — never `viewModelScope.launch`, `GlobalScope`
    or local catches),
-   `<Name>Component` (`BaseComponent<Direction>`, `retainedInstance { getKoin().get() }`,
+   `<Name>Component` (`BaseComponent<Direction>`, `retainedInstance { <Name>ViewModel(...) }`
+   with dependencies resolved inside that factory,
    `eventListener` maps every Direction subtype), `<Name>Screen`
    (`@Composable internal fun(state, loaders, contract)` in `BaseComposeScreen`,
    `AppTokens.*` only, `@AppPreview` per significant state with `Contract.Empty`).
@@ -123,9 +135,12 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    `RootDirection` → `RootContract` → `RootViewModel` → `RootComponent.eventListener`
    chain), never direct feature-to-feature imports. Deeplinks add the `Deeplink`
    enum entry + `RootViewModel.parseDeeplink` branch.
-6. **Honor process-death** — all screen `*Router`/payloads `@Serializable`, no
+6. **Apply the state-preservation gate** — all screen `*Router`/payloads `@Serializable`, no
    lambdas in routes, state rebuilt in `init {}` via Flow re-subscription,
-   range/filter state lives in the route, `key = "..."` on `childStack`.
+   route inputs seed ranges/filters; local StateKeeper drafts preserve the latest
+   selection. Use `key = "..."` on `childStack`.
+   Nonsecret editable drafts use a local Component StateKeeper supplier and
+   serializable initialState; rebuild catalogs from Flows without erasing choices.
    Dialog configs/callbacks remain in memory; the session slot and step stack use
    `serializer = null` and are not restored. Read
    [process-death.md](references/process-death.md).
@@ -215,6 +230,10 @@ file restates the patterns relevant to its topic under its own "Anti-patterns".
 
 ## Validators / gates
 
+The validator roster below applies to configured orchestrator tasks. Ordinary
+feature work still requires the semantic analytics/state-preservation gates and
+permitted verification, without unavailable machine reports.
+
 - `mvi-contract-validator` — seven files present, correct shapes/suffixes.
 - `compose-stability-validator` — `@Immutable`/`@Stable`, immutable collections, no `var` in state.
 - `architecture-validator` — base-class usage, no `viewModelScope`/`GlobalScope` or local catches; review the shared error pipeline and cancellation.
@@ -226,9 +245,12 @@ file restates the patterns relevant to its topic under its own "Anti-patterns".
 
 ## Output contract
 
-Return a builder report conforming to `orchestrator/contracts/builder-report.md`
+For configured orchestrator tasks, return a builder report conforming to
+[`builder-report.md`](../../contracts/builder-report.md)
 (`agent`, `status` ∈ `done|blocked|failed|skipped`, `files_touched`,
 `produced_signatures`, `blockers`, `assumptions`, `scope_deviations`, `handoff`).
-When an implementation plan drives the task, its shape is
-`orchestrator/contracts/planner-output.md` — the per-builder contract section
-is the authoritative file list and naming table.
+When that configured task supplies an implementation plan, follow
+[`planner-output.md`](../../contracts/planner-output.md); its per-builder section
+is the authoritative file list and naming table. For ordinary repository tasks,
+report the behavior changed, touched files and actual verification/limitations;
+do not require unavailable orchestrator files or machine reports.

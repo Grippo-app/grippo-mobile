@@ -22,8 +22,6 @@ import platform.UIKit.UIWindow
 import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 public actual class AppleAuthUiProvider internal constructor(
     private val anchorProvider: () -> ASPresentationAnchor? = { currentPresentationAnchor() },
@@ -40,17 +38,20 @@ public actual class AppleAuthUiProvider internal constructor(
     private suspend fun beginSignIn(): AppleAccount =
         suspendCancellableCoroutine { continuation ->
             var completed = false
-            fun complete(result: Result<AppleAccount>) {
-                if (completed) return
-                completed = true
-                if (!continuation.isActive) return
-                result.fold(
-                    onSuccess = continuation::resume,
-                    onFailure = continuation::resumeWithException,
-                )
+            var createdController: ASAuthorizationController? = null
+            val complete: (Result<AppleAccount>) -> Unit = { result ->
+                if (!completed) {
+                    completed = true
+                    if (continuation.isActive) {
+                        continuation.resumeWith(result)
+                    }
+                }
             }
 
             runOnMain {
+                if (!continuation.isActive) {
+                    return@runOnMain
+                }
                 if (currentController != null) {
                     complete(Result.failure(AppleAuthException("Apple sign-in is already in progress")))
                     return@runOnMain
@@ -83,6 +84,7 @@ public actual class AppleAuthUiProvider internal constructor(
 
                 currentController = controller
                 currentDelegate = delegate
+                createdController = controller
 
                 controller.delegate = delegate
                 controller.presentationContextProvider = delegate
@@ -90,8 +92,11 @@ public actual class AppleAuthUiProvider internal constructor(
             }
             continuation.invokeOnCancellation {
                 runOnMain {
-                    currentController = null
-                    currentDelegate = null
+                    createdController?.cancel()
+                    if (currentController === createdController) {
+                        currentController = null
+                        currentDelegate = null
+                    }
                 }
             }
         }

@@ -9,12 +9,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.math.min
-import kotlin.random.Random
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -57,9 +53,10 @@ public actual class GoogleAuthUiProvider internal constructor(
     private val configuration: GoogleAuthConfiguration,
     httpClient: HttpClient,
     json: Json,
-    private val anchorProvider: () -> ASPresentationAnchor? = { currentPresentationAnchor() },
+    anchorProvider: () -> ASPresentationAnchor? = { currentPresentationAnchor() },
 ) {
     private val tokenClient = GoogleTokenClient(httpClient, json)
+    private val presentationContextProvider = SessionPresentationProvider(anchorProvider)
     private var currentSession: ASWebAuthenticationSession? = null
 
     @OptIn(ExperimentalForeignApi::class)
@@ -103,13 +100,6 @@ public actual class GoogleAuthUiProvider internal constructor(
             )
         }
 
-        val serverClientId = config.serverClientId
-        if (serverClientId != null && !serverClientId.endsWith(CLIENT_ID_SUFFIX)) {
-            throw GoogleAuthException.InvalidServerClientId(
-                "Google auth misconfigured: serverClientId must end with .apps.googleusercontent.com",
-            )
-        }
-
         val redirectUri = config.redirectUri.trim()
         val redirectScheme = config.redirectScheme.trim()
 
@@ -127,19 +117,17 @@ public actual class GoogleAuthUiProvider internal constructor(
             var createdSession: ASWebAuthenticationSession? = null
             var finished = false
 
-            fun finishOnceSuccess(url: NSURL) {
-                if (finished) return
-                finished = true
-                continuation.resume(url)
-            }
-
-            fun finishOnceError(error: Throwable) {
-                if (finished) return
-                finished = true
-                continuation.resumeWithException(error)
+            val complete: (Result<NSURL>) -> Unit = { result ->
+                if (!finished) {
+                    finished = true
+                    continuation.resumeWith(result)
+                }
             }
 
             runOnMain {
+                if (!continuation.isActive) {
+                    return@runOnMain
+                }
                 val session = ASWebAuthenticationSession(
                     authUrl,
                     configuration.redirectScheme,
@@ -150,26 +138,28 @@ public actual class GoogleAuthUiProvider internal constructor(
                             }
 
                             if (error != null) {
-                                finishOnceError(error.toGoogleAuthException())
+                                complete(Result.failure(error.toGoogleAuthException()))
                                 return@runOnMain
                             }
 
                             if (url == null) {
-                                finishOnceError(
-                                    GoogleAuthException.CredentialManagerFailed(
-                                        "Google sign-in session finished without callback URL",
+                                complete(
+                                    Result.failure(
+                                        GoogleAuthException.CredentialManagerFailed(
+                                            "Google sign-in session finished without callback URL",
+                                        ),
                                     ),
                                 )
                                 return@runOnMain
                             }
 
-                            finishOnceSuccess(url)
+                            complete(Result.success(url))
                         }
                     },
                 )
 
                 session.setPrefersEphemeralWebBrowserSession(true)
-                session.setPresentationContextProvider(SessionPresentationProvider(anchorProvider))
+                session.setPresentationContextProvider(presentationContextProvider)
 
                 currentSession = session
                 createdSession = session
@@ -177,15 +167,17 @@ public actual class GoogleAuthUiProvider internal constructor(
                 val started = session.start()
                 if (!started) {
                     if (currentSession === session) currentSession = null
-                    finishOnceError(
-                        GoogleAuthException.CredentialManagerFailed("ASWebAuthenticationSession failed to start"),
+                    complete(
+                        Result.failure(
+                            GoogleAuthException.CredentialManagerFailed("ASWebAuthenticationSession failed to start"),
+                        ),
                     )
                 }
             }
 
             continuation.invokeOnCancellation {
-                val session = createdSession ?: return@invokeOnCancellation
                 runOnMain {
+                    val session = createdSession ?: return@runOnMain
                     session.cancel()
                     if (currentSession === session) {
                         currentSession = null
@@ -250,8 +242,6 @@ public actual class GoogleAuthProvider actual constructor(
 
     private fun loadConfiguration(): GoogleAuthConfiguration? {
         val iosClientId = infoValue("GIDClientID") ?: return null
-        val serverClientId = infoValue("GIDServerClientID")
-
         val redirectUri =
             infoValue("GIDRedirectURI") ?: defaultRedirectUri(iosClientId) ?: return null
         val redirectScheme = redirectScheme(redirectUri) ?: return null
@@ -260,7 +250,6 @@ public actual class GoogleAuthProvider actual constructor(
             iosClientId = iosClientId,
             redirectUri = redirectUri,
             redirectScheme = redirectScheme,
-            serverClientId = serverClientId,
         )
     }
 }
@@ -269,7 +258,6 @@ internal data class GoogleAuthConfiguration(
     val iosClientId: String,
     val redirectUri: String,
     val redirectScheme: String,
-    val serverClientId: String?,
 )
 
 private class GoogleTokenClient(
@@ -357,7 +345,7 @@ private data class GooglePkce(
 ) {
     companion object {
         fun create(): GooglePkce {
-            val verifier = randomUrlSafeString(64)
+            val verifier = randomUrlSafeString()
             val (challenge, method) = pkceChallenge(verifier)
             return GooglePkce(verifier = verifier, challenge = challenge, method = method)
         }
@@ -450,32 +438,17 @@ private fun parseFragment(fragment: String?): Map<String, String> {
     return queryItems(parser.queryItems)
 }
 
-private fun randomState(): String = randomUrlSafeString(32)
+private fun randomState(): String = randomUrlSafeString()
 
 @OptIn(ExperimentalEncodingApi::class)
 private fun pkceChallenge(verifier: String): Pair<String, String> {
-    val hash = sha256(verifier.encodeToByteArray()) ?: return verifier to "plain"
+    val hash = Sha256.digest(verifier.encodeToByteArray())
     return encodeToUrlSafe(hash) to "S256"
 }
 
-private fun sha256(data: ByteArray): ByteArray? {
-    return Sha256.digest(data)
-}
-
 @OptIn(ExperimentalEncodingApi::class, ExperimentalForeignApi::class)
-private fun randomUrlSafeString(minLength: Int): String {
-    repeat(6) {
-        val candidate = encodeToUrlSafe(secureRandomBytes(64)).ifEmpty {
-            Base64.UrlSafe.encode(ByteArray(64)).replace("=", "")
-        }
-        if (candidate.length >= minLength) {
-            return candidate.take(min(candidate.length, 128))
-        }
-    }
-    val fallback = encodeToUrlSafe(secureRandomBytes(128)).ifEmpty {
-        encodeToUrlSafe(Random.nextBytes(128))
-    }
-    return fallback.take(min(fallback.length, 128))
+private fun randomUrlSafeString(): String {
+    return encodeToUrlSafe(secureRandomBytes(64))
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -484,7 +457,10 @@ private fun secureRandomBytes(count: Int): ByteArray {
     val status = data.usePinned {
         SecRandomCopyBytes(kSecRandomDefault, count.toULong(), it.addressOf(0))
     }
-    return if (status == errSecSuccess) data else Random.nextBytes(count)
+    if (status != errSecSuccess) {
+        throw GoogleAuthException.CredentialManagerFailed("Unable to generate secure bytes for Google sign-in")
+    }
+    return data
 }
 
 @OptIn(ExperimentalEncodingApi::class)

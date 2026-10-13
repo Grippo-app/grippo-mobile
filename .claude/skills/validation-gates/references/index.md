@@ -13,7 +13,7 @@ routed below.
 | `acceptance-tracer` *(always-on)* | every acceptance criterion traced to code | task spec acceptance criteria (per-task) |
 | `architecture-validator` | module layout, architecture-shape | [forbidden-patterns.md](forbidden-patterns.md) § Architecture-shape |
 | `mvi-contract-validator` | State/Action/Event contract | [forbidden-patterns.md](forbidden-patterns.md) § State, § Collections in state |
-| `di-validator` | Koin module shape, no hand-DSL / `getKoin().get()` | [forbidden-patterns.md](forbidden-patterns.md) § Dependency Injection |
+| `di-validator` | Generated Koin module shape; Component retained-VM dependency resolution remains allowed | [forbidden-patterns.md](forbidden-patterns.md) § Dependency Injection |
 | `data-layer-validator` | repositories, DTOs, error mapping | [forbidden-patterns.md](forbidden-patterns.md) § Data layer, § Errors |
 | `compose-stability-validator` | recomposition / stability, inline `dp`·`Color` | [forbidden-patterns.md](forbidden-patterns.md) § Compose, § Resources |
 | `naming-convention-validator` | naming across layers | [forbidden-patterns.md](forbidden-patterns.md) § Architecture-shape (naming) |
@@ -25,7 +25,7 @@ routed below.
 | `figma-screenshot-validator` *(conditional, `figmaEnabled` + non-`none` `## Design`)* | visual fidelity: Roborazzi capture vs Figma oracle; missing oracle/capture is a BLOCKER | [screenshot-fidelity-gate.md](screenshot-fidelity-gate.md) |
 | `backend-contract-drift` *(conditional, `backendContractEnabled` tri-state)* | `false` skips; `auto` skips only without a snapshot; `true` requires a snapshot and treats a missing one as ERROR | backend-contract-client skill `references/drift.md` + `contracts/agents/backend-contract-drift.md` |
 
-Always-on three run on every task; conditional validators run when the
+For configured orchestrator tasks, always-on three run on every task; conditional validators run when the
 `task-intake` kind applies and **fail closed** (a required-but-skipped one emits
 `status: skipped` + `skip_reason`). Dedup is `(file, rule_id)` at routing.
 
@@ -47,22 +47,18 @@ changes need an impact assessment, not new events.
 
 ## Reviewer-only rules (no mechanical validator)
 
-These rules are caught **only by the reviewer** — no validator greps them. They
-MUST stay referenced; losing one silently is a behavior regression. The full
-register lives at:
-
-→ **[orchestrator/skills/_index/known-gaps.md](../../../../orchestrator/skills/_index/known-gaps.md)** — groups `self-enforced`,
-`pattern-orphans`, `duplicate-finding-knowns`; source-linked to
-`../../_index/known-gaps.md`.
-
-The individual reviewer-only entries are also flagged inline in
+These rules require semantic review; a keyword scan cannot establish correctness.
+The reviewer-only entries available in this checkout are flagged inline in
 [forbidden-patterns.md](forbidden-patterns.md) (e.g. `buildList {}` without
 `.toImmutableList()`, subgrouped `<Product>Api`, Compose-Nav alongside Decompose,
 mutable routes, raw `Throwable` from `validateResponse`, PNG vector-candidates,
 `@JvmStatic` in `commonMain`, `Channel` over `Flow`, PII logging, multiple `Json`
 instances, flat-scalar entity composables, inline `ImageVector.Builder`
 placeholders, non-`*Screen` UI beside the seven MVI files, flat scalar pile in
-`*State`).
+`*State`). Apply the owning skills' affected analytics and state-preservation
+checks too. A configured orchestrator additionally requires its external
+`orchestrator/skills/_index/known-gaps.md` register; verify it exists before that
+pipeline runs. Do not treat an absent external register as a passed gate.
 
 ## Reference files
 
@@ -71,7 +67,7 @@ placeholders, non-`*Screen` UI beside the seven MVI files, flat scalar pile in
 - [spec-fidelity-gate.md](spec-fidelity-gate.md) — `figma-spec-validator` procedure (extract-compose-model + compare-screen-spec machine baseline, four comparison families, severities, the `spec-<stem>.json` report the final evidence bundle requires) + the validator's frozen surface.
 - [when-to-stop-and-ask.md](when-to-stop-and-ask.md) — escalation stop points + what-you-can-change-without-asking.
 - [config-gates.md](config-gates.md) — `codexEnabled` / `verifyEnabled` gate selectors.
-- [orchestrator/skills/_index/known-gaps.md](../../../../orchestrator/skills/_index/known-gaps.md) — reviewer-only gap register (MUST stay enforced).
+- `orchestrator/skills/_index/known-gaps.md` — additional required register for a configured orchestrator task.
 
 ## Output contracts (unchanged)
 

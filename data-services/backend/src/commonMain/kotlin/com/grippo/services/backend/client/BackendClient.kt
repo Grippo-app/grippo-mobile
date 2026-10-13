@@ -17,6 +17,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
@@ -40,8 +41,9 @@ internal class BackendClient(
         }
 
         install(Logging) {
-            level = LogLevel.ALL
+            level = LogLevel.INFO
             logger = clientLogger
+            filter { request -> !request.url.encodedPath.startsWith("/auth/") }
         }
 
         install(Auth) {

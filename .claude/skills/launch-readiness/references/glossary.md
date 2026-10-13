@@ -149,7 +149,7 @@ requirements to a new project:
 
 | Category | Names |
 |---|---|
-| Base classes | `BaseViewModel`, `BaseComponent`, `BaseComposeScreen`, `BaseDirection`, `BaseLoader`, `BaseRouter`, `BaseResult`, `ComponentIdentifier`, `NoneIdentifier` |
+| Base classes | `BaseViewModel`, `BaseComponent`, `BaseComposeScreen`, `BaseDirection`, `BaseLoader`, `BaseRouter`, `BaseResult`, `PersistenceKey` |
 | Infrastructure | `OperationManager`, `ResultManager`, `ResultEmitter`, `ResultKey`, `ResultKeys`, `Processing` |
 | Design tokens | `AppTokens`, `AppTheme`, `AppColor`, `AppDp`, `AppTypography`, `AppString`, `AppDrawable`, `AppIcon`, `AppPreview`, `PreviewContainer`, `AppLocale` |
 | Resources | `StringProvider`, `UiText`, `Format*State` |

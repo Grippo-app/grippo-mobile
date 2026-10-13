@@ -11,7 +11,8 @@ import com.grippo.toolkit.analytics.context.NavigationReason
 
 internal class ExperienceViewModel(
     private val analytics: AuthAnalytics,
-) : BaseViewModel<ExperienceState, ExperienceDirection, ExperienceLoader>(ExperienceState()),
+    initialState: ExperienceState = ExperienceState(),
+) : BaseViewModel<ExperienceState, ExperienceDirection, ExperienceLoader>(initialState),
     ExperienceContract {
 
     override val screenPresentation = { reason: NavigationReason ->

@@ -2,6 +2,8 @@
 
 Scope 2026-10-13: typed stateless API в VM и общий foundation screen hook. Стандарт —
 [feature-standard](feature-standard.md); история и команды — [todo](todo.md).
+Последний полный проход — [итоговый аудит](authorization-review.md), включая
+бизнес-исправления, providers, безопасность логов и границы end-to-end готовности.
 Прежние scenario/retention/provider проверки относятся к своим реализациям.
 Актуальные изолированные JVM/VM проверки перечислены ниже. Android/iOS builds,
 Gradle/KSP/generated DI, rendering/native SDK runtime и Firebase не входят
@@ -97,13 +99,17 @@ InputPassword не содержит Clear control: password InputCleared caller 
 submit. Для текстовых полей наблюдается смена validation status, а не каждый
 символ/равный status; это намеренное покрытие текущего простого API.
 
-Existing eligibility/busy guards стоят до intent event; analytics не меняет
+Business eligibility/busy guards стоят до intent event. Analytics не выбирает
 validation/доступность controls. Rejected Login.Email/Registration.Submit/User.Next/
-Experience.Next не создают accepted intent или operation events. В этом проходе
+Experience.Next не создают accepted intent или operation events. В прежнем проходе
 четыре event calls перенесены после прежних guards без изменения payload/schema;
 прежние counts, включавшие rejected callbacks, не считать сопоставимыми напрямую.
-Neutral optional Input callbacks сохраняют default
-focus/keyboard/clear behavior. Raw text/length/name/email/password/height/weight,
+Последний business audit добавил Logout loader и guards User.Back/Next/picker opens:
+повторное или конкурирующее действие во время logout не создаёт event/dialog/navigation.
+User continue disabled при busy или любом невалидном Name/Weight/Height.
+Neutral optional Input callbacks сохраняют focus/clear/IME callback behavior.
+Password keyboard исправлен на Password/None/autoCorrectEnabled=false.
+Raw text/length/name/email/password/height/weight,
 selected entity IDs и exception text в payload не передаются. Programmatic Back
 после dialog dismiss не вызывает instrumented user Back callback.
 
@@ -148,6 +154,235 @@ adapters не менялись; Firebase delivery не проверяется э
 
 ## Текущая проверка
 
+### Повторный аудит сохранения состояния
+
+Проверены все 11 владельцев: семь локальных drafts, 18 сохраняемых полей и семь
+transient полей. Ключи остаются в нижних private companion objects; адреса и
+serializers прежние. Auth/AuthProcess/ProfileCreation восстанавливают childStack,
+Splash и Completed не получают отдельные suppliers для пустого State.
+
+Исправлена потеря принятого выбора после Back/pop и повторного открытия шага:
+ProfileCreation передаёт experience, excludedMuscleIds и missingEquipmentIds
+новым дочерним Components как обычные initial business inputs. Локальный archive
+имеет приоритет; без него каталог использует принятые исключения как known IDs,
+поэтому пустая загрузка не стирает выбор, а остальные новые items выбираются
+прежним reconciliation. State/VM/routes/use cases и analytics API не менялись.
+Нового хранилища, metadata-файлов, providers или callbacks синхронизации нет.
+
+Три новые repository regressions проверяют Back/pop, archive JSON roundtrip,
+fresh Components/VMs, parent seed и второй restore более свежего локального выбора
+поверх уже принятого parent. Каталоги проверяют empty → reload, без synthetic
+events; возврат на Equipment не запускает отменённое создание профиля повторно.
+На before production эти три сценария падают независимо; текущие **70 UI/domain/
+error cases и 14 foundation cases прошли**, всего **84** без повторного счёта.
+
+UI production/tests скомпилированы заново: 227 production/fixture inputs и 19 test
+inputs. Неизменные prerequisites и foundation test bytecode использованы после
+проверки актуальных source SHA и artifact SHA; foundation JUnit запущен заново.
+Пять canonical документов согласованы с порядком retained VM → local archive →
+accepted parent/route inputs → defaults. Skills, примеры, links/fences и exact
+source scope проверены отдельно; ограничения iOS shell остаются прежними.
+Android/iOS builds, Gradle/KSP, native UI/SDK, rendering и Firebase не запускались.
+Артефакты и команды —
+[todo](todo.md#повторный-аудит-сохранения-auth--2026-10-13).
+
+### Предыдущий перенос ключей в компоненты
+
+Foundation использует final invariant PersistenceKey<T> с internal address и
+serializer. Каждый из семи владельцев — Login, Registration, ProfileCreation, User,
+Experience, ExcludedMuscles и MissingEquipments — объявляет typed DRAFT в private
+companion object в самом низу своего Component. Отдельные *Persistence.kt,
+центральный AuthStateKeys и папка authorization/state удалены. restoreState(DRAFT)
+и saveState(DRAFT) используют прежние archive addresses/serializers. State остаётся
+слепком экрана/данных. VM/business/routes, retained factory, lazy supplier,
+parent-before-children order и analytics hooks не меняются.
+
+Свежая targeted JVM проверка после переноса: **67 существующих тестов прошли**.
+Текущие auth Component/VM/domain sources скомпилированы заново: 227 production/fixture
+inputs и 19 test inputs. Неизменные prerequisite foundation/API/analytics jars
+переиспользованы только после проверки их artifact SHA и всех текущих source SHA.
+Существующие KSP/resource/render/date/Google substitutes и exclusions прежние;
+Android/iOS builds, Gradle/KSP, native UI, rendering и Firebase не запускались.
+Все семь archive addresses/serializers и State snapshots сохранены; отдельные
+metadata-файлы удалены. Canonical skill/examples и независимое exact-diff review
+прошли, foundation API/helpers/VM/business/routes/analytics/tests не менялись.
+Fresh artifacts и команды —
+[todo](todo.md#ключи-сохранения-в-компонентах--2026-10-13).
+
+### Предыдущая проверка размещения в отдельных файлах
+
+Проверка предыдущего refactor: **81 существующий JUnit case прошёл** — 14 foundation
+и 67 auth VM/Components/domain/error pipeline. Foundation и prerequisite APIs,
+analytics implementation, UI sources/tests скомпилированы заново из текущего repo;
+UI manifest содержит 234 production/fixture и 19 test inputs. Typed restoration,
+retained priority, sibling isolation, JSON roundtrip/fresh Components и сохранение
+parent/child drafts прошли. Generated KSP DI, rendering/date/Google platform runtime
+заменены прежними explicit/fail-fast JVM fixtures; Android/iOS builds, native SDK UI,
+Gradle и Firebase не запускались.
+
+Внешний consumer PersistenceKey компилируется без friend paths; все шесть
+неправильных type/visibility/finality usages отвергнуты по соответствующим compiler
+diagnostics. Семь старых адресов/serializers и bytewise неизменные State подтверждены.
+Скиллы и примеры актуальны: семь validators, 17 Markdown документов, 82 local links,
+23 anchor, exact foundation drop-ins. Exact scope — 30 путей, без дрейфа VM/routes/
+business/analytics. Команды и fresh artifacts —
+[todo](todo.md#метаданные-сохранения-по-владельцам--2026-10-13).
+
+### Предыдущий итоговый аудит auth
+
+Свежий isolated JVM запуск: **157 JUnit cases прошли** — auth/common 19,
+toolkit/API/core/foundation 67, actual auth UI/domain/affected caller/error pipeline
+67, actual ResponseValidator четыре. UI/domain группа содержит шесть BaseViewModel
+error cases; 14 foundation входят в 67 и повторно не считаются. Before UserVM/Loader
+и before CreateProfile/Delete дают по три ожидаемых behavioral failures на новых
+тестах. Before ResponseValidator падает только на новом fatal/non-Exception identity
+regression, текущий набор из четырёх cases проходит.
+
+CreateProfile проверяет required true outcomes до подготовки/welcome/Home.
+Register existing-profile path загружает weight history перед goal/push; actual
+полный FeatureApiModule строго компилируется и его Koin registration выполняет
+оба profile paths. Delete не выполняется после failure обязательного clear.
+User logout rejection/cancellation/loader tests проверяют реальные последствия.
+UseCase results/errors/cancellation остаются бизнес-контрактами, analytics их наблюдает.
+
+Actual BackendClient/TokenProvider/ClientLogger/DTO/parser/file-logger harness
+проверил пять auth paths, корректные payload/header/result/error и отсутствие
+секретов в транспортном логе. Before TokenProvider воспроизводит persisted bearer
+prefix leak. Refresh runtime этот harness не проверяет; его неизменные ветви
+сверены по exact before diff. Native fixes проверены по source/SDK contracts;
+actual pure SHA256/PKCE и точный Password KeyboardOptions block проверены отдельно.
+
+Ни platform builds, ни generated KSP DI, ни native/render/real sign-in, ни Firebase
+не выполнялись. Production collection пока Unknown; iOS shell archive отсутствует;
+соседний backend возвращает чувствительное Google verification error.message.
+Все границы и конкретные исправления — в [review](authorization-review.md).
+Fresh commands/logs/baseline: точный audit путь указан в review/todo.
+
+### Предыдущий проход типизированных ключей
+
+Типизированные ключи черновиков и общий Component API — 2026-10-13:
+
+- Foundation owns final invariant StateKey<T>: stable archive address paired with
+  the matching KSerializer<T>; both properties are internal. BaseComponent exposes
+  protected restoreState(key) and saveState(key, supplier). These directly consume
+  and register in the existing local StateKeeper; saveState registers a lazy
+  supplier rather than writing immediately. No service/DI/provider, reflection,
+  extra job, automatic VM serialization or new BaseComponent state generic.
+- One internal authorization/state/AuthStateKeys matrix owns the same seven
+  addresses/serializers. All seven draft owners use the typed methods. Private
+  draft-key companions and repeated string/serializer bindings are gone. State
+  classes, formatters, passwords/transient policy, VM/business bodies, routes,
+  analytics schemas/hooks and parent-before-child restoration are unchanged.
+- Deleted unused ComponentIdentifier/NoneIdentifier and BaseComponent's unused
+  constructor parameter. Whole-project callers never supplied it; it provided
+  neither result addressing nor archive identity. Docs/drop-in remove the false
+  live-instance semantics. ResultKey and navigation childStack keys remain separate.
+- Fresh strict JVM compilation: 14 foundation sources and 228 auth/fixture sources.
+  **69 cases pass**: 14 foundation cases (five new) and all 55 auth/affected-caller
+  cases. New actual-component regressions cover lazy latest snapshots, fresh VM
+  without navigation replay, sibling contexts/reversed recreation, retained memory
+  winning over an older archive, strict duplicate registration and literal legacy
+  archive restore/resave. Legacy addresses and unchanged State serializers checked
+  against this audit's exact before snapshot.
+- An external consumer without friend paths compiles. Six negative checks reject
+  another state's supplier/serializer, access to hidden address/serializer,
+  external protected binding and extending StateKey. Canonical preservation and
+  UI skills now require feature-local typed metadata and protected draft bindings.
+
+Commands, logs, manifests and before snapshot:
+`/tmp/component-state-keys-20261013-6f6p5hnb/`.
+Android/iOS builds, Gradle/KSP/generated DI, rendered/native SDK runtime and Firebase
+were not run. Existing isolated JVM substitutions remain in ui-jvm/tests.json;
+foundation uses cached dependency bytecode and a test-only Decompose main-thread
+check setting. Current iOS still supplies no saved-state archive bridge.
+
+### Предыдущий полный аудит auth-состояния
+
+Полный аудит сохранения состояния auth — 2026-10-13:
+
+| Владелец | Сохраняем в локальном StateKeeper | Восстанавливаем из источника / оставляем только в памяти |
+|---|---|---|
+| Auth | Сериализованный AuthRouter/childStack | AuthState — object, отдельного draft нет |
+| AuthProcess | Сериализованный AuthProcessRouter/childStack | AuthProcessState — object, отдельного draft нет |
+| Login | Последний EmailFormatState: valid, invalid и empty; LoginDraft | Password transient → Empty; Google/Apple availability из текущих providers |
+| Registration | Последний EmailFormatState, включая изменение/очистку prefill; RegistrationDraft | Password transient → Empty; route email только без сохранённого draft |
+| Splash | Только существующая навигация | Startup token/profile/catalog источники; SplashState — object |
+| ProfileCreation | Принятые name/weight/height/experience/excluded/missing IDs; ProfileCreationDraft | Parent draft восстанавливается до childStack |
+| User | Последние Name/Weight/Height FormatState, включая незавершённый ввод; UserDraft | Живой picker/dialog закрыт; принятые значения остаются в draft |
+| Experience | Текущий selected, в том числе до Next; ExperienceDraft | Suggestions пересоздаются из enum |
+| ExcludedMuscles | Group, selected и known IDs; ExcludedMusclesDraft | Suggestions из прежнего Flow, начальная пустая выдача не стирает intent |
+| MissingEquipments | Group, selected и known IDs; MissingEquipmentsDraft | Suggestions из прежнего Flow, начальная пустая выдача не стирает intent |
+| Completed | Поля восстановленного parent | ProfileCompletedState — object; прежняя owned completion operation |
+
+- Added the two missing credential-screen drafts through the existing Component
+  consume/register pattern and typed initialState. Restored Invalid/Empty email
+  wins over the route prefill; no per-edit route changes, persistence helpers,
+  providers, new jobs or analytics lifecycle/state wiring. Profile drafts from
+  the preceding fix remain intact. Auth has seven local draft suppliers.
+- Password fields and Login provider flags are @Transient with safe defaults.
+  Tests inspect the materialized StateKeeper payload, including inactive Login
+  in the Registration Back stack, and verify secret omission and fresh empty
+  password. Login recomputes provider availability; the isolated Google actual
+  advertises true to distinguish recomputation from default false.
+- Fresh strict explicit-API JVM compilation: 227 production/fixture sources,
+  18 test sources, **55 passing UI/affected-caller cases** (48 repository and seven
+  temporary JVM cases). Six new cases cover exact/cleared email, actual archive
+  recreation, submit guards, Back, cancellation/no automatic replay and new
+  whole operation after re-entering a password. Five actual-component regressions
+  fail against this audit's pre-fix production snapshot; the separate new
+  serializer check is excluded from that baseline run. No working-tree reverts.
+- Canonical [state-preservation skill](../../.claude/skills/state-preservation/SKILL.md)
+  requires a field inventory and fresh-component restoration verification for
+  new/changed features. Entry points, UI workflow/recipe, planner/lookup and
+  reviewer gate route there. Saved nonsecret drafts and current filters differ
+  from rebuilt data/runtime secrets; presentation-only widget policy is separate.
+- All eight leaf screen hooks, three null containers, existing route serializers,
+  operation boundaries, DI and native shells remain unchanged. Save/restore adds
+  no synthetic input events or screen presentations to current instances.
+
+This audit's snapshots, commands and red/green reports:
+`/tmp/auth-state-preservation-20261013-7u7aujdw/`.
+No Android/iOS builds, Gradle/KSP, rendering, native SDK runtime or Firebase.
+JVM substitutions are explicit in `ui-jvm/tests.json`. StateKeeper restores
+supplied archives; current Android has that bridge, current iOS does not.
+Arbitrary cold-start disk persistence and an iOS shell bridge are outside scope.
+
+### Предыдущая проверка черновика профиля
+
+Восстановление черновика создания профиля — 2026-10-13:
+
+- Five existing Components save their business draft in their own StateKeeper:
+  parent accepted values and each editable screen's latest inputs/selection.
+  Fresh retained VMs receive initialState; parent restoration precedes childStack
+  construction, so Completed receives the entered profile. No provider, generic
+  BaseViewModel persistence, per-input navigation update or synchronization job.
+- Serializable state preserves invalid NameFormatState, accepted weight/height,
+  selected experience, known/selected catalog IDs and selected group. Suggestions
+  are transient and rebuilt from existing Flows. Empty catalog emissions retain
+  choices; nonempty updates select new IDs and reconcile removed IDs/groups.
+  Next uses the saved known-minus-selected IDs even before the catalog arrives.
+- The authorization serialization plugin is now required for these business-state
+  serializers. Router contracts, DI, all eight leaf screen hooks and three null
+  containers, event schemas and operation boundaries are unchanged. Draft saving
+  emits no analytics, and restoration fabricates no input/selection events.
+- Fresh strict explicit-API JVM compilation covers 227 production/fixture sources.
+  **49 UI/affected-caller tests pass**: 44 repository cases and five temporary
+  Login/AuthProcess/ProfileSettings cases. Five new repository cases perform
+  StateKeeper.save → JSON roundtrip → destroy old lifecycle/InstanceKeeper → fresh
+  context, and verify inputs, Back, both catalog drafts and exact CreateProfile
+  inputs/completion/cancellation. All five fail on the pre-fix production snapshot.
+- Persistence follows supplied saved state: Android already provides that bridge;
+  the current iOS shell supplies none. This fixes draft restoration within a saved
+  navigation tree, not disk persistence on arbitrary cold starts. Dialog sessions
+  remain closed after recreation; accepted picker results belong to the draft.
+
+Fresh scripts, before snapshots and red/green logs:
+`/tmp/profile-draft-restoration-20261013-6gacna0_/`.
+No Android/iOS builds, Gradle/KSP, rendering/native SDK runtime or Firebase.
+JVM substitutions remain explicitly listed in `ui-jvm/tests.json`.
+
+### Аудит после переименования в Registration
+
 Аудит после переименования в Registration — 2026-10-13:
 
 - Independently reviewed naming, all 11 MVI/route/Component/VM/Render chains,
@@ -168,10 +403,10 @@ adapters не менялись; Firebase delivery не проверяется э
   Both local-clear regressions fail against the pre-fix use case and pass after
   the fix; remote cleanup failure still permits a successful logout.
 - Independent review of production changes and regression tests has no blockers.
-  Existing profile-draft limitation remains outside this cleanup: parent VM state
+  At that audit, the profile-draft limitation remained outside its cleanup: parent VM state
   is retained in memory, while restored child routes do not carry the entered draft.
   Process recreation can therefore lose data and return Completed to an earlier step.
-  This audit does not claim that profile draft restoration is complete.
+  The later draft-restoration fix is described in the current check above.
 
 Fresh logs/scripts, red/green results, inventory and baseline:
 `/tmp/auth-registration-audit-20261013-rch4oat_/`.

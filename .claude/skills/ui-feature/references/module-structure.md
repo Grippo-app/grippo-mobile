@@ -60,7 +60,7 @@ Screen feature (bare-name root):
 ui-screen-features/profile/
   build.gradle.kts
   src/commonMain/kotlin/com/<org>/<product>/profile/
-    ProfileComponent.kt           // public — feature root, owns StackNavigation<ProfileRouter>
+    ProfileComponent.kt           // public — owns StackNavigation<ProfileRouter>; DRAFT companion if it owns a draft
     ProfileContract.kt  ProfileState.kt  ProfileDirection.kt  ProfileLoader.kt  ProfileViewModel.kt
     ProfileScreen.kt              // renders ChildStack of sub-screens
     summary/                      // sub-screen "summary" — internal
@@ -82,6 +82,7 @@ Dialog feature: `ui-dialog-features/amount-picker/src/commonMain/kotlin/com/<org
 - One package per sub-screen / sub-dialog; the seven MVI files at its root, plus an optional `components/` subfolder.
 - **Non-`*Screen` UI lives in `components/`** — one cohesive composable per file (file name = the entry composable, with its `private` helpers and `@AppPreview`s co-located). The `Screen` orchestrates; it doesn't inline large UI or scatter it across the seven. A widget reused across features graduates to `:design-system:components` / `:compose-libs:*`.
 - Sub-screens are `internal`; the feature-root component is `public` (so `:shared`'s `RootComponent.createChild` can instantiate it).
+- A Component with a saved draft defines one typed `DRAFT = PersistenceKey("stable address", State.serializer())` in a private companion object at the bottom of the class and uses protected BaseComponent.restoreState/saveState. No separate metadata file, feature-wide matrix or raw draft StateKeeper.consume/register bindings.
 - A screen feature exposes routes via `:ui-screen-features:screen-api`; a dialog feature exposes config via `:ui-dialog-features:dialog-api`. **Direct symbol imports between feature modules are forbidden.**
 - A feature may depend on `:compose-libs:*` for specialized widgets. It must **not** depend on another feature module.
 

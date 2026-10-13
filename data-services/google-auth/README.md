@@ -76,8 +76,8 @@ Google Cloud project.
 
 In **APIs & Services ▸ Credentials** create:
 
-1. **Web application** – the "server" client ID. Use it for backend token verification and provide
-   it to both mobile clients (see [Android](#android-configuration) and [iOS](#ios-configuration)).
+1. **Web application** – the "server" client ID. Android requests ID tokens for this audience;
+   provide it to the Android app and the backend.
 2. **Android application** – enter the package name and SHA-1 fingerprints (debug + release). Google
    Identity Services uses this to issue tokens to your APKs.
 3. **iOS application** – enter the bundle identifier. The console shows both the client ID and a
@@ -91,10 +91,11 @@ Re-download the credentials whenever package/bundle IDs or signing keys change.
 | --- | --- | --- |
 | Requesting ID tokens on Android | Web application | `GOOGLE_SERVER_CLIENT_ID` manifest placeholder |
 | Requesting ID tokens on iOS | iOS application | `GIDClientID` and redirect scheme in `Info.plist` |
-| Backend token verification / exchanging auth codes | Web application | `GIDServerClientID` (`Info.plist`) and backend configuration |
+| Backend token verification | Web application for Android; iOS application for iOS | Backend's allowed Google audiences |
 
-Share the Web client ID with the backend that validates ID token `sub`/`aud` claims – the ID token
-`aud` field is set to this value.
+The iOS provider uses `ASWebAuthenticationSession` with PKCE S256 and exchanges the authorization code
+using `GIDClientID`. Its ID token audience is the iOS client ID. Configure the backend to validate
+the Web client ID for Android tokens and the iOS client ID for iOS tokens.
 
 ---
 
@@ -131,8 +132,6 @@ Add the Google identifiers to `Info.plist`:
 ```xml
 <key>GIDClientID</key>
 <string>1234567890-abcdefg1234567890abcdefg123456.apps.googleusercontent.com</string>
-<key>GIDServerClientID</key>
-<string><web-client-id>.apps.googleusercontent.com</string>
 <key>GIDRedirectURI</key>
 <string>com.googleusercontent.apps.1234567890-abcdefg1234567890abcdefg123456:/oauthredirect</string>
 <key>CFBundleURLTypes</key>
@@ -147,7 +146,6 @@ Add the Google identifiers to `Info.plist`:
 ```
 
 - `GIDClientID` – iOS application client ID from the Google Cloud console.
-- `GIDServerClientID` – Web (server) client ID from the table above.
 - `GIDRedirectURI` and URL scheme – must match the iOS client ID (`REVERSED_CLIENT_ID`).
 - Sign-out is the same as Android: call `GoogleAuthProvider.signOut()` to remove stored cookies so
   the sheet shows the picker again.

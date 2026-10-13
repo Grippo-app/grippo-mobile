@@ -5,6 +5,7 @@ import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.user.UserFeature
+import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 
 public class RegisterUseCase(
     private val authorizationFeature: AuthorizationFeature,
@@ -12,6 +13,7 @@ public class RegisterUseCase(
     private val excludedMusclesFeature: ExcludedMusclesFeature,
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val weightHistoryFeature: WeightHistoryFeature,
     private val goalFeature: GoalFeature,
 ) {
     public suspend fun createAccount(email: String, password: String): Boolean {
@@ -25,6 +27,7 @@ public class RegisterUseCase(
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            weightHistoryFeature.getWeightHistory().getOrThrow()
             goalFeature.getGoal().getOrThrow()
         }
         val pushToken = authorizationFeature.getPushToken()
