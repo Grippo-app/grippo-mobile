@@ -5,6 +5,8 @@ import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.domain.state.training.toState
+import kotlin.uuid.Uuid
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
 public class DraftTrainingViewModel(
@@ -23,7 +25,14 @@ public class DraftTrainingViewModel(
         value ?: return
         update {
             it.copy(
-                exercises = value.exercises.toState(),
+                exercises = value.exercises.map { exercise ->
+                    exercise.toState(
+                        id = Uuid.random().toString(),
+                        iterations = exercise.iterations.map { iteration ->
+                            iteration.toState(id = Uuid.random().toString())
+                        }.toPersistentList(),
+                    )
+                }.toPersistentList(),
                 stage = when (val trainingId = value.trainingId) {
                     null -> StageState.Add
                     else -> StageState.Edit(trainingId)

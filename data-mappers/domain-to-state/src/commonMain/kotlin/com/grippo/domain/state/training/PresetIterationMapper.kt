@@ -6,11 +6,10 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.training.models.PresetIteration
-import kotlin.uuid.Uuid
 
-public fun PresetIteration.toState(): IterationState {
+public fun PresetIteration.toState(id: String): IterationState {
     return IterationState(
-        id = Uuid.random().toString(),
+        id = id,
         externalWeight = VolumeFormatState.Empty(),
         extraWeight = VolumeFormatState.Empty(),
         assistWeight = VolumeFormatState.Empty(),

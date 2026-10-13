@@ -28,19 +28,20 @@ import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.swipe.SwipeRevealAction
+import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.add_exercise_btn
+import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.empty_training_exercises
-import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.icons.EmptyExercise
+import com.grippo.design.resources.provider.icons.Trash
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
 import com.grippo.training.recording.TrainingRecordingState
@@ -53,7 +54,7 @@ internal fun ColumnScope.ExercisesPage(
     state: TrainingRecordingState,
     contract: TrainingRecordingContract
 ) {
-    val exercises = state.exercises
+    val exercises = state.exercises.orEmpty()
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
 
     BottomOverlayContainer(
@@ -158,6 +159,7 @@ private fun ExercisesPagePreview() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 stage = StageState.Add,
+                startAt = DateTimeUtils.now(),
                 exercises = stubTraining().exercises,
             ),
             loaders = persistentSetOf(),
@@ -173,6 +175,7 @@ private fun ExercisesPageEmptyPreview() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 stage = StageState.Add,
+                startAt = DateTimeUtils.now(),
                 exercises = persistentListOf(),
             ),
             loaders = persistentSetOf(),

@@ -6,17 +6,10 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.training.models.SetIteration
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
-import kotlin.uuid.Uuid
 
-public fun List<SetIteration>.toState(): PersistentList<IterationState> {
-    return map { it.toState() }.toPersistentList()
-}
-
-public fun SetIteration.toState(): IterationState {
+public fun SetIteration.toState(id: String): IterationState {
     return IterationState(
-        id = Uuid.random().toString(),
+        id = id,
         externalWeight = VolumeFormatState.of(externalWeight),
         extraWeight = VolumeFormatState.of(extraWeight),
         assistWeight = VolumeFormatState.of(assistWeight),

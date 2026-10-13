@@ -10,11 +10,11 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlin.time.Duration.Companion.days
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.firstOrNull
-import kotlin.time.Duration.Companion.days
-import kotlin.uuid.Uuid
 
 public class StartTrainingViewModel(
     private val trainingFeature: TrainingFeature,
@@ -41,7 +41,17 @@ public class StartTrainingViewModel(
 
             val preset = generatePresetTrainingUseCase
                 .execute()
-                ?.toState()
+                ?.exercises
+                ?.map { exercise ->
+                    exercise.toState(
+                        id = Uuid.random().toString(),
+                        iterations = exercise.iterations.map { iteration ->
+                            iteration.toState(id = Uuid.random().toString())
+                        }.toPersistentList(),
+                        createdAt = DateTimeUtils.now(),
+                    )
+                }
+                ?.toPersistentList()
                 ?.takeIf { it.isNotEmpty() }
                 ?.let(StartTrainingOption::Preset)
 

@@ -6,22 +6,26 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.training.models.PresetExercise
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.collections.immutable.toPersistentList
-import kotlin.uuid.Uuid
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.datetime.LocalDateTime
 
-public fun PresetExercise.toState(): ExerciseState {
+public fun PresetExercise.toState(
+    id: String,
+    iterations: PersistentList<IterationState>,
+    createdAt: LocalDateTime,
+): ExerciseState {
     return ExerciseState(
-        id = Uuid.random().toString(),
+        id = id,
         name = exerciseExample.name,
-        iterations = iterations.map { it.toState() }.toPersistentList(),
+        iterations = iterations,
         exerciseExample = exerciseExample.toState(),
         createdAt = DateTimeFormatState.of(
-            value = DateTimeUtils.now(),
+            value = createdAt,
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
         ),

@@ -1,5 +1,7 @@
 package com.grippo.training.recording
 
+import com.grippo.analytics.training.TrainingAnalytics
+import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
@@ -44,6 +46,7 @@ import com.grippo.screen.api.TrainingRouter
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.training.toDomain
 import com.grippo.state.domain.training.toDraftDomain
+import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -63,7 +66,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class TrainingRecordingViewModel(
+    private val analytics: TrainingAnalytics,
     stage: StageState,
+    initialState: TrainingRecordingState?,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
@@ -72,8 +77,12 @@ internal class TrainingRecordingViewModel(
     private val notificationManager: NotificationManager,
     private val trainingTotalUseCase: TrainingTotalUseCase,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
-    TrainingRecordingState(stage = stage)
+    initialState ?: TrainingRecordingState(stage = stage, startAt = DateTimeUtils.now())
 ), TrainingRecordingContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(TrainingScreen.Recording, reason)
+    }
 
     companion object {
         val LIBRARY_RESULT_KEY: ResultKey<Result<ExerciseExampleState>> = ResultKeys.create("exercise-library-add")
@@ -87,28 +96,30 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         state
-            .map { it.exercises.map { exercise -> exercise.exerciseExample.id }.distinct() }
+            .map { it.exercises.orEmpty().map { exercise -> exercise.exerciseExample.id }.distinct() }
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
-        safeLaunch {
-            when (val stage = state.value.stage) {
-                StageState.Add -> {
-                    trainingFeature.deleteDraftTraining().getOrThrow()
-                    showStartTrainingDialog()
-                }
+        if (initialState?.exercises == null) {
+            safeLaunch {
+                when (val stage = state.value.stage) {
+                    StageState.Add -> {
+                        trainingFeature.deleteDraftTraining().getOrThrow()
+                        showStartTrainingDialog()
+                    }
 
-                is StageState.Edit -> {
-                    trainingFeature.deleteDraftTraining().getOrThrow()
-                    val training = trainingFeature.observeTraining(stage.id).firstOrNull()
-                    provideTraining(training)
-                }
+                    is StageState.Edit -> {
+                        trainingFeature.deleteDraftTraining().getOrThrow()
+                        val training = trainingFeature.observeTraining(stage.id).firstOrNull()
+                        provideTraining(training)
+                    }
 
-                StageState.Draft -> {
-                    val draft = trainingFeature.getDraftTraining().firstOrNull()
-                    provideDraftTraining(draft)
+                    StageState.Draft -> {
+                        val draft = trainingFeature.getDraftTraining().firstOrNull()
+                        provideDraftTraining(draft)
+                    }
                 }
             }
         }
@@ -116,6 +127,7 @@ internal class TrainingRecordingViewModel(
 
     private suspend fun showStartTrainingDialog() {
         delay(START_TRAINING_DIALOG_DELAY)
+        if (state.value.exercises != null) return
         val dialog = DialogConfig.StartTraining(
             title = UiText.Res(Res.string.start_training_title),
             onStartEmpty = ::onAddExercise,
@@ -133,9 +145,16 @@ internal class TrainingRecordingViewModel(
 
     private fun provideDraftTraining(value: DraftTraining?) {
         value ?: return
+        if (state.value.exercises != null) return
 
-        val exercises = value.exercises.toState()
-            .map { it.withRecalculatedTotal() }
+        val exercises = value.exercises.map { exercise ->
+            exercise.toState(
+                id = Uuid.random().toString(),
+                iterations = exercise.iterations.map { iteration ->
+                    iteration.toState(id = Uuid.random().toString())
+                }.toPersistentList(),
+            ).withRecalculatedTotal()
+        }
             .toPersistentList()
 
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
@@ -159,6 +178,7 @@ internal class TrainingRecordingViewModel(
 
     private fun provideTraining(value: Training?) {
         value ?: return
+        if (state.value.exercises != null) return
         val exercises = value.exercises.toState()
             .map { it.withRecalculatedTotal() }
             .toPersistentList()
@@ -175,6 +195,9 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddExercise() {
+        if (state.value.exercises == null) {
+            update { it.copy(exercises = persistentListOf()) }
+        }
         navigateTo(TrainingRecordingDirection.ToLibrary(
             ExercisesRouter.Library(
                 mode = ExercisesRouter.Mode.Default(lastTargetMuscleGroupId()),
@@ -188,7 +211,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onEditExercise(id: String) {
-        val exercise = state.value.exercises.find { it.id == id } ?: return
+        val exercise = state.value.exercises.orEmpty().find { it.id == id } ?: return
         navigateTo(TrainingRecordingDirection.ToExercise(exercise, EXERCISE_RESULT_KEY))
     }
 
@@ -196,13 +219,13 @@ internal class TrainingRecordingViewModel(
         val refreshed = value.withRecalculatedTotal()
 
         update { current ->
-            val index = current.exercises.indexOfFirst { it.id == refreshed.id }
+            val index = current.exercises.orEmpty().indexOfFirst { it.id == refreshed.id }
             val updated = if (index >= 0) {
-                current.exercises.toMutableList().apply {
+                current.exercises.orEmpty().toMutableList().apply {
                     this[index] = refreshed
                 }
             } else {
-                current.exercises + refreshed
+                current.exercises.orEmpty() + refreshed
             }
             current.copy(exercises = updated.toPersistentList())
         }
@@ -211,9 +234,9 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onDeleteExercise(id: String) {
-        update { current -> current.copy(exercises = current.exercises.filterNot { it.id == id }.toPersistentList()) }
+        update { current -> current.copy(exercises = current.exercises.orEmpty().filterNot { it.id == id }.toPersistentList()) }
 
-        if (state.value.exercises.isEmpty()) {
+        if (state.value.exercises.orEmpty().isEmpty()) {
             clearDraftTraining()
         } else {
             saveDraftTraining()
@@ -223,7 +246,7 @@ internal class TrainingRecordingViewModel(
     override fun onStartReorderExercises(fromId: String, toId: String) {
         if (fromId == toId) return
         update { current ->
-            val exercises = current.exercises
+            val exercises = current.exercises.orEmpty()
             val from = exercises.indexOfFirst { it.id == fromId }
             val to = exercises.indexOfFirst { it.id == toId }
             if (from < 0 || to < 0) return@update current
@@ -234,7 +257,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onEndReorderExercises() {
-        if (state.value.exercises.isEmpty()) return
+        if (state.value.exercises.orEmpty().isEmpty()) return
         saveDraftTraining()
     }
 
@@ -245,7 +268,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
-        val hasPending = state.value.exercises.any { exercise -> exercise.iterations.any { it.isPending } }
+        val hasPending = state.value.exercises.orEmpty().any { exercise -> exercise.iterations.any { it.isPending } }
 
         if (!hasPending) {
             showCompletionDialog()
@@ -261,7 +284,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun showCompletionDialog() {
-        val hasCompletedSets = state.value.exercises.any { exercise -> exercise.iterations.any { !it.isPending } }
+        val hasCompletedSets = state.value.exercises.orEmpty().any { exercise -> exercise.iterations.any { !it.isPending } }
         if (!hasCompletedSets) return
 
         val duration = DateTimeUtils.ago(state.value.startAt)
@@ -272,7 +295,7 @@ internal class TrainingRecordingViewModel(
             onResult = { result ->
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
                 update { current ->
-                    val cleaned = current.exercises
+                    val cleaned = current.exercises.orEmpty()
                         .map { exercise ->
                             exercise.copy(
                                 iterations = exercise.iterations
@@ -297,14 +320,14 @@ internal class TrainingRecordingViewModel(
         navigateTo(
             TrainingRecordingDirection.ToCompleted(
                 stage = snapshot.stage,
-                exercises = snapshot.exercises,
+                exercises = snapshot.exercises.orEmpty(),
                 startAt = snapshot.startAt,
             )
         )
     }
 
     override fun onBack() {
-        if (state.value.exercises.isEmpty()) {
+        if (state.value.exercises.orEmpty().isEmpty()) {
             discardDraftAndExit()
             return
         }
@@ -330,7 +353,7 @@ internal class TrainingRecordingViewModel(
             val draft = DraftTraining(
                 trainingId = snapshot.stage.id,
                 duration = DateTimeUtils.ago(snapshot.startAt),
-                exercises = snapshot.exercises.toDraftDomain(),
+                exercises = snapshot.exercises.orEmpty().toDraftDomain(),
             )
             trainingFeature.setDraftTraining(draft).getOrThrow()
             scheduleNotificationReminder()
@@ -349,7 +372,7 @@ internal class TrainingRecordingViewModel(
 
     private fun lastTargetMuscleGroupId(): String? {
         val snapshot = state.value
-        val exercises = snapshot.exercises.reversed()
+        val exercises = snapshot.exercises.orEmpty().reversed()
         val examples = snapshot.examples
         val muscles = snapshot.muscles
 

@@ -10,6 +10,7 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.profile.toState
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.InsightItem
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.ReasonCode
 import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.TipCode
@@ -53,7 +54,7 @@ public class TrainingGoalDetailsViewModel(
             return
         }
 
-        val progress = adherence.toState()
+        val progress = adherence.toState(now = DateTimeUtils.now())
         val insights = buildInsights(progress)
 
         update { it.copy(progress = progress, insights = insights) }

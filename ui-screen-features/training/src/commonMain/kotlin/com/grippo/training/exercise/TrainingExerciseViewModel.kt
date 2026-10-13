@@ -1,5 +1,7 @@
 package com.grippo.training.exercise
 
+import com.grippo.analytics.training.TrainingAnalytics
+import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
@@ -32,6 +34,7 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.screen.api.ExercisesRouter
 import com.grippo.state.domain.training.toDomain
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -47,14 +50,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class TrainingExerciseViewModel(
+    private val analytics: TrainingAnalytics,
     exercise: ExerciseState,
+    initialState: TrainingExerciseState?,
     exerciseExampleFeature: ExerciseExampleFeature,
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val exerciseValidatorUseCase: ExerciseValidatorUseCase,
 ) : BaseViewModel<TrainingExerciseState, TrainingExerciseDirection, TrainingExerciseLoader>(
-    TrainingExerciseState(exercise = exercise)
+    initialState ?: TrainingExerciseState(exercise = exercise)
 ), TrainingExerciseContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(TrainingScreen.Exercise, reason)
+    }
 
     companion object {
         fun libraryResultKey(exerciseId: String): ResultKey<Result<ExerciseExampleState>> =

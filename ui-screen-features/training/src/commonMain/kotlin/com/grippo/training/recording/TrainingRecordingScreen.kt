@@ -33,6 +33,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.training
 import com.grippo.design.resources.provider.update_btn
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.timerTextFlow
 import com.grippo.training.recording.internal.ExercisesPage
 import com.grippo.training.recording.internal.Header
@@ -56,14 +57,14 @@ internal fun TrainingRecordingScreen(
     val durationText by timerFlow.collectAsState(initial = "")
 
     val totalVolume = remember(state.exercises) {
-        val sum = state.exercises
+        val sum = state.exercises.orEmpty()
             .sumOf { (it.total.volume.value ?: 0f).toDouble() }
             .toFloat()
         VolumeFormatState.of(sum)
     }
 
     val totalRepetitions = remember(state.exercises) {
-        val sum = state.exercises.sumOf { it.total.repetitions.value ?: 0 }
+        val sum = state.exercises.orEmpty().sumOf { it.total.repetitions.value ?: 0 }
         RepetitionsFormatState.of(sum)
     }
 
@@ -73,7 +74,7 @@ internal fun TrainingRecordingScreen(
         title = AppTokens.strings.res(Res.string.training),
         leading = Leading.Back(contract::onBack),
         trailing = {
-            if (state.exercises.isEmpty()) return@Toolbar
+            if (state.exercises.orEmpty().isEmpty()) return@Toolbar
 
             val buttonText = when (state.stage) {
                 is StageState.Add -> AppTokens.strings.res(Res.string.save_btn)
@@ -120,6 +121,7 @@ private fun ScreenPreview() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 stage = StageState.Add,
+                startAt = DateTimeUtils.now(),
                 exercises = persistentListOf(
                     previewExercise("Bench press", 3, listOf(60f, 70f, 80f)),
                     previewExercise("Barbell squat", 4, listOf(80f, 100f)),
@@ -145,6 +147,7 @@ private fun ScreenEmptyPreview() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 stage = StageState.Add,
+                startAt = DateTimeUtils.now(),
                 exercises = persistentListOf(),
             ),
             loaders = persistentSetOf(),
@@ -160,6 +163,7 @@ private fun ScreenPresetPreview() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 stage = StageState.Add,
+                startAt = DateTimeUtils.now(),
                 exercises = persistentListOf(stubPendingExercise()),
             ),
             loaders = persistentSetOf(),
