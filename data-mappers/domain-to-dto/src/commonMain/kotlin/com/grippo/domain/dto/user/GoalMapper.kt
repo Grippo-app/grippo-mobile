@@ -9,6 +9,6 @@ public fun SetGoal.toBody(): SetGoalBody {
         primaryGoal = primaryGoal.key,
         secondaryGoal = secondaryGoal?.key,
         target = DateTimeUtils.toUtcIso(target),
-        personalizations = personalizations.map { it.key },
+        personalizations = personalizations.map { it.key }.takeIf { it.isNotEmpty() },
     )
 }
