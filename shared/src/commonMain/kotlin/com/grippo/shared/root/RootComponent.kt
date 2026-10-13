@@ -20,7 +20,6 @@ import com.grippo.design.core.AppTheme
 import com.grippo.home.HomeRootComponent
 import com.grippo.main.MainComponent
 import com.grippo.profile.ProfileComponent
-import com.grippo.screen.api.AuthorizationEntryPoint
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.HomeRouter
 import com.grippo.screen.api.ProfileRouter
@@ -83,7 +82,7 @@ public class RootComponent(
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
             RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
-                navigation.replaceAll(Auth(AuthRouter.AuthProcess(AuthorizationEntryPoint.TokenAbsent)))
+                navigation.replaceAll(Auth(AuthRouter.AuthProcess()))
             }
 
             RootDirection.Home -> navigation.replaceAll(

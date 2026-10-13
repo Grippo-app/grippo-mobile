@@ -6,11 +6,10 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.screen.api.AuthorizationEntryPoint
 
 internal class SplashComponent(
     componentContext: ComponentContext,
-    private val toAuthProcess: (AuthorizationEntryPoint) -> Unit,
+    private val toAuthProcess: () -> Unit,
     private val toHome: () -> Unit,
     private val toProfileCreation: () -> Unit,
     private val back: () -> Unit
@@ -34,7 +33,7 @@ internal class SplashComponent(
 
     override suspend fun eventListener(direction: SplashDirection) {
         when (direction) {
-            is SplashDirection.AuthProcess -> toAuthProcess.invoke(direction.entryPoint)
+            SplashDirection.AuthProcess -> toAuthProcess.invoke()
             SplashDirection.Home -> toHome.invoke()
             SplashDirection.CreateProfile -> toProfileCreation.invoke()
             SplashDirection.Back -> back.invoke()

@@ -9,7 +9,6 @@ import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.user.UserFeature
-import com.grippo.screen.api.AuthorizationEntryPoint
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -42,7 +41,7 @@ internal class SplashViewModel(
             if (authorizationFeature.getToken().firstOrNull() == null) {
                 muscleFeature.getMuscles().getOrThrow()
                 equipmentFeature.getEquipments().getOrThrow()
-                navigateTo(SplashDirection.AuthProcess(AuthorizationEntryPoint.LaunchWithoutSession))
+                navigateTo(SplashDirection.AuthProcess)
             } else {
                 loadProfile()
             }

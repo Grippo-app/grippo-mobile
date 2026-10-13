@@ -3,6 +3,7 @@ package com.grippo.shared
 import com.grippo.analytics.authorization.AuthAnalyticsModule
 import com.grippo.analytics.home.HomeAnalyticsModule
 import com.grippo.analytics.profile.ProfileAnalyticsModule
+import com.grippo.analytics.exercises.ExercisesAnalyticsModule
 import com.grippo.analytics.training.TrainingAnalyticsModule
 import com.grippo.analytics.trainings.TrainingsAnalyticsModule
 import com.grippo.core.error.provider.impl.ErrorModule
@@ -53,6 +54,7 @@ public object Koin {
                 AnalyticsModule().module,
                 AuthAnalyticsModule().module,
                 ProfileAnalyticsModule().module,
+                ExercisesAnalyticsModule().module,
                 TrainingAnalyticsModule().module,
                 TrainingsAnalyticsModule().module,
                 HomeAnalyticsModule().module,

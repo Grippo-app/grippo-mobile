@@ -1,5 +1,10 @@
 package com.grippo.exercises.library
 
+import com.grippo.analytics.exercises.ExercisesAnalytics
+import com.grippo.analytics.exercises.models.ExercisesEvent
+import com.grippo.analytics.exercises.models.ExercisesScreen
+import com.grippo.analytics.exercises.models.LibraryFilter
+import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
@@ -20,11 +25,13 @@ import kotlinx.coroutines.flow.onEach
 
 internal class ExerciseLibraryViewModel(
     mode: ExerciseLibraryMode,
+    initialState: ExerciseLibraryState?,
+    private val analytics: ExercisesAnalytics,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
 ) : BaseViewModel<ExerciseLibraryState, ExerciseLibraryDirection, ExerciseLibraryLoader>(
-    ExerciseLibraryState(
+    initialState?.copy(mode = mode) ?: ExerciseLibraryState(
         mode = mode,
         queries = Queries(
             filter = when (mode) {
@@ -36,6 +43,10 @@ internal class ExerciseLibraryViewModel(
         ),
     )
 ), ExerciseLibraryContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(ExercisesScreen.Library, reason)
+    }
 
     init {
         if (mode is ExerciseLibraryMode.SimilarTo) {
@@ -92,7 +103,7 @@ internal class ExerciseLibraryViewModel(
         update { current ->
             val filter = current.queries.filter
             val groupVanished =
-                filter is QueryFilter.Group && suggestions.none { it.id == filter.id }
+                filter is QueryFilter.Group && suggestions.isNotEmpty() && suggestions.none { it.id == filter.id }
             val nextFilter = if (groupVanished) QueryFilter.All else filter
             val nextPagination = if (groupVanished) {
                 PaginationState.Restartable(
@@ -168,6 +179,7 @@ internal class ExerciseLibraryViewModel(
 
     override fun onSuggestionsClick() {
         if (state.value.mode !is ExerciseLibraryMode.SimilarTo) return
+        analytics.trackEvent(ExercisesEvent.FilterClicked(LibraryFilter.Suggestions))
         updateWithPaginationReset {
             val nextFilter = if (it.queries.filter is QueryFilter.Suggestions) {
                 QueryFilter.All
@@ -179,6 +191,7 @@ internal class ExerciseLibraryViewModel(
     }
 
     override fun onMuscleGroupClick(id: String) {
+        analytics.trackEvent(ExercisesEvent.FilterClicked(LibraryFilter.MuscleGroup))
         updateWithPaginationReset {
             val nextFilter =
                 if (it.queries.filter is QueryFilter.Group && it.queries.filter.id == id) {
@@ -191,6 +204,9 @@ internal class ExerciseLibraryViewModel(
     }
 
     override fun onLoadNextPage() {
+        val pagination = state.value.pagination
+        if (pagination.isEndReached || pagination.isLoadingNextPage) return
+        analytics.trackEvent(ExercisesEvent.LoadNextPage)
         update { current ->
             val pagination = current.pagination
             when {
@@ -215,10 +231,12 @@ internal class ExerciseLibraryViewModel(
 
     override fun onExerciseExampleSelectClick(id: String) {
         val example = state.value.exerciseExamples.find { it.value.id == id } ?: return
+        analytics.trackEvent(ExercisesEvent.ExerciseSelected)
         navigateTo(ExerciseLibraryDirection.BackWithResult(example))
     }
 
     override fun onBack() {
+        analytics.trackEvent(ExercisesEvent.Back)
         navigateTo(ExerciseLibraryDirection.Back)
     }
 

@@ -3,6 +3,7 @@ plugins {
     id("kotlin.multiplatform.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -11,6 +12,8 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        implementation(projects.analytics.analyticsApi)
+        implementation(libs.kotlinx.serialization.json)
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.toolkit.dateUtils)

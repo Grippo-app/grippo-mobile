@@ -38,7 +38,7 @@ public class AuthComponent(
 
     override suspend fun eventListener(direction: AuthDirection) {
         when (direction) {
-            is AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess(direction.entryPoint))
+            AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess())
             AuthDirection.Back -> close.invoke()
             AuthDirection.Home -> toHome.invoke()
             AuthDirection.ProfileCreation -> navigation.push(AuthRouter.ProfileCreation)

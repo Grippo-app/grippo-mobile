@@ -158,6 +158,17 @@ credentials/tokens, entity IDs, exception messages, URLs or request/response bod
 
 ### State impact and verification
 
+Authorization route cleanup: unused `AuthorizationEntryPoint` and its forwarding
+through Root/Auth/Splash navigation are removed. AuthProcess keeps its existing
+FlowId identity; its serializer ignores the obsolete entryPoint field in older
+saved routes. No editable state, draft supplier, analytics event or screen hook
+changes. Fresh routes still open the same destination. Source review covers the
+affected Splash leaf and null Auth/AuthProcess/Root containers; device restoration
+of an older archive remains unverified.
+Independent source review and scoped `git diff --check` passed. Kotlin iOS Simulator
+compilation passed for authorization and shared; metadata-only compile tasks were
+skipped and do not count as compilation evidence.
+
 This repair changes only internal event encoding/schema and coverage documentation.
 It introduces no screen, callback, editable field, navigation change or state owner.
 UserViewModel still updates its accepted picker input before emitting the typed
@@ -323,3 +334,84 @@ Follow-up verification: source invariants and git diff --check passed; final
 :ui-screen-features:profile:compileKotlinIosSimulatorArm64 and
 :shared:compileKotlinIosSimulatorArm64 passed (BUILD SUCCESSFUL). Device runtime
 and Android compilation were not rerun for this contract-only refinement.
+
+## Exercises analytics and process restoration
+
+Added on 2026-10-13. Actual ExercisesRouter has one Library route, entered in
+Default (optional preselected group) or SimilarTo (target exercise) mode through
+ExercisesRootComponent. Both render the same independent library surface.
+
+| Route / surface | Component → VM | Typed screen / hook |
+|---|---|---|
+| ExercisesRouter.Library, both modes and restored stacks | ExerciseLibraryComponent → ExerciseLibraryViewModel | ExercisesScreen.Library / exercise_library / screenPresentation |
+| Exercises root stack host | ExercisesRootComponent → ExercisesRootViewModel | Default null; only renders its child |
+
+The leaf resolves ExercisesAnalytics in retainedInstance. Foundation binds and
+closes the presentation, assigning Initial/Restore; no feature lifecycle bridge
+or saved telemetry provenance is introduced. Shared includes the generated module
+and its single qualified exercises_analytics catalog provider.
+
+| Callback | Observation / eligibility |
+|---|---|
+| onSuggestionsClick | FilterClicked(Suggestions) after existing SimilarTo guard; toggle semantics unchanged |
+| onMuscleGroupClick | FilterClicked(MuscleGroup); group IDs omitted; repeated clicks still toggle |
+| onExerciseExampleSelectClick | ExerciseSelected only after finding the current card; result/navigation unchanged |
+| onLoadNextPage | LoadNextPage only after existing loading/end guards; automatic list-end callback, not a user-click claim |
+| onBack | Back from toolbar/system callback; root forwarding adds no duplicate event |
+| onQueryChange | Exact text updates draft; telemetry deliberately omitted: search has no existing validation status, raw text/length is never reported |
+
+Four custom version-1 schemas: exercises_filter_clicked (bounded library_filter),
+exercises_exercise_selected, exercises_load_next_page, exercises_back (no fields).
+Built-in screen schemas are reused. This is additive instrumentation with no
+historical backfill or changed existing wire identities. Ordinary reporting
+Exceptions are isolated; business updates/navigation remain independent. No entity
+IDs, target/group IDs, query text/length, errors or request/response bodies enter
+telemetry. Continuous catalog/target/search Flows are rebuilt business
+subscriptions, not finite operations; no artificial operation decorator or jobs
+are added. Focus/IME/clear, scroll position, dialog sessions and referrer/flow
+attribution are deliberately outside this contract.
+
+| Owner | Field/group | Policy | Serializer/key or source; restore/default |
+|---|---|---|---|
+| Library | queries.name, including whitespace and explicitly empty values | Preserve | ExerciseLibraryDraft / ExerciseLibraryState.serializer → Queries; saved value wins |
+| Library | queries.filter: All, Suggestions or Group(id) | Preserve | Same local draft; saved All wins over route preselection; empty muscle emissions retain Group intent |
+| Library | mode and target identity | Rebuild from route | Existing serialized ExercisesRouter; mode supplied before VM initialization, target card observed from ExerciseExampleFeature |
+| Library | exerciseExamples, muscleGroups, target presentation, hasSuggestionsResults | Rebuild | Transient fields; current UserExerciseExamplesUseCase/MuscleFeature/ExerciseExampleFeature |
+| Library | pagination including loading/end/page | Runtime only | Transient default first page; old cards/pages are not replayed |
+| Root | navigation identity/result key | Existing stack preservation | ExercisesRouter.serializer and existing keyed childStack; no parent editable draft |
+| All | loaders/jobs, focus, list position, result callbacks, analytics provenance | Runtime only | Not added to archive |
+
+Component restores inside retainedInstance and registers one lazy supplier of the
+latest VM state. On a fresh VM the saved draft is used before route filter defaults,
+then mode is rebuilt from the restored route. No saved draft means the original
+Suggestions/preselected-group/All defaults. Nonempty current muscle catalogs drop
+vanished group IDs; empty startup emissions never erase selection intent. Loading
+starts from page one with the restored query/filter. Programmatic source fallback
+from empty Suggestions to All produces no synthetic interaction. No secret fields
+exist in this feature. Popping and re-entering uses fresh route seeds; the selected
+exercise is sent through the existing result key and its accepted business value
+belongs to the caller, outside this module.
+
+Source gates reviewed: actual route/render/owner inventory, exactly one typed leaf
+hook and null container, retained injection/foundation binding, complete custom
+catalog, eligibility, reporting isolation, local supplier/serializer reachability,
+saved-empty precedence, transient runtime/data fields, empty/nonempty catalog
+behavior and absence of restoration flags/caches or synthetic callback replay.
+No automated test sources/dependencies/infrastructure were introduced.
+Manual checks still required: save → serialization roundtrip → destroy lifecycle
+and InstanceKeeper → fresh context/VM restore in both modes; exact/empty query,
+All overriding route preselection, selected group through initial empty catalog,
+vanished groups, Back/result business inputs, pop/re-entry, pause/resume beyond
+subscription grace, actual lifecycle/cancellation/reporting-failure injection and
+SDK delivery. Android saved-state and iOS completed background checkpoints are the
+supported shell boundaries; abrupt foreground iOS termination is not guaranteed.
+
+Verification on 2026-10-13: source/diff review, inline screen/preservation/privacy/
+dependency invariants and `git diff --check` passed. The combined
+`:ui-screen-features:exercises:compileKotlinIosSimulatorArm64`,
+`:shared:compileKotlinIosSimulatorArm64` and `:androidApp:assembleDebug` run passed
+(BUILD SUCCESSFUL, 12m 25s). Generated Koin source confirms the ExercisesAnalytics
+binding and single qualified schema catalog. Existing opt-in/expect-actual and
+other project warnings remain. The initial sandboxed wrapper attempt could not
+write its cache lock; the authorized retry succeeded. Device restoration, native
+framework linking/runtime, SDK delivery and failure-injection checks were not run.

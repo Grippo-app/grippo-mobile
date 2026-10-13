@@ -45,6 +45,7 @@ kotlin {
 
         implementation(projects.analytics.authorization)
         implementation(projects.analytics.profile)
+        implementation(projects.analytics.exercises)
         implementation(projects.analytics.training)
         implementation(projects.analytics.trainings)
         implementation(projects.analytics.home)

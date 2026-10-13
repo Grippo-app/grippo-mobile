@@ -71,6 +71,10 @@ completion; default null is not a permitted screen omission.
 
 ## Direct typed facts and complete operations
 
+Apply the canonical [observation boundary](../SKILL.md#observation-boundary-must)
+before choosing event parameters or changing a caller contract. The examples below
+observe facts already available to the owning VM.
+
 ```kotlin
 analytics.trackEvent(AuthEvent.Login.Submit(Method.Google))
 val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {

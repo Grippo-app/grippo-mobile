@@ -44,6 +44,31 @@ Current skill/standard/source define the contract; historical review reports do 
   fields belong to credential events, picker events accept only picker enums,
   and fixed fields such as Name need no public field selector.
 
+## Observation boundary (MUST)
+
+Before adding an event or parameter, identify the existing callback, operation or
+foundation hook where the fact becomes known. Observe it at that owner; pass only
+the bounded typed fact to the analytics API.
+
+- Business/navigation contracts MUST remain independently necessary when analytics
+  calls are removed. MUST NOT add route/Direction/config fields, business types,
+  constructor arguments or saved state solely to carry reporting context between
+  owners. A genuine business change follows its owning skill and authorized scope.
+- Observation types belong to the feature's analytics-api models; UI fact mapping
+  stays in its existing analytics/ package. MUST NOT place telemetry-only models
+  in navigation, domain or shared UI-state modules to make them easier to transport.
+- Use the existing VM injection and foundation presentation boundary. Neutral UI
+  callbacks MAY expose real interactions under the widget rules below; they carry
+  ordinary UI values and no telemetry types or cross-screen reporting history.
+- Before completion MUST trace each added type/field/argument to either an actual
+  analytics API consumer or an independent business/UI requirement. Reject unused
+  models and reporting-only changes outside the observation boundary. A fact that
+  requires transporting reporting context/history between business or navigation
+  owners MUST remain an explicit coverage omission until its reporting requirement
+  is resolved; do not infer it or build a context propagation mechanism merely to
+  complete a report. Neutral interaction callbacks to their owning VM follow the
+  permitted widget boundary above.
+
 ## Business stays business
 
 - Analytics decorates complete existing operations and preserves caller `T`,

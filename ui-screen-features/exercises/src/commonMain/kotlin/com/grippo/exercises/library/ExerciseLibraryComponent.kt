@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
@@ -20,6 +21,8 @@ internal class ExerciseLibraryComponent(
     override val viewModel: ExerciseLibraryViewModel = componentContext.retainedInstance {
         ExerciseLibraryViewModel(
             mode = mode,
+            initialState = restoreState(DRAFT),
+            analytics = getKoin().get(),
             userExerciseExamplesUseCase = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
@@ -29,6 +32,7 @@ internal class ExerciseLibraryComponent(
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
     }
 
@@ -46,5 +50,9 @@ internal class ExerciseLibraryComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         ExerciseLibraryScreen(state.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("ExerciseLibraryDraft", ExerciseLibraryState.serializer())
     }
 }

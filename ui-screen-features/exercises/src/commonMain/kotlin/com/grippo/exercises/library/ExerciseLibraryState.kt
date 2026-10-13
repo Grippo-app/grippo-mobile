@@ -8,13 +8,20 @@ import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Immutable
+@Serializable
 internal data class ExerciseLibraryState(
-    val mode: ExerciseLibraryMode,
+    @Transient
+    val mode: ExerciseLibraryMode = ExerciseLibraryMode.Default(null),
+    @Transient
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
+    @Transient
     val pagination: PaginationState = PaginationState.Next(),
     val queries: Queries = Queries(),
+    @Transient
     val hasSuggestionsResults: Boolean = true,
 ) {
     val canShowSuggestions: Boolean =
@@ -37,22 +44,28 @@ internal sealed interface ExerciseLibraryMode {
 }
 
 @Immutable
+@Serializable
 internal data class Queries(
     val name: String = "",
     val filter: QueryFilter = QueryFilter.All,
+    @Transient
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 )
 
 @Immutable
+@Serializable
 internal sealed interface QueryFilter {
 
     @Immutable
+    @Serializable
     data object All : QueryFilter
 
     @Immutable
+    @Serializable
     data object Suggestions : QueryFilter
 
     @Immutable
+    @Serializable
     data class Group(val id: String) : QueryFilter
 }
 
