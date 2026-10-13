@@ -434,7 +434,7 @@ than becoming `Result.failure`. At a suspend Result boundary, rethrow
 `BackendClient` (Ktor):
 - `defaultRequest`: `host = "grippo-app.com"`, `URLProtocol.HTTPS`, JSON content type, **`Accept-Language = AppLocale.current()`** on every request.
 - `HttpTimeout`: 10s (request, connect, socket).
-- `Logging` uses `LogLevel.INFO`, custom `ClientLogger`, and excludes `/auth/` requests. Never log credentials, headers or bodies on auth traffic; any custom auth metadata is limited to method/path/status.
+- `Logging` uses `LogLevel.INFO`, custom `ClientLogger`, and excludes requests marked `SensitiveResponse`. Backend marks `/auth/` traffic, including token refresh; `ResponseValidator` centrally removes sensitive server text and decoding payloads from failures. Never log credentials, headers or bodies on auth traffic; any custom auth metadata is limited to method/path/status.
 - `Auth` plugin with custom `TokenProvider : AuthProvider`.
 - `withContext(Dispatchers.IO)` wraps every `invoke`.
 
@@ -442,8 +442,8 @@ than becoming `Result.failure`. At a suspend Result boundary, rethrow
 - `addRequestHeaders` always reads the fresh token from `TokenDao` (via `userActiveDao` for the current user) and sets `Bearer <token>`.
 - `refreshToken(response)` — refresh with `Mutex` (one refresh at a time), `withTimeout(10s)`. Concurrent 401 requests wait for the result via `waitForOngoingRefresh`.
 - Refresh goes through `client.submitForm` with `attributes.put(AuthCircuitBreaker, Unit)` (Ktor will not try to refresh the refresh).
-- If backend returns 401 on refresh → `RefreshUnauthorizedException` → tokens are deleted from DB (`tokenDao.delete(userId)`) → `RootViewModel.authorizationFeature.getToken()` will see `null` and call `navigateTo(RootDirection.Login)`.
-- `retryWithBackoff(maxAttempts = 3, initialDelay = 500ms, factor = 2.0)` for transient errors (but not for `RefreshUnauthorizedException`).
+- The shared validator maps refresh HTTP 4xx to sanitized `AppError.Network.Expected` before the response returns. After refresh retries fail, tokens are deleted from DB (`tokenDao.delete(userId)`); the existing authorization observer then navigates to login. The local `RefreshUnauthorizedException` branch applies only when an unauthorized response reaches TokenProvider directly.
+- `retryWithBackoff(maxAttempts = 3, initialDelay = 500ms, factor = 2.0)` for refresh failures except cancellation, fatal errors and `RefreshUnauthorizedException`; validated HTTP 4xx currently follow the retry policy.
 
 DTOs: `package com.grippo.services.backend.dto.<area>`, file `*Response.kt` or `*Body.kt`, `@Serializable data class` with every field `@SerialName` and **nullable + default `= null`**, including request bodies and collections. Request construction still supplies required business values; this defensive Kotlin shape does not make API-required fields optional.
 

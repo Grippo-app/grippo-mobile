@@ -17,5 +17,24 @@ A Result wrapper succeeding does not establish a successful business outcome.
 - UI unwraps required failures inside `safeLaunch`; the existing ErrorProvider owns presentation.
   Telemetry must observe the complete operation without controlling recovery or outcome.
 
+## Error ownership (MUST)
+
+- HTTP/status and decoding failures are classified by the shared ResponseValidator;
+  sensitive response text is sanitized there. Pass existing transport failures through
+  repository/Feature/UseCase boundaries without wrapping or reclassifying them.
+- Mappers return null for objects that cannot be constructed; they do not create AppError
+  or decide whether partial data is a successful operation.
+- Repository owns required payload completeness and cache consistency. Use the shared
+  AppError.Network.IncompleteResponse when a successful response cannot hydrate required
+  data. Confirmed empty collections are valid; missing required collections or dropped
+  malformed rows are incomplete. Do not overwrite complete cache with partial records.
+- Validate every record before reconciliation; do not use short-circuit any/all when
+  validation also writes valid records. Preserve the operation's explicit atomic or
+  partial-update policy, and protect incomplete raw server IDs from deletion.
+- Domain rejection uses the existing domain contract. Add a shared error subtype only
+  for a distinct meaning or required handling, not per endpoint/message. Update AppError,
+  AppErrorState and ErrorProviderImpl together; keep one canonical rule here.
+- UI mapError changes presentation only; logging/analytics receive the original failure.
+
 Before completion trace initial success, alternate paths and failure of each required step through
 actual source. Report runtime behavior that was not manually exercised.

@@ -41,6 +41,7 @@ internal class ErrorProviderImpl(val dialogController: DialogController) : Error
             is AppError.Network.NoInternet -> AppErrorState.Network.NoInternet(description = exception.message)
             is AppError.Network.Timeout -> AppErrorState.Network.Timeout(description = exception.message)
             is AppError.Network.Expected -> AppErrorState.Network.Expected(title = exception.title, description = exception.description)
+            is AppError.Network.IncompleteResponse -> AppErrorState.Network.IncompleteResponse(description = exception.message)
             is AppError.Network.Unexpected -> AppErrorState.Network.Unexpected(description = exception.message)
             is AppError.Expected -> AppErrorState.Expected(title = exception.message, description = exception.description)
             is AppError.Unknown -> AppErrorState.Unknown
@@ -199,6 +200,9 @@ before dismissal or an analytics retry policy.
 - **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it.
 - **Recording an exception to Firebase manually** from a ViewModel — the pipeline does this; duplicates inflate Crashlytics.
 - **Throwing a replacement `AppError` in a ViewModel** — use pure `safeLaunch.mapError` for necessary UI presentation while preserving the original error for analytics/logging/crash reporting.
+
+Data-layer classification and payload completeness follow the
+[canonical ownership rules](../../data-layer/references/error-pipeline.md).
 
 ## The error triad (`:ui-core:state` work)
 
