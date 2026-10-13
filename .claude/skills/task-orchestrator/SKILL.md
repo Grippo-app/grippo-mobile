@@ -53,7 +53,8 @@ The coordinating agent may implement work; a separate reviewer supplies independ
   or broken reference remains in the changed scope.
 - Actual verification results and runtime/platform limitations are recorded.
 - The final answer explains behavior changed, verification and remaining material
-  risks. No commit, push, deployment or external message is implied by this skill.
+  risks using the canonical [completion response format](../validation-gates/SKILL.md#final-response-format).
+  No commit, push, deployment or external message is implied by this skill.
 
 Use [validation-gates](../validation-gates/SKILL.md) for cross-cut review. Keep
 reports proportionate to the task. Follow the canonical

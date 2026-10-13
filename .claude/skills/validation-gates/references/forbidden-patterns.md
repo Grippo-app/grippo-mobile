@@ -214,7 +214,8 @@ Screen-result rules are defined in the ui-feature skill,
 Do not narrate obvious code, embed transient quiz/task IDs or claim incomplete
 TODO/NotImplementedError production paths as finished work. Keep only comments
 that explain a real invariant or non-obvious decision. Record verification and
-tradeoffs in the task report; no fixed report format or artificial line cap applies.
+tradeoffs in the task report. Completion replies follow the canonical
+[response format](../SKILL.md#final-response-format); no artificial line cap applies.
 
 ## Architecture-shape
 

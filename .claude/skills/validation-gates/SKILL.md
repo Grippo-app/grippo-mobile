@@ -56,3 +56,64 @@ runtime/platform behavior. No missing input or unrun check is a PASS. An unavail
 runtime/build check alone does not block completion after the required source gate,
 provided its limitation is explicit and no unaccepted source defect remains.
 For scope decisions use [when to ask](references/when-to-stop-and-ask.md).
+
+## Final response format
+
+Unless the user requests another format, task completion replies MUST be concise
+but informative, in plain Russian, structured as lists under bold section labels.
+No tables. Give each meaningful result enough detail to understand what changed
+and why: usually 1–2 short sentences per item. Include concrete scope/counts or a
+before/after example when useful. Avoid vague claims such as "fixed everything".
+Use only status emojis: ✅ completed/verified, ⚠️ partial completion, deviation or
+unverified check, ❌ blocker or requested work left undone. Use them on the overall status line and status list
+items, not section headings or layer names; location lists and question options
+need no emoji.
+
+MUST start with one overall status line: ✅ **Задача завершена**,
+⚠️ **Завершена частично — <missing requested outcome>**, or
+❌ **Задача заблокирована — <specific blocker>**. Choose by requested outcomes,
+not effort or number of checks. An unrun runtime check alone does not mean partial
+completion; describe it under Не проверено. Immediately below the status, state
+any limitation that materially affects use of the result or a required decision.
+Keep ordinary verification limits in their section; do not repeat the same warning.
+If all useful remaining work depends on an unresolved external condition or user
+decision, use blocked even when a portion is ready. Partial means some requested
+outcomes are ready and useful work can still proceed (e.g. a requested checkpoint).
+This format does not authorize stopping an actionable task early. A scope reduction
+requires user agreement before calling the reduced task complete.
+
+Use the following order, omitting every empty or unhelpful section:
+- **Сделано** — user-visible results and their purpose, not actions or a file-edit
+  inventory. For internal/code/rules tasks, describe the resulting guarantee or
+  convention. Implementation locations belong under Где изменил.
+- **Где изменил** — affected layers in text (UI, navigation, data, analytics,
+  project rules, etc.) and what changed there. Link key files when useful; group
+  repetitive edits. For large tasks, MUST show affected layers. Use a short key-file
+  tree for new/changed structure or an explicit request; otherwise group repetitive
+  edits without a tree. Annotate relevant paths with their purpose/change, distinguish
+  changed from planned files and link real key files outside the code block.
+  Do not repeat results or list unchanged files/exhaustive inventories.
+- **Что мешает продолжить** — for blocked work, identify the missing fact/access
+  or dependency, which remaining outcome it prevents and what would unblock it.
+  Add concrete detail beyond the brief opening limitation; do not repeat it verbatim.
+- **Проверено** — actual checks, their scope and outcomes; compilation is not runtime proof.
+- **Отклонения от правил проекта** — actual deviations, reason and whether agreed.
+- **Не сделано** — requested outcomes still missing. Give the reason here only
+  if it is not already explained in the opening limitation or blocker section.
+- **Не проверено** — relevant unrun checks and what remains uncertain, separate
+  from undone work. Give the reason when known and useful; do not invent it to
+  fill the template. Mention only limitations material to the task.
+- **Что проверить вручную** — actionable scenarios only when they help the user.
+- **Вопросы** — unresolved questions numbered separately, each with 2–3 options
+  labelled (А), (Б), (В) as needed. Mark and briefly justify the recommended option.
+  If no recommendation has enough evidence, say which fact is missing instead
+  of inventing a preferred answer. Ask during work when needed, not only at the end;
+  the final section contains only still-unresolved questions.
+
+MUST NOT invent questions, repeat answered decisions, include empty success claims
+or end with a paragraph repeating the lists. Scale detail to the task; a small fix
+may need only Сделано and Проверено. Preserve material limitations even in a short reply.
+
+See [response examples](references/response-examples.md) for completed, partial and
+blocked tasks. Read the relevant example only; examples guide detail, never supply
+claims or require every section.
