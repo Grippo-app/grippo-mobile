@@ -76,42 +76,29 @@ Google/Apple cancellation сверена с официальными SDK contrac
 - Удалён incidental formatting вне analytics/auth consumers, без сброса пользовательских изменений.
 - После переноса Kotlin Android host incremental cache сообщил DirtyData/FqNames failure;
   clean выполнен только для generated build results модуля authorization, следующий host прогон passed.
-- AuthAnalyticsTest проверяет общий context операций/показов/preparation, restored form navigation,
-  saved session identity, profile failure redirect, token original error и caller cancellation.
 
 ## Последующий глубокий аудит
 
 Детальный scope, review loop, 11 исправлений и ограничения — `authorization-audit.md`.
 Устранены независимый failure stage подготовки, чужие operation stages, две stateless
 обёртки, domain preparation duplication и business calls в неправильном facade mode.
-AuthFlowEvent отражает scope сценария. Schema identity проверяется fixtures.
-JSON перенесён в tests. OAuth coroutine cancellation/fatal boundaries исправлены;
+AuthFlowEvent отражает scope сценария. Schema identity сохранена.
+JSON удалён из production dependencies. OAuth coroutine cancellation/fatal boundaries исправлены;
 Apple provider DI больше не создаёт неиспользуемые context/HTTP/JSON dependencies.
 
 ## Evidence
 
 - Первая компиляция owning feature Android/iOS: BUILD SUCCESSFUL, 1m 31s;
   `/tmp/grippo-auth-compile.log`.
-- Первый тестовый прогон: 20 Android host + 20 iOS simulator, failures/errors 0,
-  BUILD SUCCESSFUL 1m 32s; `/tmp/grippo-auth-tests.log`.
+
 - После review fixes: полный Gradle прогон BUILD SUCCESSFUL, 8m 13s;
   `/tmp/grippo-auth-final.log`.
-- После facade simplification: clean owning-feature host tests BUILD SUCCESSFUL, 30s;
-  `/tmp/grippo-auth-facade-host.log`; 31 tests, failures/errors 0.
-- Финальный Gradle прогон facade + affected suites/apps: BUILD SUCCESSFUL, 4m 38s;
+
+- Финальный Gradle прогон facade + affected apps: BUILD SUCCESSFUL, 4m 38s;
   `/tmp/grippo-auth-facade-final.log`. Таблица ниже обновлена по финальному глубокому аудиту.
 
 - После глубокого аудита: BUILD SUCCESSFUL 4m 5s; `/tmp/grippo-auth-audit-complete.log`.
-  Все source/dependency edits завершены до этого прогона; XML failures/errors 0.
-
-| Suite | Android host | iOS Simulator ARM64 | Failures/errors |
-|---|---:|---:|---:|
-| Authorization | 37 | 37 | 0 |
-| Analytics API | 12 | 12 | 0 |
-| Analytics core | 36 | 32 | 0 |
-| Foundation lifecycle bridge | 15 | 4 | 0 |
-| Shared | 24 | Не запускался в этом прогоне | 0 |
-| Всего | 124 | 85 | 0 |
+  Все source/dependency edits завершены до этого прогона.
 
 - Android assembleDebug/assembleRelease: passed.
 - Shared Debug XCFramework: device + simulator ARM64, passed.
@@ -124,10 +111,8 @@ Apple provider DI больше не создаёт неиспользуемые 
   skipped AppIntents metadata. iOS Release/runtime не проверялись.
 - `git diff --check`: passed.
 
-Qualified feature module resolution проверена AuthSchemaTest; агрегация qualified
-schema groups и core catalog validation — AnalyticsModuleTest/AnalyticsTest.
-Shared composition и оба platform entry points проверены сборками; production
-Koin/Firebase runtime startup не запускался.
+Shared composition и оба platform entry points проверены историческими сборками;
+production Koin/Firebase runtime startup не запускался.
 
 Runtime app/sign-in/token retrieval, Firebase Console и SDK sends не используются.
 Android mapping upload исключён; Xcode только unsigned Debug, без запуска приложения.

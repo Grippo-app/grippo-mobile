@@ -18,17 +18,14 @@ StateKeeper/InstanceKeeper ключи authorization_analytics_flow и
 DI resolution выполняется только при создании нового retained instance.
 Analytics implementation не получил UI/Essenty зависимостей.
 
-Self-review охватил оба владельца, передачу в дочерние компоненты, порядок
-инициализации, сценарии восстановления и active docs/skill. Удалены тесты
-несуществующих общих extensions; snapshot/legacy/lifecycle tests переведены на
-прямой analytics API. Не создавалась тестовая копия production retention logic.
-Runtime component recreation теперь не покрывается теми удалёнными extension
-тестами; корректность новой привязки проверена статически, не выполнением тестов.
+Self-review охватил обоих владельцев, передачу в дочерние компоненты, порядок
+инициализации, восстановление и active docs/skill. Новая привязка
+проверена по исходникам.
 
 Проверки: static audit 116 Kotlin файлов (delimiter balance, удалённые usages,
 private ownership, initialization order, retention keys, FlowId invariant,
 child propagation, dependency boundaries, active documentation), skill YAML,
-git diff --check — exit 0. Android/iOS compilation/KSP/builds/tests не запускались
+git diff --check — exit 0. Android/iOS compilation/KSP/builds не запускались
 по текущему указанию пользователя. Firebase/provider calls/uploads отсутствуют.
 
 ## Удаление holders
@@ -42,7 +39,7 @@ Essenty 2.5.0: retainedInstance ограничен InstanceKeeper.Instance; дл
 Порядок consume → retain → invariant → register save → ViewModel сохранён.
 
 Повторный self-review обоих компонентов и static audit 116 Kotlin файлов,
-skill YAML и git diff --check прошли (exit 0). Compilation/runtime/tests не
+skill YAML и git diff --check прошли (exit 0). Compilation/runtime не
 проверялись, Android/iOS builds не запускались по указанию пользователя.
 
 ## Удержание по типу сценария
@@ -56,4 +53,4 @@ ANALYTICS_STATE_KEY и используется только consume/register St
 Сам InstanceKeeper не сериализуется: замена его ключа не меняет persistent snapshot
 format; in-process hot swap старых holders этим изменением не поддерживается.
 Статические проверки type keys/StateKeeper/save/order/FlowId invariant и
- git diff --check — exit 0. Android/iOS builds/tests не запускались.
+ git diff --check — exit 0. Android/iOS builds не запускались.

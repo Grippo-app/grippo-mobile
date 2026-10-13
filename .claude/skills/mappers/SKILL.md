@@ -7,7 +7,7 @@ description: >-
   Domain→Entity (drafts), or Domain→Body bridge — i.e. "add mapper", "map
   direction", "nullable DTO handling", "DTO↔domain↔state mapping". One mapper
   task = one direction × one area; the orchestrator may run this N times for one
-  larger task. Covers the `to<Target>()` / `to<Target>OrNull()` naming, the
+  larger task. Covers target-specific mapper naming, the
   null-and-drop logging rule, type promotion at the domain edge, and the
   no-business-logic boundary.
 ---

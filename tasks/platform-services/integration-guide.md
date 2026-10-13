@@ -22,13 +22,13 @@ Android использует per-event CustomKeysAndValues, а не глобал
 
 Koin.init возвращает instance-bound ApplicationBootstrap с контрактами AnalyticsBootstrap, CrashReportingBootstrap и MessagingBootstrap. Android подключает SDK в App.onCreate; iOS создаёт bootstrap в AppDelegate.init и подключает SDK после FirebaseApp.configure в didFinishLaunching. Глобальных Runtime/lookup нет; consumers получают constructor injection (BaseViewModel использует существующий Koin pattern). Каждый core регистрируется собственным аннотированным Koin-модулем. Synchronizer разрешается в scope MessagingModule при callback для разрыва DI цикла authorization ↔ messaging. Android service не владеет token coroutine: app-lifetime core обрабатывает callback независимо от уничтожения service.
 
-Проверки только local fake transports + compilation/builds. Не запускать test crash/token retrieval/remote push для этой приёмки.
+Приёмка включает source review и compilation/builds. Не запускать synthetic crash/token retrieval/remote push для этой приёмки.
 
 SDK boundary сверена с официальными [Android Crashlytics docs](https://firebase.google.com/docs/crashlytics/android/customize-crash-reports), [Apple Crashlytics docs](https://firebase.google.com/docs/crashlytics/ios/customize-crash-reports) и [Apple FCM setup](https://firebase.google.com/docs/cloud-messaging/ios/get-started). Firebase Crashlytics skill использован для SDK contract review; provisioning/project settings не менялись.
 
 PushTokenSyncStatus относится к последнему callback sync target; `Synced` означает успешное завершение PushTokenSynchronizer. Это не отдельная гарантия durable delivery, session binding или отсутствия позднего server-side эффекта после HTTP timeout. Получение token и callback sync — разные операции: fetchToken не выполняет backend registration. Существующие login/register use cases выполняют её явно; поэтому dedup callback не заменяет registration при смене аккаунта.
 
-Crash disposition Queued означает помещение в RAM queue, Submitted — успешное возвращение synchronous SDK method. Это не подтверждение remote delivery или успешной записи SDK на диск. State lock не удерживается во время SDK work; production dispatcher IO, dispatcher injection предназначена для tests.
+Crash disposition Queued означает помещение в RAM queue, Submitted — успешное возвращение synchronous SDK method. Это не подтверждение remote delivery или успешной записи SDK на диск. State lock не удерживается во время SDK work; production dispatcher IO.
 
 Swift crash adapter оборачивает submission в autoreleasepool: временные Foundation/SDK objects освобождаются на каждой записи независимо от caller/background thread.
 
@@ -45,7 +45,6 @@ Android MessagingService и Swift MessagingDelegate вызывают MessagingBo
 Каждый сервис имеет публичные контракты в `api`, публичный `*Module` в корне `core` и закрытые реализации в `core/internal`. Папка `internal` подкреплена Kotlin-видимостью: engines, locks, catalog, configuration и diagnostic types объявлены `internal`. Shared подключает только `AnalyticsModule().module`, `CrashReportingModule().module`, `MessagingModule().module` и использует API bootstrap-контракты.
 
 `AnalyticsModule` сам регистрирует внутреннюю `AnalyticsConfiguration` через `@Single`; её `expect/actual` factory находится в `analytics/core/internal`. Android читает `Application.applicationInfo.flags` (`FLAG_DEBUGGABLE`) из собственного Koin scope; отсутствие Application — ошибка wiring без fallback. iOS использует `Platform.isDebugBinary` связанного Kotlin framework. Xcode Debug/Release подключают соответствующий Debug/Release XCFramework. Модуля конфигурации приложения и параметра `analyticsDebug` у `Koin.init` больше нет.
-
 
 ### Матрица metadata после рефакторинга API
 
@@ -69,7 +68,6 @@ crashReporting.logBreadcrumb(CrashDiagnosticCode("push_registration_started"))
 Разделение пакетов: context, metadata, values, transport, lifecycle.
 CrashReporting остаётся корневым consumer API; Startup использует
 lifecycle.CrashReportingBootstrap, SDK adapters — transport.CrashReportingSink.
-
 
 ### Матрица Messaging API
 

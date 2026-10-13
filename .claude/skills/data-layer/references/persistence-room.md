@@ -53,7 +53,7 @@ public abstract class Database : RoomDatabase() {
 - **One `Database` class.** Multiple databases are not used. Cross-table relations need a shared file.
 - **`@Database(entities = [...], version = N)`** — every `@Entity` is registered.
 - **`exportSchema = true`** — Room writes JSON schema files to `data-services/database/schemas/`
-  for audit and migration testing.
+  for audit and migration review.
 - **`@TypeConverters(StringListConverter::class)`** — register every TypeConverter at the class
   level. Don't put TypeConverters on individual entities.
 - **`@ConstructedBy(DatabaseConstructor::class)`** — Room generates `DatabaseConstructor`

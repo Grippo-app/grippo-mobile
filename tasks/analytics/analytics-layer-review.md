@@ -12,8 +12,8 @@
 
 `:analytics:analytics-api` содержит feature interfaces и typed facts/state.
 `:analytics:authorization` содержит @Single stateless factory, scenario facades,
-internal matrices/events/operation timing/navigation attribution. Ни main, ни tests
-этого implementation не зависят от UI, domain или data services. UI main зависит
+internal matrices/events/operation timing/navigation attribution. Implementation
+не зависит от UI, domain или data services. UI main зависит
 только от analytics-api; shared подключает annotated implementation и UI bindings.
 
 UI сохраняет StateKeeper keys и snapshots; lifecycle binding остаётся foundation.
@@ -35,8 +35,8 @@ replay flow_started. UI types, formatters и SDK exceptions не выходят 
 
 ## Self-review
 
-- Зависимости: main и tests обоих analytics modules проверены по Gradle declarations/imports; UI/domain/services/platform SDK/Compose/Decompose/Essenty/core исключены. UI commonMain содержит только analytics.analyticsApi, implementation находится в commonTest и shared.
-- DI/lifetime: @Single stateless factory + @Single UI classifier, generated modules в composition root. Smoke test проверяет real generated factory resolution, singleton lifetime и разные mutable scenario instances.
+- Зависимости: main обоих analytics modules проверены по Gradle declarations/imports; UI/domain/services/platform SDK/Compose/Decompose/Essenty/core исключены. UI commonMain содержит только analytics.analyticsApi, implementation подключается shared.
+- DI/lifetime: @Single stateless factory + @Single UI classifier, generated modules в composition root. Проверены factory resolution, singleton lifetime и отдельное владение mutable scenarios.
 - Контракты: API принимает typed facts и suspend blocks, без use cases/routers/formatters. Mutable state и technical events internal; persistence snapshot immutable и сериализуем. Core/Sink остаются отдельной общей механикой.
 - Поведение: отсутствие token не объявляется expired, profile failure не становится NoSession/success; существующая redirect policy принадлежит UI. Profile failure result кодируется failed terminal. Whole callback exceptions/cancellation сохраняются. Login/Register preparation requests не менялись.
 - Навигация: leaf lifecycle binding передаёт facade presentation callback; общий foundation implementation закрывает presentation. UI route→entry mapping exhaustive. Legacy route и literal legacy state JSON, сохранённый SerialName, StateKeeper keys, restoration without replay проверяются.
@@ -47,31 +47,8 @@ replay flow_started. UI types, formatters и SDK exceptions не выходят 
 
 Прежние отчёты относятся к предыдущей архитектуре; текущий стандарт и skill обновлены.
 
-| Набор | Android host | iOS simulator ARM64 | Failures/errors |
-|---|---:|---:|---:|
-| Независимая analytics implementation | 24 | 24 | 0 |
-| UI authorization integration | 15 | 15 | 0 |
-| Foundation | 15 | 4 | 0 |
-| Shared | 24 | не запускался | 0 |
-
-Полный Gradle run: BUILD SUCCESSFUL, 11m47s, exit 0,
-`/tmp/grippo-analytics-layer-complete.log`.
-
-```sh
-./gradlew :analytics:authorization:testAndroidHostTest \
-  :analytics:authorization:iosSimulatorArm64Test \
-  :ui-screen-features:authorization:testAndroidHostTest \
-  :ui-screen-features:authorization:iosSimulatorArm64Test \
-  :ui-core:foundation:testAndroidHostTest :ui-core:foundation:iosSimulatorArm64Test \
-  :shared:testAndroidHostTest :androidApp:assembleDebug :androidApp:assembleRelease \
-  :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease \
-  -x :androidApp:uploadCrashlyticsMappingFileRelease
-```
-
-После добавления literal legacy snapshot fixture выполнен свежий run UI тестов
-обеих платформ: BUILD SUCCESSFUL, 29s, exit 0,
-`/tmp/grippo-analytics-layer-ui-final.log`. Оба UI XML отчёта новее последнего
-изменения test source; 15/15, 0 failures/errors. API/main source после полного run не менялся.
+Исторический Gradle build завершён BUILD SUCCESSFUL, exit 0.
+Лог: `/tmp/grippo-analytics-layer-complete.log`.
 
 Android Debug/Release и Debug XCFramework device/simulator собраны.
 Lint Debug/Release: 0 Error/Fatal, по 14 прежних warnings.
@@ -96,7 +73,6 @@ iOS Release не запускался, чтобы не инициировать 
 Runtime delivery и performance profiling не проверялись.
 Firebase sends, sign-in, app launch и mapping/symbol upload не выполняются.
 
-
 ## Повторный строгий аудит после переименования API (2026-10-12)
 
 Проверены все consumer contracts, implementation/event families/matrices,
@@ -106,11 +82,10 @@ bindings/call sites, generated DI, Gradle boundaries, platform bootstrap wiring,
 
 Исправлено:
 
-- Убраны явно добавленные coroutine-test/JSON dependencies из API без test sources.
+- Убраны неиспользуемые dependencies из API.
 - Убран serialization compiler plugin из implementation без @Serializable types;
-  snapshot serializers генерируются в analytics-api, JSON dependency остаётся в tests.
-- Snapshot другого route FlowId отклоняется до reporting; добавлен regression test.
-  Совпадающие/legacy snapshots продолжают покрываться существующими tests.
+  snapshot serializers генерируются в analytics-api.
+- Snapshot другого route FlowId отклоняется до reporting; совпадающие и legacy snapshots сохраняются.
 - Руководство использует отдельный слой, internal schema/key matrix и facade;
   примеры leaf binding обновлены. Coverage больше не ссылается на удалённые методы.
 - Skill/стандарт описывают соответствие snapshot и route-owned FlowId.
@@ -123,14 +98,10 @@ serialized state shape не изменены; прежний SerialName сохр
 
 Свежая проверка integration: BUILD SUCCESSFUL, 5m49s, exit 0,
 `/tmp/grippo-analytics-strict-audit.log`.
-Analytics authorization tests: Android 25, iOS simulator 25;
-UI authorization tests: Android 15, iOS simulator 15;
-shared Android host: 24. Failures/errors: 0.
+
 Android Debug app и Debug XCFramework (device + simulator) собраны.
 Оба Debug headers проверены по 24 internal declarations: утечек нет.
 
-Свежая проверка toolkit analytics API/core и foundation Android/iOS tests:
-BUILD SUCCESSFUL, 33s, exit 0, `/tmp/grippo-analytics-strict-core.log`.
 `git diff --check`, module-boundary/obsolete-reference scans и skill YAML checks
 прошли. Сохранены существующие warnings unrelated modules/global opt-ins.
 
@@ -138,7 +109,6 @@ BUILD SUCCESSFUL, 33s, exit 0, `/tmp/grippo-analytics-strict-core.log`.
 в этот повторный прогон не включены; их предыдущие результаты перечислены выше.
 Runtime Firebase delivery, app launch, mapping/symbol upload и performance profiling
 не выполнялись. Сборки не доказывают отсутствие любого runtime overhead.
-
 
 ## Текущий consumer API
 

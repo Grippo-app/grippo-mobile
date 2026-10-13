@@ -62,62 +62,23 @@ Ordinary presentation/close Exceptions изолируются foundation; fatal 
 сохраняются. Показы не участвуют в синхронизации черновика с профилем: эта политика
 остаётся business-owned и описана в [StateKeeper inventory](../profile/state-preservation.md).
 
-## Review и проверки
+## Review
 
-- [x] Сверить восемь реальных rendered leaf routes и container null по исходникам.
-- [x] Проверить exhaustive encoding, typed navigation, reason, DI и отсутствие
+- Сверены восемь rendered leaf routes, fixed ProfileScreen и default null контейнера.
+- Проверены exhaustive encoding, reason, common DI-композиция и отсутствие
   custom schemas, SDK/domain/UI dependencies и business/state изменений.
-- [x] Self-review → independent review → исправления → повторное review.
-- [x] Проверить actual VM/foundation lifecycle: Initial/Restore, pause/destroy,
-  отсутствие container/duplicate views, reporting isolation и сохранение draft.
-- [x] Повторить StateKeeper regressions, строгую direct JVM-компиляцию и source/SHA
-  gates; валидировать skills/docs/scope и записать реальный результат.
+- Self-review → independent review → исправления → повторное review завершены.
+- Foundation owns Initial/Restore и close; save не создаёт views или callbacks.
+  Ordinary presentation/close Exceptions изолирует foundation; fatal Errors
+  сохраняются. Feature implementation возвращает исходный presentation.
+- Проверены Kotlin syntax, отсутствие named local functions, ссылки и metadata.
+  Изменения восьми ViewModel/Component при подключении показов ограничены
+  hooks/injection; State, persistence bindings и business requests сохранены.
 
-Проверка подключения показов, 2026-10-13:
-
-- Self-review и два независимых review завершены. Уточнён стандарт: ошибки
-  presentScreen/close изолирует foundation, feature implementation передаёт
-  исходный presentation без дополнительных обёрток. Повторное review без замечаний.
-- Direct cached Kotlin JVM compiler: strict explicit API и Werror для двух API
-  файлов, трёх implementation файлов и 141 source production slice (128 настоящих
-  исходников репозитория + 13 host fixtures). Test slice: Werror, шесть настоящих
-  test/fixture файлов + два host fixtures. Source/artifact SHA проверены.
-- JUnit: **38/38 PASS** — 22 StateKeeper regressions, три прежних routing теста,
-  семь новых UI/lifecycle сценариев и шесть module/API тестов. Root независимо
-  повторил запуск на финальных артефактах: 38/38 PASS.
-- Восемь настоящих routes проверены через Component → retained VM → foundation
-  lifecycle: один Initial, закрытие при pause/destroy, Restore при следующем
-  resume, сохранение без повторного view. После archive → JSON roundtrip → destroy
-  → fresh Component показывается только активный экран; Back восстанавливает
-  черновик предыдущего экрана и создаёт его обычный первый показ.
-- Recording toolkit Analytics получает typed NavigationContext; проверены
-  уникальные stable IDs, default/explicit reason и отсутствие draft/flow/referrer.
-  Ordinary presentation/close Exceptions не мешают редактированию, сохранению и
-  следующему resume; fatal Errors сохраняются. Прямой Profile API прозрачен для
-  ошибок и возвращает исходный presentation.
-- Искусственный показ Profile container только во временной production copy
-  компилируется и выявляется финальными тестами: 6 failures. Worktree не изменялся.
-- 80 Kotlin/KTS файлов проверены через PSI: syntax errors и named local functions
-  отсутствуют. Нормализованное сравнение подтверждает: изменения восьми VM и
-  восьми Component — только hooks/injection; бизнес-код, State модели, persistence
-  bindings и container остались прежними. Skills/YAML/local links проверены.
-
-Evidence:
-`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/profile-persistence-jvm-20261013-xpu9_udr/profile-with-screens/`:
-четыре `*.sources.json`, `tests.json`, `root-junit.log`, `root-verification.json`,
-`screen-mutation-verification.json` и `mutations/container-screen/junit-final-tests.log`.
-Scope/PSI/skills evidence:
-`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/profile-analytics-20261013-kzkwoodq/`.
+Последующее упрощение draft synchronization удалило флаги редактирования,
+runtime flags/source caches из пяти owners, сохранив данные черновика и catalog
+identity. Hooks, screen IDs, lifecycle, DI, reporting isolation и event population
+не меняются. Controls/inputs/operations по-прежнему вне scope.
+Актуальная политика — в [StateKeeper record](../profile/state-preservation.md).
 
 Gradle/KSP, Android/iOS builds, UI/native runtime и SDK/Firebase не запускались.
-Host fixtures заменяют generated resources, rendering с fail-fast сигнатурами,
-generated module composition и native date formatting. Common DI-композиция
-проверена по исходникам; generated KSP и platform runtime этими тестами не подтверждены.
-
-Последующее упрощение draft synchronization удаляет флаги редактирования из пяти
-State, сохраняя данные черновика и catalog identity. Analytics impact: hooks,
-screen IDs, lifecycle, DI, reporting isolation и event population не меняются.
-Controls/inputs/operations по-прежнему вне scope. Последующий проход удаляет
-из пяти ViewModel также runtime flags/source caches и оставляет черновик в State;
-hooks, события и аналитический API не меняются. Актуальные проверки — в
-[StateKeeper record](../profile/state-preservation.md).

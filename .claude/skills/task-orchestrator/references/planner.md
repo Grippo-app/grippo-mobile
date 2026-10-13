@@ -137,37 +137,14 @@ Classify each `### Automated` bullet:
 | **resource-gated** (a string/drawable in every locale) | `resource-builder` |
 | **build-gated** (the build covers it) | `— (build-gated)` |
 | **spec-gated** (the task-prep `- Spec: …` bullet; `figma-spec-validator`) | `— (spec-gated)` |
-| **screenshot-gated** (the task-prep `- Screenshot: …` bullet; `figma-screenshot-validator`) | `— (screenshot-gated)` |
-| **test-gated** (a `` `test:<kebab-id>` `` anchor bullet — automatable runtime behavior) | the builder that owns the subject behavior (must match Step 5) |
 
-Testable runtime behaviour lives in `### Automated` as a **test-gated** bullet
-with its `test:` anchor (task-prep writes the anchor; you never invent or
-rename one). A runtime-behaviour bullet under `### Automated` WITHOUT a
-`test:` anchor means the task-prep promotion drifted:
-`BLOCKED: bullet "<first 80 chars>" reads as runtime behaviour but carries no
-test anchor…`. Do NOT silently re-classify, and never move an automatable
-behaviour to `### Manual` just because a diff cannot prove it.
+Runtime behavior belongs in `### Manual` with concrete expected results when
+it requires executing the app. Structural source evidence remains under
+`### Automated`. Do not claim source review proves runtime behavior and do not
+add an automated verification harness.
 
 **Consistency rule:** every builder in an `Owner builder` column for a structural
 bullet MUST also appear in Step 5's `## Builder contracts`.
-
-## Step 4b — Test contract
-
-One canonical `## Test contract` block (frozen sub-heading order: `### Behavior
-changes`, `### Tests to create or modify`, `### Regression suites`, `### Platform
-lanes`, `### Test dependencies`, `### Test applicability`). For every
-`test:<id>` anchor state: the behavior contract in one sentence; owner builder;
-owner module; test layer; proposed test file; proposed test case identity;
-happy/negative/boundary cases; required platform lane(s); direct suite;
-affected consumer suites; needed test capability; the machine policy's minimum
-evidence for that change kind; a one-line rationale. Suites, lanes, capabilities and reason
-vocabulary come from the machine policy (`orchestrator/tasks/test-policy.json`,
-carried by version/hash) — you may propose MORE than the policy minimum, never
-less: the deterministic resolver widens any narrower proposal and records it in
-`selectionReasons`. `### Test applicability` is either `- executable` or the
-single typed `- test-not-applicable: <allowlisted value>` (only when the whole
-task is genuinely non-executable; the resolver rejects a N/A that coexists with
-behaviors).
 
 ## Step 5 — Builder contracts
 
@@ -230,13 +207,6 @@ A single Markdown block in this exact order (the frozen
 ## Acceptance mapping
 ### Automated
 ### Manual          (optional — omit when no manual bullets)
-## Test contract
-### Behavior changes
-### Tests to create or modify
-### Regression suites
-### Platform lanes
-### Test dependencies
-### Test applicability
 ## Behavioral edge-cases (reviewer-check items)
 ## Builder contracts
 ## Open assumptions

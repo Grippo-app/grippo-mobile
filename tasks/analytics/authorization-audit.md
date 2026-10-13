@@ -41,25 +41,22 @@ OAuth signIn cancellation/fatal boundaries и Apple provider DI также пр�
    DI-модули ради этого не введены.
 6. AuthNavigationEvent включал rejected form, которое не является переходом навигации.
    Семейство переименовано в AuthFlowEvent: события относятся к сценарию. Wire names неизменны.
-7. Serialization JSON был production dependency при использовании Json только тестами.
-   JSON перенесён в commonTest; commonMain напрямую объявляет serialization core.
+7. Удалён неиспользуемый Serialization JSON production dependency;
+   commonMain напрямую объявляет serialization core.
 8. Удалены formatting tails/trailing whitespace и redundant wildcard-covered imports
    в analytics; cleanup ограничен integration-owned files, чужие изменения не сбрасывались.
 
-9. Тест wire fixtures проверял identity keys, но не Schema. Добавлен assertSame для
-   каждого event.schema относительно зарегистрированной matrix; обязательный runtime
-   schema identity contract теперь проверяется непосредственно фичей.
-10. OAuth signIn boundaries оборачивали CancellationException; Google iOS превращал
+9. OAuth signIn boundaries оборачивали CancellationException; Google iOS превращал
    её в user Cancelled, включая interruption при живом caller. Coroutine cancellation
    теперь пробрасывается без замены. Google token exchange/JSON/decode guards также
    не маскируют cancellation/fatal; внешние signIn guards Android/iOS и Apple callback
    mapper не превращают fatal Error в обычный auth failure. SDK user cancellation
    остаётся отдельным typed outcome по platform domain/code. Live OAuth UI не запускалась.
-11. AppleAuthProvider имел три UNUSED_PARAMETER на обоих targets, а AppleAuthModule
+10. AppleAuthProvider имел три UNUSED_PARAMETER на обоих targets, а AppleAuthModule
    ради них включал Context/HTTP/Serialization modules. Удалены NativeContext/HttpClient/Json
    из expect/actual constructor и provider factory; удалены пять ненужных Gradle dependencies.
-   Qualified/generated Koin pattern сохранён. Изолированный DI test создаёт Apple provider
-   из его собственного module, без networking/context/JSON bindings или SDK signIn.
+   Qualified/generated Koin pattern сохранён. Apple provider создаётся
+   из своего module без networking/context/JSON bindings или SDK signIn.
 
 ## Повторный review pass
 
@@ -97,27 +94,8 @@ transport сохранён. Реальные SDK sends, Firebase Console, app la
 
 ## Проверки
 
-Первый slice (stage ownership/stateless helper cleanup): Android + iOS tests,
-BUILD SUCCESSFUL 24s, `/tmp/grippo-auth-audit-tests.log`.
-Второй slice (shared preparation policy): Android + iOS tests,
-BUILD SUCCESSFUL 35s, `/tmp/grippo-auth-audit-preparation.log`.
-AuthSchemaTest дополнен проверками derived preparation failure stage и rejection чужих stages.
-AuthAnalyticsTest проверяет registration data contract и invalid facade mode без side effects.
-AuthExecutionTest подтверждает сохранённую загрузку weight history у всех методов Login
-и provider interruption при всё ещё активном caller. AuthSchemaTest дополнительно
-проверяет schema identity и изолированную резолюцию минимального Apple provider module.
-
 Финальный Gradle прогон после завершения source/dependency edits:
 BUILD SUCCESSFUL 4m 5s, `/tmp/grippo-auth-audit-complete.log`.
-
-| Suite | Android host | iOS Simulator ARM64 | Failures/errors |
-|---|---:|---:|---:|
-| Authorization | 37 | 37 | 0 |
-| Analytics API | 12 | 12 | 0 |
-| Analytics core | 36 | 32 | 0 |
-| Foundation | 15 | 4 | 0 |
-| Shared | 24 | Не запускался | 0 |
-| Всего | 124 | 85 | 0 |
 
 Android Debug/Release и Shared Debug XCFramework (device/simulator ARM64): passed.
 Lint Debug/Release: 0 errors/fatal, 14 прежних warnings в каждой конфигурации.

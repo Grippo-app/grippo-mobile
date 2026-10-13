@@ -14,7 +14,7 @@ Source of truth: the `task-orchestrator` skill (`references/run-loop.md` + `vali
 | Step 4 outer re-entry | 7 | per task, never reset mid-task | `reaches **7**` |
 | Step 4.5 assemble | 2 consecutive FAILs (PASS resets) | per task | `2 *consecutive* assemble-mode FAILs per task` |
 | Step 4.6 runtime verify | 3 invocations | per task | `at most 3 verify invocations per task` |
-| Step 4.6b screenshot | 3 invocations | per task | `at most 3 invocations per task` |
+| Step 4.6b manual visual review | 3 invocations | per task | `at most 3 invocations per task` |
 | Step 5.5 security-review | 2 iterations | per task | `2 security-review iterations per task` |
 | acceptance bullet repeatedly missing | 2 consecutive validator cycles | per task | `across 2 consecutive validator cycles` |
 | site runner concurrency | `MAX_PARALLEL=2` (canary; source constant, no env override) | n/a | `MAX_PARALLEL=2` |

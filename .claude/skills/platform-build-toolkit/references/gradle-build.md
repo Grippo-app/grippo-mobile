@@ -338,7 +338,7 @@ decorators and the required independent-screen `screenPresentation` hook. Contai
 keep default null. Shared foundation owns
 lifecycle binding; feature UI needs no analytics provider or integration module.
 Follow [feature-analytics](../../feature-analytics/SKILL.md) for the API, internal
-matrices and affected coverage. Add serialization/test dependencies only where needed.
+matrices and affected coverage. Add serialization dependencies only where needed. Do not add automated test infrastructure.
 
 ### Anti-patterns
 
@@ -639,39 +639,6 @@ sourceSets {
 
 Most modules only need `commonMain.dependencies`. Android-specific deps go in `androidMain.dependencies`. iOS deps usually come via the platform engine (e.g. `ktor-client-darwin` in `iosMain.dependencies` for `:toolkit:http-client`).
 
-### Test-bearing module (any kind)
-
-A module that owns tests adds the opt-in test conventions on top of its normal
-plugin set — nothing else changes in the build script:
-
-```kotlin
-plugins {
-    id("android.library.convention")
-    id("kotlin.multiplatform.convention")
-    // opt-in test foundation: pick exactly the capabilities the tests use;
-    // each capability plugin applies kmp.test.convention itself.
-    id("coroutines.test.convention")   // runTest/virtual time in commonTest
-    id("network.test.convention")      // MockEngine in commonTest
-}
-
-kotlin {
-    android { namespace = "com.<org>.<product>.data.features.<feature>" }
-
-    sourceSets.commonMain.dependencies { /* production deps */ }
-    // Test dependencies NEVER appear here by hand — capabilities own them.
-}
-```
-
-Source layout (frozen names): general tests in `src/commonTest/kotlin`,
-host-only tests (Koin `verify()`, Robolectric entries) in
-`src/androidHostTest/kotlin`, shared Compose UI scenarios in
-`src/uiTest/kotlin` (created by `compose.ui.test.convention`), iOS entries in
-`src/iosSimulatorArm64Test/kotlin`, device-only instrumented tests in
-`src/androidDeviceTest/kotlin` (standalone compilation — it does not see
-`commonTest`). Run lanes through the module aliases (`hostTests`,
-`iosSimulatorTests`, `androidDeviceTests`) or the root aggregates — never
-through guessed AGP/KGP task names.
-
 ### Per-module checklist
 
 When you create a new module:
@@ -685,9 +652,6 @@ When you create a new module:
 - [ ] No `repositories { ... }` block (forbidden by `FAIL_ON_PROJECT_REPOS`).
 - [ ] No version literals (`"2.3.21"`). Use the catalog (`libs.kotlin.gradle.plugin`).
 - [ ] Module added to `settings.gradle.kts`.
-- [ ] Test conventions only if the module owns tests (`kmp.test.convention` is opt-in, never transitive); test dependencies arrive only through `*.test.convention` capabilities.
-- [ ] No `withHostTest`/`withDeviceTest` call in the module script — the single owners live in build-logic.
-- [ ] Validate device-test resource tasks against the current Compose version before enabling the Android device lane.
 - [ ] If declares Koin module, added to `:shared/Koin.kt`.
 - [ ] If consumed by `:shared`, added to `:shared/build.gradle.kts`.
 

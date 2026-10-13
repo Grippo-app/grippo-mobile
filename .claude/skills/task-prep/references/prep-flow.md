@@ -349,7 +349,7 @@ Build a list of:
 - **Multi-feature implications** — the backlog mentions ≥ 2 feature modules; confirm which is the primary owner and whether cross-feature wiring is intended.
 - **Resource-only changes** — strings/drawables in non-English locales the backlog forgot to enumerate.
 - **Migration triggers** — schema/entity edits that need explicit user authorization per `../../validation-gates/references/when-to-stop-and-ask.md`.
-- **Missing UI-node designs** — only when `figmaEnabled: true` AND the Step-1 classification includes `screen|dialog|component|overlay` UI kinds: every UI node the task creates or visually modifies should have either a `- <NodeName> [kind] — <figma node URL>` bullet or an explicit audited opt-out `- <NodeName> — none (<why no mock>)`. A missing bullet, an empty value after the em-dash, or a no-mock claim without a reason is a real gap: ASK for the URL or the explicit reason. Never infer "no mock exists" from silence and never synthesize a `none` bullet; `none` disables the census and spec/screenshot gates for that node, so only source text or an owner answer may authorize it. A clearly non-visual edit may omit `## Design` entirely. See `screensPrompt` in `orchestrator/site/scripts/figma-actions.js` (the screen-cache/census authoring contract) and [`figma-split.md`](figma-split.md).
+- **Missing UI-node designs** — only when `figmaEnabled: true` AND the Step-1 classification includes `screen|dialog|component|overlay` UI kinds: every UI node the task creates or visually modifies should have either a `- <NodeName> [kind] — <figma node URL>` bullet or an explicit audited opt-out `- <NodeName> — none (<why no mock>)`. A missing bullet, an empty value after the em-dash, or a no-mock claim without a reason is a real gap: ASK for the URL or the explicit reason. Never infer "no mock exists" from silence and never synthesize a `none` bullet; `none` skips the census, source/spec checks and manual visual review for that node, so only source text or an owner answer may authorize it. A clearly non-visual edit may omit `## Design` entirely. See `screensPrompt` in `orchestrator/site/scripts/figma-actions.js` (the screen-cache/census authoring contract) and [`figma-split.md`](figma-split.md).
 - **Contract-missing endpoints** — the backlog names (or implies) a backend endpoint. When `npm run --silent contract:paths` in `orchestrator/api-contract/` reports a valid snapshot, fold "does the backend expose <path/capability>? what shape?" into the context-finder questions — it reads the resolved inventory first and prefixes `CONTRACT_MISS:` on a miss. An endpoint absent from a *present* snapshot is a gap for Step 3 (options: stub ahead of the backend, refresh via Backend Test + Refresh / typed `contract:probe` then `contract:refresh-*`, or defer) — do NOT ask the user for a Swagger URL the snapshot already answers. No snapshot → contract questions go to the user only when the task actually needs an endpoint.
 
 The gap list feeds Step 3.
@@ -490,72 +490,6 @@ publisher.
 
 ---
 
-## Step 4.7 — test-foundation doctor (before the final todo proposal)
-
-Task-prep is the single lifecycle owner of the primary foundation check: run it
-after the intake answers are sufficient but BEFORE building the final todo
-proposal and before any product planner. Step 0 of the run loop repeats the
-doctor only as defense-in-depth — it never creates tasks or repairs the
-foundation.
-
-```bash
-node orchestrator/tasks/task-test-foundation.mjs doctor --product-root <productRoot>
-```
-
-Exactly one typed state comes back; act on it, never on a partial reading:
-
-| State | Action |
-|---|---|
-| `READY` | Continue to Step 5 promotion; nothing else to do. |
-| `ABSENT_CAN_INSTALL` | Run the bootstrap-coordinator protocol below, bind the child stem into the parent's `## Depends on`, then continue to Step 5. |
-| `PARTIAL_CORRUPT` | `BLOCKED:` with the exact missing/duplicate/drift entries from the inventory. Never "top up" a partial foundation by hand. |
-| `CONFLICTING_STACK` | `BLOCKED:` name the conflicting markers; a separate owner-authorized clean-cut task picks one stack. Never auto-delete user tests/dependencies. |
-| `UNSUPPORTED_VERSION` | `BLOCKED:` name the off-pin versions; never guess coordinates/APIs for an unpinned stack. |
-| `TOOLCHAIN_UNAVAILABLE` | `BLOCKED:` name the exact JDK/SDK/simulator prerequisite. |
-
-**Bootstrap coordinator protocol (`ABSENT_CAN_INSTALL` only).** The absent
-foundation is a GLOBAL singleton intent, not a per-task errand:
-
-1. Compute `foundationIntentHash` from the current machine-policy hash and the
-   doctor's `doctorInventoryHash` (`task-test-foundation-contract.cjs`), then
-   `claim` the durable no-clobber marker
-   (`.cache/tasks/test-foundation/<intent-hex64>.json`). A rival claim returns
-   typed `FOUNDATION_IN_PROGRESS` with the exact owner — reuse its promoted
-   child as the dependency or report BLOCKED while its phase is live; never
-   delete or adopt a marker without owner-death proof and marker/receipt
-   reconciliation.
-2. Scan the consistent task-state snapshot for an active child with the exact
-   factory Source (`task-source-contract.cjs testFoundationPrerequisite(firstParentStem,
-   foundationIntentHash)`). Exactly one match → reuse it as the dependency;
-   zero → create; several matches, or any active bootstrap with a different
-   intent → `BLOCKED`, never a second installer.
-3. Create through the single canonical allocator (`create-backlog.py`) with the
-   factory Source, `originStem` = first parent stem, and the stable global
-   `dedupKey` `task-prep.test-foundation.<intent-hex64>` — crash recovery and
-   rescans MUST return the same child, never a new number. The child body's
-   `## Inputs` carries the exact canonical bullets `Test policy hash`,
-   `Doctor inventory hash` and `Foundation intent hash` so a lost gitignored
-   cache is recoverable from task bytes.
-4. Under the same first-parent writer/session authority, run the existing
-   delegated child flow: the child gets `## Origin` `- split from
-   <first-parent-stem>`, a prep-owned lock and promotion `backlog→todo`
-   (`transition-task-state.mjs` delegated promotion covers exactly this Source
-   type with the same parent-ref/origin/lock/session/no-clobber checks as
-   `task-split`). Advance the marker `claimed → child-created →
-   child-promoted`; the process mutex is held until durable `child-promoted`.
-5. The prerequisite child changes ONLY canonical build/test infrastructure,
-   runs its allowlisted `bootstrap-foundation-fixture` structural gate, and can
-   never write itself a `test-not-applicable`. Its Source type is the single
-   doctor exception (no recursive prerequisite). If a crash left the child in
-   `backlog` before delegated promotion, the child goes through its own
-   canonical task-prep under a child-owned session, then the parent prep is
-   re-run from its unchanged backlog bytes — a fresh prep of a backlog task,
-   never a forbidden todo re-prep.
-6. The parent's final todo proposal lists the exact child stem under
-   `## Depends on` BEFORE its own promotion. Promotion with the unresolved
-   dependency is fine; Run admission stays fail-closed until the child is
-   accepted in `done/`.
-
 ## Step 5 — promote to todo
 
 The backlog item is ready. Rewrite the free-text into the standard structured shape in memory. Freeze
@@ -565,7 +499,7 @@ scope / Depends on?) and the promotion rules — every `### Automated` bullet's 
 build gate, the five defensive Out-of-scope bullets, design-bullet handling, spec-gate generation —
 live in [`acceptance-anchors.md`](acceptance-anchors.md). The Figma census split (Step 5.5 / 5.5a) runs
 inside this promotion path before the parent file is written, so generated component tasks, parent
-`## Depends on` entries, preview-state bullets, and screenshot-gate bullets are part of the verified
+`## Depends on` entries, preview-state bullets, and manual visual acceptance are part of the verified
 todo write — see [`figma-split.md`](figma-split.md).
 
 **Precondition and collision check.** Run the canonical validator with

@@ -54,8 +54,8 @@ conversational, the appendix is a structured trailer on the task file):
 ### Spec fidelity
 - Gate: ran (<N> screens) | skipped (figmaEnabled=false | no non-`none` ## Design bullets | not a UI task)
 - <ScreenName>: PASS (<n> minors → Caveats) | FAIL — <one-line> | SKIPPED — no mock (`## Design`: `none`)   (one bullet per ## Design screen; SKIPPED is the status-neutral no-mock home — does NOT add a Caveats bullet, never flips outcome status)
-- Screenshot gate: ran | skipped (figmaEnabled=false | not a UI task) — a declared `## Design` screen whose oracle/capture is missing is a Blocker (routed), NOT a skip
-- Screenshot <ScreenName>: PASS (0.94) | Minor (→ Caveats) | Major (route by `screenshotPixelGate`: default `strict` blocks, `advisory` → Caveats, `off` suppresses pixel-similarity findings) | Blocker (routed)   (omit the line only for a non-UI task)
+- Visual review: observed | unrun — name the permitted preview/app screenshot and relevant design states.
+- Visual <ScreenName>: actual observations, fixes and unverified states (no inferred pixel score).
 
 ### Build gate
 - iOS XCFramework (`:shared:assemble<IosFrameworkName>DebugXCFramework`) — PASS / SKIP (iosEnabled=false)
@@ -83,9 +83,9 @@ todo file yourself — it lives in the control root and you cannot reach it. The
 integration transaction validates the combined task,
 persists an internal recovery snapshot, and atomically installs the trailer as
 its first phase. **Six headings are always required, in this exact order; `###
-Execution log` is parser-optional after `### Files touched`, but REQUIRED for a
-Figma-enabled UI task before finalization.** `ship-done` injects only the machine
-digest line and will not rewrite the appendix structure or line endings. If a required subsection
+Execution log` is optional after `### Files touched`.** Record actual source,
+static, build and manual observations; a Figma-backed change does not require a
+machine screenshot digest or absent recording finalization infrastructure. If a required subsection
 has nothing, write exactly one bullet `- none` — except `### Runtime verify`,
 which always records its exact `Gate:` and `Result:` pair. Never skip a required
 heading or leave a required subsection empty.
@@ -139,8 +139,7 @@ machine-checked at ship: anything outside `verified | manual | deferred` (canoni
 - Phases: <phases in order; annotate retried ones, e.g. `validators (3 cycles)`>
 - Totals: <whole-run duration> · stops <n> · retries <n>
 - Design: <screens pulled, or `none`>
-- Figma: final <PASS|WARN|BLOCKER|INCOMPLETE> · <n> screenshots · run <id> · report sha256:<short> · <fresh|stale>
-- Figma meta: «AUTO — written by `ship-done.mjs`; do NOT hand-type this bullet»
+- Design checks: <actual static spec checks, manual visual observations and unrun states>
 - Spawned: <child / follow-up task stems, or `none`>
 ```
 
@@ -165,23 +164,6 @@ machine-checked at ship: anything outside `verified | manual | deferred` (canoni
   reordered subsections are invalid.
 - `### Build gates` — one bullet per gradle task you ran (the build-gate
   acceptance line gets its own bullet). Effectively never `- none`.
-- **The `tests` gate row is required for every new finalization** and
-  uses the existing grammar unchanged: `` - `tests` — pass `` when the sealed
-  summary verdict is `PASS`, or
-  `` - `tests` — skipped (test-not-applicable: <allowlisted value>) `` when it
-  is a proven typed `SKIPPED`. A `fail` value never publishes — the finalizer
-  refuses it, the row must byte-match the sealed summary the same transaction
-  stages (mismatch = `OUTCOME_TESTS_GATE_MISMATCH`), and a `tests` row without
-  a transaction-bound summary is refused as `TEST_EVIDENCE_UNBOUND`. Task-body
-  lookalikes are ignored: only the structurally parsed Outcome `Build gates`
-  section can supply this row. The full
-  digest lives in the typed committed summary, never in Outcome prose — do NOT
-  add a seventh heading for it. The interlock is unconditional for every
-  forward `Status` (`completed`, `completed-with-caveats`,
-  `partially-completed`): flaky is BLOCKED (no WARN class), and the one legal
-  bypass is the owner-authorized descope flow (`descope-task.mjs`), which
-  shrinks the acceptance obligations BEFORE finalization — a failed test can
-  never become a Caveat.
 - `### Runtime verify` — **exactly two bullets** in order: `Gate:` (ran/deferred/
   skipped) then `Result:` (pass/fail/n/a). The verdict is `n/a` whenever the gate
   did not run; `pass`/`fail` only when `ran`. Append the verify-skill screenshot
@@ -191,11 +173,11 @@ machine-checked at ship: anything outside `verified | manual | deferred` (canoni
   verbatim** (incl. inline backticks), then ` — <verdict> — <note>`. Verdict is
   exactly `verified` (an `### Automated` bullet `acceptance-tracer` matched),
   `manual` (a `### Manual` bullet), or `deferred` (gate-delegated — build-gated /
-  spec-gated / screenshot-gated). The transient states `partial`/`missing`/
+  spec-gated). The transient states `partial`/`missing`/
   `conflicting` MUST NOT appear. The trace is **exhaustive** over `### Automated`
   + `### Manual`. Figma-deferred bullets may carry the machine report in the note:
   `spec PASS report=.cache/figma/reports/spec-compare-<stem>.json hash=<sha256>`
-  or `screenshot PASS report=…/screenshot-<stem>.json hash=<sha256>`.
+  Rendered visual observations remain manual evidence.
 - `### Caveats` — one short line per caveat, ≤120 chars. Canonical shape: `<what
   was done despite a constraint> because <why the alternative did not work>`.
   Long discussions → a follow-up task, not here.
@@ -205,19 +187,9 @@ machine-checked at ship: anything outside `verified | manual | deferred` (canoni
   deleted/renamed), without summaries or truncation markers: every bullet must
   match the exact path/change grammar. Includes any authorized footprint
   expansion (reason in `### Caveats`).
-- `### Execution log` — the **durable digest** of the pipeline journal
-  (gitignored), folded in so the run's shape survives a fresh clone. The **last**
-  heading, strictly **after `### Files touched`**, and **optional + parser-
-  additive for non-UI tasks, but mandatory for a Figma-enabled UI ship** — deliberately NOT in the required-heading set (the canonical
-  `headings` list in `orchestrator/contracts/outcome-shape.json`, which every
-  parser derives from — keep it out of that list), so a non-UI done file without
-  it stays valid. ≤6 bullets. When final
-  Figma evidence exists and is fresh, add the human `Figma:` bullet (short). The
-  machine `- Figma meta:` bullet is **code-emitted by `ship-done.mjs`** at the move
-  (Step 6b) from this run's verdict + real report hashes — **do not hand-type it**;
-  `ship-done` injects it (and overwrites any hand-typed one) but never creates
-  the heading or normalizes surrounding bytes. It may exceed 120 chars
-  to carry full `sha256:<64>` hashes; keep all other bullets short.
+- `### Execution log` — optional, last, after `### Files touched`. Keep a concise
+  durable record of actual phases/checks and remaining limits. Use up to six
+  bullets; do not fabricate machine digests, scores or inferred visual PASS.
 
 Every bullet is one physical line. Free-form caveat text is bounded to 120
 characters; build/runtime notes use their explicitly bounded grammar, and
@@ -225,8 +197,8 @@ execution-log bullets use the dedicated ≤6-line contract above.
 
 **Self-check the draft parses, BEFORE Step 6b (the hand-off).** Confirm all six
 required `### ` headings exactly — `Build gates`, `Runtime verify`, `Acceptance
-trace`, `Caveats`, `Follow-ups`, `Files touched` (PascalCase; add the seventh
-`### Execution log` whenever the Figma UI gate applies) — plus a `**Status**` line and a `**Reviewer**` line with the
+trace`, `Caveats`, `Follow-ups`, `Files touched` (add optional
+`### Execution log` only when recording actual extra check context) — plus a `**Status**` line and a `**Reviewer**` line with the
 exact key casing. A missing/mis-cased heading/key silently flips the badge to
 `malformed`. `finalize-task` and its nested `ship-done` interlock both enforce
 this mechanically (exit 1 with the exact malformed reason) — but self-check

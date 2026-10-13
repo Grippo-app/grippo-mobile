@@ -184,9 +184,8 @@ internal class DefaultAnalytics(
     }
 
     fun diagnostics(): List<AnalyticsDiagnostic> = lock.withLock { diagnostics.toList() }
-    fun queuedEventCount(): Int = lock.withLock { queue.size }
 
-    /** App-lifetime service normally remains open. Tests/tools can shut down deterministically. */
+    /** Stops the worker, discards pending events and disables the attached sink. */
     suspend fun close() {
         val target = lock.withLock {
             if (closed) return@withLock null

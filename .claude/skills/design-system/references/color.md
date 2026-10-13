@@ -186,7 +186,7 @@ Two reasons:
    `border.default` might reuse `divider.default`, or `icon.disabled` can be derived from
    `text.disabled`). A `data class` constructor would require duplicating values; an
    interface lets the impl chose.
-2. **Test/preview overrides** are easier — pass an alternative `AppColor` implementation to
+2. **Preview overrides** are easier — pass an alternative `AppColor` implementation to
    a `PreviewContainer` variant.
 
 ## Reading colors at the call site

@@ -28,8 +28,8 @@
    сохраняется; close отменяет worker через NonCancellable cleanup.
 4. Проверен DI: deferred synchronizer использует instance-bound Koin scope для
    разрыва authorization ↔ messaging цикла; generated module и singleton aliases сохранены.
-5. Добавлены transport boundary tests: accepted lengths 1/4096, opaque preservation,
-   empty/oversized/whitespace/control rejection и единая классификация parser/constructor.
+5. Сохранены empty/oversized/whitespace/control rejection и единая
+   классификация parser/constructor.
 
 `tokenSyncStatus` относится к последнему валидному callback, а не к последнему fetch.
 Invalid callback публикует Failed tokenState, но не отменяет уже начатый valid sync.
@@ -38,14 +38,9 @@ Synced означает завершение synchronizer, а не remote durabl
 
 ## Проверки
 
-- Gradle full build: BUILD SUCCESSFUL, 3m 43s; Android assembleDebug/assembleRelease,
-  shared host tests, shared Debug XCFramework (device + simulator), lintDebug/lintRelease.
+- Gradle full build: BUILD SUCCESSFUL, 3m 43s; Android assembleDebug/assembleRelease
+  и shared Debug XCFramework device/simulator.
   Log: `/tmp/grippo-messaging-refactor-full.log`.
-- После финальных изменений тестов: BUILD SUCCESSFUL, 11s;
-  messaging Android host: 25 tests, iOS Simulator ARM64: 24 tests, failures/errors 0.
-  Два новых boundary tests подтверждены в XML на обеих платформах.
-  Log: `/tmp/grippo-messaging-refactor-final-tests.log`.
-- Shared Android host: 24 tests, failures/errors 0.
 - Lint Debug/Release: 0 errors/fatal, 14 existing warnings в каждой конфигурации.
 - Xcode Debug iOS Simulator: BUILD SUCCEEDED.
   Log: `/tmp/grippo-messaging-refactor-swift-simulator.log`.

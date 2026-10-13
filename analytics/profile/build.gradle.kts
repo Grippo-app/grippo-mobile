@@ -1,7 +1,6 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    id("kotlin.multiplatform.test.convention")
     id("koin.annotation.convention")
 }
 

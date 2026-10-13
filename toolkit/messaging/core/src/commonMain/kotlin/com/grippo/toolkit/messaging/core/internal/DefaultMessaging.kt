@@ -92,7 +92,7 @@ internal class DefaultMessaging(
         acceptToken(token)
     }
 
-    internal fun acceptToken(token: PushToken) {
+    private fun acceptToken(token: PushToken) {
         val changed = lock.withLock {
             if (closed) return@withLock false
             revision++

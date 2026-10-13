@@ -177,7 +177,7 @@ App configuration module и runtime constructor args для generated modules н
 существующих controls/inputs и whole business operations. Text status compares
 existing old/new validation без cache; equal status omitted. Picker confirmations/
 clicks/selections distinct. Neutral design-system callbacks не зависят от analytics.
-Catalog/payload и actual business/lifecycle fixtures проверяют покрытие и omissions.
+Catalog/payload и source review business/lifecycle проверяют покрытие и omissions.
 Dialog/picker open/result наблюдает owning VM, включая переданный config onResult;
 shared host/config plumbing не создаёт события,
 onDismiss не доказывает cancel/confirmation. Built-in dialog schemas не означают

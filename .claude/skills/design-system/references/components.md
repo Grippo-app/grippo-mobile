@@ -8,15 +8,10 @@ categories are listed here. Each component:
 - Receives callbacks as `() -> Unit` / `(T) -> Unit`.
 - Is `public`.
 - Has at least one `@AppPreview` covering the default state (the IDE preview).
-- **If it is built from a Figma node** (a `figmaEnabled` task with a non-`none` `## Design`
-  bullet): also has a Roborazzi capture `@Test` per bullet/state, wrapped in
-  `PreviewContainerComponent` (sized to `frameSizeDp`) — the gate's real comparison. This is
-  NOT optional and is NOT replaced by the `@AppPreview`; a missing capture is a
-  `MISSING_CAPTURE` BLOCKER. Canonical harness + wrapper: the validation-gates
-  `screenshot-fidelity-gate.md` §2 (source of truth — do not fork). Do NOT strip the design
-  bullet to dodge this — the `ship-done`/`verify-done` UI-by-evidence backstop blocks a task
-  that cites a node URL or a `designComponentId:` machine snapshot, and a newly created widget
-  file structurally demands a bullet (see `../../task-prep/references/figma-split.md`).
+- When built from a Figma node, preview the actual declared content/states and
+  compare the rendered surface with the design when permitted. Follow
+  [visual review](../../validation-gates/references/visual-review.md).
+  Record unavailable runtime checks; do not create extra capture infrastructure.
 
 ## `Toolbar`
 
@@ -416,7 +411,7 @@ design-system entries. When a "checkbox" feel is needed, prefer `CheckSelectable
 
 ## Component vs `:compose-libs:*`
 
-| Test | Result |
+| Check | Result |
 |---|---|
 | Uses `AppTokens` internally | `:design-system:components` |
 | Uses product types (e.g. `Note`, `Tag`) | `:design-system:components` |

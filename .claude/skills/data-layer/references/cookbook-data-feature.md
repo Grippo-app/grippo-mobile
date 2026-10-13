@@ -432,7 +432,7 @@ public suspend fun markAllNotificationsRead(): Result<Unit> =
 ./gradlew :androidApp:assembleDebug
 ```
 
-Both must build green. Then test the feature manually. (Android-only when `iosEnabled: false`.)
+Both must build green. Then check relevant feature scenarios manually when permitted. (Android-only when `iosEnabled: false`.)
 
 ---
 

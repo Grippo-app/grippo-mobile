@@ -18,5 +18,10 @@ When implementing or changing a feature, read and apply
 or affected existing state owner: required nonsecret user input, selection,
 current filters and parent drafts must use the existing local StateKeeper pattern.
 Rebuild data-backed state and exclude secrets/runtime state. Apply the mandatory
-preservation gate, including fresh-Component archive restoration tests within the
-user's permitted scope; changes with no state impact need only an assessment.
+preservation gate through source review and permitted manual restoration checks;
+changes with no state impact need only an assessment.
+
+Do not introduce automated test sources, test folders, test dependencies or test
+infrastructure unless the user explicitly requests it. Follow CLAUDE.md verification
+policy: inspect actual source/diff, run permitted static/manual checks and report
+unverified runtime behavior honestly.

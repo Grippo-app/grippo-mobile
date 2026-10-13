@@ -148,36 +148,6 @@ per user session) add complexity without proportional benefit.
 If a feature requires session-scoped state, use Koin's custom scopes (`@Scoped`,
 `Koin.createScope(...)`) within the single context.
 
-## When tests want a different module
-
-DI changes carry mandatory graph evidence (machine authority:
-`orchestrator/tasks/test-policy.json` — `di-composition-root`): the
-generated graph must compile, Koin host `verify()` covers the module list
-(JVM/host evidence only, never Native), and a composition-root smoke test
-boots the exact module set in an isolated context. Prefer a local
-`koinApplication { ... }` per test; when a test must use the global context:
-
-```kotlin
-@BeforeTest
-fun setUp() {
-    startKoin {
-        modules(
-            ContextModule().module,
-            // ... all real modules except the one being faked
-            module { single<NoteFeature> { FakeNoteFeature() } },
-        )
-    }
-}
-
-@AfterTest
-fun tearDown() {
-    stopKoin()
-}
-```
-
-Manual DSL is OK here — tests are short-lived and need overrides. The convention
-only forbids hand-DSL in production code.
-
 ## Anti-patterns
 
 - **Forgetting to update `Koin.init` when adding a feature.** Runtime crash.

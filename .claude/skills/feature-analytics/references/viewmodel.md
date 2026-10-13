@@ -124,4 +124,4 @@ Shared registers only the generated feature implementation module; foundation DI
 owns ScreenAnalytics. No feature analytics integration module/classifier/provider
 is needed. Verify actual VM screen declarations and the foundation hook/lifecycle,
 payloads, operation results/errors/cancellation and reporting isolation. Respect
-the current test scope; source fixtures do not establish runtime correctness.
+the permitted verification scope; source checks do not establish runtime correctness.

@@ -21,8 +21,8 @@ routed below.
 | `inputs-resolver` | required task inputs resolved before run | task spec `## Inputs` / intake (per-task) |
 | `figma-component-coverage` *(conditional, `figmaEnabled`)* | component mapping/bindings coverage for design-system components | `implement-figma` skill + `contracts/agents/figma-component-coverage.md` |
 | `figma-drift` *(conditional, `figmaEnabled`)* | surfaces the published component-drift comparison, suggestion-only (token AND component comparison are the server-run local comparators, not validators) | `implement-figma` skill + `contracts/agents/figma-drift.md` |
-| `figma-spec-validator` *(conditional, `figmaEnabled` + non-`none` `## Design`)* | declared code values vs cached Figma screen spec; authors the `spec-<stem>.json` report final evidence requires via `write-spec-report.mjs` | [spec-fidelity-gate.md](spec-fidelity-gate.md) |
-| `figma-screenshot-validator` *(conditional, `figmaEnabled` + non-`none` `## Design`)* | visual fidelity: Roborazzi capture vs Figma oracle; missing oracle/capture is a BLOCKER | [screenshot-fidelity-gate.md](screenshot-fidelity-gate.md) |
+| `figma-spec-validator` *(conditional, `figmaEnabled` + non-`none` `## Design`)* | declared code values vs cached Figma screen spec; records the configured source/spec comparison in `spec-<stem>.json` via `write-spec-report.mjs` | [spec-fidelity-gate.md](spec-fidelity-gate.md) |
+| `figma-screenshot-validator` *(conditional, `figmaEnabled` + non-`none` `## Design`)* | visual fidelity: permitted preview/app screenshot vs design oracle; record unavailable inputs | [visual-review.md](visual-review.md) |
 | `backend-contract-drift` *(conditional, `backendContractEnabled` tri-state)* | `false` skips; `auto` skips only without a snapshot; `true` requires a snapshot and treats a missing one as ERROR | backend-contract-client skill `references/drift.md` + `contracts/agents/backend-contract-drift.md` |
 
 For configured orchestrator tasks, always-on three run on every task; conditional validators run when the
@@ -63,8 +63,8 @@ pipeline runs. Do not treat an absent external register as a passed gate.
 ## Reference files
 
 - [forbidden-patterns.md](forbidden-patterns.md) — the owned anti-patterns rule set (complete).
-- [screenshot-fidelity-gate.md](screenshot-fidelity-gate.md) — `figma-screenshot-validator` capture spec (Roborazzi `ScreenshotTest.kt`, density/qualifier, capture↔comparator contract) + the validator's frozen surface.
-- [spec-fidelity-gate.md](spec-fidelity-gate.md) — `figma-spec-validator` procedure (extract-compose-model + compare-screen-spec machine baseline, four comparison families, severities, the `spec-<stem>.json` report the final evidence bundle requires) + the validator's frozen surface.
+- [visual-review.md](visual-review.md) — scoped visual review of actual previews/app screenshots; no capture infrastructure.
+- [spec-fidelity-gate.md](spec-fidelity-gate.md) — configured `figma-spec-validator` source comparison (extract-compose-model + compare-screen-spec, comparison families, severities and the `spec-<stem>.json` report); source evidence does not prove rendered fidelity.
 - [when-to-stop-and-ask.md](when-to-stop-and-ask.md) — escalation stop points + what-you-can-change-without-asking.
 - [config-gates.md](config-gates.md) — `codexEnabled` / `verifyEnabled` gate selectors.
 - `orchestrator/skills/_index/known-gaps.md` — additional required register for a configured orchestrator task.

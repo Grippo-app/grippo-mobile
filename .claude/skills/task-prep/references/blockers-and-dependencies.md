@@ -34,18 +34,6 @@ Two further cheap `[ -f ]` checks in the same loop:
   integrity blocker.
 - **Self-dependency** — if a `## Depends on` entry equals THIS task's own stem, BLOCK: **`BLOCKED: task depends on itself (<stem>) — remove the self-dependency from ## Depends on.`** A task can never gate itself; this would otherwise dead-lock on the `done/` check (it is in `todo/`, never `done/`).
 
-**Test-foundation prerequisite child.** When the Step-4.7 doctor returns
-`ABSENT_CAN_INSTALL` (see `prep-flow.md`), the bootstrap coordinator yields
-exactly one globally deduplicated child task (Source
-`follow-up/test-foundation-prerequisite`, Ref = this parent). The parent's
-final todo proposal carries that child stem in `## Depends on` BEFORE its own
-promotion; Run admission stays fail-closed until the child is accepted in
-`done/`, after which the parent simply becomes admissible and starts a fresh
-Step 0 on current bytes — there is no `todo → prep/backlog` back-transition
-and no hidden re-prep. A feature task that somehow reaches Step 0 with an
-absent foundation gets `BLOCKED: foundation-prerequisite-missing` — Step 0
-never edits the todo, never creates the child and never bypasses task-prep.
-
 On the `task-prep` side, promote with the unresolved dependency intact. Do not
 remove a real dependency merely to make the task runnable. Dependency cycles
 remain a canonical integrity blocker.

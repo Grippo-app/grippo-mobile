@@ -1,7 +1,6 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    id("kotlin.multiplatform.test.convention")
     id("koin.annotation.convention")
     alias(libs.plugins.kotlin.serialization)
 }
@@ -9,10 +8,6 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.toolkit.http.client"
-    }
-
-    sourceSets.getByName("androidHostTest").dependencies {
-        implementation(libs.ktor.client.mock)
     }
 
     sourceSets {

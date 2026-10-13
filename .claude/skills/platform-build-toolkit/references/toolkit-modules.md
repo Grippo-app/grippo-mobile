@@ -397,16 +397,6 @@ build-logic/
       KoinAnnotationConventionPlugin.kt
       RoomConventionPlugin.kt
       IosSwiftPackageConventionPlugin.kt
-      KmpTestConventionPlugin.kt              // opt-in base test foundation — single androidHostTest owner
-      CoroutinesTestConventionPlugin.kt       // capability: kotlinx-coroutines-test in commonTest
-      FlowTestConventionPlugin.kt             // capability: Turbine (applies coroutines.test.convention)
-      NetworkTestConventionPlugin.kt          // capability: ktor-client-mock in commonTest
-      DiTestConventionPlugin.kt               // capability: koin-test on androidHostTest
-      RoomTestConventionPlugin.kt             // capability: room-testing + device lane (internal enabler helper)
-      ComposeUiTestConventionPlugin.kt        // capability: shared uiTest scenario tree + platform entries
-      CoverageTestConventionPlugin.kt         // optional: Kover jvm-host-coverage ratchet
-      ScreenshotTestConventionPlugin.kt       // optional, inert — screenshot-fidelity gate (see the implement-figma skill)
-      TestCapabilityEntryTask.kt              // per-module inventory fragment task (aggregated at root)
       com/<org>/                            // shared helpers (rename "<org>" per product)
         ConfigureJvmToolchain.kt            // Project.configureJvmToolchain(version)
         PluginManagerExtensions.kt          // PluginManager.applySafely(id)
@@ -460,8 +450,6 @@ dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.compose.gradle.plugin)
     implementation(libs.ksp.plugin.api)
-    // Optional — screenshot-fidelity gate; inert until a module applies `screenshot.test.convention` (see `convention-plugins.md` § "Optional convention plugin").
-    implementation(libs.roborazzi.gradle.plugin)
 }
 
 gradlePlugin {
@@ -494,45 +482,7 @@ gradlePlugin {
             id = "ios.swiftpackage.convention"
             implementationClass = "IosSwiftPackageConventionPlugin"
         }
-        // Opt-in general test foundation — registered always (ships inert);
-        // applied only by test-bearing modules, never transitively.
-        register("kmp.test.convention") {
-            id = "kmp.test.convention"
-            implementationClass = "KmpTestConventionPlugin"
-        }
-        register("coroutines.test.convention") {
-            id = "coroutines.test.convention"
-            implementationClass = "CoroutinesTestConventionPlugin"
-        }
-        register("flow.test.convention") {
-            id = "flow.test.convention"
-            implementationClass = "FlowTestConventionPlugin"
-        }
-        register("network.test.convention") {
-            id = "network.test.convention"
-            implementationClass = "NetworkTestConventionPlugin"
-        }
-        register("di.test.convention") {
-            id = "di.test.convention"
-            implementationClass = "DiTestConventionPlugin"
-        }
-        register("room.test.convention") {
-            id = "room.test.convention"
-            implementationClass = "RoomTestConventionPlugin"
-        }
-        register("compose.ui.test.convention") {
-            id = "compose.ui.test.convention"
-            implementationClass = "ComposeUiTestConventionPlugin"
-        }
-        register("coverage.test.convention") {
-            id = "coverage.test.convention"
-            implementationClass = "CoverageTestConventionPlugin"
-        }
-        // Optional — registered always (ships inert); applied only by feature modules in the screenshot gate.
-        register("screenshot.test.convention") {
-            id = "screenshot.test.convention"
-            implementationClass = "ScreenshotTestConventionPlugin"
-        }
+
     }
 }
 ```

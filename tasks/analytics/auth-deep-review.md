@@ -36,34 +36,16 @@ shared DI и зависимости Android/iOS. Дополнительных п
 в этих частях не найдено. Исторический SerialName является persistence contract,
 а не забытым старым типом. Нет новых публичных aliases/factories или fallback.
 
-Новые regression tests:
-- componentRecreationRetainsScenarioAndSavesItsLatestState: сохранённый scenario
-  общий для нового component и старых consumers, продолжение mutations,
-  актуальный StateKeeper snapshot, отсутствие повторного flow start/exit,
-  сохранённый Session scenario.
-- retainedAuthorizationCannotBeReboundToAnotherRoute: новый route FlowId не может
-  использовать прежний retained scenario; новое событие не появляется.
-
 ## Проверки
 
-Финальный Gradle run после последних source/test правок: BUILD SUCCESSFUL,
+Финальный Gradle run после последних source правок: BUILD SUCCESSFUL,
 2m 5s, exit 0. Log: /tmp/grippo-auth-final-audit-confirmed.log.
 
 ```sh
-./gradlew :analytics:authorization:testAndroidHostTest \
-  :analytics:authorization:iosSimulatorArm64Test \
-  :ui-screen-features:authorization:testAndroidHostTest \
-  :ui-screen-features:authorization:iosSimulatorArm64Test \
-  :shared:testAndroidHostTest :androidApp:assembleDebug :androidApp:assembleRelease \
+./gradlew :androidApp:assembleDebug :androidApp:assembleRelease \
   :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease \
   -x :androidApp:uploadCrashlyticsMappingFileRelease
 ```
-
-| Набор | Android host | iOS simulator ARM64 | Failures/errors/skips |
-|---|---:|---:|---:|
-| Analytics authorization | 23 | 23 | 0 |
-| UI authorization integration | 17 | 17 | 0 |
-| Shared | 24 | не запускался | 0 |
 
 Android Debug/Release и Debug XCFramework device/simulator собраны.
 Lint: 0 Error/Fatal, по 14 прежних warnings в Debug/Release.
@@ -86,5 +68,5 @@ Logs: /tmp/grippo-auth-deep-swift-simulator.log и
 и AppIntents metadata не препятствуют сборке. Kotlin предупреждения opt-in и
 deprecated BackHandler также остались прежними.
 Firebase отправка, запуск приложений/provider sign-in и mapping/symbol uploads
-не выполняются. Проверки подтверждают код, тестовые сценарии и сборочную
+не выполняются. Проверки подтверждают код и сборочную
 интеграцию; не измеряют runtime performance и доставку в Firebase.

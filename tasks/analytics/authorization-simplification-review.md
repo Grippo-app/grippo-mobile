@@ -16,7 +16,7 @@ provider cancellation, Provider/Server attribution, coroutine interruption и
 
 Намеренно убраны второстепенные данные:
 - auth_form_rejected: событие на каждое неверное поле. Удалены API rejectForm,
-  FormStatus, UI formatter mapping, Field/Rule types/keys, event schema и fixtures.
+  FormStatus, UI formatter mapping, Field/Rule types/keys и event schema.
   Validation и отображение ошибок продолжают работать как раньше.
 - Analytics wrapper для начальных справочников. Удалены Session.loadInitialData,
   InitialData/Completed codes и callback factory; Splash выполняет мышцы →
@@ -38,8 +38,7 @@ UI integration состоит из двух файлов:
   и ComponentScan для единственного binding. Generated .module подключён в shared.
 
 Новый delegate, feature scopes, workers, retries, flags, aliases и fallback paths
-не добавлены. UI business requests остаются в ViewModels/use cases. Удалён лишний
-локальный @OptIn из Splash tests: convention plugin уже задаёт общий opt-in.
+не добавлены. UI business requests остаются в ViewModels/use cases.
 
 ## Совместимость и проверки
 
@@ -48,21 +47,17 @@ UI integration состоит из двух файлов:
 поступать; historical reports сохраняют старые данные. Replay/dual-write нет.
 State keys, legacy snapshot SerialName, serialization shape и FlowId сохранены.
 
-Fixtures, operation cancellation tests, classifier/DI tests и реальные Splash
-ViewModel tests обновлены. Splash tests проверяют последовательность запросов,
-ошибки и destruction без ожидания удалённых data-loading событий. Удалены тесты
-исчезнувших form mapping и несовместимых preparation modes; остальные assertions
-сохранены. Coverage, standard и canonical skill обновлены: второстепенная
+Coverage, standard и canonical skill обновлены: второстепенная
 детализация не должна автоматически разрастаться вокруг каждого действия фичи.
 
 Выполнены self-review и повторный статический проход по consumers, API, DI,
-schemas/fixtures, enum/method references, lifetime, privacy и exceptions.
-Статические checks: catalog/fixture names и counts, отсутствующие obsolete symbols,
+schemas, enum/method references, lifetime, privacy и exceptions.
+Статические checks: catalog names и counts, отсутствующие obsolete symbols,
 скобки изменённых Kotlin files, skill frontmatter, Markdown fences, git diff --check.
 
-По прямому запросу пользователя Gradle/Xcode builds и tests НЕ запускались.
-Это не подтверждение компиляции/KSP или runtime поведения: обновлённые тесты и
-platform wiring требуют последующего разрешённого прогона. Предыдущие passing
+По прямому запросу пользователя Gradle/Xcode builds НЕ запускались.
+Это не подтверждение компиляции/KSP или runtime поведения: platform wiring
+требует последующего разрешённого прогона. Предыдущие passing
 reports относятся к прежнему implementation. Firebase sends/sign-in/uploads не выполнялись.
 
 ## Повторный проход после сокращения
@@ -70,13 +65,13 @@ reports относятся к прежнему implementation. Firebase sends/si
 Найден оставшийся consumer API хвост: AuthAnalytics.Action после удаления form
 rejection больше не используется потребителем. Enum перенесён в internal AuthAction
 в существующем AuthTypes.kt; auth_action ключ и login/register codes сохранены.
-Оставшийся unused import в UI integration tests удалён. NavigationReason.Action
+NavigationReason.Action
 является независимым toolkit типом и сохранён без переименования.
 
 Повторно проверены API consumers, annotated module/Single binding, route mapping,
 retained state/save, business callbacks, classifiers, stage/outcome encoding,
-schema/fixture catalog и active skills/docs. Новых workers/scopes/retries или
+schema catalog и active skills/docs. Новых workers/scopes/retries или
 подтверждённых дефектов в этих частях не найдено. Historical review reports
 содержат старые названия по смыслу своей истории и не переписаны.
 Статические symbol/enum/catalog/format checks выполнены после последней правки.
-Android/iOS builds/tests по-прежнему не запускались; компиляция/KSP не подтверждены.
+Android/iOS builds по-прежнему не запускались; компиляция/KSP не подтверждены.

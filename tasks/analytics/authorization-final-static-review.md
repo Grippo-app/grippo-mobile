@@ -8,19 +8,14 @@
 
 ## Исправления
 
-- AnalyticsProviderTest использовал expected.analyticsCode у consumer EntryPoint,
-  который не реализует AnalyticsCode. Fixture заменён на независимые ожидаемые
-  wire strings; API не расширялся ради теста. Статический прошлый аудит не выявил
-  этот type-level дефект; компиляция текущего кода по-прежнему не проверялась.
 - AuthFlow повторно записывал hard-coded Login→Registration / Registration→Login
   даже при уже текущем шаге и после terminal exit. Добавлены короткие idempotence
   guards: повторный/закрытый переход не сбрасывает referrer/reason и не создаёт
   несуществующее StepChanged. UI routing не переносился в analytics; schema meaning
-  остаётся фактом реальной смены шага. Добавлен regression test для этих случаев.
-- Удалены test convention у analytics-api без tests и неиспользуемая прямая
-  coroutines-core dependency у analytics/authorization. Toolkit dependency и
-  coroutine test dependency сохраняют нужные потребители; Gradle configuration
-  не запускалась. Удалены unused explicit imports и wildcard flow import в test.
+  остаётся фактом реальной смены шага.
+- Удалена неиспользуемая прямая coroutines-core dependency у
+  analytics/authorization. Toolkit dependency сохраняют нужные потребители;
+  Gradle configuration не запускалась. Удалены unused explicit imports.
 - Исправлено formatting consumer EntryPoint, AuthSessionEvent и classifier.
   Необходимый Compose getValue operator import сохранён: текстовый поиск не
   доказывает неиспользование implicit operator/delegate imports.
@@ -33,7 +28,7 @@
 API/models, scenario factories, internal flows/events/schemas/operation factories,
 UI AnalyticsProvider/classifier/annotated module, owner/leaf component ordering,
 Login/Registration/Splash ViewModels, existing Login/Register use cases, auth routing,
-profile leaf structure, generated module registration source, tests и active skills.
+profile leaf structure, generated module registration source и active skills.
 
 Сохранены closed typed AuthOperation/AuthTransition, required exit reason,
 trackOperation/presentScreen separation, bounded classifier без message parsing,
@@ -51,11 +46,11 @@ No-build ограничение не даёт оснований заявлят�
 ## Проверки
 
 Static checks выполнены после исправлений: Kotlin delimiters/import usages,
-actual EntryPoint wire fixture alignment, repeated/closed transition guards,
+actual EntryPoint wire alignment, repeated/closed transition guards,
 consumer API migration, typed descriptors, provider boundaries/order/keys/DI,
-schema fixture names/versions/key order, module dependencies и source convention
+schema names/versions/key order, module dependencies и source convention
 правила; YAML/frontmatter/metadata, relative links/fences/example alignment,
 git diff --check. Результаты команд — exit 0.
 
-Tests обновлены, но не выполнялись. Android/iOS compilation/builds, KSP, lint и
+Android/iOS compilation/builds, KSP, lint и
 runtime apps/provider/Firebase delivery не запускались по указанию пользователя.

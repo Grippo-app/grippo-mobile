@@ -61,10 +61,10 @@ Screenshots use the actual Android Compose renderer on a Pixel emulator, not
 mockups. Whole screens and shared component variants are captured in both
 light and dark themes: 500 initial views plus 388 scrolling views.
 Accessibility verification adds 72 initial views and 66 scrolling views.
-The 33 fixtures affected by the final shared-component fixes were recaptured
+The 33 preview states affected by the final shared-component fixes were recaptured
 in both themes after the final changes.
 Accessibility checks use a 360 × 800 dp viewport and 100%, 150% and 200% font
-scales with Ukrainian app resources. Exercise fixtures include a long Russian
+scales with Ukrainian app resources. Exercise preview states include a long Russian
 name, pending, partial, completed and empty states.
 
 Evidence directory:
@@ -74,7 +74,7 @@ Evidence directory:
 - `final/`: full-resolution screenshots and scrolling views.
 - `stress-final/`: small-phone and enlarged-font checks.
 - `contacts/`: sheets used for visual inspection.
-- `evidence/manifest.json`: exact screen/component fixture-to-source mapping.
+- `evidence/manifest.json`: exact screen/component preview-to-source mapping.
 - `evidence/component-inventory.md`: full component inventory.
 - `evidence/production-verification.log`: production build output.
 
@@ -83,7 +83,7 @@ settings were restored to 100% font scale, its physical viewport/density,
 system dark theme and no app-locale override. The ordinary app launch is
 recorded in `live-app-dark.png`; no audit entry points remain in the sources.
 
-The catalog images are preview-state screenshots. Some exercise fixtures intentionally have
+The catalog images are preview-state screenshots. Some exercise preview states intentionally have
 no image URL and display the existing fallback. They do not cover every live
 server-data combination, keyboard state or navigation transition. iOS device
 and simulator targets were compiled; this audit does not claim iOS screenshot

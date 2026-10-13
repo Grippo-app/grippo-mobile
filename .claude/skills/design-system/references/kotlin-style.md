@@ -109,7 +109,7 @@ one place and use the existing VM scope. Follow [the project Kotlin rules](../..
 - **`withContext(Dispatchers.IO)`** in services that touch I/O (e.g. `BackendClient.invoke`).
 - **`runCatching` for Repository methods that don't already produce `Result<T>`** — e.g.
   DataStore writes. When the underlying call already returns `Result<T>`, the Repository just
-  forwards / chains and does **not** wrap again. `runBlocking { ... }` is for tests only.
+  forwards / chains and does **not** wrap again. `runBlocking { ... }` is forbidden in production.
 
 ## Flows
 
@@ -221,7 +221,7 @@ bar.combine(other) { a, b ->
 
 - **`@JvmStatic`** in commonMain (Kotlin/Native doesn't have JVM).
 - **`@JvmField`** in commonMain.
-- **`lateinit var`** for non-test fields. Inject via constructor or use `by lazy { ... }`.
+- **`lateinit var`** in production. Inject via constructor or use `by lazy { ... }`.
 - **`var`** in `@Immutable` data classes. State is immutable.
 - **Single-letter parameter names** outside lambdas (`x`, `y`, `i`). Even `it` in long
   lambdas must be renamed for clarity.

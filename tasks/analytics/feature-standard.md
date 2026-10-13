@@ -151,7 +151,7 @@ Dialog/overlay presentation остаётся отдельным scope. Полн�
 [обязательная проверка](../../.claude/skills/feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 
 Self-review: naming/boundaries/DI/matrix/privacy/business isolation/overhead;
-исправить findings и повторить review. Удалять obsolete API/callers/helpers/tests/docs.
+исправить findings и повторить review. Удалять obsolete API/callers/helpers/docs.
 Проверять actual payloads, whole operations/results/errors/cancellation/reporting
 failures, eligible callbacks, все leaf VM screen declarations и foundation hook/lifecycle.
 Static/PSI/historical reports не заменяют compile/generated DI/UI/native runtime.

@@ -29,7 +29,6 @@ featuresWithRootComponentSuffix: []
 diHandWrittenModules: []
 figmaEnabled: false
 figmaLibraryUrl: <figma-library-url>
-screenshotPixelGate: strict
 backendContractEnabled: auto
 ```
 

@@ -10,14 +10,12 @@
 - Android crash metadata попадал в persistent global keys. Теперь per-event CustomKeysAndValues; Swift сохраняет event context в конкретном ExceptionModel, без global keys.
 - Legacy service/bridge создавал launch на каждый callback, service scope не закрывался. Новый app-lifetime core: один worker, conflated token queue; service только передаёт validated token.
 - DI cycle Messaging → token handler → authorization repository → Messaging. Deferred handler resolution в composition root разрывает цикл, не перенося service locator в feature code.
-- Новое dedup поведение оставляло Pending после повторного успешного token callback. Regression test сначала падает (10 tests, 1 failure), затем фикс.
 
 ## Round 2 — races, lifecycle, boundary
 
 Найдены и исправлены:
 - Fetch нового token мог блокировать завершение callback sync status. Sync target теперь отделён от результата fetch.
 - Поздний non-cancellable SDK result мог публиковаться после cancellation caller. После ответа SDK проверяется coroutine activity до публикации.
-- Два предыдущих случая отдельно проверены red/green: временное снятие именно исправлений даёт 15 focused tests, 2 failures; фиксы восстановлены перед финальной матрицей.
 - Дублирование token validation в Swift могло пропустить отличия Swift grapheme count от Kotlin length и вызвать exception через ObjC constructor. Общий non-throwing decoder используется платформенными ingress.
 - Token buffer при shutdown освобождается через cancel; worker регулярно проверяет cancellation и уступает dispatcher.
 - Swift traversal cause chain ограничен 32, frame conversion — 128; cycles отслеживаются. Invalid typed metadata не исчезает при try? serialization.
@@ -34,10 +32,6 @@
 
 ## Приёмка
 
-Финальные команды/результаты фиксируются в verification.md. Self-review проводится одним агентом; независимый внешний review не заявляется. Все найденные required замечания должны быть закрыты до завершения; свежие tests/builds обязательны.
-
-Host integration test сначала пытался запускать весь app Koin без Android Context и упал на существующем eager ImageLoader initializer. Проверка исправлена: вынесен настоящий platformServicesModule, который подключает app Koin, и этот же module проверяется с fixture token handler, зависящим от Messaging. Проверяется разрешение singleton aliases и прохождение callback через deferred dependency, без SDK/Android mocks. Это focused wiring test, не запуск Android-приложения.
-
 Финальная проверка dependency graph выявила три оставшиеся legacy Firebase dependencies в UI-модулях start-training/training/authorization, хотя вызовов уже нет. Удалены: теперь единственный consumer Firebase transport module — Android application. Koin dependency транспорта перенесена в androidMain, common слой SDK wrapper больше не несёт ненужный DI runtime.
 
 Swift name lookup: общий Messaging API и Firebase SDK экспортируют одно имя Messaging. SDK references/type annotations явно квалифицированы FirebaseMessaging.Messaging; application build проверяет эту границу.
@@ -46,15 +40,8 @@ Swift name lookup: общий Messaging API и Firebase SDK экспортиру
 
 Первый настоящий Swift build обнаружил lowercase enum member names (`platformnotready`, `sdkfailure`, `invalidtoken`) вместо Swift camelCase. Исправлено по generated header; повторный build обязателен. Android lint debug/release прошёл.
 
-Последний проход по расходам: CrashReportContext проверяет size ≤32 до snapshot/copy; regression test с oversized AbstractList сначала падал при чтении элементов, затем исправлен. Token validator проверяет length 1..4096 до bounded character scan; отдельный isBlank scan удалён как избыточный. Финальные проверки повторяются после этих изменений.
-
-
 ## Round 4 — установленный SDK и caller overhead
 
 Проверены source files установленного Apple Firebase SDK: FIRCrashlytics.m → FIRCLSExceptionRecordModel → FIRCLSExceptionRecord → FIRCLSUserLoggingWriteAndCheckABFiles. Последний использует dispatch_sync(logging queue) и local file writes. Прямую submission из caller отвергли: она могла задерживать UI и удерживала state lock.
 
 Crash core теперь использует один app-lifetime IO worker, bounded queue, conflated wake. SDK calls выполняются вне state lock, wake тоже вне lock; no per-report launch, cancellation checks + yield batch32. Active sink CancellationException — transport failure, actual cancellation остаётся cancellation. Suspend close отменяет/joins worker в NonCancellable, затем освобождает channel; native SDK fatal capture не меняется.
-
-Regression recordingNeverInvokesSdkInCaller сначала падал на direct implementation; после переноса в worker прошёл на Android и native iOS. Дополнительно проверяются четыре реальных parallel producers, учёт submitted + overflow, original Throwable/context и cancelled shutdown. Документация переписана вокруг окончательной архитектуры; финальная матрица повторяется.
-
-Финальная приёмка: все required findings в области задачи исправлены. 76 Android tests / 49 native iOS tests, failures/errors/skipped =0; Android debug/release R8, XCFramework device/simulator, Swift app simulator/device и lint прошли. Остались только общие version/icon warnings lint, без изменений этих настроек в задаче. Независимый peer review и remote SDK delivery не заявляются.

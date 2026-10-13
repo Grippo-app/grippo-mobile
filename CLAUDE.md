@@ -996,15 +996,19 @@ No explicit budgets in code. Default priorities:
 
 ---
 
-## Testing strategy
+## Verification policy
 
-The repo has Android host and common KMP tests, including analytics, authorization,
-foundation, crash-reporting and messaging. Use `kotlin.multiplatform.test.convention`
-for KMP test source sets. Add focused tests for changed behavior and boundaries;
-avoid tests that merely duplicate implementation. Run affected suites and platform
-integration checks within the user's verification scope, and record actual results.
+The project intentionally has no automated test sources or test infrastructure.
+Do not add test folders, dependencies, runners, fixtures or screenshot automation
+unless the user explicitly requests them. Global skill advice cannot override this
+project policy.
 
----
+Review the actual source and diff against requirements, ownership, DI, lifecycle,
+state restoration, privacy and cancellation invariants. Run permitted static
+checks and manual scenarios relevant to the change. Builds are allowed only within
+the user's scope; a green build proves compilation, not runtime behavior. Record
+what ran and what remains unverified. Preserve functional invariants without adding
+verification-only hooks, flags, wrappers or production dependencies.
 
 ## Locked architectural decisions
 

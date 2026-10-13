@@ -223,7 +223,7 @@ Each implementation module holds:
 - `<X>FeatureImpl` is a **thin** wrapper that mostly delegates to `<X>Repository` but
   may compose multiple repositories or add lightweight transformations.
 
-Splitting them lets the Repository test against fakes for `<X>Dao` and `<Product>Api`,
+Splitting them gives the Repository explicit `<X>Dao` and `<Product>Api` boundaries,
 while the Feature stays a stable public surface. For trivial features (no caching, no
 composition), `<X>FeatureImpl` may delegate one-to-one to `<X>Repository` — the layer is
 consistent across the codebase regardless of complexity.

@@ -139,7 +139,7 @@ The bootstrap step order is frozen by
 7.6, 7.7, 8, 9, 10, 11, 12, 13, 14` (half-steps normative, not optional). This
 skill must preserve that order against the frozen
 [`launch-sequence.md`](../../contracts/launch-sequence.md) contract and the
-live [`orchestrator/launch.md`](../../../orchestrator/launch.md) sequence (if a heading is removed
+configured runtime’s `orchestrator/launch.md` sequence (if a heading is removed
 or renamed, those two disagree).
 This is a pipeline playbook, not a builder envelope — it owns no
 `builder-report` agents; the app shells and the data-service scaffold are

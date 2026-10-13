@@ -6,12 +6,12 @@
 > [авторизация](authorization-coverage.md). Результаты ниже не подтверждают
 > последующие изменения.
 
-Статус: завершено. Повторное ревью, исправления, проверка скиллов, все существующие
-Kotlin test modules и указанные Android/iOS build gates прошли.
+Статус: завершено. Повторное ревью, исправления, проверка скиллов
+и указанные Android/iOS build gates прошли.
 
 Область: toolkit analytics API/core; feature analytics API/authorization;
 foundation RetainedAnalytics + ScreenAnalytics; авторизация/use cases/route ID;
-DI и Android/iOS интеграция. Соседние crash-reporting/messaging включены в тесты.
+DI и Android/iOS интеграция, соседние crash-reporting/messaging.
 Firebase delivery, provider sign-in, запуск Firebase-приложения и uploads не выполняются.
 
 ## Ревью и исправления
@@ -22,12 +22,6 @@ Messaging, Android Firebase/Swift adapters и bootstrap.
 
 | Находка | Исправление |
 |---|---|
-| Два NavigationContext в тесте DI создавались без обязательного reason | Явный Initial в ScreenAnalyticsTest |
-| Тесты юзкейсов не фиксировали все запросы подготовки и их порядок | Fixture записывает каждый запрос; проверяются полные последовательности и остановка на каждой ошибке |
-| Не было проверки фактического Register/Email декоратора и error/navigation pipeline RegistrationViewModel | Тест реальной VM, RegisterUseCase и generated modules, с исправным и падающим reporting |
-| Авторизация вручную дублировала настройки KMP test source sets | Общий kotlin.multiplatform.test.convention |
-| Тест CAS публикации StateFlow реализует экспериментальный coroutines API без явного согласия | Локальный ExperimentalForInheritanceCoroutinesApi opt-in |
-| Активные инструкции повторяли старые варианты, неверно утверждали отсутствие тестов и допускали UI Firebase transport | Консолидированы skill/standard/guide/coverage и связанные UI/DI/data/build инструкции |
 | Инструкции путали Apple code с ID token и цельные LoginUseCase с прежними API | Исправлены по текущим credential/use-case контрактам |
 
 В рабочем коде после повторного прохода не найдено подтверждённых дефектов,
@@ -55,81 +49,7 @@ authorization-coverage, coverage template и связанные инструкц
 Штатный Python skill validator требует отсутствующий PyYAML; эквивалентные YAML
 проверки выполнены Ruby без установки зависимостей.
 
-## Проверки
-
-Основной прогон завершён exit 0: BUILD SUCCESSFUL, 11m 26s, 4285 tasks.
-
-```sh
-./gradlew \
-  :toolkit:analytics:api:testAndroidHostTest \
-  :toolkit:analytics:core:testAndroidHostTest \
-  :analytics:authorization:testAndroidHostTest \
-  :ui-core:foundation:testAndroidHostTest \
-  :ui-screen-features:authorization:testAndroidHostTest \
-  :toolkit:crash-reporting:core:testAndroidHostTest \
-  :toolkit:messaging:core:testAndroidHostTest \
-  :shared:testAndroidHostTest \
-  :toolkit:analytics:api:iosSimulatorArm64Test \
-  :toolkit:analytics:core:iosSimulatorArm64Test \
-  :analytics:authorization:iosSimulatorArm64Test \
-  :ui-core:foundation:iosSimulatorArm64Test \
-  :ui-screen-features:authorization:iosSimulatorArm64Test \
-  :toolkit:crash-reporting:core:iosSimulatorArm64Test \
-  :toolkit:messaging:core:iosSimulatorArm64Test \
-  :androidApp:assembleDebug :androidApp:assembleRelease \
-  :androidApp:lintDebug :androidApp:lintRelease \
-  :shared:assembleSharedDebugXCFramework \
-  -x :androidApp:uploadCrashlyticsMappingFileRelease --offline
-```
-
-Расширенный прогон завершён exit 0: BUILD SUCCESSFUL, 18m 14s, 2346 tasks.
-Он включает остальные существующие Kotlin test modules:
-
-```sh
-./gradlew \
-  :data-features:feature-api:testAndroidHostTest \
-  :data-features:feature-api:iosSimulatorArm64Test \
-  :toolkit:connectivity:testAndroidHostTest \
-  :toolkit:connectivity:iosSimulatorArm64Test \
-  :toolkit:http-client:testAndroidHostTest \
-  :ui-screen-features:main:testAndroidHostTest \
-  :ui-screen-features:training:testAndroidHostTest \
-  :ui-screen-features:exercises:testAndroidHostTest \
-  :ui-screen-features:profile:testAndroidHostTest \
-  :shared:assembleSharedReleaseXCFramework --offline
-```
-
-XML results после выполненных test tasks: 294 Android + 203 iOS; failures/errors/
-skipped = 0. Некоторые неизменённые tasks были UP-TO-DATE: результаты относятся
-к текущим исходникам; повторные прогоны не суммируются как дополнительные тесты.
-
-| Модуль | Android host | iOS Simulator |
-|---|---:|---:|
-| toolkit/analytics/api | 16 | 16 |
-| toolkit/analytics/core | 36 | 32 |
-| analytics/authorization | 19 | 19 |
-| ui-core/foundation | 19 | 8 |
-| ui-screen-features/authorization | 24 | 24 |
-| toolkit/crash-reporting/core | 11 | 11 |
-| toolkit/messaging/core | 25 | 24 |
-| shared | 24 | — |
-| data-features/feature-api | 68 | 68 |
-| toolkit/connectivity | 4 | 1 |
-| toolkit/http-client | 4 | — |
-| ui-screen-features/main | 11 | — |
-| ui-screen-features/training | 20 | — |
-| ui-screen-features/exercises | 10 | — |
-| ui-screen-features/profile | 3 | — |
-| **Всего** | **294** | **203** |
-
-Прочерк означает отсутствие соответствующего native test source set, а не
-пропущенные тесты. После последнего opt-in изменения Messaging повторно проверен:
-exit 0, BUILD SUCCESSFUL, 53s, 136 tasks; предупреждение inheritance opt-in устранено.
-
-```sh
-./gradlew :toolkit:messaging:core:testAndroidHostTest \
-  :toolkit:messaging:core:iosSimulatorArm64Test --offline
-```
+## Исторические сборки
 
 Android Debug/Release собраны, включая R8. Android lint Debug/Release: 0 errors,
 14 warnings в каждом отчёте (версии инструментов/зависимостей и launcher icon).
@@ -169,7 +89,7 @@ xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp \
 Финальные source boundary/obsolete symbol checks, YAML/docs links/fences и
 git diff --check прошли. Логи сохранены локально:
 /tmp/analytics-review-full-gates.log, /tmp/analytics-review-extended-gates.log,
-/tmp/analytics-review-messaging-final.log, /tmp/analytics-review-swift-simulator.log,
+/tmp/analytics-review-swift-simulator.log,
 /tmp/analytics-review-swift-device.log, /tmp/analytics-review-swift-release-simulator.log.
 
 ## Ограничения

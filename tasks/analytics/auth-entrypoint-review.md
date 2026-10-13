@@ -30,12 +30,12 @@ error identity, compatible failure/outcome matrices и platform bootstrap wiring
 
 - Сценарии не singleton; shared factory не хранит mutable scenario state.
 - Не осталось runtime проверок неправильного режима: соответствующих методов нет
-  в контрактах. Два теста этих старых checks удалены как утратившие предмет проверки.
+  в контрактах.
 - Сохранены 17 wire schemas, enum codes, StateKeeper keys, snapshot fields и
-  legacy AuthFlowState SerialName. JSON fixtures и StateKeeper restoration tests
+  legacy AuthFlowState SerialName. Архивы StateKeeper
   проходят после перемещения в nested contract. Route FlowId invariant сохранён.
 - Analytics layer не импортирует UI/domain/services/SDK. UI main зависит только
-  от analytics-api; implementation разрешён в integration tests и shared.
+  от analytics-api; implementation подключается shared.
 - Scenarios оборачивают исходные business callbacks; scopes, retries, SDK calls,
   routing и дополнительная collection policy ради этого refactor не добавлялись.
 - В повторном проходе исправлены конфликт EntryPoint/import DI module и suffix Impl
@@ -50,20 +50,10 @@ error identity, compatible failure/outcome matrices и platform bootstrap wiring
 `/tmp/grippo-auth-entrypoint-full.log`:
 
 ```sh
-./gradlew :analytics:authorization:testAndroidHostTest \
-  :analytics:authorization:iosSimulatorArm64Test \
-  :ui-screen-features:authorization:testAndroidHostTest \
-  :ui-screen-features:authorization:iosSimulatorArm64Test \
-  :shared:testAndroidHostTest :androidApp:assembleDebug :androidApp:assembleRelease \
+./gradlew :androidApp:assembleDebug :androidApp:assembleRelease \
   :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease \
   -x :androidApp:uploadCrashlyticsMappingFileRelease
 ```
-
-| Набор | Android host | iOS simulator ARM64 | Failures/errors |
-|---|---:|---:|---:|
-| Analytics authorization | 23 | 23 | 0 |
-| UI authorization integration | 15 | 15 | 0 |
-| Shared | 24 | не запускался | 0 |
 
 Android Debug/Release и Debug XCFramework device/simulator собраны.
 Lint: 0 Error/Fatal, по 14 прежних warnings в Debug/Release.

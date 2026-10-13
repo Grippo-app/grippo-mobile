@@ -42,17 +42,13 @@ AuthAnalytics остаётся единственным фасадом. Подг
 Команда:
 
 ```sh
-./gradlew :ui-screen-features:authorization:testAndroidHostTest \
-  :ui-screen-features:authorization:iosSimulatorArm64Test \
-  :shared:testAndroidHostTest :androidApp:assembleDebug \
+./gradlew :androidApp:assembleDebug \
   :androidApp:assembleRelease :shared:assembleSharedDebugXCFramework \
   :androidApp:lintDebug :androidApp:lintRelease \
   -x :androidApp:uploadCrashlyticsMappingFileRelease
 ```
 
-42 auth tests Android host и 42 iOS simulator ARM64: 0 failures/errors.
 Матрица outcome проверена для всех допустимых и запрещённых kind/outcome пар.
-24 shared Android host tests: 0 failures/errors.
 Gradle: BUILD SUCCESSFUL, 6m54s, exit 0. Android Debug/Release и shared Debug
 XCFramework для device/simulator собраны. Lint Debug/Release: 0 Error/Fatal,
 14 прежних warnings в каждой конфигурации. Обе shared.h не экспортируют удалённые

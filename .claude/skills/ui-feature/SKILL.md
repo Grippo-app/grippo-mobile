@@ -163,9 +163,9 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    Keep the coverage matrix synchronized; do not scatter event construction
    through Screens, Components, ViewModels and use cases.
 9. **Verify within the user's scope** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
-   assemble when `iosEnabled: true`). Apply the analytics skill's affected tests,
+   assemble when `iosEnabled: true`). Apply the analytics skill's scoped checks,
    DI/leaf-lifecycle checks and platform validation when analytics changes.
-   Honor explicit no-build/test restrictions and record unrun checks.
+   Honor explicit platform/build restrictions and record unrun checks.
    Build failures in the permitted scope are yours to fix.
 
 ## Screen results and dialog-to-screen changes
@@ -200,11 +200,10 @@ and present it as an existing project convention.
   your own interpretation.** Read the pulled `orchestrator/.cache/figma/screens/<stem>/<Screen>.spec.json`
   (element inventory, layout, paddings/gaps, radii, fills/tokens, text styles) and the
   oracle `<Screen>.png` (appearance + which content/sections exist), and build to match;
-  seed the `@AppPreview` stub + each ScreenshotTest state from the design's actual oracle
-  content, per state — never invented data (`references/add-screen.md` "Build to the
-  pulled design"; gate spec §2 content-parity / §2.1 multi-state). An invented layout or
-  a stub whose content diverges from the oracle is the root cause of a failed screenshot
-  comparison — a BLOCKER you fix by matching the design.
+  seed each normal `@AppPreview` with the design's actual content, per state.
+  Follow `references/add-screen.md` and permitted manual visual review. Fix
+  design drift without adding capture sources or dependencies; record states you
+  could not render or inspect.
 - Ambiguous UI shape (mirror class, dialog payload) the task doesn't specify —
   inventing a shape is out of scope; ask the orchestrator.
 
@@ -247,7 +246,7 @@ permitted verification, without unavailable machine reports.
 - `scope-leak-validator` — writes only files assigned in the plan section.
 - `acceptance-tracer` — every acceptance bullet traces to a touched file.
 - `build-validator` — `:androidApp:assembleDebug` (+ iOS XCFramework) green.
-- Figma-enabled: `figma-spec-validator` + the Roborazzi screenshot-fidelity gate.
+- Figma-enabled: `figma-spec-validator` + permitted manual visual review.
 
 ## Output contract
 

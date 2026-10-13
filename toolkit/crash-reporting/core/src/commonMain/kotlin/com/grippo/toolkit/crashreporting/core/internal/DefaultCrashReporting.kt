@@ -110,7 +110,7 @@ internal class DefaultCrashReporting(
                 }
             }
         }
-        // Outside the state lock, including when tests inject an immediate dispatcher.
+        // Signal outside the state lock because a dispatcher may resume the worker immediately.
         if (queued) wake.trySend(Unit)
     }
 

@@ -50,7 +50,7 @@ app-owned. Read the routing table below to find the file for your task.
 
 | Topic | File | Key sections |
 | --- | --- | --- |
-| Convention plugins (KotlinMultiplatform / AndroidLibrary / AndroidApplication / ComposeMultiplatform / KoinAnnotation / Room / IosSwiftPackage / optional `screenshot.test.convention`), helpers, module shape, function-body style, anti-patterns | [`convention-plugins.md`](convention-plugins.md) | Plugin matrix · per-plugin sections · Helpers · Module build.gradle.kts shape · Anti-patterns |
+| Convention plugins (KotlinMultiplatform / AndroidLibrary / AndroidApplication / ComposeMultiplatform / KoinAnnotation / Room / IosSwiftPackage), helpers, module shape, function-body style, anti-patterns | [`convention-plugins.md`](convention-plugins.md) | Plugin matrix · per-plugin sections · Helpers · Module build.gradle.kts shape · Anti-patterns |
 | Version catalog (sections, naming, adding a library/plugin, bumping, pitfalls) **and** `settings.gradle.kts` (full file, restricted repos, Foojay resolver, `FAIL_ON_PROJECT_REPOS`, TYPESAFE accessors, module-path conventions, order, add/remove a module) | [`version-catalog-and-settings.md`](version-catalog-and-settings.md) | Version catalog · settings.gradle.kts |
 | `:androidApp` build, `:shared` build (`api` vs `implementation`), and all 10 representative `build.gradle.kts` shapes (pure KMP · +Koin · +Compose · +Compose+Koin · dialog feature · data service · data mapper · toolkit date-utils · Room database · compose-libs widget), patterns, per-module checklist | [`gradle-build.md`](gradle-build.md) | :androidApp module build · :shared module build · Representative build.gradle.kts shapes |
 

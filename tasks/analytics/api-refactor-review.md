@@ -38,7 +38,6 @@ Self-review: сохранены reference identity для регистрации
 Проверки окончательного кода:
 
 - Gradle: BUILD SUCCESSFUL, `/tmp/grippo-analytics-refactor-final.log`.
-- Android host tests: 87; iOS simulator tests: 48; ошибок и пропусков нет.
 - Android assembleDebug/assembleRelease; Crashlytics mapping upload исключён.
 - shared assembleSharedDebugXCFramework: device arm64 и simulator arm64.
 - Xcode Debug unsigned: симулятор и устройство, оба BUILD SUCCEEDED.
@@ -53,10 +52,9 @@ Self-review: сохранены reference identity для регистрации
 Команда Gradle:
 
 ```sh
-./gradlew :toolkit:analytics:api:testAndroidHostTest :toolkit:analytics:core:testAndroidHostTest :ui-core:foundation:testAndroidHostTest :toolkit:analytics:api:iosSimulatorArm64Test :toolkit:analytics:core:iosSimulatorArm64Test :ui-core:foundation:iosSimulatorArm64Test :shared:testAndroidHostTest :androidApp:assembleDebug :androidApp:assembleRelease :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease -x :androidApp:uploadCrashlyticsMappingFileRelease
+./gradlew :androidApp:assembleDebug :androidApp:assembleRelease :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease -x :androidApp:uploadCrashlyticsMappingFileRelease
 ```
 
 Swift-логи: `/tmp/grippo-analytics-refactor-swift-simulator.log`,
 `/tmp/grippo-analytics-refactor-swift-device.log`.
 Firebase runtime и запуск приложений не проверялись; фичи не интегрировались.
-

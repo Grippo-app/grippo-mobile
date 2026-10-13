@@ -8,6 +8,16 @@ Frozen per-agent contract. Source of truth: the `validation-gates` skill; this r
 - tools (permission boundary): `Read, Bash, Grep, Glob`
 - model: `sonnet`
 
+## Current review contract
+
+For a declared Figma-backed surface, inspect permitted actual previews/app
+screenshots against the design according to
+[visual-review.md](../../skills/validation-gates/references/visual-review.md).
+Report observations and unavailable states separately. No capture runner,
+recording plugin, image baseline or screenshot certificate is required.
+Unavailable rendering remains unverified manual acceptance; it is not a visual
+PASS. Report observed defects through the normal finding/owner route.
+
 ## Frozen surface (per source spec)
 The skill that owns this role MUST preserve:
 - role semantics and when it runs;

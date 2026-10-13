@@ -28,9 +28,8 @@ pluginManagement {
 }
 
 plugins {
-    // Auto-provisions JDK toolchains via the Foojay Disco API (the JDK 21 the screenshot-gate host-test
-    // requests, and the app's JDK 19) — no machine-specific JDK paths, works on CI. Inert unless a
-    // toolchain is requested. See the implement-figma skill (screenshot-fidelity gate).
+    // Provisions the app's pinned JDK toolchain via the Foojay Disco API.
+    // No machine-specific paths; inert unless a missing toolchain is requested.
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"   // pin to latest at setup time
 }
 

@@ -30,26 +30,23 @@ UI-фичи нет. Единственный stateless classifier binding ост
 ## Self-review и повторная проверка
 
 - Просмотрены API, descriptor hierarchy, сценарии, operation events и schemas,
-  UI call sites, classifier/DI/retention, fixtures, стандарт и skill.
-- Исправлены остатки старых stage fixtures/assertions, версии схем, imports,
+  UI call sites, classifier/DI/retention, стандарт и skill.
+- Исправлены остатки старых stage declarations, версии схем, imports,
   форматирование callback, obsolete stage helpers и активные примеры API.
 - Проверен общий toolkit executor: исходная ошибка перекидывается без обёртки,
   reporting defect добавляется в suppressed, coroutine cancellation отдельна
   от typed SDK cancellation. Новых scopes/jobs/retries не добавлено.
-- Fixtures обновлены: 16 схем, failed attempt v2 без failure_stage, прежние session
-  stages. Сохранены тесты original exception identity, cancellation, retries,
-  independent contexts, returned results и retention. Тесты не запускались.
 
 ## Выполненные проверки
 
 - Python static audit: 117 Kotlin файлов, balance delimiters, отсутствие старых
   symbols/imports, отсутствие UI/domain/SDK imports в analytics implementation,
-  16 schema names/fixture entries/versions, exact typed signatures, сохранённые
+  16 schema names/versions, exact typed signatures, сохранённые
   retention keys и legacy SerialName, documentation fences. Exit 0.
 - Ruby YAML validation canonical analytics skill: exit 0.
 - git diff --check: exit 0.
 
-По запросу пользователя Android/iOS builds, compilation, KSP и unit tests не
+По запросу пользователя Android/iOS builds, compilation, KSP не
 запускались. Статический аудит не подтверждает компиляцию или runtime поведение.
 Firebase/provider requests и uploads не выполнялись. Исторические результаты
 проверок не используются как подтверждение текущего изменения.

@@ -62,12 +62,12 @@ waive required screen coverage. Containers must keep default null.
 For new or changed features, also apply the mandatory
 [state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
 Reconcile affected fields with their owners, saved drafts, rebuilt sources and
-runtime exclusions; review fresh-component archive tests and secret omission.
+runtime exclusions; review fresh-component archive wiring and secret omission.
 Reject private restoration/edit flags, previous-source caches and equivalent
 shadow data in State, helpers, providers or mutable closures. Check that fresh
 form population runs once, restored Empty/null/default values survive and source
-refresh/pause/resume does not overwrite the draft. Lifecycle tests must cross the
-actual disconnect grace before resume; see the owning skill's
+refresh/pause/resume does not overwrite the draft. Review the actual subscription
+disconnect grace; manual lifecycle checks must wait past it before resume. See the owning skill's
 [draft policy](../state-preservation/SKILL.md#data-backed-form-synchronization).
 Follow the user's verification scope and report actual shell limitations.
 
@@ -79,6 +79,9 @@ For a configured orchestrator task, two layers are required; neither replaces th
    their kind applies; a required conditional that does not run **must emit a
    `skipped` finding with a `skip_reason`** — it fails closed, it does not
    silently vanish.
+   Always-on assessment does not authorize a build: `build-validator` reviews
+   source/configuration when compilation is excluded and records compile/assemble
+   checks as unrun with that reason, without a false PASS or scaffold blocker.
 2. **Independent reviewers** — `internal-reviewer` or the official Codex plugin
    command keep the semantic judgement. Both normalize to `reviewer-output`
    (reviewer-agnostic). The reviewer is the pipeline's **only
@@ -119,10 +122,10 @@ feature-specific semantic review also defer to the owning skill references below
   `references/when-to-stop-and-ask.md`.
 - Review/verify gate selectors (`codexEnabled` / `verifyEnabled`):
   `references/config-gates.md`.
-- Screenshot-fidelity gate (`figma-screenshot-validator` capture spec + frozen
-  surface): `references/screenshot-fidelity-gate.md`.
-- Spec-fidelity gate (`figma-spec-validator` procedure + the `spec-<stem>.json`
-  report final evidence requires): `references/spec-fidelity-gate.md`.
+- Permitted visual review of previews/app screenshots:
+  `references/visual-review.md`.
+- Configured source/spec comparison (`figma-spec-validator` procedure and its
+  `spec-<stem>.json` report): `references/spec-fidelity-gate.md`.
 - Reviewer-only rules in `references/forbidden-patterns.md` and owning skills;
   configured orchestrator tasks also require their `known-gaps.md` register.
 - Per-validator frozen contracts: `orchestrator/contracts/agents/<validator>.md`.
@@ -140,11 +143,12 @@ Conditional (run when the intake kind applies, fail-closed on skip):
 `naming-convention-validator`, `anti-pattern-scanner`,
 `figma-component-coverage`, `figma-drift`, `figma-spec-validator`
 (`figmaEnabled` + non-`none` `## Design`; runs the machine baseline and authors
-the `spec-<stem>.json` report final evidence requires via `write-spec-report.mjs`
+its source/spec report via `write-spec-report.mjs`
 — see `references/spec-fidelity-gate.md`), `figma-screenshot-validator`
 (`figmaEnabled` + ANY non-`none` `## Design` bullet — any kind
-(screen/dialog/component/overlay); missing oracle/capture emits BLOCKER findings
-— see `references/screenshot-fidelity-gate.md`), `backend-contract-drift`.
+(screen/dialog/component/overlay); inspect permitted rendered/design inputs and
+record unavailable runtime checks
+— see `references/visual-review.md`), `backend-contract-drift`.
 
 Reviewer gate (semantic, logic-correctness, reviewer-only gaps):
 `internal-reviewer` or `Skill(skill: "codex:review", args: "--wait --scope working-tree")`.

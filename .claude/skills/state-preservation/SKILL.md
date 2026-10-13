@@ -33,22 +33,23 @@ Before completing feature work:
    all state indiscriminately or move ordinary screen drafts to a global store.
    Inspect ViewModel members, closures and State fields: reject restoration/edit
    flags, previous-source caches and equivalent shadow data hidden behind helpers.
-4. Verify real save → serialization roundtrip → destroy old lifecycle and
-   InstanceKeeper → fresh ComponentContext/InstanceKeeper → restore. Check exact
+4. Review real save → serialization roundtrip → destroy old lifecycle and
+   InstanceKeeper → fresh ComponentContext/InstanceKeeper → restore wiring.
+   When runtime verification is permitted, check this sequence manually. Check exact
    unfinished input/selection, Back, parent-to-child values and final business
    inputs. Where a child can be destroyed and entered again, verify accepted
    parent values seed its fresh state without an archive. Retained instances or
    a State-only copy are insufficient proof of wiring.
-   Check pause/resume without repeating form initialization. For lifecycle-aware
-   subscriptions, advance virtual time past the actual disconnect grace so the
-   test exercises resubscription rather than continuous collection.
-5. Reconcile the inventory with implementation and tests. Reject missing required
+   Review pause/resume without repeating form initialization, including the actual
+   disconnect grace of lifecycle-aware subscriptions. Source review alone does not
+   prove runtime resubscription.
+5. Reconcile the inventory with implementation and permitted checks. Reject missing required
    fields, stale route-prefill restoration, secret leakage and duplicate ownership.
-   Record actual checks and shell limitations; honor no-build/test restrictions.
+   Record actual checks and shell limitations; honor platform/build restrictions.
 
 Use this compact inventory in the existing feature record:
 
-| Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and test |
+| Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 
 ## Ownership and implementation

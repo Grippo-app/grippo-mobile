@@ -22,13 +22,9 @@
    Error не маскируется. Direct strict validation и invariant проверки остаются.
 
 Обновлены skill, UI skill, standard, guide, coverage и проектные инструкции.
-Тестовые исходники: полный register при profile/no profile, обе операции при
-ошибках подготовки, legacy route shape + provider mapping, start/terminal
-reporting failures, flow transitions при reporting failure, lifecycle failure.
-Существующие cancellation/restore/DI фикстуры сохранены и синхронизированы.
 
 Саморевью и повторные статические проверки /tmp/verify_three.py прошли, YAML,
 links/examples и git diff --check прошли. Удалённых API/схем в актуальных исходниках
 не осталось. Исторические review reports описывают прошлые состояния.
-Android/iOS builds, KSP, lint и тесты не запускались по ограничению пользователя;
+Android/iOS builds, KSP и lint не запускались по ограничению пользователя;
 компиляция и runtime не подтверждены. Без Firebase delivery или uploads.

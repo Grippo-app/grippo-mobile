@@ -8,9 +8,7 @@ helpers make previews concise and consistent:
 - **`PreviewContainer { ... }`** — wraps preview content in `AppTheme(darkTheme = true)`, a
   Coil image preview handler, and a padded `Column`.
 
-Both live in `:design-system:preview` — alongside the two **capture-only** siblings
-(`PreviewContainerScreenshot` / `PreviewContainerComponent`) that the screenshot-fidelity
-gate mandates; see the screenshot-capture wrappers section below.
+Both live in `:design-system:preview`. Use these normal helpers for IDE inspection.
 
 ## `@AppPreview` annotation
 
@@ -179,32 +177,14 @@ previews. Without it, Coil would try to load from network in the IDE — slow an
 The handler returns a translucent black square. For richer previews (a real avatar), pass an
 explicit `ContentScale.Fit` `painter` to the Composable instead of relying on `AsyncImage`.
 
-## Screenshot-capture wrappers
+## Visual review
 
-`PreviewContainer` serves the IDE. Roborazzi capture `@Test`s MUST NOT use it — they use
-two **capture-only** siblings, living in the same `:design-system:preview` module:
-
-- **`PreviewContainerScreenshot(darkTheme, ...)`** — full-bleed wrapper for `[screen]`
-  bullets. Bakes in the four determinism controls (frozen clock, animations disabled via
-  `LocalAnimationsEnabled`, deterministic Coil loader, locale from the `@Config`
-  qualifier) around the real `AppTheme(darkTheme, localeTag, content)` call (`theme.md`).
-- **`PreviewContainerComponent(darkTheme, ...)`** — the `[dialog]`/`[component]` sibling:
-  same four controls + theme parameter, but sized to the bullet's own `frameSizeDp`
-  (`Modifier.size(<W>.dp, <H>.dp)` / wrap-content), never full-bleed.
-
-Differences from `PreviewContainer` that matter at capture time:
-
-- **`darkTheme` is a parameter, set per-`@Test` by the ORACLE** — `false` for a `light:`
-  oracle, `true` for a dark/primary-dark design; the `.dark.png` capture always passes
-  `true`. `PreviewContainer`'s hardcoded `darkTheme = true` is an IDE convenience, not a
-  capture rule.
-- **No padded `Column`, no extra background wrapper** — the capture canvas is the
-  screen/component itself, edge to edge; `PreviewContainer`'s 12.dp padding would ship a
-  border the Figma oracle does not have and fail the pixel comparison.
-
-The canonical copy-paste implementation, the THEME RULE, and the forbidden-call list live
-in the validation-gates skill — `references/screenshot-fidelity-gate.md` §2/§2.2. That
-file is the single source of truth for the wrappers; do not fork the code here.
+Use normal `@AppPreview` states and preview containers for IDE inspection. For a
+Figma-backed change, seed actual design content and choose the relevant theme,
+locale and dimensions. Compare a permitted rendered preview or app screenshot
+with the design; record states you could not inspect. Follow the
+[visual review reference](../../validation-gates/references/visual-review.md).
+Do not introduce special capture wrappers or recording infrastructure.
 
 ## Anti-patterns
 
@@ -221,13 +201,13 @@ file is the single source of truth for the wrappers; do not fork the code here.
 - **Preview takes parameters.** Compose previews don't support parameters (use
   `@PreviewParameter` if absolutely needed, but prefer multiple `*Preview` functions).
 
-## State fixtures and whole-screen review
+## Preview state examples and whole-screen review
 
 For meaningful variants, start from an existing stub and explicitly override
 the fields that determine the state. Keep compared names, values, dates and
 set counts deterministic; random stubs alone cannot reliably demonstrate a
 preset, partially completed or completed exercise. Use a small file-local
-fixture helper when several previews repeat the same setup.
+preview-data helper when several previews repeat the same setup.
 
 A component preview checks its own rendering. It does not demonstrate harmony
 with a toolbar, adjacent cards or a pinned action. For changes to shared card

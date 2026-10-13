@@ -8,7 +8,7 @@
 
 Canonical source: .claude/skills/feature-analytics/SKILL.md. Полная перепись вместо
 append-only дополнений. Linked references/ui-provider.md содержит детали UI wiring,
-DI, typed retention, persistence и meaningful tests, без нового runtime framework.
+DI, typed retention и persistence, без нового runtime framework.
 
 Закреплены one feature entry point + nested scenario/classifier ports, sibling
 models, internal implementation responsibility folders, sealed event families,
@@ -30,7 +30,7 @@ Self-review по actual provider/classifier/module/components/API и двум с
 новая feature operation (own descriptor/result/schema + supplied existing business
 block) и изменение route (provider mapping/FlowId/snapshot/coverage/lifecycle).
 Инструкции не переносят бизнес-код в analytics и не дают permissions на Firebase.
-User limits overrides default build/test requirements; static checks не объявляются
+User limits overrides default build requirements; static checks не объявляются
 compilation/KSP/runtime verification.
 
 Проверки: Ruby YAML frontmatter/name/description/interface/implicit-policy checks,
@@ -38,4 +38,4 @@ Python relative links/fences/obsolete examples/source alignment (7 documents),
 git diff --check — exit 0. Bundled quick_validate.py не выполнился из-за отсутствия
 PyYAML; frontmatter ограничения проверены отдельно через Ruby YAML + explicit checks,
 зависимости не устанавливались. App source в этом изменении не менялся;
-Android/iOS builds/tests не запускались.
+Android/iOS builds не запускались.

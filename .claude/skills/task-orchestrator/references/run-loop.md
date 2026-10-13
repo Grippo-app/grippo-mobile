@@ -44,10 +44,10 @@ parallel group; the 5 remaining validators are conditional — the 2 `figma-*`
 component validators (`figma-drift`, `figma-component-coverage`)
 run only when `figmaEnabled: true`,
 `figma-spec-validator` runs only when `figmaEnabled: true` AND the task carries
-non-`none` `## Design` bullets, `figma-screenshot-validator` runs (mandatory)
-whenever `figmaEnabled: true` AND the task has non-`none` `## Design` bullets — a
-pulled oracle + capture are REQUIRED inputs (missing ⇒ BLOCKER), not run-conditions
-(Step 4.6b — after the assemble gate, not in the Step-4 parallel group),
+non-`none` `## Design` bullets. For the same declared surfaces,
+`figma-screenshot-validator` assesses permitted manual visual evidence at Step
+4.6b, outside the Step-4 parallel group. Unavailable rendering remains unverified;
+do not install capture automation or run builds beyond the user's scope.
 and `backend-contract-drift` runs when a contract snapshot exists and
 `backendContractEnabled` is not `false`, or when `backendContractEnabled: true`
 requires a missing snapshot to be reported as an error.
@@ -121,31 +121,9 @@ scaffold incomplete — <missing list>` if any are absent):
   → `values/strings.xml`, non-English → `values-<lang>/strings.xml`.
 - If `iosEnabled: true`, `iosApp/` exists.
 - If `firebaseEnabled: true`, `androidApp/google-services.json` exists.
-- **Test-foundation doctor (defense-in-depth).** Run
-  `node orchestrator/tasks/task-test-foundation.mjs doctor --product-root .`.
-  For an ordinary task only `READY` admits the run; anything else is
-  `BLOCKED[foundation-prerequisite-missing]: <state>` — Step 0 never creates a
-  prerequisite child, never edits the todo and never repairs the foundation
-  (that is task-prep's Step 4.7). The single exception is a task whose Source
-  is `follow-up/test-foundation-prerequisite`: it runs with
-  `ABSENT_CAN_INSTALL` as the toolkit-only bootstrap (§ prep-flow Step 4.7),
-  and a repeated doctor on it never recurses into another prerequisite.
-- If `figmaEnabled: true`, the screenshot-gate enforcement net is WIRED:
-  `git config core.hooksPath` prints `orchestrator/skills/checks/hooks`. Unwired,
-  nothing mechanical catches a bare-`mv` ship past the gate (the pre-commit
-  verify-done net is inactive), so an uncompared UI task can silently reach
-  `done/`. If unwired → `BLOCKED[figma-wiring]: run
-  orchestrator/skills/install-skills.sh . (or: git config core.hooksPath
-  orchestrator/skills/checks/hooks)` — do not proceed. This is the same
-  invariant the site runner enforces mechanically (it refuses `run` sessions
-  while unwired) and `figma:doctor` reports (strict via `FIGMA_STRICT_WIRING=1`);
-  this bullet covers runs that bypass the site (a /loop worker or a manual
-  terminal session).
-
-If `apiClassName` still holds a placeholder (`^<`), signal that the project-config
-substitution (launch.md Step 1.5) was not run. If any check fails →
-`BLOCKED[scaffold]: run orchestrator/launch.md to bootstrap the project first`.
-Do not proceed to task-intake.
+- For a changed Figma-backed surface, inspect declared design inputs and plan
+  permitted manual visual review. Do not require screenshot recording hooks,
+  automation plugins or image-baseline infrastructure.
 
 ## Rollback safety
 
@@ -417,10 +395,8 @@ The input has exactly `runId`, `phase`, `attempt`, `status`,
 Use the exact `runId` from the verified task-lock receipt; `status` is
 `completed|failed|blocked`; receipt arrays contain only canonical durable IDs
 actually produced/consumed by the phase (otherwise `[]`). A completed `ship`
-checkpoint is the exception: it MUST consume exactly one current sealed
-`test-summary:<sha256>` receipt for the same run and exact non-null execution
-pin; without it candidate sealing refuses. A failed status needs an allowlisted
-failure code. The retry policy is conservative:
+checkpoint records only current checks actually performed under the user's scope.
+A failed status needs an allowlisted failure code. The retry policy is conservative:
 
 - exact `retry-phase` is limited to preflight, validators, assemble,
   runtime/screenshot gates, review, security review, and design-pull, with
@@ -467,15 +443,14 @@ produced by another board task — add an optional `DEPENDS-ON: TASK_<…>` line
 3.  for each builder in plan.builderSequence: invoke with task + context + plan
 3.5 diff sanity against the sealed base after EVERY builder run
 4.  run every applicable validator in PARALLEL — always incl. the three always-on
-       (build-validator mode=compile, scope-leak-validator, acceptance-tracer)
+       (build-validator source/configuration assessment, scope-leak-validator, acceptance-tracer;
+        mode=compile only if permitted, otherwise record compilation as unrun)
     if any finding: dedup → route → goto 4
-4.4 deterministic test certification — observed impact → allowlisted executor →
-       sealed receipts/summary. exactly once per Step-4 entry; PASS/SKIPPED
-       proceeds, anything else routes back to 4 (Step-4 outer cap: 7)
-4.5 full assemble gate — build-validator mode=assemble; PASS→proceed (counter
+4.5 full assemble gate — build-validator mode=assemble if permitted, otherwise
+       record assemble as unrun and proceed; PASS→proceed (counter
        resets), FAIL→route→goto 4 (re-converge compile-mode first). cap: 2 consecutive FAILs
-4.6 runtime verify gate (optional, verifyEnabled + Skill-tool gated). cap: 3
-4.6b screenshot fidelity gate (conditional). cap: 3
+4.6 runtime verify gate (optional, verifyEnabled + Skill-tool + user-scope gated). cap: 3
+4.6b manual visual review (conditional). cap: 3
 5.  external reviewer (official Codex plugin review OR internal-reviewer — one per attempt)
        Critical/Major → goto 4; Minor/Style/Info → batch or ### Caveats
 5.5 conditional security-review (only if diff touches auth/token/credential).
@@ -573,25 +548,20 @@ with task-intake.
 Fires whenever **both** hold: `figmaEnabled: true` AND the task's `## Design`
 carries ≥1 non-`none` bullet — **any** node kind
 (`screen`/`dialog`/`component`/`overlay`), regardless of which builders the
-intake plan includes. This is the same kind-agnostic predicate the enforcement
-layer gates on (Step 4.6b, `evidence-bundle`, `ship-done`): the node kind picks
-the CAPTURE HARNESS (gate spec §2), never whether the gates run — a
-`[component]`-only task still needs this full pre-flight (cache check, census,
-check-spec, prebuild bundle) or the final `--stage final --fresh`
-bundle blocks it as unshippable. Otherwise (non-UI task) skip to Step 2a.
+intake plan includes. The node kind identifies the rendered surface; all changed
+Figma-backed kinds need relevant cache/census/static spec inputs. Plan manual
+visual review separately; no final screenshot bundle or recording harness is
+required by this checkout. Otherwise (non-UI task) skip to Step 2a.
 
 One Figma run id spans the whole task (Step 1b through Step 4/4.6b/final
-evidence/ship-done). The id is **file-pinned per stem**: the first figma tool
+source/spec reporting). The id is **file-pinned per stem**: the first figma tool
 invocation mints it and writes `orchestrator/.cache/figma/reports/.run-id-<stem>`;
 every later invocation (any shell, any turn, any sub-agent) reuses the pinned id
 automatically — no `export` is required anymore. An exported
 `FIGMA_PIPELINE_RUN_ID` still WINS over the pin (and re-pins the file), so an
-explicit id remains available for diagnostics. A full `evidence-clean <stem>`
-removes the pin (next run = fresh id); `--bundle-only` keeps it (an immediate
-re-bundle must stay on the same run). Every Figma report in this task must carry
-that same id; the final `--stage final --fresh` bundle rejects mixed reports as
-stale (`REPORT_STALE_RUN` — its message names the pinned id and the exact re-run
-recipe).
+explicit id remains available for diagnostics. Every Figma report in this task must carry
+that same id. Use only current reports with matching task/design/source inputs;
+do not claim stale or foreign artifacts establish this change's correctness.
 
 0. **Toolchain preflight** — `node_modules` is gitignored, so a fresh clone has
    no figma toolchain even when the screens cache is committed. If
@@ -644,9 +614,9 @@ recipe).
     `TEXT_NOT_IN_CODE` WARN means the stub/copy drifted from the design (the
     "invented 312 Mbps" class) — route it back to the builder as a content fix,
     never as a gate relaxation. A pre-text-contract spec reports nothing.
-2b. **Evidence bundle** — `node orchestrator/figma/scripts/evidence-bundle.mjs
-    <stem> --stage prebuild --fresh`; pass `evidence-<stem>.json` forward. Rerun
-    the final command before Step 5 (see Step 4.6b).
+2b. **Evidence inventory** — pass the current design inputs and static reports
+    forward with their actual source/task identity. Manual rendered observations
+    follow Step 4.6b; do not require an automatic screenshot finalization bundle.
 3. **Carry it forward** — pass the census table to the planner (Step 2a) and to
    every screen/dialog builder (Step 3). Builders consume only `MAPPED` fqNames.
 
@@ -747,7 +717,7 @@ publishes the binding-authorized mapping for a design-origin component task
 after a staged validation compare; generic tasks never auto-map). `ship-done`
 calls the final gate driver, which re-runs census under the pinned run id when
 a CONSULTED mapping/inventory projection changed. Never run a post-ship
-registry mutation; it would make the just-issued evidence certificate stale.
+registry mutation; it would make the just-issued spec report stale.
 
 ## Step 3.5 — Diff sanity check
 
@@ -777,16 +747,13 @@ re-prompt that builder to undo its own write — never reset or clean anything
 yourself, and never touch the manager's installed `.claude/skills/` or
 `.claude/contracts/` copies.
 
-## Steps 4 → 5.5 (validators, tests, gates, reviewer)
+## Steps 4 → 5.5 (validators, gates, reviewer)
 
-The validator wave (dedup, footprint-scoping, caps), the deterministic test
-certification (Step 4.4), the assemble / verify / screenshot gates, the
-reviewer routing, and the security gate are covered in
-[`validator-routing.md`](validator-routing.md) — read it for Steps 4, 4.4,
-4.5, 4.6, 4.6b, 5, and 5.5. The numeric caps for all of them are frozen in
-[`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md). Step 4.4
-runs exactly once per Step-4 entry; the existing Step-4 outer re-entry cap
-(**7** per task) is the only bound on repeat certification after fixes.
+The validator wave (dedup, footprint-scoping, caps), permitted assemble/runtime
+checks, manual visual review and reviewer/security routing are covered in
+[`validator-routing.md`](validator-routing.md) — read it for Steps 4, 4.5, 4.6,
+4.6b, 5 and 5.5. Numeric invocation caps live in
+[`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md).
 
 ## Step 6 — Finalize (same turn)
 
@@ -888,7 +855,7 @@ unanswered section outlives the session and re-raises the blocker forever.
 
 **Gate-script rule.** Product tasks do not edit template-owned gate scripts
 (`orchestrator/figma/scripts/**`). Escalate a suspected gate defect as a separate
-owner-authorized template-maintenance task with a regression test.
+owner-authorized template-maintenance task with scoped source and manual verification.
 
 ## Parallelism rules
 

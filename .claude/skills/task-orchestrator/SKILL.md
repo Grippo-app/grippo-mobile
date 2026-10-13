@@ -5,7 +5,7 @@ description: >-
   orchestrate the build loop, drive builders to done, route validators, or
   drop a task. Covers the full lifecycle from a `todo/TASK_*.md` to a green,
   validated, reviewer-approved ship: task-intake → context-finder → planner →
-  builders → validators → assemble → verify → screenshot → review → security →
+  builders → validators → permitted assemble/runtime checks → visual review → review → security →
   done. The parent session ADOPTS this role (it is a playbook, not a spawnable
   sub-agent). Use for "run task TASK_N", "orchestrate the build loop", "route
   validators", "drive builders to done", "reopen TASK_N", or "drop a task".
@@ -23,6 +23,8 @@ the scaffold, scripts and required inputs below. The mobile checkout installs
 skills/contracts, not that runtime. Ordinary authorized feature work still applies
 the owning skills' analytics/state-preservation gates and permitted verification;
 do not require a task board, invent machine PASS reports or create the scaffold.
+The user's scope applies to every stage: excluded builds or unavailable runtime
+checks remain unrun, not passed. This playbook cannot authorize test infrastructure.
 
 ## When to use
 
@@ -66,8 +68,8 @@ the caller-owned generation. The
    resolver verdict; scan results for `MAP_MISS`/`REGISTRY_MISS`/`CONTRACT_MISS`
    and carry each forward (never silently drop).
 1b. **Screen pre-flight (conditional):** `figmaEnabled` + any non-`none`
-   `## Design` bullet (any node kind; kind picks the capture harness, not whether
-   gates run) → check screen cache, run census, spec-sanity, evidence-bundle.
+   `## Design` bullet (any node kind; kind identifies the rendered surface, not whether
+   gates run) → check screen cache, run census and permitted static spec checks.
    Carry the census table into the planner + builders.
 2a. **implementation-planner** → file-level contract (names/paths/signatures/
    acceptance mapping; there is no standalone Step 2 — the number is kept for
@@ -76,20 +78,22 @@ the caller-owned generation. The
 3. **Builders** in `builderSequence`; parallel only on disjoint file sets. After
    each builder run **Step 3.5 diff-sanity**: in the execution root the whole
    `git status --porcelain` IS this task's footprint (nothing to subtract).
-4. **Validators (parallel):** always-on three (`build-validator`
-   mode=compile, `scope-leak-validator`, `acceptance-tracer`) + the conditional
-   set. **Dedup by `(file, rule_id)`**, highest severity wins; same
+4. **Validators (parallel):** always-on source/configuration assessment by
+   `build-validator`, `scope-leak-validator` and `acceptance-tracer` + the
+   conditional set. `build-validator` runs mode=compile only when compilation is
+   permitted; otherwise it reviews source/configuration and records compilation
+   as unrun with the user's restriction. **Dedup by `(file, rule_id)`**, highest severity wins; same
    `(file,rule_id)` from two validators counts once. Adjudicate *opposite*
    verdicts against the cited skill reference (not blind-route). Route deduped
    findings grouped by builder → re-run.
-4.5. **Assemble gate:** `build-validator` mode=assemble. FAIL → route →
+4.5. **Assemble gate (if permitted):** `build-validator` mode=assemble. FAIL → route →
    re-converge in Step 4 first.
 4.6. **Runtime verify** (optional; `verifyEnabled` + `Skill` tool). FAIL
    → route → goto Step 4.
-4.6b. **Screenshot fidelity** (conditional; `figmaEnabled` + non-`none`
-   Design). Missing oracle/capture is a Blocker, not a skip; pixel-similarity
-   severity follows `screenshotPixelGate` (`strict` by default — blocks;
-   `advisory` warns). Blocker → route → goto Step 4; advisory findings → `### Caveats`.
+4.6b. **Manual visual review** (conditional; changed Figma-backed surface).
+   Compare permitted rendered previews/app screenshots with the design; record
+   actual observations and unavailable checks. No recording harness or automatic
+   pixel gate is required by this project.
 5. **Review:** select one reviewer per attempt using the shared
    `reviewer-status.cjs` availability contract, then journal the locked
    `reviewer` / `reviewAttempt` / `selectionReason`. Critical/Major → goto Step 4;
@@ -113,7 +117,7 @@ the caller-owned generation. The
 | Step 4 outer re-entry | **7** | per task, never reset mid-task |
 | Step 4.5 assemble | **2** consecutive FAILs (PASS resets) | per task |
 | Step 4.6 runtime verify | **3** invocations | per task |
-| Step 4.6b screenshot | **3** invocations | per task |
+| Step 4.6b manual visual review | **3** invocations | per task |
 | Step 5.5 security review | **2** iterations | per task |
 | acceptance bullet repeatedly missing | **2** consecutive validator cycles | per task |
 | site runner concurrency | `MAX_PARALLEL=2` (canary; source constant, no env override) | n/a |

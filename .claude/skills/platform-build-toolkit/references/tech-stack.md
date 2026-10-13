@@ -242,11 +242,6 @@ Any new dependency requires a deliberate decision. Steps:
 - **kotlinx-serialization**, not Moshi/Gson — only kotlinx-serialization works on KMP and integrates with Decompose `StateKeeper`.
 - **kotlinx-collections-immutable** — required for Compose stability inference (`ImmutableList`, `ImmutableSet`).
 - **Coil 3 + `coil-network-ktor3`**, not Glide / Kamel — Coil 3 is multiplatform and shares the Ktor client with the rest of the app.
-- **Roborazzi** (opt-in, test-only), not Paparazzi — the screenshot-fidelity gate renders on Robolectric in the KMP `androidHostTest` source set; Paparazzi supports neither `com.android.kotlin.multiplatform.library` nor AGP 9. Wired via the `screenshot.test.convention` plugin and inert unless a `figmaEnabled` screen module opts in. See the implement-figma skill (`orchestrator/figma/skill/`) § screenshot-fidelity gate.
-- **`kotlin.test` + hand-written fakes**, not Kotest/MockK/Mockito — one platform-neutral runner/assertion API in `commonTest`; no second DSL while `kotlin.test` suffices, and no JVM instrumentation/reflection mocking that a KMP architecture cannot carry to Native. Test doubles are hand-written fakes at boundaries.
-- **Turbine + `kotlinx-coroutines-test`** for Flow/virtual-time evidence on both the Android host and iOS simulator lanes (Turbine upstream depends on the experimental `UnconfinedTestDispatcher` — treat its upgrades as deliberate, not mechanical).
-- **`ktor-client-mock`**, not real HTTP — product tests stay hermetic; the MockEngine handler validates the request before responding.
-- **No JVM desktop target for tests** — it would change the target/publication graph and can mask Android/iOS divergences; the host lane is the Android host test, not a desktop shortcut.
 
 ### Version interdependencies
 
@@ -255,7 +250,6 @@ Several versions in the catalog are not independent and must move together:
 - `kotlin` + `compose-compiler` — the `compose-compiler` plugin tracks the Kotlin compiler version exactly. Bumping `kotlin` requires bumping `compose-compiler` to a matching release.
 - `kotlin` + `agp` — the Kotlin/AGP compatibility matrix constrains which AGP versions work with a given Kotlin release; verify against JetBrains' published matrix before bumping either.
 - `compose-plugin` (JetBrains Compose Multiplatform) — follows its own release cadence, but each release is generally tied to a Kotlin version range; check the Compose Multiplatform release notes when bumping `kotlin`.
-- `compose-plugin` + `compose-ui-test-manifest` — the manifest artifact must match the androidx Compose UI line the CMP release resolves to (observe it via dependency resolution after any `compose-plugin` bump; 1.12.1 → androidx ui 1.12.1). A mismatched pin breaks the Robolectric host lane for Compose UI scenarios.
 
 ## gradle.properties
 

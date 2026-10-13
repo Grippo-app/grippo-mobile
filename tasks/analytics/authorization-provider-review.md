@@ -30,18 +30,12 @@ mutable singletons, base components или feature extensions нет. UI зав�
 ## Self-review и проверки
 
 Просмотрены root provider, обе component call sites, передачи leaf/VM, DI module,
-обновлённые named arguments и tests, skill/standard/coverage/integration guide.
-AnalyticsProviderTest использует actual provider + DefaultComponentContext,
-StateKeeperDispatcher/InstanceKeeperDispatcher: retained identity при recreation,
-актуальное сохранение после recreation, fresh snapshot restore без повторного
-flow start/exit, ошибочная смена route ID, session isolation и все пять entry points.
-AuthIntegrationTest дополнен singleton DI-resolution для provider. Эти тесты
-написаны, но не выполнялись по действующему ограничению пользователя.
+обновлённые named arguments, skill/standard/coverage/integration guide.
 
 Static audit 118 Kotlin files: delimiters, naming, stateless provider, exact type
 keys, persistent keys/save/invariant, DI binding, initialization order, child
 propagation, analytics layer dependency boundaries и active docs — exit 0.
 Skill frontmatter YAML и git diff --check — exit 0. Constructors DefaultComponentContext
 и retainedSimpleInstance сверены с locally installed Decompose/Essenty source jars.
-Compilation/KSP/Android/iOS builds/tests не запускались; runtime поведение не
+Compilation/KSP/Android/iOS builds не запускались; runtime поведение не
 подтверждено. Firebase sends/sign-in/uploads не выполнялись.

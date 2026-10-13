@@ -23,7 +23,7 @@ Each numeric cap and frozen mechanic is pinned in the contracts under
 | Step 4 — validator wave, dedup `(file, rule_id)`, adjudication, rotation + outer-reentry caps | [`validator-routing.md`](validator-routing.md) §4 | [`validation-run.md`](../../../contracts/validation-run.md); [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 4.5 — assemble gate, 2-consecutive-FAIL cap | [`validator-routing.md`](validator-routing.md) §4.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 4.6 — runtime verify gate, 3-invocation cap | [`validator-routing.md`](validator-routing.md) §4.6 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
-| Step 4.6b — screenshot fidelity gate, 3-invocation cap | [`validator-routing.md`](validator-routing.md) §4.6b | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
+| Step 4.6b — permitted manual visual review, 3-invocation cap | [`validator-routing.md`](validator-routing.md) §4.6b | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 5 — external review (reviewer-agnostic), fallback policy | [`validator-routing.md`](validator-routing.md) §5 | [`reviewer-output.md`](../../../contracts/reviewer-output.md) |
 | Step 5.5 — security review, 2-iteration cap, no severity threshold | [`validator-routing.md`](validator-routing.md) §5.5 | [`orchestrator-loop.md`](../../../contracts/orchestrator-loop.md) |
 | Step 6 — chat summary + 6a Outcome draft (6 headings + Execution log) | [`outcome-appendix.md`](outcome-appendix.md) | [`acceptance-trace.md`](../../../contracts/acceptance-trace.md) |
@@ -53,7 +53,7 @@ Each numeric cap and frozen mechanic is pinned in the contracts under
 | Step 4 outer re-entry | 7 | per task, never reset mid-task |
 | Step 4.5 assemble | 2 consecutive FAILs (PASS resets) | per task |
 | Step 4.6 runtime verify | 3 invocations | per task |
-| Step 4.6b screenshot | 3 invocations | per task |
+| Step 4.6b manual visual review | 3 invocations | per task |
 | Step 5.5 security review | 2 iterations | per task |
 | acceptance bullet repeatedly missing | 2 consecutive validator cycles | per task |
 | site runner concurrency | `MAX_PARALLEL=2` (canary; source constant, no env override — each run owns its own task worktree) | n/a |

@@ -31,9 +31,9 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
   keep `CancellationException` propagation intact. Non-suspending workers must
   provide cancellation through their execution design. When removing existing
   checks, preserve cancellation before work and after late SDK results; do not
-  turn cancellation into success/fallback or weaken the tests that verify it.
+  turn cancellation into success/fallback or weaken its observable error contract.
 - **`viewModelScope.launch`, `lifecycleScope.launch`, `GlobalScope.launch`, `CoroutineScope(...).launch`** inside a `BaseViewModel`. Only `safeLaunch` / `Flow.safeLaunch()`.
-- **`runBlocking { ... }`** anywhere in production. Tests only.
+- **`runBlocking { ... }`** anywhere in production.
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.
 - **Local exception handling that hides, replaces or presents unhandled failures
   in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Unwrap
@@ -86,7 +86,7 @@ Things you must not do — refuse to write them, refuse to commit them. Listed r
 - **`@Single` without `binds = [Interface::class]`** when registering an impl for an interface. Consumers can't `inject<Interface>()`.
 - **Missing module in `:shared/Koin.kt`.** Runtime "no definition found".
 - **`getKoin().get()` in a Composable.** Wrong layer.
-- **Module hand-DSL** unless it is in tests, listed in `diHandWrittenModules`, or the built-in `FeatureApiModule` UseCase-aggregator (see the di-modules skill, references/annotations.md).
+- **Module hand-DSL** unless it is listed in `diHandWrittenModules`, or the built-in `FeatureApiModule` UseCase-aggregator (see the di-modules skill, references/annotations.md).
 - **`@Factory` for stateless services.** Use `@Single`.
 - **A Koin-injectable type as a `*Component` constructor parameter.** Feature interfaces, UseCases, `DialogController`, repositories, managers, auth/link providers and analytics services resolve via `getKoin().get()` inside `componentContext.retainedInstance { <X>ViewModel(...) }`, not through Component constructors. Components receive context, navigation callbacks and ordinary initial business inputs from a route or accepted parent flow. Analytics stays in VM, with lifecycle binding only in foundation; no feature provider/route matrix or manual bind. See [feature analytics](../../feature-analytics/SKILL.md) and the ui-feature base-classes reference.
 
@@ -171,18 +171,16 @@ Screen-result rules are defined in the ui-feature skill,
 - **Calling `AppLogger.General.error(...)` after a Ktor exception.** Pipeline already logs.
 - **Skipping `AppLogger.Mapping.log(value) { msg }`** in DTO → Entity / Domain mappers. Required.
 
-## Testing
+## Verification infrastructure
 
-- **Production code that requires test-only setup.** Architecture must be test-friendly without backflips: constructor injection and boundary interfaces, never `if (isTest)`, public singleton resets, global fake modes or reflection into private state.
-- **Test libraries in production source sets or production publications.** Test-bearing
-  KMP modules use the existing `kotlin.multiplatform.test.convention`; additional
-  test dependencies belong in their test source sets, as auth/foundation do.
-  Do not require absent capability plugins or introduce a new test framework
-  merely to add a focused regression. The XCFramework stays test-free.
-- **A test that merely restates the implementation.** Expected values derive from the acceptance contract, not from copying the production formula; a test that would still pass on the old bug proves nothing.
-- **`assertTrue(true)`/non-null-only assertions, sleeps, retry-until-pass, shared mutable fixtures, real network or production databases in tests.**
-- **Weakening or deleting an existing assertion to make a change green.** A removed contract needs an owner decision, not a quieter test.
-- **A screenshot standing in for a behavioral test.** Roborazzi captures prove "looks like the design"; interaction and state contracts need their own tests (machine authority: `orchestrator/tasks/test-policy.json`).
+- **Automated test sources, folders, runners, fixtures, dependencies or screenshot
+  automation introduced without an explicit user request.** The project deliberately
+  has none. Use actual source/diff review and permitted static/manual checks.
+- **Verification-only production hooks or global fake modes.** Keep constructor
+  injection and module boundaries clean; do not add flags, singleton resets or
+  reflection scaffolding for checks.
+- **Claiming runtime behavior from source checks.** Record what ran and what remains
+  unverified, including native lifecycle, SDK delivery and generated DI.
 
 ## Resources
 

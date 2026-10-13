@@ -17,13 +17,8 @@ Session/FlowContext. Mapping, ID conversion/check и прежние StateKeeper 
 Foundation экспортирует serialization-core из-за public KSerializer; json остаётся
 implementation. Business/core/route contracts не менялись.
 
-Добавлены исходники RetainedAnalyticsTest: реальная рекреация с общим keeper,
-последующее изменение/latest save/fresh restore, разные scenario types,
-validation-before-registration и сохранение удержанного экземпляра. Существующие
-AuthAnalyticsProviderTest и generated DI фикстуры используют новый путь.
-
 Self-review: inline visibility, exact contract type, captures/owner lifetime,
 callback ordering, serializer bounds, dependency API, private keys и skill/examples.
 Статические проверки helper/provider/keys/dependency, YAML и git diff --check
-прошли. Сборки Android/iOS, KSP и тесты не запускались; компиляция/runtime
+прошли. Сборки Android/iOS и KSP не запускались; компиляция/runtime
 не подтверждены. Общих extensions/base components или дополнительных factory нет.

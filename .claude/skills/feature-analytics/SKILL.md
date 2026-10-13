@@ -153,10 +153,11 @@ See [ViewModel integration](references/viewmodel.md#screen-classification) and t
 - Maintain route/control/input/operation coverage with actual owners and explicit
   omissions. One feature does not prove global coverage or Firebase delivery.
 - Self-review naming/boundaries/DI/event matrix/privacy/error isolation and overhead;
-  fix findings and review again. Remove obsolete API/callers/helpers/tests/docs.
+  fix findings and review again. Remove obsolete API/callers/helpers/docs.
 - Verify actual payloads, results/errors/cancellation, reporting-failure injection,
   leaf VM screen coverage/foundation lifecycle and eligible callbacks. Check real code, not copied
-  helpers. Compile/test affected scopes when permitted; record actual results/skips.
-- Honor no-build/test instructions. Static/PSI/historical checks do not prove
+  helpers. Run permitted static/manual checks and builds; record actual results/skips.
+  Do not introduce automated test infrastructure without an explicit user request.
+- Honor platform/build instructions. Static/PSI/historical checks do not prove
   generated DI, UI/native runtime or platform integration. Validate skill YAML,
   links and examples. Firebase sign-in/sends/uploads need explicit authorization.

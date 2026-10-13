@@ -10,8 +10,7 @@ Distinct from `planner-output` (file-level contract).
 2. `## Classification` — the change kinds `task-intake` resolved.
 3. `## Builder routing (order)` — the resolved builder sequence (must obey `builder-order`).
 4. `## Validator set` — always-on three + conditional validators that gate completion.
-5. `## Test gate` — the resolved pre-builder test policy for this task: policy `version`/`policyHash`, required suites/lanes/capabilities from the sealed planned impact (`test-impact.planned.json`, referenced by `impactHash`), or the single typed `test-not-applicable` line. Never free-form shell — logical suite/lane ids only.
-6. `## Gate sequence` — Step 4 (compile) → 4.4 (tests) → 4.5 (assemble) → 4.6 (verify) → 4.6b (screenshot) → 5 (review) → 5.5 (security) ordering for this task.
-7. `## Planner reference` — the `planner-output` plan this routes.
+5. `## Gate sequence` — Step 4 (validators) → 4.5 (permitted assemble) → 4.6 (permitted runtime verify) → 4.6b (manual visual review) → 5 (review) → 5.5 (security) ordering for this task. Record excluded/unavailable checks as unrun.
+6. `## Planner reference` — the `planner-output` plan this routes.
 
 Parser rejects missing/reordered headings. Builder routing must not violate the `builder-order` hard-ordering rules.

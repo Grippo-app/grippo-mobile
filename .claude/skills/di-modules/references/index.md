@@ -20,7 +20,6 @@ Route by task kind; each row lists the file to read first, then any supporting f
 | Composition root, `Koin.init`, explicit module listing, order | [`composition-root.md`](composition-root.md) | [`shared-module.md`](shared-module.md) |
 | Feature analytics service/catalog and foundation hook | [canonical analytics skill](../../feature-analytics/SKILL.md) | [`composition-root.md`](composition-root.md) |
 | Adding a module — checklist / wire a feature in `:shared` | [`composition-root.md`](composition-root.md) § "Adding a module — checklist" | [`shared-module.md`](shared-module.md) |
-| When tests want a different module / multiple Koin contexts | [`composition-root.md`](composition-root.md) § "When tests want a different module" | — |
 | How `BaseViewModel` / `RootViewModel` / `RootComponent` consume Koin | [`koin-overview.md`](koin-overview.md) § "How BaseViewModel itself uses Koin" | [`shared-module.md`](shared-module.md) |
 | `:shared` composition root, `Koin.kt` responsibilities, `RootComponent`/`RootViewModel`/`RootScreen` | [`shared-module.md`](shared-module.md) | [`composition-root.md`](composition-root.md) |
 | Why every module is listed in `:shared`, `:shared/build.gradle.kts` | [`composition-root.md`](composition-root.md) § "Why explicit listing" / [`shared-module.md`](shared-module.md) § "`:shared/build.gradle.kts`" | [`composition-root.md`](composition-root.md) |
@@ -31,7 +30,7 @@ Route by task kind; each row lists the file to read first, then any supporting f
 |---|---|
 | [`koin-overview.md`](koin-overview.md) | Why Koin Annotations, mental model, annotation table, what gets annotated, feature vs service module shapes, how `BaseViewModel`/`RootViewModel`/`RootComponent` consume Koin, what stays out of Koin, anti-patterns |
 | [`annotations.md`](annotations.md) | KSP/`KOIN_CONFIG_CHECK` config, `@Module`/`@ComponentScan`, `@Single`/`@Factory`/`@Scoped`/`@InjectedParam`, includes-per-layer table, `Koin.init` setup, anti-patterns, `FeatureApiModule` hand-DSL exception |
-| [`composition-root.md`](composition-root.md) | `:shared/Koin.kt` file, Android/iOS `Koin.init` call sites, module order, add-a-module checklist, why explicit listing, what `Koin.init` doesn't do, multiple contexts, test overrides, anti-patterns |
+| [`composition-root.md`](composition-root.md) | `:shared/Koin.kt` file, Android/iOS `Koin.init` call sites, module order, add-a-module checklist, why explicit listing, what `Koin.init` doesn't do, multiple contexts, anti-patterns |
 | [`shared-module.md`](shared-module.md) | `:shared` responsibilities, file layout, `Koin.kt`, `RootComponent`/`RootViewModel`/`RootScreen` shapes, `:shared/build.gradle.kts`, adding-to-`:shared` |
 
 ## Out of this skill's scope (handed off)

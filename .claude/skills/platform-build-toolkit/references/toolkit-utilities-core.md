@@ -272,7 +272,7 @@ kotlin {
 
 - **Throwing raw `Throwable` from `validateResponse`.** Always an `AppError` subtype.
 - **Multiple `HttpClient` instances.** One base; extend via `.config { ... }`.
-- **Different engines per environment.** The platform engine is the only choice. Mocking the engine in tests is fine via Ktor's `MockEngine`, but not in production.
+- **Different engines per environment.** The platform engine is the only choice. Do not add alternative or fake engines to production.
 - **Treating `ApiErrorParser` as an object/singleton without DI.** It's a `@Single` class that depends on the shared `Json`; reach it via Koin.
 
 ## :toolkit:serialization

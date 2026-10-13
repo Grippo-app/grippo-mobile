@@ -1,7 +1,6 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    id("kotlin.multiplatform.test.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
     alias(libs.plugins.kotlin.serialization)
@@ -10,11 +9,6 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.ui.screen.features.profile"
-    }
-
-    sourceSets.commonTest.dependencies {
-        implementation(projects.analytics.profile)
-        implementation(libs.kotlinx.coroutines.test)
     }
 
     sourceSets.commonMain.dependencies {

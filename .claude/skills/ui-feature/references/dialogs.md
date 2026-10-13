@@ -331,7 +331,7 @@ override fun onPickTagClick() {
 
 ### Verify
 Update affected callback/operation coverage and declared presentation omissions;
-run allowed analytics checks and record no-build/test restrictions.
+run allowed analytics checks and record platform/build restrictions.
 ```bash
 ./gradlew :shared:assembleSharedDebugXCFramework
 ./gradlew :androidApp:assembleDebug

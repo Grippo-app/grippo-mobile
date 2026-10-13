@@ -9,15 +9,6 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.shared"
-        withHostTestBuilder {}
-    }
-
-    sourceSets.getByName("androidHostTest").dependencies {
-        implementation(kotlin("test-junit"))
-    }
-
-    sourceSets.commonTest.dependencies {
-        implementation(kotlin("test"))
     }
 
     sourceSets.commonMain.dependencies {

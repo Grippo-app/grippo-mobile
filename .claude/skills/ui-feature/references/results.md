@@ -124,7 +124,7 @@ Check caller-chosen key delivery for every result Action, no delivery to an
 unrelated key, and key serialization/restoration. For Library-like flows check
 add, replace, cancellation/system Back, retained caller state and navigation after
 selection. Exercise both queued and immediate coroutine handling when navigation
-order matters. Do not add tests that merely duplicate a constant definition.
+order matters. Review actual producers and consumers; a constant definition alone proves no behavior.
 
 ## Anti-patterns
 

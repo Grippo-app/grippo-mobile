@@ -8,13 +8,6 @@ plugins {
 kotlin {
     android {
         namespace = "com.grippo.ui.screen.features.exercises"
-        withHostTestBuilder {}
-    }
-
-    sourceSets.getByName("androidHostTest").dependencies {
-        implementation(kotlin("test-junit"))
-        implementation(libs.kotlinx.coroutines.test)
-        implementation(libs.kotlinx.serialization.json)
     }
 
     sourceSets.commonMain.dependencies {

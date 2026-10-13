@@ -1,10 +1,9 @@
 # Spec-fidelity gate — `figma-spec-validator` surface
 
-<!-- Source of truth pinned by orchestrator/contracts/agents/figma-spec-validator.md.
-     The final evidence bundle requires the `spec` report this gate writes. Machine baseline verified against
-     orchestrator/figma/scripts/extract-compose-model.mjs + compare-screen-spec.mjs; report
-     envelope verified against evidence-bundle.mjs REPORT_PREFIXES/DEFAULT_REQUIRED (final
-     requires `spec` + `spec-compare` in gate mode with fresh inputHashes). -->
+The installed role contract is `orchestrator/contracts/agents/figma-spec-validator.md`.
+In a configured runtime, use its actual static comparison/report tools when
+available; this mobile checkout installs reference guidance, not those executors.
+No automatic screenshot bundle is required by this project.
 
 The spec-fidelity gate compares the values the screen code **declares** (resolved
 through AppTokens) against the screen's cached Figma value spec
@@ -14,14 +13,13 @@ findings route to the owner builder; Minor findings are advisory
 (suggestion-only → `### Caveats`). The known residual is honest and documented:
 emergent layout the code never declares (a missing `fillMaxWidth()`, text
 wrapping, `weight` distribution) is OUT of this gate's scope — the
-screenshot-fidelity gate covers rendered reality.
+permitted manual visual review covers rendered reality.
 
 - Identity/tool budget: pinned by `orchestrator/contracts/agents/figma-spec-validator.md`
   (`Read, Bash, Grep, Glob`, model sonnet). No code edits, report-only.
 - The rendered-pixels half of the comparison is
-  [screenshot-fidelity-gate.md](screenshot-fidelity-gate.md); this file owns the
-  declared-values half and the `spec-<stem>.json` report the final evidence
-  bundle requires.
+  [visual-review.md](visual-review.md); this file owns the
+  declared-values half and records only static checks actually performed.
 
 ## Applicability (check first)
 
@@ -236,7 +234,7 @@ carries this text / token / dp." The machine gate (`compare-screen-spec.mjs` +
   `MISSING_COLOR_TOKEN` BLOCKER, `HARDCODED_COLOR_FOR_TOKEN` stays a BLOCKER for every class, and an
   unbindable hoist form (a `with(group){…}` block or an alias-of-alias) also stays a BLOCKER — the
   builder uses a direct `val` hoist. The canvas class is purely a **label**: the report records
-  `widgetClasses: { <screen>: "canvas" }` (surfaced by evidence-bundle as
+  `widgetClasses: { <screen>: "canvas" }` (reported as
   `verifiedAs: "canvas-component"`) for the audit trail; it changes no verdict.
 
 ### 4. Output
@@ -286,20 +284,19 @@ node orchestrator/figma/scripts/write-spec-report.mjs "$STEM" \
 - It also enforces verdict↔finding consistency up front: a FAIL screen with
   no routed finding, a routed finding on a PASS screen, an issue naming an
   undeclared screen, or a `minors` count unbacked by MINOR issue rows are
-  rejected with an actionable message — inconsistencies the bundle either
-  surfaced late as a fail-closed blocker or, worse, could NOT see at all (a
-  FAIL verdict row beside an empty `issues[]` shipped as a PASS that
-  certified nothing).
+  rejected with an actionable message. Do not accept a FAIL verdict row beside
+  an empty `issues[]` as a clean source/spec comparison.
 - It REFUSES to run when `spec-compare-<stem>.json` is missing: the agent
-  report certifies on top of the Step-0 machine baseline, never instead of it.
+  report records agent findings on top of the Step-0 source comparison, never
+  instead of it.
 - Component-internal escalations (routing guard below) are NOT `--issue` rows —
   they go to the orchestrator as escalation bullets.
 - Re-running the CLI after a fix-cycle `compare-screen-spec` re-run re-pins the
   fresh baseline hash automatically (hand-computed hashes went stale silently).
 
-The final evidence bundle hard-requires this report in `mode: "gate"` with
-non-empty `inputHashes` under the shared `pipelineRunId` — all guaranteed by
-the CLI.
+When this configured gate runs, retain its report in `mode: "gate"` with
+non-empty `inputHashes` under the shared `pipelineRunId`. It is source/spec
+evidence only; no automatic screenshot bundle or rendered PASS follows from it.
 
 **Routing guard:** a mismatch rooted *inside* a design-system component (the
 spec disagrees with the component's own internals, not with the screen's usage
@@ -317,16 +314,15 @@ one-caller rule stays intact; screens never mutate the design system.
 - Do not run the component census or mutate the mapping registry — component
   coverage is task-prep Step 5.5's and orchestrator Step 1b's concern.
 - Do not mine `done/` tasks for precedent on what this gate accepts — they are
-  immutable records certified by their stamped `gatePolicyVersion`. The committed gate scripts +
-  `screenshot-thresholds.json` are the only authorities.
+  historical records. Current source, design specs and the actual static comparison
+  implementation define this check; screenshot thresholds are not a source gate.
 - Do not route DS-component-internal divergence to a screen builder (escalate
   per the routing guard).
 
 ## Appendix: raw report envelope (debugging only)
 
 What `write-spec-report.mjs` emits — for READING a produced report or debugging
-a bundle rejection, not for authoring (hand-authoring still validates at the
-bundle, but every field below is a clerical trap the CLI exists to own):
+a report rejection, not for authoring (hand-authored reports are claims rather than executed evidence, but every field below is a clerical trap the CLI exists to own):
 
 ```json
 {

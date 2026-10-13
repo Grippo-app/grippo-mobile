@@ -6,15 +6,6 @@
 
 ```sh
 ./gradlew \
-  :toolkit:crash-reporting:core:testAndroidHostTest \
-  :toolkit:messaging:core:testAndroidHostTest \
-  :toolkit:crash-reporting:core:iosSimulatorArm64Test \
-  :toolkit:messaging:core:iosSimulatorArm64Test \
-  :toolkit:analytics:api:testAndroidHostTest \
-  :toolkit:analytics:core:testAndroidHostTest \
-  :toolkit:analytics:api:iosSimulatorArm64Test \
-  :toolkit:analytics:core:iosSimulatorArm64Test \
-  :shared:testAndroidHostTest \
   :androidApp:assembleDebug :androidApp:assembleRelease \
   :shared:assembleSharedDebugXCFramework \
   :androidApp:lintDebug :androidApp:lintRelease \
@@ -23,27 +14,17 @@
 
 BUILD SUCCESSFUL, 1m 59s. Лог: `/tmp/grippo-services-verification-final.log`. Crash worker использует production Dispatchers.IO с Native extension import; контекст/токен имеют fail-fast bounds.
 
-| Проверка | Android host | Native iOS Simulator |
-|---|---:|---:|
-| Crash reporting | 10 | 10 |
-| Messaging | 16 | 16 |
-| Analytics regression | 25 | 23 |
-| Shared / DI wiring | 25 | — |
-| Всего | 76 | 49 |
-
-XML: failures/errors/skipped = 0 для всех 125 tests. Native tests выполняются в iosSimulatorArm64 runtime. Parallel producers проверяют настоящие Dispatchers Default/IO и платформенные locks; SDK transports заменены fixtures, отправки нет.
-
 Android debug и release/R8 собраны. XCFramework включает iosArm64 и iosSimulatorArm64. Crashlytics mapping generation сохранён, remote upload исключён.
 
 Android lint debug/release: BUILD SUCCESSFUL, 0 Errors/Fatal, по 14 Warning. Все warnings находятся в общих Gradle/version catalog и launcher icons: AndroidGradlePluginVersion, GradleDependency, NewerVersionAvailable, ObsoleteSdkInt, MonochromeLauncherIcon. Изменений dependency versions/icons в этой задаче нет; новых замечаний к cores/adapters нет. Reports: `androidApp/build/reports/lint-results-{debug,release}.xml`.
 
-## Regression red / green
+## Исправленные границы
 
-- Duplicate successful callback оставлял Pending: первоначально 10 messaging tests, 1 failure.
-- Fetch stranding sync status и cancelled late SDK result: при снятии двух fixes 15 focused messaging tests, 2 failures.
-- Oversized CrashReportContext читался/копировался до лимита: regression failed на прежнем constructor, теперь IllegalArgumentException до чтения элементов.
-- SDK submission выполнялась в caller: recordingNeverInvokesSdkInCaller failed на прямой реализации. После IO worker — проходит на Android/native iOS.
-- SDK exceptions/active CancellationException не останавливают worker; close при cancelled caller joins worker, future submissions rejected.
+Successful callback корректно обновляет sync status, late отменённый SDK result
+не заменяет актуальный token. Oversized CrashReportContext отклоняется до чтения
+элементов. SDK submission выполняется на IO worker, вне caller и state lock.
+Обычные SDK exceptions не останавливают worker; close joins worker даже при
+отменённом caller, future submissions rejected.
 
 ## Swift / SDK contract
 

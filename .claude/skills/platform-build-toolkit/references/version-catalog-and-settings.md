@@ -125,7 +125,7 @@ These are pulled from `[libraries]`, not `[plugins]` — Gradle uses the Maven c
 1. Update the `[versions]` entry.
 2. Run a clean build (`./gradlew clean build`) — catches incompatible API changes early.
 3. Check breaking changes in the changelog.
-4. **Test on both platforms** — Android library bumps often work on Android but break Kotlin/Native targets.
+4. **Verify supported platforms when permitted** — Android library bumps often work on Android but break Kotlin/Native targets.
 5. If the lib is exported via XCFramework, run `./gradlew :shared:assembleSharedDebugXCFramework`.
 
 ### Avoid
@@ -193,9 +193,8 @@ pluginManagement {
 }
 
 plugins {
-    // Auto-provisions JDK toolchains via the Foojay Disco API (the JDK 21 the screenshot-gate host-test
-    // requests, and the app's JDK 19) — no machine-specific JDK paths, works on CI. Inert unless a
-    // toolchain is requested. See the implement-figma skill (screenshot-fidelity gate).
+    // Provisions the app's pinned JDK toolchain via the Foojay Disco API.
+    // No machine-specific paths; inert unless a missing toolchain is requested.
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"   // pin to latest at setup time
 }
 
@@ -312,7 +311,7 @@ plugins {
 }
 ```
 
-Registers the [Foojay Disco API](https://github.com/gradle/foojay-toolchains) as a **Java toolchain download repository** for the whole build. When a task requests a JVM toolchain that isn't installed locally — for example, the **JDK 21** used by the screenshot-fidelity host test (see [`convention-plugins.md`](convention-plugins.md) § "Optional convention plugin") or the app's pinned toolchain — Gradle auto-downloads it instead of failing. This keeps the build hands-off on a fresh checkout and on CI, with no machine-specific `org.gradle.java.installations.paths`. It is **inert** for any build that never requests a missing toolchain. Pin the resolver version during project setup.
+Registers the [Foojay Disco API](https://github.com/gradle/foojay-toolchains) as a **Java toolchain download repository** for the whole build. When a task requests a JVM toolchain that isn't installed locally — for example, the app's pinned toolchain — Gradle auto-downloads it instead of failing. This keeps the build hands-off on a fresh checkout and on CI, with no machine-specific `org.gradle.java.installations.paths`. It is **inert** for any build that never requests a missing toolchain. Pin the resolver version during project setup.
 
 ### `repositories` — restricted
 
@@ -400,80 +399,3 @@ If the module declares a Koin module, also add `<X>Module().module` to `:shared/
 - **Different `rootProject.name`** at different times. The name must be stable across the project lifetime.
 - **Including a module twice** — Gradle errors with "Project ':foo' is included multiple times".
 - **Spaces or special characters in module paths.** Use kebab-case only.
-
-## Root `build.gradle.kts` — verification aggregates & capability inventory
-
-The root build script is created at bootstrap (launch Step 2 item 6) and owns
-exactly one concern: stable, fail-closed verification entry points. It applies
-no plugins and configures no modules. Model output never guesses AGP/KGP task
-names — these aggregates and the per-module lane aliases registered by
-`kmp.test.convention` are the only supported commands.
-
-```kotlin
-// Root build.gradle.kts — verification aggregates only.
-// dependsOn(subprojects.map { p -> p.tasks.matching { ... } }) is the frozen
-// configuration-cache-safe aggregation idiom (two consecutive CC runs proven
-// on the pinned stack: entry stored, then reused).
-
-tasks.register("allHostTests") {
-    group = "verification"
-    description = "Runs every test-bearing module's Android host tests."
-    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "hostTests" } })
-}
-
-tasks.register("allIosSimulatorTests") {
-    group = "verification"
-    description = "Runs every eligible module's Kotlin/Native tests on the iOS simulator."
-    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "iosSimulatorTests" } })
-}
-
-tasks.register("allAndroidDeviceTests") {
-    group = "verification"
-    description = "Runs every device-enabled module's instrumented tests on connected devices."
-    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "androidDeviceTests" } })
-}
-
-tasks.register("allScreenshotTests") {
-    group = "verification"
-    description = "Verifies every screenshot module's Roborazzi captures."
-    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "verifyRoborazziAndroidHostTest" } })
-}
-
-tasks.register("allConfiguredTests") {
-    group = "verification"
-    description = "Runs every configured test lane (host, iOS simulator, device, screenshots)."
-    dependsOn("allHostTests", "allIosSimulatorTests", "allAndroidDeviceTests", "allScreenshotTests")
-}
-
-tasks.register("testCapabilityInventory") {
-    group = "verification"
-    description = "Aggregates per-module test capability fragments into build/test-capability/inventory.json."
-    dependsOn(subprojects.map { p -> p.tasks.matching { it.name == "testCapabilityEntry" } })
-    val fragments = files(subprojects.map { p -> p.layout.buildDirectory.file("test-capability/entry.json") })
-    inputs.files(fragments).skipWhenEmpty()
-    val out = layout.buildDirectory.file("test-capability/inventory.json")
-    outputs.file(out)
-    doLast {
-        val entries = fragments.files.filter { it.exists() }.map { it.readText() }.sorted()
-        out.get().asFile.writeText(entries.joinToString(",\n", "[", "]\n"))
-    }
-}
-```
-
-Rules (all fail-closed):
-
-- an aggregate depends on the **real** per-module task providers; a module that
-  should own a lane but lost its alias fails the build instead of printing
-  "nothing to do";
-- an optional lane with zero configured owners is legitimately empty here —
-  the typed `not-configured` verdict is decided by the capability inventory
-  plus the machine test policy, never by a CI `if:` condition or a grep;
-- the inventory JSON is the machine input for
-  `orchestrator/tasks/test-capability-inventory.schema.json` (domain
-  `test-capability-inventory`); the Node runtime validates schema and hash
-  only and never parses build scripts;
-- aggregates never create production artifacts and never touch the publication
-  graph;
-- raising these into per-task certification commands is owned by the
-  deterministic test executor — task prose never invokes `bash -c` shell built
-  from task content.

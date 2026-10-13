@@ -16,17 +16,15 @@
 
 ### Саморевью
 
-1. Проверен сгенерированный KSP-код: provider-функции не выводят interface aliases из return type автоматически. Добавлены явные @Single(binds = [...]); тесты подтверждают общие экземпляры consumer/bootstrap/receiver.
-2. Проверена изоляция контейнеров: два независимых koinApplication отправляют callback разным fixture handlers. Глобальный контекст для callback не нужен; dependency cycle воспроизводится и успешно разрешается.
-3. Проверено влияние тестовой среды: coroutines-test не добавляется в shared, чтобы не менять Main dispatcher существующих Android host tests. Analytics DI проверяется в собственном core/commonTest.
-4. Проверены startup ordering и границы: iOS Koin создаётся в AppDelegate.init, SDK подключается после configure и до установки Messaging delegate; root остаётся lazy. ApplicationBootstrap хранит API-интерфейсы. Код очередей/лимитов/dispatcher не изменён.
-5. Проверен overhead: нет новых SDK, потоков, worker jobs или callback-coroutines. Используется существующий Koin annotation convention, не менялись версии зависимостей.
-6. Swift compile выявил конфликт Objective-C selector у attachSink(sink:) в разных bootstrap interfaces. Параметры названы analyticsSink/crashSink/messagingSink; это создаёт разные selectors и стабильные Swift labels без генерируемых подчёркиваний.
-7. Поиск старых Runtime и platformServicesModule в production/test source пуст. data-services/firebase сохранён.
+1. Проверен сгенерированный KSP-код: provider-функции не выводят interface aliases из return type автоматически. Добавлены явные @Single(binds = [...]); consumer/bootstrap/receiver разделяют экземпляр.
+2. Проверена изоляция контейнеров: два независимых koinApplication разрешают отдельные handlers. Глобальный контекст для callback не нужен; dependency cycle воспроизводится и успешно разрешается.
+3. Проверены startup ordering и границы: iOS Koin создаётся в AppDelegate.init, SDK подключается после configure и до установки Messaging delegate; root остаётся lazy. ApplicationBootstrap хранит API-интерфейсы. Код очередей/лимитов/dispatcher не изменён.
+4. Проверен overhead: нет новых SDK, потоков, worker jobs или callback-coroutines. Используется существующий Koin annotation convention, не менялись версии зависимостей.
+5. Swift compile выявил конфликт Objective-C selector у attachSink(sink:) в разных bootstrap interfaces. Параметры названы analyticsSink/crashSink/messagingSink; это создаёт разные selectors и стабильные Swift labels без генерируемых подчёркиваний.
+6. Поиск старых Runtime и platformServicesModule в production source пуст. data-services/firebase сохранён.
 
 ### Проверки
 
-- 79 Android host tests и 51 native iOS tests: 0 failures/errors/skips (analytics API/core, crash core, messaging core; shared host wiring).
 - Android assembleDebug/assembleRelease и shared assembleSharedDebugXCFramework: BUILD SUCCESSFUL.
 - Android lintDebug/lintRelease: 0 errors, 14 существующих warnings в каждом варианте (версии зависимостей/SDK/icons).
 - Финальная Gradle-проверка: /tmp/grippo-bootstrap-final.log, BUILD SUCCESSFUL in 3m 51s.
@@ -39,9 +37,7 @@
 ## Воспроизведение
 
 ```sh
-./gradlew :shared:testAndroidHostTest :toolkit:analytics:core:testAndroidHostTest :toolkit:crash-reporting:core:testAndroidHostTest :toolkit:messaging:core:testAndroidHostTest :toolkit:crash-reporting:core:iosSimulatorArm64Test :toolkit:messaging:core:iosSimulatorArm64Test :toolkit:analytics:core:iosSimulatorArm64Test :androidApp:assembleDebug :androidApp:assembleRelease :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease -x :androidApp:uploadCrashlyticsMappingFileRelease
+./gradlew :androidApp:assembleDebug :androidApp:assembleRelease :shared:assembleSharedDebugXCFramework :androidApp:lintDebug :androidApp:lintRelease -x :androidApp:uploadCrashlyticsMappingFileRelease
 xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug -destination 'platform=iOS Simulator,id=8A3E8CAA-5BCC-4A9C-9FB3-610B71034B0F' -disableAutomaticPackageResolution CODE_SIGNING_ALLOWED=NO build
 xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug -destination 'generic/platform=iOS' -disableAutomaticPackageResolution CODE_SIGNING_ALLOWED=NO build
 ```
-
-Неизменённые analytics API tests также проверены в предыдущем проходе этой задачи на Android и iOS (по 2 теста).

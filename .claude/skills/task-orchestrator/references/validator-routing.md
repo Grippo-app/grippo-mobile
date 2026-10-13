@@ -27,7 +27,7 @@ Applies to `scope-leak-validator`,
 `mvi-contract-validator`, `build-validator`, `anti-pattern-scanner`,
 `acceptance-tracer`, `architecture-validator`, and the Step 5 / 5.5 reviewers.
 
-For `build-validator`, also prepend `BUILD_MODE=compile.` — it parses the token
+When compilation is permitted, for `build-validator` prepend `BUILD_MODE=compile.` — it parses the token
 from the prompt text (the parent does not export it as a shell env var):
 
 ```
@@ -37,8 +37,10 @@ Agent(subagent_type: "build-validator", prompt: "BUILD_MODE=compile. TASK_STEM=<
 **Always include the three always-on validators** regardless of what task-intake
 returned (they run in the same parallel group as the conditionals):
 
-- `build-validator` (mode=compile) — fast Kotlin compile + KSP on changed files,
-  no R8/dex/lint/packaging or `xcodebuild` (that is Step 4.5).
+- `build-validator` — source/configuration assessment on every task. Run fast
+  Kotlin compile + KSP in mode=compile only when compilation is permitted;
+  otherwise record it as unrun with the user's restriction. No
+  R8/dex/lint/packaging or `xcodebuild` here (that is Step 4.5 when permitted).
 - `scope-leak-validator` — enforces the `Inputs`/`Acceptance`/`Out of scope`
   boundary the user wrote.
 - `acceptance-tracer` — traces each `## Acceptance` bullet to its match in the
@@ -54,9 +56,9 @@ skill, `references/spec-fidelity-gate.md` — it MUST run the machine baseline
 `--screen-map` inputs) and author `orchestrator/.cache/figma/reports/spec-<stem>.json`
 **via `write-spec-report.mjs <stem> --screen … --issue …` (never a hand-assembled
 envelope — the CLI computes overall/counts/run-id/hashes and schema-validates
-before writing)**; the final evidence bundle hard-requires
-both that report and `spec-compare-<stem>.json`, so a skipped baseline deadlocks
-Step 6b. Its
+before writing)**. These reports record the configured source/spec comparison;
+retain both when the gate ran. They do not require an automated screenshot bundle
+or establish rendered fidelity. Its
 **Blocker/Major** findings route like any validator finding; its **Minor**
 findings are advisory (suggestion-only) — do NOT route them; copy each
 as one `### Caveats` bullet in Step 6a. A `COMPONENT_COLOR_DELEGATED` WARN is
@@ -125,8 +127,9 @@ the two suggestion-only validators (`figma-drift`, `backend-contract-drift`)
 never enter the routing pool regardless of severity, but a
 `figma-component-coverage` ERROR DOES route — to `design-system-component-builder`.
 
-If any validator returns 0 findings AND `build-validator` (mode=compile) is green
-AND no other validator has high-severity findings → proceed to **Step 4.5**.
+When applicable validator assessments have no blocking findings AND permitted
+compilation passes (or excluded compilation is explicitly recorded as unrun
+with the user's reason) → proceed to **Step 4.5**.
 Otherwise group findings by builder, send one consolidated follow-up per builder,
 let them fix, re-run validators (goto Step 4).
 
@@ -151,83 +154,22 @@ let them fix, re-run validators (goto Step 4).
   *within* one session; this outer cap catches the orthogonal failure where each
   circuit is clean-then-broken-downstream.
 
-## Step 4.4 — Deterministic test certification
-
-Runs exactly once per Step-4 entry, after the validator wave converged in
-`mode=compile` and BEFORE the assemble gate. This step is a deterministic
-security boundary, not a Claude validator: the orchestrator invokes the
-canonical Node CLIs and never lets task text, planner prose or builder output
-form a shell command.
-
-1. **Observed impact.** Recompute the actual content footprint through the
-   canonical byte-content snapshot (`orchestrator/tasks/content-snapshot.cjs`)
-   and materialize `test-impact.observed.json` with
-   `node orchestrator/tasks/resolve-test-impact.mjs` (planner proposal +
-   footprint facts). The observed artifact may only keep or widen the sealed
-   planned impact (`checkWidening`); a widening returns the task to the owner
-   builders BEFORE any certification run, and narrowing is impossible by
-   contract.
-2. **Certification runs.** For each required tier and lane, the deterministic
-   orchestrator writes the strict request artifact and invokes exactly
-   `node orchestrator/tasks/run-test-certification-request.mjs --request <relative-json>`.
-   That caller verifies the exact task-lock tuple/hash before driving the
-   receipt producers in `run-test-certification.mjs`; it executes ONLY
-   allowlisted Gradle task paths taken from the published capability
-   inventory / root aggregates — direct new/changed identities first, then
-   owner-module suites, then the affected consumer closure, then required
-   platform lanes; the full suite when the observed impact demands it. Direct
-   tier never accepts `FROM-CACHE`/`UP-TO-DATE`; `--continue` is diagnostic
-   only and never flips a failed leaf.
-   Typed N/A gates carry only policy gate ids; executable/tool/argv come from
-   the producer's closed mapping and never from the request.
-3. **Receipts → sealed summary.** Every command/gate yields immutable
-   started/terminal receipts under
-   `orchestrator/.cache/tasks/test-certification/<stem>/<run-id>/`;
-   `evaluateCommandReceipt` turns zero-discovered, `NO-SOURCE`-with-required-
-   tests, all-skipped, timeout and fail→pass-retry into typed violations.
-   `aggregate-test-certification.mjs` enumerates all receipts, proves their
-   started→terminal links and sealed report/output hashes, rechecks impact and
-   source snapshots, and derives every summary field itself; no API accepts a
-   caller-supplied verdict or summary. The
-   sealed `summary.json` (verdict `PASS|SKIPPED|BLOCKED|FAIL`) is the ONLY
-   authority the tracer, finalizer and Site consume — a builder report is a
-   claim, never evidence.
-4. **Checkpoint + journal.** Emit journal phase `tests`; the phase checkpoint
-   stores terminal receipt ids only after the summary is sealed (a `started`
-   receipt is never reusable). Infrastructure failures (missing emulator/
-   simulator, toolchain, disk) are `BLOCKED[tests-infrastructure]` — the task
-   stays in `todo/`, never a skip and never a PASS; test failures route back
-   into Step 4 through the same outer re-entry counter (cap **7**). The single
-   diagnostic retry happens inside this invocation and can never change a
-   verdict (flaky = BLOCKED).
-5. **Acceptance hand-off.** `acceptance-tracer` maps every `test:` anchor to
-   discovered identities + receipt hashes from the sealed summary: fresh PASS
-   → `verified`; test exists but does not prove the bullet → `partial`;
-   contradicting assertion → `conflicting`; failed/stale required lane keeps
-   blocking. Manual bullets never close from a test PASS.
-6. **Finalization binding.** The Outcome must carry exactly one `` `tests` ``
-   build-gate row. Before publishing its marker or immutable Outcome snapshot,
-   `finalize-task.mjs` discovers `summary.json` from the exact active
-   orchestrator lock run, reconstructs every context/started/terminal receipt,
-   recalculates `test-task-input` from the pre-Outcome bytes, and reverifies
-   the current source snapshot. The marker freezes task/source/policy/summary,
-   run/session, and raw lock hashes as one all-or-none binding; every recovery
-   verify repeats it. `` `tests` — skipped `` is accepted only with the exact
-   typed ``test-not-applicable: <policy-enum>`` reason. A missing row, standalone
-   self-hashed summary, missing receipt, stale task/source, foreign run/session,
-   or FAIL/BLOCKED verdict leaves the task in `todo/`.
-
 ## Step 4.5 — Full assemble gate
 
-Step 4 converged in `mode=compile`; compile-only does not exercise R8 shrinking,
+Step 4 converged. Permitted compile-only checks do not exercise R8 shrinking,
 dex packaging, lint, resource processing, the iOS XCFramework link, or
-`xcodebuild :iosApp`. Run `build-validator` once more in `mode=assemble`:
+`xcodebuild :iosApp`. If builds are within the user's authorized verification
+scope, run `build-validator` once more in `mode=assemble`:
 
 ```
 Agent(subagent_type: "build-validator", prompt: "BUILD_MODE=assemble. TASK_STEM=<stem>. Run Step 1 (full XCFramework + assembleDebug), Step 2 (ancillary module assembles), Step 2.5 (deprecation extraction), Step 3 (xcodebuild :iosApp when iosEnabled=true), per your spec.")
 ```
 
 (No footprint argument is needed: Step 2.5 diffs against `HEAD`, this run's sealed base commit, and the assemble gate reads final state.)
+
+When the user excludes builds, record the affected build checks as unrun with
+that reason and continue permitted review. Do not label them PASS or invoke a
+build to satisfy this playbook.
 
 If PASS → proceed to Step 4.6. If FAIL → the failure is in territory
 the compile gate does not cover (R8 keep-rule conflict, missing resource,
@@ -265,7 +207,8 @@ fires once at convergence.
 Read `verifyEnabled` (default `auto` when absent) and detect `Skill`-tool
 availability by inspecting your own tool budget at runtime. **Auto by default**:
 it runs when the top-level session that adopted this playbook has the `Skill`
-tool enabled; otherwise it is recorded as deferred. Only `verifyEnabled:false`
+tool enabled and the requested runtime checks are authorized; otherwise it is
+recorded as deferred or skipped with the actual reason. `verifyEnabled:false`
 disables it. Editing any frontmatter does nothing — the parent adopts the role,
 its own tool budget is what counts.
 
@@ -290,8 +233,8 @@ plan's `## Acceptance mapping` → `### Automated` `Owner builder` column (a fai
 manual behaviour maps through the `### Automated` structural bullet that delivers
 the screen/route it exercises; if none corresponds — e.g. crash at startup —
 route to **all** builders that ran). Goto Step 4. On **PASS**, proceed to Step 4.6b
-when it applies; proceed to Step 5 only after screenshot fidelity has passed or
-self-skipped as non-UI.
+when it applies, then Step 5 after recording observed visual findings or unverified
+states. A source/spec match cannot supply a visual PASS.
 
 **Turn discipline** — `Skill` executes inside your own session; the skill's
 output instructions bind the **report it emits**, not your turn. Capture the
@@ -302,131 +245,18 @@ lowercase `pass/fail/n/a` into the appendix `Result:` bullet and uppercase
 
 **Cap: at most 3 verify invocations per task.**
 
-## Step 4.6b — Screenshot fidelity (Roborazzi + Figma oracle, conditional)
+## Step 4.6b — Visual review (conditional)
 
-After Step 4.6 (or after Step 4.5 when 4.6 was skipped). No Skill-tool
-dependency — runs Roborazzi locally via Gradle and calls
-`compare-screenshots.mjs`.
+For a changed Figma-backed surface, follow the validation-gates
+[screenshot fidelity reference](../../validation-gates/references/visual-review.md).
+Use its actual preview or an authorized app screenshot and compare the relevant
+states with the design oracle. Check content, theme, dimensions, spacing and
+interaction affordances. Do not add screenshot automation or dependencies.
+Record captures and actual observations; unavailable runtime visual checks stay
+explicitly unverified. A source/spec match alone does not prove rendered fidelity.
 
-**Step 4.6b·0 — capture-config gate (BEFORE the Roborazzi render).** The
-`@Config(qualifiers = "w<W>dp-h<H>dp")` is DERIVED from the oracle `frameSizeDp`
-(fidelity-gate §3), so it is verified mechanically, not left to the builder's memory —
-this is what keeps an already-written test from silently rendering at the ~320×470 host
-default (the stale-vendored-copy failure). Run
-`node orchestrator/figma/scripts/check-capture-config.mjs <stem> --gate` first. It reports
-`CAPTURE_CONFIG_MISSING` / `CAPTURE_CONFIG_DRIFT` before an expensive Roborazzi render — the
-locale segment included (the design language is derived from `designLocale` config or spec
-texts × string resources; a wrong/absent locale segment is the same DRIFT/MISSING class); route
-those findings to the owner builder to update `ScreenshotTest.kt` / `@Config`. The orchestrator
-does not run `--fix` here: validators are read-only in the run loop, and capture test edits must
-stay inside builder ownership. `CAPTURE_LOCALE_UNDERIVABLE` (votable design text, no decisive
-locale, no declaration) is NOT a builder code fix — surface it to the user: the remedy is an
-owner config line (`designLocale:` in project-config) or richer design text layers. If it
-reports `CAPTURE_TEST_ABSENT` (a `## Design` bullet no
-`@Test` captures), that is also the builder's gap — route it back (the screenshot gate will block
-it as `MISSING_CAPTURE` anyway). Only after this gate is green do you record the Roborazzi captures.
- **Mandatory** whenever `figmaEnabled: true` and the task
-carries a non-`none` `## Design` bullet — a pulled oracle (any theme) + its Roborazzi
-capture are REQUIRED inputs, **not** run-conditions. **No separate enable flag.** It
-self-skips ONLY for a non-UI task (no `figmaEnabled` / no non-`none` `## Design`
-bullet — but a `figmaEnabled` task that cites a Figma node URL or embeds a
-`designComponentId:`+`figmaNodeId:`/`frozenStructuralHash:` component snapshot yet omits
-`## Design` is NOT non-UI: the `ship-done`/`verify-done` UI-by-evidence backstop
-hard-blocks those before `done/`. A screen/dialog FILE edit with no node cited only
-draws an advisory NOTE there — that filename-only class is an accepted residual, not a
-netted case). When a `## Design` screen IS declared but its oracle
-or capture is missing, that is a **BLOCKER** (`MISSING_ORACLE` / `MISSING_CAPTURE`), never a silent skip —
-the comparison must run. Invoke `compare-screenshots.mjs` with **`--gate`**.
-
-```
-Agent(subagent_type: "figma-screenshot-validator",
-      prompt: "Task: <task content>. Stem: <stem>. Implementation plan: <plan path>. Affected modules: <module list from Step 4.5>. Census/screen map: <census report path or none>. FIGMA_PIPELINE_RUN_ID=<same id from Step 1b>. Run the screenshot-fidelity gate in --gate mode (see the validation-gates skill, references/screenshot-fidelity-gate.md). Preferred: one driver command — `node orchestrator/figma/scripts/run-figma-gates.mjs <stem> --stage screenshot --modules <:module,:module>` (it runs check-capture-config --gate with the --fix self-heal, exports SCREENSHOT_CAPTURE_STARTED_AT itself, records via recordRoborazziAndroidHostTest, derives ROBORAZZI_OUTPUT_DIRS, emits the nodeId capture manifest, then compare-screenshots --gate). Debug path (identical semantics): `check-capture-config.mjs <stem> --gate`, then Roborazzi for the affected modules, then `compare-screenshots.mjs <stem> --gate`.")
-```
-
-| Result | Action |
-|---|---|
-| PASS | Proceed to Step 5. |
-| Minor | Proceed to Step 5; copy findings to `### Caveats`. |
-| Major | Follow `screenshotPixelGate`: under the default `strict`, a Major blocks and routes to the owner builder; under `advisory`, proceed to Step 5 and copy findings to `### Caveats`; under `off`, pixel-similarity findings are suppressed but completeness/anti-forgery blockers still apply. |
-| Blocker (incl. `MISSING_ORACLE` / `MISSING_CAPTURE`) | Route to owner builder (same `(file, screen)` dedup as Step 4). Goto Step 4. The comparison MUST run before done. |
-| SKIPPED — non-UI (no `figmaEnabled` / no `## Design` screen) | Proceed to Step 5 (nothing to compare). Record in `### Spec fidelity`. |
-| SKIPPED — a `## Design` screen is declared but its capture/oracle is missing | **Treat as Blocker**, not a pass — a declared screen cannot ship uncompared. Route as above, goto Step 4. |
-| BLOCKED (Roborazzi not wired) | Surface: *"add `id("screenshot.test.convention")` + ScreenshotTest.kt"* — but the builder scaffolds this by construction (implement-figma Step 5), so it should not occur. Goto Step 4. |
-
-**Routing a Major/Blocker back to the builder:** pass the report's **`fixBrief`**
-(also printed under `Fix first:` in the gate output) verbatim as the HEAD of the fix
-prompt — it is the ranked "start here" digest (capture wiring → deciding zone →
-whole-frame band → colour axis), so the builder fixes the verdict-deciding element
-first instead of re-deriving it from the full report.
-
-Record the verdict in the chat summary's `### Spec fidelity` block (one bullet
-per screen). **Do NOT add a new `### Screenshot fidelity` heading to the outcome
-appendix** — the parser expects exactly the six `###` headings (+ optional
-`### Execution log`). Pixel-similarity routing follows `screenshotPixelGate`:
-the default `strict` blocks Major, `advisory` records Major in `### Caveats`, and
-`off` suppresses pixel-similarity findings while completeness/anti-forgery
-blockers still route back through the fix path.
-
-**Cap: at most 3 invocations per task.**
-
-Before Step 5, when Step 1b ran, run `node
-orchestrator/figma/scripts/run-figma-gates.mjs <stem> --stage final` (preferred —
-it first re-runs `component-census` under the pinned run id when a CONSULTED
-mapping/inventory projection changed, then the final bundle; the raw
-equivalent is `node orchestrator/figma/scripts/evidence-bundle.mjs <stem>
---stage final --fresh`) and
-**require exit 0** — final mode fails closed when any of screen-cache, check-spec,
-capture-config, census, spec, spec-compare, or screenshot is missing/`SKIPPED`/stale (all BLOCKER at
-`final`). A non-zero exit ⇒ the screenshot comparison did not run/pass ⇒ goto Step 4,
-do not advance. The refreshed `evidence-<stem>.json` supersedes the pre-build bundle
-and is the SAME bundle the Step-6b `ship-done.mjs` interlock re-runs before the
-todo→done move (see the outcome-appendix reference) — they are one fail-closed
-contract, not two. `ship-done` also writes the code-emitted `- Figma meta:` digest and
-the headless `verify-done.mjs` auditor catches any task that reached `done/` without it.
-
-When the final bundle blocks, route by the blocker kind. The first, second and fourth
-rows are BUNDLE-emitted kinds — read `issues[].issueKind` in `evidence-<stem>.json`;
-the `CAPTURE_*` row's witness lives in the SCREENSHOT report — when the bundle is
-BLOCKER with no matching bundle issue, read `issues[].issueKind` /
-`results[].status` in `screenshot-<stem>.json`:
-
-| Final-bundle blocker | Action |
-|---|---|
-| `THRESHOLDS_WEAKENED` / `THRESHOLDS_UNRECORDED` / `METRIC_MISMATCH` | A screenshot report does not prove the required judge configuration — unset threshold overrides and re-run the compare + bundle. |
-| `LOCALE_ENV_OVERRIDE` | The compare ran under the fixture-only `FIGMA_DESIGN_LOCALE` / `FIGMA_SUPPORTED_LOCALES` / `FIGMA_STRING_RESOURCE_ROOTS` env override(s), which can redirect or disarm the capture-locale witness — unset them and re-run the compare + bundle (same class as `THRESHOLDS_WEAKENED`; they may not certify a task). |
-| `DESIGN_CHANGED_SINCE_CHECK` | The task's `## Design` changed after the screen-cache gate — re-run the `figma:screens` pull, then re-run the gates under the same run id. |
-| `CAPTURE_IS_ORACLE_COPY` / `CAPTURE_PATH_UNCONTAINED` | The capture is not a real app render (copied oracle / uncontained path) — fix the ScreenshotTest/manifest; never point outputs at the cache. |
-| `CAPTURE_LOCALE_MISMATCH` | The capture rendered a different LANGUAGE than the design (the manifest `localeTag` vs the derived/declared design locale) — run `check-capture-config --fix` (locale-aware, patches the `@Config` locale segment) and re-record, then re-run the compare + bundle. NOT a builder code fix beyond the `@Config` repair, NEVER a threshold change, and never a re-pull of a "convenient" oracle. |
-| `CAPTURE_LOCALE_UNDERIVABLE` | The design language could not be derived (votable spec text, no decisive locale match) and `designLocale` is not declared — an OWNER config action, not a builder fix: add `designLocale: <locale>` to `orchestrator/project-config.md` (one of `supportedLocales`) or enrich the design's text layers, then re-run `check-capture-config --gate`. |
-| `ASPECT_MISMATCH` whose message names `IOS_CHROME_SUSPECTED` | The un-normalized oracle likely embeds iOS device chrome (the "9:41" status bar / home indicator, a 40–90dp one-sided offset) — re-pull the screens (the `figma:screens` session runs `normalize-oracle` mandatorily, stripping the chrome at the pull boundary), or rename the Figma layer if the strict predicate missed it. NEVER a builder code fix, never a capture crop, never a threshold change. `CHROME_CROP_*` / `SPEC_PNG_ASPECT_MISMATCH` blockers at the screen-cache gate carry the same remedy: re-pull. |
-| `DESIGN_SOURCE_HASH_MISSING` | Re-run `check-screen-cache`. |
-| `REPORT_STALE_RUN` | One report was written under a different run id (the blocker message names both ids and the pin file) — re-run ONLY that report under the pinned id, then the final bundle. NOT a re-pull. `run-figma-gates.mjs` prevents this by construction. |
-| `REPORT_INPUT_HASH_MISMATCH` | A report's input changed after it was written. On `census` this is the mapping-registry ordering (a CONSULTED mapping/inventory projection changed): re-run `component-census.mjs <stem>` under the pinned id, then the final bundle — `run-figma-gates.mjs --stage final` does exactly this automatically. On other reports: re-run that one gate, then the bundle. |
-| `PIXEL_REVIEW_REQUIRED` / overall `REVIEW_REQUIRED` | A canvas/glass-classed component row awaits the OWNER's pixel verdict because the metric is blind on that class. NOT a builder fix and NOT an agent decision: leave the task in todo and surface it; the owner reviews in the site's evidence tab (three verdict buttons) and the receipt re-runs the bundle. NEVER write `orchestrator/tasks/evidence/pixel-review/` receipts yourself — an agent-authored receipt is a forged review. |
-| `PIXEL_REVIEW_FAILED` | The owner REJECTED a reviewed row — the issue message carries their note. Route it to the owner builder like any visual finding, fix, and re-run the pipeline (the new render voids the old receipt by hash). |
-| `CLASS_ROUTING_STALE` | A row was routed to review under a renderClass the LIVE mapping registry no longer carries (the owner tightened it back to strict). Re-run `compare-screenshots` under the pinned run id, then the final bundle. |
-
-**False-positive doctrine.** A machine false positive is fixed at the
-DETECTOR (the way the locale and device-chrome traces were — derive the invariant
-or normalize it away), or routed to the owner's review receipt when the metric is
-provably blind (renderClass routing) — it is **never adjudicated around**: no agent
-edits a gate script mid-task, hand-authors a report, or waives a finding. There is
-no waiver mechanism; if standing exceptions ever become necessary, that is an
-owner-authorized design change, not a run-loop improvisation.
-
-**Policy authority.** `done/` tasks are immutable receipts, never gate
-precedent. Do not mine `done/` files to decide whether a finding
-is blockable or a shape is acceptable: the committed gate scripts, the committed
-`screenshot-thresholds.json` (its `version` is the gate-policy version, stamped
-into every report as `gatePolicyVersion`) are the only authorities.
-
-If a prior partial/manual run left a **half-state** (a prebuild bundle beside a
-fresh screenshot report, mixed-run reports, or a stale bundle — the site shows it as
-`SUPERSEDED`/`MIXED_RUNS`/`STALE`/`NOT_RUN`, never authoritative), run `node
-orchestrator/figma/scripts/evidence-clean.mjs <stem> --bundle-only` to delete only the
-stale bundle + digest while preserving the seven gate reports, then re-run the final bundle
-from those reports. Use plain `evidence-clean <stem>` only when intentionally discarding
-all gate reports. Never reuse a prebuild bundle as final.
+**Cap: at most 3 invocations per task.** This bounds review/fix cycles; it does
+not require capture tooling or turn an unavailable rendered state into a defect.
 
 ## Step 5 — External review (Codex or internal-reviewer)
 
@@ -500,7 +330,7 @@ Skill(skill: "codex:review", args: "--wait --scope working-tree")
 
 # reviewer=internal-reviewer
 Agent(subagent_type: "internal-reviewer",
-      prompt: "TASK_STEM=<stem>. Internal gates passed. Task: <task content>. Implementation plan (pass it WHOLE — its `## Behavioral edge-cases` section is the reviewer's per-task logic worklist and its `## Test contract` section is the test-quality worklist; do not trim): <plan verbatim>. Builders that ran: <list>. Review the current diff using only your own read/analysis tools and return classified findings — do NOT spawn builders or any sub-agent. Test-quality gate (each is a finding, not advice): expected values derived from acceptance/contract rather than copied from the implementation; the test would fail on the old bug; the subject is exercised through its public/observable contract and is never mocked itself; a relevant negative/boundary case exists; no existing assertion was weakened and no test deleted while its contract survives; async behavior is scheduler-driven (no sleeps/retry-until-pass); tests are hermetic and independent; the platform lane matches the behavior; any screenshot baseline change is deliberate; anti-patterns (assertTrue(true), production-formula echoes, shared mutable fixtures, real network/DB, over-mocked mappers, one giant end-to-end) are findings.")
+      prompt: "TASK_STEM=<stem>. Internal gates passed. Task: <task content>. Implementation plan (pass it WHOLE — its `## Behavioral edge-cases` section is the reviewer's per-task logic worklist; do not trim): <plan verbatim>. Builders that ran: <list>. Review the current diff using only your own read/analysis tools and return classified findings — do NOT spawn builders or any sub-agent. Review requirements, business behavior, state ownership/restoration, lifecycle/cancellation, DI, privacy and unnecessary complexity. Distinguish source evidence from observed runtime behavior; do not add test infrastructure.")
 ```
 
 When Step 3.5 found pre-existing work, append the footprint path list and

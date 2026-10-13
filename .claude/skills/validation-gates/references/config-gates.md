@@ -37,6 +37,10 @@ runtime substitution is forbidden.
 
 Controls the post-validator runtime-verify gate (orchestrator Step 4.6 — runs after validators are green, before external review). One of:
 
+These selectors do not expand the user's verification scope. When required app
+execution is excluded or unavailable, record the check as unrun with its reason.
+Do not install a harness, add dependencies or infer runtime PASS from source.
+
 - `auto` (default) — orchestrator invokes the Anthropic `verify` skill if the `Skill` tool is available in its runtime; if not, emits a manual-verify hint in the summary and records the gate as `deferred`. No hard fail.
 - `true` — force runtime verify; orchestrator hard-fails when the `Skill` tool is unavailable (use this when you want CI-like discipline).
 - `false` — skip the runtime-verify gate entirely. Useful for headless / CI environments where the app cannot be launched.

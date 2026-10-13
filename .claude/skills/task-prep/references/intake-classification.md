@@ -134,20 +134,21 @@ Every task runs every applicable validator.
 | `data-layer-validator` | Any task touching `:data-services:**`, `:data-features:**`, or `:data-mappers:**`. |
 | `build-validator` | Always (the final gate). |
 | `scope-leak-validator` | Always — enforces the `Inputs`/`Acceptance`/`Out of scope` boundary on every task. |
-| `acceptance-tracer` | Always — traces each `## Acceptance` → `### Automated` bullet to the diff (or, for a `test:` anchor bullet, to a certified test identity) and classifies it as `verified` / `partial` / `missing` / `conflicting` / `build-gated` / `resource-gated` / `spec-gated` / `screenshot-gated` / `test-gated`. A `test-gated` bullet turns `verified` only through a fresh PASS receipt in the sealed certification summary. Bullets under `### Manual` are recorded as `manual` and feed the outcome appendix; a test PASS never closes a manual bullet. Consumes the implementation plan produced earlier in the run loop when available. |
+| `acceptance-tracer` | Always — maps structural acceptance to actual source/diff and records required runtime/human checks as manual. A source match does not establish runtime behavior. Consumes the current implementation plan. |
 | `figma-component-coverage` | **Only when `figmaEnabled: true`** AND the task touches `:design-system:components` or the component mapping registry. Self-skips otherwise. |
 | `figma-drift` | **Only when `figmaEnabled: true`** AND the task touches design-system components or tokens. Suggestion-only; self-skips otherwise. |
 | `figma-spec-validator` | **Only when `figmaEnabled: true`** AND the task carries at least one non-`none` `## Design` bullet (screens cache pulled via the executable `figma:screens:<stem>` action — orchestrator Step 1b gates it). Compares the screen code's declared values against the cached value spec; Blocker/Major route, Minor is advisory. Self-skips otherwise. |
-| `figma-screenshot-validator` | **Mandatory when `figmaEnabled: true`** AND the task has at least one non-`none` `## Design` bullet — Step 4.6b, post-assemble (no separate enable flag). Compares rendered screenshots against the pulled Figma oracle(s) per theme. The oracle + Roborazzi capture are REQUIRED inputs: a declared screen whose oracle/capture is missing is a BLOCKER, never a silent skip. Self-skips only for a non-UI task. |
+| `figma-screenshot-validator` | When a Figma-backed surface changes, inspect permitted rendered previews/app screenshots against the design. Report actual observations and unavailable states; do not install capture automation. |
 | `backend-contract-drift` | **Only when `contract:paths` reports a valid snapshot and `backendContractEnabled` is not `false`** AND the task touches `:data-services:backend` DTOs / `<Product>Api` or `:data-mappers:*`. Suggestion-only; self-skips otherwise. |
 
 In practice almost every non-trivial task runs every validator. Only `resource-builder`-only tasks
 (strings/drawables) may skip `di-validator` and `data-layer-validator`. The four `figma-*` validators
 run only on `figmaEnabled` projects (see the implement-figma skill; `figma-spec-validator`
-additionally needs the task's `## Design` bullets, and `figma-screenshot-validator` is mandatory for
-any non-`none` `## Design` bullet — the pulled oracle + Roborazzi capture are REQUIRED inputs
-(missing ⇒ BLOCKER, never a skip), not run-conditions; it runs post-assemble at Step
-4.6b). `backend-contract-drift` runs only when a
+additionally needs the task's `## Design` bullets). For each declared Figma-backed
+surface, Step 4.6b assesses permitted rendered previews/app screenshots against
+the design. Missing or unavailable rendering is recorded as unverified manual
+acceptance; it does not authorize capture automation or a build outside the user's
+scope. An observed defect still routes to its owner. `backend-contract-drift` runs only when a
 contract snapshot exists and `backendContractEnabled` is not `false` (see
 `../../backend-contract-client/references/drift.md`).
 
@@ -195,11 +196,11 @@ Every task runs these unless noted:
 - `figma-component-coverage` (only if `figmaEnabled: true` AND design-system/mapping-registry touched)
 - `figma-drift` (only if `figmaEnabled: true` AND design-system/tokens touched)
 - `figma-spec-validator` (only if `figmaEnabled: true` AND the task has non-`none` `## Design` bullets)
-- `figma-screenshot-validator` (mandatory when `figmaEnabled: true` AND the task has non-`none` `## Design` bullets — oracle+capture are required inputs, missing ⇒ BLOCKER; Step 4.6b, post-assemble)
+- `figma-screenshot-validator` (when `figmaEnabled: true` AND the task has non-`none` `## Design` bullets — permitted manual visual review at Step 4.6b; unavailable rendering remains unverified)
 - `backend-contract-drift` (only if a contract snapshot exists AND `backendContractEnabled` is not `false` AND backend DTOs / `<Product>Api` / mappers touched)
 
 ## Gate sequence
-- Step 4 validators → Step 4.5 assemble → Step 4.6 verify (`auto|true|false`) → Step 4.6b screenshot (when `figmaEnabled` + non-`none` `## Design`) → Step 5 review → Step 5.5 security.
+- Step 4 validators → Step 4.5 assemble (if permitted) → Step 4.6 verify (`auto|true|false`, within user scope) → Step 4.6b manual visual review (when `figmaEnabled` + non-`none` `## Design`) → Step 5 review → Step 5.5 security. Record unrun checks honestly.
 
 ## Planner reference
 - Derived from task-intake classification + builder-order + validation-run; blockers/escalations: <list, or "none">.

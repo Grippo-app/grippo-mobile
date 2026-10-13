@@ -170,7 +170,7 @@ An initial empty cache emission must not erase the draft before data arrives.
 This is business state ownership, separate from analytics. Add no generic
 BaseViewModel save/restore framework, provider, synchronization job or per-input
 route replacement. The supplier runs when StateKeeper saves, not on every edit.
-Dialog sessions and callbacks remain unsaved. Test save → serialization roundtrip
+Dialog sessions and callbacks remain unsaved. Review save → serialization roundtrip
 → destroy → fresh ComponentContext/InstanceKeeper → restore, including unfinished
 edits, Back and final operation inputs; retention alone is insufficient proof.
 This preserves drafts when the shell supplies saved state. Android recreation and
@@ -246,17 +246,14 @@ not retroactively included. Do not claim session revalidation or transactional
 consistency with the data layer from this bridge alone, and do not put credentials
 or session policy in its envelope to compensate.
 
-Verification must distinguish actual codec/fresh-Component and file-store tests
-from native shell execution. A JVM or host Swift test does not prove scene delivery,
-file protection, generated Swift exports or an iOS process restart. Record unrun
-platform checks when builds/runtime are outside the user's permitted scope.
-Essenty's JVM and iOS state formats differ. A host test may compile the exact
-cached nonJavaMain JSON codec to check iOS-format archives; label it as a host
-format check, not a Kotlin/Native or UIKit lifecycle test. If a host capability
-check is unavailable, report the skip explicitly; never infer unavailability from
-a failing assertion on the implementation being tested.
+Verification must distinguish source/codec inspection from actual native shell
+execution. Source review does not prove scene delivery, file protection, generated
+Swift exports or a process restart. Essenty's JVM and iOS state formats differ;
+inspect the actual platform codec rather than assuming the formats are equivalent.
+Use permitted manual save/restart/restoration scenarios and record unrun platform
+checks when builds/runtime are outside the user's scope.
 
-## What "Don't Keep Activities" tests
+## What "Don't Keep Activities" checks
 
 This Android option destroys Activities when they leave the foreground; it does
 not necessarily kill the process. Navigate deep → press Home → re-open to inspect

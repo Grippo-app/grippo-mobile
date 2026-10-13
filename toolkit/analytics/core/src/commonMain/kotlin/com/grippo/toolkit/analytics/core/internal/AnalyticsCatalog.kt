@@ -103,7 +103,7 @@ internal class AnalyticsCatalog(
         return AnalyticsPayload(definition.name, values)
     }
 
-    internal fun validateIdentity(identity: AnalyticsIdentity) {
+    private fun validateIdentity(identity: AnalyticsIdentity) {
         require(identity.properties.size <= AnalyticsSchemaRules.MAX_PROPERTIES)
         val names = HashSet<String>(identity.properties.size)
         identity.properties.forEach {

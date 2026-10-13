@@ -20,12 +20,10 @@ with the new project's domain — the layers and patterns stay.
 - **No backwards-compatibility shims.** The architecture targets a fresh project.
   New code follows the canonical module and package layout described by the
   skills.
-- **Mandatory automated proof per task.** Every new or changed observable
-  behavior ships with a behavioral test on its proven lane, every bugfix with a
-  regression test; wiring/resources/scaffold changes get structural gates. The
-  architecture supports this natively (interfaces between layers, fakeable
-  repositories, injected dispatchers/clock) and the single machine authority is
-  `orchestrator/tasks/test-policy.json` — no role re-declares the policy.
+- **Scoped verification.** Review actual source/diff against requirements and
+  architectural invariants; run permitted static/manual checks and builds.
+  Follow CLAUDE.md: do not add automated verification infrastructure without an
+  explicit user request, and report runtime behavior that was not observed.
 - **No build optimization tuning.** Convention plugins, `gradle.properties`, and
   Compose stability config are specified once and treated as fixed; tweaking them
   is a separate, deliberate task.
@@ -67,7 +65,7 @@ with the new project's domain — the layers and patterns stay.
 | Room conventions | ✅ | Specific schema (per product) |
 | Mappers | ✅ | Specific mappings (per product) |
 | Build infrastructure | ✅ | — |
-| Testing strategy | (mentioned: opt-in) | Test code (no defaults) |
+| Verification | Source/static/manual checks within authorized scope | Automated infrastructure without explicit request |
 | CI/CD | — | (per product) |
 | Release pipeline | — | (per product) |
 

@@ -29,7 +29,7 @@ shrink exercise thumbnails to make a title fit.
   longer labels when the change affects text layout. Use existing tokens for
   adaptation thresholds and dimensions.
 - Exercise empty, pending, partial and completed states where relevant. Check
-  long titles, missing images and zero values; use deterministic fixtures.
+  long titles, missing images and zero values; use representative preview state.
 - Check scrolled content too: the final item must remain reachable above the
   pinned action. Check title/action overlap, separate date slots, tag wrapping
   and button labels at enlarged fonts.
@@ -38,22 +38,20 @@ shrink exercise thumbnails to make a title fit.
 
 ## Reliable capture and cleanup
 
-Use the repository’s screenshot gates when the task requires them. Additional
-native captures can verify composition but do not replace a required Figma gate.
-Wait for the requested fixture and its layout to settle. Verify the image’s
+Use permitted rendered previews or authorized app screenshots and compare the
+actual content with the design when relevant. Wait for the intended state and
+layout to settle. Verify the image’s
 actual title/content and absence of system overlays; a ready log or successful
 capture command alone does not prove that the frame is current. Cold-launch
 and recapture stale transition frames. Avoid resource-heavy builds during
 emulator captures when they cause timing failures or system dialogs.
 
-For temporary harnesses, preserve the original entry point, keep hooks local,
-and remove them before the production build. Restore device locale, font scale,
+Do not add capture harnesses, production hooks or recording dependencies. Restore device locale, font scale,
 viewport and theme after checks; retain requested preview variants. Record the
-fixture/source mapping and distinguish component captures, whole-screen
+preview/source mapping and distinguish component captures, whole-screen
 captures, live-data checks and platforms actually inspected. Do not claim iOS
 visual coverage from compilation or complete runtime coverage from previews.
 
 Before delivery, check removed-component callers, imports, locale placeholders,
-callback-bearing stability annotations, and the final diff. Confirm the clean
-Android/iOS build for the project’s supported targets. Report specific evidence
+callback-bearing stability annotations, and the final diff. Run platform builds only when permitted by the user’s scope. Report specific evidence
 and remaining limits rather than asserting absolute certainty.

@@ -4,7 +4,7 @@ description: >-
   Build-system and platform-utility layer for the KMP template — the bottom of the
   dependency graph. Use when a task touches a toolkit module, a build, Gradle, a
   convention plugin, the version catalog, settings.gradle, a compose-lib widget, the
-  app shell, screenshot infra, or build/test commands. Covers tech-stack versions,
+  app shell or build commands. Covers tech-stack versions,
   :toolkit:* utilities (context, http-client, serialization, logger, date-utils,
   connectivity, notification-manager, permission-manager, link-opener, image-loader,
   theme, localization), :compose-libs:* reusable widgets, build-logic convention
@@ -27,7 +27,7 @@ and the two thin app shells — see `references/index.md`.
 - Add or extend a `:compose-libs:<name>` product-agnostic widget — route to **compose-lib-builder**.
 - Edit the thin `:androidApp`/`:iosApp` shells (permission, intent filter, deeplink filter, platform-service wiring, root-ctor) — route to **app-shell-builder**.
 - Author a module's `build.gradle.kts`, add a catalog entry/plugin, touch `settings.gradle.kts`, build-logic convention plugins, or the iOS framework/project.
-- Decide languages/versions, gradle.properties, or run build/test gates.
+- Decide languages/versions, gradle.properties, or run build gates.
 
 NOT this skill: domain logic, data services/repos/mappers, DI modules, UI screens/MVI, design-system token-styled components — those route to their own skills.
 
@@ -43,10 +43,10 @@ If a required reading file or config field is missing, stop and report `BLOCKED:
 
 1. **Toolkit-first ordering.** The dependency graph is built bottom-up: toolkit utilities and build-logic exist before the layers that consume them; the app shells are wired **last** and stay thin. A `:toolkit:*` module depends on (almost) nothing; the closed rule-5 exceptions (`http-client → error-provider`; `date-utils → design-system resources`) are not extendable.
 2. **Pick the layer.** Toolkit (platform-aware, product-agnostic util) vs `:compose-libs` (reusable widget, all style/data as parameters, no `AppTokens`) vs shell (platform wiring only). Wrong layer → refuse with the agent's BLOCKED string, don't force-fit.
-3. **Convention plugins.** Modules apply `android.library.convention` + `kotlin.multiplatform.convention` (+ `compose.multiplatform.convention`, `koin.annotation.convention`, serialization plugin, `screenshot.test.convention` only when actually used). `:androidApp` applies the Compose plugins directly (single-target). Never re-declare `compileSdk`, `repositories`, or toolchain in a module — that lives in the convention plugin.
+3. **Convention plugins.** Modules apply `android.library.convention` + `kotlin.multiplatform.convention` (+ `compose.multiplatform.convention`, `koin.annotation.convention`, serialization plugin). `:androidApp` applies the Compose plugins directly (single-target). Never re-declare `compileSdk`, `repositories`, or toolchain in a module — that lives in the convention plugin.
 4. **Catalog discipline.** All versions come from the version catalog — no inline version strings in module scripts, one version per artifact group, no stale entries, no in-flight key renames without updating every consumer. A brand-new third-party library/plugin is a **stop-and-ask** (must be authorized in the task text).
 5. **App-shell-last & shell-only.** Shells (1) init DI (`Koin.init`/`Koin().doInit`), (2) start the Decompose `RootComponent`, (3) wire platform services. No business logic, mappers, screens, or Koin modules. The `:iosApp` `project.pbxproj` is verbatim — shape-copy from the fences, never hand-author the UUID graph.
-6. **Build/test gates.** Verify green before reporting done (see Validators / gates). The iOS XCFramework gate is what catches a missing `actual`; skip every iOS gate when `iosEnabled: false`.
+6. **Build gates.** Verify green before reporting done (see Validators / gates). The iOS XCFramework gate is what catches a missing `actual`; skip every iOS gate when `iosEnabled: false`.
 
 ## Stop and ask
 

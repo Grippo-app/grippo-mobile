@@ -16,9 +16,7 @@
 4. Перестановка одинаковых user properties считалась сменой identity и теряла ожидающие события. Identity кодируется один раз при обновлении, сравнение maps не зависит от порядка.
 5. Отменённый caller мог прервать close до выключения sink. Shutdown выполняет join/disable в NonCancellable, не оставляя работающий worker.
 
-6. Первый grant устанавливал identity при выключенном SDK: SDK мог игнорировать user properties. Теперь grant включает SDK, затем устанавливает identity; собственные события отправляются только после обоих вызовов. Смена identity не вызывает временный Denied. Тестовый sink воспроизводит игнорирование properties при disabled collection.
-
-Первые пять случаев воспроизведены новыми тестами на исходной реализации: 19 core host tests, 5 failures. После исправлений эти тесты прошли. Шестой случай отдельно воспроизведён падающим regression test и исправлен.
+6. Первый grant устанавливал identity при выключенном SDK: SDK мог игнорировать user properties. Теперь grant включает SDK, затем устанавливает identity; собственные события отправляются только после обоих вызовов. Смена identity не вызывает временный Denied.
 
 Дополнительно: pending events при close и event, инвалидированный между dequeue и send, теперь получают явный терминальный diagnostic. Добавлена стресс-проверка учёта каждого из 2000 событий при параллельной смене identity. Общая проверка четырёх parallel producers запускается также нативно на iOS.
 
@@ -28,8 +26,8 @@
 - Regex и reserved sets создаются один раз. Reserved event names не ошибочно применяются к names параметров/user properties.
 - Identity payload и anonymous clear payload переиспользуются; repeated configuration не перекодирует identity.
 - Одна app-lifetime coroutine, conflated wake channel, очередь максимум 128 плюс одно извлечённое событие. Нет coroutine на каждое событие, polling/timer, дисковой очереди или неограниченного буфера.
-- Schema: максимум 500 событий, 25 properties, 15 собственных параметров + 10 полей контекста. Debug journal 64 записи; в release выключен. Recording sink не зарегистрирован в production.
-- API зависит от serialization-core для публичных сериализуемых типов; JSON parser перенесён в commonTest. Новых версий зависимостей нет.
+- Schema: максимум 500 событий, 25 properties, 15 собственных параметров + 10 полей контекста. Debug journal 64 записи; в release выключен.
+- API зависит от serialization-core для публичных сериализуемых типов; JSON parser удалён из production. Новых версий зависимостей нет.
 - Убраны неиспользуемый runtime service-locator для Analytics и строковый debug bridge. Bootstrap экспортирует только attachSink; фичи используют constructor injection typed Analytics.
 - В production-коде аналитики явные imports; нет Any в feature event API, default-to-zero/empty преобразований, nullable casts со скрытой подменой значений или automatic retries.
 
@@ -45,4 +43,4 @@ Manifest/plist задают disabled collection и denied consent defaults; boot
 
 ## Итоговые проверки
 
-Результаты финального запуска фиксируются в verification.md. Проверяется настоящий Android APK (debug + release/R8), native iOS tests и shared framework для device/simulator, затем Swift build приложения. В этой проверке приложение с Firebase не запускается и тестовые события не отправляются. Crashlytics mapping upload исключён из release build.
+Результаты финального запуска фиксируются в verification.md. Проверяется настоящий Android APK (debug + release/R8), shared framework для device/simulator, затем Swift build приложения. В этой проверке приложение с Firebase не запускается и synthetic события не отправляются. Crashlytics mapping upload исключён из release build.

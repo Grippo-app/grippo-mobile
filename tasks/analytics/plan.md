@@ -10,7 +10,7 @@
 
 Общий строго типизированный слой для Kotlin Multiplatform с одинаковым смыслом событий на Android/iOS. Firebase — первый транспорт. Ядро должно быть готово к интеграции фич без прямых вызовов SDK из UI или бизнес-операций.
 
-Первый этап включает контракт, обработку контекста, адаптеры, DI, диагностику, тестовые средства и удаление старой аналитики. Автоматическое отслеживание реальной навигации, идентификация из авторизации и продуктовые события подключаются следующими отдельными задачами. Наличие API ещё не означает покрытие приложения.
+Первый этап включает контракт, обработку контекста, адаптеры, DI, диагностику и удаление старой аналитики. Автоматическое отслеживание реальной навигации, идентификация из авторизации и продуктовые события подключаются следующими отдельными задачами. Наличие API ещё не означает покрытие приложения.
 
 ## Модули и зависимости
 
@@ -46,8 +46,8 @@
 
 - Инициализировать транспорт до первой отправки. Проверить текущий порядок Android Koin.init/FirebaseProvider.setup и раннее создание root на iOS.
 - Для состояния NotReady явно определить ограниченный буфер без дискового хранения и диагностируемое переполнение. При запрете/неизвестном согласии события не копятся для последующей отправки; отзыв разрешения и смена аккаунта очищают ожидающие события.
-- Обработка сериализована; track не блокирует UI. Очередь ограничена. Политика потерь/сбоев наблюдаема и тестируется. Исключение транспорта не ломает пользовательскую операцию; ошибки схем выявляются в тестах/debug, в release событие отклоняется с безопасной диагностикой.
-- Согласие/включение сбора применяется и к ядру, и к платформенному SDK, включая автоматически собираемые события. Начальное состояние задаётся до инициализации SDK; восстановление настройки явно тестируется.
+- Обработка сериализована; track не блокирует UI. Очередь ограничена. Политика потерь/сбоев наблюдаема. Исключение транспорта не ломает пользовательскую операцию; ошибки схем выявляются в debug, в release событие отклоняется с безопасной диагностикой.
+- Согласие/включение сбора применяется и к ядру, и к платформенному SDK, включая автоматически собираемые события. Начальное состояние задаётся до инициализации SDK; восстановление настройки проверяется явно.
 - API поддерживает псевдонимный UserId, его сброс и ограниченные типизированные свойства пользователя. Auth подключит их позднее; email/имя/токены не допустимы.
 - Разрешён только описанный схемой набор полей. Свободный текст, полный URL, тело запроса и сообщение exception в продуктовую аналитику не проходят. Телесные/чувствительные значения не включаются по умолчанию; решение принимается на этапе конкретной схемы.
 - Не обещать exactly-once доставки Firebase. Защита от повторного успеха бизнес-операции проектируется у владельца операции, а не глобальным подавлением одинаковых событий. Повторные реальные действия должны учитываться.
@@ -55,11 +55,10 @@
 
 ## Диагностика и проверка
 
-- Recording/Fake sink для тестов. Ограниченный локальный журнал debug с уже проверенными событиями и причинами отклонения, без персональных значений.
+- Ограниченный локальный журнал debug с уже проверенными событиями и причинами отклонения, без персональных значений.
 - Проверки схем: уникальность имён, обязательные поля, разрешённые параметры и значения, зарезервированные имена, лимиты Firebase с учётом общего контекста. Проверяются реальные сериализованные payload.
-- Контрактные fixtures одинаковых payload для Android и Swift. Проверить String/Long/Double, отсутствующие значения и экспорт Kotlin-интерфейса в Swift.
-- Тесты гонок контекста, последовательности очереди, переполнения, NotReady, запрета сбора, отзыва разрешения, смены аккаунта и исключений транспорта.
-- После ядра: сборка Android, Kotlin iOS device/simulator, Swift app; локальные typed fixtures проверяют новый путь на обеих платформах. Отправка в Firebase исключена пользователем из текущей приёмки.
+- Сверить кодирование payload для Android и Swift: String/Long/Double, отсутствующие значения и экспорт Kotlin-интерфейса в Swift.
+- После ядра: сборка Android, Kotlin iOS device/simulator, Swift app. Отправка в Firebase исключена пользователем из текущей приёмки.
 - Команды Gradle/Xcode записать из фактически существующих tasks/schemes при реализации. Не считать компиляцию доказательством появления события в Firebase.
 
 ## Последующая интеграция
@@ -69,9 +68,9 @@
 3. Тренировка целиком: запуск, выбор источника, черновик, восстановление, редактирование, завершение и сохранение. Связать FlowId/OperationId; причины отмены фиксировать только когда они известны.
 4. Упражнения/подходы, поиск и фильтры.
 5. Главная, история, статистика и рекомендации: показы по фактической видимости, действия, источники последующих сценариев.
-6. Профиль, настройки и уведомления: типизированные подтверждённые изменения и контекст внешнего запуска. Cold/warm start тестировать отдельно.
+6. Профиль, настройки и уведомления: типизированные подтверждённые изменения и контекст внешнего запуска. Cold/warm start проверять отдельно.
 
-Для каждой фичи: карта сценариев → схемы → места вызова → тесты → DebugView → описание нужных GA4 dimensions/metrics и отчётов. Порядок фич можно изменить; зависимости контекста сохраняются. BigQuery/GA4-настройки — отдельный этап конфигурации, не автоматическое следствие SDK-интеграции.
+Для каждой фичи: карта сценариев → схемы → места вызова → source review → DebugView → описание нужных GA4 dimensions/metrics и отчётов. Порядок фич можно изменить; зависимости контекста сохраняются. BigQuery/GA4-настройки — отдельный этап конфигурации, не автоматическое следствие SDK-интеграции.
 
 ## Готовность ядра
 
@@ -93,11 +92,11 @@
 Статус этого этапа: реализован и проверен; результат в `tasks/analytics/feature-standard-review.md`. Пользователь уточнил: сначала общий стандарт и обвязка, без подключения авторизации или других фич. Реализация: typed operation events + общая suspend-обвязка, фабрики flow/operation IDs, атомарный screen presentation API и lifecycle bridge в foundation. Product events и причины принадлежат фичам; универсального события с произвольными map нет. Навигационный владелец передаёт достоверный referrer/reason; обвязка не угадывает их.
 
 Последовательность:
-1. API операции и ID factories; тесты результатов, ошибок, отмены, длительности и параллельных попыток.
-2. Screen presentation API/core: один атомарный снимок контекста и screen_view, безопасное закрытие старой presentation. Тесты policy gates и overlapping presentations.
-3. Lifecycle bridge: только конечный экран, один view на RESUMED, закрытие на PAUSED/DESTROYED. Foreground resume считается новым показом; причина каждого показа передаётся явно. Тесты lifecycle на Android/iOS.
+1. API операции и ID factories с сохранением результатов, ошибок, отмены и длительности.
+2. Screen presentation API/core: один атомарный снимок контекста и screen_view, безопасное закрытие старой presentation. Policy gates и overlapping presentations сохранены.
+3. Lifecycle bridge: только конечный экран, один view на RESUMED, закрытие на PAUSED/DESTROYED. Foreground resume считается новым показом; причина каждого показа передаётся явно.
 4. Обязательный шаблон структуры и матрицы покрытия, будущая матрица авторизации. Annotated qualified @Single definitions, без новой DSL/нового Gradle-модуля.
-5. Self-review + Android Debug/Release, core/API/foundation host/native tests, iOS Debug XCFramework и Swift device/simulator compilation. Firebase runtime/send checks исключены пользователем.
+5. Self-review + Android Debug/Release, iOS Debug XCFramework и Swift device/simulator compilation. Firebase runtime/send checks исключены пользователем.
 
 Не меняются BaseViewModel, BaseComponent, OperationManager и ErrorProvider. Обвязка вызывается внутри существующего safeLaunch. Consent остаётся обязательным; отложенного сбора событий до согласия нет. Автоматический сбор всех фич не включается от одного наличия общей обвязки.
 
@@ -105,7 +104,7 @@
 
 Сохранить wire-контракт и поведение; разделить публичные типы по ответственности,
 переименовать декларации схем, централизовать поля контекста и ограничения транспорта.
-Проверить unit-тесты Android/iOS, приложения Android Debug/Release и Swift Debug
+Проверить приложения Android Debug/Release и Swift Debug
 для устройства и симулятора. Фичи и Firebase runtime в этот этап не входят.
 
 Завершено: [отчёт рефакторинга](api-refactor-review.md).
@@ -116,7 +115,7 @@
 2. Server authentication отдельно от profile/data/push preparation.
 3. Typed session check/provider cancellation и UI error preservation.
 4. Сохранённый navigation flow и leaf lifecycle views.
-5. Schema/privacy/failure/restore tests, self-review loop, Android/iOS app builds.
+5. Schema/privacy/failure/restore review, self-review loop, Android/iOS app builds.
 
 ## Упрощение подключения авторизации
 
@@ -124,15 +123,15 @@
 Контракты потребителя сгруппированы в AuthContracts; реализации — в analytics/internal.
 События объединены в четыре sealed семейства, схемы остаются централизованной матрицей.
 Сохраняем wire contract, consent, original UI errors, cancellation и domain preparation contract.
-Проверка: прежние schema/operation/navigation тесты + facade restoration/error boundary tests;
-Android Debug/Release и lint, iOS Simulator tests + Debug XCFramework и unsigned Swift builds.
+Проверка: source review schema/operation/navigation и facade restoration/error boundaries;
+Android Debug/Release и lint, Debug XCFramework и unsigned Swift builds.
 
 ## Глубокий аудит после фасада
 
 Completed: audit scope/findings/evidence — authorization-audit.md. Event stage ownership,
 facade mode contracts, schema identity, stateless helper cleanup, shared domain preparation,
 minimal dependencies и OAuth cancellation/fatal boundaries проверены и исправлены.
-37 authorization tests на каждой платформе; Android Debug/Release, Shared XCFramework,
+Android Debug/Release, Shared XCFramework,
 lint и unsigned Swift Debug simulator/device прошли. Runtime/Firebase sends не запускались.
 
 ## Упрощение границы подготовки авторизации
@@ -143,7 +142,7 @@ UseCase.prepare() остаётся обычной бизнес-операцие�
 Новая семья auth_setup_* отделяет общий результат от прежних auth_preparation_*.
 Матрица: authorization-coverage.md; актуальная проверка: authorization-preparation-review.md.
 
-Упрощение завершено: 42 auth tests Android + 42 iOS, Android Debug/Release,
+Упрощение завершено: Android Debug/Release,
 shared Debug XCFramework, unsigned Swift Debug simulator/device и lint прошли.
 
 ## Отдельный feature analytics layer
@@ -151,12 +150,11 @@ shared Debug XCFramework, unsigned Swift Debug simulator/device и lint прош
 Выделить :analytics:analytics-api и :analytics:authorization. UI main зависит только
 от API; shared регистрирует implementation + UI bindings. Ни business/use case,
 ни routes/lifecycle/StateKeeper/SDK types не переносить в implementation.
-Сохранить snapshots/flow identities и wire schemas. Разделить pure tests и UI
-integration tests, проверить Android/iOS и обновить standard/skill.
+Сохранить snapshots/flow identities и wire schemas, проверить Android/iOS
+и обновить standard/skill.
 Актуальный отчёт: analytics-layer-review.md.
 
-Слой перенесён и проверен: 24 implementation + 15 UI integration tests на каждой
-платформе, Android Debug/Release, XCFramework, unsigned Swift Debug simulator/device
+Слой перенесён и проверен: Android Debug/Release, XCFramework, unsigned Swift Debug simulator/device
 и lint без ошибок. Подробнее: analytics-layer-review.md.
 
 
@@ -166,4 +164,4 @@ AuthAnalytics становится stateless injectable entry point. Authorizati
 и все feature-owned contracts вложены в него; implementations internal и раздельны,
 без shared mode/casts. Сохраняем event wire contracts и persisted state shape.
 Обновить consumers, generated DI, standard/skill/coverage; выполнить self-review,
-Android tests/Debug/Release/lint и iOS tests/XCFramework/unsigned Swift builds.
+Android Debug/Release/lint и iOS XCFramework/unsigned Swift builds.

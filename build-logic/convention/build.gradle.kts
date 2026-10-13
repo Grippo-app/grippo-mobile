@@ -27,10 +27,6 @@ gradlePlugin {
             id = "kotlin.multiplatform.convention"
             implementationClass = "KotlinMultiplatformConventionPlugin"
         }
-        register("kotlin.multiplatform.test.convention") {
-            id = "kotlin.multiplatform.test.convention"
-            implementationClass = "KotlinMultiplatformTestConventionPlugin"
-        }
         register("koin.annotation.convention") {
             id = "koin.annotation.convention"
             implementationClass = "KoinAnnotationConventionPlugin"

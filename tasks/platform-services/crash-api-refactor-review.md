@@ -42,8 +42,6 @@ reflection-based registration, retries, динамических схем или
 
 Проверки завершены:
 
-- Crash core: 11 Android host tests и 11 iOS simulator tests; ошибок и пропусков нет.
-- Shared: 24 Android host tests; ошибок и пропусков нет.
 - Android assembleDebug/assembleRelease: успешно; mapping upload исключён.
 - shared assembleSharedDebugXCFramework: device arm64 и simulator arm64, успешно.
 - Xcode unsigned Debug: simulator/device, оба BUILD SUCCEEDED.
@@ -59,4 +57,3 @@ Swift: `/tmp/grippo-crash-refactor-swift-simulator.log`,
 SDK selectors recordException/record(exceptionModel:) сохранены.
 В BaseViewModel и AuthorizationRepositoryImpl обновлены существующие вызовы;
 новые feature hooks не добавлялись. Firebase runtime и запуск приложения не проверялись.
-

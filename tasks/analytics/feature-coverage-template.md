@@ -32,7 +32,7 @@ Initial — первый показ binding, Restore — последующая 
 
 | Callback / trigger | Typed FeatureEvent / wire name | Owner | Safe facts / omission | Check |
 |---|---|---|---|---|
-| <existing callback> | <closed direct description> | <Contract→VM> | <enum/status/Boolean/count> | <actual fixture> |
+| <existing callback> | <closed direct description> | <Contract→VM> | <enum/status/Boolean/count> | <source/manual check> |
 
 Text status compares existing old/new validation: same status omitted, без cache.
 Picker confirmations/clicks/selections always distinct. Нет raw values/length/body
@@ -45,7 +45,7 @@ open/result — owning VM; dedicated views/close — explicit omission либо 
 
 | Business block | Typed FeatureOperation / wire family | Owner | Results/errors | Check |
 |---|---|---|---|---|
-| <whole existing sequence> | <operation> | <existing coroutine> | <preserved caller T/error/cancellation> | <actual fixture> |
+| <whole existing sequence> | <operation> | <existing coroutine> | <preserved caller T/error/cancellation> | <source/manual check> |
 
 OperationId/duration/start-terminal создаёт toolkit. Analytics не решает navigation,
 validation/retry/fallback; programmatic navigation не fake user click.
@@ -63,5 +63,5 @@ Reference loads/provider/system internals/overlay details/other features — т�
 
 Actual commands/results: <paths>. Payload/business isolation/reporting failures/
 cancellation/leaf VM hooks/eligible callbacks/lifecycle: <run scopes>. YAML/links/examples: <results>.
-Explicit unrun: <Gradle/KSP/platform/UI/native/Firebase>. Test source/PSI/static
+Explicit unrun: <Gradle/KSP/platform/UI/native/Firebase>. PSI/static
 review не означает runtime success; исторические результаты не подтверждают diff.

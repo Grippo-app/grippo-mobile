@@ -89,7 +89,7 @@ skill below.
 | Change-kind taxonomy + prerequisites + **builder order** + validator gate + intake plan | `references/intake-classification.md` |
 | Full prep flow (Modes A/B, pre-flight, lock, journal, gap analysis, questions, Mode B convergence, canonical INDEX publication, output blocks) | `references/prep-flow.md` |
 | Promoted todo shape — acceptance Automated/Manual split, automation anchors, defensive bullets | `references/acceptance-anchors.md` |
-| Figma census design-system-first split + `## Preview states` + screenshot-gate bullets | `references/figma-split.md` |
+| Figma census design-system-first split + `## Preview states` + manual visual acceptance | `references/figma-split.md` |
 | Every BLOCKED / ESCALATE condition — deps, collision, migration/contract/refactor, convergence stall | `references/blockers-and-dependencies.md` |
 | Builder ordering / prerequisite-prepend rules (frozen contract) | `orchestrator/contracts/builder-order.md` |
 | Frozen per-agent surface (name, tools, inputs, outputs, stops) | `orchestrator/contracts/agents/task-intake.md`, `orchestrator/contracts/agents/task-prep.md` |

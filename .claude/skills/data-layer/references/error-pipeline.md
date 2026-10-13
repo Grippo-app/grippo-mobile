@@ -232,9 +232,9 @@ permit swallowing caller cancellation or changing other required steps.
 Keep complete operations business-owned. Alternate entry paths reaching the same
 ready state must perform the required data hydration, including the existing-account
 registration path and ordinary login. Verify required dependencies, false/failure
-short-circuiting and successful completion using focused complete-UseCase tests
+short-circuiting and successful completion through actual complete-UseCase source review and permitted manual checks
 within the permitted scope; check matching UI outcomes when relevant. Do not add
-analytics dependencies, split preparation for timing or introduce test frameworks.
+analytics dependencies, split preparation for timing or introduce verification infrastructure.
 
 Two patterns coexist in this codebase:
 

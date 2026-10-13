@@ -4,7 +4,7 @@ Self-contained reference for the promoted `todo/<stem>.md` shape (Step 5 promoti
 required sections, the `### Automated` / `### Manual` acceptance split, the per-bullet automation
 anchor, the build gate, the conditional `## Design` / spec-gate bullets, and the five defensive
 Out-of-scope bullets. The Figma census split (Step 5.5) and
-the `## Preview states` + screenshot-gate bullets (Step 5.5a) live in
+the `## Preview states` + manual visual acceptance (Step 5.5a) live in
 [`figma-split.md`](figma-split.md). The prep flow that calls into this is
 [`prep-flow.md`](prep-flow.md).
 
@@ -33,17 +33,16 @@ One paragraph. What capability does the user gain when this lands?
 ## Design
 - Conditional — written only when `figmaEnabled: true` and the task creates/modifies UI nodes (`screen|dialog|component|overlay`): one `- <NodeName> [kind] — <figma node URL>` bullet per node, or the explicit escape `- <NodeName> — none (<why no mock>)`. Omit the whole section otherwise.
 - The parser's `none` grammar is EXACT: `none`, or `none (<reason>)` with a non-empty reason containing no `)` and nothing after the closing paren (` — ` INSIDE the reason is fine; `none — text`, `none()`, `none (why) trailing` all fail closed as `DESIGN_VALUE_RESIDUE`). Bare `none` is parseable but not an audited opt-out; task-prep must ask for the reason. A pullable `<NodeName>` must stay inside `[A-Za-z0-9_]` (`RISKY_SCREEN_NAME` blocks at the cache gate otherwise), and no name may contain the bullet separator ` — ` (the parser splits on the FIRST one).
-- Optional tighten-only gate bullet: the exact line `- gate: strict` forces strict pixel-verdict routing for this task even on an advisory-configured project. It is not a node bullet (no separator, no URL). Any OTHER `gate:` value is a malformed design (`DESIGN_VALUE_RESIDUE`, blocks at the cache gate) — the weakening direction deliberately has no grammar.
 
 ## Acceptance
 
 ### Automated
-- Bulleted, automatically verifiable: by reading the diff, running a build task, a gate validator, or an automated test. Every bullet MUST carry at least one automation anchor (see promotion rules below).
-- Automatable runtime behaviour ("tapping X opens Y", ordering, error paths) belongs HERE with a `test:` anchor — it is test-gated, certified by the deterministic executor's fresh receipts, and never hides in `### Manual` just because a diff cannot prove it.
-- Includes the build gate: "`./gradlew :shared:assemble<IosFrameworkName>DebugXCFramework` and `./gradlew :androidApp:assembleDebug` both green."
+- Bulleted, automatically verifiable: by inspecting actual source/diff, running a permitted build task or a static validator. Every bullet MUST carry at least one automation anchor (see promotion rules below).
+- Runtime behavior (navigation, ordering, error paths) belongs in `### Manual` with concrete expected results and permitted app verification. Source review alone cannot close it.
+- When builds are authorized, includes the build gate: "`./gradlew :shared:assemble<IosFrameworkName>DebugXCFramework` and `./gradlew :androidApp:assembleDebug` both green." Otherwise record the excluded build checks and use permitted source/static acceptance.
 
 ### Manual
-- Bulleted, requires genuinely human, hardware or external verification: subjective copy/design approval, canvas/glass pixel verdicts, physical push/camera/biometric flows without an automation harness, store/external-account operations, owner acceptance. Optional — omit the heading entirely when there is nothing in that class. A test PASS never auto-closes a manual bullet, and an automatable behaviour never moves here.
+- Bulleted runtime, visual, hardware or external scenarios with concrete expected outcomes. Omit only when none apply. Record unrun scenarios honestly; source/build evidence does not automatically close manual behavior.
 
 ## Out of scope
 - What the task does NOT cover. Cuts off scope creep. **Required** — write "nothing else" if the boundary is trivial, but the section must be present.
@@ -57,35 +56,25 @@ One paragraph. What capability does the user gain when this lands?
 ## Promotion rules
 
 - The four sections (`## Goal`, `## Inputs`, `## Acceptance`, `## Out of scope`) are **required**. A promotion that cannot fill any one of them is not actually ready — go back to Step 4 and ask. A section filled with a grounded, recorded `Assumed —` default (a *decidable* gap prep closed per Step 3 of [`prep-flow.md`](prep-flow.md)) counts as filled; a section that can only be filled by inventing *undecidable* product intent does not — ask.
-- `## Acceptance` MUST contain a `### Automated` sub-heading with at least one bullet (the build gate is always there). `### Manual` is optional — write the heading and at least one bullet ONLY for genuinely human/hardware/external verification (subjective approval, physical-device-only flows, store/external accounts, owner acceptance). Runtime behaviour that a test can prove stays in `### Automated` with a `test:` anchor. Otherwise omit the `### Manual` heading entirely. Do NOT write `- none` and do NOT keep an empty `### Manual` heading.
+- `## Acceptance` contains `### Automated` for structural/static/build checks and `### Manual` for required runtime/human checks. Runtime behavior belongs under Manual; do not add an automated harness. Omit empty headings rather than writing `- none`. All execution follows the user’s scope.
 
 ### Automation anchors (the acceptance-anchor gate)
 
 - **Every `### Automated` bullet must carry at least one automation anchor.** An anchor is one of:
   - a **file path** (`<path>`),
   - a **class/method/identifier** reference written `<Name>.<member>` or in backticks,
-  - a **gradle task** (`./gradlew :...`),
-  - a **test anchor** — `` `test:<kebab-id>` `` followed by ` — ` and the behaviour sentence.
-- **Test anchors** (the test-gated class): lowercase kebab-case after `test:`
-  (machine grammar: `test-policy.json` `anchorGrammar`); unique within the
-  task; named after the BEHAVIOUR, never a class/file; written by task-prep and
-  immutable afterwards (the planner maps them to concrete test cases but never
-  renames one; the exact bullet bytes enter the evidence identity). One anchor
-  may need several cases/lanes. Example:
-  > `` - `test:save-note-failure-keeps-cache` — Failed save leaves the local cache unchanged and surfaces the mapped error. ``
-  File/class/gradle anchors remain the structural/build classes — different
-  first-class categories, never interchangeable aliases.
-- The anchor lets `acceptance-tracer` map the bullet to a concrete artifact in the diff or to a certified test identity. If a bullet under `### Automated` lacks all four anchor forms, return:
-  > `BLOCKED: acceptance bullet "<bullet, first 80 chars>" lacks an automation anchor (file/class/gradle task/test anchor). Give the behaviour a test: anchor, rewrite it with a structural anchor, or — only if it is genuinely human/hardware/external — move it to ### Manual.`
-  Do NOT silently move it for the user — they make the call.
+  - a **gradle task** (`./gradlew :...`).
+- The anchor lets `acceptance-tracer` map the bullet to a concrete artifact in the diff for structural source evidence. If a bullet under `### Automated` lacks these anchor forms, return:
+  > `BLOCKED: acceptance bullet lacks a structural anchor (file/class/gradle task). Add the concrete artifact, or describe runtime verification under ### Manual.`
+  Keep the requirement intact and distinguish artifact evidence from runtime observation.
 
 ### Build gate
 
-- The **build-gate acceptance line is required** and lives under `### Automated`. The iOS Gradle module is always `:shared:`; only the task-name suffix tracks `iosFrameworkName` from `orchestrator/project-config.md` (`:shared:assemble<IosFrameworkName>DebugXCFramework`); skip the iOS bullet when `iosEnabled: false`.
+- When builds are authorized, the **build-gate acceptance line is required** and lives under `### Automated`. The iOS Gradle module is always `:shared:`; only the task-name suffix tracks `iosFrameworkName` from `orchestrator/project-config.md` (`:shared:assemble<IosFrameworkName>DebugXCFramework`); skip the iOS bullet when `iosEnabled: false`. A user exclusion is an unrun check, never a green gate.
 
 ### Design bullets + spec-gate (figmaEnabled only)
 
-- **Design bullets for UI tasks when `figmaEnabled: true`.** A UI task records one `## Design` bullet per UI node it creates or visually modifies (`screen|dialog|component|overlay`). Each node must carry either a Figma node URL or an explicit audited `none (<reason>)` supplied by the source/owner. A missing bullet, an empty value, or a reasonless no-mock claim goes back to Step 4; task-prep never fabricates `none (no mock exists)` from absence. An explicit `none` value is honoured by skipping that node in the census (Step 5.5) and the spec/screenshot gates, and the exemption is surfaced in the ship summary's `### Spec fidelity` block as a `SKIPPED — no mock` line (status-neutral — NOT a `### Caveats` bullet, so a no-mock node does not flip the outcome status). (The only hard stop in the design path is Step 5.5's cache pre-flight, and it fires only for nodes that DO carry a non-`none` URL.)
+- **Design bullets for UI tasks when `figmaEnabled: true`.** A UI task records one `## Design` bullet per UI node it creates or visually modifies (`screen|dialog|component|overlay`). Each node must carry either a Figma node URL or an explicit audited `none (<reason>)` supplied by the source/owner. A missing bullet, an empty value, or a reasonless no-mock claim goes back to Step 4; task-prep never fabricates `none (no mock exists)` from absence. An explicit `none` value is honoured by skipping that node in the census (Step 5.5) and the source/spec checks and manual visual review, and the exemption is surfaced in the ship summary's `### Spec fidelity` block as a `SKIPPED — no mock` line (status-neutral — NOT a `### Caveats` bullet, so a no-mock node does not flip the outcome status). (The only hard stop in the design path is Step 5.5's cache pre-flight, and it fires only for nodes that DO carry a non-`none` URL.)
 - **Generate the spec-gate acceptance bullet** — for every non-`none` `## Design` bullet, add one prep-generated line under `### Automated`, verbatim:
   > ``- Spec: <NodeName> matches its Figma node values (<url>) — `figma-spec-validator` green (Minors allowed).``
   This bullet is **spec-gated** (the planner and `acceptance-tracer` defer it to `figma-spec-validator`, like the build gate defers to `build-validator`). Skip when `figmaEnabled: false`.
