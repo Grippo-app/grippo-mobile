@@ -1,5 +1,14 @@
 # grippo-mobile
 
+## Reading these rules
+
+`MUST` / `MUST NOT` are mandatory; `MAY` identifies a permitted choice, not a
+requirement. Each topic has one canonical owning skill/reference. Summaries and
+examples MUST NOT override it. Current source establishes actual signatures,
+versions and callers; an existing deviation does not weaken a declared rule.
+Resolve a material conflict using source evidence and the authorized task scope,
+then update the owning rule and affected references together.
+
 ## Project purpose
 
 Grippo KMP client — Android + iOS from a single codebase. UI in Compose
@@ -870,15 +879,11 @@ defines completion checks. Work directly with repository source and the user's
 request. No task-board runtime, generated machine reports or bootstrap scaffold
 is required.
 
-MUST self-review actual source/diff and fix blocking findings. Behavior,
-architecture and changes spanning multiple owners also require independent review
-when delegation is authorized. Small isolated editorial changes may finish with
-self-review. Re-review each corrected area; recurring unresolved findings need a
-clear cause/question or capability limitation. MUST disclose unavailable independent
-review rather than claim it happened. Reports distinguish source review, successful
-builds and unverified runtime behavior. [task-orchestrator](.claude/skills/task-orchestrator/SKILL.md)
-owns the execution/review loop; [validation-gates](.claude/skills/validation-gates/SKILL.md)
-owns cross-cut completion checks.
+MUST apply the canonical [execution and review loop](.claude/skills/task-orchestrator/SKILL.md#execution-loop)
+and [completion checks](.claude/skills/validation-gates/SKILL.md). The execution skill
+owns independent-review eligibility, unavailable-reviewer handling and recurring
+findings; do not maintain a second review policy here. Reports distinguish source
+review, successful builds and unverified runtime behavior.
 
 ### Backend contract rules
 

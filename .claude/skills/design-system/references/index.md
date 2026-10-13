@@ -32,7 +32,7 @@ These rules are owned by sibling skills; the design-system skill defers to them:
 |---|---|
 | Compose function-signature rule, modifier-first, entity composables, Toggle outlier | `../../ui-feature/references/compose-rules.md` |
 | Forbidden patterns (no literal colors/dp/TextStyle, no `MaterialTheme.*`, no `stringResource(R.…)`, no `ic_*` raster) | `../../validation-gates/references/forbidden-patterns.md` |
-| Stop-and-ask items (new token category, slot rename, widget removal, new font, theme wiring) | `../../validation-gates/references/when-to-stop-and-ask.md` § Design system |
+| Stop-and-ask items (new token category, slot rename, widget removal, new font, theme wiring) | [scope questions](../../validation-gates/references/when-to-stop-and-ask.md) and [authorized scope](../../../../CLAUDE.md#scope-discipline) |
 
 ## Completion
 
