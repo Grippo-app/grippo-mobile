@@ -312,3 +312,14 @@ No automated test source or infrastructure was added. Android/iOS device executi
 SDK delivery, reporting-failure injection, actual cancellation/lifecycle timing and
 fresh-process restoration were not run. iOS compilation does not prove framework
 linking or native runtime behavior; no Firebase sign-in/send/upload was performed.
+
+Profile contract follow-up on 2026-10-13: Goal.PrimaryConfirmed and
+Goal.SecondaryConfirmed are parameterless observations; their nonnull picker
+results imply Valid internally. Goal.TargetDateConfirmed alone accepts the existing
+formatter status. GoalPicker remains the closed selector for open callbacks only.
+The profile_picker_confirmed version-1 wire payload, fields and status values are
+unchanged; no report migration, dual emission or StateKeeper change is needed.
+Follow-up verification: source invariants and git diff --check passed; final
+:ui-screen-features:profile:compileKotlinIosSimulatorArm64 and
+:shared:compileKotlinIosSimulatorArm64 passed (BUILD SUCCESSFUL). Device runtime
+and Android compilation were not rerun for this contract-only refinement.

@@ -20,15 +20,14 @@ scope and locked decisions. Existing deviations do not authorize copying them.
 
 ## Coroutines
 
-- **Manual `ensureActive()` checks in production**, including
-  `currentCoroutineContext().ensureActive()`, `CoroutineContext`, `CoroutineScope`
-  and `Job` overloads or helpers hiding the call. The project does not use this
-  pattern: it adds unwanted cancellation boilerplate. Do not replace it with
-  equivalent manual Job checks. Use owned scopes and cooperative cancellable APIs;
-  keep `CancellationException` propagation intact. Non-suspending workers must
-  provide cancellation through their execution design. When removing existing
-  checks, preserve cancellation before work and after late SDK results; do not
-  turn cancellation into success/fallback or weaken its observable error contract.
+- **Mechanical cancellation checks around already cooperative suspend calls.**
+  Use owned scopes and cancellable APIs; preserve `CancellationException`.
+  Explicit `ensureActive()` checks MAY be used when necessary for noncooperative
+  CPU work or an SDK/foundation boundary. Review the actual cancellation gap and
+  place checks where they prevent continued work or acceptance of a late result;
+  do not add them merely to satisfy a template or for telemetry. Equivalent Job
+  checks follow the same rule. MUST NOT remove necessary existing checks, turn
+  cancellation into success/fallback or weaken the observable error contract.
 - **`viewModelScope.launch`, `lifecycleScope.launch`, `GlobalScope.launch`, `CoroutineScope(...).launch`** inside a `BaseViewModel`. Only `safeLaunch` / `Flow.safeLaunch()`.
 - **`runBlocking { ... }`** anywhere in production.
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.

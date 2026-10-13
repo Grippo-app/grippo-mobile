@@ -20,8 +20,9 @@ mappers (mappers), reusable widgets in `:design-system:components`
 (design-system), Koin module wiring (di-modules).
 
 Follow the [project coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines):
-do not add manual `ensureActive()` checks or wrappers in production. Keep work in
-the existing `safeLaunch`/Flow pipeline and preserve cancellation propagation.
+avoid mechanical cancellation checks and new recovery wrappers. Keep work in the
+existing `safeLaunch`/Flow pipeline and preserve cancellation propagation; explicit
+checks require a real cancellation gap under that canonical rule.
 
 Follow the [Kotlin block style](../../../CLAUDE.md#kotlin): keep `safeLaunch`,
 `trackOperation`, business/control bodies and multi-operation blocks multiline.
@@ -96,7 +97,8 @@ are mandatory, containers keep null. Do not duplicate those specifications here.
    Component owns its seven MVI files and screenPresentation directly; for multiple
    screens use a container root and child stack, following current naming.
 3. **For a screen/dialog: write the seven MVI files** (same package, siblings) —
-   `<Name>State` (`@Immutable`, defaults-in-ctor, no `companion Empty` on State),
+   `<Name>State` (`@Immutable`, meaningful constructor defaults or explicit required
+   initial data, no `companion Empty` on State),
    `<Name>Direction` (`sealed interface : BaseDirection`, nav intents only),
    `<Name>Loader` (`@Immutable sealed interface : BaseLoader`, empty ok),
    `<Name>Contract` (`@Immutable interface` + `companion object Empty`),
@@ -108,7 +110,11 @@ are mandatory, containers keep null. Do not duplicate those specifications here.
    with dependencies resolved inside that factory,
    `eventListener` maps every Direction subtype), `<Name>Screen`
    (`@Composable internal fun(state, loaders, contract)` in `BaseComposeScreen`,
-   `AppTokens.*` only, `@AppPreview` per significant state with `Contract.Empty`).
+   `AppTokens.*` only, `@AppPreview` per significant affected state for new or
+   visually changed UI with `Contract.Empty`). Nonvisual changes assess visual
+   impact and reuse existing previews without unrelated preview expansion.
+   Shared model stubs live in ui-core:state; private screen-State fixture builders
+   may live beside the feature preview.
    Screen-specific sub-composables go in a sibling `components/` folder, one per
    file, entity composables bound to their `*State` as one param.
 4. **For a dialog**: no toolbar, `ScreenBackground.Color(...background.dialog)`;
@@ -153,7 +159,8 @@ are mandatory, containers keep null. Do not duplicate those specifications here.
    assemble when the iOS platform check is authorized and available). Apply the analytics skill's scoped checks,
    DI/leaf-lifecycle checks and platform validation when analytics changes.
    Honor explicit platform/build restrictions and record unrun checks.
-   Build failures in the permitted scope are yours to fix.
+   Fix build failures caused by the task's changes. Report unrelated or pre-existing
+   failures; do not expand scope or change unrelated infrastructure to make a build pass.
 
 ## Screen results and dialog-to-screen changes
 

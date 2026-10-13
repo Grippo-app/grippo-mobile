@@ -5,8 +5,13 @@ not copied annotation/theme/Coil implementations. AppPreview supplies the curren
 phone/locale configurations; PreviewContainer owns preview tokens/theme and image
 handling. Inspect its real signature before choosing an additional theme/config.
 
-- A changed/new screen or widget has at least one private named AppPreview in its
-  file, inside PreviewContainer. Explicit sample text/data MAY be literal preview
+- A new screen/widget or visual change MUST have representative private named
+  AppPreview coverage in its file, inside PreviewContainer. Update existing
+  previews when they already cover the change; do not add duplicate fixtures.
+  Other edits require a visual-impact assessment and review of relevant existing
+  previews/callers; callback-only or visibility-only changes do not mechanically
+  require new fixtures when they have no visual impact.
+  Explicit sample text/data MAY be literal preview
   fixtures; production product text/styles still require resources/tokens.
   Screens/dialogs use Contract.Empty; widgets use
   lightweight parameters and existing stub data, never a live ViewModel/Koin.

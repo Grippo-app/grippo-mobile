@@ -24,7 +24,8 @@ callback behavior; this reference does not duplicate component implementations.
   them; MUST NOT infer complete inputs from an old shortened signature.
 - Button state comes from actual loaders and validity; MUST NOT add business
   eligibility rules inside the widget. Feature owners keep logical selection.
-- Shared shimmer adds highlight only, not skeleton shape/loading semantics. Apply
+- [Shared shimmer](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/Shimmer.kt)
+  adds highlight only, not skeleton shape/loading semantics. Apply
   it after clip/background; owning component supplies shape/semantics. Opacity
   belongs to shimmer tokens. MUST NOT migrate unrelated loaders incidentally.
 - Existing CheckSelectableCard/ToggleSelectableCard/Toggle variants serve selection
@@ -47,8 +48,11 @@ observable data. Deeply immutable data uses @Immutable.
 
 Place new widgets in the actual matching category/package (e.g. inputs, toolbar,
 indicators); preserve existing dotted directories. MUST NOT move files to invented
-input/navigation folders as incidental cleanup. Each changed/new widget requires
-its private AppPreview in PreviewContainer; [previews.md](previews.md) owns coverage.
+input/navigation folders as incidental cleanup. New widgets and visual changes
+require representative private AppPreview coverage in PreviewContainer; other
+edits require a visual-impact assessment and review of relevant existing
+previews/callers. [previews.md](previews.md) owns coverage; do not mechanically
+add fixtures for changes without visual impact.
 
 AppTokens/product UI-state consumers belong to design-system. Product-independent
 widgets accept style/data parameters in compose-libs; MUST NOT classify ownership

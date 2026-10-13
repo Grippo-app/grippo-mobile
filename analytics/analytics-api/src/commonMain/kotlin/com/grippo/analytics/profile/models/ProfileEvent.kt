@@ -15,7 +15,9 @@ public sealed interface ProfileEvent {
 
     public sealed interface Goal : ProfileEvent {
         public data class PickerOpened(public val field: GoalPicker) : Goal
-        public data class PickerConfirmed(public val field: GoalPicker, public val status: InputStatus) : Goal
+        public data object PrimaryConfirmed : Goal
+        public data object SecondaryConfirmed : Goal
+        public data class TargetDateConfirmed(public val status: InputStatus) : Goal
         public data class PersonalizationChanged(public val selected: Boolean, public val selectedCount: Int) : Goal
         public data object Save : Goal
         public data object Back : Goal

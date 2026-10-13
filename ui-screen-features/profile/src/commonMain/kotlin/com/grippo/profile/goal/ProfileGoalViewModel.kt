@@ -1,6 +1,5 @@
 package com.grippo.profile.goal
 
-import com.grippo.analytics.common.models.InputStatus
 import com.grippo.analytics.profile.ProfileAnalytics
 import com.grippo.analytics.profile.models.GoalPicker
 import com.grippo.analytics.profile.models.ProfileEvent
@@ -111,8 +110,8 @@ internal class ProfileGoalViewModel(
                     )
                 }
                 analytics.trackEvent(
-                    ProfileEvent.Goal.PickerConfirmed(
-                        GoalPicker.TargetDate, ProfileInputMapping.status(state.value.selectedTarget),
+                    ProfileEvent.Goal.TargetDateConfirmed(
+                        ProfileInputMapping.status(state.value.selectedTarget)
                     )
                 )
             }
@@ -128,11 +127,7 @@ internal class ProfileGoalViewModel(
             title = UiText.Res(Res.string.goal_picker_primary_title),
             onResult = { value ->
                 update { it.copy(selectedPrimary = value) }
-                analytics.trackEvent(
-                    ProfileEvent.Goal.PickerConfirmed(
-                        GoalPicker.Primary, InputStatus.Valid,
-                    )
-                )
+                analytics.trackEvent(ProfileEvent.Goal.PrimaryConfirmed)
             }
         )
 
@@ -146,11 +141,7 @@ internal class ProfileGoalViewModel(
             title = UiText.Res(Res.string.goal_picker_secondary_title),
             onResult = { value ->
                 update { it.copy(selectedSecondary = value) }
-                analytics.trackEvent(
-                    ProfileEvent.Goal.PickerConfirmed(
-                        GoalPicker.Secondary, InputStatus.Valid,
-                    )
-                )
+                analytics.trackEvent(ProfileEvent.Goal.SecondaryConfirmed)
             }
         )
 

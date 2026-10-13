@@ -23,7 +23,8 @@ Top-level extension families may share their existing mapper/token file. This is
 not a rule requiring every function in its own file. New directories use normal
 slash-separated packages; preserve existing dotted directories during feature work.
 
-State defaults belong in constructors, not a companion Empty snapshot. Contract
-companion Empty supplies no-op callbacks for previews. Use real existing stub data.
+Meaningful State defaults belong in constructors, not a companion Empty snapshot;
+required data stays explicit and no-argument construction is not mandatory.
+Contract companion Empty supplies no-op callbacks for previews. Use real existing stub data.
 Do not introduce a shadow isEdited/dirty/restorePending state to satisfy naming;
 actual field ownership and preservation rules determine whether a value exists.

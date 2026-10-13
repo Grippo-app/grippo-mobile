@@ -60,8 +60,9 @@ internal data class NoteEditorState(
 )
 ```
 
-Each property has a default value, so `NoteEditorState()` is the initial state
-passed to `BaseViewModel(...)` and to previews. **No separate `companion object
+In this example each property has a meaningful default, so `NoteEditorState()`
+can initialize `BaseViewModel(...)`. Other states may require explicit initial data.
+**No separate `companion object
 Empty` is needed on State** (Empty belongs on `Contract`).
 
 Static/empty-data screen: `@Immutable internal data object ProfileSettingsState`.
@@ -73,7 +74,7 @@ Rules:
 - Collections: `ImmutableList`/`ImmutableSet`/`PersistentList` (kotlinx-collections-immutable).
 - Strings: `UiText` if the value depends on resources/locale; `String` if it's a verbatim user input or a non-localizable identifier.
 - Form fields reuse a suitable existing formatter where parsing/validation/display requires it; plain nonsecret free text without those needs may remain String. Follow [formatter rules](state.md#formatstate-rules-must--anti-patterns); do not create a type per field.
-- Provide an initial state via default values on every property — `<X>State()` is the "empty" instance used as `BaseViewModel`'s initial state and for previews.
+- Use meaningful constructor defaults where an initial empty/loading value exists; pass required data explicitly through initialState. A no-argument `<X>State()` is not mandatory. Shared models follow the same [initialization rule](state.md#state-conventions); previews use explicit representative fixtures, not fabricated production defaults.
 - **No** direct domain model storage if a transformation is required — map via `:data-mappers:domain-to-state` to a UI-friendly shape.
 - **No flat scalar piles.** Cluster related primitives into sub-states, fixed value sets into enums, a lifecycle of booleans into a sealed interface (see `references/state.md`).
 
@@ -184,7 +185,7 @@ Rules:
 - Wraps content in `BaseComposeScreen(background = ...)`.
 - Reads all strings/colors/dp via `AppTokens.*`.
 - Follow [recomposition discipline](compose-rules.md#recomposition-discipline-should) for derived rendering values; simple checks stay inline.
-- Has a `@AppPreview private fun <Name>ScreenPreview()` immediately below the screen function, wrapped in `PreviewContainer { ... }` with stub data + `Contract.Empty`.
+- New or visually changed screens MUST have private `@AppPreview`s for significant affected states, wrapped in `PreviewContainer { ... }` with representative data and `Contract.Empty`. Nonvisual changes assess visual impact and reuse existing previews; they need no unrelated preview expansion. Shared model stubs stay in ui-core:state; private screen-State fixture builders may live with the preview.
 - **No** `LaunchedEffect(Unit)` for navigation. Navigation goes via `Direction` only.
 - **No** business logic. Only rendering and event forwarding via `contract.onXxx*()`.
 
@@ -212,7 +213,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 | Contract | UI callbacks | Methods returning data, mutable state |
 | ViewModel | `update`, `navigateTo`, `safeLaunch`, `withLoader` | `viewModelScope`, `GlobalScope`, local catches, Compose code |
 | Component | Decompose wiring, DI pulls, `eventListener` | UI rendering, business logic |
-| Screen | Composables, derived rendering values under the Compose caching policy | State mutations, side effects beyond `LaunchedEffect` for non-nav purposes |
+| Screen | Composables, derived rendering values, presentation/system effects with correct keys and teardown | Business state mutations, business operations or navigation effects |
 
 ## Architecture cross-cuts (always-on)
 

@@ -12,7 +12,8 @@ belongs to its owning skill rather than a generic Kotlin tutorial.
   callback/DSL lambdas remain allowed.
 - ViewModels use safeLaunch/Flow.safeLaunch and the shared error pipeline. Their
   suspend helpers preserve original errors, cancellation and fatal Errors. No
-  local recovery handlers or manual ensureActive checks. Outside the ViewModel,
+  local recovery handlers. Explicit cancellation checks follow the
+  [canonical coroutine rules](../../validation-gates/references/forbidden-patterns.md#coroutines). Outside the ViewModel,
   preserve the existing Result/throwing boundary; bare suspend runCatching that
   captures cancellation/fatal Errors is not an approved recipe.
 - State uses val and the project's immutable collections. Kotlin read-only

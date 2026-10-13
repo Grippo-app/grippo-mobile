@@ -118,7 +118,7 @@ Rules (MUST):
 1. **`@Immutable`** on the class.
 2. **`internal data class`** by default (`public` only for cross-module state in `:ui-core:state`).
 3. **`val` only** — no `var`.
-4. **Default ctor values for every property** — `FooState()` is the initial state for `BaseViewModel(FooState())` and previews. No `companion object Empty` (the companion stays for thresholds/derived helpers/shared constants only).
+4. **Meaningful initial state** — constructor defaults MAY represent valid empty/loading/input values. Pass required data explicitly through the existing initialState/route boundary; MUST NOT invent empty IDs or placeholder business data just to enable `FooState()`. Shared models do not require a no-argument constructor. No `companion object Empty` snapshot (the companion stays for thresholds/derived helpers/shared constants only).
 5. **Field order**: required first, optional last; primitives last (or grouped by domain).
 
 **Goes in state**: display values; form-field values as `*FormatState`; filter/pagination state; business validation/eligibility; sub-states.
@@ -170,7 +170,7 @@ A `State` is not a bucket for every scalar. When fields cluster into obvious gro
 
 ### Top-level `stub*` functions
 
-Realistic preview data lives in `:ui-core:state` as **public top-level functions** next to the state class:
+Shared reusable model preview data lives in `:ui-core:state` as **public top-level functions** next to the state class:
 
 ```kotlin
 public fun stubNote(): NoteState = NoteState(id = "preview-1", title = "Grocery list", summaryLabel = UiText.Str("3 items"))
@@ -179,9 +179,9 @@ public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
 )
 ```
 
-- **Where**: `:ui-core:state`, next to the state class — **never** inside `:ui-screen-features:*` / `:ui-dialog-features:*`, so previews across the repo pull from one source.
-- **Visibility**: `public` (shared across feature modules).
-- **Naming**: `stubX()` for a single instance, `stubXs()` / `stubXList()` for collections.
+- **Where**: shared model stubs live next to the class in `:ui-core:state`. Private builders assembling a feature-owned screen/dialog MVI State may live beside that feature's preview and reuse shared model stubs. MUST NOT move feature State into ui-core or expose a public fixture API solely for a local preview.
+- **Visibility**: shared model stubs are `public`; local feature-State fixture builders are `private`.
+- **Naming**: shared stubs use `stubX()` for a single instance, `stubXs()` / `stubXList()` for collections; local builders use a descriptive preview name.
 - **Content**: realistic data — not `"foo"` placeholders.
 
 ### State anti-patterns (MUST avoid)

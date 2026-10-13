@@ -229,9 +229,9 @@ Full API which **must** be used instead of manual coroutines/channels:
 | `protected enum class Processing { WhileActive, Infinity }` | Flow subscription modes only; `WhileActive` suppresses upstream when the screen is not RESUMED. |
 | `attachActivation(flow)` / `detachActivation()` | Managed automatically by `BaseComponent` via lifecycle. |
 
-Manual `ensureActive()` / `currentCoroutineContext().ensureActive()` checks are
-forbidden in production as unwanted cancellation boilerplate. Preserve owned
-scopes and cancellation propagation; follow the [project coroutine rules](.claude/skills/validation-gates/references/forbidden-patterns.md#coroutines).
+Preserve owned scopes and cancellation propagation. Avoid mechanical cancellation
+checks; explicit checks require a real cancellation gap under the canonical
+[project coroutine rules](.claude/skills/validation-gates/references/forbidden-patterns.md#coroutines).
 
 ViewModels keep feature data in State and change it through update. Private runtime
 flags, previous-source caches and shadow snapshots for initialization, restoration,
@@ -599,14 +599,18 @@ MUST reuse a suitable existing formatter for validated/formatted input; add a ne
 
 ### Preview
 
-MUST use existing AppPreview/PreviewContainer and Contract.Empty. Cover meaningful
-states with existing stubs; explicit preview fixture text/IDs are permitted, while
-production product text/visual values use resources/tokens. The canonical
+New UI and changes to rendering require existing AppPreview/PreviewContainer and
+Contract.Empty where applicable. For nonvisual edits, assess visual impact and
+inspect relevant existing previews/callers rather than creating fixtures mechanically.
+Cover meaningful states with existing stubs; explicit preview fixture text/IDs are
+permitted, while production product text/visual values use resources/tokens. The canonical
 [preview rules](.claude/skills/design-system/references/previews.md) own the workflow;
 inspect actual [preview helpers](design-system/preview/src/commonMain/kotlin/com/grippo/design.preview/Preview.kt)
 before choosing locale/theme variants.
 
-`stub*()` functions — single source of realistic preview data, live next to State classes in `:ui-core:state`.
+Reusable model `stub*()` functions live next to State classes in `:ui-core:state`.
+Private fixtures for a feature's screen-specific State may live beside its preview;
+they reuse shared stubs rather than duplicate shared model factories.
 
 ---
 
@@ -669,7 +673,7 @@ Do not maintain a second catalog of their methods here.
 - Collections in State and Loaders — **only** `kotlinx-collections-immutable` (`ImmutableList`, `ImmutableSet`, `PersistentList`). No `List`/`Set`/`MutableList` in `@Immutable` classes.
 - Unwrap a Result-returning call with `.getOrThrow()` inside `safeLaunch` (inside the decorated block when tracked); existing direct-value throwing calls remain direct. Original exceptions bubble to `BaseViewModel.sendError` → `ErrorProvider`.
 - Every `@Composable internal fun <X>Screen` takes three arguments in the same order: `state, loaders, contract` (sometimes also `component` for the cross-feature navigator).
-- `@AppPreview` + `PreviewContainer` for previews. Preview always uses `<X>Contract.Empty` and stub data (`stub*()` functions from `:ui-core:state`).
+- Previews use `@AppPreview` + `PreviewContainer`, screen `<X>Contract.Empty` and shared stubs or private screen-specific fixtures. Apply the canonical [preview scope](.claude/skills/design-system/references/previews.md).
 - Use `remember` for expensive pure computations or a demonstrated stability/identity need, keyed on all relevant inputs. Simple derived checks may be inline; do not add mechanical caching to every lambda or Modifier.
 - VM-side resource lookup uses injected StringProvider (`get` or `plural` as required). Composable consumers use the real AppTokens accessor; a new plural accessor must be implemented before use. See [accessor boundaries](.claude/skills/design-system/references/accessors.md).
 

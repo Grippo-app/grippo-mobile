@@ -11,8 +11,9 @@ A Result wrapper succeeding does not establish a successful business outcome.
   the original failure. Do not catch-and-ignore failures or translate them into UI dialogs here.
 - Preserve caller `CancellationException`; do not store it as an ordinary recoverable Result failure.
   If a Result boundary needs explicit exception handling, rethrow cancellation before handling
-  expected ordinary failures. Do not catch fatal Errors, create generic recovery wrappers or
-  add manual `ensureActive()` calls. Existing bare suspend `runCatching` is an implementation
+  expected ordinary failures. Do not catch fatal Errors or create generic recovery wrappers.
+  Explicit cancellation checks follow the [canonical coroutine rules](../../validation-gates/references/forbidden-patterns.md#coroutines).
+  Existing bare suspend `runCatching` is an implementation
   deviation, not an endorsed recipe; repair only within authorized scope.
 - UI unwraps required failures inside `safeLaunch`; the existing ErrorProvider owns presentation.
   Telemetry must observe the complete operation without controlling recovery or outcome.

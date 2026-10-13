@@ -31,9 +31,19 @@ internal object ProfileEventMatrix {
         ProfileEvent.Goal.Save -> clicked(ProfileScreen.Goal, InteractionAction.Save)
         ProfileEvent.Goal.Back -> clicked(ProfileScreen.Goal, InteractionAction.Back)
         is ProfileEvent.Goal.PickerOpened -> pickerOpened(ProfileScreen.Goal, ProfileEncoding.field(event.field))
-        is ProfileEvent.Goal.PickerConfirmed -> pickerConfirmed(
+        ProfileEvent.Goal.PrimaryConfirmed -> pickerConfirmed(
             ProfileScreen.Goal,
-            ProfileEncoding.field(event.field),
+            InputField.Primary,
+            InputStatus.Valid,
+        )
+        ProfileEvent.Goal.SecondaryConfirmed -> pickerConfirmed(
+            ProfileScreen.Goal,
+            InputField.Secondary,
+            InputStatus.Valid,
+        )
+        is ProfileEvent.Goal.TargetDateConfirmed -> pickerConfirmed(
+            ProfileScreen.Goal,
+            InputField.TargetDate,
             event.status,
         )
         ProfileEvent.Experience.Apply -> clicked(ProfileScreen.Experience, InteractionAction.Apply)

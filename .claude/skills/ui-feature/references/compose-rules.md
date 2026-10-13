@@ -8,7 +8,8 @@ compiler's stability metrics).
 ## Stability (MUST)
 
 ### State classes
-Every state class is `@Immutable` (fields use default ctor values so the VM builds initial state with `FooState()`):
+Immutable State is annotated `@Immutable`. Constructor defaults represent meaningful
+initial values, not fabricated required data; follow [State initialization](state.md#state-conventions):
 - `@Immutable` promises deeply immutable observable data; all State fields remain `val`.
 - Use `@Stable` only when equality, observable changes and property types satisfy its contract.
 - An annotation does not make mutable data safe. Do not introduce `var` in State.
@@ -74,6 +75,8 @@ Keep callbacks neutral and do not add a separate input framework.
 MUST route navigation through Direction/eventListener. LaunchedEffect is permitted
 for actual presentation/system side effects; its keys must include the changing
 inputs that determine that effect. Business state stays in the ViewModel.
+Presentation/system registrations needing teardown MUST use DisposableEffect
+with onDispose cleanup and keys matching the registration's changing inputs.
 
 ## Modifiers
 

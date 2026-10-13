@@ -33,8 +33,9 @@ implementations MUST remain internal. MUST NOT add analytics dependencies to the
   explicit unchanged wire keys. Existing source deviations do not weaken this standard;
   unrelated DTO cleanup requires its own scope. Request validity is enforced before sending.
 - MUST preserve caller cancellation at suspend Result boundaries. Bare `runCatching`/`mapCatching`
-  can capture cancellation; do not copy them as a compliant pattern or add generic wrappers/
-  manual `ensureActive()` checks. Review actual callees and retain the declared error contract.
+  can capture cancellation; do not copy them as a compliant pattern or add generic wrappers.
+  Explicit cancellation checks follow the [canonical coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines).
+  Review actual callees and retain the declared error contract.
 - Before completion MUST review ownership, required outcomes, cache reconciliation, UTC conversion,
   privacy and cancellation in source/diff. MUST apply `CLAUDE.md` Verification policy, including
   its explicit-user-request exception for automated tests; report unverified behavior.

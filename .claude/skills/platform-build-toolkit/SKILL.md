@@ -24,7 +24,8 @@ startup signatures come from current source; do not copy a generic project templ
 - Platform APIs MUST preserve required Android/iOS actuals and lifecycle/disposal. MUST NOT pass Android
   Context into common code or add platform SDK dependencies to shared contracts.
 - Use existing AppLogger categories and sinks; inspect actual build-mode behavior.
-  Preserve cancellation without new generic wrappers/manual ensureActive checks.
+  Preserve cancellation without new generic wrappers; explicit checks follow the
+  [canonical coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines).
 
 ## Completion gate
 

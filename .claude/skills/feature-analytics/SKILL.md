@@ -67,7 +67,9 @@ Current skill/standard/source define the contract; historical review reports do 
   Follow the [error pipeline](../ui-feature/references/error-pipeline.md): no local
   recovery catch/wrapper; pure mapError changes dialog presentation only, onError
   runs after dismissal. Both safeLaunch overloads keep the same hooks.
-- Do not add manual ensureActive checks. Keep business lambdas multiline;
+- Do not add cancellation checks solely for analytics; business cancellation follows
+  the [canonical coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines).
+  Keep business lambdas multiline;
   short update/simple Flow operators compact. Named local functions are forbidden.
   Startup/retry uses the existing VM scope and class-level private methods.
 

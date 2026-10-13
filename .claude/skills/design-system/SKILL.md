@@ -30,8 +30,11 @@ scope, existing packages, resource locales and font factory from source.
   accepts a reusable UI state. Neutral callbacks import no analytics types.
 - Migrate all necessary callers atomically for a changed contract. Remove obsolete
   overloads and aliases within scope; leave no broken caller or deprecated escape path.
-- Each changed/new widget has a private `@AppPreview` inside `PreviewContainer`.
-  Use representative states; screens use their own `Contract.Empty`.
+- New widgets and visual changes MUST have representative private `@AppPreview`
+  coverage inside `PreviewContainer`; screens use their own `Contract.Empty`.
+  Other edits require a visual-impact assessment and review of relevant existing
+  previews/callers, not mechanically added fixtures. [Preview rules](references/previews.md)
+  own the detailed coverage gate.
 - With a supplied design, inspect the actual Figma node or supplied design artifact.
   Compare actual content, hierarchy, themes and enlarged-font behavior in whole-screen
   consumers when rendering is permitted. Source compliance does not prove visual fidelity.
