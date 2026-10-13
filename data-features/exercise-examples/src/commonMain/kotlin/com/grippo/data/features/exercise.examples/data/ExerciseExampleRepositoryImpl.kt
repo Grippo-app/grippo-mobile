@@ -126,12 +126,23 @@ internal class ExerciseExampleRepositoryImpl(
             val equipments = mutableListOf<ExerciseExampleEquipmentEntity>()
 
             for (r in it) {
-                val entity = r.entity ?: return@onSuccess
-                val example = r.toEntityOrNull() ?: return@onSuccess
+                val entity = r.entity ?: return Result.failure(
+                    AppError.Network.IncompleteResponse()
+                )
+                val example = r.toEntityOrNull() ?: return Result.failure(
+                    AppError.Network.IncompleteResponse()
+                )
+                val mappedBundles = entity.exerciseExampleBundles.toEntities()
+                val mappedEquipments = entity.equipmentRefs.toEntities()
+                if (mappedBundles.size != entity.exerciseExampleBundles?.size ||
+                    mappedEquipments.size != entity.equipmentRefs?.size
+                ) {
+                    return Result.failure(AppError.Network.IncompleteResponse())
+                }
                 examples += example
                 components += entity.components.toEntity(example.id)
-                bundles += entity.exerciseExampleBundles.toEntities()
-                equipments += entity.equipmentRefs.toEntities()
+                bundles += mappedBundles
+                equipments += mappedEquipments
             }
 
             exerciseExampleDao.replaceFromSnapshot(
@@ -149,11 +160,20 @@ internal class ExerciseExampleRepositoryImpl(
         val response = api.getExerciseExample(id)
 
         response.onSuccess { r ->
-            val entity = r.entity ?: return@onSuccess
-            val example = r.toEntityOrNull() ?: return@onSuccess
+            val entity = r.entity ?: return Result.failure(
+                AppError.Network.IncompleteResponse()
+            )
+            val example = r.toEntityOrNull() ?: return Result.failure(
+                AppError.Network.IncompleteResponse()
+            )
             val components = entity.components.toEntity(example.id)
             val bundles = entity.exerciseExampleBundles.toEntities()
             val equipments = entity.equipmentRefs.toEntities()
+            if (bundles.size != entity.exerciseExampleBundles?.size ||
+                equipments.size != entity.equipmentRefs?.size
+            ) {
+                return Result.failure(AppError.Network.IncompleteResponse())
+            }
             exerciseExampleDao.insertOrReplace(example, components, bundles, equipments)
         }
 
