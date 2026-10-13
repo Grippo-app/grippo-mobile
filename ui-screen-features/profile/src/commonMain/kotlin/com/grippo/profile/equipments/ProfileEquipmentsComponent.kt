@@ -16,9 +16,9 @@ internal class ProfileEquipmentsComponent(
     override val viewModel = componentContext.retainedInstance {
         ProfileEquipmentsViewModel(
             analytics = getKoin().get(),
-            initialState = restoreState(DRAFT) ?: ProfileEquipmentsState(),
             equipmentFeature = getKoin().get(),
-            excludedEquipmentsFeature = getKoin().get()
+            excludedEquipmentsFeature = getKoin().get(),
+            initialState = restoreState(DRAFT) ?: ProfileEquipmentsState(),
         )
     }
 

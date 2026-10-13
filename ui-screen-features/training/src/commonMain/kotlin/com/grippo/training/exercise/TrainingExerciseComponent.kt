@@ -23,13 +23,13 @@ internal class TrainingExerciseComponent(
 
     override val viewModel: TrainingExerciseViewModel = componentContext.retainedInstance {
         TrainingExerciseViewModel(
-            analytics = getKoin().get(),
-            initialState = restoreState(DRAFT),
             exercise = exercise,
+            analytics = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             dialogController = getKoin().get(),
             weightHistoryFeature = getKoin().get(),
             exerciseValidatorUseCase = getKoin().get(),
+            initialState = restoreState(DRAFT),
         )
     }
 

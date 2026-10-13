@@ -42,16 +42,16 @@ internal class TrainingRecordingComponent(
 
     override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
         TrainingRecordingViewModel(
-            analytics = getKoin().get(),
-            initialState = restoreState(DRAFT),
             stage = stage,
-            exerciseExampleFeature = getKoin().get(),
+            analytics = getKoin().get(),
             muscleFeature = getKoin().get(),
+            exerciseExampleFeature = getKoin().get(),
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
             notificationManager = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
+            initialState = restoreState(DRAFT),
         )
     }
 

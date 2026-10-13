@@ -50,13 +50,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class TrainingExerciseViewModel(
-    private val analytics: TrainingAnalytics,
     exercise: ExerciseState,
-    initialState: TrainingExerciseState?,
+    private val analytics: TrainingAnalytics,
     exerciseExampleFeature: ExerciseExampleFeature,
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val exerciseValidatorUseCase: ExerciseValidatorUseCase,
+    initialState: TrainingExerciseState?,
 ) : BaseViewModel<TrainingExerciseState, TrainingExerciseDirection, TrainingExerciseLoader>(
     initialState ?: TrainingExerciseState(exercise = exercise)
 ), TrainingExerciseContract {

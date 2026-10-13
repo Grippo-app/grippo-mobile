@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.combine
 
 internal class ProfileEquipmentsViewModel(
     private val analytics: ProfileAnalytics,
-    initialState: ProfileEquipmentsState,
     equipmentFeature: EquipmentFeature,
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
+    initialState: ProfileEquipmentsState,
 ) : BaseViewModel<ProfileEquipmentsState, ProfileEquipmentsDirection, ProfileEquipmentsLoader>(
     initialState
 ), ProfileEquipmentsContract {

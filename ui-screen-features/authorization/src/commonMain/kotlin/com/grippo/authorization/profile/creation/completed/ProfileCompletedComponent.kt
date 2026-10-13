@@ -23,13 +23,13 @@ internal class ProfileCompletedComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileCompletedViewModel(
-            analytics = getKoin().get(),
             name = name,
             weight = weight,
             height = height,
             experience = experience,
             excludedMuscleIds = excludedMuscleIds,
             missingEquipmentIds = missingEquipmentIds,
+            analytics = getKoin().get(),
             createProfileUseCase = getKoin().get(),
             localSettingsFeature = getKoin().get(),
         )

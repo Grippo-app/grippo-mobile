@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.combine
 
 internal class ProfileMusclesViewModel(
     private val analytics: ProfileAnalytics,
-    initialState: ProfileMusclesState,
     muscleFeature: MuscleFeature,
     private val excludedMusclesFeature: ExcludedMusclesFeature,
+    initialState: ProfileMusclesState,
 ) : BaseViewModel<ProfileMusclesState, ProfileMusclesDirection, ProfileMusclesLoader>(
     initialState
 ), ProfileMusclesContract {

@@ -25,11 +25,11 @@ import kotlinx.coroutines.flow.onEach
 
 internal class ExerciseLibraryViewModel(
     mode: ExerciseLibraryMode,
-    initialState: ExerciseLibraryState?,
     private val analytics: ExercisesAnalytics,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
+    initialState: ExerciseLibraryState?,
 ) : BaseViewModel<ExerciseLibraryState, ExerciseLibraryDirection, ExerciseLibraryLoader>(
     initialState?.copy(mode = mode) ?: ExerciseLibraryState(
         mode = mode,

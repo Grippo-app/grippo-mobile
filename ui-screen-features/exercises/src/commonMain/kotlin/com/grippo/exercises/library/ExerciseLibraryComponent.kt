@@ -21,11 +21,11 @@ internal class ExerciseLibraryComponent(
     override val viewModel: ExerciseLibraryViewModel = componentContext.retainedInstance {
         ExerciseLibraryViewModel(
             mode = mode,
-            initialState = restoreState(DRAFT),
             analytics = getKoin().get(),
             userExerciseExamplesUseCase = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
+            initialState = restoreState(DRAFT),
         )
     }
 

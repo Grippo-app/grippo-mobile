@@ -15,13 +15,13 @@ import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.ImmutableList
 
 internal class ProfileCompletedViewModel(
-    private val analytics: AuthAnalytics,
     name: String,
     weight: Float,
     height: Int,
     experience: ExperienceEnumState?,
     excludedMuscleIds: ImmutableList<String>,
     missingEquipmentIds: ImmutableList<String>,
+    private val analytics: AuthAnalytics,
     createProfileUseCase: CreateProfileUseCase,
     localSettingsFeature: LocalSettingsFeature,
 ) : BaseViewModel<ProfileCompletedState, ProfileCompletedDirection, ProfileCompletedLoader>(

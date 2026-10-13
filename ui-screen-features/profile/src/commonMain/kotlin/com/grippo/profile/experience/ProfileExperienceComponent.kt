@@ -16,8 +16,8 @@ internal class ProfileExperienceComponent(
     override val viewModel = componentContext.retainedInstance {
         ProfileExperienceViewModel(
             analytics = getKoin().get(),
+            userFeature = getKoin().get(),
             initialState = restoreState(DRAFT),
-            userFeature = getKoin().get()
         )
     }
 

@@ -66,9 +66,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class TrainingRecordingViewModel(
-    private val analytics: TrainingAnalytics,
     stage: StageState,
-    initialState: TrainingRecordingState?,
+    private val analytics: TrainingAnalytics,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
@@ -76,6 +75,7 @@ internal class TrainingRecordingViewModel(
     private val stringProvider: StringProvider,
     private val notificationManager: NotificationManager,
     private val trainingTotalUseCase: TrainingTotalUseCase,
+    initialState: TrainingRecordingState?,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     initialState ?: TrainingRecordingState(stage = stage, startAt = DateTimeUtils.now())
 ), TrainingRecordingContract {

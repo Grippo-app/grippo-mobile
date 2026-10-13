@@ -49,8 +49,8 @@ public class RootComponent(
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel(
-            authorizationFeature = getKoin().get(),
             deeplink = deeplink,
+            authorizationFeature = getKoin().get(),
         )
     }
 

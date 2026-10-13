@@ -7,8 +7,8 @@ import com.grippo.screen.api.deeplink.Deeplink
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
-    authorizationFeature: AuthorizationFeature,
     deeplink: String? = null,
+    authorizationFeature: AuthorizationFeature,
 ) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState(deeplink = deeplink)),
     RootContract {
 

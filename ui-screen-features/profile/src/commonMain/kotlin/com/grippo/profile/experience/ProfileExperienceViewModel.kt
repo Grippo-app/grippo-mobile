@@ -18,8 +18,8 @@ import kotlinx.coroutines.flow.take
 
 internal class ProfileExperienceViewModel(
     private val analytics: ProfileAnalytics,
+    private val userFeature: UserFeature,
     initialState: ProfileExperienceState?,
-    private val userFeature: UserFeature
 ) : BaseViewModel<ProfileExperienceState, ProfileExperienceDirection, ProfileExperienceLoader>(
     initialState ?: ProfileExperienceState()
 ), ProfileExperienceContract {
