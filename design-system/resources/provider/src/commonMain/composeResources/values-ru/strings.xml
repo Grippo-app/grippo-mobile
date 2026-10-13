@@ -869,4 +869,8 @@
     <string name="exercise_library">Библиотека упражнений</string>
     <string name="analytics_consent_title">Аналитика использования</string>
     <string name="analytics_consent_description">Разрешите события использования, чтобы помочь улучшить приложение. Введённый текст и измерения тела не отправляются. Можно отключить в любой момент.</string>
+    <string name="login_analytics_consent">Разрешить аналитику использования (необязательно)</string>
+    <string name="login_analytics_consent_details">Что собирается?</string>
+    <string name="login_analytics_consent_description">С вашего разрешения мы отправляем экраны, действия и технические данные событий в Google Analytics for Firebase, чтобы улучшать Grippo. В этих событиях мы не отправляем введённый текст, учётные данные или измерения тела. Выбор сохраняется на этом устройстве и меняется здесь или в настройках. Вход доступен и без этого согласия.</string>
+    <string name="login_analytics_consent_preferences">Настройки аналитики</string>
 </resources>

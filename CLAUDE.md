@@ -20,7 +20,7 @@ API.
 ## Stack
 
 - Kotlin **2.4.20**, explicit API mode (enabled in `KotlinMultiplatformConventionPlugin`).
-- Compose Multiplatform **1.12.1** + Kotlin Compose plugin. Compiler metrics and reports enabled via convention plugin.
+- Compose Multiplatform **1.12.1** + Kotlin Compose plugin.
 - Targets: `commonMain`, `androidMain`, `iosMain` (`iosArm64`, `iosSimulatorArm64`). Android `compileSdk = 37`, `minSdk = 26`. JVM toolchain 19.
 - Decompose **3.5** + Essenty (`back-handler`, `state-keeper`, `lifecycle`).
 - Koin **4.2** + `koin-annotations` **2.3.1** + KSP. KOIN_CONFIG_CHECK is disabled (TODO until next Koin Annotations release).
@@ -182,7 +182,7 @@ What each does:
 - `kotlin.multiplatform.convention` — applies `kotlin("multiplatform")`, **`explicitApi()`**, registers iOS targets (`iosArm64`, `iosSimulatorArm64`), `applyDefaultHierarchyTemplate`, **global `optIn(...)`** (Material3 ExperimentalApi, Foundation, Coroutines, ForeignApi, Decompose Delicate/Experimental, kotlin.time, kotlin.uuid, etc.).
 - `android.library.convention` — applies `com.android.kotlin.multiplatform.library`, KMP Android target with `compileSdk = 37`, `minSdk = 26`, `namespace = "com.grippo"`, JVM toolchain 19.
 - `android.application.convention` — Android `applicationId/SDK`, `compileSdk = 37`, `minSdk = 26`, `targetSdk = 36`, JVM 19.
-- `compose.multiplatform.convention` — Compose plugins, metrics/reports in `build/compose-{metrics,reports}`, stability is inferred from code annotations and types.
+- `compose.multiplatform.convention` — Compose plugins and Android packaging exclusions; stability is inferred from code annotations and types.
 - `koin.annotation.convention` — KSP, Koin Core + Annotations, `kspCommonMainMetadata`, `KOIN_CONFIG_CHECK = false` (TODO until next Koin release).
 - `room.convention` — KSP + Room compiler for Android and all iOS targets, `room.schemaLocation = $projectDir/schemas`.
 - `ios.swiftpackage.convention` — assembles `XCFramework("shared")`, **static** framework, exports Decompose API + analytics/crash-reporting/messaging API contracts, `linkerOpts: -lsqlite3`.
@@ -679,7 +679,7 @@ Do not maintain a second catalog of their methods here.
 
 ### Compose specifics
 
-- Recomposition: state classes — `@Immutable`/`@Stable`, immutable collections. Compose stability metrics enabled in convention plugin.
+- Recomposition: state classes — `@Immutable`/`@Stable`, immutable collections.
 - Global `optIn`s (Material3, Foundation, Coroutines, ForeignApi, etc.) are already enabled in `KotlinMultiplatformConventionPlugin` — **do not duplicate in source files** via `@OptIn`.
 - `LaunchedEffect(Unit)` for one-shot navigation side effects is **forbidden** — navigation goes through `Direction` + `eventListener`. `LaunchedEffect` is allowed only for non-navigational side effects (animation kickoff, system API init).
 - Regular `Toolbar` belongs to screens. Dialogs follow the current session host/title layout; do not add a second toolbar to hosted dialog content.
@@ -739,7 +739,7 @@ new scope or require redundant confirmation of work already authorized.
 No explicit budgets in code. Default priorities:
 
 - Keep heavy work off the main thread at its existing owner: IO on `Dispatchers.IO`, CPU-heavy work on `Dispatchers.Default`. Do not move simple state updates/navigation or already-dispatched service calls merely to satisfy a dispatcher template.
-- Recomposition stability: state — `@Immutable`/`@Stable`, immutable collections everywhere, Compose metrics in `build/compose-metrics`.
+- Recomposition stability: state — `@Immutable`/`@Stable`, immutable collections everywhere.
 - Public API changes in shared/foundation/design/data-feature contracts require assessing both platforms. Run `./gradlew :shared:assembleSharedDebugXCFramework` when authorized and available; record an unrun check and the remaining integration risk otherwise.
 - The explicit `gc=cms` override is disabled in `gradle.properties`; do not describe it as enabled.
 - `kotlin.native.binary.smallBinary=true` for smaller iOS frameworks.

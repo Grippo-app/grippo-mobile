@@ -6,6 +6,9 @@ import com.grippo.core.foundation.models.BaseLoader
 @Immutable
 internal sealed interface LoginLoader : BaseLoader {
     @Immutable
+    data object AnalyticsConsent : LoginLoader
+
+    @Immutable
     data object LoginByEmailButton : LoginLoader
 
     @Immutable

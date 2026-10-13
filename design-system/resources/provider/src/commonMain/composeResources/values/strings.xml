@@ -881,4 +881,8 @@
     <string name="exercise_library">Exercise library</string>
     <string name="analytics_consent_title">Usage analytics</string>
     <string name="analytics_consent_description">Allow usage events to help improve the app. No entered text or body measurements are sent. You can turn this off at any time.</string>
+    <string name="login_analytics_consent">Allow usage analytics (optional)</string>
+    <string name="login_analytics_consent_details">What is collected?</string>
+    <string name="login_analytics_consent_description">With your permission, we send app screens, actions and technical event data to Google Analytics for Firebase to improve Grippo. We do not send entered text, credentials or body measurements in these events. Your choice is stored on this device and can be changed here or in Settings. Leaving this unchecked does not prevent sign-in.</string>
+    <string name="login_analytics_consent_preferences">Analytics preferences</string>
 </resources>

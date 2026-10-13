@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.local.settings.domain.LocalSettingsRepository
@@ -27,8 +28,14 @@ internal class LocalSettingsRepositoryImpl(
         val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
     }
 
-    override fun observeAnalyticsConsent(): Flow<Boolean> {
-        return dataStore.data.map { preferences -> preferences[AnalyticsConsentKey] ?: false }
+    override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> {
+        return dataStore.data.map { preferences ->
+            when (preferences[AnalyticsConsentKey]) {
+                null -> AnalyticsConsent.Undecided
+                false -> AnalyticsConsent.Denied
+                true -> AnalyticsConsent.Granted
+            }
+        }
     }
 
     override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
@@ -107,10 +114,12 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
-    override suspend fun clear(): Result<Unit> {
+    override suspend fun clearUserSettings(): Result<Unit> {
         return try {
             dataStore.edit { preferences ->
+                val consent = preferences[AnalyticsConsentKey]
                 preferences.clear()
+                if (consent != null) preferences[AnalyticsConsentKey] = consent
             }
             Result.success(Unit)
         } catch (error: CancellationException) {

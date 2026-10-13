@@ -1,5 +1,6 @@
 package com.grippo.data.features.api.local.settings
 
+import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +8,7 @@ import kotlinx.datetime.LocalDateTime
 
 public interface LocalSettingsFeature {
 
-    public fun observeAnalyticsConsent(): Flow<Boolean>
+    public fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
     public suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
 
     public fun observeRange(): Flow<Range?>
@@ -19,5 +20,6 @@ public interface LocalSettingsFeature {
     public fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus>
     public suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit>
 
-    public suspend fun clear(): Result<Unit>
+    /** Clears account preferences, preserving this installation's analytics decision. */
+    public suspend fun clearUserSettings(): Result<Unit>
 }

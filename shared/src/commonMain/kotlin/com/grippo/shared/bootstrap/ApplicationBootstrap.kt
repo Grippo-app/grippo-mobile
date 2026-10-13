@@ -1,6 +1,7 @@
 package com.grippo.shared.bootstrap
 
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.toolkit.analytics.Analytics
 import com.grippo.toolkit.analytics.lifecycle.AnalyticsBootstrap
 import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
@@ -32,9 +33,9 @@ public class ApplicationBootstrap internal constructor(
     init {
         localSettingsFeature.observeAnalyticsConsent()
             .distinctUntilChanged()
-            .onEach { granted ->
+            .onEach { consent ->
                 collectionController.updateCollection(
-                    if (granted) AnalyticsCollection.Granted else AnalyticsCollection.Denied
+                    if (consent == AnalyticsConsent.Granted) AnalyticsCollection.Granted else AnalyticsCollection.Denied
                 )
             }
             .retryWhen { error, attempt ->

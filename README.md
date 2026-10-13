@@ -86,6 +86,30 @@ This project demonstrates:
 4. Build iOS framework: `./gradlew :shared:assembleSharedDebugXCFramework`
 5. Run iOS project via Xcode
 
+### Build performance
+
+Build the target you need, and keep Gradle outputs between edits. Avoid routine
+`clean` or aggregate `build` calls; they expand the work beyond a development build.
+Build/configuration caches and incremental Kotlin/Native compilation are already enabled.
+
+The default single worker protects memory during iOS Release linking. For Android,
+try two workers and compare profiles on your machine before increasing parallelism:
+
+```sh
+./gradlew :androidApp:assembleDebug --max-workers=2 --profile
+```
+
+Compare the same task with `--max-workers=1` and `--max-workers=2`, using equivalent
+source changes and warm caches. Run one build at a time; compare task execution and
+memory pressure as well as total duration. Local profiles are in `build/reports/profile/`.
+A no-change build measures cache reuse rather than compiler throughput.
+
+The current Xcode project consumes a manually built XCFramework containing both
+iOS targets. Continue rebuilding it with `:shared:assembleSharedDebugXCFramework`
+after Kotlin/resource edits. Switching development to Xcode's active-target direct
+integration can avoid building the second target, but requires a separate coherent
+migration of framework linking and Compose resource packaging.
+
 ### Author
 
 **Max Voitenko**  

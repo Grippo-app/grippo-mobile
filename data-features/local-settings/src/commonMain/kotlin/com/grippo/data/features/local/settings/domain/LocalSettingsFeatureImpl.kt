@@ -1,6 +1,7 @@
 package com.grippo.data.features.local.settings.domain
 
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ internal class LocalSettingsFeatureImpl(
     private val repository: LocalSettingsRepository
 ) : LocalSettingsFeature {
 
-    override fun observeAnalyticsConsent(): Flow<Boolean> = repository.observeAnalyticsConsent()
+    override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> = repository.observeAnalyticsConsent()
 
     override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
         return repository.setAnalyticsConsent(granted)
@@ -42,7 +43,7 @@ internal class LocalSettingsFeatureImpl(
         return repository.setHomeWelcomeStatus(value)
     }
 
-    override suspend fun clear(): Result<Unit> {
-        return repository.clear()
+    override suspend fun clearUserSettings(): Result<Unit> {
+        return repository.clearUserSettings()
     }
 }

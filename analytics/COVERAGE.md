@@ -1,3 +1,73 @@
+# Login consent integration (2026-10-14)
+
+Current scope: AuthRouter.AuthProcess → AuthProcessRouter.Login → LoginComponent
+→ retained LoginViewModel → LoginScreen. Login remains one independent screen with
+AuthScreen.Login / auth_login and its existing screenPresentation. Auth/AuthProcess
+containers keep null. Registration and Google/Apple alternative paths enter through
+these existing Login callbacks; no route/context field or new screen is introduced.
+
+## Behavior and observations
+
+- LocalSettings observes AnalyticsConsent (Undecided/Denied/Granted) from the existing
+  nullable Boolean preference. Absence is distinct from a saved false. Core/bootstrap
+  grants SDK collection only for Granted; Settings renders absence as unchecked.
+- The optional Login checkbox starts unchecked for a fresh draft and is shown for
+  Undecided. A small expandable disclosure identifies Google Analytics for Firebase,
+  usage/technical events, exclusions and withdrawal; there is no invented policy URL.
+  Text, checkbox colors/accessibility and scrollable layout use the current design
+  tokens/resources. Saved choices collapse the checkbox to an Analytics preferences
+  link, which can reopen the same control before authentication (including after
+  provider cancellation/failure). No new dialog/presentation contract is introduced.
+- onAnalyticsConsentChange observes no telemetry: Undecided edits the actual local
+  checkbox input; a known decision changes the durable preference directly through
+  the existing safeLaunch/error pipeline. Source-pending/busy and equal known values
+  reject edits. Description expansion is UI-only and deliberately uninstrumented.
+- Email login retains busy/email/password validity guards. Google/Apple retain busy
+  guards and the complete existing provider+login block. Each accepted callback saves
+  an Undecided choice before Submit and trackOperation; Login Register saves before
+  its existing Register observation/navigation. False allows all methods; no source
+  readiness or affirmative-consent guard is added to authentication. If the source is
+  still pending, authentication proceeds without inventing/overwriting a choice, while
+  the application collection policy stays fail-closed until the source is known.
+- Consent persistence is not an auth operation. Write failures/cancellation propagate
+  through the existing safeLaunch pipeline, before auth telemetry/provider execution.
+  Read errors retry only after the error dialog is dismissed. No reporting exception
+  changes login behavior; no new operation/event schema or version is needed (all v1).
+- Login's selected draft is not permission. SDK collection changes only after the
+  actual persisted decision. Pre-consent events are discarded and never replayed;
+  source/worker/SDK scheduling still requires runtime verification of actual delivery.
+
+## Preservation inventory and source gate
+
+| Owner | Field/group | Policy | Source/key and restoration |
+|---|---|---|---|
+| LoginViewModel / LoginState | analyticsConsentGranted (unfinished checkbox input) | Preserve | Existing LoginComponent DRAFT / LoginDraft supplier and LoginState serializer; initial false, saved true/false survives supported StateKeeper restoration |
+| LoginViewModel | analyticsConsent (source-pending or actual stored preference) | Rebuild | @Transient default null; LocalSettings Infinity observation on fresh VM, source never overwrites the unfinished input |
+| LocalSettingsRepository | accepted true/false choice | Preserve durably per installation | Existing analytics_consent Boolean key; false maps Denied, missing maps Undecided; clearUserSettings preserves it atomically across logout/delete |
+| LoginState | email | Preserve unchanged | Existing LoginDraft; existing route/email priority unchanged |
+| LoginState / providers | password, availability, native auth contexts | Exclude/rebuild unchanged | Existing password/provider @Transient fields and runtime UI contexts; no secret or analytics provenance enters archives |
+| LoginScreen / VM | expansion/scroll, focus, jobs/loaders and errors | Runtime / UI presentation only | Compose ownership and existing VM scope; no new persistence keys/restore flags/caches |
+
+Old Boolean preferences remain valid. Old LoginDraft archives use false for the new
+stable-default checkbox field. Saved decision wins over an old unfinished input:
+known choices are never overwritten by saveAnalyticsConsent. Retained VM precedence,
+existing shell checkpoint limits and password exclusion remain intact. No server,
+backend/auth payload, transport SDK or schema/storage migration is added.
+
+## Verification
+
+Pending final source/diff and Android/iOS integration results. No automated test
+sources/infrastructure are introduced. Independent review is unavailable under the
+current agent restrictions; self-review does not count as independent review.
+Manual checks unrun: absent/false/true preference; checkbox + all four entry callbacks;
+invalid/busy callbacks; provider failure/cancel then withdrawal via the Login link;
+read/write failures; pause/resume; supported fresh saved-state restoration of the
+unfinished checkbox/email without password; logout/delete retention; Settings update
+and fresh reinstall; small-screen/large-font rendering and actual SDK delivery.
+Earlier build results below are scoped to their original source revisions.
+
+---
+
 # Current analytics contract review (2026-10-14)
 
 This section defines the current changes; dated build/review records below remain
@@ -6,7 +76,7 @@ historical evidence for their original revisions, not verification of this revis
 ## Collection policy and Settings
 
 Collection is explicitly opt-in. `analytics_consent` is a Boolean preference in the
-existing LocalSettings/DataStore owner; missing/cleared values mean false. ApplicationBootstrap
+existing LocalSettings/DataStore owner; absence is Undecided and never authorizes collection. ApplicationBootstrap
 owns one application-lifetime observation before platform sink attachment. It applies
 Granted/Denied through Analytics; read failures deny collection while the existing
 preference observation is retried with a delay increasing from one to thirty seconds. Platform shells still initialize
@@ -28,9 +98,9 @@ Existing Settings Logout/Delete/Back coverage remains unchanged.
 
 Preservation inventory: consent is immediately committed to the existing durable
 owner, not an unfinished form; Settings rebuilds it through an Infinity observation.
-No StateKeeper copy or restore cache is needed. The existing LogoutUseCase and
-DeleteProfileUseCase clear LocalSettings, revoking consent; new sessions default to
-false. Jobs/loaders/focus, telemetry IDs and live dialogs remain runtime-only.
+No StateKeeper copy or restore cache is needed. LogoutUseCase/DeleteProfileUseCase call clearUserSettings, atomically preserving
+this installation's saved consent while clearing account preferences. New installs
+remain Undecided/off. Jobs/loaders/focus, telemetry IDs and live dialogs are runtime-only.
 
 ## Screens and central actions
 
@@ -103,7 +173,7 @@ opt-in/deprecation warnings remain. This validates compilation/export, not SDK d
 No automated test infrastructure is introduced. Independent local review is unavailable
 under this chat's agent restrictions; self-review is not independent review.
 Manual scenarios remain unrun: opt-in/off across restart, settings write/read failure,
-logout/delete revocation, native lifecycle/restoration, error/cancellation injection,
+installation consent retention across logout/delete, native lifecycle/restoration, error/cancellation injection,
 rendered Settings layout and actual SDK delivery. Build success alone does not prove them.
 
 ---

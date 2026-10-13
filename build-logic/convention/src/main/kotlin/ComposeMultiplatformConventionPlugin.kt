@@ -4,7 +4,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class ComposeMultiplatformConventionPlugin : Plugin<Project> {
@@ -12,13 +11,6 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.applySafely("org.jetbrains.kotlin.plugin.compose")
             pluginManager.applySafely("org.jetbrains.compose")
-
-            pluginManager.withPlugin("org.jetbrains.kotlin.plugin.compose") {
-                extensions.configure<ComposeCompilerGradlePluginExtension> {
-                    metricsDestination.set(layout.buildDirectory.dir("compose-metrics"))
-                    reportsDestination.set(layout.buildDirectory.dir("compose-reports"))
-                }
-            }
 
             pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
                 extensions.configure<KotlinMultiplatformExtension> {

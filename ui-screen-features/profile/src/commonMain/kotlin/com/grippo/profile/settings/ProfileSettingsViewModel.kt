@@ -9,6 +9,7 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.account_deletion
 import com.grippo.design.resources.provider.account_deletion_description
@@ -38,7 +39,7 @@ internal class ProfileSettingsViewModel(
     private fun observeAnalyticsConsent() {
         update { it.copy(analyticsConsent = null) }
         localSettingsFeature.observeAnalyticsConsent()
-            .onEach { granted -> update { it.copy(analyticsConsent = granted) } }
+            .onEach { consent -> update { it.copy(analyticsConsent = consent == AnalyticsConsent.Granted) } }
             .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
     }
 

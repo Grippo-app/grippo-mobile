@@ -19,6 +19,7 @@ internal class LoginComponent(
     override val viewModel = componentContext.retainedInstance {
         LoginViewModel(
             analytics = getKoin().get(),
+            localSettingsFeature = getKoin().get(),
             loginUseCase = getKoin().get(),
             googleAuthProvider = getKoin().get(),
             appleAuthProvider = getKoin().get(),

@@ -2,8 +2,7 @@
 
 > Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
 
-Compose conventions on top of Kotlin style (enforced by review + the Compose
-compiler's stability metrics).
+Compose conventions on top of Kotlin style, enforced by source review.
 
 ## Stability (MUST)
 
