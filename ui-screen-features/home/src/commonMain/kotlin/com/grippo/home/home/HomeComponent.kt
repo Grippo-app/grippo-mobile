@@ -23,6 +23,7 @@ internal class HomeComponent(
 
     override val viewModel = componentContext.retainedInstance {
         HomeViewModel(
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             localSettingsFeature = getKoin().get(),
             dialogController = getKoin().get(),

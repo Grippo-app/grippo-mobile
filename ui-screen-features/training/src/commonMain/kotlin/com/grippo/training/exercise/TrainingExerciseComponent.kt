@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
@@ -22,6 +23,8 @@ internal class TrainingExerciseComponent(
 
     override val viewModel: TrainingExerciseViewModel = componentContext.retainedInstance {
         TrainingExerciseViewModel(
+            analytics = getKoin().get(),
+            initialState = restoreState(DRAFT),
             exercise = exercise,
             exerciseExampleFeature = getKoin().get(),
             dialogController = getKoin().get(),
@@ -33,6 +36,7 @@ internal class TrainingExerciseComponent(
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
 
         observeResult(
@@ -72,5 +76,9 @@ internal class TrainingExerciseComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         TrainingExerciseScreen(state.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("TrainingExerciseDraft", TrainingExerciseState.serializer())
     }
 }
