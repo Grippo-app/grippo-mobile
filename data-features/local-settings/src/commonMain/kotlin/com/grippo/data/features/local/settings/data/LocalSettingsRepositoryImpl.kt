@@ -8,6 +8,7 @@ import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.local.settings.domain.LocalSettingsRepository
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
@@ -30,7 +31,7 @@ internal class LocalSettingsRepositoryImpl(
     }
 
     override suspend fun setRange(range: Range?): Result<Unit> {
-        return runCatching {
+        return try {
             dataStore.edit { preferences ->
                 val key = range?.key
                 if (key == null) {
@@ -39,6 +40,11 @@ internal class LocalSettingsRepositoryImpl(
                     preferences[RangeKey] = key
                 }
             }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
 
@@ -49,7 +55,7 @@ internal class LocalSettingsRepositoryImpl(
     }
 
     override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit> {
-        return runCatching {
+        return try {
             dataStore.edit { preferences ->
                 if (value == null) {
                     preferences.remove(LastGoalSuggestionShownAtKey)
@@ -57,6 +63,11 @@ internal class LocalSettingsRepositoryImpl(
                     preferences[LastGoalSuggestionShownAtKey] = DateTimeUtils.toUtcIso(value)
                 }
             }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
 
@@ -67,18 +78,28 @@ internal class LocalSettingsRepositoryImpl(
     }
 
     override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit> {
-        return runCatching {
+        return try {
             dataStore.edit { preferences ->
                 preferences[HomeWelcomeStatusKey] = value.key
             }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
 
     override suspend fun clear(): Result<Unit> {
-        return runCatching {
+        return try {
             dataStore.edit { preferences ->
                 preferences.clear()
             }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
 }
