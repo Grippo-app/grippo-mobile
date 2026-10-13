@@ -3,8 +3,8 @@
 Current scope: AuthRouter.AuthProcess → AuthProcessRouter.Login → LoginComponent
 → retained LoginViewModel → LoginScreen. Login remains one independent screen with
 AuthScreen.Login / auth_login and its existing screenPresentation. Auth/AuthProcess
-containers keep null. Registration and Google/Apple alternative paths enter through
-these existing Login callbacks; no route/context field or new screen is introduced.
+containers keep null. Email, Google, Apple and Registration retain their existing
+callbacks/routes; no new screen, telemetry schema or navigation context is added.
 
 ## Behavior and observations
 
@@ -48,11 +48,11 @@ these existing Login callbacks; no route/context field or new screen is introduc
 | LoginState / providers | password, availability, native auth contexts | Exclude/rebuild unchanged | Existing password/provider @Transient fields and runtime UI contexts; no secret or analytics provenance enters archives |
 | LoginScreen / VM | expansion/scroll, focus, jobs/loaders and errors | Runtime / UI presentation only | Compose ownership and existing VM scope; no new persistence keys/restore flags/caches |
 
-Old Boolean preferences remain valid. Old LoginDraft archives use false for the new
-stable-default checkbox field. Saved decision wins over an old unfinished input:
-known choices are never overwritten by saveAnalyticsConsent. Retained VM precedence,
-existing shell checkpoint limits and password exclusion remain intact. No server,
-backend/auth payload, transport SDK or schema/storage migration is added.
+The obsolete analyticsConsentGranted field is removed, not treated as permission.
+LoginState's class-scoped JsonIgnoreUnknownKeys accepts old draft fields without
+changing global decoding or ignoring invalid types of recognized fields. The
+existing LoginDraft key/email supplier and secret exclusion remain intact. Old
+Boolean preferences stay valid; no server, storage migration or SDK change is added.
 
 ## Verification
 

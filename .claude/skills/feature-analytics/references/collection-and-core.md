@@ -34,8 +34,9 @@ decision; this skill does not make jurisdiction/store-compliance claims.
 Consent is currently an installation preference in LocalSettings. Preserve both
 saved true and saved false across account cleanup with clearUserSettings; do not
 add backend fields or account synchronization without an authorized requirement.
-UI reads the real source and writes through the normal error pipeline. An
-unfinished checkbox remains a screen draft under
+UI reads the real source and persists each checkbox change immediately through
+the normal error pipeline; there is no separate consent draft. Rebuild the transient
+UI value from LocalSettings under
 [state preservation](../../state-preservation/SKILL.md#initialization-from-persistent-settings).
 Consent controls and disclosure interactions are deliberately unreported.
 

@@ -57,20 +57,10 @@ internal class LoginViewModel(
     override fun onAnalyticsConsentChange(granted: Boolean) {
         val consent = state.value.analyticsConsent ?: return
         if (loaders.value.isNotEmpty()) return
-        if (consent == AnalyticsConsent.Undecided) {
-            update { it.copy(analyticsConsentGranted = granted) }
-            return
-        }
         if ((consent == AnalyticsConsent.Granted) == granted) return
         safeLaunch(loader = LoginLoader.AnalyticsConsent) {
             localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
         }
-    }
-
-    private suspend fun saveAnalyticsConsent() {
-        val snapshot = state.value
-        if (snapshot.analyticsConsent != AnalyticsConsent.Undecided) return
-        localSettingsFeature.setAnalyticsConsent(snapshot.analyticsConsentGranted).getOrThrow()
     }
 
     override fun onEmailChange(value: String) {
@@ -134,7 +124,6 @@ internal class LoginViewModel(
         }
 
         safeLaunch(loader = LoginLoader.LoginByEmailButton) {
-            saveAnalyticsConsent()
             analytics.trackEvent(AuthEvent.Login.Submit(Method.Email))
             val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Email)) {
                 loginUseCase.loginEmail(
@@ -156,7 +145,6 @@ internal class LoginViewModel(
             loader = LoginLoader.LoginByGoogleButton,
             mapError = ::mapAuthError,
         ) {
-            saveAnalyticsConsent()
             analytics.trackEvent(AuthEvent.Login.Submit(Method.Google))
             val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
                 val account = googleAuthProvider
@@ -179,7 +167,6 @@ internal class LoginViewModel(
             loader = LoginLoader.LoginByAppleButton,
             mapError = ::mapAuthError,
         ) {
-            saveAnalyticsConsent()
             analytics.trackEvent(AuthEvent.Login.Submit(Method.Apple))
             val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Apple)) {
                 val account = appleAuthProvider
@@ -199,11 +186,8 @@ internal class LoginViewModel(
         }
 
         val email = state.value.email.takeIf { it is EmailFormatState.Valid }?.display
-        safeLaunch(loader = LoginLoader.AnalyticsConsent) {
-            saveAnalyticsConsent()
-            analytics.trackEvent(AuthEvent.Login.Register)
-            navigateTo(LoginDirection.Registration(email))
-        }
+        analytics.trackEvent(AuthEvent.Login.Register)
+        navigateTo(LoginDirection.Registration(email))
     }
 
     override fun onBack() {

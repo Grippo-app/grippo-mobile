@@ -6,11 +6,12 @@ import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Immutable
 @Serializable
+@JsonIgnoreUnknownKeys
 internal data class LoginState(
-    val analyticsConsentGranted: Boolean = false,
     @Transient
     val analyticsConsent: AnalyticsConsent? = null,
     val email: EmailFormatState = EmailFormatState.Empty(),

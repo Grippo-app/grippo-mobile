@@ -1,6 +1,7 @@
 package com.grippo.authorization.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,7 +54,6 @@ import com.grippo.design.resources.provider.icons.GrippoLogo
 import com.grippo.design.resources.provider.login_analytics_consent
 import com.grippo.design.resources.provider.login_analytics_consent_description
 import com.grippo.design.resources.provider.login_analytics_consent_details
-import com.grippo.design.resources.provider.login_analytics_consent_preferences
 import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
@@ -136,73 +136,6 @@ internal fun LoginScreen(
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        var showConsentDetails by remember { mutableStateOf(false) }
-        val consent = state.analyticsConsent
-        if (consent != null && consent != AnalyticsConsent.Undecided) {
-            Button(
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.login_analytics_consent_preferences),
-                ),
-                size = ButtonSize.Small,
-                style = ButtonStyle.Transparent,
-                onClick = { showConsentDetails = !showConsentDetails },
-            )
-        }
-        if (consent == AnalyticsConsent.Undecided || (consent != null && showConsentDetails)) {
-            val consentGranted = if (consent == AnalyticsConsent.Undecided) {
-                state.analyticsConsentGranted
-            } else {
-                consent == AnalyticsConsent.Granted
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth().toggleable(
-                    value = consentGranted,
-                    enabled = loaders.isEmpty(),
-                    role = Role.Checkbox,
-                    onValueChange = contract::onAnalyticsConsentChange,
-                ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    checked = consentGranted,
-                    onCheckedChange = null,
-                    enabled = loaders.isEmpty(),
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = AppTokens.colors.toggle.checkedTrack1,
-                        uncheckedColor = AppTokens.colors.text.secondary,
-                        checkmarkColor = AppTokens.colors.toggle.checkedThumb,
-                        disabledCheckedColor = AppTokens.colors.button.backgroundDisabled,
-                        disabledUncheckedColor = AppTokens.colors.button.backgroundDisabled,
-                    ),
-                )
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = AppTokens.strings.res(Res.string.login_analytics_consent),
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.primary,
-                )
-            }
-            if (consent == AnalyticsConsent.Undecided) {
-                Button(
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.login_analytics_consent_details),
-                    ),
-                    size = ButtonSize.Small,
-                    style = ButtonStyle.Transparent,
-                    onClick = { showConsentDetails = !showConsentDetails },
-                )
-            }
-            if (showConsentDetails) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.login_analytics_consent_description),
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-        }
 
         val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
             when {
@@ -328,6 +261,64 @@ internal fun LoginScreen(
             )
         }
 
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        var showConsentDetails by remember { mutableStateOf(false) }
+        val consent = state.analyticsConsent
+        val consentGranted = consent != AnalyticsConsent.Denied
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                modifier = Modifier.weight(1f).toggleable(
+                    value = consentGranted,
+                    enabled = consent != null && loaders.isEmpty(),
+                    role = Role.Checkbox,
+                    onValueChange = contract::onAnalyticsConsentChange,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = consentGranted,
+                    onCheckedChange = null,
+                    enabled = consent != null && loaders.isEmpty(),
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = AppTokens.colors.text.secondary,
+                        uncheckedColor = AppTokens.colors.text.secondary,
+                        checkmarkColor = AppTokens.colors.background.screen,
+                        disabledCheckedColor = AppTokens.colors.button.backgroundDisabled,
+                        disabledUncheckedColor = AppTokens.colors.button.backgroundDisabled,
+                    ),
+                )
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = AppTokens.strings.res(Res.string.login_analytics_consent),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
+            Text(
+                modifier = Modifier
+                    .clickable(role = Role.Button) { showConsentDetails = !showConsentDetails }
+                    .padding(
+                        horizontal = AppTokens.dp.contentPadding.subContent,
+                        vertical = AppTokens.dp.contentPadding.content,
+                    ),
+                text = AppTokens.strings.res(Res.string.login_analytics_consent_details),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
+        if (showConsentDetails) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = AppTokens.strings.res(Res.string.login_analytics_consent_description),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
+
         Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
 
         Spacer(Modifier.navigationBarsPadding())
@@ -340,7 +331,7 @@ private fun ScreenPreviewEmpty() {
     PreviewContainer {
         LoginScreen(
             state = LoginState(
-                analyticsConsent = AnalyticsConsent.Undecided,
+                analyticsConsent = AnalyticsConsent.Granted,
                 email = EmailFormatState.Empty(),
                 password = PasswordFormatState.Empty(),
                 isGoogleLoginAvailable = true,
@@ -390,12 +381,11 @@ private fun ScreenPreviewLoading() {
 
 @AppPreview
 @Composable
-private fun ScreenPreviewConsentSelected() {
+private fun ScreenPreviewConsentPending() {
     PreviewContainer {
         LoginScreen(
             state = LoginState(
-                analyticsConsent = AnalyticsConsent.Undecided,
-                analyticsConsentGranted = true,
+                analyticsConsent = null,
                 isGoogleLoginAvailable = true,
                 isAppleLoginAvailable = true,
             ),

@@ -13,7 +13,7 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         implementation(projects.analytics.analyticsApi)
-        implementation(libs.kotlinx.serialization.core)
+        implementation(libs.kotlinx.serialization.json)
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.uiCore.error.errorProvider)
