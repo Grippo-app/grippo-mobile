@@ -13,24 +13,55 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         super.init()
     }
 
-    var backDispatcher: BackDispatcher = BackDispatcherKt.BackDispatcher()
+    let backDispatcher: BackDispatcher = BackDispatcherKt.BackDispatcher()
 
-    lazy var root: RootComponent = RootComponent(
-        componentContext: DefaultComponentContext(
-            lifecycle: ApplicationLifecycle(),
-            stateKeeper: nil,
-            instanceKeeper: nil,
-            backHandler: backDispatcher
-        ),
-        close: {
-            // ✅ Soft hide app
-            UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+    private let stateStore = ApplicationStateStore()
+    private var applicationState: ApplicationState?
 
-            // ❌ Hard close app
-            // exit(0)
-        },
-        deeplink: nil
-    )
+    lazy var root: RootComponent = {
+        let state: ApplicationState
+        do {
+            if let savedState = try stateStore.restore() {
+                state = try ApplicationState(savedState: savedState)
+            } else {
+                state = ApplicationState()
+            }
+        } catch {
+            NSLog("Unable to restore application state")
+            state = ApplicationState()
+        }
+        applicationState = state
+        return RootComponent(
+            componentContext: DefaultComponentContext(
+                lifecycle: ApplicationLifecycle(),
+                stateKeeper: state.stateKeeper,
+                instanceKeeper: nil,
+                backHandler: backDispatcher
+            ),
+            close: {
+                UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+            },
+            deeplink: nil
+        )
+    }()
+
+    func saveState() {
+        guard let applicationState else { return }
+        do {
+            try stateStore.save(applicationState.save())
+        } catch {
+            NSLog("Unable to save application state")
+        }
+    }
+
+    func discardSavedState() {
+        guard applicationState != nil else { return }
+        do {
+            try stateStore.clear()
+        } catch {
+            NSLog("Unable to discard application state")
+        }
+    }
 
     func application(
         _ application: UIApplication,
@@ -77,13 +108,5 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseMessaging.Messaging.messaging().appDidReceiveMessage(userInfo)
         // This bridge does not fetch application data.
         completionHandler(.noData)
-    }
-
-    func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool {
-        return true
-    }
-
-    func application(_ application: UIApplication, shouldRestoreSecureApplicationState coder: NSCoder) -> Bool {
-        return true
     }
 }

@@ -20,6 +20,7 @@
 		BA393AE72F11B00700DE3DF3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA393AE62F11B00700DE3DF3 /* GoogleService-Info.plist */; };
 		BA853F4A2DC657D900A34846 /* AppDeletage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F492DC657D300A34846 /* AppDeletage.swift */; };
 		BA853F4C2DC658B000A34846 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F4B2DC658AF00A34846 /* RootView.swift */; };
+		04A14563B1EE4FC294D720E7 /* ApplicationStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */; };
 		BAB5713F2F1164EF00147ABC /* shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAB5713E2F1164EF00147ABC /* shared.xcframework */; };
 		BAB571402F1164EF00147ABC /* shared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAB5713E2F1164EF00147ABC /* shared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */; };
@@ -53,6 +54,7 @@
 		BA393AE62F11B00700DE3DF3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BA853F492DC657D300A34846 /* AppDeletage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDeletage.swift; sourceTree = "<group>"; };
 		BA853F4B2DC658AF00A34846 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationStateStore.swift; sourceTree = "<group>"; };
 		BA9C51052F80496E00A08466 /* iosAppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosAppDebug.entitlements; sourceTree = "<group>"; };
 		BAB5713E2F1164EF00147ABC /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = "../shared/build/XCFrameworks/$(SHARED_XCFRAMEWORK_CONFIGURATION)/shared.xcframework"; sourceTree = "<group>"; };
 		BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseCrashlytics.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */,
 				2F7AD9C81ABB4D679CDC57B2 /* IosFirebaseMessaging.swift */,
 				BA853F4B2DC658AF00A34846 /* RootView.swift */,
+				A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */,
 				BA853F492DC657D300A34846 /* AppDeletage.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF8C242A565B00829871 /* Info.plist */,
@@ -255,6 +258,7 @@
 			files = (
 				BAFDC8BD2F11697600971CAB /* IosFirebaseAnalytics.swift in Sources */,
 				BA853F4C2DC658B000A34846 /* RootView.swift in Sources */,
+				04A14563B1EE4FC294D720E7 /* ApplicationStateStore.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				BA853F4A2DC657D900A34846 /* AppDeletage.swift in Sources */,
 				BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */,
@@ -305,7 +309,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;

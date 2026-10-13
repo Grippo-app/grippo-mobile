@@ -1090,5 +1090,53 @@ docs и три task records. Отдельное параллельное изм�
 UI substitutes/exclusions прежние и перечислены в ui-after-jvm/tests.json;
 foundation reuse checks — foundation-cached/tests.json. Android/iOS builds,
 Gradle/KSP/generated DI, rendering/native SDK UI и Firebase не запускались.
-Current iOS shell по-прежнему не предоставляет архив StateKeeper; common checks
+На момент этого прохода iOS shell не предоставлял архив StateKeeper; common checks
 проверяют восстановление из supplied archive, не iOS app-shell process restart.
+
+## iOS StateKeeper bridge — 2026-10-13
+
+- [x] Добавить компактный ApplicationState codec/dispatcher в shared и вернуть
+  saved state до создания root; сохранить существующее lazy ownership/lifecycle.
+- [x] Добавить атомарный backup-excluded protected file store с version/build/format
+  и checksum validation, consume-once restore, constant error logs и fresh-root recovery.
+- [x] Один scenePhase hook: background checkpoint, active disk clear только после
+  root initialization, inactive no-op; без отдельной lifecycle системы.
+- [x] Удалить inert secure-state callbacks, зарегистрировать Swift source в actual
+  PBX и обоих templates; feature keys, UI/domain/analytics не менять.
+- [x] Независимый review loop: исправить active-clear-before-lazy-restore race.
+- [x] 10 actual common codec tests, 70 freshly executed auth tests через новый codec
+  в двух temporary restoration fixtures, 12 actual macOS Swift store checks.
+  Backup attribute: 1 explicit skip из-за macOS sandbox; iOS protection не проверена.
+- [x] Актуализировать canonical skills/CLAUDE и текущие task records; проверить
+  syntax/PBX/templates/links/source+artifact SHA/scope, без Android/iOS/Gradle builds.
+
+Native export compilation, scene delivery и iOS process restart не выполнялись.
+Policy — восстановление только завершённого background checkpoint этого build;
+резкое завершение активного процесса не имеет гарантированного архива.
+Evidence: `/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/ios-state-restoration-20261013-18khj6xy/`.
+
+## Повторный аудит iOS StateKeeper — 2026-10-13
+
+- [x] Перекрёстно проверить restore/save/clear, scenePhase, реальный Essenty
+  ApplicationLifecycle и lazy RootComponent ownership; новых lifecycle дефектов
+  не выявлено, дополнительных observers/jobs/providers не добавлено.
+- [x] Убрать изменяемость BackDispatcher и промежуточную переменную в RootView.
+- [x] Добавить regression сохранности последнего архива при неудачной записи,
+  отделить backup capability probe от actual store assertion; negative mutation
+  без atomic replacement ожидаемо проваливает проверку.
+- [x] Заново выполнить 10 common JVM tests и 13 Swift store checks; backup exclusion
+  — 1 explicit host skip. Native file protection не проверялась.
+- [x] Проверить iOS-format codec на JVM из точных Essenty common/nonJavaMain source
+  bytes: 12 tests (10 current + 2 temporary) и 70 actual auth/domain/VM tests.
+  Auth artifacts reused только после current source/artifact SHA gates; classpath
+  не содержит Android StateKeeper или старый ApplicationState jar.
+- [x] Обновить process-death reference: point-in-time/session границы, lazy nested
+  decoding, различия JVM/nonJavaMain и честный host capability skip.
+- [x] Финальные source/syntax/PBX/Info.plist/skills/links/fences/scope/index проверки;
+  без Android/iOS builds, Gradle/KSP, Native ABI, scene/device runtime и Firebase.
+
+Review, пределы и команды — [повторный аудит](authorization-review.md#повторный-аудит-ios-statekeeper).
+Fresh logs/manifests:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/ios-state-review-20261013-dllqj_u3/`.
+NonJavaMain runner/evidence:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/ios-state-restoration-20261013-18khj6xy/native-format-jvm/`.

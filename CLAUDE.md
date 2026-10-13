@@ -34,12 +34,13 @@ Groups:
 ### App shells (thin, no business logic)
 
 - `:androidApp` — `Application` + `MainActivity` + DI startup + Firebase setup. Decomposes root via `retainedComponent { RootComponent(...) }`. Edge-to-edge, splash screen, deeplink from intent (`onCreate` for cold start, `onNewIntent` for warm).
-- `:iosApp` — Xcode project. Links `shared.xcframework` and starts `RootViewController` from `iosMain`.
+- `:iosApp` — Xcode project. Links `shared.xcframework` and starts `RootViewController` from `iosMain`. AppDelegate owns one lazy root and restores its StateKeeper before construction. The single SwiftUI scene saves a background checkpoint and discards it on becoming active; existing ApplicationLifecycle owns lifecycle transitions.
 
 ### `:shared` — composition root
 
 - `Koin.kt` — `Koin.init { ... }` starts all Koin modules **explicitly by enumeration** and returns `bootstrap/ApplicationBootstrap` with typed startup contracts. Any new module is added here manually. Each service core owns its public annotated DI module; implementations live in `core/internal` with Kotlin `internal` visibility. AnalyticsModule owns its internal platform configuration through an `expect/actual` factory and `@Single`. App shells attach SDK adapters.
 - `RootComponent` / `RootViewModel` / `RootScreen` / `RootContract` / `RootDirection` / `RootLoader` / `RootState` — primary stack navigator + token observer for auto-logout (`authorizationFeature.getToken()` → `onEach { if (it == null) navigateTo(Login) }`).
+- `state/ApplicationState` — shell archive codec and StateKeeperDispatcher owner. Swift uses its typed stateKeeper when constructing the root; features keep their existing local PersistenceKey drafts. No platform storage, session authority or generic ViewModel persistence lives in this class.
 - `DialogComponent` — separate slot navigator for bottom sheets layered above the stack.
 
 ### Design system
@@ -299,7 +300,7 @@ public sealed class ProfileRouter : BaseRouter {
 }
 ```
 
-Decompose `childStack(serializer = RootRouter.serializer(), initialConfiguration = ..., key = "RootComponent", childFactory = ::createChild)` supports screen-route restoration when the platform shell supplies saved StateKeeper state — therefore **all Routers and payloads inside them (`StageState`, etc.) must be `@Serializable`**. Android uses `retainedComponent`; the current iOS shell supplies no persisted StateKeeper archive. See [platform limits](.claude/skills/ui-feature/references/process-death.md).
+Decompose `childStack(serializer = RootRouter.serializer(), initialConfiguration = ..., key = "RootComponent", childFactory = ::createChild)` supports screen-route restoration when the platform shell supplies saved StateKeeper state — therefore **all Routers and payloads inside them (`StageState`, etc.) must be `@Serializable`**. Android uses `retainedComponent`; iOS restores a consumed, validated checkpoint saved after entering background. An abrupt active-process termination has no guaranteed checkpoint. See [platform policy](.claude/skills/ui-feature/references/process-death.md#ios-specifics).
 
 For every new or changed feature, apply the mandatory
 [state-preservation skill](.claude/skills/state-preservation/SKILL.md). Inventory

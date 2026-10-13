@@ -6,8 +6,8 @@ the implementation; the linked skill defines the field inventory and completion 
 
 Serializable screen routes support restoration when the platform shell supplies
 saved navigation state. Android's `MainActivity` creates the root through
-`retainedComponent { ... }`; the iOS shell currently supplies no saved
-StateKeeper state. Do not promise the same stack on every app restart or claim
+`retainedComponent { ... }`; iOS supplies a validated checkpoint after completed
+background saving. Do not promise the same stack on every app restart or claim
 that loaders or all ViewModel state are automatically serialized. Fresh ViewModels
 rebuild state from route inputs, explicitly saved business drafts and data sources.
 Dialog sessions and their callbacks are in memory and are not restored after process death.
@@ -15,11 +15,11 @@ Dialog sessions and their callbacks are in memory and are not restored after pro
 ## The mechanism
 
 Screen `childStack` instances use their Router serializers with Decompose's
-`StateKeeper`. When Android recreates the root with saved navigation state, the
+`StateKeeper`. When the shell recreates the root with saved navigation state, the
 stack is deserialized and Components rebuild their ViewModels:
 
 ```
-Android recreation with saved state → StateKeeper.consume() → router stack rebuilt
+Shell supplies saved archive → StateKeeper.consume() → router stack rebuilt
   → childStack(serializer = RootRouter.serializer(), ...) restores all configs
   → childFactory(config, ctx) recreates each Component
   → each Component re-creates its ViewModel via retainedInstance { ... }
@@ -166,12 +166,13 @@ route replacement. The supplier runs when StateKeeper saves, not on every edit.
 Dialog sessions and callbacks remain unsaved. Test save → serialization roundtrip
 → destroy → fresh ComponentContext/InstanceKeeper → restore, including unfinished
 edits, Back and final operation inputs; retention alone is insufficient proof.
-This preserves drafts only when the shell supplies saved state, not on every
-cold start or in the current iOS shell.
+This preserves drafts when the shell supplies saved state. Android recreation and
+iOS background checkpoints have different delivery policies; neither guarantees
+a draft on every arbitrary cold start.
 
 ### 6. Route inputs seed filters; StateKeeper preserves the latest selection
 
-For supported screen-route restoration, keep a date-range filter in the `<Feature>Router.<Screen>` config (`NoteArchive(val initialRange: DateRange)`). The component pulls it from the config and threads it into the ViewModel via `retainedInstance { <X>ViewModel(initialRange, ...) }`, which stores it in initial state. This supplies the selected input when the shell restores that route; it does not add iOS persistence.
+For supported screen-route restoration, keep a date-range filter in the `<Feature>Router.<Screen>` config (`NoteArchive(val initialRange: DateRange)`). The component pulls it from the config and threads it into the ViewModel via `retainedInstance { <X>ViewModel(initialRange, ...) }`, which stores it in initial state. This supplies the selected input when the shell restores that route; the owning Component still preserves later edits locally.
 
 When the user changes the range/filter, the ViewModel updates `state`; the owning
 Component saves the current selection in its local business draft. Restore that
@@ -193,16 +194,60 @@ selection even before Next. Do not serialize DialogConfig, callbacks or sessions
 
 ## iOS specifics
 
-iOS apps can be terminated after long backgrounding. The current shell in
-`iosApp/iosApp/AppDeletage.swift` constructs `DefaultComponentContext` with
-`stateKeeper: nil` and `instanceKeeper: nil`. It does not supply a persisted
-Decompose archive or background/foreground save/restore bridge.
-`shouldSaveSecureApplicationState` / `shouldRestoreSecureApplicationState`
-returning `true` does not provide that bridge. `RootViewController.kt` renders
-the supplied root; it does not persist navigation state. A new iOS process builds
-a fresh navigation tree, with ViewModels rebuilding domain-backed data. Keep
-screen routes serializable, but do not claim iOS process-death stack restoration
-is implemented.
+The current app uses one scene (`UIApplicationSupportsMultipleScenes = false`) and
+one lazy root owned by `iosApp/iosApp/AppDeletage.swift`. Keep the existing
+ApplicationLifecycle owner; SwiftUI checkpoint handling does not drive another
+lifecycle or recreate the root on foregrounding.
+
+Maintained sources:
+
+- `shared/src/commonMain/kotlin/com/grippo/shared/state/ApplicationState.kt` owns
+  StateKeeperDispatcher and serializes its latest suppliers. It exposes a fresh
+  constructor, a throwing saved-archive constructor and throwing save(); no local
+  feature persistence, platform files or recovery lives in the codec.
+- `iosApp/iosApp/ApplicationStateStore.swift` owns the native checkpoint. Its
+  envelope contains format version, application version, build version and SHA-256
+  of the exact UTF-8 state. Save is atomic in Application Support, excluded from
+  backup, with completeFileProtectionUntilFirstUserAuthentication so background
+  writes remain possible after the phone locks following its first unlock.
+- `AppDeletage.swift` consumes the checkpoint once, before archive decoding and
+  DefaultComponentContext/RootComponent construction. Its external error boundary
+  uses a constant log and fresh ApplicationState for store/codec failures. Root
+  construction remains strict. Saving an uninitialized root is a no-op: it must
+  not create UI for a background launch.
+- `iosApp/iosApp/iOSApp.swift` has the single scenePhase hook: background saves;
+  active removes only the disk checkpoint; inactive does nothing. Both saving and
+  clearing are no-ops before ApplicationState/root initialization, so active delivery
+  cannot discard the checkpoint before lazy restoration. Returning to foreground
+  keeps the current root, drafts and retained ViewModels in memory.
+  RootView and RootViewController render the supplied root; they add no persistence.
+
+Restoration supports a completed background checkpoint from the same application,
+build and archive format. Missing, mismatched or modified checkpoints start fresh;
+a consumed checkpoint cannot replay repeatedly after a failed launch. Increment the
+build or archive format when serializer, key or route changes make saved data
+incompatible: nested Essenty data is decoded lazily, and the envelope is not a
+migration framework. Keep existing Component keys unchanged in ordinary refactors.
+
+Abrupt active-process termination, a failed checkpoint write and termination before
+background saving completes have no restoration guarantee. Session/authorization
+state remains owned by its existing data layer; the archive stores no credentials
+and does not authorize navigation. Dialogs, jobs and callbacks remain unsaved.
+The checkpoint is a point-in-time UI snapshot. Existing business operations can
+finish after it is saved; later changes to tokens, profile data or navigation are
+not retroactively included. Do not claim session revalidation or transactional
+consistency with the data layer from this bridge alone, and do not put credentials
+or session policy in its envelope to compensate.
+
+Verification must distinguish actual codec/fresh-Component and file-store tests
+from native shell execution. A JVM or host Swift test does not prove scene delivery,
+file protection, generated Swift exports or an iOS process restart. Record unrun
+platform checks when builds/runtime are outside the user's permitted scope.
+Essenty's JVM and iOS state formats differ. A host test may compile the exact
+cached nonJavaMain JSON codec to check iOS-format archives; label it as a host
+format check, not a Kotlin/Native or UIKit lifecycle test. If a host capability
+check is unavailable, report the skip explicitly; never infer unavailability from
+a failing assertion on the implementation being tested.
 
 ## What "Don't Keep Activities" tests
 

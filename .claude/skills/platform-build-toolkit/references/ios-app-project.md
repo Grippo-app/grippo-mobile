@@ -18,12 +18,11 @@ reference, `ios-framework.md`.)
    - `<TEAM_ID>` — Apple Developer Team ID; leave empty for the simulator, set it for device builds.
 3. **Firebase gate** (`firebaseEnabled`):
    - `true` → use **`project.pbxproj` (firebaseEnabled: true)**; keep `IosFirebase*.swift` +
-     `GoogleService-Info.plist`; keep the `// region firebase-conditional … // endregion
-     firebase-conditional` blocks in `AppDelegate.swift` (the marker comment lines may stay).
+     `GoogleService-Info.plist`; preserve SDK setup in
+     `application(_:didFinishLaunchingWithOptions:)` from the maintained AppDelegate.
    - `false` → use **`project.pbxproj` (firebaseEnabled: false)**; omit the three `IosFirebase*.swift`
-     files and `GoogleService-Info.plist`; strip everything between the
-     `// region firebase-conditional` / `// endregion firebase-conditional` markers in
-     `AppDelegate.swift`.
+     files and `GoogleService-Info.plist`; omit Firebase imports/SDK setup from
+     AppDelegate while preserving root and state restoration ownership.
 4. `chmod +x iosApp/run-ios.sh`.
 5. Build the framework once so Xcode can resolve `import <iosFrameworkName>`:
    `./gradlew :shared:assemble<IosFrameworkName>DebugXCFramework`.
@@ -52,77 +51,60 @@ struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate: AppDelegate
 
+    @Environment(\.scenePhase)
+    private var scenePhase
+
     var body: some Scene {
         WindowGroup {
             RootView(root: appDelegate.root, backDispatcher: appDelegate.backDispatcher)
                 .ignoresSafeArea(edges: .all) // https://youtrack.jetbrains.com/issue/CMP-3621
         }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active:
+                appDelegate.discardSavedState()
+            case .background:
+                appDelegate.saveState()
+            case .inactive:
+                break
+            @unknown default:
+                break
+            }
+        }
     }
 }
 ```
 
-### AppDelegate.swift
+### AppDelegate and checkpoint store
 
-Firebase blocks are marked `// region firebase-conditional`; strip them when `firebaseEnabled: false`.
+Use the maintained sources rather than duplicating the shell in this reference:
 
-_Target path:_ `iosApp/iosApp/AppDelegate.swift`
+- `iosApp/iosApp/AppDeletage.swift`: one lazy RootComponent, DI/bootstrap and
+  existing ApplicationLifecycle ownership. Restore ApplicationState before
+  constructing DefaultComponentContext, pass its stateKeeper, and guard saving
+  with the initialized optional state so it cannot construct a root. Clearing
+  on active is also a no-op before initialization, preserving the checkpoint
+  until the lazy root can restore it.
+- `iosApp/iosApp/ApplicationStateStore.swift`: native atomic, backup-excluded,
+  protected checkpoint file with format/application/build identity and SHA-256.
+  Add this Swift file to the app target's source phase.
+- `shared/src/commonMain/kotlin/com/grippo/shared/state/ApplicationState.kt`:
+  shared archive codec and StateKeeperDispatcher, exported through shared.
 
-```swift
-import UIKit
-import <iosFrameworkName>
-// region firebase-conditional
-import FirebaseCore
-// endregion firebase-conditional
+Paths are relative to the project root; substitute the framework import when
+adapting the shell. New templates use AppDelegate.swift as required by the PBX
+fences; the existing checkout keeps its AppDeletage.swift filename.
+Keep a single scene (UIApplicationSupportsMultipleScenes=false)
+and the iOSApp phase calls above. RootView's root/backDispatcher API stays unchanged.
+Read the [state-preservation skill](../../state-preservation/SKILL.md) and
+[iOS checkpoint policy](../../ui-feature/references/process-death.md#ios-specifics)
+when changing this bridge. Feature drafts keep their local Component keys; do not
+add a second lifecycle, session metadata, feature storage or foreground restoration.
 
-/// Owns the root `RootComponent` and the Essenty `BackDispatcher`.
-///
-/// The root is constructed here (not in `iOSApp.init`) so the `AppDelegate` is fully attached to
-/// `UIApplication` before first use.
-// region firebase-conditional
-/// This also lets Firebase's `AppDelegateSwizzler` find the delegate: configure Firebase from
-/// `application(_:didFinishLaunchingWithOptions:)`, since `iOSApp.init` runs too early for it.
-// endregion firebase-conditional
-class AppDelegate: NSObject, UIApplicationDelegate {
-
-    let bootstrap: ApplicationBootstrap
-
-    override init() {
-        bootstrap = Koin().doInit(appDeclaration: { _ in })
-        super.init()
-    }
-
-    let backDispatcher: BackDispatcher = BackDispatcherKt.BackDispatcher()
-
-    lazy var root: RootComponent = RootComponent(
-        componentContext: DefaultComponentContext(
-            lifecycle: ApplicationLifecycle(),
-            stateKeeper: nil,
-            instanceKeeper: nil,
-            backHandler: backDispatcher
-        ),
-        close: {
-            // Soft-hide the app (iOS has no supported "exit" — sending to background is the norm).
-            UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
-        },
-        deeplink: nil
-    )
-
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        // region firebase-conditional
-        FirebaseApp.configure()
-        let analytics = IosFirebaseAnalytics()
-        analytics.setCollection(collection: .unknown)
-        bootstrap.analytics.attachSink(analyticsSink: analytics)
-        bootstrap.crashReporting.attachSink(crashSink: IosFirebaseCrashlytics())
-        bootstrap.messaging.attachTokenProvider(tokenProvider: IosFirebaseMessaging())
-        // endregion firebase-conditional
-        return true
-    }
-}
-```
+When Firebase is enabled, preserve the maintained Firebase imports, SDK adapters,
+APNs callbacks and bootstrap attachment after FirebaseApp.configure() in
+application(_:didFinishLaunchingWithOptions:). When disabled, omit that SDK wiring
+and its files; root/checkpoint ownership remains the same.
 
 ### RootView.swift
 
@@ -622,6 +604,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 		BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */; };
 		BAFDC8BD2F11697600971CAB /* IosFirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */; };
 		D3D0B9802FA23C2C00AA1234 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */; };
+		04A14563B1EE4FC294D720E7 /* ApplicationStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -638,6 +621,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 		BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseAnalytics.swift; sourceTree = "<group>"; };
 		D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		F0054F872EE5B3C300F40B1C /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationStateStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -694,6 +678,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 				BA853F492DC657D300A34846 /* AppDelegate.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF8C242A565B00829871 /* Info.plist */,
+				A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 			);
@@ -823,6 +808,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 			files = (
 				BAFDC8BD2F11697600971CAB /* IosFirebaseAnalytics.swift in Sources */,
 				BA853F4C2DC658B000A34846 /* RootView.swift in Sources */,
+				04A14563B1EE4FC294D720E7 /* ApplicationStateStore.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				BA853F4A2DC657D900A34846 /* AppDelegate.swift in Sources */,
 				BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */,
@@ -855,7 +841,6 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1067,6 +1052,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 		BA853F4A2DC657D900A34846 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F492DC657D300A34846 /* AppDelegate.swift */; };
 		BA853F4C2DC658B000A34846 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F4B2DC658AF00A34846 /* RootView.swift */; };
 		D3D0B9802FA23C2C00AA1234 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */; };
+		04A14563B1EE4FC294D720E7 /* ApplicationStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1079,6 +1065,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 		BA853F4B2DC658AF00A34846 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		F0054F872EE5B3C300F40B1C /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationStateStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1126,6 +1113,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 				BA853F492DC657D300A34846 /* AppDelegate.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF8C242A565B00829871 /* Info.plist */,
+				A36BFC3F123B449391EF4463 /* ApplicationStateStore.swift */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 			);
@@ -1243,6 +1231,7 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 			buildActionMask = 2147483647;
 			files = (
 				BA853F4C2DC658B000A34846 /* RootView.swift in Sources */,
+				04A14563B1EE4FC294D720E7 /* ApplicationStateStore.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				BA853F4A2DC657D900A34846 /* AppDelegate.swift in Sources */,
 			);
@@ -1272,7 +1261,6 @@ _Target path:_ `iosApp/iosApp.xcodeproj/project.pbxproj`
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;

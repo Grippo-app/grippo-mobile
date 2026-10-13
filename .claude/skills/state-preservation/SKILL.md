@@ -92,7 +92,12 @@ Use this compact inventory in the existing feature record:
   callbacks, emit synthetic analytics, auto-submit authentication or serialize jobs.
   Restarting existing startup/completion operations remains business-owned; verify
   cancellation and the current operation policy without inventing retry machinery.
-- StateKeeper restores supplied archives; it is not durable storage for arbitrary
-  cold starts. Verify the actual shell bridge. Current Android supplies saved state;
-  current iOS does not. Dialog sessions stay unsaved; accepted results belong to
-  the owning screen's draft.
+- StateKeeper restores supplied archives; it does not guarantee every cold start.
+  Android supplies saved state through retainedComponent. iOS restores one validated
+  background checkpoint before constructing the root, then keeps that root live
+  through foreground transitions. Abrupt active termination before a completed
+  checkpoint is not guaranteed. Feature keys and local ownership stay unchanged;
+  add no feature storage or lifecycle bridge. See the reference's
+  [iOS policy](../ui-feature/references/process-death.md#ios-specifics), including
+  format/build invalidation when archive schemas change. Dialog sessions stay
+  unsaved; accepted results belong to the owning screen's draft.

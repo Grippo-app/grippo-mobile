@@ -6,10 +6,8 @@ struct RootView: UIViewControllerRepresentable {
     let backDispatcher: BackDispatcher
 
     func makeUIViewController(context: Context) -> UIViewController {
-        let controller = RootViewControllerKt.rootViewController(root: root, backDispatcher: backDispatcher)
-        return controller
+        RootViewControllerKt.rootViewController(root: root, backDispatcher: backDispatcher)
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-    }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }

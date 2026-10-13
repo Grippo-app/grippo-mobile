@@ -16,6 +16,10 @@ kotlin {
         implementation(kotlin("test-junit"))
     }
 
+    sourceSets.commonTest.dependencies {
+        implementation(kotlin("test"))
+    }
+
     sourceSets.commonMain.dependencies {
         api(libs.decompose.core)
         api(libs.decompose.extensions)
@@ -112,6 +116,7 @@ kotlin {
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)
+        implementation(libs.kotlinx.serialization.json)
 
         implementation(libs.compose.backhandler)
         implementation(libs.compose.ui)

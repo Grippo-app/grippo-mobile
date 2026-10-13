@@ -5,6 +5,10 @@ Scope 2026-10-13: typed stateless API в VM и общий foundation screen hook
 Последний полный проход — [итоговый аудит](authorization-review.md), включая
 бизнес-исправления, providers, безопасность логов и границы end-to-end готовности.
 Прежние scenario/retention/provider проверки относятся к своим реализациям.
+Последующий app-shell проход добавил iOS StateKeeper checkpoint без изменений
+analytics events и feature ключей. Текущая политика и проверки —
+[iOS StateKeeper](authorization-review.md#повторный-аудит-ios-statekeeper).
+Ниже записи об отсутствии iOS bridge относятся к прежним датированным проходам.
 Актуальные изолированные JVM/VM проверки перечислены ниже. Android/iOS builds,
 Gradle/KSP/generated DI, rendering/native SDK runtime и Firebase не входят
 в текущий запуск.

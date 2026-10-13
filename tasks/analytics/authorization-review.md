@@ -254,12 +254,9 @@ anchor; foundation drop-ins и UserPersistence пример совпадают �
   владелец перехода в Granted пока отсутствует; события не отправляются до явного
   разрешения. Это прежняя отдельно запланированная application consent policy,
   а не доказанный live Firebase сбор.
-- **iOS state restoration:** `stateKeeper: nil` создаёт обычный пустой dispatcher;
-  в shell отсутствует сохранение и загрузка архива до первого RootComponent. Common
-  drafts готовы к supplied archive, Android bridge существует. Для iOS нужен
-  отдельный app-shell lifecycle/carrier contract, согласованный с текущим SwiftUI
-  WindowGroup; произвольная загрузка с диска на любом cold start здесь не добавлена
-  и process restoration не обещается.
+- **iOS state restoration:** последующий проход добавил архив в app shell;
+  актуальная реализация и ограничения описаны ниже. Native process restart пока
+  не проверялся: platform builds/runtime остаются вне разрешённого scope.
 - **Непроверенный runtime:** generated KSP DI, platform compilation, нативные
   Google/Apple dialogs, rendered Compose/IME и SDK delivery требуют последующих
   разрешённых platform checks. Их отсутствие не скрывается за JVM PASS.
@@ -268,3 +265,95 @@ Optional validation alignment: backend registration ограничивает pas
 до 128, текущий PasswordFormatState задаёт только minimum. Сверхдлинный ввод получает
 обычную backend validation error; изменение shared validator/product hint в этот
 проход не добавлялось.
+
+## iOS StateKeeper: app-shell интеграция
+
+Один `ApplicationState` в shared владеет dispatcher и кодирует Essenty archive.
+AppDelegate восстанавливает его до первого DefaultComponentContext/RootComponent,
+затем передаёт тот же dispatcher дереву компонентов. Root остаётся ленивым:
+background saving и active clearing не инициализируют UI и не удаляют файл до
+первого восстановления. Существующий ApplicationLifecycle остаётся единственным
+владельцем lifecycle; WindowGroup использует один scenePhase hook.
+
+ApplicationStateStore атомарно сохраняет файл в Application Support. Envelope
+проверяет format/application/build version и SHA256 точных UTF-8 bytes; checkpoint
+потребляется до декодирования. Несовместимый или повреждённый архив начинает новый
+root. Ordinary store/codec errors обрабатываются только в shell, без текста
+ошибки/payload в логах; ошибки конструирования компонентов не скрываются.
+Файл исключён из backup и использует iOS protection until first authentication.
+Инертные UIKit shouldSave/shouldRestoreSecureApplicationState callbacks удалены.
+Swift source зарегистрирован в app target и обоих канонических PBX templates.
+
+Feature ключи, serializers, DI, screenPresentation и события не менялись.
+Это восстановление завершённого background checkpoint того же build, не обещание
+восстановления после внезапного завершения активного процесса. При foreground
+удаляется только disk checkpoint, живое дерево и черновики сохраняются в памяти.
+Изменение несовместимой схемы требует нового build либо archive format.
+
+Проверки первого app-shell прохода: 10 common codec JUnit tests; 70 existing auth/domain/VM tests,
+включая временно адаптированные реальные restoration fixtures через ApplicationState;
+12 macOS Swift checks реального store. Один backup-attribute check пропущен:
+macOS sandbox не предоставляет этот атрибут. Всего 92 проходящих проверки.
+Swift syntax parse, actual PBX и оба PBX templates lint прошли; source/artifact
+SHA gates подтверждают проверенные исходники. Review исправил риск active clearing
+до lazy restore. Архивы не содержат паролей; materialized privacy assertions
+существующих restoration tests сохранены.
+
+Evidence:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/ios-state-restoration-20261013-18khj6xy/`.
+Android/iOS builds, Gradle/KSP, generated Swift exports, native scene delivery,
+file protection и перезапуск приложения на iOS не проверялись. Mac/JVM PASS
+не подменяет эти проверки. Canon обновлён в CLAUDE, state-preservation,
+process-death и platform-build-toolkit; analytics coverage остаётся прежним.
+
+### Повторный аудит iOS StateKeeper
+
+Порядок проверен по реальному ApplicationLifecycle из cached Essenty 2.6.0:
+чтение архива предшествует созданию дерева, initial lifecycle delivery поставлена
+в main queue, checkpoint callbacks не создают lazy root. Живой root и dispatcher
+сохраняются при foreground; RootComponent конструируется вне recovery boundary.
+Новых ошибок в этом порядке не найдено. BackDispatcher сделан неизменяемым,
+RootView возвращает UIViewController напрямую без промежуточной переменной.
+
+Усилены actual Swift tests: неудачная замена оставляет предыдущий завершённый
+архив; capability probe backup-атрибута отделён от проверки store, чтобы skip не
+скрывал ошибку реализации. Temporary mutation без atomic write проваливает новый
+regression check; production store не менялся ради отрицательной проверки.
+
+Свежие проверки: **10** current common tests на JVM; **12** tests с побайтно
+сохранёнными Essenty common/nonJavaMain исходниками (10 current + 2 temporary
+format/origin checks); **70** auth/domain/VM tests с этим JSON/UTF-8 codec вместо
+Android StateKeeper jar; **13** actual macOS Swift checks. Один backup-attribute
+check пропущен после независимого host capability probe. Auth bytecode использован
+повторно после проверки current source/artifact SHA, свежая auth compilation не
+заявляется. Для nonJavaMain host compilation изменено только имя extracted file
+из-за JVM facade collision и добавлен compiler opt-in; source bytes сохранены.
+
+Снимок не является транзакцией с data layer: запросы могут завершиться после
+checkpoint и изменить сессию/навигацию. Bridge не добавляет session policy;
+это граница текущего восстановления, явно закреплённая в process-death reference.
+Nested Essenty containers декодируются лениво: несовместимые serializers/keys/routes
+требуют нового build/format, ошибки создания root не маскируются fallback.
+
+Evidence текущего review:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/ios-state-review-20261013-dllqj_u3/`.
+Exact nonJavaMain host runner и manifests:
+`/var/folders/gs/p9xpr8w95s3g6tcyx10tqbc80000gn/T/ios-state-restoration-20261013-18khj6xy/native-format-jvm/`.
+Swift syntax/PBX/Info.plist, canonical docs/examples/links и exact working-tree
+scope проверены отдельно. Git index агент не менял: во время аудита из него
+исчезли девять исторических AD-файлов shared/main, эти удаления не откатывались.
+Android/iOS builds, Gradle/KSP, Native ABI/Swift exports,
+UIKit/scene delivery, iOS file protection и process restart не запускались.
+
+### Удаление iOS тестов
+
+По запросу пользователя удалён standalone Swift runner и пустая папка iosApp/tests.
+В ApplicationStateStore убраны test-only constructor параметры и macOS ветка;
+production directory/versions, atomic/protected write и restore/save/clear сохранены.
+ENABLE_TESTABILITY удалён из actual Debug PBX и обоих канонических PBX templates.
+Тестовых targets/dependencies/scripts/references в app project нет; пустая стандартная
+Xcode TestAction без testables не является отдельным тестовым target. Common/shared
+и Android tests не изменялись. Swift результаты выше — исторические, до этой очистки.
+Свежие проверки этого удаления: Swift syntax parse, actual PBX/Info.plist и оба PBX
+templates lint, остаточные references, exact source scope и git diff --check.
+Android/iOS builds и runtime tests в этом проходе не запускались.
