@@ -1,3 +1,10 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+
 # Primary goal picker coverage (2026-10-13)
 
 Scope: ProfileGoalViewModel.onPrimaryGoalPickerClick → DialogConfig.PrimaryGoalPicker
@@ -10,7 +17,7 @@ production entry and rendered surface; no nested screens or business operations.
 | Surface / callback owner | Observation | Boundary |
 |---|---|---|
 | PrimaryGoalPickerScreen / Component / VM | Default null screenPresentation | Live bottom sheet, no dedicated presentation contract; no screen enum required |
-| VM.onSelectGoal | PrimaryGoalPickerEvent.GoalSelected / primary_goal_picker_goal_selected v1 | Inside existing safeLaunch, before state update and unchanged 300 ms delay/result direction; unconditional callback |
+| VM.onSelectGoal | PrimaryGoalPickerEvent.GoalClicked / primary_goal_picker_goal_selected v1 | Inside existing safeLaunch, before state update and unchanged 300 ms delay/result direction; unconditional callback |
 | VM.onDismiss | PrimaryGoalPickerEvent.DismissRequested / primary_goal_picker_dismiss_requested v1 | Before unchanged Back direction; request, not completed dismissal |
 | ProfileGoalViewModel | Existing Goal.PickerOpened(Primary), Goal.PrimaryConfirmed | Open intent and accepted result remain at the parent owner |
 

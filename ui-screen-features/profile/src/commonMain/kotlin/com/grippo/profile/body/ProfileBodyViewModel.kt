@@ -182,7 +182,7 @@ internal class ProfileBodyViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Body.Back)
+        analytics.trackEvent(ProfileEvent.Body.DismissRequested)
         navigateTo(ProfileBodyDirection.Back)
     }
 }

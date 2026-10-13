@@ -6,8 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public enum class NavigationReason(override val analyticsCode: String) : AnalyticsCode {
     Initial("initial"),
-    Action("action"),
-    Back("back"),
     Restore("restore"),
-    External("external")
 }

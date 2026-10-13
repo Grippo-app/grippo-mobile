@@ -14,6 +14,7 @@ public class DebugComponent(
 
     override val viewModel: DebugViewModel = componentContext.retainedInstance {
         DebugViewModel(
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             generateTrainingUseCase = getKoin().get(),
             authorizationFeature = getKoin().get()

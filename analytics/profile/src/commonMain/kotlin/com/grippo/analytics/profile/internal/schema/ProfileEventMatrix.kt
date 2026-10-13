@@ -21,7 +21,7 @@ internal object ProfileEventMatrix {
             ProfileInteractionSchema.Target.value(event.target),
         )
         ProfileEvent.Body.Apply -> clicked(ProfileScreen.Body, InteractionAction.Apply)
-        ProfileEvent.Body.Back -> clicked(ProfileScreen.Body, InteractionAction.Back)
+        ProfileEvent.Body.DismissRequested -> clicked(ProfileScreen.Body, InteractionAction.DismissRequested)
         is ProfileEvent.Body.PickerOpened -> pickerOpened(ProfileScreen.Body, ProfileEncoding.field(event.field))
         is ProfileEvent.Body.PickerConfirmed -> pickerConfirmed(
             ProfileScreen.Body,
@@ -29,7 +29,7 @@ internal object ProfileEventMatrix {
             event.status,
         )
         ProfileEvent.Goal.Save -> clicked(ProfileScreen.Goal, InteractionAction.Save)
-        ProfileEvent.Goal.Back -> clicked(ProfileScreen.Goal, InteractionAction.Back)
+        ProfileEvent.Goal.DismissRequested -> clicked(ProfileScreen.Goal, InteractionAction.DismissRequested)
         is ProfileEvent.Goal.PickerOpened -> pickerOpened(ProfileScreen.Goal, ProfileEncoding.field(event.field))
         ProfileEvent.Goal.PrimaryConfirmed -> pickerConfirmed(
             ProfileScreen.Goal,
@@ -47,10 +47,10 @@ internal object ProfileEventMatrix {
             event.status,
         )
         ProfileEvent.Experience.Apply -> clicked(ProfileScreen.Experience, InteractionAction.Apply)
-        ProfileEvent.Experience.Back -> clicked(ProfileScreen.Experience, InteractionAction.Back)
+        ProfileEvent.Experience.DismissRequested -> clicked(ProfileScreen.Experience, InteractionAction.DismissRequested)
         ProfileEvent.Muscles.GroupSelected -> clicked(ProfileScreen.Muscles, InteractionAction.GroupSelected)
         ProfileEvent.Muscles.Apply -> clicked(ProfileScreen.Muscles, InteractionAction.Apply)
-        ProfileEvent.Muscles.Back -> clicked(ProfileScreen.Muscles, InteractionAction.Back)
+        ProfileEvent.Muscles.DismissRequested -> clicked(ProfileScreen.Muscles, InteractionAction.DismissRequested)
         is ProfileEvent.Muscles.SelectionChanged -> selection(
             ProfileInteractionSchema.SelectionChanged,
             ProfileScreen.Muscles,
@@ -59,7 +59,7 @@ internal object ProfileEventMatrix {
         )
         ProfileEvent.Equipments.GroupSelected -> clicked(ProfileScreen.Equipments, InteractionAction.GroupSelected)
         ProfileEvent.Equipments.Apply -> clicked(ProfileScreen.Equipments, InteractionAction.Apply)
-        ProfileEvent.Equipments.Back -> clicked(ProfileScreen.Equipments, InteractionAction.Back)
+        ProfileEvent.Equipments.DismissRequested -> clicked(ProfileScreen.Equipments, InteractionAction.DismissRequested)
         is ProfileEvent.Equipments.SelectionChanged -> selection(
             ProfileInteractionSchema.SelectionChanged,
             ProfileScreen.Equipments,
@@ -69,8 +69,8 @@ internal object ProfileEventMatrix {
         ProfileEvent.Settings.Logout -> clicked(ProfileScreen.Settings, InteractionAction.Logout)
         ProfileEvent.Settings.DeleteOpened -> clicked(ProfileScreen.Settings, InteractionAction.DeleteOpened)
         ProfileEvent.Settings.DeleteConfirmed -> clicked(ProfileScreen.Settings, InteractionAction.DeleteConfirmed)
-        ProfileEvent.Settings.Back -> clicked(ProfileScreen.Settings, InteractionAction.Back)
-        ProfileEvent.Social.Back -> clicked(ProfileScreen.Social, InteractionAction.Back)
+        ProfileEvent.Settings.DismissRequested -> clicked(ProfileScreen.Settings, InteractionAction.DismissRequested)
+        ProfileEvent.Social.DismissRequested -> clicked(ProfileScreen.Social, InteractionAction.DismissRequested)
         is ProfileEvent.Goal.PersonalizationChanged -> selection(
             ProfileInteractionSchema.PersonalizationChanged,
             ProfileScreen.Goal,

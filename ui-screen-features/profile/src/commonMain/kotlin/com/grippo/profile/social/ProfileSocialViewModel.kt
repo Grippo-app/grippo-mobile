@@ -28,7 +28,7 @@ internal class ProfileSocialViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Social.Back)
+        analytics.trackEvent(ProfileEvent.Social.DismissRequested)
         navigateTo(ProfileSocialDirection.Back)
     }
 }

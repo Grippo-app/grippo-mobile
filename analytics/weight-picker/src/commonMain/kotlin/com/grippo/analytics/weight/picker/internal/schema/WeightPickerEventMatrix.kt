@@ -6,15 +6,15 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object WeightPickerEventMatrix {
-    private val WeightSelected = AnalyticsEventSchema("weight_picker_weight_selected", 1, emptyList())
+    private val SelectionChanged = AnalyticsEventSchema("weight_picker_weight_selected", 1, emptyList())
     private val SubmitClicked = AnalyticsEventSchema("weight_picker_submit_clicked", 1, emptyList())
     private val DismissRequested = AnalyticsEventSchema("weight_picker_dismiss_requested", 1, emptyList())
 
-    val all = listOf(WeightSelected, SubmitClicked, DismissRequested)
+    val all = listOf(SelectionChanged, SubmitClicked, DismissRequested)
 
     fun event(event: WeightPickerEvent): AnalyticsEvent = Payload(
         when (event) {
-            WeightPickerEvent.WeightSelected -> WeightSelected
+            WeightPickerEvent.SelectionChanged -> SelectionChanged
             WeightPickerEvent.SubmitClicked -> SubmitClicked
             WeightPickerEvent.DismissRequested -> DismissRequested
         }

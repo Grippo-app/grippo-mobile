@@ -1,3 +1,10 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+
 # Goal setup suggestion coverage
 
 Scope: `ui-dialog-features:goal-setup-suggestion`, reviewed 2026-10-13.
@@ -20,7 +27,7 @@ No feature lifecycle binding or analytics persistence is added.
 |---|---|---|
 | onConfigure | goal_setup_suggestion_configure | Configure button intent, before Configure direction |
 | onLater | goal_setup_suggestion_later | Later button intent, before Later direction |
-| onBack | goal_setup_suggestion_back | Registered hardware Back callback, before Back direction |
+| onBack | goal_setup_suggestion_dismiss_requested | Registered hardware Back callback, before Back direction |
 
 All events have empty payloads. Callbacks have no existing eligibility/busy guards;
 no new guard or deduplication changes their behavior. The closed public event

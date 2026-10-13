@@ -1,7 +1,7 @@
 package com.grippo.analytics.profile.internal.models
 
 internal enum class InteractionAction {
-    Back,
+    DismissRequested,
     Apply,
     Save,
     GroupSelected,

@@ -6,7 +6,7 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object TrainingGoalDetailsEventMatrix {
-    private val DismissRequested = AnalyticsEventSchema("training_goal_details_dismiss", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("training_goal_details_dismiss_requested", 1, emptyList())
 
     private val AddGoalClicked = AnalyticsEventSchema("training_goal_details_add_goal", 1, emptyList())
 

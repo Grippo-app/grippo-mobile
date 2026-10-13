@@ -28,7 +28,7 @@ exists here, so no operation API/model/decorator is added.
 | onIterationClick | iteration_picker_suggestion_selected | Only if the ID resolves in existing suggestions; ID never encoded |
 | onRepetitionSuggestionClick | iteration_picker_repetition_selected | Real chip click, only for a listed suggestion; ordinary Int UI callback, no value encoded |
 | onSubmit, Save and keyboard Done | iteration_picker_submit | After existing canSubmit guard for all four component kinds; invalid/empty required fields neither emit nor navigate |
-| onBack, including Component system Back | iteration_picker_back | Observed callback before existing navigation |
+| onBack, including Component system Back | iteration_picker_dismiss_requested | Observed callback before existing navigation |
 
 Suggestion application emits its distinct selection event, without synthetic text
 status changes. Programmatic initialization does not emit input events. The chip

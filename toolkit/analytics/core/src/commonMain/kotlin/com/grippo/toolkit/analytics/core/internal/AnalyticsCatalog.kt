@@ -1,10 +1,9 @@
 package com.grippo.toolkit.analytics.core.internal
 
+import com.grippo.toolkit.analytics.context.AnalyticsContext
+import com.grippo.toolkit.analytics.context.OperationId
 import com.grippo.toolkit.analytics.core.internal.schema.AnalyticsContextField
 import com.grippo.toolkit.analytics.core.internal.schema.AnalyticsSchemaRules
-import com.grippo.toolkit.analytics.context.AnalyticsContext
-import com.grippo.toolkit.analytics.context.FlowContext
-import com.grippo.toolkit.analytics.context.OperationId
 import com.grippo.toolkit.analytics.events.DialogViewed
 import com.grippo.toolkit.analytics.events.ScreenViewed
 import com.grippo.toolkit.analytics.identity.AnalyticsIdentity
@@ -62,7 +61,6 @@ internal class AnalyticsCatalog(
     internal fun encode(
         event: AnalyticsEvent,
         context: AnalyticsContext,
-        flow: FlowContext?,
         operation: OperationId?,
     ): AnalyticsPayload {
         val definition = event.schema
@@ -81,7 +79,8 @@ internal class AnalyticsCatalog(
         }
         values[AnalyticsContextField.SchemaVersion.wireName] = registered.version
         values[AnalyticsContextField.LaunchSource.wireName] = AnalyticsValue.Text(context.launchSource.analyticsCode)
-        context.navigation?.let {
+        // Operations are feature-owned; visible-screen context is not operation attribution.
+        context.navigation?.takeIf { operation == null }?.let {
             values[AnalyticsContextField.Screen.wireName] = AnalyticsValue.Text(it.screen.analyticsCode)
             it.referrer?.let { referrer ->
                 values[AnalyticsContextField.ReferrerScreen.wireName] = AnalyticsValue.Text(referrer.analyticsCode)
@@ -89,13 +88,6 @@ internal class AnalyticsCatalog(
             values[AnalyticsContextField.NavigationReason.wireName] = AnalyticsValue.Text(it.reason.analyticsCode)
             it.dialog?.let { dialog ->
                 values[AnalyticsContextField.Dialog.wireName] = AnalyticsValue.Text(dialog.analyticsCode)
-            }
-        }
-        flow?.let {
-            values[AnalyticsContextField.Flow.wireName] = AnalyticsValue.Text(it.id.value)
-            values[AnalyticsContextField.EntryPoint.wireName] = AnalyticsValue.Text(it.entryPoint.analyticsCode)
-            it.originScreen?.let { screen ->
-                values[AnalyticsContextField.OriginScreen.wireName] = AnalyticsValue.Text(screen.analyticsCode)
             }
         }
         operation?.let { values[AnalyticsContextField.Operation.wireName] = AnalyticsValue.Text(it.value) }

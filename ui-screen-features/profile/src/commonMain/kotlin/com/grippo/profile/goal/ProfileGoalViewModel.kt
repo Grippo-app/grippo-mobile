@@ -164,7 +164,7 @@ internal class ProfileGoalViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Goal.Back)
+        analytics.trackEvent(ProfileEvent.Goal.DismissRequested)
         navigateTo(ProfileGoalDirection.Back)
     }
 }

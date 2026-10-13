@@ -116,7 +116,7 @@ public class StartTrainingViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(StartTrainingEvent.Back)
+        analytics.trackEvent(StartTrainingEvent.DismissRequested)
         navigateTo(StartTrainingDirection.Back)
     }
 

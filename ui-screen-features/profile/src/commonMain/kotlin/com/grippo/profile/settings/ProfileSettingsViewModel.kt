@@ -8,28 +8,50 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.UiText
 import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
+import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.account_deletion
 import com.grippo.design.resources.provider.account_deletion_description
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.toolkit.analytics.context.NavigationReason
+import kotlinx.coroutines.flow.onEach
 
 internal class ProfileSettingsViewModel(
     private val analytics: ProfileAnalytics,
+    private val localSettingsFeature: LocalSettingsFeature,
     private val deleteProfileUseCase: DeleteProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val dialogController: DialogController,
 ) : BaseViewModel<ProfileSettingsState, ProfileSettingsDirection, ProfileSettingsLoader>(
-    ProfileSettingsState
+    ProfileSettingsState()
 ), ProfileSettingsContract {
 
     override val screenPresentation = { reason: NavigationReason ->
         analytics.presentScreen(ProfileScreen.Settings, reason)
     }
 
+    init {
+        observeAnalyticsConsent()
+    }
+
+    private fun observeAnalyticsConsent() {
+        update { it.copy(analyticsConsent = null) }
+        localSettingsFeature.observeAnalyticsConsent()
+            .onEach { granted -> update { it.copy(analyticsConsent = granted) } }
+            .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
+    }
+
+    override fun onAnalyticsConsentChange(granted: Boolean) {
+        val current = state.value.analyticsConsent ?: return
+        if (current == granted || ProfileSettingsLoader.AnalyticsConsent in loaders.value) return
+        safeLaunch(loader = ProfileSettingsLoader.AnalyticsConsent) {
+            localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
+        }
+    }
+
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Settings.Back)
+        analytics.trackEvent(ProfileEvent.Settings.DismissRequested)
         navigateTo(ProfileSettingsDirection.Back)
     }
 

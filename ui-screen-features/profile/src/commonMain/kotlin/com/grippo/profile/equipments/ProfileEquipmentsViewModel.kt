@@ -85,7 +85,7 @@ internal class ProfileEquipmentsViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Equipments.Back)
+        analytics.trackEvent(ProfileEvent.Equipments.DismissRequested)
         navigateTo(ProfileEquipmentsDirection.Back)
     }
 

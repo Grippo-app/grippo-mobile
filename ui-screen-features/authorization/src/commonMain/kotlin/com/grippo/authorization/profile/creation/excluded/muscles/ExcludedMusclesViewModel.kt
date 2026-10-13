@@ -92,7 +92,7 @@ internal class ExcludedMusclesViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Muscles.Control(ControlAction.Back))
+        analytics.trackEvent(AuthEvent.Muscles.Control(ControlAction.DismissRequested))
         navigateTo(ExcludedMusclesDirection.Back)
     }
 }

@@ -236,7 +236,7 @@ internal class ExerciseLibraryViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ExercisesEvent.Back)
+        analytics.trackEvent(ExercisesEvent.DismissRequested)
         navigateTo(ExerciseLibraryDirection.Back)
     }
 

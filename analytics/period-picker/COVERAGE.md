@@ -1,3 +1,10 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+
 # Period picker analytics and state preservation
 
 Scope: `ui-dialog-features/period-picker`, 2026-10-13.
@@ -12,7 +19,7 @@ Scope: `ui-dialog-features/period-picker`, 2026-10-13.
 
 | Callback | Event / schema | Observation |
 |---|---|---|
-| onSelectRange | RangeSelected / period_picker_range_selected v1 | Actual card selection callback, including the already selected range; before existing safeLaunch/update/delay/result direction |
+| onSelectRange | RangeClicked / period_picker_range_selected v1 | Actual card selection callback, including the already selected range; before existing safeLaunch/update/delay/result direction |
 | onDismiss, including system Back | DismissRequested / period_picker_dismiss_requested v1 | Request only; does not infer delivered closure or cancellation |
 | Home onOpenPeriodPicker / onResult | Existing HomeEvent.PeriodPickerClicked / PeriodConfirmed and HomeOperation.SavePeriod | Parent opening and accepted result/save; unchanged |
 

@@ -6,15 +6,15 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object ConfirmationEventMatrix {
-    private val Confirm = AnalyticsEventSchema("confirmation_confirm", 1, emptyList())
-    private val Back = AnalyticsEventSchema("confirmation_back", 1, emptyList())
+    private val ConfirmClicked = AnalyticsEventSchema("confirmation_confirm", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("confirmation_dismiss_requested", 1, emptyList())
 
-    val all = listOf(Confirm, Back)
+    val all = listOf(ConfirmClicked, DismissRequested)
 
     fun event(event: ConfirmationEvent): AnalyticsEvent = Payload(
         when (event) {
-            ConfirmationEvent.Confirm -> Confirm
-            ConfirmationEvent.Back -> Back
+            ConfirmationEvent.ConfirmClicked -> ConfirmClicked
+            ConfirmationEvent.DismissRequested -> DismissRequested
         }
     )
 

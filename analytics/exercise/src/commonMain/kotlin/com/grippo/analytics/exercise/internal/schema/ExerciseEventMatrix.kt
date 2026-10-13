@@ -7,14 +7,14 @@ import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object ExerciseEventMatrix {
     private val ExampleDetailsClicked = AnalyticsEventSchema("exercise_example_details_clicked", 1, emptyList())
-    private val Dismiss = AnalyticsEventSchema("exercise_dismiss", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("exercise_dismiss_requested", 1, emptyList())
 
-    val all = listOf(ExampleDetailsClicked, Dismiss)
+    val all = listOf(ExampleDetailsClicked, DismissRequested)
 
     fun event(event: ExerciseEvent): AnalyticsEvent = Payload(
         when (event) {
             ExerciseEvent.ExampleDetailsClicked -> ExampleDetailsClicked
-            ExerciseEvent.Dismiss -> Dismiss
+            ExerciseEvent.DismissRequested -> DismissRequested
         }
     )
 

@@ -170,7 +170,7 @@ internal class LoginViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Login.Back)
+        analytics.trackEvent(AuthEvent.Login.DismissRequested)
         navigateTo(LoginDirection.Back)
     }
 

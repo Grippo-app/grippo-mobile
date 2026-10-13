@@ -1,3 +1,10 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+
 # Weight picker coverage (2026-10-13)
 
 Scope: DialogConfig.WeightPicker → DialogContentComponent.Child.WeightPicker →
@@ -17,7 +24,7 @@ No nested independent screen is introduced by weight-picker itself.
 | Surface / callback owner | Observation | Boundary |
 |---|---|---|
 | WeightPickerScreen / Component / VM | Default null screenPresentation | Dialog policy; no separately defined presentation contract, screen enum or screen hook |
-| VM.onSelectWeight | WeightSelected / weight_picker_weight_selected v1 | Existing callback; emit only when formatted state changes, then keep original state update |
+| VM.onSelectWeight | SelectionChanged / weight_picker_weight_selected v1 | Existing callback; emit only when formatted state changes, then keep original state update |
 | VM.onSubmitClick | SubmitClicked / weight_picker_submit_clicked v1 | Before unchanged BackWithResult; intent, not proof of parent acceptance |
 | VM.onDismiss | DismissRequested / weight_picker_dismiss_requested v1 | Before unchanged Back; request, not proof of completed dismissal |
 | UserViewModel | Existing PickerOpened(Weight), PickerConfirmed(Weight, status) | Open intent and accepted result remain parent-owned |
@@ -26,7 +33,7 @@ No nested independent screen is introduced by weight-picker itself.
 
 All three schemas have empty parameters: weight/body measurements, raw inputs,
 IDs and exception messages are excluded. Wheel callbacks include automatic sync
-and correction; WeightSelected observes changed selection, not exclusively user
+and correction; SelectionChanged observes changed selection, not exclusively user
 scrolls. Equal callbacks emit nothing without changing business callback behavior.
 No synthetic initialization events are emitted by the VM constructor.
 Normal retainedInstance injection resolves the stateless API; shared registers its
@@ -57,7 +64,7 @@ unchanged; the same analytics injection covers direct and nested factories.
 
 No local picker PersistenceKey, state serializer or storage is required under the
 canonical dialog policy. Direct parent onResult updates UserState.weight or
-ProfileBodyState.weight. Nested onBodyWeightSelected updates the live iteration;
+ProfileBodyState.weight. Nested onBodySelectionChanged updates the live iteration;
 only iteration Submit transfers it into TrainingExerciseState.exercise.iterations.
 Reopening seeds from the latest accepted value at that owner. Confirmation inside
 the nested picker alone does not preserve the unfinished iteration across process

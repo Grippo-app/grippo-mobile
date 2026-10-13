@@ -149,7 +149,7 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(TrainingEvent.Completed.Back)
+        analytics.trackEvent(TrainingEvent.Completed.DismissRequested)
         navigateTo(TrainingCompletedDirection.Back)
     }
 }

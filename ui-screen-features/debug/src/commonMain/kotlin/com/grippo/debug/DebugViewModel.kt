@@ -1,20 +1,29 @@
 package com.grippo.debug
 
+import com.grippo.analytics.debug.DebugAnalytics
+import com.grippo.analytics.debug.models.DebugScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentMap
 
 public class DebugViewModel(
+    private val analytics: DebugAnalytics,
     private val trainingFeature: TrainingFeature,
     private val authorizationFeature: AuthorizationFeature,
     private val generateTrainingUseCase: GenerateTrainingUseCase,
 ) : BaseViewModel<DebugState, DebugDirection, DebugLoader>(DebugState()),
     DebugContract {
+
+    override val screenPresentation: (NavigationReason) -> ScreenPresentation = { reason ->
+        analytics.presentScreen(DebugScreen.Debug, reason)
+    }
 
     init {
         loadLogs()

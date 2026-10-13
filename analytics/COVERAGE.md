@@ -1,3 +1,113 @@
+# Current analytics contract review (2026-10-14)
+
+This section defines the current changes; dated build/review records below remain
+historical evidence for their original revisions, not verification of this revision.
+
+## Collection policy and Settings
+
+Collection is explicitly opt-in. `analytics_consent` is a Boolean preference in the
+existing LocalSettings/DataStore owner; missing/cleared values mean false. ApplicationBootstrap
+owns one application-lifetime observation before platform sink attachment. It applies
+Granted/Denied through Analytics; read failures deny collection while the existing
+preference observation is retried with a delay increasing from one to thirty seconds. Platform shells still initialize
+SDK collection as Unknown before attachment. No feature enables SDK collection. Events observed before consent is known are
+discarded, not buffered/replayed; granting consent does not synthesize a screen view.
+
+ProfileRouter.Settings → ProfileSettingsComponent → retained ProfileSettingsViewModel
+→ ProfileSettingsScreen retains ProfileScreen.Settings / profile_settings and its
+single foundation hook. The switch uses AppTokens colors, an accessible label, scrollable Settings content
+and title/description in EN/UK/RU. Its nullable
+presentation waits for the durable source; unknown/pending writes disable the control.
+onAnalyticsConsentChange accepts changed values only after source acquisition and
+outside AnalyticsConsent loader, then saves with getOrThrow inside safeLaunch.
+Write failures follow the normal error pipeline; a failed source subscription
+restarts only after its error dialog is dismissed and keeps the switch disabled
+until the source is known again. Consent actions deliberately emit no
+tracking event: denial must not require or report a consent-control interaction.
+Existing Settings Logout/Delete/Back coverage remains unchanged.
+
+Preservation inventory: consent is immediately committed to the existing durable
+owner, not an unfinished form; Settings rebuilds it through an Infinity observation.
+No StateKeeper copy or restore cache is needed. The existing LogoutUseCase and
+DeleteProfileUseCase clear LocalSettings, revoking consent; new sessions default to
+false. Jobs/loaders/focus, telemetry IDs and live dialogs remain runtime-only.
+
+## Screens and central actions
+
+[Debug](debug/COVERAGE.md) now supplies the missing independent screen hook.
+[Main](main/COVERAGE.md) observes actual central-button and tab callbacks and keeps
+the null container hook. Source inventory: 23 independent screen VMs have one hook;
+nine graph/container VMs keep null. Shared root/dialog hosts remain containers.
+
+## Reporting decision and compatibility
+
+Operation events identify their owner through feature-specific operation/action
+codes and correlate outcomes by operation_id. They now omit visible-screen fields
+(screen_id, navigation_reason, referrer_screen, dialog_id), because construction,
+background work and pause/navigation do not establish operation ownership. The user
+confirmed that the app has never been released: every analytics schema is reset to
+initial version 1. No released-report compatibility or migration is required.
+No substitute origin, referrer, saved provenance or reporting context propagation
+is introduced.
+
+Unused FlowContext/EntryPoint/toolkit FlowId and Action/Back/External reasons are
+removed from the API. Unused attribution names remain reserved against accidental custom reuse. The distinct
+screen-api FlowId remains necessary for route identity/archive compatibility and is
+unchanged. Built-in DialogViewed remains reusable; this change adds no dialog view API.
+
+Typed screen/dialog dismissal observations and internal actions consistently use
+DismissRequested. Their wire event names/action codes use dismiss_requested, including
+former back/dismiss encodings. The two long details-dialog event names use bounded
+prefixes: performance_trend_dismiss_requested and training_streak_dismiss_requested.
+Business callbacks/Direction.Back, guards, confirmation decisions and navigation
+remain independently necessary and unchanged. A request is never reported as a
+delivered dismissal; host-managed exits remain explicit scoped omissions.
+Click intents use Clicked; wheel state changes use SelectionChanged, including
+programmatic correction. Parameter shapes and event populations are unchanged.
+
+## Pre-release baseline follow-up (2026-10-14)
+
+User decision: no app release exists. All 149 literal analytics schemas, including
+built-ins and auth_input_changed, use version 1. Dismissal observations are renamed
+across all public events, common ControlAction, internal actions/encoders and owning
+VM callers; obsolete Back/back/dismiss analytics encodings are removed.
+This is a telemetry-only contract cleanup: actual routes/screen hooks, business
+callbacks/guards, input/selection/draft owners and navigation are unchanged. No
+additional state archive or synthetic callback is introduced. Final source/diff checks
+passed: all 149 schemas use version 1 with unique names bounded to 40 characters;
+no Back/back/dismiss analytics models/codes or stale UI consumers remain. Comparing
+the UI source before/after confirms that only typed analytics references changed.
+`:shared:compileAndroidMain :shared:assembleSharedDebugXCFramework` passed offline
+without configuration cache (exit 0, BUILD SUCCESSFUL, 3m 17s), including device and
+simulator frameworks. No runtime SDK delivery or independent review was performed;
+earlier build records below describe their original source revisions.
+
+## Verification of the earlier review revision
+
+Final source/diff gate passed: 23 independent hooks and nine null containers; all
+30 feature analytics modules registered once; 149 unique, bounded literal schemas
+including built-ins; interaction parameter shapes; default-deny/readiness/write guards
+and cancellation propagation;
+EN/UK/RU XML resources and disabled Android/iOS SDK defaults. Generated Koin output
+confirms MainAnalytics/DebugAnalytics bindings and the unique main_analytics catalog.
+The existing screen-api route FlowId/archive identity is preserved.
+
+Initial integration found a missing explicit API type on DebugViewModel's new public
+hook; it was corrected. The next Android/XCFramework integration passed. After final
+UI colors/accessibility, source retry and internal schema-name cleanup, the exact final
+source passed `:androidApp:assembleDebug :shared:assembleSharedDebugXCFramework`
+with `--offline --no-configuration-cache` (exit 0, BUILD SUCCESSFUL, 1m 18s).
+Both device and simulator debug frameworks were linked and packaged. Existing global
+opt-in/deprecation warnings remain. This validates compilation/export, not SDK delivery.
+
+No automated test infrastructure is introduced. Independent local review is unavailable
+under this chat's agent restrictions; self-review is not independent review.
+Manual scenarios remain unrun: opt-in/off across restart, settings write/read failure,
+logout/delete revocation, native lifecycle/restoration, error/cancellation injection,
+rendered Settings layout and actual SDK delivery. Build success alone does not prove them.
+
+---
+
 # Scoped Home and Training flows coverage
 
 Reviewed during the project-skill cleanup on 2026-10-13. This is an inventory of
@@ -152,17 +262,12 @@ list. Repeated group/experience clicks remain observed callbacks.
 
 ### Reporting decision
 
-From this change, AuthEvent.User.PickerConfirmed encodes `auth_picker_confirmed`
-version 1 with interaction_screen, input_field and input_status. It no longer
-encodes `auth_input_changed`. `auth_input_changed` version 2 has the same parameter
-shape as version 1 but a narrower population: text validation-status transitions
-for email/password/name only. Existing version-1 height/weight rows represent
-accepted picker results, not validation transitions. Reports spanning releases
-must count picker confirmations as version-1 auth_input_changed filtered to
-height/weight plus auth_picker_confirmed; text-transition reports must filter to
-email/password/name across both versions. Do not compare unfiltered input-change
-counts across the version boundary. No dual emission or historical rewriting is
-performed. Existing field/action wire codes are unchanged by exhaustive encoding.
+AuthEvent.User.PickerConfirmed encodes auth_picker_confirmed version 1 with
+interaction_screen, input_field and input_status. Auth input_changed version 1
+observes only existing text validation-status transitions for email/password/name.
+Height/weight accepted picker results belong exclusively to auth_picker_confirmed.
+The app has not been released, so there are no prior reporting populations to merge
+or migrate. Dismissal action codes use dismiss_requested consistently.
 
 ### Omissions and privacy
 
@@ -364,7 +469,7 @@ binding. All twelve operation values have actual VM callers; existing typed even
 schemas and privacy omissions remain unchanged.
 
 Body now registers the same leaf BackCallback as the other profile editors:
-system Back invokes Body.Back before the existing parent pop, just like toolbar
+system Back invokes Body.DismissRequested before the existing parent pop, just like toolbar
 Back. Parent/programmatic navigation still does not synthesize user events.
 
 Body's fresh height/weight population consumes the first nonnull user observation
@@ -421,11 +526,11 @@ and its single qualified exercises_analytics catalog provider.
 | onMuscleGroupClick | FilterClicked(MuscleGroup); group IDs omitted; repeated clicks still toggle |
 | onExerciseExampleSelectClick | ExerciseSelected only after finding the current card; result/navigation unchanged |
 | onLoadNextPage | LoadNextPage only after existing loading/end guards; automatic list-end callback, not a user-click claim |
-| onBack | Back from toolbar/system callback; root forwarding adds no duplicate event |
+| onBack | DismissRequested from toolbar/system callback; root forwarding adds no duplicate event |
 | onQueryChange | Exact text updates draft; telemetry deliberately omitted: search has no existing validation status, raw text/length is never reported |
 
 Four custom version-1 schemas: exercises_filter_clicked (bounded library_filter),
-exercises_exercise_selected, exercises_load_next_page, exercises_back (no fields).
+exercises_exercise_selected, exercises_load_next_page, exercises_dismiss_requested (no fields).
 Built-in screen schemas are reused. This is additive instrumentation with no
 historical backfill or changed existing wire identities. Ordinary reporting
 Exceptions are isolated; business updates/navigation remain independent. No entity
@@ -501,7 +606,7 @@ qualified `home_analytics` catalog; foundation still owns lifecycle presentation
 | onOpenPeriodPicker | PeriodPickerClicked | Existing dialog opening |
 | PeriodPicker.onResult in HomeViewModel | PeriodConfirmed / SavePeriod | Accepted result; complete setRange/getOrThrow block |
 | onAddGoal / TrainingGoalDetails.onAddGoal closure | AddGoalClicked | Existing navigation at the callback owner; no reporting context propagated |
-| onBack | Back | Existing Back callback |
+| onBack | DismissRequested | Existing Back callback |
 | Range-driven mapLatest / withLoader | RefreshTrainings | Complete getTrainings/getOrThrow block; waits for resolved persisted range |
 | Existing startup safeLaunch | RefreshExerciseExamples | Complete getExerciseExamples/getOrThrow block |
 
@@ -723,7 +828,7 @@ Recording and Completed retain their existing typed screen hooks.
 | Duration input click | CompletionConfirmation.DurationOpened / dialog VM | Before existing PickDuration direction |
 | Accepted nested picker result | CompletionConfirmation.DurationSelected / dialog VM | Existing onDurationSelected; no duration value encoded |
 | Confirm button | CompletionConfirmation.Confirm / dialog VM | Before existing Confirm direction; existing UI disables invalid/empty duration |
-| Cancel button / system Back | CompletionConfirmation.Back / dialog VM | Shared existing onBack; no inferred dismissal reason |
+| Cancel button / system Back | CompletionConfirmation.DismissRequested / dialog VM | Shared existing onBack; no inferred dismissal reason |
 | Open / accepted dialog result | Recording.CompletionOpened / CompletionConfirmed / recording VM | Existing parent observations; distinct from local confirm intent |
 
 Four bounded action codes extend the existing training_interaction v1 schema
@@ -793,7 +898,7 @@ implementation module. No routing/reporting context or lifecycle wiring is added
 | Callback / observation | Version-1 event | Meaning / exclusions |
 |---|---|---|
 | `onConfirm` | `confirmation_confirm` | Confirm intent before the existing Confirm direction; no claim of downstream operation success |
-| `onBack` | `confirmation_back` | Existing Cancel button or registered hardware Back callback; source is intentionally not inferred |
+| `onBack` | `confirmation_dismiss_requested` | Existing Cancel button or registered hardware Back callback; source is intentionally not inferred |
 
 Both events have no parameters. Description, title, callbacks, action context and
 entity IDs never enter payloads. Ordinary reporting Exceptions cannot block either
@@ -902,7 +1007,7 @@ not separate screens. Root/main containers retain their null hooks.
 | Date/MonthPicker onResult | DateConfirmed / MonthConfirmed | Accepted result, including unchanged value; no date encoded |
 | shiftDate from Next/Previous callbacks | NextDateSelected / PreviousDateSelected | After unchanged/coerced-range rejection; no event at date limits |
 | onOpenDaily | DailySelected | Existing calendar day callback; UI limits clicks to current-month days with training records |
-| onBack | Back | Leaf callback only; container forwards navigation without synthetic event |
+| onBack | DismissRequested | Leaf callback only; container forwards navigation without synthetic event |
 | rangeFlow mapLatest / withLoader | RefreshTrainings operation | Entire getTrainings/getOrThrow block; same effective range does not retrigger from presentation rebuild |
 | deleteTraining safeLaunch | DeleteTraining operation | Entire DeleteTrainingUseCase.execute/getOrThrow block |
 
@@ -1143,7 +1248,7 @@ infrastructure/cache deletion was performed. No automated tests were introduced.
 
 Scope: `:ui-dialog-features:exercise`, 2026-10-13. The read-only Exercise overlay
 now reports two parameterless typed observations: `exercise_example_details_clicked`
-after the existing example guard, and `exercise_dismiss` from its existing VM
+after the existing example guard, and `exercise_dismiss_requested` from its existing VM
 callback. Host-managed exits are explicitly omitted. No independent screen hook
 or finite operation is applicable. Data is rebuilt from TrainingFeature; live
 dialog sessions remain unsaved, with no editable draft requiring StateKeeper.

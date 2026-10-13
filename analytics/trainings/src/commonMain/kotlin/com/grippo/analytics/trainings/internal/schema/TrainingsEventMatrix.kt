@@ -21,7 +21,7 @@ internal object TrainingsEventMatrix {
     private val MonthlyPeriodSelected = AnalyticsEventSchema("trainings_monthly_period_selected", 1, emptyList())
     private val NextDateSelected = AnalyticsEventSchema("trainings_next_date_selected", 1, emptyList())
     private val PreviousDateSelected = AnalyticsEventSchema("trainings_previous_date_selected", 1, emptyList())
-    private val Back = AnalyticsEventSchema("trainings_back", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("trainings_dismiss_requested", 1, emptyList())
 
     val all = listOf(
         TrainingMenuClicked,
@@ -39,7 +39,7 @@ internal object TrainingsEventMatrix {
         MonthlyPeriodSelected,
         NextDateSelected,
         PreviousDateSelected,
-        Back,
+        DismissRequested,
     )
 
     fun event(event: TrainingsEvent): AnalyticsEvent = TrainingsPayloadEvent(
@@ -59,7 +59,7 @@ internal object TrainingsEventMatrix {
             TrainingsEvent.MonthlyPeriodSelected -> MonthlyPeriodSelected
             TrainingsEvent.NextDateSelected -> NextDateSelected
             TrainingsEvent.PreviousDateSelected -> PreviousDateSelected
-            TrainingsEvent.Back -> Back
+            TrainingsEvent.DismissRequested -> DismissRequested
         },
         emptyList(),
     )

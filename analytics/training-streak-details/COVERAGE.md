@@ -15,7 +15,7 @@ review of config, factory, Component, VM and rendered content.
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
-| TrainingStreakDetailsViewModel.onBack | DismissRequested / training_streak_details_dismiss v1 | Existing callback has no guard; empty parameters, emitted before existing Back direction |
+| TrainingStreakDetailsViewModel.onBack | DismissRequested / training_streak_dismiss_requested v1 | Existing callback has no guard; empty parameters, emitted before existing Back direction |
 | HomeViewModel.onOpenTrainingStreak | Existing HomeEvent.TrainingStreakClicked | Nonnull range guard; unchanged parent-owned opening intent |
 | observeTrainings / provideTrainingStreak | Deliberate omission | Reactive data rebuilding and metric calculation with current user experience, no explicit request or submission to decorate |
 
@@ -23,7 +23,7 @@ The Component registers a Decompose BackCallback targeting the VM onBack.
 However, DialogScreen also installs a Compose BackHandler targeting the host
 DialogViewModel.onDismiss(null); toolbar Back and Close are host-owned too.
 These paths, swipe and scrim dismissal can bypass the leaf VM and emit no
-training_streak_details_dismiss event. The event therefore observes only the VM
+training_streak_dismiss_requested event. The event therefore observes only the VM
 callback request, not every system Back, close, delivered dismissal or cancellation.
 Views/close, scrolling and passive cards are omitted. No callbacks, route context,
 operation scaffolding, lifecycle jobs or reporting state are added solely for telemetry.

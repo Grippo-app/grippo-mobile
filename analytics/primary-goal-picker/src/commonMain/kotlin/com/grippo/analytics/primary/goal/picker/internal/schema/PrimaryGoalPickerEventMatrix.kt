@@ -6,14 +6,14 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object PrimaryGoalPickerEventMatrix {
-    private val GoalSelected = AnalyticsEventSchema("primary_goal_picker_goal_selected", 1, emptyList())
+    private val GoalClicked = AnalyticsEventSchema("primary_goal_picker_goal_selected", 1, emptyList())
     private val DismissRequested = AnalyticsEventSchema("primary_goal_picker_dismiss_requested", 1, emptyList())
 
-    val all = listOf(GoalSelected, DismissRequested)
+    val all = listOf(GoalClicked, DismissRequested)
 
     fun event(event: PrimaryGoalPickerEvent): AnalyticsEvent = Payload(
         when (event) {
-            PrimaryGoalPickerEvent.GoalSelected -> GoalSelected
+            PrimaryGoalPickerEvent.GoalClicked -> GoalClicked
             PrimaryGoalPickerEvent.DismissRequested -> DismissRequested
         }
     )

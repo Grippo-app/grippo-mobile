@@ -14,7 +14,7 @@ traced through actual config, factory, Component, VM and rendered content.
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
-| PerformanceTrendDetailsViewModel.onBack | DismissRequested / performance_trend_details_dismiss v1 | Existing Back callback, no guard; empty parameters before existing Back direction |
+| PerformanceTrendDetailsViewModel.onBack | DismissRequested / performance_trend_dismiss_requested v1 | Existing Back callback, no guard; empty parameters before existing Back direction |
 | HomeViewModel.onPerformanceMetricClick | Existing HomeEvent.PerformanceMetricClicked | Existing valid-range guard; unchanged, owned by Home |
 | Training/user observations and history calculation | Deliberate omission | Reactive data rebuilding and local pure calculation, no finite business request or submission |
 
@@ -77,7 +77,7 @@ generated Koin output and shared integration remain unverified.
 Found and fixed a blocking catalog defect: the initial event name had 43 characters,
 exceeding AnalyticsSchemaRules.MAX_NAME_LENGTH = 40. The catalog validates names at
 construction, so this could reject the registered catalog before event reporting.
-The wire name is now `performance_trend_details_dismiss` (33 characters); the public
+The wire name is now `performance_trend_dismiss_requested` (33 characters); the public
 DismissRequested fact and existing callback/navigation behavior are unchanged.
 This is a correction of the newly introduced, unverified v1 schema, with no prior
 verified delivery/report compatibility to preserve. Coverage uses the corrected name.

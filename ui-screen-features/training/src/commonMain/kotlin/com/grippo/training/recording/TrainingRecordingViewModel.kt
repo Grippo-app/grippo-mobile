@@ -365,7 +365,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(TrainingEvent.Recording.Back)
+        analytics.trackEvent(TrainingEvent.Recording.DismissRequested)
         if (state.value.exercises.orEmpty().isEmpty()) {
             discardDraftAndExit()
             return

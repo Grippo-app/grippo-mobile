@@ -15,7 +15,7 @@ public class WeightPickerViewModel(
     override fun onSelectWeight(value: Float) {
         val selected = WeightFormatState.of(value)
         if (selected != state.value.value) {
-            analytics.trackEvent(WeightPickerEvent.WeightSelected)
+            analytics.trackEvent(WeightPickerEvent.SelectionChanged)
         }
         update { it.copy(value = selected) }
     }

@@ -61,7 +61,7 @@ public class DraftTrainingViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(DraftTrainingEvent.Back)
+        analytics.trackEvent(DraftTrainingEvent.DismissRequested)
         navigateTo(DraftTrainingDirection.Back)
     }
 }

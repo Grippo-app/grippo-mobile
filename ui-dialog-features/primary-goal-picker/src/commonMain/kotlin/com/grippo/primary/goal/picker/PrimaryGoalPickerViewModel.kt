@@ -17,7 +17,7 @@ public class PrimaryGoalPickerViewModel(
 
     override fun onSelectGoal(goal: GoalPrimaryGoalEnumState) {
         safeLaunch {
-            analytics.trackEvent(PrimaryGoalPickerEvent.GoalSelected)
+            analytics.trackEvent(PrimaryGoalPickerEvent.GoalClicked)
             update { it.copy(value = goal) }
             delay(300)
             navigateTo(PrimaryGoalPickerDirection.BackWithResult(goal))

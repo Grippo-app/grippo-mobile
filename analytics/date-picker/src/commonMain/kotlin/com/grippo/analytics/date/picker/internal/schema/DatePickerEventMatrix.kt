@@ -6,15 +6,15 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEvent
 import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 
 internal object DatePickerEventMatrix {
-    private val Submit = AnalyticsEventSchema("date_picker_submit", 1, emptyList())
-    private val Dismiss = AnalyticsEventSchema("date_picker_dismiss", 1, emptyList())
+    private val SubmitClicked = AnalyticsEventSchema("date_picker_submit", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("date_picker_dismiss_requested", 1, emptyList())
 
-    val all: List<AnalyticsEventSchema> = listOf(Submit, Dismiss)
+    val all: List<AnalyticsEventSchema> = listOf(SubmitClicked, DismissRequested)
 
     fun event(event: DatePickerEvent): AnalyticsEvent = DatePickerPayloadEvent(
         when (event) {
-            DatePickerEvent.Submit -> Submit
-            DatePickerEvent.Dismiss -> Dismiss
+            DatePickerEvent.SubmitClicked -> SubmitClicked
+            DatePickerEvent.DismissRequested -> DismissRequested
         }
     )
 }

@@ -10,5 +10,5 @@ public sealed interface HomeEvent {
     public data object PeriodConfirmed : HomeEvent
     public data object PerformanceMetricClicked : HomeEvent
     public data object AddGoalClicked : HomeEvent
-    public data object Back : HomeEvent
+    public data object DismissRequested : HomeEvent
 }

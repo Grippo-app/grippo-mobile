@@ -15,7 +15,7 @@ internal object HomeEventMatrix {
     private val PeriodConfirmed = AnalyticsEventSchema("home_period_confirmed", 1, emptyList())
     private val PerformanceMetricClicked = AnalyticsEventSchema("home_performance_metric_clicked", 1, emptyList())
     private val AddGoalClicked = AnalyticsEventSchema("home_add_goal_clicked", 1, emptyList())
-    private val Back = AnalyticsEventSchema("home_back", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("home_dismiss_requested", 1, emptyList())
 
     val all = listOf(
         TrainingsClicked,
@@ -27,7 +27,7 @@ internal object HomeEventMatrix {
         PeriodConfirmed,
         PerformanceMetricClicked,
         AddGoalClicked,
-        Back,
+        DismissRequested,
     )
 
     fun event(event: HomeEvent): AnalyticsEvent = HomePayloadEvent(
@@ -41,7 +41,7 @@ internal object HomeEventMatrix {
             HomeEvent.PeriodConfirmed -> PeriodConfirmed
             HomeEvent.PerformanceMetricClicked -> PerformanceMetricClicked
             HomeEvent.AddGoalClicked -> AddGoalClicked
-            HomeEvent.Back -> Back
+            HomeEvent.DismissRequested -> DismissRequested
         },
         emptyList(),
     )

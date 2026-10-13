@@ -1,5 +1,7 @@
 package com.grippo.main
 
+import com.grippo.analytics.main.MainAnalytics
+import com.grippo.analytics.main.models.MainEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.stage.StageState
@@ -10,27 +12,35 @@ import com.grippo.design.resources.provider.dialog_saved_workout
 import com.grippo.design.resources.provider.goal_setup_suggestion_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.main.analytics.toAnalytics
 import com.grippo.screen.api.MainRouter
 import kotlinx.coroutines.flow.first
 
 public class MainViewModel(
+    private val analytics: MainAnalytics,
     private val trainingFeature: TrainingFeature,
     private val goalSetupSuggestionUseCase: GoalSetupSuggestionUseCase,
     private val dialogController: DialogController,
 ) : BaseViewModel<MainState, MainDirection, MainLoader>(MainState), MainContract {
 
     override fun onSelectTab(tab: MainRouter) {
+        analytics.trackEvent(MainEvent.TabSelected(tab.toAnalytics()))
         navigateTo(MainDirection.SelectTab(tab))
     }
 
     override fun onStartTraining() {
+        analytics.trackEvent(MainEvent.StartTrainingClicked)
+        resumeOrStartTraining()
+    }
+
+    private fun resumeOrStartTraining() {
         safeLaunch(loader = MainLoader.StartTraining) {
             if (trainingFeature.getDraftTraining().first() != null) {
                 dialogController.open(
                     DialogConfig.DraftTraining(
                         title = UiText.Res(Res.string.dialog_saved_workout),
                         onContinue = { navigateTo(MainDirection.Training(StageState.Draft)) },
-                        onStartNew = ::onStartTraining,
+                        onStartNew = ::resumeOrStartTraining,
                     )
                 )
             } else {

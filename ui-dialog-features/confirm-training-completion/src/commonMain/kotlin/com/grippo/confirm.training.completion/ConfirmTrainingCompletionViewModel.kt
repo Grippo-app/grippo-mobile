@@ -19,7 +19,7 @@ public class ConfirmTrainingCompletionViewModel(
 ), ConfirmTrainingCompletionContract {
 
     override fun onConfirm() {
-        analytics.trackEvent(TrainingEvent.CompletionConfirmation.Confirm)
+        analytics.trackEvent(TrainingEvent.CompletionConfirmation.ConfirmClicked)
         navigateTo(ConfirmTrainingCompletionDirection.Confirm(state.value.duration))
     }
 
@@ -34,7 +34,7 @@ public class ConfirmTrainingCompletionViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(TrainingEvent.CompletionConfirmation.Back)
+        analytics.trackEvent(TrainingEvent.CompletionConfirmation.DismissRequested)
         navigateTo(ConfirmTrainingCompletionDirection.Back)
     }
 }

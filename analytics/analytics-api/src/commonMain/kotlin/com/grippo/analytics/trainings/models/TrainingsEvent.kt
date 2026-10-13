@@ -16,5 +16,5 @@ public sealed interface TrainingsEvent {
     public data object MonthlyPeriodSelected : TrainingsEvent
     public data object NextDateSelected : TrainingsEvent
     public data object PreviousDateSelected : TrainingsEvent
-    public data object Back : TrainingsEvent
+    public data object DismissRequested : TrainingsEvent
 }

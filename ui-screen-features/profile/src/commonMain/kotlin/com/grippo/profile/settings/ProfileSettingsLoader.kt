@@ -9,5 +9,8 @@ internal sealed interface ProfileSettingsLoader : BaseLoader {
     data object DeleteAccountButton : ProfileSettingsLoader
 
     @Immutable
+    data object AnalyticsConsent : ProfileSettingsLoader
+
+    @Immutable
     data object LogoutButton : ProfileSettingsLoader
 }

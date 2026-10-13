@@ -34,7 +34,7 @@ internal class ExperienceViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Experience.Control(ControlAction.Back))
+        analytics.trackEvent(AuthEvent.Experience.Control(ControlAction.DismissRequested))
         navigateTo(ExperienceDirection.Back)
     }
 }

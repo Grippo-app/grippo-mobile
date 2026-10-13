@@ -10,5 +10,5 @@ public sealed interface IterationPickerEvent {
     public data object IterationSuggestionSelected : IterationPickerEvent
     public data object RepetitionSuggestionSelected : IterationPickerEvent
     public data object Submit : IterationPickerEvent
-    public data object Back : IterationPickerEvent
+    public data object DismissRequested : IterationPickerEvent
 }

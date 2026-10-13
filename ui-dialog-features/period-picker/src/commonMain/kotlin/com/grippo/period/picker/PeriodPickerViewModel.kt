@@ -17,7 +17,7 @@ public class PeriodPickerViewModel(
 ), PeriodPickerContract {
 
     override fun onSelectRange(kind: DateRangeKind) {
-        analytics.trackEvent(PeriodPickerEvent.RangeSelected)
+        analytics.trackEvent(PeriodPickerEvent.RangeClicked)
         safeLaunch {
             update { it.copy(value = DateRangeFormatState.of(kind)) }
             delay(300)

@@ -879,4 +879,6 @@
     <string name="training_no_sets">No sets yet</string>
     <string name="training_first_set_hint">Add your first set to start tracking your progress.</string>
     <string name="exercise_library">Exercise library</string>
+    <string name="analytics_consent_title">Usage analytics</string>
+    <string name="analytics_consent_description">Allow usage events to help improve the app. No entered text or body measurements are sent. You can turn this off at any time.</string>
 </resources>

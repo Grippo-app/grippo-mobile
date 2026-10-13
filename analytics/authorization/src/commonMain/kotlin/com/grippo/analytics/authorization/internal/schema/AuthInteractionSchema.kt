@@ -24,7 +24,7 @@ internal object AuthInteractionSchema {
 
     val Clicked = AnalyticsEventSchema("auth_control_clicked", 1, listOf(Screen, Action))
     val Submitted = AnalyticsEventSchema("auth_submit_clicked", 1, listOf(Screen, AuthOperationSchema.Method))
-    val InputChanged = AnalyticsEventSchema("auth_input_changed", 2, listOf(Screen, Field, Status))
+    val InputChanged = AnalyticsEventSchema("auth_input_changed", 1, listOf(Screen, Field, Status))
     val InputFocused = AnalyticsEventSchema("auth_input_focused", 1, listOf(Screen, Field))
     val InputCleared = AnalyticsEventSchema("auth_input_cleared", 1, listOf(Screen, Field))
     val Keyboard = AnalyticsEventSchema("auth_keyboard_action", 1, listOf(Screen, Field, KeyboardAction))

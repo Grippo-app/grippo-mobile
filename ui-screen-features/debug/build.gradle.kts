@@ -11,6 +11,7 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        implementation(projects.analytics.analyticsApi)
         implementation(projects.uiCore.foundation)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.logger)

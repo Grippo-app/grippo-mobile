@@ -8,6 +8,7 @@ internal enum class AnalyticsContextField(val wireName: String) {
     ReferrerScreen("referrer_screen"),
     NavigationReason("navigation_reason"),
     Dialog("dialog_id"),
+    // Unused attribution names remain reserved; current APIs never encode them.
     Flow("flow_id"),
     EntryPoint("entry_point"),
     OriginScreen("origin_screen"),

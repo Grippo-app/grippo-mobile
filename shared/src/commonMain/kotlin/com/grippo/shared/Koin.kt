@@ -2,32 +2,34 @@ package com.grippo.shared
 
 import com.grippo.analytics.authorization.AuthAnalyticsModule
 import com.grippo.analytics.confirmation.ConfirmationAnalyticsModule
-import com.grippo.analytics.goal.setup.suggestion.GoalSetupSuggestionAnalyticsModule
-import com.grippo.analytics.error.display.ErrorDisplayAnalyticsModule
-import com.grippo.analytics.exercise.example.ExerciseExampleAnalyticsModule
-import com.grippo.analytics.exercise.ExerciseAnalyticsModule
-import com.grippo.analytics.home.HomeAnalyticsModule
 import com.grippo.analytics.date.picker.DatePickerAnalyticsModule
+import com.grippo.analytics.debug.DebugAnalyticsModule
 import com.grippo.analytics.draft.training.DraftTrainingAnalyticsModule
-import com.grippo.analytics.start.training.StartTrainingAnalyticsModule
-import com.grippo.analytics.profile.ProfileAnalyticsModule
 import com.grippo.analytics.duration.picker.DurationPickerAnalyticsModule
+import com.grippo.analytics.error.display.ErrorDisplayAnalyticsModule
+import com.grippo.analytics.exercise.ExerciseAnalyticsModule
+import com.grippo.analytics.exercise.example.ExerciseExampleAnalyticsModule
+import com.grippo.analytics.exercises.ExercisesAnalyticsModule
+import com.grippo.analytics.goal.setup.suggestion.GoalSetupSuggestionAnalyticsModule
+import com.grippo.analytics.height.picker.HeightPickerAnalyticsModule
+import com.grippo.analytics.home.HomeAnalyticsModule
 import com.grippo.analytics.iteration.picker.IterationPickerAnalyticsModule
-import com.grippo.analytics.month.picker.MonthPickerAnalyticsModule
-import com.grippo.analytics.period.picker.PeriodPickerAnalyticsModule
+import com.grippo.analytics.main.MainAnalyticsModule
 import com.grippo.analytics.menu.picker.MenuPickerAnalyticsModule
-import com.grippo.analytics.secondary.goal.picker.SecondaryGoalPickerAnalyticsModule
-import com.grippo.analytics.primary.goal.picker.PrimaryGoalPickerAnalyticsModule
-import com.grippo.analytics.weight.picker.WeightPickerAnalyticsModule
+import com.grippo.analytics.month.picker.MonthPickerAnalyticsModule
 import com.grippo.analytics.muscle.loading.details.MuscleLoadingDetailsAnalyticsModule
 import com.grippo.analytics.performance.trend.details.PerformanceTrendDetailsAnalyticsModule
+import com.grippo.analytics.period.picker.PeriodPickerAnalyticsModule
+import com.grippo.analytics.primary.goal.picker.PrimaryGoalPickerAnalyticsModule
+import com.grippo.analytics.profile.ProfileAnalyticsModule
+import com.grippo.analytics.secondary.goal.picker.SecondaryGoalPickerAnalyticsModule
+import com.grippo.analytics.start.training.StartTrainingAnalyticsModule
+import com.grippo.analytics.statistics.StatisticsAnalyticsModule
+import com.grippo.analytics.training.TrainingAnalyticsModule
 import com.grippo.analytics.training.goal.details.TrainingGoalDetailsAnalyticsModule
 import com.grippo.analytics.training.streak.details.TrainingStreakDetailsAnalyticsModule
-import com.grippo.analytics.statistics.StatisticsAnalyticsModule
-import com.grippo.analytics.height.picker.HeightPickerAnalyticsModule
-import com.grippo.analytics.exercises.ExercisesAnalyticsModule
-import com.grippo.analytics.training.TrainingAnalyticsModule
 import com.grippo.analytics.trainings.TrainingsAnalyticsModule
+import com.grippo.analytics.weight.picker.WeightPickerAnalyticsModule
 import com.grippo.core.error.provider.impl.ErrorModule
 import com.grippo.core.foundation.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -76,6 +78,8 @@ public object Koin {
                 AnalyticsModule().module,
                 AuthAnalyticsModule().module,
                 ProfileAnalyticsModule().module,
+                DebugAnalyticsModule().module,
+                MainAnalyticsModule().module,
                 ExercisesAnalyticsModule().module,
                 DurationPickerAnalyticsModule().module,
                 IterationPickerAnalyticsModule().module,
@@ -140,6 +144,8 @@ public object Koin {
             analytics = application.koin.get(),
             crashReporting = application.koin.get(),
             messaging = application.koin.get(),
+            localSettingsFeature = application.koin.get(),
+            collectionController = application.koin.get(),
         )
     }
 }

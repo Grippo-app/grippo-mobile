@@ -1,3 +1,10 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+
 # Exercise dialog analytics and state assessment
 
 Scope: `:ui-dialog-features:exercise`, reviewed 2026-10-13.
@@ -19,7 +26,7 @@ schema catalog. No host, config, navigation or lifecycle instrumentation is adde
 | Owner / callback | Typed fact / version-1 wire schema | Eligibility and meaning |
 |---|---|---|
 | ExerciseViewModel.onExampleDetailsClick | ExampleDetailsClicked / exercise_example_details_clicked | After the existing exercise/example ID guard, before ShowExampleDetails; observes click, not successful downstream display. Null exercise emits nothing. |
-| ExerciseViewModel.onDismiss | Dismiss / exercise_dismiss | Before the existing Back direction. The Component registers this callback with its BackCallback. Reports callback invocation without inferring user source or actual host dismissal. |
+| ExerciseViewModel.onDismiss | Dismiss / exercise_dismiss_requested | Before the existing Back direction. The Component registers this callback with its BackCallback. Reports callback invocation without inferring user source or actual host dismissal. |
 
 Both schemas have no parameters. No IDs, names, URLs, measurements, iteration
 values or exception text are reported. Ordinary reporting Exceptions are isolated
@@ -30,7 +37,7 @@ command to decorate: observeExercise remains a subscription, not an operation.
 Omissions: automatic dialog view/close, host Back/swipe/outside-tap dismissal,
 programmatic removal, entry attribution and nested-example interaction/outcome.
 Host-managed exits can bypass ExerciseViewModel.onDismiss and therefore emit no
-exercise_dismiss. No synthetic events on initialization, data emissions or resume.
+exercise_dismiss_requested. No synthetic events on initialization, data emissions or resume.
 Calling screens retain their own open-intent observations.
 
 ## State preservation source gate

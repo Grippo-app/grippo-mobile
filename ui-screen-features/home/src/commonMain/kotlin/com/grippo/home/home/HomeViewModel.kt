@@ -347,7 +347,7 @@ internal class HomeViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(HomeEvent.Back)
+        analytics.trackEvent(HomeEvent.DismissRequested)
         navigateTo(HomeDirection.Back)
     }
 }

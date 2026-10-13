@@ -79,7 +79,7 @@ internal object AuthEncoding {
 
     fun code(value: InteractionAction): String {
         return when (value) {
-            InteractionAction.Back -> "back"
+            InteractionAction.DismissRequested -> "dismiss_requested"
             InteractionAction.Next -> "next"
             InteractionAction.Register -> "register"
             InteractionAction.GroupSelected -> "group_selected"
@@ -109,7 +109,7 @@ internal object AuthEncoding {
 
     fun action(value: ControlAction): InteractionAction {
         return when (value) {
-            ControlAction.Back -> InteractionAction.Back
+            ControlAction.DismissRequested -> InteractionAction.DismissRequested
             ControlAction.Next -> InteractionAction.Next
         }
     }

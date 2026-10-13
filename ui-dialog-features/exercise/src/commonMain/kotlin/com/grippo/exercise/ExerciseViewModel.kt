@@ -28,7 +28,7 @@ public class ExerciseViewModel(
     }
 
     override fun onDismiss() {
-        analytics.trackEvent(ExerciseEvent.Dismiss)
+        analytics.trackEvent(ExerciseEvent.DismissRequested)
         navigateTo(ExerciseDirection.Back)
     }
 

@@ -1,3 +1,13 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+This feature's operation schemas use version 1 and omit visible-screen context;
+feature operation codes and operation_id own outcome correlation. Earlier build
+statements below describe their original source revisions, not released contracts.
+
 # Start training dialog coverage
 
 Scope: `:ui-dialog-features:start-training`, reviewed 2026-10-13.
@@ -15,7 +25,7 @@ null serializers. This task adds no host, parent, screen or lifecycle wiring.
 | Callback / operation | Observation | Eligibility and payload |
 |---|---|---|
 | onSelect(key) | start_training_option_confirmed v1 | Only after key resolves in current options; option enum empty/preset/recent. Unknown keys emit nothing and navigate nowhere |
-| onBack() including registered hardware Back | start_training_back v1 | No payload; existing Back navigation is unchanged |
+| onBack() including registered hardware Back | start_training_dismiss_requested v1 | No payload; existing Back navigation is unchanged |
 | Existing startup coroutine, after best-effort range refresh | BuildOptions / start_training_task_started/completed/failed/interrupted v1 | Complete local option acquisition/build: first current-cache observation, whole preset use case, mapping and state update; operation code and terminal duration only |
 
 `StartTrainingAnalytics` is injected through the retained VM factory; its internal

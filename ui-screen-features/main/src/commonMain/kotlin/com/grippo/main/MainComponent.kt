@@ -20,6 +20,7 @@ public class MainComponent(
 ) : BaseComponent<MainDirection>(componentContext) {
     override val viewModel: MainViewModel = componentContext.retainedInstance {
         MainViewModel(
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             goalSetupSuggestionUseCase = getKoin().get(),
             dialogController = getKoin().get(),

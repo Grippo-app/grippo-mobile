@@ -31,9 +31,9 @@ internal object IterationPickerEventMatrix {
     private val IterationSelected = AnalyticsEventSchema("iteration_picker_suggestion_selected", 1, emptyList())
     private val RepetitionSelected = AnalyticsEventSchema("iteration_picker_repetition_selected", 1, emptyList())
     private val Submit = AnalyticsEventSchema("iteration_picker_submit", 1, emptyList())
-    private val Back = AnalyticsEventSchema("iteration_picker_back", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("iteration_picker_dismiss_requested", 1, emptyList())
 
-    val all = listOf(InputChanged, BodyWeightOpened, BodyWeightConfirmed, PreviousSelected, IterationSelected, RepetitionSelected, Submit, Back)
+    val all = listOf(InputChanged, BodyWeightOpened, BodyWeightConfirmed, PreviousSelected, IterationSelected, RepetitionSelected, Submit, DismissRequested)
 
     fun event(event: IterationPickerEvent): AnalyticsEvent = when (event) {
         is IterationPickerEvent.InputChanged -> Payload(InputChanged, listOf(Field.value(event.field), Status.value(event.status)))
@@ -43,7 +43,7 @@ internal object IterationPickerEventMatrix {
         IterationPickerEvent.IterationSuggestionSelected -> Payload(IterationSelected)
         IterationPickerEvent.RepetitionSuggestionSelected -> Payload(RepetitionSelected)
         IterationPickerEvent.Submit -> Payload(Submit)
-        IterationPickerEvent.Back -> Payload(Back)
+        IterationPickerEvent.DismissRequested -> Payload(DismissRequested)
     }
 
     private class Payload(

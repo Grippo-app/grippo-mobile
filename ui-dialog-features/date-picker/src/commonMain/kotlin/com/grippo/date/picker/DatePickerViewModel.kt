@@ -24,12 +24,12 @@ public class DatePickerViewModel(
 
     override fun onSubmitClick() {
         if (state.value.value !is DateTimeFormatState.Valid) return
-        analytics.trackEvent(DatePickerEvent.Submit)
+        analytics.trackEvent(DatePickerEvent.SubmitClicked)
         navigateTo(DatePickerDirection.BackWithResult(state.value.value))
     }
 
     override fun onDismiss() {
-        analytics.trackEvent(DatePickerEvent.Dismiss)
+        analytics.trackEvent(DatePickerEvent.DismissRequested)
         navigateTo(DatePickerDirection.Back)
     }
 }

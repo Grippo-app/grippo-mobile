@@ -18,14 +18,14 @@ import com.grippo.toolkit.analytics.values.AnalyticsCount
 internal object AuthEventMatrix {
     fun event(event: AuthEvent): AnalyticsEvent {
         return when (event) {
-            AuthEvent.Splash.Back -> clicked(AuthScreen.Splash, InteractionAction.Back)
+            AuthEvent.Splash.DismissRequested -> clicked(AuthScreen.Splash, InteractionAction.DismissRequested)
             is AuthEvent.Login -> login(event)
             is AuthEvent.Registration -> registration(event)
             is AuthEvent.User -> user(event)
             is AuthEvent.Experience -> experience(event)
             is AuthEvent.Muscles -> muscles(event)
             is AuthEvent.Equipments -> equipments(event)
-            AuthEvent.Completed.Back -> clicked(AuthScreen.Completed, InteractionAction.Back)
+            AuthEvent.Completed.DismissRequested -> clicked(AuthScreen.Completed, InteractionAction.DismissRequested)
         }
     }
 
@@ -54,7 +54,7 @@ internal object AuthEventMatrix {
             is AuthEvent.Login.PasswordVisibilityChanged -> visibility(AuthScreen.Login, event.visible)
             is AuthEvent.Login.Submit -> submitted(AuthScreen.Login, event.method)
             AuthEvent.Login.Register -> clicked(AuthScreen.Login, InteractionAction.Register)
-            AuthEvent.Login.Back -> clicked(AuthScreen.Login, InteractionAction.Back)
+            AuthEvent.Login.DismissRequested -> clicked(AuthScreen.Login, InteractionAction.DismissRequested)
         }
     }
 
@@ -82,7 +82,7 @@ internal object AuthEventMatrix {
             )
             is AuthEvent.Registration.PasswordVisibilityChanged -> visibility(AuthScreen.Registration, event.visible)
             AuthEvent.Registration.Submit -> submitted(AuthScreen.Registration, Method.Email)
-            AuthEvent.Registration.Back -> clicked(AuthScreen.Registration, InteractionAction.Back)
+            AuthEvent.Registration.DismissRequested -> clicked(AuthScreen.Registration, InteractionAction.DismissRequested)
         }
     }
 

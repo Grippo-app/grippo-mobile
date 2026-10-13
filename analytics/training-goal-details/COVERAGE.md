@@ -14,7 +14,7 @@ screen enum or dedicated dialog presentation contract is introduced.
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
-| TrainingGoalDetailsViewModel.onBack | DismissRequested / training_goal_details_dismiss v1 | Existing callback without guards; empty payload before Back direction |
+| TrainingGoalDetailsViewModel.onBack | DismissRequested / training_goal_details_dismiss_requested v1 | Existing callback without guards; empty payload before Back direction |
 | TrainingGoalDetailsViewModel.onAddGoal | AddGoalClicked / training_goal_details_add_goal v1 | Existing callback without guards; GoalCard update click before AddGoal direction; empty payload |
 | HomeViewModel.onOpenGoalDetails | Existing HomeEvent.GoalDetailsClicked | Existing valid-range guard; parent-owned open intent unchanged |
 | HomeViewModel config onAddGoal closure | Existing HomeEvent.AddGoalClicked | Parent observes its own accepted navigation callback; unchanged, separate from dialog click intent |

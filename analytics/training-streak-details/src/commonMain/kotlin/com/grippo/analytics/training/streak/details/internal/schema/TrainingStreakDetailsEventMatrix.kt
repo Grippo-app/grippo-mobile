@@ -6,7 +6,7 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object TrainingStreakDetailsEventMatrix {
-    private val DismissRequested = AnalyticsEventSchema("training_streak_details_dismiss", 1, emptyList())
+    private val DismissRequested = AnalyticsEventSchema("training_streak_dismiss_requested", 1, emptyList())
 
     val all = listOf(DismissRequested)
 

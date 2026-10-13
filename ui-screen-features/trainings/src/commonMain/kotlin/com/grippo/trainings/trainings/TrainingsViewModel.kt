@@ -250,7 +250,7 @@ internal class TrainingsViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(TrainingsEvent.Back)
+        analytics.trackEvent(TrainingsEvent.DismissRequested)
         navigateTo(Back)
     }
 

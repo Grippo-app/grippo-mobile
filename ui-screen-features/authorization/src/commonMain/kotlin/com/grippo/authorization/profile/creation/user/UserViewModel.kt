@@ -128,7 +128,7 @@ internal class UserViewModel(
             return
         }
 
-        analytics.trackEvent(AuthEvent.User.Control(ControlAction.Back))
+        analytics.trackEvent(AuthEvent.User.Control(ControlAction.DismissRequested))
         safeLaunch(loader = UserLoader.Logout) {
             analytics.trackOperation(AuthOperation.Logout) {
                 logoutUseCase.execute()

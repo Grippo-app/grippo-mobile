@@ -2,6 +2,7 @@ package com.grippo.data.features.local.settings.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
@@ -20,9 +21,25 @@ internal class LocalSettingsRepositoryImpl(
 ) : LocalSettingsRepository {
 
     companion object {
+        val AnalyticsConsentKey = booleanPreferencesKey("analytics_consent")
         val RangeKey = stringPreferencesKey("range")
         val LastGoalSuggestionShownAtKey = stringPreferencesKey("last_goal_suggestion_shown_at")
         val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
+    }
+
+    override fun observeAnalyticsConsent(): Flow<Boolean> {
+        return dataStore.data.map { preferences -> preferences[AnalyticsConsentKey] ?: false }
+    }
+
+    override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
+        return try {
+            dataStore.edit { preferences -> preferences[AnalyticsConsentKey] = granted }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
+        }
     }
 
     override fun observeRange(): Flow<Range?> {

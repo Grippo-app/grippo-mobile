@@ -7,7 +7,7 @@ import com.grippo.analytics.common.models.InputStatus
 /** Bounded observations only: no credentials, raw input, measurements or selected IDs. */
 public sealed interface AuthEvent {
     public sealed interface Splash : AuthEvent {
-        public data object Back : Splash
+        public data object DismissRequested : Splash
     }
 
     public sealed interface Login : AuthEvent {
@@ -18,7 +18,7 @@ public sealed interface AuthEvent {
         public data class PasswordVisibilityChanged(public val visible: Boolean) : Login
         public data class Submit(public val method: Method) : Login
         public data object Register : Login
-        public data object Back : Login
+        public data object DismissRequested : Login
     }
 
     public sealed interface Registration : AuthEvent {
@@ -28,7 +28,7 @@ public sealed interface AuthEvent {
         public data class KeyboardAction(public val field: CredentialField, public val action: InputKeyboardAction) : Registration
         public data class PasswordVisibilityChanged(public val visible: Boolean) : Registration
         public data object Submit : Registration
-        public data object Back : Registration
+        public data object DismissRequested : Registration
     }
 
     public sealed interface User : AuthEvent {
@@ -59,6 +59,6 @@ public sealed interface AuthEvent {
     }
 
     public sealed interface Completed : AuthEvent {
-        public data object Back : Completed
+        public data object DismissRequested : Completed
     }
 }

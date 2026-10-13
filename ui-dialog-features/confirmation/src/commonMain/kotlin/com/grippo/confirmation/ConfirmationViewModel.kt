@@ -15,12 +15,12 @@ public class ConfirmationViewModel(
 ), ConfirmationContract {
 
     override fun onConfirm() {
-        analytics.trackEvent(ConfirmationEvent.Confirm)
+        analytics.trackEvent(ConfirmationEvent.ConfirmClicked)
         navigateTo(ConfirmationDirection.Confirm)
     }
 
     override fun onBack() {
-        analytics.trackEvent(ConfirmationEvent.Back)
+        analytics.trackEvent(ConfirmationEvent.DismissRequested)
         navigateTo(ConfirmationDirection.Back)
     }
 }

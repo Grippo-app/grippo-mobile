@@ -6,14 +6,14 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 
 internal object PeriodPickerEventMatrix {
-    private val RangeSelected = AnalyticsEventSchema("period_picker_range_selected", 1, emptyList())
+    private val RangeClicked = AnalyticsEventSchema("period_picker_range_selected", 1, emptyList())
     private val DismissRequested = AnalyticsEventSchema("period_picker_dismiss_requested", 1, emptyList())
 
-    val all = listOf(RangeSelected, DismissRequested)
+    val all = listOf(RangeClicked, DismissRequested)
 
     fun event(event: PeriodPickerEvent): AnalyticsEvent = Payload(
         when (event) {
-            PeriodPickerEvent.RangeSelected -> RangeSelected
+            PeriodPickerEvent.RangeClicked -> RangeClicked
             PeriodPickerEvent.DismissRequested -> DismissRequested
         }
     )

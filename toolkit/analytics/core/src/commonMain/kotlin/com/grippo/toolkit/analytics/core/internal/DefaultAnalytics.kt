@@ -2,7 +2,6 @@ package com.grippo.toolkit.analytics.core.internal
 
 import com.grippo.toolkit.analytics.Analytics
 import com.grippo.toolkit.analytics.context.AnalyticsContext
-import com.grippo.toolkit.analytics.context.FlowContext
 import com.grippo.toolkit.analytics.context.NavigationContext
 import com.grippo.toolkit.analytics.context.OperationId
 import com.grippo.toolkit.analytics.events.ScreenViewed
@@ -80,23 +79,23 @@ internal class DefaultAnalytics(
         wake.trySend(Unit)
     }
 
-    override fun track(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?) {
-        val queued = lock.withLock { enqueue(event, flow, operation) }
+    override fun track(event: AnalyticsEvent, operation: OperationId?) {
+        val queued = lock.withLock { enqueue(event, operation) }
         if (queued) wake.trySend(Unit)
     }
 
-    override fun presentScreen(navigation: NavigationContext, flow: FlowContext?): ScreenPresentation {
+    override fun presentScreen(navigation: NavigationContext): ScreenPresentation {
         val presentation = lock.withLock {
             presentationRevision++
             if (!closed) context = context.copy(navigation = navigation)
-            Presentation(presentationRevision, enqueue(ScreenViewed(navigation.screen), flow, null))
+            Presentation(presentationRevision, enqueue(ScreenViewed(navigation.screen), null))
         }
         if (presentation.queued) wake.trySend(Unit)
         return presentation
     }
 
     /** Caller holds the state lock; signal the worker only after releasing it. */
-    private fun enqueue(event: AnalyticsEvent, flow: FlowContext?, operation: OperationId?): Boolean {
+    private fun enqueue(event: AnalyticsEvent, operation: OperationId?): Boolean {
         if (closed) {
             record(AnalyticsDisposition.Closed); return false
         }
@@ -109,7 +108,7 @@ internal class DefaultAnalytics(
             return false
         }
         val payload = try {
-            catalog.encode(event, context, flow, operation)
+            catalog.encode(event, context, operation)
         } catch (e: Exception) {
             record(AnalyticsDisposition.InvalidEvent)
             if (validationMode == AnalyticsValidationMode.Throw) throw IllegalArgumentException(

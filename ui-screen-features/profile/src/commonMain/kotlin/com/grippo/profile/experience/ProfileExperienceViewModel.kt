@@ -67,7 +67,7 @@ internal class ProfileExperienceViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Experience.Back)
+        analytics.trackEvent(ProfileEvent.Experience.DismissRequested)
         navigateTo(ProfileExperienceDirection.Back)
     }
 }

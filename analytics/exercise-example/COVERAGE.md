@@ -1,3 +1,13 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+This feature's operation schemas use version 1 and omit visible-screen context;
+feature operation codes and operation_id own outcome correlation. Earlier build
+statements below describe their original source revisions, not released contracts.
+
 # Exercise example dialog coverage
 
 Scope: `ui-dialog-features:exercise-example`, reviewed 2026-10-13.

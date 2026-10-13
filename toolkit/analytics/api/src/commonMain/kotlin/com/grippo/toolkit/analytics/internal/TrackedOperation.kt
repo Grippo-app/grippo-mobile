@@ -1,7 +1,6 @@
 package com.grippo.toolkit.analytics.internal
 
 import com.grippo.toolkit.analytics.Analytics
-import com.grippo.toolkit.analytics.context.FlowContext
 import com.grippo.toolkit.analytics.context.OperationId
 import com.grippo.toolkit.analytics.operation.AnalyticsOperationEvents
 import com.grippo.toolkit.analytics.values.DurationMillis
@@ -10,13 +9,12 @@ import kotlinx.coroutines.CancellationException
 
 internal suspend fun <T> Analytics.executeTrackedOperation(
     events: AnalyticsOperationEvents<T>,
-    flow: FlowContext?,
     timeSource: TimeSource,
     block: suspend () -> T,
 ): T {
     val operation = OperationId.create()
     try {
-        track(events.started(), flow, operation)
+        track(events.started(), operation)
     } catch (_: Exception) {
         // Reporting must not prevent business execution.
     }
@@ -29,7 +27,7 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
             val duration = DurationMillis(started.elapsedNow().inWholeMilliseconds)
             val event = if (error is CancellationException) events.interrupted(duration)
             else events.failed(error, duration)
-            track(event, flow, operation)
+            track(event, operation)
         } catch (reportingError: Exception) {
             if (reportingError !== error) error.addSuppressed(reportingError)
         }
@@ -37,7 +35,7 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
     }
     // Keep encoding outside the operation catch: its defect cannot produce two terminal events.
     try {
-        track(events.completed(result, DurationMillis(started.elapsedNow().inWholeMilliseconds)), flow, operation)
+        track(events.completed(result, DurationMillis(started.elapsedNow().inWholeMilliseconds)), operation)
     } catch (_: Exception) {
         // Reporting must not replace the successful business result.
     }

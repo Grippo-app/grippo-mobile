@@ -7,6 +7,9 @@ import kotlinx.datetime.LocalDateTime
 
 public interface LocalSettingsFeature {
 
+    public fun observeAnalyticsConsent(): Flow<Boolean>
+    public suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
+
     public fun observeRange(): Flow<Range?>
     public suspend fun setRange(range: Range?): Result<Unit>
 

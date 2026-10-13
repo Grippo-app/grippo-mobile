@@ -12,6 +12,12 @@ internal class LocalSettingsFeatureImpl(
     private val repository: LocalSettingsRepository
 ) : LocalSettingsFeature {
 
+    override fun observeAnalyticsConsent(): Flow<Boolean> = repository.observeAnalyticsConsent()
+
+    override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
+        return repository.setAnalyticsConsent(granted)
+    }
+
     override fun observeRange(): Flow<Range?> {
         return repository.observeRange()
     }

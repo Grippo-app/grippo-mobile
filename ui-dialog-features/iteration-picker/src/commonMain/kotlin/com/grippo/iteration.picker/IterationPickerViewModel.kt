@@ -170,7 +170,7 @@ public class IterationPickerViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(IterationPickerEvent.Back)
+        analytics.trackEvent(IterationPickerEvent.DismissRequested)
         navigateTo(IterationPickerDirection.Back)
     }
 }

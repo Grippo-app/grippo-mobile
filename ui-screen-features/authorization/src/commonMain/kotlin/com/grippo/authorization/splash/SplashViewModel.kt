@@ -29,7 +29,7 @@ internal class SplashViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Splash.Back)
+        analytics.trackEvent(AuthEvent.Splash.DismissRequested)
         navigateTo(SplashDirection.Back)
     }
 

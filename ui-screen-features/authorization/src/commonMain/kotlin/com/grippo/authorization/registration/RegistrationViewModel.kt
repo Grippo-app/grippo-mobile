@@ -105,7 +105,7 @@ internal class RegistrationViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Registration.Back)
+        analytics.trackEvent(AuthEvent.Registration.DismissRequested)
         navigateTo(RegistrationDirection.Back)
     }
 }

@@ -112,7 +112,7 @@ internal class ProfileMusclesViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(ProfileEvent.Muscles.Back)
+        analytics.trackEvent(ProfileEvent.Muscles.DismissRequested)
         navigateTo(ProfileMusclesDirection.Back)
     }
 }

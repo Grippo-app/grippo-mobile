@@ -1,3 +1,10 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+
 # Date picker analytics and state preservation
 
 Scope: `ui-dialog-features/date-picker`, reviewed on 2026-10-13. The user chose
@@ -20,7 +27,7 @@ in shared. This scope has no asynchronous business operation to decorate.
 | Callback | Observation | Eligibility / meaning |
 |---|---|---|
 | onSubmitClick | date_picker_submit, version 1 | Only DateTimeFormatState.Valid; invalid/empty callbacks neither emit nor navigate; observes submit before the host delivers the result |
-| onDismiss, including Component system Back | date_picker_dismiss, version 1 | Observed callback only, without inferring a dismissal reason or host completion |
+| onDismiss, including Component system Back | date_picker_dismiss_requested, version 1 | Observed callback only, without inferring a dismissal reason or host completion |
 | onSelectDate | Deliberately omitted | Wheel synchronization and initial composition also invoke select; these are not reliable user interaction observations |
 | Parent date picker open / accepted onResult | Existing parent analytics | Profile Goal and Daily calendar retain their existing open/accepted events; no context is transported through routes |
 

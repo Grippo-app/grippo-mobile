@@ -65,7 +65,7 @@ internal object ProfileEncoding {
     }
 
     fun code(value: InteractionAction): String = when (value) {
-        InteractionAction.Back -> "back"
+        InteractionAction.DismissRequested -> "dismiss_requested"
         InteractionAction.Apply -> "apply"
         InteractionAction.Save -> "save"
         InteractionAction.GroupSelected -> "group_selected"

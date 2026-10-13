@@ -92,7 +92,7 @@ internal class MissingEquipmentsViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Equipments.Control(ControlAction.Back))
+        analytics.trackEvent(AuthEvent.Equipments.Control(ControlAction.DismissRequested))
         navigateTo(MissingEquipmentsDirection.Back)
     }
 }

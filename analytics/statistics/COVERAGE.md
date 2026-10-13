@@ -1,3 +1,13 @@
+## Current contract follow-up (2026-10-14)
+
+The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
+records this revision and its verification limits. Typed dialog observation names
+use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
+The app has not been released; all analytics schemas use initial version 1.
+This feature's operation schemas use version 1 and omit visible-screen context;
+feature operation codes and operation_id own outcome correlation. Earlier build
+statements below describe their original source revisions, not released contracts.
+
 # Statistics coverage
 
 Scope: `:ui-dialog-features:statistics`, 2026-10-13.
@@ -17,7 +27,7 @@ screen enum, view/close events or feature lifecycle wiring is introduced.
 
 | Owner / path | Observation | Payload / eligibility |
 |---|---|---|
-| StatisticsViewModel.onBack / registered BackCallback | StatisticsEvent.DismissRequested | statistics_dismiss v1; empty payload, before existing Back direction; no guard |
+| StatisticsViewModel.onBack / registered BackCallback | StatisticsEvent.DismissRequested | statistics_dismiss_requested v1; empty payload, before existing Back direction; no guard |
 | Trainings mode startup safeLaunch / Charts loader | StatisticsOperation.RefreshTrainings | statistics_task_started/completed/failed/interrupted v1; statistics_operation=refresh_trainings, terminal duration_ms; foundation supplies fresh operation identity |
 | Training mode observeTraining | Deliberate omission | Reactive source observation; no finite request |
 | observeTrainings and metric calculations | Deliberate omission | Reactive presentation rebuilding and local calculations |

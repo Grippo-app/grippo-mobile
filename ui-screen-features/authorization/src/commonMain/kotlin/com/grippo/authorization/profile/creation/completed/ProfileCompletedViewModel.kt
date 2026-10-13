@@ -67,7 +67,7 @@ internal class ProfileCompletedViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(AuthEvent.Completed.Back)
+        analytics.trackEvent(AuthEvent.Completed.DismissRequested)
         navigateTo(ProfileCompletedDirection.Back)
     }
 }

@@ -23,7 +23,7 @@ public class GoalSetupSuggestionViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(GoalSetupSuggestionEvent.Back)
+        analytics.trackEvent(GoalSetupSuggestionEvent.DismissRequested)
         navigateTo(GoalSetupSuggestionDirection.Back)
     }
 }

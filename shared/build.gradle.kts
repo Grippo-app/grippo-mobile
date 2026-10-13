@@ -45,6 +45,8 @@ kotlin {
 
         implementation(projects.analytics.authorization)
         implementation(projects.analytics.profile)
+        implementation(projects.analytics.debug)
+        implementation(projects.analytics.main)
         implementation(projects.analytics.exercises)
         implementation(projects.analytics.durationPicker)
         implementation(projects.analytics.iterationPicker)

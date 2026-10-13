@@ -858,4 +858,6 @@
     <string name="training_no_sets">Поки немає підходів</string>
     <string name="training_first_set_hint">Додайте перший підхід, щоб відстежувати прогрес.</string>
     <string name="exercise_library">Бібліотека вправ</string>
+    <string name="analytics_consent_title">Аналітика використання</string>
+    <string name="analytics_consent_description">Дозвольте події використання, щоб допомогти покращити застосунок. Введений текст і вимірювання тіла не надсилаються. Можна вимкнути будь-коли.</string>
 </resources>

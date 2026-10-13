@@ -7,7 +7,7 @@ public sealed interface TrainingEvent {
         public data object DeleteExercise : Recording
         public data object ReorderExercises : Recording
         public data object Save : Recording
-        public data object Back : Recording
+        public data object DismissRequested : Recording
         public data object StartOpened : Recording
         public data object StartConfirmed : Recording
         public data object LibrarySelected : Recording
@@ -30,19 +30,19 @@ public sealed interface TrainingEvent {
         public data object ReplaceExample : Exercise
         public data object ExampleSelected : Exercise
         public data object Save : Exercise
-        public data object Back : Exercise
+        public data object DismissRequested : Exercise
         public data object IterationOpened : Exercise
         public data object IterationConfirmed : Exercise
     }
     public sealed interface CompletionConfirmation : TrainingEvent {
         public data object DurationOpened : CompletionConfirmation
         public data object DurationSelected : CompletionConfirmation
-        public data object Confirm : CompletionConfirmation
-        public data object Back : CompletionConfirmation
+        public data object ConfirmClicked : CompletionConfirmation
+        public data object DismissRequested : CompletionConfirmation
     }
     public sealed interface Completed : TrainingEvent {
         public data object SummaryOpened : Completed
         public data object ExerciseOpened : Completed
-        public data object Back : Completed
+        public data object DismissRequested : Completed
     }
 }
