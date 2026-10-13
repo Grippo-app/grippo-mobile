@@ -56,26 +56,24 @@ backend/auth payload, transport SDK or schema/storage migration is added.
 
 ## Verification
 
-Source/diff self-review and the screen/preservation source gates passed: Login has
-one AuthScreen.Login hook, Auth/AuthProcess containers remain null, normal retained
-VM injection and LoginDraft save/restore remain wired, password/source state stays
-transient. All four eligible entry callbacks save the undecided choice; known
-decisions are not overwritten. EN/UK/RU resource XML/keys and git diff --check passed.
-Final offline build passed with --no-configuration-cache: authorization and
-local-settings compileAndroidMain, shared compileAndroidMain and
-shared assembleSharedDebugXCFramework (iosArm64 + iosSimulatorArm64). Earlier retry
-failures came from missing generated metadata KLIBs in screen-api/statistics and a
-stray constructor character; the metadata tasks were regenerated and the typo
-removed before the successful final run. Parallel build configuration/documentation
-edits outside this task were preserved. Builds prove compilation/linking only.
-No automated test sources/infrastructure are introduced. Independent review is unavailable under the
-current agent restrictions; self-review does not count as independent review.
-Manual checks unrun: absent/false/true preference; checkbox + all four entry callbacks;
-invalid/busy callbacks; provider failure/cancel then withdrawal via the Login link;
-read/write failures; pause/resume; supported fresh saved-state restoration of the
-unfinished checkbox/email without password; logout/delete retention; Settings update
-and fresh reinstall; small-screen/large-font rendering and actual SDK delivery.
-Earlier build results below are scoped to their original source revisions.
+Source/diff self-review and screen/preservation gates passed: one Login screen hook,
+container null hooks, one transient consent source, one immediate write callback,
+unchanged authentication guards/operations and LoginDraft/email/password ownership.
+git diff --check passed. Final offline compilation with --no-configuration-cache
+passed: authorization compileAndroidMain, compileKotlinIosArm64 and
+compileKotlinIosSimulatorArm64; shared compileAndroidMain. Authorization now uses
+the existing serialization JSON dependency for class-scoped old-draft compatibility.
+An initial missing JSON import was resolved; an absent generated AuthAnalyticsModule
+was regenerated with its scoped KSP task before the successful final run.
+The previous full Android/shared and debug XCFramework build passed for the prior
+consent implementation; it does not verify this revision. No automated test sources
+or infrastructure are added. Independent review is unavailable under current agent
+restrictions; self-review does not count as independent review.
+Manual checks unrun: absent/false/true preference; immediate opt-in/withdrawal and
+write/read failures; all four login/registration entry paths without consent;
+provider cancellation then inline editing; pause/resume and fresh restoration of
+email without password (including an old draft); Settings synchronization;
+logout/delete retention; small-screen/large-font rendering and actual SDK delivery.
 
 ---
 
