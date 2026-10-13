@@ -17,4 +17,6 @@ separate responsibilities. KSP wiring follows `build-logic/convention/.../KoinAn
   because another module has it. Match the owning module's annotated pattern.
 - FeatureApiModule's existing module DSL registers plain UseCases. Extending it for an authorized
   UseCase is permitted; a new DSL module is not.
-- Do not change KSP configuration checks or convention-plugin wiring as a feature fix.
+- KSP configuration checks and convention wiring MUST remain within authorized task scope.
+  Necessary feature wiring may change; unrelated build cleanup MUST NOT be added. Apply
+  [platform/build ownership](../../platform-build-toolkit/SKILL.md) for such changes.

@@ -33,9 +33,11 @@ A Result wrapper succeeding does not establish a successful business outcome.
 - MUST identify required save/hydration/cleanup steps from the UseCase and callers. Required
   failures MUST NOT become success. Optional readback may fail without changing server-write
   success only when the operation explicitly defines that partial-success policy.
-- MUST reconcile only the requested owner/range, preserving raw IDs of incomplete records.
-  If a required server ID is missing, MUST skip range deletion. Confirmed valid empty data may
-  clear that range; missing/invalid data MUST NOT authorize destructive reconciliation.
+- MUST reconcile only the requested owner/range. A missing required collection or any missing
+  required server ID MUST prohibit range deletion. Confirmed valid empty data may clear the range.
+  When all raw server IDs are known, malformed rows MUST retain their cached records and raw IDs;
+  the existing partial-update policy may reconcile other stale rows while reporting incomplete
+  required hydration. Malformed payloads MUST NOT be treated as absent server records.
 - MUST validate every record before reconciliation; do not use short-circuit any/all when
   validation also writes valid records. Preserve the operation's explicit atomic or
   partial-update policy, and protect incomplete raw server IDs from deletion.

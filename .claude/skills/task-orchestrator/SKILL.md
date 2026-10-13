@@ -28,11 +28,15 @@ The coordinating agent may implement work; a separate reviewer supplies independ
    from a permitted reviewer that did not author that area. Small isolated editorial
    changes require self-review only. Provide requirements, changed files, decisions
    and actual checks; ask for concrete defects with file/line evidence and severity. A writer's self-review
-   is useful but does not count as independent review.
+   is useful but does not count as independent review. If no permitted reviewer
+   is available, complete the authorized work and available checks, and explicitly
+   record independent review as unperformed; MUST NOT claim it passed.
 6. Resolve every blocking finding and re-review the changed area. Repeat while
    new actionable evidence appears. If the same unresolved finding returns twice,
-   stop dependent work, identify the cause and ask a concise question or report
-   the missing capability. Do not loop endlessly or redefine a failure as a pass.
+   MUST reassess its cause and continue fixing when a local correction is available.
+   Ask only for a real product/scope blocker or report a missing capability; two
+   rounds are not a hard cap. MUST NOT repeat an unchanged ineffective attempt
+   endlessly or redefine a failure as a pass.
 7. MUST run relevant source/manual checks on the resulting revision. Builds needed
    to verify the task are permitted within its scope without repeated consent. If fixes
    change checked code, repeat only checks affected by those fixes. Unavailable
@@ -41,7 +45,7 @@ The coordinating agent may implement work; a separate reviewer supplies independ
 ## Completion gate
 
 - Requested outcomes and relevant edge/error/cancellation paths are accounted for.
-- Owning semantic gates MUST pass source review; required independent review
+- Owning semantic gates MUST pass source review; completed independent review
   MUST have no unaccepted blocking findings. Explicitly retained behavior is recorded as an accepted risk,
   never as a fixed finding or PASS. If required independent review is unavailable,
   MUST report that limitation explicitly rather than claiming the review loop completed.
