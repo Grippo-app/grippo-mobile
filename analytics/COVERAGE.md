@@ -4,6 +4,9 @@ Reviewed during the project-skill cleanup on 2026-10-13. This is an inventory of
 actual affected owners, not a template or a claim of global feature/SDK coverage.
 Update it when these owners or their instrumentation change.
 
+Start training dialog instrumentation and its runtime-session / accepted-parent-state
+assessment are recorded in [Start training coverage](start-training/COVERAGE.md).
+
 Goal setup suggestion actions and its no-draft assessment are recorded in
 [Goal setup suggestion coverage](goal-setup-suggestion/COVERAGE.md).
 
@@ -1172,3 +1175,55 @@ through a typed, parameterless DismissRequested event. Live sessions remain unsa
 range/type are caller inputs and history is rebuilt from current data. No editable
 draft requires StateKeeper. See [scoped coverage](performance-trend-details/COVERAGE.md)
 for the surface/callback inventory, omissions, preservation gate and checks.
+
+## Primary goal picker
+
+Current callback coverage and dialog-state preservation assessment: [primary-goal-picker](primary-goal-picker/COVERAGE.md).
+
+
+## Period picker (2026-10-13)
+
+Period picker callback telemetry is now scoped in [period-picker/COVERAGE.md](period-picker/COVERAGE.md).
+Two empty-payload events observe range selection and dismissal requests. Earlier
+Home rows remain parent open/accepted-result/save coverage; dialog visibility and
+host-driven closure remain uninstrumented. Live sessions stay unsaved; the accepted
+period already uses durable LocalSettings/DataStore with no extra StateKeeper copy.
+
+## Secondary goal picker scoped coverage (2026-10-13)
+
+[Secondary goal picker coverage](secondary-goal-picker/COVERAGE.md) records
+parameterless GoalClicked and DismissRequested observations, the overlay screen
+classification, parent-owned accepted selection preservation and verification limits.
+The existing profile-owned opening/accepted-result observations remain unchanged.
+
+## Training streak details (2026-10-13)
+
+The read-only training-streak-details dialog reports its existing VM Back request
+through a typed, parameter-free event. Opening intent remains owned by Home.
+Dialog views/close, host-handled system Back/toolbar closure and swipe/scrim
+dismissal are omitted; no user-owned draft requires StateKeeper.
+See [scoped coverage](training-streak-details/COVERAGE.md)
+for the actual surface, preservation inventory and verification limitations.
+
+Statistics dialog analytics and state assessment: see [statistics/COVERAGE.md](statistics/COVERAGE.md). Both modes remain runtime dialogs; the scoped implementation tracks Back requests and the existing finite range refresh.
+
+## Training goal details dialog
+
+[Scoped coverage and preservation inventory](training-goal-details/COVERAGE.md)
+records parameterless AddGoalClicked and DismissRequested at the dialog VM.
+The earlier overlay presentation omission remains valid: no independent screen
+or dedicated dialog presentation contract is added. Live sessions remain unsaved;
+range is a caller seed and progress/insights rebuild from current training data.
+There is no editable draft requiring StateKeeper. Existing Home events are unchanged.
+
+
+## Weight picker scoped coverage
+
+[Weight picker coverage and preservation inventory](weight-picker/COVERAGE.md)
+records changed-selection observations, submit clicks and VM dismissal requests
+with empty payloads. The live overlay remains outside independent-screen tracking;
+unconfirmed selection is runtime-only. Accepted direct results remain in UserDraft
+or ProfileBodyDraft; nested results stay in the live iteration until its Submit
+updates TrainingExerciseDraft.
+Wheel synchronization can change selection without a user gesture; the selection
+event does not claim gesture provenance. Host-managed exits remain omitted.

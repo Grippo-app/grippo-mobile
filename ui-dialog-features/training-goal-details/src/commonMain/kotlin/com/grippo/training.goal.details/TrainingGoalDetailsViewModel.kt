@@ -1,5 +1,7 @@
 package com.grippo.training.goal.details
 
+import com.grippo.analytics.training.goal.details.TrainingGoalDetailsAnalytics
+import com.grippo.analytics.training.goal.details.models.TrainingGoalDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
@@ -23,6 +25,7 @@ public class TrainingGoalDetailsViewModel(
     range: DateRange,
     trainingFeature: TrainingFeature,
     private val goalFollowingUseCase: GoalFollowingUseCase,
+    private val analytics: TrainingGoalDetailsAnalytics,
 ) : BaseViewModel<TrainingGoalDetailsDialogState, TrainingGoalDetailsDirection, TrainingGoalDetailsLoader>(
     TrainingGoalDetailsDialogState(
         range = DateRangeFormatState.of(range),
@@ -217,10 +220,12 @@ public class TrainingGoalDetailsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(TrainingGoalDetailsEvent.DismissRequested)
         navigateTo(TrainingGoalDetailsDirection.Back)
     }
 
     override fun onAddGoal() {
+        analytics.trackEvent(TrainingGoalDetailsEvent.AddGoalClicked)
         navigateTo(TrainingGoalDetailsDirection.AddGoal)
     }
 }

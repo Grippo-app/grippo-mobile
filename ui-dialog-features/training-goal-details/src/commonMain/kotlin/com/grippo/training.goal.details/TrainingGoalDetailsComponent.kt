@@ -20,6 +20,7 @@ public class TrainingGoalDetailsComponent(
             range = range,
             trainingFeature = getKoin().get(),
             goalFollowingUseCase = getKoin().get(),
+            analytics = getKoin().get(),
         )
     }
 

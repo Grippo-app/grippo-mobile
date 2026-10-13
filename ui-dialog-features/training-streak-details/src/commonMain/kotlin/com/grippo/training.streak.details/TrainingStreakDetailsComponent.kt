@@ -17,6 +17,7 @@ public class TrainingStreakDetailsComponent(
     override val viewModel: TrainingStreakDetailsViewModel = componentContext.retainedInstance {
         TrainingStreakDetailsViewModel(
             range = range,
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             trainingStreakUseCase = getKoin().get()
         )

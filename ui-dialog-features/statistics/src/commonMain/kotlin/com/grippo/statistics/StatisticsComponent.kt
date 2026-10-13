@@ -17,6 +17,7 @@ public class StatisticsComponent(
     override val viewModel: StatisticsViewModel = componentContext.retainedInstance {
         StatisticsViewModel(
             config = config,
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
             volumeSeriesUseCase = getKoin().get(),

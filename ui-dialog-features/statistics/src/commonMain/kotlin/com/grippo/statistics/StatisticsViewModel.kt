@@ -1,5 +1,8 @@
 package com.grippo.statistics
 
+import com.grippo.analytics.statistics.StatisticsAnalytics
+import com.grippo.analytics.statistics.models.StatisticsEvent
+import com.grippo.analytics.statistics.models.StatisticsOperation
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.mapLatest
 
 public class StatisticsViewModel(
     config: DialogConfig.Statistics,
+    private val analytics: StatisticsAnalytics,
     private val trainingFeature: TrainingFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
@@ -41,9 +45,11 @@ public class StatisticsViewModel(
 
                 safeLaunch {
                     withLoader(StatisticsLoader.Charts) {
-                        trainingFeature
-                            .getTrainings(start = config.range.from, end = config.range.to)
-                            .getOrThrow()
+                        analytics.trackOperation(StatisticsOperation.RefreshTrainings) {
+                            trainingFeature
+                                .getTrainings(start = config.range.from, end = config.range.to)
+                                .getOrThrow()
+                        }
                     }
                 }
             }
@@ -57,6 +63,7 @@ public class StatisticsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(StatisticsEvent.DismissRequested)
         navigateTo(StatisticsDirection.Back)
     }
 

@@ -7,6 +7,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.toolkit.date.utils.DateRangeKind
+import org.koin.core.component.get
 
 public class PeriodPickerComponent(
     componentContext: ComponentContext,
@@ -18,6 +19,7 @@ public class PeriodPickerComponent(
     override val viewModel: PeriodPickerViewModel = componentContext.retainedInstance {
         PeriodPickerViewModel(
             initial = initial,
+            analytics = getKoin().get(),
         )
     }
 

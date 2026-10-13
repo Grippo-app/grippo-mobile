@@ -16,7 +16,7 @@ public class WeightPickerComponent(
 ) : BaseComponent<WeightPickerDirection>(componentContext) {
 
     override val viewModel: WeightPickerViewModel = componentContext.retainedInstance {
-        WeightPickerViewModel(initial)
+        WeightPickerViewModel(initial = initial, analytics = getKoin().get())
     }
     private val backCallback = BackCallback(onBack = viewModel::onDismiss)
 

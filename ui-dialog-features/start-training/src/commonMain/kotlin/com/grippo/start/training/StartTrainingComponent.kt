@@ -18,6 +18,7 @@ public class StartTrainingComponent(
 
     override val viewModel: StartTrainingViewModel = componentContext.retainedInstance {
         StartTrainingViewModel(
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             generatePresetTrainingUseCase = getKoin().get(),
         )

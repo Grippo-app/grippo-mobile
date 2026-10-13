@@ -18,6 +18,7 @@ public class PrimaryGoalPickerComponent(
     override val viewModel: PrimaryGoalPickerViewModel = componentContext.retainedInstance {
         PrimaryGoalPickerViewModel(
             initial = initial,
+            analytics = getKoin().get(),
         )
     }
 

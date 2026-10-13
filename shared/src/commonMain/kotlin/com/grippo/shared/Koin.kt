@@ -9,13 +9,21 @@ import com.grippo.analytics.exercise.ExerciseAnalyticsModule
 import com.grippo.analytics.home.HomeAnalyticsModule
 import com.grippo.analytics.date.picker.DatePickerAnalyticsModule
 import com.grippo.analytics.draft.training.DraftTrainingAnalyticsModule
+import com.grippo.analytics.start.training.StartTrainingAnalyticsModule
 import com.grippo.analytics.profile.ProfileAnalyticsModule
 import com.grippo.analytics.duration.picker.DurationPickerAnalyticsModule
 import com.grippo.analytics.iteration.picker.IterationPickerAnalyticsModule
 import com.grippo.analytics.month.picker.MonthPickerAnalyticsModule
+import com.grippo.analytics.period.picker.PeriodPickerAnalyticsModule
 import com.grippo.analytics.menu.picker.MenuPickerAnalyticsModule
+import com.grippo.analytics.secondary.goal.picker.SecondaryGoalPickerAnalyticsModule
+import com.grippo.analytics.primary.goal.picker.PrimaryGoalPickerAnalyticsModule
+import com.grippo.analytics.weight.picker.WeightPickerAnalyticsModule
 import com.grippo.analytics.muscle.loading.details.MuscleLoadingDetailsAnalyticsModule
 import com.grippo.analytics.performance.trend.details.PerformanceTrendDetailsAnalyticsModule
+import com.grippo.analytics.training.goal.details.TrainingGoalDetailsAnalyticsModule
+import com.grippo.analytics.training.streak.details.TrainingStreakDetailsAnalyticsModule
+import com.grippo.analytics.statistics.StatisticsAnalyticsModule
 import com.grippo.analytics.height.picker.HeightPickerAnalyticsModule
 import com.grippo.analytics.exercises.ExercisesAnalyticsModule
 import com.grippo.analytics.training.TrainingAnalyticsModule
@@ -72,15 +80,23 @@ public object Koin {
                 DurationPickerAnalyticsModule().module,
                 IterationPickerAnalyticsModule().module,
                 MonthPickerAnalyticsModule().module,
+                PeriodPickerAnalyticsModule().module,
                 MenuPickerAnalyticsModule().module,
+                SecondaryGoalPickerAnalyticsModule().module,
+                PrimaryGoalPickerAnalyticsModule().module,
+                WeightPickerAnalyticsModule().module,
                 MuscleLoadingDetailsAnalyticsModule().module,
                 HeightPickerAnalyticsModule().module,
                 PerformanceTrendDetailsAnalyticsModule().module,
+                TrainingGoalDetailsAnalyticsModule().module,
+                TrainingStreakDetailsAnalyticsModule().module,
+                StatisticsAnalyticsModule().module,
                 TrainingAnalyticsModule().module,
                 TrainingsAnalyticsModule().module,
                 HomeAnalyticsModule().module,
                 DatePickerAnalyticsModule().module,
                 DraftTrainingAnalyticsModule().module,
+                StartTrainingAnalyticsModule().module,
                 ConfirmationAnalyticsModule().module,
                 GoalSetupSuggestionAnalyticsModule().module,
                 ErrorDisplayAnalyticsModule().module,

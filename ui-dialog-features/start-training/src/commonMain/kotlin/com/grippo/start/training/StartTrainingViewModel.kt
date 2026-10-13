@@ -1,5 +1,8 @@
 package com.grippo.start.training
 
+import com.grippo.analytics.start.training.StartTrainingAnalytics
+import com.grippo.analytics.start.training.models.StartTrainingEvent
+import com.grippo.analytics.start.training.models.StartTrainingOperation
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -9,6 +12,7 @@ import com.grippo.data.features.api.training.GeneratePresetTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.training.toState
+import com.grippo.start.training.analytics.toAnalytics
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
@@ -17,6 +21,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.firstOrNull
 
 public class StartTrainingViewModel(
+    private val analytics: StartTrainingAnalytics,
     private val trainingFeature: TrainingFeature,
     generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
 ) : BaseViewModel<StartTrainingState, StartTrainingDirection, StartTrainingLoader>(
@@ -30,38 +35,40 @@ public class StartTrainingViewModel(
 
             trainingFeature.getTrainings(start = recentRangeStart, end = now)
 
-            val recents = trainingFeature
-                .observeTrainings(start = recentRangeStart, end = now)
-                .firstOrNull()
-                .orEmpty()
-                .filter { it.exercises.isNotEmpty() }
-                .sortedByDescending { it.createdAt }
-                .take(MAX_RECENT_TRAININGS)
-                .map(::toRecentOption)
+            analytics.trackOperation(StartTrainingOperation.BuildOptions) {
+                val recents = trainingFeature
+                    .observeTrainings(start = recentRangeStart, end = now)
+                    .firstOrNull()
+                    .orEmpty()
+                    .filter { it.exercises.isNotEmpty() }
+                    .sortedByDescending { it.createdAt }
+                    .take(MAX_RECENT_TRAININGS)
+                    .map(::toRecentOption)
 
-            val preset = generatePresetTrainingUseCase
-                .execute()
-                ?.exercises
-                ?.map { exercise ->
-                    exercise.toState(
-                        id = Uuid.random().toString(),
-                        iterations = exercise.iterations.map { iteration ->
-                            iteration.toState(id = Uuid.random().toString())
-                        }.toPersistentList(),
-                        createdAt = DateTimeUtils.now(),
-                    )
-                }
-                ?.toPersistentList()
-                ?.takeIf { it.isNotEmpty() }
-                ?.let(StartTrainingOption::Preset)
+                val preset = generatePresetTrainingUseCase
+                    .execute()
+                    ?.exercises
+                    ?.map { exercise ->
+                        exercise.toState(
+                            id = Uuid.random().toString(),
+                            iterations = exercise.iterations.map { iteration ->
+                                iteration.toState(id = Uuid.random().toString())
+                            }.toPersistentList(),
+                            createdAt = DateTimeUtils.now(),
+                        )
+                    }
+                    ?.toPersistentList()
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let(StartTrainingOption::Preset)
 
-            val options = buildList {
-                preset?.let(::add)
-                add(StartTrainingOption.Empty)
-                addAll(recents)
-            }.toPersistentList()
+                val options = buildList {
+                    preset?.let(::add)
+                    add(StartTrainingOption.Empty)
+                    addAll(recents)
+                }.toPersistentList()
 
-            update { it.copy(options = options) }
+                update { it.copy(options = options) }
+            }
         }
     }
 
@@ -93,6 +100,8 @@ public class StartTrainingViewModel(
     override fun onSelect(key: String) {
         val option = state.value.options.firstOrNull { it.key == key } ?: return
 
+        analytics.trackEvent(StartTrainingEvent.OptionConfirmed(option.toAnalytics()))
+
         when (option) {
             StartTrainingOption.Empty -> {
                 navigateTo(StartTrainingDirection.StartEmpty)
@@ -107,6 +116,7 @@ public class StartTrainingViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(StartTrainingEvent.Back)
         navigateTo(StartTrainingDirection.Back)
     }
 

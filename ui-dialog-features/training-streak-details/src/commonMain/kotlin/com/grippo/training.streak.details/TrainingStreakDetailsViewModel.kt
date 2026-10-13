@@ -1,5 +1,7 @@
 package com.grippo.training.streak.details
 
+import com.grippo.analytics.training.streak.details.TrainingStreakDetailsAnalytics
+import com.grippo.analytics.training.streak.details.models.TrainingStreakDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.onEach
 
 public class TrainingStreakDetailsViewModel(
     range: DateRange,
+    private val analytics: TrainingStreakDetailsAnalytics,
     trainingFeature: TrainingFeature,
     private val trainingStreakUseCase: TrainingStreakUseCase,
 ) : BaseViewModel<TrainingStreakDetailsDialogState, TrainingStreakDetailsDirection, TrainingStreakDetailsLoader>(
@@ -25,6 +28,7 @@ public class TrainingStreakDetailsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(TrainingStreakDetailsEvent.DismissRequested)
         navigateTo(TrainingStreakDetailsDirection.Back)
     }
 
