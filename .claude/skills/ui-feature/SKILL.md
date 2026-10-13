@@ -192,19 +192,7 @@ also requires the canonical [feature-analytics skill](../feature-analytics/SKILL
 Start with `references/index.md` (the routing table); it maps each task-kind to
 the reference file(s) to read.
 
-| task-kind | read |
-|---|---|
-| Add a sub-screen | `references/add-screen.md` → `references/mvi-contract.md`, `references/base-classes.md`, `references/compose-rules.md` |
-| Author the seven-file MVI contract | `references/mvi-contract.md` → `references/base-classes.md`, `references/state.md` |
-| Add a dialog | `references/dialogs.md` → `references/mvi-contract.md`, `references/base-classes.md` |
-| Scaffold a feature module | `references/module-structure.md` → `references/navigation.md`, `references/mvi-contract.md` |
-| Cross-feature nav / deeplink | `references/navigation.md` (§ Cross-feature navigation, § Deeplinks) → `references/module-structure.md` |
-| Process-death / restoration | `references/process-death.md` |
-| `:ui-core:state` models / error triad | `references/state.md` → `references/module-structure.md` (§ ui-core), `references/error-pipeline.md` |
-| Compose / stability / previews | `references/compose-rules.md` → `references/base-classes.md` (§ BaseComposeScreen) |
-| Base classes / results | `references/base-classes.md`, `references/results.md` |
-| Cross-component results | `references/results.md` |
-| Widgets shared across features | `references/module-structure.md` (§ `:compose-libs:*` — graduate to design-system instead) |
+Use the canonical [reference routing table](references/index.md#task-kind--topic--read); do not maintain a second table here.
 
 Always-on cross-cuts (MVI, dialogs, error pipeline, Decompose nav,
 process-death) are summarized at the foot of `references/mvi-contract.md`. The

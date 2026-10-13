@@ -1,5 +1,7 @@
 # Base Classes (`:ui-core:foundation`)
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 Read the actual foundation sources under `ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/` before changing a base contract. This reference describes usage; it is not a replacement implementation. Result conventions live in [results.md](results.md).
 
 ## `BaseViewModel`
@@ -73,7 +75,7 @@ override fun onDestroy()
   Reuse the existing VM scope and follow the [error rules](error-pipeline.md).
 - **`state`** is read-only outside the VM. `update { it.copy(...) }` is the **only** mutator (atomic compare-and-swap; thread-safe). **Never** capture `state.value` before a slow op then `update { it.copy(... = capturedValue + ...) }` — a concurrent update is lost; the lambda receives the **current** value.
 - **`loaders`** is an `ImmutableSet` (multiple concurrent). `withLoader(MyLoader.X) { block() }` adds X, runs `block`, removes X on completion (success **or** failure via `try/finally`); `loader == null` runs without modifying the set. Useful inside `mapLatest`/`flatMapLatest` chains.
-- **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. For every-event delivery use `ResultManager` or design the Direction so the second event is a no-op.
+- **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. Do not route navigation commands through ResultManager; it carries business result payloads. Verify the normal Direction chain when ordering matters.
 - **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. Unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
 - **Suspend helpers**: run in the caller's coroutine and propagate failures to its `safeLaunch`. No local catches, additional jobs, stage flags or recovery wrappers. Analytics decorates the business operation and preserves its original error. See [error rules](error-pipeline.md).
 - **`screenPresentation`** defaults to null for containers. Every independent screen must override the reason-aware presenter; BaseComponent/foundation owns its lifecycle binding. Graph/null resolves no ScreenAnalytics. VM stores no Lifecycle/ComponentContext and adds no activationFlow visibility observer or scope. Verify every new/affected screen through the [mandatory screen coverage gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
@@ -100,14 +102,9 @@ authoritative; follow the [draft policy](../../state-preservation/SKILL.md#data-
 
 ### `onDestroy`
 
-```kotlin
-override fun onDestroy() {
-    _navigator.close()
-    coroutineScope.cancel()
-}
-```
-
-Closes the navigator channel and cancels the VM's `coroutineScope`; `Flow.safeLaunch()` subscriptions cancel automatically.
+The base closes its navigator and cancels the VM-owned coroutine scope; existing
+safeLaunch jobs and subscriptions are cancelled. Inspect BaseViewModel before
+changing this lifecycle contract; do not duplicate its implementation in a leaf.
 
 ### What MUST NOT be in a ViewModel
 
@@ -117,7 +114,12 @@ Closes the navigator channel and cancels the VM's `coroutineScope`; `Flow.safeLa
   [canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 - `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present failures, including private helpers; use `getOrThrow()` inside `safeLaunch`. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
 
-### Minimal VM template
+### Partial MVI-only VM excerpt
+
+This educational example omits analytics and draft wiring; it is not a complete
+independent screen. A real screen MUST include its typed screenPresentation under
+the [mandatory analytics screen gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate)
+and apply the preservation gate to required drafts.
 
 ```kotlin
 internal class FooViewModel(private val barFeature: BarFeature) :
@@ -222,35 +224,7 @@ Render UI directly (`Render()` calls a `<X>Screen` function). Hold state. Call `
 
 A stack-owning feature root owns a private `StackNavigation` + `Value<ChildStack<<X>Router, Child>>` and is a **`public class`** (constructed from `:shared`):
 
-```kotlin
-public class ProfileComponent(
-    initial: ProfileRouter,
-    componentContext: ComponentContext,
-    private val close: () -> Unit,
-) : BaseComponent<ProfileDirection>(componentContext) {
-    override val viewModel: ProfileViewModel = componentContext.retainedInstance { ProfileViewModel() }
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
-    init { backHandler.register(backCallback) }
-    override suspend fun eventListener(direction: ProfileDirection) {
-        when (direction) { ProfileDirection.Back -> close.invoke() }
-    }
-    private val navigation = StackNavigation<ProfileRouter>()
-    internal val childStack: Value<ChildStack<ProfileRouter, Child>> = childStack(
-        source = navigation, serializer = ProfileRouter.serializer(),
-        initialStack = { listOf(initial) }, key = "ProfileComponent",
-        handleBackButton = true, childFactory = ::createChild,
-    )
-    private fun createChild(router: ProfileRouter, context: ComponentContext): Child = when (router) {
-        ProfileRouter.Overview -> Child.Overview(ProfileOverviewComponent(componentContext = context, back = viewModel::onBack))
-        ProfileRouter.Settings -> Child.Settings(ProfileSettingsComponent(componentContext = context, back = viewModel::onBack))
-    }
-    @Composable override fun Render() { /* collects state/loaders, calls ProfileScreen(this, ...) */ }
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Overview(override val component: ProfileOverviewComponent) : Child(component)
-        data class Settings(override val component: ProfileSettingsComponent) : Child(component)
-    }
-}
-```
+Inspect the actual [ProfileComponent](../../../../ui-screen-features/profile/src/commonMain/kotlin/com/grippo/profile/ProfileComponent.kt): its Back handler pops a nonempty back stack and calls close only at the feature root. Leaf children forward Back to that handler. MUST distinguish returning to a previous child from exiting the feature; do not wire every child Back directly to close.
 
 Pop/back is wired through `BackCallback(onBack = viewModel::onBack)` + `backHandler.register(...)`, not by inspecting `navigation.popOrNull()` in `eventListener` — the VM owns back semantics. Nested graph Components may own their own stacks, as AuthProcess and ProfileCreation do. Each graph handles its own navigation; leaf Components delegate navigation through callbacks.
 
@@ -260,28 +234,7 @@ Pop/back is wired through `BackCallback(onBack = viewModel::onBack)` + `backHand
 
 A thin Composable wrapper at the root of every screen: sets background, lays out in a `Column`, registers a tap-anywhere gesture that clears focus (dismisses the keyboard).
 
-```kotlin
-@Composable
-public fun BaseComposeScreen(
-    background: ScreenBackground.Color,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    val focusInteractionSource = remember { MutableInteractionSource() }
-    Column(
-        modifier = Modifier
-            .background(background.value)
-            .clickable(interactionSource = focusInteractionSource, indication = null,
-                onClick = { focusManager.clearFocus(force = true) }),
-        content = content,
-    )
-}
-
-@Stable
-public sealed interface ScreenBackground {
-    @Immutable public data class Color(public val value: ComposeColor) : ScreenBackground
-}
-```
+Inspect [BaseScreen.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseScreen.kt) for the exact implementation; do not copy a replacement from this reference.
 
 Notes: `Column` (not `Box`/`LazyColumn`); **no** `fillMaxSize()` (content drives height); `clickable` with `indication = null` (no ripple); the `content` lambda receives `ColumnScope`.
 
@@ -320,15 +273,8 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 
 `@Factory(binds = [OperationManager::class])`, `@InjectedParam coroutineScope`. `BaseViewModel` gets its own instance bound to its own scope (cancelled in `onDestroy()`):
 
-- **`launch(dispatcher, onError, block)`** — runs `block` on `coroutineScope` with the dispatcher + a `CoroutineExceptionHandler` calling `onError(t)` for any non-`CancellationException` + a `SupervisorJob` child (failures don't cancel siblings), wrapped in `supervisorScope { block() }`.
+- **`launch(dispatcher, onError, block)`** — runs `block` on `coroutineScope` with the dispatcher + a `CoroutineExceptionHandler` calling `onError(t)` for any non-`CancellationException` in the VM-owned supervised scope, wrapped in `supervisorScope { block() }`.
 - **`whileActive(upstream, activation)`** — the 1-second debounced unsubscription for `Processing.WhileActive`:
-  ```kotlin
-  override fun <T> whileActive(upstream: Flow<T>, activation: Flow<Boolean>): Flow<T> =
-      activation
-          .flatMapLatest { active -> if (active) flowOf(true) else flow { delay(1.seconds); emit(false) } }
-          .distinctUntilChanged()
-          .flatMapLatest { active -> if (active) upstream else emptyFlow() }
-  ```
   `activation` is RESUMED-true / else-false, provided by `BaseComponent` via `attachActivation(lifecycle.asActiveFlow())`. Returning to RESUMED within 1s cancels the delay (flatMapLatest) and keeps upstream subscribed.
 
 `CancellationException` is **never** treated as an error. `OperationManager` does **not** throttle/debounce/rate-limit, does **not** retry, does **not** log success. `CoreModule` (`@Module @ComponentScan`) discovers `OperationManagerImpl` and is included in `:shared/Koin.kt`.

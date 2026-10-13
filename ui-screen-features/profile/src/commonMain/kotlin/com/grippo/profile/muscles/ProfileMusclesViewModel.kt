@@ -1,6 +1,8 @@
 package com.grippo.profile.muscles
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
@@ -34,7 +36,9 @@ internal class ProfileMusclesViewModel(
             .safeLaunch()
 
         safeLaunch {
-            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshMuscles) {
+                excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            }
         }
     }
 
@@ -74,6 +78,7 @@ internal class ProfileMusclesViewModel(
 
     override fun onGroupClick(id: String) {
         update { it.copy(selectedGroupId = id) }
+        analytics.trackEvent(ProfileEvent.Muscles.GroupSelected)
     }
 
     override fun onSelect(id: String) {
@@ -85,6 +90,8 @@ internal class ProfileMusclesViewModel(
             }
             it.copy(selectedMuscleIds = selectedMuscleIds)
         }
+        val selectedIds = state.value.selectedMuscleIds
+        analytics.trackEvent(ProfileEvent.Muscles.SelectionChanged(id in selectedIds, selectedIds.size))
     }
 
     override fun onApply() {
@@ -95,13 +102,17 @@ internal class ProfileMusclesViewModel(
         if (allIds.isEmpty()) return
         val excludedMuscleIds = allIds - current.selectedMuscleIds
 
+        analytics.trackEvent(ProfileEvent.Muscles.Apply)
         safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
-            excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds).getOrThrow()
+            analytics.trackOperation(ProfileOperation.SaveMuscles) {
+                excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds).getOrThrow()
+            }
             navigateTo(ProfileMusclesDirection.Back)
         }
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Muscles.Back)
         navigateTo(ProfileMusclesDirection.Back)
     }
 }

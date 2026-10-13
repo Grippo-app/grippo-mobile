@@ -1,12 +1,15 @@
 package com.grippo.profile.experience
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.domain.state.user.toState
+import com.grippo.profile.analytics.ProfileInputMapping
 import com.grippo.state.domain.user.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.mapNotNull
@@ -35,7 +38,9 @@ internal class ProfileExperienceViewModel(
         }
 
         safeLaunch {
-            userFeature.getUser().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshUser) {
+                userFeature.getUser().getOrThrow()
+            }
         }
     }
 
@@ -46,18 +51,23 @@ internal class ProfileExperienceViewModel(
 
     override fun onSelectExperience(value: ExperienceEnumState) {
         update { it.copy(selected = value) }
+        analytics.trackEvent(ProfileEvent.Experience.Selected(ProfileInputMapping.experience(value)))
     }
 
     override fun onApply() {
         val selected = state.value.selected ?: return
 
+        analytics.trackEvent(ProfileEvent.Experience.Apply)
         safeLaunch(loader = ProfileExperienceLoader.ApplyButton) {
-            userFeature.setExperience(selected.toDomain()).getOrThrow()
+            analytics.trackOperation(ProfileOperation.SaveExperience) {
+                userFeature.setExperience(selected.toDomain()).getOrThrow()
+            }
             navigateTo(ProfileExperienceDirection.Back)
         }
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Experience.Back)
         navigateTo(ProfileExperienceDirection.Back)
     }
 }

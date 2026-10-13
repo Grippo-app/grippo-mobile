@@ -1,18 +1,19 @@
 # design-system — references index
 
-Self-contained reference pack for the `design-system` skill. These files carry the skill's
-**own** normative rules — read the matching reference below.
+Read only the reference for the affected topic. Exact source APIs and signatures
+remain in the linked producers; references own project invariants, not copied
+implementation catalogs.
 
 ## Routing table
 
 | When the task involves… | Read |
 |---|---|
-| `AppTokens` facade, the six accessors, when to add a token/category, VM-side `StringProvider` equivalent, CompositionLocal definitions | `tokens.md` |
-| `AppColor` shape, nested groups, color slots, dark/light impls, two-levels-deep guidance | `color.md` |
-| `AppDp` shape, dimension/spacing/radius slots, base scales, no-theme-switch rationale | `dp.md` |
+| `AppTokens` facade, the six accessors, when to add a token/category, VM-side `StringProvider` access, CompositionLocal definitions | `tokens.md` |
+| `AppColor` shape, nested groups, color slots, dark/light implementations and slot ownership | `color.md` |
+| `AppDp` shape, dimension/spacing/radius slots, private scales and adaptation ownership | `dp.md` |
 | `AppTypography` text styles, `@Composable` accessors, font family, adding a style token | `typography.md` |
 | `AppString` / `AppDrawable` / `AppIcon` accessors, string/drawable/font conventions | `accessors.md` |
-| `AppTheme` composable, `ProvideResources`, composition locals, theme + locale switching | `theme.md` |
+| `AppTheme` composable, `ProvideResources`, composition locals, actual theme and locale behavior | `theme.md` |
 | `@AppPreview`, `PreviewContainer`, stub data, preview rules | `previews.md` |
 | Card hierarchy, semantic color, adaptive layouts, whole-screen visual review and capture cleanup | `visual-consistency.md` |
 | Shared widgets (Button, Input, Chip, Toolbar, Card, EmptyState, BannerCard, LineIndicator, Toggle, selectable cards), rules for all components, component-vs-`compose-libs` decision | `components.md` |
@@ -20,9 +21,9 @@ Self-contained reference pack for the `design-system` skill. These files carry t
 | `:design-system:*` module layout (`components`, `core`, `preview`, `resources:provider`, `resources:provider-impl`), build files, rules summary | `design-system-modules.md` |
 | `AsyncImage` token-themed usage (image loader) | `image-loader.md` |
 | Add a string / plural / drawable / icon / font (step-by-step recipe + verify) | `cookbook-resource.md` |
-| Kotlin style, visibility, `explicitApi()`, collections, flows | `kotlin-style.md` |
-| Naming tables (classes, files, functions, parameters, sealed types, stub*) | `naming.md` |
-| Package scheme, directory=package, area sub-packages | `packages.md` |
+| UI/resource Kotlin rules and links to owning policies | `kotlin-style.md` |
+| Project naming and file placement | `naming.md` |
+| Existing packages and dotted-directory preservation | `packages.md` |
 
 ## Cross-skill references (not owned here)
 

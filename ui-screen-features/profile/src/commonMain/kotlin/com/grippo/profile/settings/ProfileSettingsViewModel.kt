@@ -1,6 +1,8 @@
 package com.grippo.profile.settings
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.UiText
@@ -27,22 +29,30 @@ internal class ProfileSettingsViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Settings.Back)
         navigateTo(ProfileSettingsDirection.Back)
     }
 
     override fun onLogoutClick() {
+        analytics.trackEvent(ProfileEvent.Settings.Logout)
         safeLaunch(loader = ProfileSettingsLoader.LogoutButton) {
-            logoutUseCase.execute()
+            analytics.trackOperation(ProfileOperation.Logout) {
+                logoutUseCase.execute()
+            }
         }
     }
 
     override fun onDeleteAccount() {
+        analytics.trackEvent(ProfileEvent.Settings.DeleteOpened)
         val config = DialogConfig.Confirmation(
             title = UiText.Res(Res.string.account_deletion),
             description = UiText.Res(Res.string.account_deletion_description),
             onResult = {
+                analytics.trackEvent(ProfileEvent.Settings.DeleteConfirmed)
                 safeLaunch(loader = ProfileSettingsLoader.DeleteAccountButton) {
-                    deleteProfileUseCase.execute()
+                    analytics.trackOperation(ProfileOperation.DeleteAccount) {
+                        deleteProfileUseCase.execute()
+                    }
                 }
             })
         dialogController.open(config)

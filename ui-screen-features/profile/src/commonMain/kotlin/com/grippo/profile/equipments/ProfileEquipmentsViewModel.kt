@@ -1,6 +1,8 @@
 package com.grippo.profile.equipments
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
@@ -34,7 +36,9 @@ internal class ProfileEquipmentsViewModel(
             .safeLaunch()
 
         safeLaunch {
-            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshEquipments) {
+                excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+            }
         }
     }
 
@@ -77,9 +81,11 @@ internal class ProfileEquipmentsViewModel(
 
     override fun onSelectGroup(id: String) {
         update { it.copy(selectedGroupId = id) }
+        analytics.trackEvent(ProfileEvent.Equipments.GroupSelected)
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Equipments.Back)
         navigateTo(ProfileEquipmentsDirection.Back)
     }
 
@@ -92,6 +98,8 @@ internal class ProfileEquipmentsViewModel(
             }
             it.copy(selectedEquipmentIds = selectedEquipmentIds)
         }
+        val selectedIds = state.value.selectedEquipmentIds
+        analytics.trackEvent(ProfileEvent.Equipments.SelectionChanged(id in selectedIds, selectedIds.size))
     }
 
     override fun onApply() {
@@ -102,8 +110,11 @@ internal class ProfileEquipmentsViewModel(
         if (allIds.isEmpty()) return
         val excludedEquipmentIds = allIds - current.selectedEquipmentIds
 
+        analytics.trackEvent(ProfileEvent.Equipments.Apply)
         safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton) {
-            excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds).getOrThrow()
+            analytics.trackOperation(ProfileOperation.SaveEquipments) {
+                excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds).getOrThrow()
+            }
             navigateTo(ProfileEquipmentsDirection.Back)
         }
     }

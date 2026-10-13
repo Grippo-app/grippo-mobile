@@ -1,5 +1,9 @@
 # MVI Contract (the seven files)
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
+Inspect actual neighboring [Login files](../../../../ui-screen-features/authorization/src/commonMain/kotlin/com/grippo/authorization/login/) for screen ownership and [ProfileComponent](../../../../ui-screen-features/profile/src/commonMain/kotlin/com/grippo/profile/ProfileComponent.kt) for a container. Their existing deviations do not waive the gates below.
+
 Every screen and dialog is a package with **seven files** of the same template:
 same names, same shape, same flow of data.
 
@@ -64,11 +68,11 @@ Static/empty-data screen: `@Immutable internal data object ProfileSettingsState`
 Multi-mode screen: `@Immutable internal sealed interface AuthorizationState { @Immutable data class Idle(...) ; @Immutable data class Submitting(...) ; @Immutable data object Done }`.
 
 Rules:
-- `@Immutable` (or `@Stable` for `sealed interface`). Marks Compose stability inference.
+- `@Immutable` on State and every sealed subtype; use the canonical [state conventions](state.md).
 - Properties: `val`. No `var`.
 - Collections: `ImmutableList`/`ImmutableSet`/`PersistentList` (kotlinx-collections-immutable).
 - Strings: `UiText` if the value depends on resources/locale; `String` if it's a verbatim user input or a non-localizable identifier.
-- Form fields: `*FormatState` (`EmailFormatState.of("a@b.com")`, ...).
+- Form fields reuse a suitable existing formatter where parsing/validation/display requires it; plain nonsecret free text without those needs may remain String. Follow [formatter rules](state.md#formatstate-rules-must--anti-patterns); do not create a type per field.
 - Provide an initial state via default values on every property — `<X>State()` is the "empty" instance used as `BaseViewModel`'s initial state and for previews.
 - **No** direct domain model storage if a transformation is required — map via `:data-mappers:domain-to-state` to a UI-friendly shape.
 - **No flat scalar piles.** Cluster related primitives into sub-states, fixed value sets into enums, a lifecycle of booleans into a sealed interface (see `references/state.md`).
@@ -133,59 +137,7 @@ Rules:
 
 ### `<Name>ViewModel.kt`
 
-This generic scaffold assumes a new `DialogConfig.AmountPicker` subtype and its
-localized title resource are added through [dialogs.md](dialogs.md). It is not
-an existing production API: give the subtype `title: UiText` and a typed
-`hasSameContentAs` branch comparing its initial value, excluding callbacks.
-
-```kotlin
-internal class NoteEditorViewModel(
-    private val tagFeature: TagFeature,
-    private val noteFeature: NoteFeature,
-    private val dialogController: DialogController,
-) : BaseViewModel<NoteEditorState, NoteEditorDirection, NoteEditorLoader>(
-    NoteEditorState(),
-), NoteEditorContract {
-
-    init {
-        tagFeature.observeTag()
-            .onEach { tag -> update { it.copy(tag = tag.toState()) } }
-            .safeLaunch()
-
-        noteFeature.observeNotes()
-            .onEach { history -> update { it.copy(history = history.toState()) } }
-            .safeLaunch()
-
-        safeLaunch(loader = NoteEditorLoader.LoadingHistory) {
-            noteFeature.getNotes().getOrThrow()
-        }
-    }
-
-    override fun onBack() {
-        navigateTo(NoteEditorDirection.Back)
-    }
-
-    override fun onAmountPickerClick() {
-        val current = (state.value.amount as? AmountFormatState.Valid)?.value
-        dialogController.open(
-            DialogConfig.AmountPicker(
-                title = UiText.Res(Res.string.amount_picker_title),
-                initial = current,
-                onResult = { newValue ->
-                    update { it.copy(amount = AmountFormatState.of(newValue)) }
-                }
-            )
-        )
-    }
-
-    override fun onApplyClick() {
-        val amount = (state.value.amount as? AmountFormatState.Valid)?.value ?: return
-        safeLaunch(loader = NoteEditorLoader.SavingAmount) {
-            noteFeature.updateAmount(amount).getOrThrow()
-        }
-    }
-}
-```
+Opening a new picker follows [dialogs.md](dialogs.md): its config has caller-owned title, typed content/result callbacks and exhaustive content comparison.
 
 Rules:
 - `internal class`, extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
@@ -218,41 +170,8 @@ Rules:
 
 ### `<Name>Component.kt`
 
-```kotlin
-internal class NoteEditorComponent(
-    componentContext: ComponentContext,
-    private val back: () -> Unit,
-    private val toSettings: () -> Unit,
-    private val toNoteArchive: (DateRange) -> Unit,
-) : BaseComponent<NoteEditorDirection>(componentContext) {
-
-    override val viewModel: NoteEditorViewModel = componentContext.retainedInstance {
-        NoteEditorViewModel(
-            tagFeature = getKoin().get(),
-            noteFeature = getKoin().get(),
-            dialogController = getKoin().get(),
-        )
-    }
-
-    override suspend fun eventListener(direction: NoteEditorDirection) {
-        when (direction) {
-            NoteEditorDirection.Back -> back()
-            NoteEditorDirection.OpenSettings -> toSettings()
-            is NoteEditorDirection.OpenNoteArchive -> toNoteArchive(direction.initialRange)
-        }
-    }
-
-    @Composable
-    override fun Render() {
-        val state = viewModel.state.collectAsStateMultiplatform()
-        val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        NoteEditorScreen(state.value, loaders.value, viewModel)
-    }
-}
-```
-
 Rules:
-- `internal class`, extends `BaseComponent<Direction>(componentContext)`.
+- A leaf inside its feature is `internal`; a feature/module entry Component is `public`, including a directly exposed single-screen feature or dialog. Extend `BaseComponent<Direction>(componentContext)`.
 - Constructor takes `componentContext` plus **callback lambdas** for every navigation action this Component cannot perform itself (typically: `back`, `close`, and any cross-feature nav).
 - `viewModel` is created via `componentContext.retainedInstance { <Name>ViewModel(getKoin().get(), ...) }`. All dependencies, including stateless analytics, resolve inside that block, not through Component constructors. VM owns typed events/operations; every independent screen must declare screenPresentation, containers keep default null. BaseComponent/foundation binds it without feature wiring. See [feature analytics](../../feature-analytics/SKILL.md).
 - `eventListener` is `when (direction) { ... }` mapping every `Direction` subtype to a constructor lambda call (`back()`, `toSettings()`) or a child-component `navigation.push(...)` call if this is a parent component owning a stack.
@@ -260,44 +179,11 @@ Rules:
 
 ### `<Name>Screen.kt`
 
-```kotlin
-@Composable
-internal fun NoteEditorScreen(
-    state: NoteEditorState,
-    loaders: ImmutableSet<NoteEditorLoader>,
-    contract: NoteEditorContract,
-) {
-    BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.screen)) {
-        Toolbar(
-            title = AppTokens.strings.res(Res.string.<key>),
-            leading = Leading.Back(onClick = contract::onBack),
-        )
-        // ... actual content
-    }
-}
-
-@AppPreview
-@Composable
-private fun NoteEditorScreenPreview() {
-    PreviewContainer {
-        NoteEditorScreen(
-            state = NoteEditorState(
-                amount = AmountFormatState.of(72.0),
-                history = stubNotes(),
-                tag = stubTag(),
-            ),
-            loaders = persistentSetOf(),
-            contract = NoteEditorContract.Empty,
-        )
-    }
-}
-```
-
 Rules:
 - `@Composable internal fun`. **Three** arguments: `state`, `loaders`, `contract`. Optionally a `component: <Name>Component` if the screen needs to render a child stack/slot.
 - Wraps content in `BaseComposeScreen(background = ...)`.
 - Reads all strings/colors/dp via `AppTokens.*`.
-- Computes derived state via `remember(state.x, state.y) { ... }`.
+- Follow [recomposition discipline](compose-rules.md#recomposition-discipline-should) for derived rendering values; simple checks stay inline.
 - Has a `@AppPreview private fun <Name>ScreenPreview()` immediately below the screen function, wrapped in `PreviewContainer { ... }` with stub data + `Contract.Empty`.
 - **No** `LaunchedEffect(Unit)` for navigation. Navigation goes via `Direction` only.
 - **No** business logic. Only rendering and event forwarding via `contract.onXxx*()`.
@@ -326,7 +212,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 | Contract | UI callbacks | Methods returning data, mutable state |
 | ViewModel | `update`, `navigateTo`, `safeLaunch`, `withLoader` | `viewModelScope`, `GlobalScope`, local catches, Compose code |
 | Component | Decompose wiring, DI pulls, `eventListener` | UI rendering, business logic |
-| Screen | Composables, derived state via `remember` | State mutations, side effects beyond `LaunchedEffect` for non-nav purposes |
+| Screen | Composables, derived rendering values under the Compose caching policy | State mutations, side effects beyond `LaunchedEffect` for non-nav purposes |
 
 ## Architecture cross-cuts (always-on)
 

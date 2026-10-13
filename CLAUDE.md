@@ -56,7 +56,7 @@ Groups:
 
 - `:design-system:core` — `AppTokens` (facade over CompositionLocals).
 - `:design-system:components` — atomic Composables (`Button`, `Toolbar`, `Input*`, `WeightHistoryChart`, ...).
-- `:design-system:resources:provider` — `Res.string.*` (Compose Multiplatform Resources), `interface StringProvider`, `interface AppColor`/`AppDp`/`AppTypography`/`AppString`/`AppDrawable`/`AppIcon`.
+- `:design-system:resources:provider` — `Res.string.*` (Compose Multiplatform Resources), `StringProvider` and `AppColor` interfaces, plus `AppDp`/`AppTypography` data objects and `AppString`/`AppDrawable`/`AppIcon` objects.
 - `:design-system:resources:provider-impl` — `ResourcesProviderModule` + `StringProviderImpl`.
 - `:design-system:preview` — `@AppPreview` (multi-preview annotation: phone EN big + UK small), `PreviewContainer` (CompositionLocalProvider + Coil preview handler + `AppTheme(darkTheme = isSystemInDarkTheme())`).
 
@@ -69,7 +69,7 @@ Groups:
 ### `:ui-screen-features:*` — full-screen features
 
 - `:screen-api` — public `*Router` sealed classes (`@Serializable`) and `Deeplink` enum. Used by Decompose for type-safe navigation **between features**.
-- Features: `authorization`, `main`, `home`, `profile`, `training`, `trainings`, `debug`. Inside a feature — a root `*RootComponent` with its own `StackNavigation<*Router>` and **internal** sub-Components for each screen.
+- Features include `authorization`, `main`, `home`, `profile`, `training`, `trainings`, `debug`. Multi-screen flows have a public entry Component with an inner stack and internal child Components. A single-screen feature may expose its screen Component directly; do not create an empty graph for future screens. Follow [UI module ownership](.claude/skills/ui-feature/references/module-structure.md).
 
 - `:main` owns the Home/Calendar/Profile tab shell and bottom bar. `:shared` supplies child-component factories; `:main` does not depend on feature implementations. Factories return `BaseComponent<*>` directly. The bottom bar remains visible throughout all tab flows. Main owns the central workout action, including draft continuation and the goal setup suggestion; Home and Calendar do not own launch buttons.
 
@@ -103,10 +103,6 @@ Groups:
 ### `:toolkit:*` — platform-aware utilities
 
 - `:analytics:{api,core}`, `:crash-reporting:{api,core}`, `:messaging:{api,core}` — typed service contracts and bounded app-lifetime cores. Features inject consumer APIs; app shells use bootstrap interfaces. Messaging callback validation belongs to core, not the Firebase service.
-
-- For new features and feature behavior changes, apply [.claude/skills/feature-analytics/SKILL.md](.claude/skills/feature-analytics/SKILL.md), even when analytics is not explicitly requested. Pure styling changes require an impact assessment, not new events.
-
-
 
 - `:context` — `NativeContext` (expect/actual: Android holds `Context`, iOS — pure object), `ContextModule`.
 - `:http-client` — Ktor `HttpClient` with `responseValidator` + `ApiErrorParser` (translates HTTP into `AppError`).
@@ -294,11 +290,11 @@ transformed. `onError` runs only after dialog dismissal. See the
 
 ### `BaseScreen.kt` — UI root
 
-`BaseComposeScreen(background, content)` — a `Column` with the background from `AppTokens.colors.background.screen`, `clickable` without indication for clear-focus on background tap. **All top-level screens** are wrapped in this.
+`BaseComposeScreen(background, content)` wraps screen content in a Column and clears focus on background tap. The caller supplies `ScreenBackground.Color`: screen or dialog background from AppTokens. See [foundation API](.claude/skills/ui-feature/references/base-classes.md#basecomposescreen--screenbackground).
 
 ### Inter-feature navigation: Routers
 
-In `:ui-screen-features:screen-api`:
+Abbreviated route excerpt from `:ui-screen-features:screen-api`; omitted variants are not a complete route catalog:
 
 ```kotlin
 @Serializable
@@ -437,7 +433,7 @@ DTOs: `package com.grippo.services.backend.dto.<area>`, file `*Response.kt` or `
 
 `@Database(entities = [...], version = 5, exportSchema = true)` in `Database.kt`. `@TypeConverters(StringListConverter::class)` for `List<String>` → `pipe|delimited|string`.
 
-Entities — flat `data class` in `package com.grippo.services.database.entity.*`:
+Entities — flat data classes in the owning database entity package. The following is an abbreviated relationship excerpt, not the complete TrainingEntity signature:
 
 ```kotlin
 @Entity(
@@ -491,7 +487,7 @@ raw values, domain conversions or inline mapping in ViewModel/Screen:
 
 Function name — top-level extension: `<Source>.toEntity()`, `<Source>.toDomain()`, `<Source>.toState()`, `<Source>.toBody()`. Plural variants — `List<Source>.toEntities()`/`toDomain()`/`toState()`. Nullable variants — `toEntityOrNull(): T?`.
 
-**Canonical mapping with null-friendly DTO** (DTO fields nullable for safety, but domain/entity — non-null):
+**Required-field guard excerpt** (required Domain/Entity fields are non-null; semantically optional target fields may remain nullable):
 
 ```kotlin
 public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
@@ -586,9 +582,9 @@ Compose Multiplatform Resources in `:design-system:resources:provider`:
 
 - Strings — `commonMain/composeResources/values/strings.xml` (en) + `values-uk/`, `values-ru/` for localizations. Access — `Res.string.<key>`.
 - Drawables — `commonMain/composeResources/drawable/`. Access — `Res.drawable.<key>`.
-- No plural resource/accessor exists currently. When needed, add localized plural resources and a real AppTokens/StringProvider wrapper; never document an invented API as available.
+- No plural resources or composable AppString plural accessor exist currently. When needed, add localized plural resources and an AppString accessor; outside composition reuse the existing `StringProvider.plural`. Never document an invented API as available.
 - All keys — `snake_case`, descriptive (`registration_title`, not `title1`).
-- Changing Accept-Language on backend ⇒ changing `AppLocale.current` locally (`AppLocale.current` and `AppTheme.current` — expect/actual `@Composable` functions; in `RootScreen` they switch `AppTheme(darkTheme, localeTag)` and trigger `DateFormatting.install(systemLocaleTag)`).
+- Backend Accept-Language follows AppLocale.current(). The composition root reads the composable system theme/locale properties and installs DateFormatting; localeTag does not currently override Compose resource language. Inspect [RootComponent](shared/src/commonMain/kotlin/com/grippo/shared/root/RootComponent.kt) and [theme wiring](.claude/skills/design-system/references/theme.md) before changing that policy.
 
 ### `Format*State` formatters
 
@@ -603,71 +599,31 @@ MUST reuse a suitable existing formatter for validated/formatted input; add a ne
 
 ### Preview
 
-```kotlin
-@AppPreview                                  // multi-preview: phone EN big + UK small
-@Composable
-private fun ScreenPreview() {
-    PreviewContainer {                       // wraps in AppTheme + Coil preview handler
-        ProfileBodyScreen(
-            state = ProfileBodyState(
-                weight = WeightFormatState.of(33f),
-                height = HeightFormatState.of(90),
-                history = stubWeightHistoryList(),  // stub from :ui-core:state
-                user = stubUser(),
-            ),
-            loaders = persistentSetOf(),
-            contract = ProfileBodyContract.Empty,    // companion object Empty
-        )
-    }
-}
-```
+MUST use existing AppPreview/PreviewContainer and Contract.Empty. Cover meaningful
+states with existing stubs; explicit preview fixture text/IDs are permitted, while
+production product text/visual values use resources/tokens. The canonical
+[preview rules](.claude/skills/design-system/references/previews.md) own the workflow;
+inspect actual [preview helpers](design-system/preview/src/commonMain/kotlin/com/grippo/design.preview/Preview.kt)
+before choosing locale/theme variants.
 
 `stub*()` functions — single source of realistic preview data, live next to State classes in `:ui-core:state`.
 
 ---
 
-## Toolkit deep dive
+## Toolkit ownership
 
-### `:date-utils`
+MUST inspect actual signatures and platform actuals before calling a toolkit API.
+[Core ownership](.claude/skills/platform-build-toolkit/references/toolkit-utilities-core.md)
+and [platform utilities](.claude/skills/platform-build-toolkit/references/toolkit-utilities-platform.md)
+own the detailed rules. Date persistence uses UTC-normalized representation;
+logger consumers use AppLogger and do not assume debug-only dispatch; notification,
+permission and link APIs retain their current platform contracts.
 
-- `DateTimeUtils.now() / .startOfDay(date) / .endOfDay(date) / .toUtcIso(localDateTime) / .toLocalDateTime(iso) / .shift(range, period) / .trailingYear() / .getDaysInMonth(year, month) / .weekDayShortLabels()`.
-- `DateRange(from: LocalDateTime, to: LocalDateTime)` + `.coerceWithin(limitations)`.
-- `DateRangeKind` — Last7Days, Last30Days, ThisMonth, AllTime, ...
-- `DateRangePresets.daily() / .monthly() / .infinity()`.
-- `DateFormat.DateOnly.{DateMmmDdYyyy, MmmYyyy, DateDdMmm}` / `DateFormat.DateTime.*`.
-- `DateFormatting.install(localeTag)` — sets the locale for all formatters. Called from `RootComponent.Render` via `LaunchedEffect(systemLocaleTag) { DateFormatting.install(systemLocaleTag) }`.
-
-### `:connectivity`
-
-`Connectivity.statusUpdates: SharedFlow<Connectivity.Status>` (replay = 1, DROP_OLDEST), auto-start via `ConnectivityOptions(autoStart = true)`. In `RootViewModel`:
-
-```kotlin
-init {
-    connectivity.statusUpdates
-        .onEach(::provideConnectionStatus)
-        .safeLaunch()
-}
-```
-
-### `:notification-manager` / `:permission-manager` / `:link-opener`
-
-- `NotificationManager.show(AppNotification(id, title, body, deeplink), ttl: Duration)` — local notification (Android — WorkManager/AlarmManager wrapper, iOS — `UNUserNotificationCenter`).
-- `NotificationKey` — enum for deduplication (one notification per key).
-- `PermissionManager.request(Permission)` / `.isGranted(Permission)`.
-- `LinkOpener.open(url: String)` — opens in the system browser / Safari.
-
-### `:logger` `AppLogger`
-
-- `AppLogger.General.error(msg)` / `.warning(msg)` — general-purpose.
-- `AppLogger.Network.log(msg)` — for `BackendClient`/`TokenProvider`.
-- `AppLogger.Navigation.log(msg)` — for Decompose navigation (if we choose to log).
-- `AppLogger.Mapping.log(value) { msg }: T?` — null-tracker for mappers.
-- File sink — `~/grippo/logs/app.log` (Android) or `NSTemporaryDirectory()/grippo/logs/` (iOS). Access via `AppLogger.logFileContentsByCategory()`.
-
-### `:theme` / `:localization`
-
-- `AppTheme.current: Boolean` — system dark/light theme (expect/actual `@Composable`).
-- `AppLocale.current(): String` — current BCP-47 language tag, used in `BackendClient.defaultRequest` for the `Accept-Language` header.
+Useful sources: [DateTimeUtils](toolkit/date-utils/src/commonMain/kotlin/com/grippo/toolkit/date/utils/DateTimeUtils.kt),
+[AppLogger](toolkit/logger/src/commonMain/kotlin/com/grippo/toolkit/logger/AppLogger.kt),
+[AppLocale](toolkit/localization/src/commonMain/kotlin/com/grippo/toolkit/localization/AppLocale.kt)
+and [AppTheme](toolkit/theme/src/commonMain/kotlin/com/grippo/toolkit/theme/AppTheme.kt).
+Do not maintain a second catalog of their methods here.
 
 ---
 
@@ -676,12 +632,12 @@ init {
 ### Files and naming
 
 - **Public API classes** — `public` explicitly (required by `explicitApi()`).
-- **Internal-by-default** — anything not part of feature-api is marked `internal`. Implementations of interfaces — `Impl` suffix.
+- **Internal-by-default** — implementations and helpers stay internal/private; real module-boundary contracts, entry Components, state models, widgets and DI modules may be public. Public does not mean implementation details may leak. Implementations use the `Impl` suffix.
 - Composable — `PascalCase`. ViewModel callback — `onXxx` (`onApplyClick`, `onWeightPickerClick`, `onBack`).
-- One file = one class/interface. Group files allowed only for tightly-related sealed classes in one file (like `TrainingResponse`/`ExerciseResponse`/`IterationResponse` — one DTO family).
+- Independent new types MUST have separate files. Related sealed variants and existing coherent model families may stay together; do not split or group unrelated types merely to satisfy a template.
 - DTO — `@Serializable public data class <Name>Response` or `<Name>Body`, fields `@SerialName("...")`, **all nullable with default `= null`**.
-- Domain models — `public data class` with non-null fields.
-- Entity — `public data class <Name>Entity` with `@Entity`, `@PrimaryKey`, `@Column(name = "snake_case")` if an explicit override is needed.
+- Domain models — public typed contracts; required fields are non-null, semantically optional fields may remain nullable. Use domain enums/sealed types for closed sets.
+- Entity — `public data class <Name>Entity` with `@Entity`, `@PrimaryKey`, `@ColumnInfo(name = "snake_case")` if an explicit override is needed.
 - State — `@Immutable internal data class <Feature><Subscreen>State` (or `data object` if stateless, or `sealed interface` with subtypes).
 - Direction — `internal sealed interface <Feature>Direction : BaseDirection` with `data object`/`data class` subtypes.
 - Loader — `@Immutable internal sealed interface <Feature>Loader : BaseLoader` with `@Immutable data object` subtypes.
@@ -691,8 +647,8 @@ init {
 ### Packages
 
 - Base scheme: `com.grippo.<area>.<feature>` (`com.grippo.profile.body`, `com.grippo.authorization.registration`).
-- **Existing inconsistency:** `data-features/`, `data-mappers/`, `data-services/`, `dialog-api`, `weight-picker` use packages **with a dot in the directory name** (`com/grippo/data.features.trainings/`, `com/grippo/dto.entity.training/`, `com/grippo/dialog.api/`, `com/grippo/weight.picker/`). Inside, the `package` declaration is normal (`package com.grippo.data.features.trainings`). **Intentional, do not refactor — but new modules should be written without dots in directories.**
-- `internal` functions in a public module — in an `internal/` subpackage.
+- Some existing feature/design directories contain dotted package segments (for example `com/grippo/data.features.trainings/` or `com/grippo/dialog.api/`); other areas, including current mapper/service sources, use slash-separated packages. Inspect actual neighboring files. Preserve existing layouts during feature work; new modules use slash-separated directories. Do not normalize unrelated paths.
+- Keep helpers internal/private in the owning package. Service cores follow their established `internal/` package layout; this is not a requirement to move every internal declaration to another package.
 
 ### Kotlin
 
@@ -714,8 +670,8 @@ init {
 - Unwrap a Result-returning call with `.getOrThrow()` inside `safeLaunch` (inside the decorated block when tracked); existing direct-value throwing calls remain direct. Original exceptions bubble to `BaseViewModel.sendError` → `ErrorProvider`.
 - Every `@Composable internal fun <X>Screen` takes three arguments in the same order: `state, loaders, contract` (sometimes also `component` for the cross-feature navigator).
 - `@AppPreview` + `PreviewContainer` for previews. Preview always uses `<X>Contract.Empty` and stub data (`stub*()` functions from `:ui-core:state`).
-- `remember(...)` for derived button state (`val buttonState = remember(loaders, state.x, state.y) { when { ... } }`).
-- VM-side string lookup — only via `StringProvider.get(Res.string.x)` (injected). Composable-side — `AppTokens.strings.res(Res.string.x)`.
+- Use `remember` for expensive pure computations or a demonstrated stability/identity need, keyed on all relevant inputs. Simple derived checks may be inline; do not add mechanical caching to every lambda or Modifier.
+- VM-side resource lookup uses injected StringProvider (`get` or `plural` as required). Composable consumers use the real AppTokens accessor; a new plural accessor must be implemented before use. See [accessor boundaries](.claude/skills/design-system/references/accessors.md).
 
 ### Compose specifics
 
@@ -723,7 +679,7 @@ init {
 - Global `optIn`s (Material3, Foundation, Coroutines, ForeignApi, etc.) are already enabled in `KotlinMultiplatformConventionPlugin` — **do not duplicate in source files** via `@OptIn`.
 - `LaunchedEffect(Unit)` for one-shot navigation side effects is **forbidden** — navigation goes through `Direction` + `eventListener`. `LaunchedEffect` is allowed only for non-navigational side effects (animation kickoff, system API init).
 - Regular `Toolbar` belongs to screens. Dialogs follow the current session host/title layout; do not add a second toolbar to hosted dialog content.
-- In LazyColumn — always `key = { it.id }` for stability and `Modifier.animateItem()` for transitions.
+- Lazy items MUST use stable unique keys from actual identity; `.id` is one option, not a required new field. Add `animateItem()` only for the intended insert/remove/reorder transitions. Modifier order follows required layout, clipping and hit area; there is no universal sequence.
 - `BottomOverlayContainer` (`:design-system:components`) — standard "list + bottom CTA" pattern, propagates padding into content for correct bottom overscroll.
 
 ---
@@ -778,7 +734,7 @@ new scope or require redundant confirmation of work already authorized.
 
 No explicit budgets in code. Default priorities:
 
-- Don't block the main thread. All IO/CPU — via `safeLaunch(dispatcher = Dispatchers.IO)` or `withContext(Dispatchers.IO)` (like `BackendClient`).
+- Keep heavy work off the main thread at its existing owner: IO on `Dispatchers.IO`, CPU-heavy work on `Dispatchers.Default`. Do not move simple state updates/navigation or already-dispatched service calls merely to satisfy a dispatcher template.
 - Recomposition stability: state — `@Immutable`/`@Stable`, immutable collections everywhere, Compose metrics in `build/compose-metrics`.
 - Public API changes in shared/foundation/design/data-feature contracts require assessing both platforms. Run `./gradlew :shared:assembleSharedDebugXCFramework` when authorized and available; record an unrun check and the remaining integration risk otherwise.
 - The explicit `gc=cms` override is disabled in `gradle.properties`; do not describe it as enabled.
@@ -849,24 +805,11 @@ messages require explicit user authorization. See [scope questions](.claude/skil
 
 ## Anti-patterns (refuse to write)
 
-- Direct `viewModelScope.launch`, `runBlocking`, `GlobalScope.launch`, `CoroutineScope().launch`. Only `safeLaunch` / `Flow.safeLaunch`.
-- Named local function declarations inside `init`, constructors, functions or lambdas. Methods/functions belong at class/file scope; callbacks and DSL lambdas remain allowed.
-- Mutable collections (`MutableList`, `mutableStateListOf`, `mutableMapOf`) in `@Immutable` state.
-- Business logic in `Component`, `Screen`, mappers, or DTOs. Logic — in `ViewModel` or domain layer (`*Repository`/`*UseCase`/`*FeatureImpl`).
-- Business-model DTO/Entity/Domain/State conversions outside `:data-mappers:*`, including inline conversion in ViewModel/Screen — forbidden. UI→telemetry fact mapping (existing validation state/enum → bounded analytics status/code) stays in the feature UI `analytics/` package; call that mapping from the VM rather than embedding it there. This does not permit business conversions or validation changes for analytics.
-- Direct UI dependency on domain-shaped `:data-services:*` — use `:data-features:feature-api`. Existing authorization credential wrappers (`google-auth`, `apple-auth`) are the narrow exception.
-- Creating a Koin module via hand-written `module { ... }` DSL for a new module.
-- `LaunchedEffect(Unit)` for navigation — use `Direction` + `eventListener`.
-- Local `try/catch`, `runCatching` or result failure handlers that hide, replace or present failures in a ViewModel, including private helpers. Use `getOrThrow()` → `safeLaunch` → `ErrorProvider` and pure `mapError` only for dialog mapping. No recovery wrappers, extra launches or analytics-owned recovery. `onError` runs after dialog dismissal.
-- Hardcoded strings in UI — only via `AppTokens.strings.res(Res.string.x)` (Composable) or `StringProvider.get(...)` (VM).
-- Storing `String` in State if the value depends on resources/locale — use `UiText`.
-- Direct Koin `get()` in Screen — forbidden. All ViewModel dependencies, including `analytics`, resolve inside `componentContext.retainedInstance { <X>ViewModel(getKoin().get(), ...) }` in Component. Feature analytics stays in VM callbacks/operations; every independent screen must override screenPresentation, containers keep default null; only foundation binds lifecycle/resolves ScreenAnalytics. No feature provider/route matrix, analytics constructor parameter in Component, manual bind or activationFlow visibility observer.
-- Accessing `Context`/`Activity` directly from `commonMain` — go through `:toolkit:context` (`NativeContext`).
-- Hidden coupling of feature modules via transitive `api` — list every needed dependency in your own `build.gradle.kts`.
-- Using `androidx.compose.ui.res.stringResource(...)` or `painterResource(R.drawable...)` — only Compose Multiplatform Resources (`Res.string.*` / `Res.drawable.*`).
-- Calling `Composable` from `BaseViewModel` (e.g. `@Composable fun ...` directly). VM does not know Compose.
-- Threading Decompose `ChildSlot`/`ChildStack` into Screen functions instead of a `component.childStack` reference to the Component itself — Screen works only with state/loaders/contract, optionally with the component for rendering stack/slot.
-- Storing `LocalDateTime` without UTC normalization in DB. In DAO, always go through `DateTimeUtils.toUtcIso(...)`.
+MUST apply the canonical [forbidden patterns](.claude/skills/validation-gates/references/forbidden-patterns.md)
+and the affected owning skill's semantic gate. This overview does not maintain a
+second list of prohibitions. Existing source deviations are not permission to copy
+them; fix affected defects within scope and report unrelated ones without silently
+expanding the task.
 
 ---
 

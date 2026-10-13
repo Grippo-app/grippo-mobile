@@ -1,9 +1,11 @@
 package com.grippo.profile.social
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.SocialMenu
+import com.grippo.profile.analytics.ProfileInputMapping
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.link.opener.LinkOpener
 
@@ -19,10 +21,14 @@ internal class ProfileSocialViewModel(
     }
 
     override fun onOpenLink(value: SocialMenu) {
-        value.urls.any { url -> linkOpener.open(url).isOpened }
+        val channel = ProfileInputMapping.channel(value)
+        analytics.trackEvent(ProfileEvent.Social.LinkClicked(channel))
+        val opened = value.urls.any { url -> linkOpener.open(url).isOpened }
+        analytics.trackEvent(ProfileEvent.Social.LinkResult(channel, opened))
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Social.Back)
         navigateTo(ProfileSocialDirection.Back)
     }
 }

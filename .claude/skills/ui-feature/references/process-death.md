@@ -1,5 +1,7 @@
 # Process-Death Restoration
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 Apply the mandatory [state-preservation gate](../../state-preservation/SKILL.md)
 for every new feature or affected existing state owner. This reference defines
 the implementation; the linked skill defines the field inventory and completion checks.
@@ -42,7 +44,7 @@ Forgetting `@Serializable` on a subtype crashes at runtime when `kotlinx-seriali
 
 ### 2. All payloads in routes MUST be `@Serializable`
 
-`DateRange`, `StageState`, all `*FormatState`, `DateFormat`, `DateRangeKind` — all **are** `@Serializable` in this project. `UiText` is **not** (`@Stable` only — it wraps a non-serializable `StringResource` plus `ImmutableList<Any>` args), so don't put a `UiText` in a route payload. Resolve it to a `String`/`Res` key before navigating, or keep it inside `State` (rebuilt in `init { }`, not restored from the StateKeeper).
+`DateRange`, `StageState`, all `*FormatState`, `DateFormat`, `DateRangeKind` — all **are** `@Serializable` in this project. `UiText` is **not** (`@Stable` only — it wraps a non-serializable `StringResource` plus `ImmutableList<Any>` args), so don't put a `UiText` in a route payload. Carry a serializable identifier and rebuild localized UiText after restoration; a plain String is only for verbatim, nonlocalized text. Keep rebuilt UiText fields transient with defaults in a serialized draft.
 
 ### 3. No lambdas in route configs
 
@@ -95,7 +97,7 @@ init {
 }
 ```
 
-The first `onEach` populates the list immediately from Room cache (no network); the `safeLaunch` refreshes it. On a healthy connection the screen appears "instantly populated".
+The observer rebuilds list presentation from the existing data source; the request refreshes that source. Inspect actual cache and Flow behavior before claiming initial timing or availability.
 
 ### Editable form drafts
 

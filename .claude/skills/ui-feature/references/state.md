@@ -1,38 +1,14 @@
 # State, `UiText`, and `*FormatState` (`:ui-core:state`)
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 > Examples use `Note` / `Tag` / `User` as the generic `<Entity>`. Substitute your domain.
 
 ## `UiText` — localizable strings in state
 
 State cannot use `String` for values that depend on resources (locale may change at runtime). `UiText` is the sealed type for all localizable strings (lives in `:ui-core:state/formatters/UiText.kt`):
 
-```kotlin
-@Stable
-public sealed interface UiText {
-    @Immutable
-    public data class Res(
-        public val value: StringResource,
-        public val formatArgs: ImmutableList<Any> = persistentListOf(),
-    ) : UiText
-
-    @Immutable
-    public data class Str(public val value: String) : UiText
-
-    @Composable
-    public fun text(): String = when (this) {
-        is Str -> value
-        is Res -> {
-            val args = remember(formatArgs) { formatArgs.toTypedArray() }
-            AppTokens.strings.res(value, *args)
-        }
-    }
-
-    public suspend fun text(stringProvider: StringProvider): String = when (this) {
-        is Str -> value
-        is Res -> stringProvider.get(value, *formatArgs.toTypedArray())
-    }
-}
-```
+Inspect the current [UiText implementation](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/formatters/UiText.kt). It resolves nested UiText format arguments recursively in both rendering and suspend contexts; do not replace this behavior with a cached raw argument array.
 
 | Subtype | When |
 |---|---|
@@ -43,7 +19,7 @@ Resolving: in a Composable `Text(text = uiText.text())`; in a ViewModel/suspend 
 
 Usage in state: `val title: UiText = UiText.Res(Res.string.foo)`; with args `UiText.Res(Res.string.welcome_user, formatArgs = persistentListOf(user.name))`; verbatim `UiText.Str(serverError.title)`.
 
-`formatArgs` is `ImmutableList<Any>` (Compose stability; `Any` matches `strings.xml` placeholder types; `persistentListOf()` default). Sealed interface so `when` is exhaustive. Equality is by-value (`Res(foo) == Res(foo)`; equal instances skip re-resolution during recomposition).
+`formatArgs` is `ImmutableList<Any>` (Compose stability; `Any` matches `strings.xml` placeholder types; `persistentListOf()` default). Sealed interface so `when` is exhaustive. Equality is by-value; this does not establish skipped resource resolution, recomposition cost or locale behavior. Inspect actual UiText consumers and the current implementation.
 
 ### Serialization (MUST)
 
@@ -124,7 +100,7 @@ dialog configs remain in memory.
 
 Rules: reuse a suitable existing `*FormatState`. Add a formatter only when the field
 needs genuinely different parsing, validation or display semantics, not merely
-because it belongs to another screen; absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
+because it belongs to another screen; absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path for supplied values (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
 
 Anti-patterns: `String` for an email/password/amount field; `Double?` for an amount (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
 
@@ -135,8 +111,6 @@ Anti-patterns: `String` for an email/password/amount field; `Double?` for an amo
 internal data class FooState(
     val title: UiText = UiText.Res(Res.string.foo_default_title),
     val items: ImmutableList<ItemState> = persistentListOf(),
-    val isLoading: Boolean = false,
-    val errorMessage: UiText? = null,
 )
 ```
 

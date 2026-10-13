@@ -51,9 +51,11 @@ scope and locked decisions. Existing deviations do not authorize copying them.
 - **`mutableStateOf(...)` for logical state**. Logical state goes in the ViewModel; `mutableStateOf` is for local UI animations.
 - **`stringResource(R.string.foo)`** from `androidx.compose.ui.res`. Android-only — breaks iOS build.
 - **`painterResource(R.drawable.foo)`** from `androidx.compose.ui.res`. Same.
-- **Hardcoded `Color(0xFF...)`** in feature code. Use `AppTokens.colors.*`.
-- **Hardcoded `12.dp`, `14.sp`**. Use `AppTokens.dp.*`, `AppTokens.typography.*`.
-- **`TextStyle(fontSize = ...)` inline** in feature code. Use `AppTokens.typography.<token>()`.
+- **Product color/dimension/typography literals in consumers.** Use AppTokens.
+  Neutral technical constants (`0.dp`, `Color.Transparent`) and explicit
+  representative preview fixtures are permitted; MUST NOT become substitute
+  product styling. Apply [Compose rules](../../ui-feature/references/compose-rules.md#anti-patterns-must-avoid).
+- **Product `TextStyle(fontSize = ...)` inline** in feature code. Use `AppTokens.typography.<token>()`; the explicit preview-fixture exception above still applies.
 - **`MaterialTheme.colorScheme.*`** in feature code. Use `AppTokens.colors.*`.
 - **`androidx.compose.material3.Button`** in feature code. Use `:design-system:components/Button`.
 - **`@Composable` calls from a `BaseViewModel`.** VMs don't know Compose.
@@ -67,7 +69,9 @@ scope and locked decisions. Existing deviations do not authorize copying them.
 - **Inline mappers in Repository / ViewModel.** Use `:data-mappers:*`.
 - **`!!` on a DTO field.** Forbidden; use `?: return null` (via `AppLogger.Mapping.log`).
 - **Non-null DTO fields or non-null collection defaults**, in responses AND request bodies. Every DTO field is nullable with `= null`; request construction still supplies API-required values. See the data-layer DTO reference.
-- **Required entity fields nullable.** Entities are post-validation; nullable belongs in DTOs.
+- **Required entity fields nullable.** Guard required values during mapping;
+  semantically optional Entity/Domain fields remain nullable. Apply
+  [target null semantics](../../mappers/references/null-safety-and-logging.md).
 - **Raw `String` for a closed-set field in a *domain* model.** A field from a backend dictionary (type, status, kind, category, …) is a domain `<X>Enum` (pure labels — `key` + `companion object of(key)`) or a `sealed interface <X>` (variants carry payload — base `val key` + per-variant `data class`), not a bare `String`. The raw `String` stays only in the DTO / Entity replica; the `…→domain` mapper promotes it via `<X>Enum.of(value)`. Same stance for timestamps (`LocalDateTime`, not `String`) and durations (`Duration`, not `Long`). See [DTO/API contracts](../../data-layer/references/dtos-and-api.md) and [mappers](../../mappers/SKILL.md).
 - **Auto-generated numeric entity IDs replacing established identity.** Preserve server-provided IDs for synced records and business-owned local IDs for drafts; mappers do not generate identity.
 - **Swallowing repository exceptions or cancellation.** Preserve existing Result/throwing contracts; at a suspend Result boundary rethrow CancellationException rather than wrapping it as failure.
@@ -183,7 +187,7 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Resources
 
-- **Hardcoded strings in Composables.** Extract.
+- **Hardcoded user-facing product strings in Composables.** Extract to resources; explicitly marked preview-fixture text is permitted.
 - **Missing keys in a locale's `strings.xml`.** Translator might miss; runtime falls back to English.
 - **Raster substitutes for UI icons.** Use the existing AppIcon ImageVector pattern. *(Reviewer-only.)*
 - **Resource files in feature modules.** Centralize in `:design-system:resources:provider`.

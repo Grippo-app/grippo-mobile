@@ -1,6 +1,9 @@
 package com.grippo.profile.body
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.BodyPicker
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.HeightFormatState
@@ -20,6 +23,7 @@ import com.grippo.design.resources.provider.weight_picker_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
+import com.grippo.profile.analytics.ProfileInputMapping
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.local.notification.AppNotification
@@ -49,11 +53,15 @@ internal class ProfileBodyViewModel(
 
     init {
         safeLaunch {
-            weightHistoryFeature.getWeightHistory().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshWeightHistory) {
+                weightHistoryFeature.getWeightHistory().getOrThrow()
+            }
         }
 
         safeLaunch {
-            userFeature.getUser().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshUser) {
+                userFeature.getUser().getOrThrow()
+            }
         }
 
         userFeature
@@ -97,19 +105,33 @@ internal class ProfileBodyViewModel(
     }
 
     override fun onHeightPickerClick() {
+        analytics.trackEvent(ProfileEvent.Body.PickerOpened(BodyPicker.Height))
         val dialog = DialogConfig.HeightPicker(
             title = UiText.Res(Res.string.height_picker_title),
             initial = state.value.height.value,
-            onResult = { value -> update { it.copy(height = HeightFormatState.of(value)) } }
+            onResult = { value ->
+                val input = HeightFormatState.of(value)
+                update { it.copy(height = input) }
+                analytics.trackEvent(
+                    ProfileEvent.Body.PickerConfirmed(BodyPicker.Height, ProfileInputMapping.status(input))
+                )
+            }
         )
         dialogController.open(dialog)
     }
 
     override fun onWeightPickerClick() {
+        analytics.trackEvent(ProfileEvent.Body.PickerOpened(BodyPicker.Weight))
         val dialog = DialogConfig.WeightPicker(
             title = UiText.Res(Res.string.weight_picker_title),
             initial = state.value.weight.value,
-            onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
+            onResult = { value ->
+                val input = WeightFormatState.of(value)
+                update { it.copy(weight = input) }
+                analytics.trackEvent(
+                    ProfileEvent.Body.PickerConfirmed(BodyPicker.Weight, ProfileInputMapping.status(input))
+                )
+            }
         )
         dialogController.open(dialog)
     }
@@ -119,35 +141,39 @@ internal class ProfileBodyViewModel(
         val height = state.value.height.value ?: return
         val user = state.value.user ?: return
 
+        analytics.trackEvent(ProfileEvent.Body.Apply)
         safeLaunch(
             loader = ProfileBodyLoader.ApplyBodyChanges
         ) {
-            val hasNewWeight = user.weight.value != weight
-            val hasNewHeight = user.height.value != height
+            analytics.trackOperation(ProfileOperation.SaveBody) {
+                val hasNewWeight = user.weight.value != weight
+                val hasNewHeight = user.height.value != height
 
-            if (hasNewWeight) {
-                updateWeightUseCase.execute(weight).getOrThrow()
+                if (hasNewWeight) {
+                    updateWeightUseCase.execute(weight).getOrThrow()
+                }
+
+                if (hasNewHeight) {
+                    userFeature.setHeight(height).getOrThrow()
+                }
+
+                delay(500.milliseconds)
+
+                val notification = AppNotification(
+                    id = NotificationKey.ChangeWeight,
+                    title = stringProvider.get(Res.string.notification_weight_title),
+                    body = stringProvider.get(Res.string.notification_weight_description),
+                    deeplink = Deeplink.WeightHistory.key
+                )
+                notificationManager.show(notification, 7.days)
             }
-
-            if (hasNewHeight) {
-                userFeature.setHeight(height).getOrThrow()
-            }
-
-            delay(500.milliseconds)
-
-            val notification = AppNotification(
-                id = NotificationKey.ChangeWeight,
-                title = stringProvider.get(Res.string.notification_weight_title),
-                body = stringProvider.get(Res.string.notification_weight_description),
-                deeplink = Deeplink.WeightHistory.key
-            )
-            notificationManager.show(notification, 7.days)
 
             navigateTo(ProfileBodyDirection.Back)
         }
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Body.Back)
         navigateTo(ProfileBodyDirection.Back)
     }
 }

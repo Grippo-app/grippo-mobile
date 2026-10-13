@@ -1,7 +1,9 @@
 # Room migration decisions
 
-A schema change is authorized only when the user's scope includes it. If a feature requires an
-unapproved schema delta, prepare the concrete proposal and resolve authorization before editing it.
+Necessary schema/migration changes are covered by the authorized feature outcome;
+MUST NOT request repeat consent. Ask only when the proposed delta expands scope,
+changes a locked decision or requires an unresolved data-retention/product fact.
+Apply [project scope discipline](../../../../CLAUDE.md#scope-discipline).
 
 1. Inspect current Database version, affected entities/DAOs, migrations, both platform builders
    and exported schemas under `data-services/database/`.

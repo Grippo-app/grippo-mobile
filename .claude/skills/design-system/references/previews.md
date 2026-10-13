@@ -6,7 +6,9 @@ phone/locale configurations; PreviewContainer owns preview tokens/theme and imag
 handling. Inspect its real signature before choosing an additional theme/config.
 
 - A changed/new screen or widget has at least one private named AppPreview in its
-  file, inside PreviewContainer. Screens/dialogs use Contract.Empty; widgets use
+  file, inside PreviewContainer. Explicit sample text/data MAY be literal preview
+  fixtures; production product text/styles still require resources/tokens.
+  Screens/dialogs use Contract.Empty; widgets use
   lightweight parameters and existing stub data, never a live ViewModel/Koin.
 - Cover meaningful empty/loading/content/error/selection variants relevant to the
   change. Start from existing ui-core state stubs and explicitly override the facts

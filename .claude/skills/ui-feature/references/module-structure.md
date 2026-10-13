@@ -1,5 +1,7 @@
 # Module Structure (feature, ui-core, shells, compose-libs)
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 > Examples use `Note` / `Tag` / `Profile` / `Home` as the generic `<Feature>`/`<Entity>`. Substitute your domain.
 
 ## `:ui-screen-features:*`
@@ -123,7 +125,7 @@ The heart of MVI (full API: `references/base-classes.md`). Exposes `BaseViewMode
 Reusable UI state data classes + formatters: `UiText`, `*FormatState`, `AppErrorState` (package `core.state.error` — UI mirror of `AppError`, consumed by `DialogConfig.ErrorDisplay`, produced by `ErrorProviderImpl`), product-specific reusable state, `stub*()` factories. Every class `@Immutable`/`@Stable`; every collection immutable; resource-dependent strings as `UiText`; `stub*()` next to the class. Build: KMP+Compose + serialization alias (because `*FormatState`/`DateFormat` are `@Serializable` for `*Router` payloads; dialog configs stay in memory); namespace `com.grippo.ui.core.state`.
 
 ### `:ui-core:error:error-provider`
-Pure types only — `AppError` (sealed: `Network.{NoInternet, Timeout, Expected, Unexpected}`, `Expected`, `Unknown`; extends `Exception(message, cause)`) + `ErrorProvider` interface. **No DI**, deps-free. `AppErrorState` lives in `:ui-core:state`, **not** here — keeping this module UI-free lets `:data-services:*`/`:toolkit:http-client` reference `AppError` without UI.
+Pure types only — `AppError` (sealed: `Network.{NoInternet, Timeout, Expected, IncompleteResponse, Unexpected}`, `Expected`, `Unknown`; extends `Exception(message, cause)`) + `ErrorProvider` interface. **No DI**, deps-free. `AppErrorState` lives in `:ui-core:state`, **not** here — keeping this module UI-free lets `:data-services:*`/`:toolkit:http-client` reference `AppError` without UI.
 
 ### `:ui-core:error:error-provider-impl`
 `ErrorProviderImpl` (`@Single(binds = [ErrorProvider::class])`, `internal`, `DialogController` injected) maps `AppError` → `AppErrorState` and shows `DialogConfig.ErrorDisplay`. `ErrorModule` (`@Module(includes = [DialogModule::class]) @ComponentScan public class`) — the `includes` is intentional (the pipeline is meaningless without the dialog controller). Depends on `:ui-dialog-features:dialog-api` + `:ui-core:error:error-provider` + `:ui-core:state`.
@@ -135,7 +137,7 @@ Pure types only — `AppError` (sealed: `Network.{NoInternet, Timeout, Expected,
 ## App shells (scaffold context)
 
 ### `:androidApp`
-`android.application.convention` (not `library`). Compose plugins applied directly (it's a single-target Android app, not KMP). `App : Application` starts Koin (`Koin.init { androidContext(this); androidLogger() }`) and attaches platform adapters through the returned `ApplicationBootstrap`. `MainActivity : ComponentActivity` holds `private val root: RootComponent by lazy { retainedComponent { RootComponent(componentContext = it, close = ::finishAffinity, deeplink = intent.getStringExtra(...)) } }`; `onCreate` installs splash + edge-to-edge + `setContent { root.Render() }` (cold-start deeplink); `onNewIntent` routes warm-start deeplinks via `root.handleDeeplink(it)`. Build directly depends on `:shared`, `:design-system:core`, `:ui-core:foundation`, a few toolkit modules; Firebase is wired here (Android-only SDKs). Manifest: single `MainActivity` (`exported=true`, `launchMode=singleTop`, `MAIN`/`LAUNCHER`, splash theme); **no** `<uses-permission>` (`POST_NOTIFICATIONS` requested at runtime via `:toolkit:permission-manager`); add deeplink intent filters only when exposing external deeplinks.
+`android.application.convention` (not `library`). Compose plugins applied directly (it's a single-target Android app, not KMP). `App : Application` starts Koin (`Koin.init { androidContext(this); androidLogger() }`) and attaches platform adapters through the returned `ApplicationBootstrap`. `MainActivity : ComponentActivity` holds `private val root: RootComponent by lazy { retainedComponent { RootComponent(componentContext = it, close = ::finishAffinity, deeplink = intent.getStringExtra(...)) } }`; `onCreate` installs splash + edge-to-edge + `setContent { root.Render() }` (cold-start deeplink); `onNewIntent` routes warm-start deeplinks via `root.handleDeeplink(it)`. Build directly depends on `:shared`, `:design-system:core`, `:ui-core:foundation`, a few toolkit modules; Firebase is wired here (Android-only SDKs). Inspect the current AndroidManifest and permission-manager declarations before permission changes; a runtime request alone does not establish manifest permission availability. Add deeplink intent filters only when exposing external deeplinks.
 
 ### `:iosApp`
 **Not** a Gradle module — an Xcode project linking the static `XCFramework` from `:shared`. `iOSApp.swift` (`@main`) hosts `RootView(root:backDispatcher:)`. `AppDelegate` owns the `RootComponent` + `BackDispatcher` and initializes Koin once, retains `ApplicationBootstrap`, and calls `FirebaseApp.configure()` before attaching SDK adapters. `iosMain/RootViewController.kt` exports `rootViewController(root, backDispatcher): UIViewController = ComposeUIViewController { PredictiveBackGestureOverlay(... content = { root.Render() }) }`. XCFramework refresh: `./gradlew :shared:assembleSharedDebugXCFramework` (lands at `shared/build/XCFrameworks/debug/shared.xcframework`); Release variant analogous.
@@ -154,11 +156,17 @@ Reference modules: `:compose-libs:chart`, `:konfetti`, `:wheel-picker`, `:segmen
 2. **No data-layer access.** Input arrives as Composable parameters (`List<ChartPoint>`, `ImmutableList<WheelOption>`), never from a feature/repository.
 3. **Stateless or self-contained state.** Owns animation/gesture state via `remember`/`rememberSaveable`; no ViewModel dependency.
 4. **Public API.** All types/Composables `public`.
-5. **`@Stable` / `@Immutable` everywhere** on input types.
+5. Stability annotations MUST match the actual contract: deeply immutable data may use @Immutable; callback/composable-slot contracts use @Stable when its contract holds. A sealed hierarchy alone does not justify either annotation.
 
 Build (typical): `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention`; namespace `com.grippo.compose.libs.<name>`; deps `compose.foundation` (+ `compose.material3` only if it uses Material3 primitives, immutable-collections). **No Koin. No `:toolkit:*`. No `:design-system:*`.**
 
-### When to extract a widget into `:compose-libs:*` (SHOULD)
-Extract when: used by **two or more** feature modules and **not** a design-system primitive; has significant internal state/animation/gesture (≥ 100 LoC of logic); product-agnostic (swapping colors/typography makes it usable in another product without code changes). **Don't** extract: one-off styled wrappers around Material3 primitives (→ `:design-system:components`); widgets tightly coupled to product domain (→ `:design-system:components`, which has `AppTokens` + product types).
+### When to extract a widget into `:compose-libs:*`
+
+Choose ownership from real reuse and product independence, not line count. A
+product-agnostic widget shared by callers may belong in compose-libs; tokens or
+product UI-state semantics belong in design-system components. A cohesive
+feature-specific widget may remain in its owning feature regardless of size.
+Do not create a new module merely to satisfy a LoC threshold; evaluate the
+required dependencies and authorized architecture scope.
 
 How widgets are styled by callers: the caller passes design tokens explicitly (`textStyle = AppTokens.typography.h4()`, `color = AppTokens.colors.text.primary`); the widget's own implementation never references `AppTokens`. If you want to import `AppTokens` into a `:compose-libs:*` module, the widget isn't product-agnostic — either move it to `:design-system:components`, or add a parameter (`color: Color`, `style: TextStyle`). Prefer the parameter unless the widget already has many product-specific assumptions baked in.

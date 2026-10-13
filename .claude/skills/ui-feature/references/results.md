@@ -1,5 +1,7 @@
 # Screen results and ViewModel data flow
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 ## Agreed project convention
 
 For a screen returning data, use the existing `BaseComponent.observeResult` /

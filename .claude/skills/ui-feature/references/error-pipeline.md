@@ -29,80 +29,17 @@ safeLaunch(loader = MyLoader.Fetch) {
 
 ## `ErrorProvider` and the dialog mapping
 
-```kotlin
-public interface ErrorProvider {
-    public suspend fun provide(exception: Throwable, callback: () -> Unit)
-}
-
-@Single(binds = [ErrorProvider::class])
-internal class ErrorProviderImpl(val dialogController: DialogController) : ErrorProvider {
-    override suspend fun provide(exception: Throwable, callback: () -> Unit) {
-        val state: AppErrorState = when (exception) {
-            is AppError.Network.NoInternet -> AppErrorState.Network.NoInternet(description = exception.message)
-            is AppError.Network.Timeout -> AppErrorState.Network.Timeout(description = exception.message)
-            is AppError.Network.Expected -> AppErrorState.Network.Expected(title = exception.title, description = exception.description)
-            is AppError.Network.IncompleteResponse -> AppErrorState.Network.IncompleteResponse(description = exception.message)
-            is AppError.Network.Unexpected -> AppErrorState.Network.Unexpected(description = exception.message)
-            is AppError.Expected -> AppErrorState.Expected(title = exception.message, description = exception.description)
-            is AppError.Unknown -> AppErrorState.Unknown
-            else -> AppErrorState.Unknown
-        }
-        dialogController.open(
-            DialogConfig.ErrorDisplay(title = state.title(), error = state, onClose = callback)
-        )
-    }
-}
-```
+Inspect the current [ErrorProviderImpl](../../../../ui-core/error/error-provider-impl/src/commonMain/kotlin/com/grippo/core/error/provider/impl/ErrorProviderImpl.kt) for exact mapping and callback fields.
 
 `AppErrorState` is the UI mirror of `AppError`. It lives in `:ui-core:state` (package `core.state.error`) — **not** in `:ui-core:error:error-provider`, which is kept UI-free so `:data-services:*` and `:toolkit:http-client` can depend on `AppError` without dragging in UI. Constructor params are plain strings (`title: String`, `description: String?`); `UiText` wrapping is a per-product decision, not part of the bootstrap shape. `ErrorDisplay` is a `DialogConfig` subtype in `:ui-dialog-features:dialog-api`.
 
 ## Inside `BaseViewModel` — `sendError`
 
-```kotlin
-private val errorProvider by inject<ErrorProvider>()
-private val crashReporting by inject<CrashReporting>()
-
-private suspend fun sendError(
-    exception: Throwable,
-    onError: () -> Unit,
-    mapError: (Throwable) -> Throwable,
-) {
-    val log = buildString {
-        append("─────── ViewModel error ──────\n")
-        append("│ message: ${exception.message}\n")
-        append("│ cause: ${exception.cause?.message}\n")
-        append("└──────────────────────────")
-    }
-    AppLogger.General.error(log)
-    crashReporting.reportException(exception)
-    val displayError = if (exception is Exception) {
-        mapError(exception)
-    } else {
-        exception
-    }
-    errorProvider.provide(displayError, callback = onError)
-}
-```
-
-The `CancellationException` filter lives one layer up, in `OperationManagerImpl`:
-
-```kotlin
-val handler = CoroutineExceptionHandler { _, t ->
-    if (t !is CancellationException) {
-        coroutineScope.launch {
-            onError(t)
-        }
-    }
-}
-```
-
-`CrashReporting` is injected from toolkit API; platform SDK adapters are attached
-by app shells. Reporting follows core collection policy. Analytics operation
-decoration preserves the original error path. With the standard pipeline,
-`onError` runs after dismissal and can clean up UI state.
-It is not an immediate exception handler and cannot suppress the dialog or
-continue the failed business block. `CancellationException` never enters this
-pipeline or `mapError`; fatal `Error` is not transformed for presentation.
+Inspect [BaseViewModel](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseViewModel.kt)
+and [OperationManagerImpl](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/internal/operation/OperationManagerImpl.kt).
+CancellationException is excluded before reporting. Original failures are logged
+and reported; only Exception receives pure mapError for the dialog. Fatal Error is
+not transformed. onError is a post-dismissal callback, not immediate recovery.
 
 Keep the error contract unified across block and Flow `safeLaunch`: both expose
 `onError: () -> Unit = {}` and `mapError: (Throwable) -> Throwable = { it }`, with

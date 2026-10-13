@@ -1,225 +1,52 @@
-# Compose Multiplatform resources
+# Compose Multiplatform resource ownership
 
-Strings, drawables, plurals, and fonts are managed via **Compose Multiplatform
-Resources** — `Res.string.*`, `Res.drawable.*`, `Res.plurals.*`, `Res.font.*`.
+MUST inspect [the provider build](../../../../design-system/resources/provider/build.gradle.kts),
+`design-system/resources/provider/src/commonMain/composeResources/` and the actual
+locale directories before editing. Compose Resources generates Res; feature UI
+resources belong in this shared provider. MUST NOT introduce a feature resource
+bundle as an incidental exception to module ownership. A split requires an explicit
+architecture decision; feature size alone is not permission.
 
-All resource files live in `:design-system:resources:provider/src/commonMain/composeResources/`:
+## Android packaging
 
-```
-:design-system:resources:provider/
-  src/commonMain/composeResources/
-    values/strings.xml              # default (English)
-    values-<locale>/strings.xml     # one folder per non-default locale
-    drawable/                       # raster imagery (.webp; justified PNG)
-    font/                           # font files (manrope variants)
-```
+The provider currently enables `androidResources.enable = true` inside
+`kotlin { android { ... } }`. MUST retain that opt-in: the shared convention does
+not enable Android resources globally. Inspect the pinned source DSL before
+editing; MUST NOT copy the former `androidLibrary` recipe as the current signature.
+The notification-manager's Android resources have their separate platform owner.
+A build verifies compilation; actual resource packaging/use requires its relevant
+inspection or manual scenario, not an inferred runtime success.
 
-The Compose Resources plugin generates a `Res` object at build time. Resources are accessed
-as `Res.string.<key>`, `Res.drawable.<key>`, `Res.font.<key>`. Grippo does not
-currently ship a `values/plurals.xml` — add one (with matching `values-<locale>/plurals.xml`
-per locale) only when a feature actually needs plural-aware strings.
+## Strings and plurals
 
-## Build requirement — `androidResources.enable`
+- Every new user-facing string/plural MUST have a real translation in every existing
+  supported locale, including unfinished features. No silent English fallback.
+- Keys MUST be descriptive snake_case, with a semantic prefix where ambiguous;
+  MUST NOT use numbered placeholder names such as title1.
+- Format arguments MUST use explicit positional placeholders (`%1$s`, `%2$d`).
+  Locale variants may reorder positions but MUST preserve argument indices/types.
+  MUST NOT concatenate localized sentence fragments or assume named formatting.
+- Strings remain in each locale's strings.xml. Rich-text presentation belongs in
+  the owning AnnotatedString consumer; MUST NOT insert HTML markup into resources.
+- The repository currently has no plurals.xml. Add a complete `<resources>` document
+  in default and every existing locale only when needed. Quantity categories MUST
+  follow the specific locale's plural rules, not one copied four-category list.
+- Composables use AppTokens.strings; ViewModels use StringProvider; resource-backed
+  state uses UiText. [accessors.md](accessors.md) owns the actual accessor boundaries.
 
-`:design-system:resources:provider/build.gradle.kts` **must** enable Android resource
-processing on its Android target:
+## Imagery and fonts
 
-```kotlin
-kotlin {
-    androidLibrary { androidResources.enable = true }
-}
-```
+- Product UI icons MUST be AppIcon ImageVector extensions with real path data.
+  Raster illustrations/photos use WebP by default; PNG needs a documented
+  lossless/tooling reason. MUST NOT substitute raster/vector drawables for UI icons.
+- Raster names MUST be descriptive snake_case without ic_/img_/bg_ prefixes.
+  Keep one resource per asset file; no sprite sheets or texture atlases.
+- Font file names MUST match the existing family/weight convention. Registration
+  MUST map each used weight to its actual file in the existing typography factory.
+  [typography.md](typography.md) owns token/font-factory changes.
 
-This is mandatory, not optional. With AGP 9 and the `com.android.kotlin.multiplatform.library`
-plugin (Grippo's KMP Android plugin), Compose Resources' `CopyResourcesToAndroidAssetsTask`
-is **silently skipped** unless Android resources are enabled on the module: the generated
-`composeResources` (`.cvr`) assets are never copied into Android assets, never reach the
-APK, and the app crashes at runtime with
-`org.jetbrains.compose.resources.MissingResourceException` ("Missing resource with path:
-composeResources/…"). Enabling `androidResources` configures the copy task's output
-directory so the assets are packaged. Use the pinned-toolchain form shown above:
-`androidResources.enable = true`.
-
-Do **not** delete this line as "redundant with the convention plugin."
-`android.library.convention` configures `compileSdk`/`minSdk`/`namespace` on the Android
-target but deliberately does **not** turn `androidResources` on globally — most KMP modules
-ship no Android resources, so the opt-in stays at the call site. Only modules that actually
-package Android-side resources enable it: `:design-system:resources:provider` (Compose
-`composeResources`) and `:toolkit:notification-manager` (androidMain notification icons).
-
-## `strings.xml`
-
-Standard Android-style XML, but processed by Compose Resources (so the file is
-multiplatform):
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="note_title">Note</string>
-    <string name="amount_value">%1$.1f %2$s</string>
-    <string name="error_no_internet_title">No internet connection</string>
-    <string name="error_no_internet_description">Check your connection and try again.</string>
-    <string name="welcome_user">Welcome, %1$s</string>
-</resources>
-```
-
-Per-locale variants live in `values-XX/strings.xml`:
-
-```xml
-<!-- values-<locale>/strings.xml -->
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="note_title">Translated note title</string>
-    <string name="amount_value">%1$.1f %2$s</string>
-    <!-- ... -->
-</resources>
-```
-
-### Conventions
-
-- **All keys `snake_case`** with a domain prefix when ambiguous: `note_title` (domain
-  `note`), `error_no_internet_title` (domain `error`).
-- **Descriptive, never numbered.** `title1`/`subtitle2` is forbidden.
-- **Format args use positional placeholders**: `%1$s`, `%2$d`, `%3$.1f`. Order is
-  **locale-stable** — different languages can rearrange placeholders.
-- **No HTML or rich text** in `strings.xml`. If a string needs bold/italic spans, render it
-  via `AnnotatedString` at the call site.
-
-### Resource scope
-
-Every new user-facing string MUST have a translation in every supported locale.
-Ephemeral or unfinished features follow the same rule. Do not silently use English
-as a translation fallback. Inspect the actual locale directories before editing.
-
-## `plurals.xml`
-
-Not present in the project yet. When a plural-aware string is needed, add
-`values/plurals.xml` (and a matching variant in every `values-XX/`) following the standard
-Compose Resources / Android shape:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <plurals name="notes_count">
-        <item quantity="one">%d note</item>
-        <item quantity="other">%d notes</item>
-    </plurals>
-</resources>
-```
-
-Per-locale variants must include the locale's quantity classes:
-
-- English: `one`, `other`.
-- Many other languages use more categories (`one`/`few`/`many`/`other`) — consult the CLDR
-  plural rules for each locale.
-
-Access (once a plural is defined):
-
-```kotlin
-// VM
-val message = stringProvider.plural(Res.plurals.notes_count, count, count)
-
-// AppString has no plural accessor yet. Add it for this real requirement,
-// then call it through AppTokens; do not bypass the facade.
-```
-
-`StringProvider.plural(...)` is already declared in `:design-system:resources:provider`
-(and implemented in `:design-system:resources:provider-impl`) so VM-side usage works as
-soon as the XML is added.
-
-## Drawables
-
-```
-:design-system:resources:provider/
-  src/commonMain/composeResources/
-    drawable/
-      note_thumbnail.webp         # raster product imagery
-      tag_badge.webp
-      empty_state.webp
-      welcome_hero.webp
-      // UI icons live in AppIcon extension files
-```
-
-### Conventions
-
-- **`snake_case` bare nouns** (`note_thumbnail`, `tag_badge`, `empty_state`). Drawables
-  stay suffix-less because line-art **icons** live as `ImageVector`
-  extension properties under `icons/` (see `accessors.md`), so the `drawable/` bucket is
-  reserved for raster product imagery and decorative illustrations. Resolve naming
-  collisions with a more descriptive noun, not an `img_*` / `bg_*` prefix.
-- **WebP is the default** raster format. PNG needs a documented lossless/tooling
-  reason. UI icons use ImageVector extensions on AppIcon.
-- **One file per resource.** No sprite sheets.
-
-Access:
-
-```kotlin
-Image(
-    painter = AppTokens.drawables.res(Res.drawable.note_thumbnail),
-    contentDescription = null,
-)
-
-// For icons (ImageVector), reach them through AppTokens.icons.*:
-Icon(
-    imageVector = AppTokens.icons.Search,
-    contentDescription = null,
-    tint = AppTokens.colors.icon.primary,
-)
-```
-
-## Fonts
-
-```
-:design-system:resources:provider/
-  src/commonMain/composeResources/
-    font/
-      manrope_regular.ttf
-      manrope_medium.ttf
-      manrope_semi_bold.ttf
-      manrope_bold.ttf
-      manrope_extra_bold.ttf
-      manrope_light.ttf
-      manrope_extra_light.ttf
-```
-
-Wired into `AppTypography` via `manrope()` helper. See `typography.md`.
-
-## Why everything in one module
-
-`:design-system:resources:provider` is the **single home** for resources. UI feature
-modules don't carry their own `composeResources/` directories. Why:
-
-- **Translation effort centralized.** Translators see one file per locale.
-- **Reference consistency.** Every screen pulls from the same string namespace.
-- **No duplicate keys.** A feature module's `Res.string.title` would collide with another's;
-  centralizing prevents this.
-- **Build performance.** One module's resource bundle compiles once.
-
-Exception: very large feature modules (a fully internationalized "onboarding flow" of 100
-screens) might have their own resource sub-module. The default is **one shared module**.
-
-## Adding a resource
-
-1. Add the key + English value to `values/strings.xml`.
-2. Add the same key to **every** `values-<locale>/strings.xml` with its translation.
-3. Compose Resources regenerates `Res.string.your_new_key`.
-4. Use it: `AppTokens.strings.res(Res.string.your_new_key)` (UI) or
-   `stringProvider.get(Res.string.your_new_key)` (VM).
-
-For drawables/fonts, drop the file into the right directory; Compose Resources picks it up.
-(Step-by-step recipes: `cookbook-resource.md`.)
-
-## Anti-patterns
-
-- **Hardcoded strings in Composables.** `Text("Welcome")`. Forbidden — extract.
-- **Missing keys in some locale files.** Causes the default (English) to render — pollutes
-  the non-English UI with English text. Use a translation-management process to catch.
-- **`stringResource(R.string.foo)`** from `androidx.compose.ui.res`. Android-only; breaks
-  iOS build.
-- **Resource files in feature modules.** Move them to `:design-system:resources:provider`
-  unless there's a deliberate split.
-- **PNG line-art icons.** Use `ImageVector` icons
-  (`:design-system:resources:provider/icons/*.kt` → `AppTokens.icons.*`); reserve the
-  `drawable/` bucket for raster product imagery (currently `.webp`).
-- **Format args by name.** Compose Resources uses positional format args (`%1$s`, `%2$d`).
-  Don't try named (`%(name)s`).
+For a real addition follow [cookbook-resource.md](cookbook-resource.md). Review
+locale key/placeholder parity, actual generated identifiers and affected callers.
+Use scoped checks under [verification policy](../../../../CLAUDE.md#verification-policy);
+MUST NOT require full app builds for every isolated resource/document edit or claim
+resource runtime coverage from a green build.

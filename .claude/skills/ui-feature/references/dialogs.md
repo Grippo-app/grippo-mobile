@@ -1,5 +1,7 @@
 # Dialogs (Bottom Sheets) — Navigation & Recipe
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 Dialogs (bottom sheets) live in a **parallel** navigation graph, not in the main
 screen stack: they can be shown over any screen and dismissed independently of
 stack changes.
@@ -162,8 +164,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
 - **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` always starts a new session.
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
-- **Dialogs do not invoke `:data-features:feature-api`** for the data they collect — they build a value and hand it back via `onResult`; the caller persists it.
-- **Exception**: confirmation dialogs that invoke a side effect themselves (e.g. delete confirmation calling `feature.delete()` before dismissing) depend on `:data-features:feature-api`. Document the exception in the dialog's package-level comment.
+- Dialogs MAY read/write domain data through Feature/UseCase contracts in `:data-features:feature-api`, when their behavior requires it; never access services/DAOs directly. Value pickers return their accepted value through `onResult`; the caller owns its business persistence. A dialog-owned side effect MUST complete through safeLaunch and the shared error pipeline before emitting success.
 
 ---
 

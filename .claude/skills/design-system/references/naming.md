@@ -16,7 +16,9 @@ new conventions do not rename unrelated callers or directory layouts.
 | AppIcon extension | PascalCase ImageVector name |
 | Router/config | NameRouter; nested DialogConfig subtype |
 
-One class/interface per file; tightly related sealed variants may stay together.
+Independent new types use separate files. Tightly related sealed variants and
+existing coherent model families MAY stay together; MUST NOT split or expand them
+mechanically.
 Top-level extension families may share their existing mapper/token file. This is
 not a rule requiring every function in its own file. New directories use normal
 slash-separated packages; preserve existing dotted directories during feature work.

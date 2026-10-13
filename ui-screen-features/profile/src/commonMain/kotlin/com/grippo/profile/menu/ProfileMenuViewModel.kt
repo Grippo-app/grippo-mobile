@@ -1,6 +1,8 @@
 package com.grippo.profile.menu
 
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.ProfileMenu
@@ -11,6 +13,7 @@ import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
+import com.grippo.profile.analytics.ProfileInputMapping
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -31,7 +34,9 @@ internal class ProfileMenuViewModel(
 
     init {
         safeLaunch(loader = ProfileMenuLoader.User) {
-            userFeature.getUser().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshUser) {
+                userFeature.getUser().getOrThrow()
+            }
         }
 
         userFeature.observeUser()
@@ -57,15 +62,21 @@ internal class ProfileMenuViewModel(
             .safeLaunch()
 
         safeLaunch(loader = ProfileMenuLoader.Goal) {
-            goalFeature.getGoal().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshGoal) {
+                goalFeature.getGoal().getOrThrow()
+            }
         }
 
         safeLaunch(loader = ProfileMenuLoader.Muscles) {
-            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshMuscles) {
+                excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            }
         }
 
         safeLaunch(loader = ProfileMenuLoader.Equipments) {
-            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshEquipments) {
+                excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+            }
         }
     }
 
@@ -74,10 +85,12 @@ internal class ProfileMenuViewModel(
     }
 
     override fun onProfileMenuClick(menu: ProfileMenu) {
+        analytics.trackEvent(ProfileEvent.MenuSelected(ProfileInputMapping.target(menu)))
         navigateTo(ProfileMenuDirection.ProfileMenuSelected(menu))
     }
 
     override fun onSettingsMenuClick(menu: SettingsMenu) {
+        analytics.trackEvent(ProfileEvent.MenuSelected(ProfileInputMapping.target(menu)))
         navigateTo(ProfileMenuDirection.SettingsMenuSelected(menu))
     }
 }

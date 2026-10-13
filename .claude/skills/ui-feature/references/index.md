@@ -20,9 +20,9 @@ there rather than duplicated in each recipe.
 | `:ui-core:state` models / `UiText` / `*FormatState` / state conventions / `stub*` | `state.md` → `module-structure.md` (§ ui-core), `error-pipeline.md` (§ error triad) |
 | Compose / stability / previews / lists / modifiers | `compose-rules.md` → `base-classes.md` (§ BaseComposeScreen) |
 | Base classes (`BaseViewModel`/`BaseComponent`/`BaseComposeScreen`/models/`OperationManager`/platform helpers) | `base-classes.md` |
-| ViewModel data flow (observe vs get, `safeLaunch`) | `results.md` (§ ViewModel data flow) |
+| ViewModel data flow (observe vs get, `safeLaunch`) | `results.md` (§ Data boundary for result producers and receivers) |
 | Analytics impact, typed VM events/operations, mandatory independent-screen hook and coverage | [feature-analytics](../../feature-analytics/SKILL.md) → [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
-| Widgets shared across features | `module-structure.md` (§ `:compose-libs:*`) — graduate to design-system instead |
+| Widgets shared across features | `module-structure.md` (§ `:compose-libs:*`) — choose design-system for product coupling, compose-libs for product-independent reuse |
 
 ## reference files
 

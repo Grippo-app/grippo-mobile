@@ -23,7 +23,7 @@ Use public visibility only for real module-boundary consumers; helpers internal/
 
 Apply the existing android.library, kotlin.multiplatform and compose.multiplatform
 conventions; add koin.annotation only where the module actually owns DI.
-The resource provider enables `androidLibrary { androidResources.enable = true }`
+The resource provider enables `kotlin { android { androidResources.enable = true } }`
 for resource packaging. Do not duplicate namespace/SDK settings in feature recipes.
 
 Read the actual previews before changing assumptions: AppPreview declares its

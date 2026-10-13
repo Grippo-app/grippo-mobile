@@ -1,6 +1,10 @@
 package com.grippo.profile.goal
 
+import com.grippo.analytics.common.models.InputStatus
 import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.GoalPicker
+import com.grippo.analytics.profile.models.ProfileEvent
+import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -16,6 +20,7 @@ import com.grippo.design.resources.provider.select_date
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
+import com.grippo.profile.analytics.ProfileInputMapping
 import com.grippo.state.domain.goal.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.toPersistentList
@@ -46,7 +51,9 @@ internal class ProfileGoalViewModel(
         }
 
         safeLaunch {
-            goalFeature.getGoal().getOrThrow()
+            analytics.trackOperation(ProfileOperation.RefreshGoal) {
+                goalFeature.getGoal().getOrThrow()
+            }
         }
     }
 
@@ -78,12 +85,16 @@ internal class ProfileGoalViewModel(
                 target = state.value.selectedTarget.value ?: return@safeLaunch,
                 personalizations = state.value.selectedPersonalization.map { it.toDomain() },
             )
-            goalFeature.setGoal(request).getOrThrow()
+            analytics.trackEvent(ProfileEvent.Goal.Save)
+            analytics.trackOperation(ProfileOperation.SaveGoal) {
+                goalFeature.setGoal(request).getOrThrow()
+            }
             navigateTo(ProfileGoalDirection.Back)
         }
     }
 
     override fun onTargetDatePickerClick() {
+        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(GoalPicker.TargetDate))
         val config = DialogConfig.DatePicker(
             initial = state.value.selectedTarget.value,
             format = state.value.selectedTarget.format,
@@ -99,6 +110,11 @@ internal class ProfileGoalViewModel(
                         ),
                     )
                 }
+                analytics.trackEvent(
+                    ProfileEvent.Goal.PickerConfirmed(
+                        GoalPicker.TargetDate, ProfileInputMapping.status(state.value.selectedTarget),
+                    )
+                )
             }
         )
 
@@ -106,20 +122,36 @@ internal class ProfileGoalViewModel(
     }
 
     override fun onPrimaryGoalPickerClick() {
+        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(GoalPicker.Primary))
         val config = DialogConfig.PrimaryGoalPicker(
             initial = state.value.selectedPrimary,
             title = UiText.Res(Res.string.goal_picker_primary_title),
-            onResult = { value -> update { it.copy(selectedPrimary = value) } }
+            onResult = { value ->
+                update { it.copy(selectedPrimary = value) }
+                analytics.trackEvent(
+                    ProfileEvent.Goal.PickerConfirmed(
+                        GoalPicker.Primary, InputStatus.Valid,
+                    )
+                )
+            }
         )
 
         dialogController.open(config)
     }
 
     override fun onSecondaryGoalPickerClick() {
+        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(GoalPicker.Secondary))
         val config = DialogConfig.SecondaryGoalPicker(
             initial = state.value.selectedSecondary,
             title = UiText.Res(Res.string.goal_picker_secondary_title),
-            onResult = { value -> update { it.copy(selectedSecondary = value) } }
+            onResult = { value ->
+                update { it.copy(selectedSecondary = value) }
+                analytics.trackEvent(
+                    ProfileEvent.Goal.PickerConfirmed(
+                        GoalPicker.Secondary, InputStatus.Valid,
+                    )
+                )
+            }
         )
 
         dialogController.open(config)
@@ -136,9 +168,12 @@ internal class ProfileGoalViewModel(
 
             current.copy(selectedPersonalization = personalizations)
         }
+        val selected = state.value.selectedPersonalization
+        analytics.trackEvent(ProfileEvent.Goal.PersonalizationChanged(item in selected, selected.size))
     }
 
     override fun onBack() {
+        analytics.trackEvent(ProfileEvent.Goal.Back)
         navigateTo(ProfileGoalDirection.Back)
     }
 }

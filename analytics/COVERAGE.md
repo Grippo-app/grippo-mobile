@@ -183,3 +183,132 @@ global opt-in marker warnings for libraries absent from this pure module. The fi
 sandboxed attempt could not write the Gradle wrapper cache lock; the permitted
 retry completed successfully. Android compilation, full app/generated DI builds
 and device runtime checks were not run for this repair.
+
+## Profile analytics
+
+Full profile-module instrumentation added on 2026-10-13 using the existing
+ProfileAnalytics API/module and retained VM injection. Current routes and rendered
+surfaces, rather than the enum alone, define the following screen inventory.
+
+| Route / surface | Component → ViewModel | ProfileScreen / wire identity | Hook |
+|---|---|---|---|
+| ProfileRouter.Menu / main Profile tab | ProfileMenuComponent → ProfileMenuViewModel | Menu / profile_menu | Typed screenPresentation |
+| ProfileRouter.Body / including WeightHistory deeplink | ProfileBodyComponent → ProfileBodyViewModel | Body / profile_body | Typed screenPresentation |
+| ProfileRouter.Goal | ProfileGoalComponent → ProfileGoalViewModel | Goal / profile_goal | Typed screenPresentation |
+| ProfileRouter.Experience | ProfileExperienceComponent → ProfileExperienceViewModel | Experience / profile_experience | Typed screenPresentation |
+| ProfileRouter.Muscles | ProfileMusclesComponent → ProfileMusclesViewModel | Muscles / profile_muscles | Typed screenPresentation |
+| ProfileRouter.Equipments | ProfileEquipmentsComponent → ProfileEquipmentsViewModel | Equipments / profile_equipments | Typed screenPresentation |
+| ProfileRouter.Settings | ProfileSettingsComponent → ProfileSettingsViewModel | Settings / profile_settings | Typed screenPresentation |
+| ProfileRouter.Social | ProfileSocialComponent → ProfileSocialViewModel | Social / profile_social | Typed screenPresentation |
+| Profile graph / arbitrary initial ProfileRouter | ProfileComponent → ProfileViewModel | Default null | Child stack host; no duplicate presentation |
+| Height/Weight/Date/PrimaryGoal/SecondaryGoal/Confirmation dialogs | Existing dialog components/VMs | No dedicated profile presentation contract | Runtime overlays; owning profile VM reports open and accepted result |
+
+All eight screen owners inject the existing stateless service inside their normal
+retainedInstance factory. Containers add neither binding nor service resolution.
+Foundation alone binds screenPresentation, assigns Initial/Restore and closes on
+pause/destroy. Alternate initial routes and restored child stacks use the same
+owners. Profile's parent navigation and the main tab shell emit no fake menu/Back
+clicks; system stack handling may navigate without invoking a leaf Back callback.
+
+| Owner | Observed callbacks / payload facts | Complete operations |
+|---|---|---|
+| Menu | Profile/Settings menu target (Body, Goal, Experience, Muscles, Equipments, Settings, Social, Debug) | RefreshUser, RefreshGoal, RefreshMuscles, RefreshEquipments |
+| Body | Height/Weight picker open; each accepted result with existing validation status; Apply, Back | RefreshUser, RefreshWeightHistory; SaveBody includes conditional weight/height writes, existing delay and reminder scheduling |
+| Goal | Primary/Secondary/TargetDate picker open; each accepted result with presence/status; personalization toggle selected/count; Save, Back | RefreshGoal; SaveGoal wraps setGoal with getOrThrow |
+| Experience | Selected bounded experience level, Apply, Back | RefreshUser; SaveExperience wraps setExperience with getOrThrow |
+| Muscles | Group click; item toggle selected/count; Apply, Back | RefreshMuscles; SaveMuscles wraps setExcludedMuscles with getOrThrow |
+| Equipments | Group click; item toggle selected/count; Apply, Back | RefreshEquipments; SaveEquipments wraps setExcludedEquipments with getOrThrow |
+| Settings | Logout click; deletion confirmation open and accepted result as distinct facts; Back | Complete LogoutUseCase and DeleteProfileUseCase |
+| Social | Link click/channel, returned any-URL-opened boolean/channel, Back | Existing synchronous URL fallback remains business-owned; no artificial suspend operation |
+
+Eligibility is unchanged. Body Apply returns before intent/operation when weight,
+height or user is absent. Experience Apply returns when no experience is selected.
+Muscles/Equipments Apply return for empty catalogs. Goal constructs its request
+inside the existing safeLaunch and emits Save only after required primary/target
+values pass the existing returns. These rejected paths emit no accepted intent or
+operation. Existing callbacks have no additional VM busy guards; UI loader behavior
+and repeated callback acceptance are preserved. No analytics-driven validation,
+retry, fallback, navigation, dispatcher or job is added.
+
+Refresh operations wrap the original explicit startup requests, not ongoing data
+observations. All Result-returning calls unwrap inside the decorator; direct-value
+use cases retain their throwing contracts. Started/Completed/Failed/Interrupted
+use the shared decorator's fresh OperationId and monotonic duration. Completed
+means the whole caller block returned, including cached/false read outcomes or an
+accepted Body Apply with no changed measurements; it does not infer a server write.
+Navigation follows the block. Ordinary reporting Exceptions are isolated without
+replacing results/original business exceptions; cancellation propagates and fatal
+Errors remain fatal. Source review is not reporting-failure injection proof.
+
+### Catalog and reporting decision
+
+The single qualified profile_analytics schema provider registers nine interaction
+schemas and four operation schemas through the existing generated module, already
+included by shared. New custom schemas start at version 1: profile_control_clicked,
+profile_menu_selected, profile_picker_opened, profile_picker_confirmed,
+profile_experience_selected, profile_selection_changed,
+profile_personalization_changed, profile_link_clicked, profile_link_result, and
+profile_task_started/completed/failed/interrupted. The profile_task names avoid
+colliding with authorization's existing profile_operation schemas. Existing built-in
+screen schemas and all eight presentation wire identities are unchanged.
+This is additive instrumentation with no historical behavioral-event backfill.
+
+Public events are closed observations with direct typed facts; Body and Goal have
+separate picker enums, menu targets never contain navigation routers, and operation
+values are feature-owned. Wire strings and exhaustive encoders stay internal.
+Picker confirmation is distinct from input-status change and emits even for an
+unchanged accepted value. Primary/Secondary results are nonnull enum values and
+therefore Valid; date/height/weight reuse their current formatter status.
+Counts describe selected items/personalizations, not complementary excluded lists.
+
+### Deliberate omissions and privacy
+
+No raw measurement, date, name/email, input length, entity/group/item ID, URL,
+credential, request/response body or exception message is sent. Goal categories and
+personalization content are deliberately omitted; the latter can describe health
+and lifestyle limitations. Only picker field/status and toggle selected/count are
+observed. No dedicated dialog views/close/dismissal/cancel reason, error classifier,
+referrer/entry attribution, transition/funnel event or navigation-generated click
+is added. Scroll/chart gestures and internal unaccepted dialog choices have no
+profile Contract callback and remain outside owning-screen observations. Debug's
+entry click is covered; the destination is outside the profile module.
+Consent, identity and SDK transport remain app/core-owned.
+
+### Preservation inventory and impact
+
+| Owner | Field/group | Policy | Existing key/source and restore behavior |
+|---|---|---|---|
+| Body | Height/weight formats, including accepted picker results | Preserve | ProfileBodyDraft / ProfileBodyState.serializer; saved state wins over initial user values |
+| Body | User/history | Rebuild | Transient fields repopulated from UserFeature/WeightHistoryFeature observations |
+| Goal | Primary/secondary goals, target formatter, personalization selection | Preserve | ProfileGoalDraft / ProfileGoalState.serializer; restore before fresh defaults/one-time source initialization |
+| Goal | Date limitations/personalization catalog | Rebuild | Transient current limitations and enum suggestions |
+| Experience | Selected experience | Preserve | ProfileExperienceDraft / ProfileExperienceState.serializer; source seed only without archive |
+| Muscles | Group, known/selected IDs | Preserve | ProfileMusclesDraft / ProfileMusclesState.serializer; empty catalog retains selection intent |
+| Equipments | Group, known/selected IDs | Preserve | ProfileEquipmentsDraft / ProfileEquipmentsState.serializer; empty catalog retains selection intent |
+| Muscles/Equipments | Suggestions | Rebuild | Transient catalog fields; current feature observations |
+| Menu | User/goal/exclusion summaries | Rebuild | Current feature observations; no editable draft |
+| Settings/Social/Profile container | No editable draft | Runtime only | Existing stateless screen/container state |
+| All owners | Dialogs, focus, loaders/jobs and telemetry provenance | Runtime only | No new snapshot, key or analytics retention |
+
+This implementation changes no State, Component, route seed, serializer or archive
+address. Accepted picker values still update the owning draft before reporting;
+restoration/source initialization never replays those callbacks. Local suppliers
+remain the latest source for archive saves. Popped editors rebuild from persistent
+business sources on re-entry; profile has no multi-step parent draft to synchronize.
+The preservation gate for this telemetry-only change is a source/impact assessment;
+no new persistence mechanism or runtime restoration claim is introduced.
+
+### Verification results
+
+On 2026-10-13, actual source/diff review and `git diff --check` passed. Inline static
+checks confirmed eight unique leaf hooks with retained injection, the null container,
+callers for all twelve operations, complete schema registration, unique custom event
+names across feature catalogs and implementation dependency boundaries. Generated
+profile DI registers exactly one qualified schema provider and the service binding.
+The final `:androidApp:assembleDebug` and `:shared:compileKotlinIosSimulatorArm64`
+run passed (BUILD SUCCESSFUL). Earlier scoped analytics/profile and UI/profile
+compilation also passed. Existing global opt-in/deprecation warnings remain.
+No automated test source or infrastructure was added. Android/iOS device execution,
+SDK delivery, reporting-failure injection, actual cancellation/lifecycle timing and
+fresh-process restoration were not run. iOS compilation does not prove framework
+linking or native runtime behavior; no Firebase sign-in/send/upload was performed.

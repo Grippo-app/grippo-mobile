@@ -1,5 +1,7 @@
 # Decompose Navigation & Cross-Feature Nav
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 > Examples use `Note` / `Tag` / `User` as the generic `<Entity>`. Substitute your domain.
 
 Navigation is built on Decompose (`com.arkivanov.decompose`). Each `Component`
@@ -149,7 +151,7 @@ For sub-feature components, `eventListener` handles two kinds of directions:
 
 Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol import between feature modules is **forbidden**. The mechanism (full recipe):
 
-1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — e.g. `ProfileRouter.NoteArchive(initialRange)`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Notes`, `Debug`) are `data object`; payload-carrying ones are `data class`. When the destination exists but takes different params, **add a new subtype** rather than mutating the existing one.
+1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — e.g. `ProfileRouter.NoteArchive(initialRange)`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Notes`, `Debug`) are `data object`; payload-carrying ones are `data class`. When destination inputs change, inspect all callers and archived-route compatibility, including supported invalidation when archives become incompatible. Reuse the existing subtype for the same destination when a coherent migration is within scope; add a subtype only for a distinct destination or contract.
 
 2. **Add a `RootDirection` entry** (in `:shared`'s `RootDirection.kt`, a `public sealed interface`):
    ```kotlin
@@ -160,7 +162,7 @@ Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol 
        public data class OpenProfileNoteArchive(val initialRange: DateRange) : RootDirection
    }
    ```
-   (Grippo uses the explicit-direction style; `data object` for 1:1 destinations, `data class` for payloads. A general `data class GoTo(val target: RootRouter)` is an alternative.)
+   (Grippo uses the explicit-direction style; `data object` for 1:1 destinations, `data class` for payloads. Reuse the existing explicit-direction convention; do not introduce a generic GoTo route wrapper.)
 
 3. **Expose the callback on `RootContract` / `RootViewModel`** (both `public` — they cross the iOS XCFramework boundary):
    ```kotlin
@@ -275,7 +277,7 @@ private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(
 }
 ```
 
-The cold-start path stores the raw string in `RootState.deeplink`; `toHome()` later drains it after the Home child becomes active.
+The cold-start path stores the raw string in `RootState.deeplink`; `toHome()` emits Home and the parsed direction consecutively, then clears the stored value. It does not wait for the Home child to become active. The navigator is conflated; these emissions do not establish ordered or exactly-once delivery.
 
 ## Back handling
 

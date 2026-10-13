@@ -13,14 +13,16 @@ scope, existing packages, resource locales and font factory from source.
 
 - Consumers use `AppTokens.colors|dp|typography|icons|strings|drawables`.
   Concrete color, dimension, typography, font and icon producers own their literals.
-  Do not introduce raw visual values in consumers; existing neutral Compose constants
-  such as Color.Transparent do not authorize new product colors.
+  MUST NOT introduce raw product visual values in consumers. Neutral technical
+  constants such as 0.dp and Color.Transparent are permitted; they do not authorize
+  hardcoded product dimensions or palettes.
 - Add only demanded token slots. Update every concrete theme implementation on disk.
   Do not invent a theme implementation or token category for a hypothetical consumer.
 - UI icons are real `ImageVector` extensions on `AppIcon`, with nonempty path data.
   Raster imagery uses WebP by default; PNG requires a documented lossless/tooling reason.
   No vector drawable substitutes or `ic_*`/`img_*`/`bg_*` naming prefixes.
-- Strings and plurals cover every existing locale with matching positional placeholders.
+- User-facing strings and plurals MUST cover every existing locale with matching
+  positional placeholders. Explicit preview fixtures MAY use literal sample text.
   Use the actual resource/provider APIs. `AppString` currently has no plural accessor:
   add a real wrapper only when a feature needs it; do not claim it already exists.
   Font files and their weight registration must agree.
@@ -41,7 +43,8 @@ scope, existing packages, resource locales and font factory from source.
 Honor the user's existing authorization. Ask a simple quiz only for an unresolved
 product/design decision or expansion beyond that scope: new token category,
 new typeface, public contract removal, theme/CompositionLocal wiring or module changes.
-Do not ask again for work already explicitly authorized.
+MUST NOT ask again for necessary steps already covered by explicit or implied
+authorization.
 
 ## Completion gate
 

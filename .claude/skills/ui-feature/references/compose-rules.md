@@ -1,5 +1,7 @@
 # Compose-Specific Rules
 
+> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
+
 Compose conventions on top of Kotlin style (enforced by review + the Compose
 compiler's stability metrics).
 
@@ -15,7 +17,7 @@ Every state class is `@Immutable` (fields use default ctor values so the VM buil
 Use `ImmutableList<T>` / `ImmutableSet<T>` / `PersistentList<T>` in state. Kotlin's `List`/`Set`/`Map` are **not Compose-stable** (degrade skipping). Construct via `buildList { ... }.toImmutableList()`.
 
 ### Sealed types
-`@Immutable` on the parent AND every subtype — inference doesn't auto-propagate.
+Use `@Immutable` on a sealed parent/subtype only when its complete contract is deeply immutable. Callback/composable-slot widget types use `@Stable` when its stability contract holds; MUST NOT mark them immutable merely because they are sealed. Immutable business State remains pure data with immutable fields.
 
 ## Composables
 
@@ -69,31 +71,18 @@ Keep callbacks neutral and do not add a separate input framework.
 
 ## Side effects
 
-- **`LaunchedEffect`** — key on whatever should re-trigger it. `LaunchedEffect(Unit)` is **forbidden for navigation** (navigation goes via `Direction` + `eventListener`); it is **acceptable** only for one-time side effects depending on no input (e.g. collecting a `snapshotFlow` for the composable's lifetime). If it depends on any value — even an implicit one like the system locale — key on that value.
-- **`DisposableEffect`** — for setup needing teardown (`onDispose { ... }`).
-- **`produceState`** — for a value derived from a slow source.
-- **`derivedStateOf`** — derived state depending on multiple inputs that should update only when the result changes (`val x by remember(a, b) { derivedStateOf { ... } }`).
-- **Plain `remember(...)`** — for computed values that are pure functions of inputs (derived UI state), to avoid recomputing every recomposition.
+MUST route navigation through Direction/eventListener. LaunchedEffect is permitted
+for actual presentation/system side effects; its keys must include the changing
+inputs that determine that effect. Business state stays in the ViewModel.
 
 ## Modifiers
 
-### Order matters (MUST)
-Different orders produce different rendering — not a free choice. General order:
-1. Size (`fillMax*`, `width`, `height`).
-2. Outer padding / offset.
-3. Background / border.
-4. Shape (clip).
-5. Interaction (clickable, focusable).
-6. Inner padding.
-7. Drawing modifiers (`drawBehind`, `graphicsLayer`).
+MUST use existing component-scoped AppTokens dimensions/colors/typography. There
+is no public general AppTokens.dp.radius group. Verify actual token accessors rather
+than inventing a path. Modifier ordering must match the supplied design and widget
+behavior; no generic order substitutes for rendered review.
 
-### `Modifier.then(...)` (SHOULD)
-For conditional modifiers: `.then(if (enabled) Modifier.clickable { ... } else Modifier)`. Don't build modifier lists via `mutableListOf`.
-
-### Extension modifiers (SHOULD)
-For repeated patterns, extract a `private fun Modifier.x(): Modifier`. Live in the same file (private) or `:design-system:components` if shared. Note: there is **no** general `AppTokens.dp.radius.*` slot (`AppDp.radius` is `private`) — read radii from the component-scoped group (`AppTokens.dp.bannerCard.radius`, `AppTokens.dp.wheelPicker.radius`, ...).
-
-## Lists — always `key = { it.id }` (MUST)
+## Lists — stable identity (MUST)
 ```kotlin
 LazyColumn(contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)) {
     items(items = state.notes, key = { it.id }, contentType = { "NoteRow" }) { note ->
@@ -101,26 +90,30 @@ LazyColumn(contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horiz
     }
 }
 ```
-- **`key = { it.id }`** is mandatory (without it, animation breaks; identity lost).
-- **`Modifier.animateItem()`** for reorder/insert/delete transitions.
+- MUST use a stable unique item identity as the key; `.id` is appropriate only when that model actually owns a stable unique ID. Do not invent an ID or use mutable position as identity.
+- Use `Modifier.animateItem()` when reorder/insert/delete transitions are part of the required presentation, not automatically on every list.
 - **`contentType = { "..." }`** for performance (Compose reuses composables of the same content type).
 
 ## Recomposition discipline (SHOULD)
-Don't pass lambda parameters capturing changing state without `remember`. Use `key` parameters in `remember` to invalidate. Hoist state to the lowest common parent. Avoid re-creating `Modifier` chains inside loops without `remember`.
 
-## Layout primitives (SHOULD)
-`Column`/`Row`/`Box` (over `ConstraintLayout` unless its specific features are needed); `LazyColumn`/`LazyRow` for collections > 10 items; `Spacer(Modifier.height(...))` for vertical spacing between siblings (prefer over per-item `padding(top=, bottom=)`); `Arrangement.spacedBy(...)` for uniform spacing.
+Use remember with relevant keys for expensive pure computations or identity that
+must remain stable. Simple loader membership and Boolean rendering conditions may
+remain inline; do not add mechanical caches around every expression.
 
-## Material3 — wrapped primitives (MUST)
-Interactive/structural Material3 components (`Button`, `TextField`, `Card`, `Toolbar`, sheets, dialogs, chips, indicators) are wrapped in `:design-system:components`. **Outside** the design-system module, **do not import those wrapped primitives directly** — use the design-system wrapper (it applies `AppTokens` consistently):
-```kotlin
-// ❌ in a feature module
-import androidx.compose.material3.Button
-// ✅
-import com.grippo.design.components.button.Button
-Button(onClick = ..., content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.apply)))
-```
-**Exception — unwrapped Material3 primitives** imported directly in feature modules: `androidx.compose.material3.Text` (styles via `AppTokens.typography.*`, colors via `AppTokens.colors.*`), `androidx.compose.material3.Icon` (`tint` via `AppTokens.colors.*`), `rememberTooltipState` + tooltip primitives. Any other `material3.*` symbol → add a wrapper to `:design-system:components` first.
+## Material3 — actual product component boundaries (MUST)
+
+Feature UI MUST reuse existing design-system components for their product roles,
+including the existing Button, inputs, Toolbar and selection components. Inspect
+actual signatures rather than assume generic Card/TextField wrappers exist.
+When a demanded product component is missing, add it in the owning design-system
+category only for that real need; do not generate wrappers for every imported symbol.
+
+Text and Icon primitives may be used with explicit AppTokens styles/colors/tint;
+existing tooltip primitives keep their actual role. Shared sheet hosts and
+product-independent compose-libs retain their source-established boundaries.
+Neutral callbacks MUST preserve the existing widget's focus/IME/selection behavior
+and import no analytics types. Do not widen a module exception into a parallel
+feature design system or bypass an existing appropriate product component.
 
 ## Anti-patterns (MUST avoid)
 
@@ -128,11 +121,11 @@ Button(onClick = ..., content = ButtonContent.Text(text = AppTokens.strings.res(
 - `mutableStateOf(...)` inside a `Composable` as a "global" — local state for UI; logical state belongs in the ViewModel.
 - Calling `getKoin().get()` in a Composable — forbidden. Get deps via Component → ViewModel.
 - `@Composable val` properties without `@ReadOnlyComposable` when the value doesn't depend on observable state.
-- `if (loaders.contains(MyLoader.Foo)) ... else ...` inline — wrap in `remember(loaders) { ... }`.
-- Heavy work in a `Composable` without `LaunchedEffect`/`produceState`.
+- Recomputing nontrivial derived button state without relevant remember keys; a simple loader-membership read needs no separate cache.
+- Heavy IO/CPU in rendering or on Main: keep it in the existing business/data owner with the appropriate dispatcher. LaunchedEffect/produceState alone do not select a worker dispatcher or make blocking work safe.
 - Storing state in a `var` outside `remember`/`rememberSaveable`.
 - `@OptIn` per function when the global `optIn(...)` already covers it.
 - Material3 colors in a feature module — use `AppTokens.colors.*`.
 - Mutable collections (`mutableListOf`) in state — use immutable.
-- Hardcoded `Color(...)`, `12.dp`, `14.sp` — use `AppTokens.*`.
+- Product colors/dimensions/typography literals in consumers — use `AppTokens.*`. Neutral technical constants such as `0.dp` and `Color.Transparent`, and explicit representative preview fixtures, are permitted; they must not become alternative product styling.
 - Flat-scalar explosion of a domain entity in a composable signature — pass the entity's `*State` model. Primitives (`Button`, `Chip`) are exempt.
