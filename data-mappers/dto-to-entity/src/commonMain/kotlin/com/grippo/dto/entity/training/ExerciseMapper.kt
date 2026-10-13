@@ -4,8 +4,8 @@ import com.grippo.services.backend.dto.training.ExerciseResponse
 import com.grippo.services.database.entity.ExerciseEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
-    return mapNotNull { it.toEntityOrNull() }
+public fun List<ExerciseResponse>?.toEntities(): List<ExerciseEntity> {
+    return orEmpty().mapNotNull { it.toEntityOrNull() }
 }
 
 public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {

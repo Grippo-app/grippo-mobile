@@ -49,6 +49,14 @@ public fun GetExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
         "ExerciseExampleResponse.usageCount is null"
     } ?: return null
 
+    AppLogger.Mapping.log(entity?.exerciseExampleBundles) {
+        "ExerciseExampleResponse.exerciseExampleBundles is null"
+    } ?: return null
+
+    AppLogger.Mapping.log(entity?.equipmentRefs) {
+        "ExerciseExampleResponse.equipmentRefs is null"
+    } ?: return null
+
     return ExerciseExampleEntity(
         id = entityId,
         name = entityName,

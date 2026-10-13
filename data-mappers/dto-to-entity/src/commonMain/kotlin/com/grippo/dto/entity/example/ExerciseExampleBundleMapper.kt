@@ -4,8 +4,8 @@ import com.grippo.services.backend.dto.exercise.example.ExerciseExampleBundleRes
 import com.grippo.services.database.entity.ExerciseExampleBundleEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<ExerciseExampleBundleResponse>.toEntities(): List<ExerciseExampleBundleEntity> {
-    return mapNotNull { it.toEntityOrNull() }
+public fun List<ExerciseExampleBundleResponse>?.toEntities(): List<ExerciseExampleBundleEntity> {
+    return orEmpty().mapNotNull { it.toEntityOrNull() }
 }
 
 public fun ExerciseExampleBundleResponse.toEntityOrNull(): ExerciseExampleBundleEntity? {

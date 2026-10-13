@@ -28,6 +28,10 @@ internal class ErrorProviderImpl(
                 description = exception.description,
             )
 
+            is AppError.Network.IncompleteResponse -> AppErrorState.Network.IncompleteResponse(
+                description = exception.message,
+            )
+
             is AppError.Network.Unexpected -> AppErrorState.Network.Unexpected(
                 description = exception.message,
             )

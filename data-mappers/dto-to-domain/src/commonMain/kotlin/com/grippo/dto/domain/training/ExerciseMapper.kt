@@ -35,13 +35,17 @@ public fun ExerciseResponse.toDomainOrNull(example: ExerciseExampleValue): Exerc
         "ExerciseResponse.createdAt is null"
     } ?: return null
 
+    val domainIterations = AppLogger.Mapping.log(iterations) {
+        "ExerciseResponse.iterations is null"
+    } ?: return null
+
     return Exercise(
         id = domainId,
         name = domainName,
         volume = domainVolume,
         repetitions = domainRepetitions,
         intensity = domainIntensity,
-        iterations = iterations.toDomain(),
+        iterations = domainIterations.toDomain(),
         exerciseExample = example,
         createdAt = DateTimeUtils.toLocalDateTime(domainCreatedAt)
     )

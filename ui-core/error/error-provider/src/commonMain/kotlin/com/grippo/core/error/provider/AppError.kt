@@ -27,6 +27,9 @@ public sealed class AppError(
             override val cause: Throwable? = null
         ) : Network(message, cause)
 
+        public class IncompleteResponse
+            : Network("Required server data is incomplete.")
+
         public data class Unexpected(
             val statusCode: Int? = null,
             override val message: String,

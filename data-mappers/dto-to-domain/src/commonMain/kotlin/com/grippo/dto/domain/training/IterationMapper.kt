@@ -4,8 +4,8 @@ import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.services.backend.dto.training.IterationResponse
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<IterationResponse>.toDomain(): List<Iteration> {
-    return mapNotNull { it.toDomainOrNull() }
+public fun List<IterationResponse>?.toDomain(): List<Iteration> {
+    return orEmpty().mapNotNull { it.toDomainOrNull() }
 }
 
 public fun IterationResponse.toDomainOrNull(): Iteration? {

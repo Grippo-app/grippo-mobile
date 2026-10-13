@@ -1,5 +1,6 @@
 package com.grippo.data.features.trainings.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.training.models.DraftTraining
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.SetTraining
@@ -18,6 +19,7 @@ import com.grippo.services.database.dao.TrainingDao
 import com.grippo.services.database.dao.UserActiveDao
 import com.grippo.services.database.dao.UserDao
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -59,12 +61,19 @@ internal class TrainingRepositoryImpl(
         )
 
         response.onSuccess { r ->
-            val actualIds = r.mapNotNull { training -> provideTraining(training) }
+            val actualIds = r.mapNotNull(TrainingResponse::id)
+            val savedCount = r.count { training -> provideTraining(training) }
+            if (actualIds.size != r.size) {
+                return Result.failure(AppError.Network.IncompleteResponse())
+            }
 
             if (actualIds.isEmpty()) {
                 trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
             } else {
                 trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
+            }
+            if (savedCount != r.size) {
+                return Result.failure(AppError.Network.IncompleteResponse())
             }
         }
 
@@ -109,12 +118,14 @@ internal class TrainingRepositoryImpl(
         return response
     }
 
-    private suspend fun provideTraining(value: TrainingResponse): String? {
-        val training = value.toEntityOrNull() ?: return null
+    private suspend fun provideTraining(value: TrainingResponse): Boolean {
+        val training = value.toEntityOrNull() ?: return false
         val exercises = value.exercises.toEntities()
-        val iterations = value.exercises.flatMap { f -> f.iterations }.toEntities()
+        val rawIterations = value.exercises.orEmpty().flatMap { exercise -> exercise.iterations.orEmpty() }
+        val iterations = rawIterations.toEntities()
+        if (exercises.size != value.exercises?.size || iterations.size != rawIterations.size) return false
         trainingDao.insertOrReplace(training, exercises, iterations)
-        return training.id
+        return true
     }
 
     override fun getDraftTraining(): Flow<DraftTraining?> {
@@ -128,7 +139,18 @@ internal class TrainingRepositoryImpl(
             ?.let { userDao.getById(it).firstOrNull()?.profileId }
             ?: return Result.success(Unit)
 
-        val pack = draft.toEntity(profileId)
+        val draftId = Uuid.random().toString()
+        val draftExercises = draft.exercises.map { exercise ->
+            val exerciseId = Uuid.random().toString()
+            exercise.toEntity(
+                id = exerciseId,
+                trainingId = draftId,
+                iterations = exercise.iterations.map { iteration ->
+                    iteration.toEntity(id = Uuid.random().toString(), exerciseId = exerciseId)
+                },
+            )
+        }
+        val pack = draft.toEntity(id = draftId, profileId = profileId, exercises = draftExercises)
 
         val training = pack.training
         val exercises = pack.exercises.map { it.exercise }

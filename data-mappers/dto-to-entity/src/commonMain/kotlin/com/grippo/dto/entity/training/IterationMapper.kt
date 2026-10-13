@@ -4,8 +4,8 @@ import com.grippo.services.backend.dto.training.IterationResponse
 import com.grippo.services.database.entity.IterationEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<IterationResponse>.toEntities(): List<IterationEntity> {
-    return mapNotNull { it.toEntityOrNull() }
+public fun List<IterationResponse>?.toEntities(): List<IterationEntity> {
+    return orEmpty().mapNotNull { it.toEntityOrNull() }
 }
 
 public fun IterationResponse.toEntityOrNull(): IterationEntity? {

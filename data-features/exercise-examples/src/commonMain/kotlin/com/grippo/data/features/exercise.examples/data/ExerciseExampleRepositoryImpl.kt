@@ -1,5 +1,6 @@
 package com.grippo.data.features.exercise.examples.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum

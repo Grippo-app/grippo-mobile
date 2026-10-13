@@ -38,6 +38,12 @@ public sealed interface AppErrorState {
 
         @Immutable
         @Serializable
+        public data class IncompleteResponse(
+            val description: String?,
+        ) : Network
+
+        @Immutable
+        @Serializable
         public data class Unexpected(
             val description: String?,
         ) : Network
@@ -59,6 +65,7 @@ public sealed interface AppErrorState {
             is Network.Expected -> UiText.Str(this.title)
             is Network.NoInternet -> TITLE_NO_INTERNET
             is Network.Timeout -> TITLE_TIMEOUT
+            is Network.IncompleteResponse -> TITLE_UNEXPECTED_NETWORK
             is Network.Unexpected -> TITLE_UNEXPECTED_NETWORK
             is Expected -> UiText.Str(this.title)
             is Unknown -> TITLE_UNKNOWN
@@ -70,6 +77,7 @@ public sealed interface AppErrorState {
             is Network.Expected -> this.description?.let { UiText.Str(it) }
             is Network.NoInternet -> this.description?.let { UiText.Str(it) }
             is Network.Timeout -> this.description?.let { UiText.Str(it) }
+            is Network.IncompleteResponse -> this.description?.let { UiText.Str(it) }
             is Network.Unexpected -> this.description?.let { UiText.Str(it) }
             is Expected -> this.description?.let { UiText.Str(it) }
             is Unknown -> null
