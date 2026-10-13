@@ -48,31 +48,36 @@ internal fun HttpClientConfig<*>.responseValidator(
     }
 
     handleResponseExceptionWithRequest { cause, _ ->
-        if (cause !is Exception) {
+        if (cause !is Exception || cause is CancellationException) {
             throw cause
         }
-        when (cause) {
-            is CancellationException -> throw cause
-            is AppError -> throw cause
 
-            is HttpRequestTimeoutException -> throw AppError.Network.Timeout(
+        if (cause is JsonConvertException) {
+            val decodingCause = cause.cause
+            if (decodingCause is CancellationException || decodingCause is Error) throw decodingCause
+        }
+
+        throw when (cause) {
+            is AppError -> cause
+
+            is HttpRequestTimeoutException -> AppError.Network.Timeout(
                 message = "Request timed out. Try again.",
                 cause = cause
             )
 
-            is JsonConvertException -> throw AppError.Network.Unexpected(
+            is JsonConvertException -> AppError.Network.Unexpected(
                 message = "Invalid server response format.",
-                cause = cause
+                cause = cause,
             )
 
-            is IOException -> throw AppError.Network.NoInternet(
+            is IOException -> AppError.Network.NoInternet(
                 message = "Connection lost or unavailable.",
                 cause = cause
             )
 
-            else -> throw AppError.Network.Unexpected(
+            else -> AppError.Network.Unexpected(
                 message = cause.message ?: "Unexpected network error",
-                cause = cause
+                cause = cause,
             )
         }
     }

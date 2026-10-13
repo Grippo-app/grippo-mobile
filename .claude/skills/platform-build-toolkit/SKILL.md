@@ -23,7 +23,7 @@ startup signatures come from current source; do not copy a generic project templ
   infrastructure cleanup or version changes.
 - Platform APIs preserve required Android/iOS actuals and lifecycle/disposal. Never pass Android
   Context into common code or add platform SDK dependencies to shared contracts.
-- Logs exclude secrets, fragments and hashes; auth logs contain only method/path/status.
+- Use existing AppLogger categories and sinks; inspect actual build-mode behavior.
   Preserve cancellation without new generic wrappers/manual ensureActive checks.
 
 ## Completion gate

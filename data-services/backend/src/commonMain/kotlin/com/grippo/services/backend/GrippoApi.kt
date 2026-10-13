@@ -28,6 +28,7 @@ import com.grippo.services.backend.dto.user.UserResponse
 import com.grippo.services.backend.dto.user.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
+import kotlin.coroutines.cancellation.CancellationException
 import org.koin.core.annotation.Single
 
 @Single
@@ -325,13 +326,18 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         body: Any? = null,
         queryParams: Map<String, String>? = null
     ): Result<T> {
-        return runCatching {
-            client.invoke(
+        return try {
+            val response = client.invoke(
                 method = method,
                 path = path,
                 body = body,
                 queryParams = queryParams
-            ).body()
+            )
+            Result.success(response.body<T>())
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
 }

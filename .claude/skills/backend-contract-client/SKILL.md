@@ -22,8 +22,7 @@ server behavior. Resolve missing details with the user before implementing them.
    [mappers](../mappers/SKILL.md). Preserve exact enum keys; do not infer a dictionary from examples.
 4. During a drift audit report evidence and a concrete correction proposal. Apply fixes only when
    the task authorizes them; an authorized fix does not require a separate ticket or second approval.
-5. Read actual transport/data consumers and preserve privacy/cancellation. Never log secrets,
-   fragments or hashes. Auth logging includes only method/path/status.
+5. Read actual transport/data consumers and preserve cancellation and the existing logging configuration.
 
 ## Completion gate
 

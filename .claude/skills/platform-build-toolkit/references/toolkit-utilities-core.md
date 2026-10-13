@@ -4,8 +4,8 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
 
 - `context` supplies NativeContext platform access. `http-client` owns engines/response validation;
   backend authentication stays in its existing service owner. Serialization owns the shared Json policy.
-- `logger` owns sinks/categories. Messages must exclude secret values, prefixes and hashes in all
-  build modes. Auth transport logs contain only method/path/status; no headers/bodies.
+- `logger` owns sinks/categories. AppLogger currently dispatches in all build modes;
+  do not assume its onDebug method checks the build variant.
 - `date-utils` owns timezone/date representation. Persist UTC-normalized values and review round-trip
   conversions; formatting is presentation, a clock-based business decision belongs to its operation owner.
 - Analytics/crash-reporting/messaging API modules expose typed consumer/bootstrap contracts;

@@ -12,7 +12,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.uiCore.error.errorProvider)
             implementation(projects.toolkit.serialization)
             implementation(projects.toolkit.httpClient)
             implementation(projects.toolkit.logger)

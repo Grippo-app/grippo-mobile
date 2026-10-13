@@ -72,7 +72,6 @@ Groups:
 ### `:data-services:*` — low-level services and DTOs
 
 - `:backend` — `GrippoApi` (flat class with methods like `suspend fun <action>(body): Result<T>`), `BackendClient` (Ktor with Auth, Logging, ContentNegotiation, defaultRequest pointed at `https://grippo-app.com`), `TokenProvider` (Auth `Bearer` + refresh with mutex and retry-with-backoff), `ClientLogger`, `dto/<area>/*` — `@Serializable data class`, all fields nullable with `@SerialName`.
-- Transport/local logs must exclude passwords, authorization codes, provider/ID/access/refresh tokens and Authorization headers, including secret prefixes or hashes. Auth traffic logs may contain method/path/status, without request/response bodies or headers.
 - `:database` — Room `@Database(version = 5)`, all `@Entity`, DAOs, migrations, `models/*Pack` (`@Embedded` + `@Relation`), `converters/StringListConverter`, `DatabaseBuilder` (expect/actual), **`fallbackToDestructiveMigration(dropAllTables = true)` on both platforms — intentional**.
 - `:datastore` — wrapper over AndroidX DataStore.
 - `:google-auth` / `:apple-auth` — platform credential wrappers returning a Google ID token or Apple authorization code.
@@ -434,7 +433,7 @@ than becoming `Result.failure`. At a suspend Result boundary, rethrow
 `BackendClient` (Ktor):
 - `defaultRequest`: `host = "grippo-app.com"`, `URLProtocol.HTTPS`, JSON content type, **`Accept-Language = AppLocale.current()`** on every request.
 - `HttpTimeout`: 10s (request, connect, socket).
-- `Logging` uses `LogLevel.INFO`, custom `ClientLogger`, and excludes requests marked `SensitiveResponse`. Backend marks `/auth/` traffic, including token refresh; `ResponseValidator` centrally removes sensitive server text and decoding payloads from failures. Never log credentials, headers or bodies on auth traffic; any custom auth metadata is limited to method/path/status.
+- `Logging` uses `LogLevel.INFO` and custom `ClientLogger`, including auth requests. No auth-specific error sanitation is used. AppLogger currently dispatches in every build mode; its onDebug method has no variant check.
 - `Auth` plugin with custom `TokenProvider : AuthProvider`.
 - `withContext(Dispatchers.IO)` wraps every `invoke`.
 
@@ -442,7 +441,7 @@ than becoming `Result.failure`. At a suspend Result boundary, rethrow
 - `addRequestHeaders` always reads the fresh token from `TokenDao` (via `userActiveDao` for the current user) and sets `Bearer <token>`.
 - `refreshToken(response)` — refresh with `Mutex` (one refresh at a time), `withTimeout(10s)`. Concurrent 401 requests wait for the result via `waitForOngoingRefresh`.
 - Refresh goes through `client.submitForm` with `attributes.put(AuthCircuitBreaker, Unit)` (Ktor will not try to refresh the refresh).
-- The shared validator maps refresh HTTP 4xx to sanitized `AppError.Network.Expected` before the response returns. After refresh retries fail, tokens are deleted from DB (`tokenDao.delete(userId)`); the existing authorization observer then navigates to login. The local `RefreshUnauthorizedException` branch applies only when an unauthorized response reaches TokenProvider directly.
+- The shared validator maps refresh HTTP 4xx to `AppError.Network.Expected` before the response returns. After refresh retries fail, tokens are deleted from DB (`tokenDao.delete(userId)`); the existing authorization observer then navigates to login. The local `RefreshUnauthorizedException` branch applies only when an unauthorized response reaches TokenProvider directly.
 - `retryWithBackoff(maxAttempts = 3, initialDelay = 500ms, factor = 2.0)` for refresh failures except cancellation, fatal errors and `RefreshUnauthorizedException`; validated HTTP 4xx currently follow the retry policy.
 
 DTOs: `package com.grippo.services.backend.dto.<area>`, file `*Response.kt` or `*Body.kt`, `@Serializable data class` with every field `@SerialName` and **nullable + default `= null`**, including request bodies and collections. Request construction still supplies required business values; this defensive Kotlin shape does not make API-required fields optional.

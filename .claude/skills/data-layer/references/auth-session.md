@@ -11,7 +11,6 @@ credential wrappers, token DAO and the actual Login/Register UseCases before cha
 - Refresh synchronization/retry/circuit-breaker is load-bearing network core; edit only within
   authorization covering that behavior. Preserve caller cancellation and distinguish timeout policy
   from ordinary cancellation by reading actual source.
-- No secret in logs, analytics or StateKeeper. That includes fragments and hashes.
-  Auth logs may contain only method/path/status. Input status analytics never carry credential values.
+- Credentials remain excluded from analytics and StateKeeper. Input status analytics never carry credential values.
 - Logout clearing must follow the actual session/domain contract; identify retained local drafts
   and owner boundaries before changing cleanup.

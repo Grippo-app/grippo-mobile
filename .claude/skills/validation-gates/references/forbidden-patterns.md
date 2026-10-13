@@ -161,13 +161,6 @@ Screen-result rules are defined in the ui-feature skill,
 
 - **`println(...)`** in production. Use `AppLogger`.
 - **`android.util.Log.*`** in `commonMain`. Doesn't compile.
-- **Logging credentials or personal input**, including passwords, authorization
-  codes, provider/ID/access/refresh tokens and Authorization headers. Secret
-  prefixes and hashes are not permitted substitutes. Auth transport/local logs
-  use method/path/status without request/response bodies or headers. Review error
-  and crash-reporting paths too: auth server free text and decode exception causes
-  must not escape into the shared logging pipeline. Preserve safe typed failure
-  semantics while removing secret-bearing messages/causes. *(Reviewer-only.)*
 - **Calling `AppLogger.General.error(...)` after a Ktor exception.** Pipeline already logs.
 - **Skipping `AppLogger.Mapping.log(value) { msg }`** in DTO → Entity / Domain mappers. Required.
 

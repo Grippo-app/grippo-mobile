@@ -20,7 +20,7 @@ A Result wrapper succeeding does not establish a successful business outcome.
 ## Error ownership (MUST)
 
 - HTTP/status and decoding failures are classified by the shared ResponseValidator;
-  sensitive response text is sanitized there. Pass existing transport failures through
+  no auth-specific sanitation is applied. Pass existing transport failures through
   repository/Feature/UseCase boundaries without wrapping or reclassifying them.
 - Mappers return null for objects that cannot be constructed; they do not create AppError
   or decide whether partial data is a successful operation.

@@ -20,6 +20,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.AuthScheme
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.path
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
@@ -27,15 +29,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.koin.core.annotation.Single
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration.Companion.milliseconds
 
 @Single
 internal class TokenProvider(
     private val tokenDao: TokenDao,
     private val userActiveDao: UserActiveDao,
 ) : AuthProvider {
-
     private val refreshMutex = Mutex()
     private var lastRefreshError: Throwable? = null
     private var lastKnownInvalidAccessToken: String? = null
@@ -50,10 +49,7 @@ internal class TokenProvider(
     override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean = true
 
     override fun isApplicable(auth: HttpAuthHeader): Boolean {
-        val applicable =
-            auth is HttpAuthHeader.Parameterized && auth.authScheme == AuthScheme.Bearer
-        logInfo { "Checking isApplicable: $applicable, scheme=${(auth as? HttpAuthHeader.Parameterized)?.authScheme}" }
-        return applicable
+        return auth is HttpAuthHeader.Parameterized && auth.authScheme == AuthScheme.Bearer
     }
 
     override suspend fun addRequestHeaders(
@@ -69,16 +65,11 @@ internal class TokenProvider(
             if (!accessToken.isNullOrBlank()) {
                 val bearer = "Bearer $accessToken"
                 append("Authorization", bearer)
-                logInfo { "Set Authorization header" }
-            } else {
-                logWarn { "No access token available to add" }
             }
         }
     }
 
     override suspend fun refreshToken(response: HttpResponse): Boolean {
-        logInfo { "Refresh requested (HTTP ${response.status.value})" }
-
         return if (refreshMutex.isLocked) {
             waitForOngoingRefresh()
         } else {
@@ -87,46 +78,30 @@ internal class TokenProvider(
     }
 
     private suspend fun waitForOngoingRefresh(): Boolean {
-        logInfo { "⏳ Waiting for another request to refresh token..." }
+        withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
+            refreshMutex.withLock {
+                val token = getCurrentToken()
 
-        return try {
-            withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
-                refreshMutex.withLock {
-                    val token = getCurrentToken()
+                if (token?.access != lastKnownInvalidAccessToken) {
+                    return@withLock
+                }
 
-                    if (token?.access != lastKnownInvalidAccessToken) {
-                        logInfo { "🔁 Skip refresh — already handled by another request (token changed)" }
-                        return@withLock
-                    }
-
-                    lastRefreshError?.let {
-                        logError { "⛔ Refresh failed previously: ${it::class.simpleName}" }
-                        throw it
-                    }
-
-                    logWarn { "⚠️ Still same token, but no error recorded — unknown state" }
+                lastRefreshError?.let {
+                    throw it
                 }
             }
-            logInfo { "✅ Refresh completed by another request" }
-            true
-        } catch (e: TimeoutCancellationException) {
-            logError { "⏰ Timeout while waiting for refresh to complete" }
-            throw e
         }
+
+        return true
     }
 
     private suspend fun performTokenRefreshBlock(response: HttpResponse): Boolean {
-        logInfo { "Starting exclusive token refresh..." }
-
         return try {
             withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
                 refreshMutex.withLock {
                     lastRefreshError = null
 
-                    val (_, token) = getCurrentUserAndToken() ?: run {
-                        logError { "No active user or token — aborting refresh" }
-                        return@withLock false
-                    }
+                    val token = getCurrentToken() ?: return@withLock false
 
                     val accessToken = token.requireAccess()
                     val refreshToken = token.requireRefresh()
@@ -134,13 +109,11 @@ internal class TokenProvider(
                     lastKnownInvalidAccessToken = accessToken
 
                     try {
-                        logInfo { "Calling /auth/refresh..." }
                         val refresh = retryWithBackoff {
                             performTokenRefresh(response.call.client, refreshToken)
                         }
 
-                        val newId = AppLogger.Mapping.log(refresh.id) { "TokenResponse.id is null" }
-                            ?: return@withLock false
+                        val newId = refresh.id ?: return@withLock false
 
                         tokenDao.insertOrUpdate(
                             TokenEntity(
@@ -150,16 +123,15 @@ internal class TokenProvider(
                             )
                         )
 
-                        logInfo { "Token refresh successful" }
                         true
                     } catch (e: Throwable) {
-                        logError { "Refresh call failed: ${e::class.simpleName}" }
+                        if (e is Error) throw e
+
                         handleRefreshFailure(e)
                     }
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            logError { "Timeout during token refresh" }
             handleRefreshFailure(e)
         }
     }
@@ -168,8 +140,6 @@ internal class TokenProvider(
         client: HttpClient,
         refreshToken: String
     ): TokenResponse {
-        logDebug { "Requesting token refresh..." }
-
         return client.submitForm {
             attributes.put(AuthCircuitBreaker, Unit)
             url {
@@ -178,10 +148,9 @@ internal class TokenProvider(
                 setBody(RefreshBody(refreshToken = refreshToken))
             }
         }.also {
-            logDebug { "Refresh response received: ${it.status.value}" }
+            AppLogger.Network.log("POST /auth/refresh ${it.status.value}")
         }.let { response ->
             if (response.status == HttpStatusCode.Unauthorized) {
-                logWarn { "🚫 Refresh rejected with HTTP 401" }
                 throw RefreshUnauthorizedException("Refresh token was rejected by backend")
             }
 
@@ -193,38 +162,18 @@ internal class TokenProvider(
         lastRefreshError = e
         lastKnownInvalidAccessToken = null
 
-        logWarn { "🧨 Refresh failed — error will propagate to all waiting requests (${e::class.simpleName})" }
-
-        when (e) {
-            is CancellationException -> {
-                logWarn {
-                    "⚠️ Refresh was cancelled by coroutine host — skipping token deletion to avoid side effects"
-                }
-            }
-
-            else -> {
-                val userId = userActiveDao.get().firstOrNull()
-                if (userId != null) {
-                    logInfo { "🗑 Deleting tokens for user $userId after refresh failure" }
-                    tokenDao.delete(userId)
-                } else {
-                    logWarn { "⚠️ No active user found — cannot delete token after refresh failure" }
-                }
+        if (e !is CancellationException) {
+            val userId = userActiveDao.get().firstOrNull()
+            if (userId != null) {
+                tokenDao.delete(userId)
             }
         }
 
-        logError { "❌ Throwing refresh error" }
         throw e
     }
 
     private suspend fun getCurrentToken(): TokenEntity? {
         return userActiveDao.get().firstOrNull()?.let { tokenDao.getById(it).firstOrNull() }
-    }
-
-    private suspend fun getCurrentUserAndToken(): Pair<String, TokenEntity>? {
-        val userId = userActiveDao.get().firstOrNull() ?: return null
-        val token = tokenDao.getById(userId).firstOrNull() ?: return null
-        return userId to token
     }
 
     private fun TokenEntity?.requireAccess(): String {
@@ -244,12 +193,12 @@ internal class TokenProvider(
         block: suspend () -> T
     ): T {
         var currentDelay = initialDelay
-        repeat(maxAttempts - 1) { attempt ->
+        repeat(maxAttempts - 1) {
             try {
                 return block()
             } catch (e: Throwable) {
+                if (e is CancellationException || e is Error) throw e
                 if (e is RefreshUnauthorizedException) throw e
-                logWarn { "Retry $attempt failed: ${e::class.simpleName}" }
             }
             delay(currentDelay.milliseconds)
             currentDelay = (currentDelay * factor).toLong()
@@ -258,20 +207,4 @@ internal class TokenProvider(
     }
 
     private class RefreshUnauthorizedException(message: String) : IllegalStateException(message)
-
-    private inline fun logInfo(message: () -> String) {
-        AppLogger.Network.log("ℹ️ [TokenProvider] ${message()}")
-    }
-
-    private inline fun logWarn(message: () -> String) {
-        AppLogger.Network.log("⚠️ [TokenProvider] ${message()}")
-    }
-
-    private inline fun logError(message: () -> String) {
-        AppLogger.Network.log("❌ [TokenProvider] ${message()}")
-    }
-
-    private inline fun logDebug(message: () -> String) {
-        AppLogger.Network.log("🔧 [TokenProvider] ${message()}")
-    }
 }

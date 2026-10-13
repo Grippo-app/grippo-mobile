@@ -5,7 +5,7 @@ val mappedId = AppLogger.Mapping.log(id) { "Response.id is null" } ?: return nul
 ```
 
 This is a required-field guard pattern, not a complete DTO example. Messages name the missing
-field/type, never secret values. Use `mapNotNull` for a collection only when dropping malformed
+field/type. Use `mapNotNull` for a collection only when dropping malformed
 rows is the agreed behavior; the consumer must not mistake partial mapping for complete server data.
 
 - Required fields guard once. Nullable targets remain nullable. Aliases may coalesce inside one

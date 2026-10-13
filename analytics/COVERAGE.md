@@ -60,9 +60,8 @@ retained by request, not a fixed finding or a preservation PASS.
 
 ## Verification limits
 
-The follow-up review centralized sensitive-response sanitation in the shared
-ResponseValidator. Backend and token refresh mark requests with SensitiveResponse;
-GrippoApi only wraps results, and TokenProvider retains refresh policy. This
+The follow-up review removed auth-specific response sanitation and request markers
+by explicit user decision. Logging remains enabled in all build modes. This
 transport change adds no screen, preserved input or analytics payload. The review
 also removed redundant example snapshot IDs. Required exercise-example snapshots validate completely before
 writing. Training list refresh updates valid records, retains cached incomplete
@@ -75,7 +74,7 @@ Calendar presentation rebuilds do not restart requests for an unchanged range.
 
 Source/diff and independent review cover hooks, route ownership, descriptor/key
 wiring, transient fields, caller identity creation and cancellation boundaries.
-Final authorized builds, rerun after centralizing response sanitation and adding IncompleteResponse, passed on 2026-10-13: `:androidApp:assembleDebug` and
+Final authorized builds, rerun after adding IncompleteResponse, passed on 2026-10-13: `:androidApp:assembleDebug` and
 `:shared:assembleSharedDebugXCFramework` (device and simulator frameworks).
 Fresh native process
 restoration, pause/resume timing, actual request serialization and SDK presentation
