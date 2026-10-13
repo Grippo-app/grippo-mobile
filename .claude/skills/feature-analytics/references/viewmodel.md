@@ -57,13 +57,9 @@ role. A page with its own content can also own child navigation; review what is
 actually displayed. Container events/operations may still observe its real business
 callbacks; they do not justify a container screen_view.
 
-Authorization has eight screen hooks and three null-hook hosts:
-AuthViewModel, AuthProcessViewModel and ProfileCreationViewModel. The last adds
-shared progress decoration, not a separate page. The complete mapping is in
-[authorization coverage](../../../../tasks/analytics/authorization-coverage.md).
-Profile has eight independent screen hooks and one null-hook ProfileViewModel
-container; its screen-only API introduces no event/operation families. See
-[Profile coverage](../../../../tasks/analytics/profile-coverage.md).
+Inventory the actual affected routes and rendered content; do not rely on historical
+counts or missing reports. Record current owners, typed hooks and container reasons
+in the current task/feature record.
 Dialogs, pickers and overlays do not automatically become screens; their dedicated
 presentation telemetry needs the separate contract described below.
 

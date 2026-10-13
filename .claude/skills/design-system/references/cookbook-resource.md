@@ -82,7 +82,7 @@ internal data class ProfileNoteArchiveState(
 
 ## Add a plural
 
-This template does not ship a `plurals.xml` today (no
+Grippo does not ship a `plurals.xml` today (no
 `composeResources/values/plurals.xml` exists), so this section is forward-looking — set it up
 the first time you need pluralized text.
 
@@ -115,8 +115,8 @@ present.
 ### 2. Use
 
 ```kotlin
-// Composable
-val text = pluralStringResource(Res.plurals.notes_count, count, count)
+// AppString has no plural accessor yet: add a neutral producer wrapper for
+// this real requirement and use AppTokens. Do not call Compose resources directly.
 
 // VM
 val text = stringProvider.plural(Res.plurals.notes_count, count, count)
@@ -129,7 +129,7 @@ calls `getPluralString(...)` from Compose Resources.
 ## Add a drawable (raster illustration)
 
 Use this for raster artwork (illustrations, photos, hero images). For monochrome UI icons, see
-**Add an icon** below — the template authors them as `ImageVector` code, not drawables.
+**Add an icon** below — the project authors them as `ImageVector` code, not drawables.
 
 ### 1. Drop the file
 
@@ -142,7 +142,7 @@ Use this for raster artwork (illustrations, photos, hero images). For monochrome
 ### 2. Naming
 
 - `snake_case` lowercase, **bare noun** describing the asset (e.g. `note`, `tag`,
-  `empty_inbox`, ...). This template does NOT use `ic_*` / `img_*` / `bg_*` prefixes.
+  `empty_inbox`, ...). Grippo does NOT use `ic_*` / `img_*` / `bg_*` prefixes.
 - Prefer `.webp` (the format actually used in `composeResources/drawable/`). PNG only when
   truly needed; the repo currently ships no vector drawables in this folder.
 
@@ -175,7 +175,7 @@ design system.
 ### 1. Create the file
 
 ```
-:design-system:resources:provider/src/commonMain/kotlin/com/<org>/<product>/design/resources/provider/icons/
+:design-system:resources:provider/src/commonMain/kotlin/com/grippo/design/resources/provider/icons/
   Notifications.kt
 ```
 
@@ -188,7 +188,7 @@ where to get them — that's a per-project decision. Common sources:
   tabler-icons (MIT). The path data is in the library's SVG files; transcribe to the Kotlin
   DSL.
 - **Designer SVG export** — designer drops an SVG in `figma/svg-export/<Name>.svg` (or
-  equivalent), the builder transcribes path commands.
+  equivalent), transcribe path commands.
 - **Material as a fallback when no source is task-specified** — search
   `androidx.compose.material.icons.Icons.*` for a close-enough match and copy its
   `materialPath { ... }` commands into the new `AppIcon.<Name>`. Do NOT `import` the Material
@@ -203,10 +203,10 @@ where to get them — that's a per-project decision. Common sources:
 ### 2. Author the `ImageVector`
 
 ```kotlin
-package com.<org>.<product>.design.resources.provider.icons
+package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.<org>.<product>.design.resources.provider.AppIcon
+import com.grippo.design.resources.provider.AppIcon
 
 public val AppIcon.Notifications: ImageVector
     get() {
@@ -238,17 +238,6 @@ Icon(
 )
 ```
 
-### 4. (Optional) Catalog preview when adding a bucket
-
-When `resource-builder` adds more than ~5 icons in one task, author one extra
-`@AppPreview`-annotated composable in `:design-system:preview` that grids all newly-added
-`AppTokens.icons.*` slots at 24dp. Designers use it to spot-check the bucket without opening
-every consuming widget; the cost is one ~50-LoC file per bucket.
-
-Place under
-`design-system/preview/src/commonMain/kotlin/com/<org>/<product>/design/preview/IconCatalogPreview.kt`
-(or wherever the project's preview-catalog files live).
-
 ## Add a font
 
 ### 1. Drop the file
@@ -266,8 +255,7 @@ Place under
 
 ### 2. Naming
 
-`<typeface>_<weight>.ttf`, where `<typeface>` is the `typefaceFactory` value from
-`orchestrator/project-config.md` (requirements).
+Use the existing font family/weight naming and factory in the resource provider.
 
 ### 3. Wire into `AppTypography`
 
@@ -276,19 +264,19 @@ at the top of the file gives the short accessor):
 
 ```kotlin
 @Composable
-internal fun <typeface>(): FontFamily = FontFamily(
-    Font(AppFont.<typeface>_bold, weight = FontWeight.Bold),
-    Font(AppFont.<typeface>_extra_bold, weight = FontWeight.ExtraBold),
-    Font(AppFont.<typeface>_extra_light, weight = FontWeight.ExtraLight),
-    Font(AppFont.<typeface>_light, weight = FontWeight.Light),
-    Font(AppFont.<typeface>_medium, weight = FontWeight.Medium),
-    Font(AppFont.<typeface>_regular, weight = FontWeight.Normal),
-    Font(AppFont.<typeface>_semi_bold, weight = FontWeight.SemiBold),
+internal fun manrope(): FontFamily = FontFamily(
+    Font(AppFont.manrope_bold, weight = FontWeight.Bold),
+    Font(AppFont.manrope_extra_bold, weight = FontWeight.ExtraBold),
+    Font(AppFont.manrope_extra_light, weight = FontWeight.ExtraLight),
+    Font(AppFont.manrope_light, weight = FontWeight.Light),
+    Font(AppFont.manrope_medium, weight = FontWeight.Medium),
+    Font(AppFont.manrope_regular, weight = FontWeight.Normal),
+    Font(AppFont.manrope_semi_bold, weight = FontWeight.SemiBold),
 )
 ```
 
-`AppFont.<typeface>_bold` resolves to `Res.font.<typeface>_bold`, the accessor Compose
-Resources generates from the file `font/<typeface>_bold.ttf`. Only `<typeface>()` decides
+`AppFont.manrope_bold` resolves to `Res.font.manrope_bold`, the accessor Compose
+Resources generates from the file `font/manrope_bold.ttf`. Only `manrope()` decides
 which weights are visible to text styles, so register every weight you actually use in
 `AppTypography`.
 
@@ -298,7 +286,7 @@ which weights are visible to text styles, so register every weight you actually 
 @Composable
 public fun h1(): TextStyle = TextStyle(
     fontSize = 30.sp,
-    fontFamily = <typeface>(),
+    fontFamily = manrope(),
     fontWeight = FontWeight.Bold,
     lineHeight = 38.sp,
 )
@@ -336,7 +324,7 @@ All resource modules must compile and the generated accessors (`Res.string.*`,
 - **`stringResource(R.string.foo)`** from `androidx.compose.ui.res`. Android-only.
 - **Adding monochrome icons as drawables** (`ic_*.xml` / `ic_*.svg`). Author them as
   `ImageVector` extensions on `AppIcon` so tint, sizing, and previews stay consistent.
-- **`ic_*` / `img_*` / `bg_*` prefixes** on raster files. This template uses bare nouns
+- **`ic_*` / `img_*` / `bg_*` prefixes** on raster files. Grippo uses bare nouns
   (`note.webp`, `tag.webp`, …).
-- **Font weight not registered in `<typeface>()`** — calls to that weight render the default
+- **Font weight not registered in `manrope()`** — calls to that weight render the default
   (often "Regular").

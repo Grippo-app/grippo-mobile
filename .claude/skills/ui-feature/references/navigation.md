@@ -158,7 +158,7 @@ Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol 
        public data class OpenProfileNoteArchive(val initialRange: DateRange) : RootDirection
    }
    ```
-   (This template uses the explicit-direction style; `data object` for 1:1 destinations, `data class` for payloads. A general `data class GoTo(val target: RootRouter)` is an alternative.)
+   (Grippo uses the explicit-direction style; `data object` for 1:1 destinations, `data class` for payloads. A general `data class GoTo(val target: RootRouter)` is an alternative.)
 
 3. **Expose the callback on `RootContract` / `RootViewModel`** (both `public` — they cross the iOS XCFramework boundary):
    ```kotlin

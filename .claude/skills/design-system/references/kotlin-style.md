@@ -1,233 +1,32 @@
-# Kotlin style
+# Kotlin style for UI and resource work
 
-> Cross-module style rules; the design-system-relevant subset is the same — these apply to
-> every `:design-system:*` file.
+Follow [CLAUDE.md](../../../../CLAUDE.md#kotlin) and actual neighboring source.
+Keep this reference scoped to UI/resource implementation; domain/network behavior
+belongs to its owning skill rather than a generic Kotlin tutorial.
 
-## `explicitApi()` is enabled
+- Public APIs have explicit visibility; implementation types stay internal.
+  Keep imports specific and remove unused ones in changed files.
+- Business/control blocks, safeLaunch and trackOperation are multiline. Short
+  single-expression update and simple Flow transformations may remain compact.
+  Named local function declarations are forbidden; class/file methods and ordinary
+  callback/DSL lambdas remain allowed.
+- ViewModels use safeLaunch/Flow.safeLaunch and the shared error pipeline. Their
+  suspend helpers preserve original errors, cancellation and fatal Errors. No
+  local recovery handlers or manual ensureActive checks. Outside the ViewModel,
+  preserve the existing Result/throwing boundary; bare suspend runCatching that
+  captures cancellation/fatal Errors is not an approved recipe.
+- State uses val and the project's immutable collections. Kotlin read-only
+  List/Set/Map alone do not guarantee immutable contents. Do not use an annotation
+  to hide mutation or copy business eligibility logic into a Composable.
+- Resources/tokens follow their producer ownership. Consumer fallbacks must have
+  defined semantics; required DTO values are not replaced with dummy zero/empty
+  values to make a mapper or preview succeed.
+- Compose experimentals are opted in by conventions. Do not add per-file opt-ins
+  already covered globally or silence an unrelated warning during UI work.
+- Prefer clear code to narration. Keep comments only for non-obvious invariants;
+  do not embed task/quiz IDs or temporary implementation history.
 
-Every top-level declaration **must** have an explicit visibility modifier (`public`,
-`internal`, `private`). The Kotlin compiler enforces it. There is no implicit-public.
-
-```kotlin
-// ✅ correct
-public fun foo() { ... }
-internal fun bar() { ... }
-private fun baz() { ... }
-
-// ❌ compile error: explicit visibility required
-fun foo() { ... }
-```
-
-### Visibility defaults by location
-
-| Location | Default visibility |
-|---|---|
-| `:data-features:feature-api` types | `public` |
-| `:data-features:<feature>` impls | `internal` (only `<X>FeatureModule` is `public`) |
-| `:data-services:*` types | `internal` (only entry-points like `<Product>Api`, `Database` are `public`) |
-| `:ui-screen-features:*`, `:ui-dialog-features:*` | `internal` for sub-screens (`Component`, `Screen`, `State`, `ViewModel`, `Loader`, `Direction`, `Contract`); `public` for the feature-root counterparts (consumed from `:shared`), for `*Router` sealed classes + `Deeplink` in `:screen-api`, and for `DialogConfig`/`DialogController`/`DialogModule` in `:dialog-api` (dialogs use a single `DialogConfig` sealed class — there are no per-feature dialog routers) |
-| `:design-system:*` | `public` (consumed everywhere) |
-| `:toolkit:*` | `public` for the interface; `internal` for impl |
-| `:data-mappers:*` | `public` top-level functions |
-
-## File and class naming
-
-- Files: **PascalCase** matching the primary class/interface (`NoteRepository.kt`,
-  `BaseViewModel.kt`).
-- Composables (functions): **PascalCase** (`NoteArchiveScreen`, `NotePickerComponent`).
-- Other functions: **camelCase** (`getCurrentToken`, `toEntity`).
-- Properties: **camelCase** (`accessToken`, `isOnline`).
-- Classes/interfaces/objects: **PascalCase** (`NoteRepository`, `AppTokens`).
-- Constants: **SCREAMING_SNAKE_CASE** inside `companion object` (`const val MAX_RETRIES = 3`).
-- Sealed type subtypes: **PascalCase** (`AppError.Network.NoInternet`).
-
-## File layout
-
-One file = one top-level class/interface/object. Exception: tightly-related sealed-type
-families (e.g. `NoteResponse` + `TagResponse` + `ItemResponse` in one file) — only when
-they're conceptually inseparable.
-
-```kotlin
-package com.<org>.<product>.notes
-
-import ...
-
-@Immutable
-internal data class NotesListState(
-    val items: ImmutableList<Note> = persistentListOf(),
-    val filter: NoteFilter = NoteFilter.All,
-)
-```
-
-State classes use **default constructor values** for the initial state; the ViewModel
-constructs them with `NotesListState()`. A `companion object Empty` is the **Contract**
-convention (see `naming.md`), not the State convention.
-
-## Function scope and block layout
-
-Named local function declarations inside `init`, constructors, another function or
-lambda are forbidden. Declare methods at class scope or functions at file scope.
-Ordinary callbacks, lambdas and DSLs remain allowed.
-
-Keep function/`init`/control-flow bodies and business blocks such as `safeLaunch`
-and `analytics.trackOperation` multiline, even for a single business call. Short
-single-expression state updates and simple Flow transformations stay compact:
-
-```kotlin
-update { it.copy(value = value) }
-items.map { it.toState() }
-items.filter { it.isSelected }
-items.onEach { update { state -> state.copy(items = it) } }
-flows.flatMapLatest { it }
-
-safeLaunch {
-    feature.getItems().getOrThrow()
-}
-```
-
-Expand long expressions and blocks with several operations. Empty defaults such as
-`onError = {}` may remain inline. `init` normally starts requests/subscriptions;
-a complete startup operation reused after error-dialog dismissal belongs in a
-private class-level method called from `init` and `onError`. Keep its sequence in
-one place and use the existing VM scope. Follow [the project Kotlin rules](../../../../CLAUDE.md#kotlin).
-
-## Imports
-
-- **No wildcard imports.** `import com.foo.bar.*` is forbidden. Use specific imports.
-- **No unused imports.** IDE auto-clean keeps these out.
-- **Order**: single alphabetical group (IntelliJ Kotlin default — no stdlib-first grouping).
-  Mixed packages sort lexicographically: `androidx.*` → `com.<org>.<product>.*` →
-  `kotlinx.*` → `kotlin.*`. Don't manually insert blank lines between sections.
-
-## Coroutines
-
-- **Only `safeLaunch` / `Flow.safeLaunch()`** inside a ViewModel. `viewModelScope.launch`,
-  `GlobalScope`, `runBlocking`, raw `CoroutineScope(...).launch` are forbidden.
-- **`Dispatchers.Main.immediate`** is the default. Use `Dispatchers.IO` only when explicitly
-  needed (Heavy IO inside the VM; usually IO already runs in `BackendClient`).
-- **`Dispatchers.Default`** for CPU-bound work (sorting large lists, complex computation).
-- **`withContext(Dispatchers.IO)`** in services that touch I/O (e.g. `BackendClient.invoke`).
-- **`runCatching` for Repository methods that don't already produce `Result<T>`** — e.g.
-  DataStore writes. When the underlying call already returns `Result<T>`, the Repository just
-  forwards / chains and does **not** wrap again. `runBlocking { ... }` is forbidden in production.
-
-## Flows
-
-- **`Flow<T>` for observation**; `StateFlow<T>` for state holders.
-- **`combine(flowA, flowB) { a, b -> ... }`** for joining streams. Never `zip` (which waits
-  for both — wrong semantics).
-- **`distinctUntilChanged()`** before emitting to state to avoid recomposition cascades.
-- **`map { }.distinctUntilChanged()`** in that order — map first, then dedupe.
-- **`flatMapLatest`** for "cancel previous on new emission".
-- **`combine` / `merge` / `flatMap*`** all return cold flows; collect via `.safeLaunch()` in
-  `init { }`.
-
-## Collections
-
-- **Immutable in state**: `ImmutableList<T>`, `ImmutableSet<T>`, `PersistentList<T>` from
-  `kotlinx-collections-immutable`. Mutable collections (`List`, `Set`, `Map` — Kotlin's
-  default) are **not Compose-stable**.
-- **`emptyList()`** for non-state defaults; **`persistentListOf()`** in state.
-- **Builder pattern**: `persistentListOf(a, b, c).add(d)` returns a new list; not in-place.
-- **`buildList { ... }`** for one-off construction; convert to `ImmutableList` if stored in
-  state.
-
-## Nullability
-
-- **Avoid `!!`.** Use `?: error("reason")` or `?: return null` or
-  `requireNotNull(value) { "msg" }`.
-- **Use `?:` for fallbacks.** `amount ?: 0f`.
-- **Use `?.let { ... }`** for null-safe transformations.
-- **`runCatching { ... }`** at service/domain boundaries returning `Result`.
-  ViewModels use `getOrThrow()` inside `safeLaunch`, including suspend helpers;
-  do not add local catches or recovery wrappers. Follow the
-  [UI error rules](../../ui-feature/references/error-pipeline.md).
-
-## Equality
-
-- **`==`** for value equality (`==` calls `.equals()`).
-- **`===`** for reference equality (rarely needed).
-- **`data class`** gives free `equals`/`hashCode`/`copy`.
-
-## When to use `data class`
-
-Use `data class` for: DTOs; Entities; Domain models; States, Loaders' params (with
-`@Immutable`); Configurations.
-
-Don't use `data class` for: Services with behavior (`@Single` services are regular classes);
-ViewModels (they're behavior, not data); Classes that aren't meaningfully comparable.
-
-## When to use `data object` vs `object`
-
-- **`data object`** for empty sealed-type cases (`Back`, `Close`, `Done`). Generates a nice
-  `toString()` and `equals()`.
-- **`object`** for stateful singletons that have behavior (`AppLogger`, `DateTimeUtils`,
-  `AppTokens`).
-
-## Long expressions
-
-- **Break at logical points**: chain calls each on a new line; multi-line `if/when` over
-  multi-line one-liners.
-- **Trailing commas** in multi-line argument lists and parameter declarations.
-
-```kotlin
-fun foo(
-    a: String,
-    b: Int,
-    c: List<Foo>,
-): Bar = Bar(a, b, c)
-
-bar.combine(other) { a, b ->
-    a + b
-}.distinctUntilChanged()
-    .onEach { update { state -> state.copy(value = it) } }
-    .safeLaunch()
-```
-
-## Comments
-
-- **Default: no comments.** Names and structure tell the story.
-- **One-liner WHY comment** for non-obvious decisions: a workaround or a known
-  limitation. Do not leave `TODO`/`FIXME`/`XXX` markers in code claimed as done;
-  record unfinished work as blockers or follow-ups.
-- **KDoc on `public` types** if the type's purpose isn't obvious from the name. Don't write
-  KDoc just to repeat the name.
-- **No multi-paragraph KDoc.** Be terse.
-
-## Visibility rules per layer
-
-| Layer | Public types | Internal types |
-|---|---|---|
-| `:design-system:*` | Tokens, Composables, `AppTheme` | Color/typography/dp impls (`DarkColor`, `*ProviderImpl`) under `internal/` |
-| `:ui-core:foundation` | `Base*`, `ResultKey`, helpers | `OperationManagerImpl`, `ResultManager`, `ResultEmitter` |
-| `:ui-screen-features:screen-api` | `*Router` sealed classes, `Deeplink` | (none — pure API module) |
-| `:ui-screen-features:<feature>` | `<Feature>RootComponent`, top-level routes | All sub-screens (`Component`, `Screen`, etc.) |
-| `:data-features:feature-api` | `<X>Feature`, domain models, `<X>UseCase` | (none) |
-| `:data-features:<feature>` | `<X>FeatureModule` | `<X>RepositoryImpl`, `<X>FeatureImpl` |
-| `:data-services:*` | Entry types (`<Product>Api`, `Database`, `DataStore`), Koin modules | All impls (`BackendClient`, `TokenProvider`, DAOs) |
-| `:toolkit:*` | Interfaces and entry points | All impls |
-| `:data-mappers:*` | Top-level extension functions | (none) |
-
-## `@Suppress`
-
-- **Avoid `@Suppress` at file scope** — narrow it to the specific declaration.
-- **Common acceptable suppresses**:
-  - `@Suppress("UNCHECKED_CAST")` after an explicit type check.
-  - `@Suppress("NO_ACTUAL_FOR_EXPECT")` on KSP-generated `expect/actual`.
-  - `@Suppress("UnstableApiUsage")` in `settings.gradle.kts` for `dependencyResolutionManagement`.
-- **Document why** in a one-line comment above the suppress.
-
-## Anti-patterns
-
-- **`@JvmStatic`** in commonMain (Kotlin/Native doesn't have JVM).
-- **`@JvmField`** in commonMain.
-- **`lateinit var`** in production. Inject via constructor or use `by lazy { ... }`.
-- **`var`** in `@Immutable` data classes. State is immutable.
-- **Single-letter parameter names** outside lambdas (`x`, `y`, `i`). Even `it` in long
-  lambdas must be renamed for clarity.
-- **`return@somelambda`** without a clear named target. Use an explicit
-  `if (...) return@onEach`.
-- **Catching `Throwable` broadly** instead of specific types. Exception: `runCatching { ... }`
-  at API boundaries.
-- **`fun <T> Any?.cast(): T = this as T`** helpers. Use explicit `as` with
-  `@Suppress("UNCHECKED_CAST")`.
+Review the actual changed signatures, dependencies and callers. Use the owning
+[UI error pipeline](../../ui-feature/references/error-pipeline.md),
+[data error rules](../../data-layer/references/error-pipeline.md) and
+[mapper constraints](../../mappers/SKILL.md) when those boundaries are affected.

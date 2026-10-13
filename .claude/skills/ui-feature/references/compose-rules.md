@@ -7,9 +7,9 @@ compiler's stability metrics).
 
 ### State classes
 Every state class is `@Immutable` (fields use default ctor values so the VM builds initial state with `FooState()`):
-- `@Immutable` tells Compose instances are deeply immutable — recomposition skips on identity.
-- `@Stable` is weaker (equal-by-equals, not deeply immutable). Use when fields may change but `equals` reflects the change.
-- **`var` fields require `@Stable`** (or forfeit skip optimization). Don't use `var` in state anyway.
+- `@Immutable` promises deeply immutable observable data; all State fields remain `val`.
+- Use `@Stable` only when equality, observable changes and property types satisfy its contract.
+- An annotation does not make mutable data safe. Do not introduce `var` in State.
 
 ### Collections
 Use `ImmutableList<T>` / `ImmutableSet<T>` / `PersistentList<T>` in state. Kotlin's `List`/`Set`/`Map` are **not Compose-stable** (degrade skipping). Construct via `buildList { ... }.toImmutableList()`.
@@ -117,7 +117,7 @@ Interactive/structural Material3 components (`Button`, `TextField`, `Card`, `Too
 // ❌ in a feature module
 import androidx.compose.material3.Button
 // ✅
-import com.<org>.<product>.design.components.Button
+import com.grippo.design.components.Button
 Button(onClick = ..., content = ButtonContent.Text(text = "Click"))
 ```
 **Exception — unwrapped Material3 primitives** imported directly in feature modules: `androidx.compose.material3.Text` (styles via `AppTokens.typography.*`, colors via `AppTokens.colors.*`), `androidx.compose.material3.Icon` (`tint` via `AppTokens.colors.*`), `rememberTooltipState` + tooltip primitives. Any other `material3.*` symbol → add a wrapper to `:design-system:components` first.

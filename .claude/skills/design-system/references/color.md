@@ -154,14 +154,14 @@ really needed; the existing groups are exhaustive for most cases.
 
 ## Product-specific groups
 
-This template has product-tied groups (e.g. domain-specific palettes attached to
+Grippo has product-tied groups (e.g. domain-specific palettes attached to
 feature pages and charts) alongside the structural groups. When forking these
 requirements:
 
 - Keep the **structural** groups (`button`, `input`, `background`, `dialog`, `text`,
   `divider`, `semantic`, `overlay`, `border`, `brand`, `icon`, `toggle`, `segment`,
   `palette`).
-- Drop the template's product-specific groups.
+- Drop the project's product-specific groups.
 - Add new product-specific groups as needed (`payment.success`, `tournament.banner`, ...).
 
 ## Rules

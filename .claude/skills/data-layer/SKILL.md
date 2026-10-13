@@ -1,140 +1,45 @@
 ---
 name: data-layer
-description: >-
-  Build the data layer for a KMP feature — add a data feature, repository, DTO,
-  domain model/enum, compose or change UseCase operations, persist data, add or extend an endpoint on the product API,
-  add/extend a Room entity, DAO, or migration, or store a DataStore preference.
-  Use when a task introduces a new domain concept the UI needs as a feature interface,
-  adds/changes a backend endpoint + DTO, changes a Room schema (new column,
-  index, table, type change), persists a key-value preference, or touches
-  auth/token storage or composing business behavior/outcomes. Covers the repository + feature-api split, observe/get/
-  mutate shape, DTO↔Entity↔Domain boundary, and the migration authorization gate.
+description: Change Grippo Feature/Repository/UseCase contracts, API-backed data flow, Room persistence or DataStore preferences. Use for domain behavior and storage ownership; mapper implementation belongs to mappers.
 ---
 
-# Data layer
+# Grippo data layer
 
-Follow the [project coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines):
-do not add manual `ensureActive()` checks or wrappers in production. Preserve
-caller cancellation through suspend APIs, exception handling and `Result` boundaries.
-
-Operational entrypoint for data-layer work. The UI sees only the `<X>Feature`
-interface in `:data-features:feature-api`; the impl, repository, `<Product>Api`,
-Room, and DataStore live below it. This is the routing map, not new rules.
-UseCase composition also belongs here: preserve actual return/error contracts,
-required outcomes and data hydration without analytics dependencies. Storage and
-endpoint steps apply only when those layers change.
-
-## When to use
-
-- Add a new `:data-features:<name>` module (new domain concept the UI consumes).
-- Compose or change a UseCase's complete business operation, outcome checks,
-  required cleanup or alternate-path data hydration.
-- Add or extend an endpoint + DTO on the flat `<Product>Api`.
-- Add or change a Room entity / DAO, or write a migration (schema delta).
-- Persist a small key-value preference via DataStore on the owning Repository.
-- Touch token/auth storage (load-bearing — explicit review only).
-
-## Required inputs
-
-- **Authorized task scope** and the feature/operation name; include a task file
-  for a configured orchestrator task.
-- **Domain models** the feature exposes (strict-typed: enums for closed sets,
-  `LocalDateTime`/`Duration` for timestamps/numbers — never raw `String`).
-- **Actual API surface and outcome semantics** — Flow observations, Result-returning
-  Feature methods, or throwing Unit/T commands. Identify required endpoints only
-  when changing endpoint behavior.
-- **Affected persistence, if any** — Room entity/DAO? DataStore preference (name, type, owner
-  Repository)? Migration (schema delta + `prelaunch` state)?
-- For endpoints, the **contract source** (see Step 1 of the endpoint recipe).
-
-If domain shape is unclear, stop and ask — inventing a domain shape is out of
-scope.
+Read `CLAUDE.md`, the actual affected Feature/UseCase/Repository and callers before editing.
+UI consumes public contracts in `:data-features:feature-api`; FeatureImpl and Repository
+implementations remain internal. Do not add analytics dependencies to the business layer.
 
 ## Workflow
 
-For composing operations read [UseCase contracts](references/error-pipeline.md#authoring-rules--usecase-should)
-and the actual callees first. A successful Result wrapper does not establish a
-successful business outcome; required payload/cleanup failures must stop later
-work. Verify complete operations and alternate-path hydration within the user's
-scope, without adding analytics types, new storage or test infrastructure.
+1. Establish the existing operation contract: Flow observation, Result-returning method or
+   throwing command. Preserve required outcomes, cleanup, hydration and cancellation.
+2. For wire changes, read [backend-contract-client](../backend-contract-client/SKILL.md).
+   Verify authoritative fields/method/path first. Never invent transport shape.
+3. Keep conversions in the seven directional modules using [mappers](../mappers/SKILL.md).
+   Domain closed sets are typed; transport/storage retain wire values.
+4. API-backed cache mutations follow confirmed server success; local drafts and preferences
+   follow their owning Repository contract. Required hydration failure cannot become success.
+5. Use [DI](../di-modules/SKILL.md) for bindings. Add only dependencies the implementation uses.
+6. For changed feature behavior apply [analytics](../feature-analytics/SKILL.md) and
+   [state preservation](../state-preservation/SKILL.md); business code stays telemetry-free.
 
-1. **Server owns the contract.** Confirm the endpoint is live before defining
-   the DTO; check `backendContractEnabled` + the inventory snapshot. Mobile does
-   not invent endpoints.
-2. **No codegen** unless explicitly authorized — DTOs/endpoints are synced by
-   hand against the contract.
-3. **No speculative entities or writes.** Write to the DAO only inside
-   `response.onSuccess { … }`; reconcile ranges (`deleteAllExceptIds`).
-4. **Strict typing at the domain edge only.** DTO/Entity keep raw `String?` /
-   `String`; promotion to enum / `LocalDateTime` / `Duration` happens in the
-   `…→domain` mapper. Coordinate `mapper-builder` per direction.
-5. **Migrations are a deliberate, separate task.** Authorization is enforced by
-   `task-intake` before `room-migration-builder` runs; `prelaunch: true` skips
-   the migration (destructive fallback), `prelaunch: false` requires one. Verify
-   both Android and iOS.
-6. **Prelaunch / verify gates** — build green on both platforms (Android-only
-   when `iosEnabled: false`); commit the new schema JSON with the migration.
-7. **No raw `Throwable` leak.** The Repository returns `Result` / lets
-   exceptions propagate via `runCatching`; never catch-and-swallow, never return
-   a DTO. Error translation is the ViewModel's job (error pipeline).
+## Decisions and gates
 
-## Stop and ask
+- Resolve unclear domain shapes and partial-success policies with the user before implementing them.
+- Confirm existing authorization before new modules, schema/migration changes or auth/network-core changes.
+  An existing request covering the change is sufficient; do not request it again.
+- Response and request DTO fields, including collections, are nullable with `= null` and
+  explicit unchanged wire keys. Existing source deviations do not weaken this standard;
+  unrelated DTO cleanup requires its own scope. Request validity is enforced before sending.
+- Preserve caller cancellation at suspend Result boundaries. Bare `runCatching`/`mapCatching`
+  can capture cancellation; do not copy them as a compliant pattern or add generic wrappers/
+  manual `ensureActive()` checks. Review actual callees and retain the declared error contract.
+- Before completion review ownership, required outcomes, cache reconciliation, UTC conversion,
+  privacy and cancellation in source/diff. No automated test sources/infrastructure.
+  Run only permitted static/manual checks and builds within the user's scope; report unverified behavior.
 
-- With gate `auto` or `true`, the validated snapshot or endpoint is missing →
-  `BLOCKED` for endpoint/DTO work; never substitute task text.
-- A Room migration on a **shipped** (`prelaunch: false`) DB with a risky delta.
-- Changing `fallbackToDestructiveMigration`, the `TokenProvider`, or any
-  load-bearing auth/refresh infra.
-- A domain shape you would have to invent.
-- Required reading file missing → `BLOCKED: required reading missing — <list>`.
-
-## References to read
-
-Data mechanics live in [`references/`](references/index.md). For feature behavior
-changes, also assess [analytics impact/coverage](../feature-analytics/SKILL.md).
-Business layers retain their existing contracts without analytics dependencies;
-any feature instrumentation belongs to the owning ViewModel.
-
-| Task kind | Read first |
-|---|---|
-| New data feature | [`references/cookbook-data-feature.md`](references/cookbook-data-feature.md); [`references/repositories.md`](references/repositories.md) |
-| Repository shape / data flow | [`references/repositories.md`](references/repositories.md); [`references/module-structure.md`](references/module-structure.md) |
-| UseCase composition / outcomes / cleanup / alternate-path hydration | [`references/error-pipeline.md`](references/error-pipeline.md); [`references/repositories.md`](references/repositories.md) |
-| Feature behavior analytics impact / business boundary | [feature-analytics](../feature-analytics/SKILL.md), [`references/repositories.md`](references/repositories.md) |
-| Endpoint + DTO | [`references/cookbook-endpoint.md`](references/cookbook-endpoint.md); [`references/dtos-and-api.md`](references/dtos-and-api.md), [`references/backend-client.md`](references/backend-client.md) |
-| Room entity / DAO / migration | [`references/cookbook-room-migration.md`](references/cookbook-room-migration.md); [`references/persistence-room.md`](references/persistence-room.md) |
-| DataStore preference | [`references/datastore.md`](references/datastore.md); [`references/module-structure.md`](references/module-structure.md) |
-| Auth / token | [`references/auth-session.md`](references/auth-session.md); [`references/error-pipeline.md`](references/error-pipeline.md) |
-| `:data-services:*` rules / anti-patterns | [`references/module-structure.md`](references/module-structure.md); [`references/repositories.md`](references/repositories.md) |
-
-## Validators / gates
-
-The validator roster below applies to configured orchestrator tasks. Ordinary
-repository work requires the relevant semantic reviews and permitted verification,
-without unavailable machine reports or builds outside the authorized scope.
-
-- `data-layer-validator` — repository/feature split, observe/get/mutate shape,
-  no DTO leak, no speculative DAO writes.
-- `architecture-validator` — module dependency direction, no cross-feature import.
-- `naming-convention-validator` — `observe*/get*/save*`, `<X>RepositoryImpl`,
-  `Migration<N>To<N+1>`, snake_case DataStore keys.
-- `build-validator` — both-platform build green.
-- `backend-contract-drift` — DTO/endpoint vs. the contract snapshot (when
-  `backendContractEnabled`).
-
-## Output contract
-
-For configured orchestrator tasks, builders return the normalized envelope in
-[`builder-report.md`](../../contracts/builder-report.md)
-(`agent`, `status`, `files_touched`, `produced_signatures`, `assumptions`, `blockers`,
-`scope_deviations`, `handoff`). When that configured task supplies a plan, its
-per-builder section (per
-[`planner-output.md`](../../contracts/planner-output.md))
-is authoritative for file paths and names; this skill's recipes define the
-methodology. Owned builders: `data-feature-builder`,
-`data-service-scaffold-builder`, `room-migration-builder` (each `Read, Edit,
-Write, Bash, Grep, Glob`, `sonnet`).
-
-For ordinary repository tasks, report the behavior changed, touched files and
-actual verification/limitations; do not require unavailable orchestrator files
-or machine reports.
+Read the relevant reference only:
+[repositories](references/repositories.md), [operation errors](references/error-pipeline.md),
+[DTO/API](references/dtos-and-api.md), [Room](references/persistence-room.md),
+[migration](references/cookbook-room-migration.md), [DataStore](references/datastore.md),
+[network](references/backend-client.md), [auth](references/auth-session.md).

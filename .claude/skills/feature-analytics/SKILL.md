@@ -8,8 +8,7 @@ description: Implement and review simple typed Grippo KMP feature analytics alon
 ## Scope
 
 Apply when feature behavior changes, even without an explicit tracking request.
-Visual-only changes need an impact assessment, not new events. Read `CLAUDE.md`,
-[feature standard](../../../tasks/analytics/feature-standard.md) and the affected
+Visual-only changes need an impact assessment, not new events. Read `CLAUDE.md`, current analytics contracts and the affected
 coverage matrix. For UI wiring read [ViewModel integration](references/viewmodel.md).
 Stay within the requested feature and verification scope.
 
@@ -133,8 +132,10 @@ Before completing a new feature or an affected screen/navigation change:
    an omissions row cannot waive a required
    screen hook. Record permitted checks and explicit unrun runtime checks.
 
-See [ViewModel integration](references/viewmodel.md#screen-classification) and the
-[coverage template](../../../tasks/analytics/feature-coverage-template.md).
+See [ViewModel integration](references/viewmodel.md#screen-classification).
+Create/update coverage in the current task or feature record; no separate template
+is required. Record route/surface, Component, VM, typed screen/hook or container
+reason, callbacks/inputs/operations, omissions and checks.
 
 ## Schemas, privacy and checks
 

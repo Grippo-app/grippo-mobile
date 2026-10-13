@@ -16,9 +16,8 @@
 > no runtime flags/source caches; fresh forms populate once. This recipe's live
 > items observer rebuilds display data and must not reinitialize editable inputs.
 
-> **Figma-enabled (`figmaEnabled: true`) + a `## Design` bullet:** the builder's design-cache gate applies BEFORE any file from this recipe is written — read the cached spec/mock and stop on unmapped components (see SKILL.md "Stop and ask"). This recipe owns the code shape; that gate owns when you may start.
 
-> **Build to the pulled design — not your own interpretation (mandatory for a `figmaEnabled` screen).** The pull session already wrote this screen's design to the cache — you build to THAT, you do not invent a layout. For each `## Design` bullet, read the pulled value spec `orchestrator/.cache/figma/screens/<stem>/<Screen>.spec.json` (it drives the element inventory, layout, paddings/gaps, corner radii, fills/tokens, and text styles — build every one to match) AND look at the oracle mock `orchestrator/.cache/figma/screens/<stem>/<Screen>.png` (it drives the overall appearance and which content/sections actually exist — reproduce the design's structure and its representative content). Do NOT build a different, simpler, or made-up screen. Manual visual review compares the actual rendered surface with this design; invented layout or content prevents a meaningful comparison. Source/spec matches alone do not establish rendered fidelity. Per dark theme, consult the dark spec/oracle (`<Screen>.dark.spec.json` / `<Screen>.dark.png`) too. (Golden invariant: you read these PULLED cache files — you never call Figma/MCP yourself; only the pull session does.)
+> **Design fidelity:** read the actual supplied Figma node or design artifact before implementation. Match its content, layout, tokens and declared states; inspect rendered previews when permitted and record unverified states.
 
 > **Figma-backed visual review:** seed the normal `@AppPreview` from the design’s actual text, values and sections for each affected state. Compare a permitted rendered preview or app screenshot with its declared design node; record observations and unavailable runtime checks. Follow [visual fidelity review](../../validation-gates/references/visual-review.md). Add no runner, dependency or recording source set.
 
@@ -26,7 +25,7 @@ How to add a new sub-screen inside an existing feature module — e.g. a "Note a
 
 ## 1. Create the package
 ```
-ui-screen-features/profile/src/commonMain/kotlin/com/<org>/<product>/profile/notearchive/
+ui-screen-features/profile/src/commonMain/kotlin/com/grippo/profile/notearchive/
 ```
 
 ## 2. Create the seven files
@@ -97,7 +96,7 @@ internal class ProfileNoteArchiveViewModel(
 
 `ProfileNoteArchiveComponent.kt`:
 ```kotlin
-import com.<org>.<product>.core.foundation.models.PersistenceKey
+import com.grippo.core.foundation.models.PersistenceKey
 
 internal class ProfileNoteArchiveComponent(
     componentContext: ComponentContext,
@@ -168,7 +167,7 @@ private fun ProfileNoteArchiveScreenPreview() {
 
 The list renders each entity through `NoteRow(state = note)` — one parameter, never fields spread flat. `NoteRowState` and its `stubNoteList()` factory live in `:ui-core:state`. Screen-specific sub-composables (a custom header, stats card, empty-state block) go in a `notearchive/components/` subfolder, one cohesive composable per file, with private helpers + `@AppPreview` co-located.
 
-For a `figmaEnabled` screen the `@AppPreview` stub (`stubNoteList()` here) is not free-form filler — it must carry the design's representative content, so the rendered preview can be meaningfully compared with that design. Fill it from the oracle `<Screen>.png` / the pulled `<Screen>.spec.json` frame content — the actual sections/text/values the design shows — so the built preview renders the design, not made-up data.
+With a supplied design, preview its actual representative content and declared states.
 
 ## 3. Add the route to `:ui-screen-features:screen-api`
 In `ProfileRouter.kt`:
@@ -205,8 +204,8 @@ Apply the [mandatory preservation gate](../../state-preservation/SKILL.md#mandat
 to current range/drafts and rebuilt items; confirm restored values, Back and secret
 exclusion in the user's permitted verification scope.
 ```bash
-# Task names come from project-config (sharedFrameworkTask / androidAssembleTask) —
-# these are the template defaults; skip the framework task when iosEnabled: false.
+# Current project build tasks;
+# Run only when the user's verification scope permits the relevant platform.
 ./gradlew :shared:assembleSharedDebugXCFramework
 ./gradlew :androidApp:assembleDebug
 ```

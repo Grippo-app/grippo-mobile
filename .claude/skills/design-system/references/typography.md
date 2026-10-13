@@ -64,14 +64,14 @@ public data object AppTypography {
 }
 ```
 
-Each method returns a `TextStyle` built from the product's font family (`<typeface>()` in
-the template) with explicit `fontSize`, `lineHeight`, and `fontWeight`:
+Each method returns a `TextStyle` built from the product's font family (`manrope()` in
+the project) with explicit `fontSize`, `lineHeight`, and `fontWeight`:
 
 ```kotlin
 @Composable
 public fun h1(): TextStyle = TextStyle(
     fontSize = 30.sp,
-    fontFamily = <typeface>(),
+    fontFamily = manrope(),
     lineHeight = 38.sp,
     fontWeight = FontWeight.Bold,
 )
@@ -79,7 +79,7 @@ public fun h1(): TextStyle = TextStyle(
 @Composable
 public fun b14Med(): TextStyle = TextStyle(
     fontSize = 14.sp,
-    fontFamily = <typeface>(),
+    fontFamily = manrope(),
     lineHeight = 20.sp,
     fontWeight = FontWeight.Medium,
 )
@@ -87,7 +87,7 @@ public fun b14Med(): TextStyle = TextStyle(
 
 ## Naming convention
 
-- **`hN()`** — headings (H1–H6). Sizes step down: 30/25/22/18/16/15 sp (the template) —
+- **`hN()`** — headings (H1–H6). Sizes step down: 30/25/22/18/16/15 sp (the project) —
   pick your own scale per product.
 - **`bNNWeight()`** — body text, e.g. `b14Med` = "body 14sp, Medium weight".
 - Weights abbreviated: `Reg` (Regular/Normal), `Med` (Medium 500), `Semi` (SemiBold 600),
@@ -97,28 +97,28 @@ public fun b14Med(): TextStyle = TextStyle(
 
 ## Font family
 
-A single typeface is used app-wide (e.g. Manrope). This template registers all seven
+A single typeface is used app-wide (e.g. Manrope). Grippo registers all seven
 Manrope weights in a top-level internal helper inside `AppTypography.kt`:
 
 ```kotlin
 private typealias AppFont = Res.font   // file-private alias for terseness
 
 @Composable
-internal fun <typeface>(): FontFamily = FontFamily(
-    Font(AppFont.<typeface>_bold, weight = FontWeight.Bold),
-    Font(AppFont.<typeface>_extra_bold, weight = FontWeight.ExtraBold),
-    Font(AppFont.<typeface>_extra_light, weight = FontWeight.ExtraLight),
-    Font(AppFont.<typeface>_light, weight = FontWeight.Light),
-    Font(AppFont.<typeface>_medium, weight = FontWeight.Medium),
-    Font(AppFont.<typeface>_regular, weight = FontWeight.Normal),
-    Font(AppFont.<typeface>_semi_bold, weight = FontWeight.SemiBold),
+internal fun manrope(): FontFamily = FontFamily(
+    Font(AppFont.manrope_bold, weight = FontWeight.Bold),
+    Font(AppFont.manrope_extra_bold, weight = FontWeight.ExtraBold),
+    Font(AppFont.manrope_extra_light, weight = FontWeight.ExtraLight),
+    Font(AppFont.manrope_light, weight = FontWeight.Light),
+    Font(AppFont.manrope_medium, weight = FontWeight.Medium),
+    Font(AppFont.manrope_regular, weight = FontWeight.Normal),
+    Font(AppFont.manrope_semi_bold, weight = FontWeight.SemiBold),
 )
 ```
 
 `AppFont` is **not** a public type — it is a file-private `typealias` for `Res.font` (the
 Compose Resources generated `Res` object). Font files live in
 `:design-system:resources:provider/src/commonMain/composeResources/font/` (e.g.
-`<typeface>_bold.ttf`).
+`manrope_bold.ttf`).
 
 Multiple typefaces are rare — usually one font with multiple weights covers a product. If a
 second typeface is needed (display vs body), add a parallel `oswald()` helper and route
@@ -154,7 +154,7 @@ vs:
 public fun h1(): TextStyle = TextStyle(...)
 ```
 
-This template chooses the **method** form. Both are valid; methods are slightly more
+Grippo chooses the **method** form. Both are valid; methods are slightly more
 idiomatic for "compute on every call".
 
 ## Adding a new token
@@ -176,6 +176,6 @@ idiomatic for "compute on every call".
 
 - **Composing token text styles with `.copy(fontWeight = ...)`** — that's a new style; add
   a token.
-- **Mixing font families across the app** without a second `<typeface>()` helper.
+- **Mixing font families across the app** without a second `manrope()` helper.
 - **Adding a `material3.Typography` parallel to `AppTypography`.** Material3's typography is
   bypassed entirely; we don't read it.

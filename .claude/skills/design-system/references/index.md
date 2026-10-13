@@ -1,7 +1,7 @@
 # design-system — references index
 
 Self-contained reference pack for the `design-system` skill. These files carry the skill's
-**own** normative rules — a builder reads the matching reference below.
+**own** normative rules — read the matching reference below.
 
 ## Routing table
 
@@ -34,20 +34,6 @@ These rules are owned by sibling skills; the design-system skill defers to them:
 | Forbidden patterns (no literal colors/dp/TextStyle, no `MaterialTheme.*`, no `stringResource(R.…)`, no `ic_*` raster) | `../../validation-gates/references/forbidden-patterns.md` |
 | Stop-and-ask items (new token category, slot rename, widget removal, new font, theme wiring) | `../../validation-gates/references/when-to-stop-and-ask.md` § Design system |
 
-## Owned agents (frozen contracts)
+## Completion
 
-| Agent | Kind | Contract |
-|---|---|---|
-| `design-system-component-builder` | builder | `orchestrator/contracts/agents/design-system-component-builder.md` |
-| `resource-builder` | builder | `orchestrator/contracts/agents/resource-builder.md` |
-
-## Validators
-
-`compose-stability-validator`, `naming-convention-validator`, `anti-pattern-scanner`,
-`architecture-validator`, `build-validator` — always. Figma gates are conditional:
-`figma-spec-validator` / `figma-screenshot-validator` require at least one
-non-`none` `## Design` bullet; `figma-component-coverage` applies to
-design-system component/mapping-registry work; `figma-drift` applies only when
-a published component-drift comparison is in scope (design token AND component
-comparison are the server-run local comparators on the site's Design → Tokens /
-Design → Components tabs, not validators).
+Apply the semantic completion gate in [SKILL.md](../SKILL.md).

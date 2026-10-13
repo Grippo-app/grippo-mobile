@@ -21,7 +21,7 @@ there rather than duplicated in each recipe.
 | Compose / stability / previews / lists / modifiers | `compose-rules.md` → `base-classes.md` (§ BaseComposeScreen) |
 | Base classes (`BaseViewModel`/`BaseComponent`/`BaseComposeScreen`/models/`OperationManager`/platform helpers) | `base-classes.md` |
 | ViewModel data flow (observe vs get, `safeLaunch`) | `results.md` (§ ViewModel data flow) |
-| Analytics impact, typed VM events/operations, optional screen hook and coverage | [feature-analytics](../../feature-analytics/SKILL.md) → [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
+| Analytics impact, typed VM events/operations, mandatory independent-screen hook and coverage | [feature-analytics](../../feature-analytics/SKILL.md) → [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
 | Widgets shared across features | `module-structure.md` (§ `:compose-libs:*`) — graduate to design-system instead |
 
 ## reference files
@@ -34,7 +34,7 @@ there rather than duplicated in each recipe.
 | `results.md` | receiver-owned companion keys, serialized resultKey, sendResult → back, SharedFlow semantics/lifecycle, Action protocols, verification, ViewModel data flow |
 | `error-pipeline.md` | single error path, `ErrorProvider`/`ErrorProviderImpl` mapping, `sendError`, authoring rules, the `AppError`→`AppErrorState`→`ErrorProviderImpl` triad |
 | `process-death.md` | StateKeeper mechanism, 7 hard rules, `retainedInstance`, iOS specifics, anti-patterns |
-| `base-classes.md` | `BaseViewModel`/`BaseComponent`/`BaseComposeScreen` API + rules, marker interfaces, `OperationManager`, platform helpers, **drop-in sources** |
+| `base-classes.md` | `BaseViewModel`/`BaseComponent`/`BaseComposeScreen` API + rules, marker interfaces, `OperationManager`, platform helpers, current source ownership |
 | `state.md` | `UiText`, `*FormatState`, state conventions, sealed-interface states, no flat scalar piles, `stub*` |
 | `compose-rules.md` | stability, function/screen signatures, entity composables, side effects, modifiers, lists, Material3 wrappers, anti-patterns |
 | `module-structure.md` | `:ui-screen-features:*`/`:ui-dialog-features:*` shape + file layout, `:ui-core:*` modules, app shells, feature-to-feature anti-pattern, `:compose-libs:*` |

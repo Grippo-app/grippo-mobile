@@ -24,8 +24,9 @@ Before completing feature work:
    later steps. Inspect callbacks, initialization, Back/pop and re-entry after
    child destruction, not only serializers.
 2. Classify each meaningful field/group in the feature's existing task or coverage
-   record. User-owned nonsecret drafts MUST survive supported saved-state
-   restoration. Preserve the latest value, including invalid or explicitly empty
+   record. User-owned nonsecret screen drafts MUST survive supported saved-state
+   restoration. Live dialog sessions and their unfinished input remain unsaved;
+   accepted results are preserved by the owning screen/parent. Preserve the latest value, including invalid or explicitly empty
    input; a route seed cannot replace a saved draft. State with no editable data
    needs no extra supplier.
 3. Implement the required preservation at its existing owner using the pattern
@@ -144,3 +145,9 @@ parent exclusions. Preserve choices for known IDs, seed new IDs from the current
 business source and discard IDs absent from a nonempty current catalog. Empty
 catalog emissions must not erase the draft. Verify first-load edits, restored
 defaults, pause/resume, changed sources, empty catalogs and final requests.
+
+## Self-review
+
+Review the actual source and inventory, fix findings, then inspect the resulting diff
+again. Report the fields preserved, sources rebuilt, secret exclusions, permitted
+checks and unverified restoration scenarios without claiming runtime proof from source.

@@ -3,10 +3,7 @@ name: ui-feature
 description: Build the product UI layer of the KMP app — add a screen, sub-screen, tab, bottom-sheet dialog, picker, or modal; wire Decompose navigation (ChildStack / SlotNavigation, cross-feature jumps, deeplinks); author the seven-file MVI contract (State / Direction / Loader / Contract / ViewModel / Component / Screen); add `:ui-core:state` UI models, `*FormatState`, `stub*()` previews, and the error-pipeline triad; handle process-death restoration. Triggers on "MVI", "Compose screen", "Decompose component", "BaseViewModel", "ViewModel", "UI state", "navigation", "dialog", "feature module".
 ---
 
-Owns the UI-feature work: `screen-builder`, `dialog-builder`,
-`feature-module-scaffold-builder`, `ui-core-state-builder`, and
-`cross-feature-nav-builder`. This is the operational
-entrypoint; long normative rules live in self-contained `references/` (routed below).
+Build Grippo UI features using the current source and the topic references below.
 
 ## When to use
 
@@ -86,8 +83,7 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
 
 ## Required inputs
 
-- **Authorized task scope**; include `orchestrator/tasks/todo/TASK_*.md` only for
-  a configured orchestrator task. Ordinary feature work needs no task-board scaffold.
+- **Authorized task scope** and acceptance criteria from the user.
 - **Target module + names** — feature module, PascalCase screen/dialog name,
   serializable route payload type(s) for screens; initial payload, `title: UiText`
   and typed output callbacks for an in-memory dialog session.
@@ -96,15 +92,14 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
 - **Reusable UI models + `stub*()`** the Screen previews — MUST already exist in
   `:ui-core:state` (or run that workflow first). The owning screen's MVI State is
   created alongside its other six files, not in `:ui-core:state`.
-- **Implementation plan** (if present): its per-builder section is authoritative
-  for file list + names. Plan wins on names/paths; this skill wins on methodology.
+- **Implementation plan** (if present): its agreed file list and names constrain the change. Plan wins on names/paths; this skill wins on methodology.
 
 ## Workflow
 
 1. **Read the routing table** below for the task kind, then read those files.
    Verify each exists (`[ -f <path> ]`); if any is missing, emit
    `BLOCKED: required reading missing — <list>` and stop.
-2. **Scaffold first if the feature module doesn't exist** — create the module,
+2. **Within authorized module/navigation scope, scaffold if the feature module doesn't exist** — create the module,
    `settings.gradle.kts` include, `build.gradle.kts`, the `public` feature-root
    component (bare-name, or `<Feature>Root*` only when a sub-screen reuses the
    feature name), and the `RootRouter` entry. Then the screen work chains on.
@@ -142,7 +137,7 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    chain), never direct feature-to-feature imports. Deeplinks add the `Deeplink`
    enum entry + `RootViewModel.parseDeeplink` branch.
 6. **Apply the state-preservation gate** — all screen `*Router`/payloads `@Serializable`, no
-   lambdas in routes, state rebuilt in `init {}` via Flow re-subscription,
+   lambdas in routes, data-backed state rebuilt through existing subscriptions,
    route inputs seed ranges/filters; local StateKeeper drafts preserve the latest
    selection. Use `key = "..."` on `childStack`.
    Nonsecret editable drafts use a local Component StateKeeper supplier and
@@ -163,7 +158,7 @@ remain unchanged. Follow the linked canonical skill for schemas/DI/verification.
    Keep the coverage matrix synchronized; do not scatter event construction
    through Screens, Components, ViewModels and use cases.
 9. **Verify within the user's scope** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
-   assemble when `iosEnabled: true`). Apply the analytics skill's scoped checks,
+   assemble when the iOS platform check is authorized and available). Apply the analytics skill's scoped checks,
    DI/leaf-lifecycle checks and platform validation when analytics changes.
    Honor explicit platform/build restrictions and record unrun checks.
    Build failures in the permitted scope are yours to fix.
@@ -191,21 +186,11 @@ and present it as an existing project convention.
   → stop; needs data-layer first.
 - A referenced `<X>State` / `stub<X>()` missing in `:ui-core:state`
   → `BLOCKED: <X>State / stub<X>() missing in :ui-core:state — needs the :ui-core:state workflow first`.
-- Figma-enabled screen with a `## Design` bullet but a census component in any
-  unresolved status (`MISSING`/`INCOMPLETE`/`AMBIGUOUS`/`UNSUPPORTED`/`RETIRED`/
-  `SOURCE_STALE`) → do NOT write that screen; report `MISSING_COMPONENT` /
-  `AMBIGUOUS_COMPONENT` (orchestrator HALTs — the component must be built or its
-  mapping/inventory state resolved first).
-- Figma-enabled screen with a `## Design` bullet → **build to the pulled design, not
-  your own interpretation.** Read the pulled `orchestrator/.cache/figma/screens/<stem>/<Screen>.spec.json`
-  (element inventory, layout, paddings/gaps, radii, fills/tokens, text styles) and the
-  oracle `<Screen>.png` (appearance + which content/sections exist), and build to match;
-  seed each normal `@AppPreview` with the design's actual content, per state.
-  Follow `references/add-screen.md` and permitted manual visual review. Fix
-  design drift without adding capture sources or dependencies; record states you
-  could not render or inspect.
-- Ambiguous UI shape (mirror class, dialog payload) the task doesn't specify —
-  inventing a shape is out of scope; ask the orchestrator.
+- An unresolved product shape, navigation outcome or supplied design ambiguity:
+  ask the user a simple quiz with a recommended choice. Inspect the actual Figma
+  node or supplied artifact when design fidelity is required; do not invent its states.
+- Module/root/public-route changes outside existing authorization require a scope
+  decision. Necessary work already authorized by the user needs no repeated approval.
 
 ## References to read
 
@@ -233,29 +218,12 @@ process-death) are summarized at the foot of `references/mvi-contract.md`. The
 forbidden-patterns surface is owned by the validation-gates skill; each reference
 file restates the patterns relevant to its topic under its own "Anti-patterns".
 
-## Validators / gates
+## Completion gate
 
-The validator roster below applies to configured orchestrator tasks. Ordinary
-feature work still requires the semantic analytics/state-preservation gates and
-permitted verification, without unavailable machine reports.
-
-- `mvi-contract-validator` — seven files present, correct shapes/suffixes.
-- `compose-stability-validator` — `@Immutable`/`@Stable`, immutable collections, no `var` in state.
-- `architecture-validator` — base-class usage, no `viewModelScope`/`GlobalScope` or local catches; review the shared error pipeline and cancellation.
-- `naming-convention-validator` — State/Direction/Loader/Contract/Component/Screen naming.
-- `scope-leak-validator` — writes only files assigned in the plan section.
-- `acceptance-tracer` — every acceptance bullet traces to a touched file.
-- `build-validator` — `:androidApp:assembleDebug` (+ iOS XCFramework) green.
-- Figma-enabled: `figma-spec-validator` + permitted manual visual review.
-
-## Output contract
-
-For configured orchestrator tasks, return a builder report conforming to
-[`builder-report.md`](../../contracts/builder-report.md)
-(`agent`, `status` ∈ `done|blocked|failed|skipped`, `files_touched`,
-`produced_signatures`, `blockers`, `assumptions`, `scope_deviations`, `handoff`).
-When that configured task supplies an implementation plan, follow
-[`planner-output.md`](../../contracts/planner-output.md); its per-builder section
-is the authoritative file list and naming table. For ordinary repository tasks,
-report the behavior changed, touched files and actual verification/limitations;
-do not require unavailable orchestrator files or machine reports.
+Review the actual source/diff for the seven MVI files, correct visibility,
+State/update ownership, immutable collections, neutral UI, typed navigation/results,
+shared error handling and cancellation. Trace each acceptance criterion to its
+implementation. Apply the mandatory analytics and preservation gates before completion.
+Fix findings and review the resulting diff again. Run permitted static/manual checks
+and builds within the user's scope; report evidence and unverified runtime scenarios.
+Add no automated tests, infrastructure or production verification hooks.

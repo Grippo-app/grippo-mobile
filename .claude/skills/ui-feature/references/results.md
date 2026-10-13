@@ -149,35 +149,12 @@ Do not recreate these classes from a generic template.
 
 ---
 
-# ViewModel data flow (the layer the VM owns)
+## Data boundary for result producers and receivers
 
-```kotlin
-internal class NotesListViewModel(private val noteFeature: NoteFeature) : BaseViewModel<...>(...), NotesListContract {
-    init {
-        // Observe — Flow of domain, never blocks
-        noteFeature.observeNotes(state.value.range.from, state.value.range.to)
-            .map { it.toState() }                        // domain-to-state mapper
-            .onEach { listState -> update { it.copy(items = listState) } }
-            .safeLaunch()
-
-        // Initial fetch — Result, triggers a loader
-        safeLaunch(loader = NotesListLoader.LoadingNotes) {
-            noteFeature.getNotes(start = state.value.range.from, end = state.value.range.to).getOrThrow()
-        }
-    }
-    override fun onRangeChange(range: DateRange) {
-        update { it.copy(range = range) }
-        safeLaunch(loader = NotesListLoader.LoadingNotes) {
-            noteFeature.getNotes(start = range.from, end = range.to).getOrThrow()
-        }
-    }
-}
-```
-
-Rules at this layer (MUST):
-- The ViewModel **never** touches `<Product>Api`, `Database`, `Dao`, `Repository`. Only `<X>Feature` (interface).
-- `observe...()` returns `Flow<Domain>` — collect it inside `init { }` with `.safeLaunch()`.
-- `get...()` returns `Result<T>` — call it inside `safeLaunch(loader = ...) { ... }` with `.getOrThrow()` so errors flow through `ErrorProvider`.
-- Map domain to state via `:data-mappers:domain-to-state` (`it.toState()`).
-
----
+ViewModels consume the actual Feature/UseCase contracts, not backend/DAO/repository
+implementations. Preserve the declared error/return semantics: unwrap Result calls
+inside safeLaunch; direct-value throwing commands remain direct. Observations use
+the existing Flow.safeLaunch pipeline and may fail; navigation/result delivery
+must not manufacture success when a required operation fails.
+Business-model conversion remains in directional data-mappers. Result ownership
+and sendResult → back are independent of the business API's method naming.

@@ -174,7 +174,6 @@ Dialogs keep these typed config callbacks. Separate screen results use
 > owning-VM callbacks; dedicated dialog presentation/close tracking is a separate
 > declared scope. Schema availability does not mean automatic instrumentation.
 
-> Figma-enabled (`figmaEnabled: true`) + a `## Design` bullet: the design-cache gate applies BEFORE any file is written (see SKILL.md "Stop and ask").
 
 ### 1. Add the module to `settings.gradle.kts`
 ```kotlin
@@ -190,7 +189,6 @@ plugins {
     id("koin.annotation.convention")
 }
 kotlin {
-    android { namespace = "com.<org>.<product>.ui.dialog.features.tag.picker" }
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
@@ -205,7 +203,7 @@ kotlin {
 }
 ```
 
-### 3. Create the seven MVI files (package `com.<org>.<product>.tag.picker`)
+### 3. Create the seven MVI files (package `com.grippo.tag.picker`)
 
 `TagPickerState.kt` — `@Immutable internal data class TagPickerState(val current: String = "")`. Defaults in ctor; **no `companion object Empty` on State** (Empty belongs on Contract).
 
@@ -277,7 +275,7 @@ with `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.
 → `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding is
 `AppTokens.dp.dialog.horizontalPadding`. Include an `@AppPreview private fun
 ...Preview()` wrapped in `PreviewContainer { ... }` with `Contract.Empty`. Pick a
-real input control from `:design-system:components`/`:compose-libs` (the template
+real input control from `:design-system:components`/`:compose-libs` (the project
 uses custom `*WheelPicker`, not Material3 `Slider`). Extracted dialog UI lives in
 `components/`, one cohesive composable per file.
 

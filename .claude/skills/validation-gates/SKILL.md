@@ -1,163 +1,60 @@
 ---
 name: validation-gates
-description: >-
-  Validation and review gate for a finished task — run when you need to
-  validate, review, or gate produced code before it merges. Covers
-  architecture / MVI / DI / naming / anti-pattern / scope / acceptance /
-  build / data-layer / Compose-stability / inputs checks, the two-layer
-  machine-validator + agent-reviewer pipeline, and the reviewer-only gaps
-  that no validator catches mechanically. Use for "validate this", "review
-  before merge", "did this break an anti-pattern", "is scope leaking",
-  "trace acceptance", "reviewer-only gaps", or "run the gates".
+description: Review a Grippo change against requirements, architecture, privacy, lifecycle, analytics coverage and state preservation before completion. Use for a diff review or implementation completion; source/manual checks and authorized builds replace no semantic gate.
 ---
 
-# validation-gates
+# Validation and review
 
-Owns the VALIDATORS + reviewers and the anti-patterns rule set.
-Operational entrypoint — this skill routes, it does not redefine the gates.
+Read [project conventions](../../../CLAUDE.md), the user's accepted scope and the
+actual change set. A review needs an identifiable outcome and footprint; recover
+these from the request/source before asking for missing information.
 
-The machine-validator pipeline below applies to configured orchestrator tasks.
-For ordinary repository work, review the authorized scope against these semantic
-rules and the owning skills; run permitted checks and record unavailable/unrun
-checks. This checkout installs reference contracts, not the orchestrator runtime.
-Do not require its scaffold or report machine gates as passed without execution.
+## Mandatory review
 
-## When to use
+1. Trace each requested outcome to actual code and callers. Review happy paths,
+   rejected inputs, empty/nullable data, failure, cancellation and lifecycle edges
+   relevant to the change. Do not infer runtime success from a keyword scan.
+2. Apply [forbidden patterns](references/forbidden-patterns.md) and the owning
+   skill's semantic completion gate. Review correctness, simplicity, dependencies,
+   privacy and work done in frequently called paths.
+3. Feature behavior changes require [analytics](../feature-analytics/SKILL.md):
+   actual route/surface → Component → VM → screen identity → hook coverage, eligible
+   callbacks, complete-operation results/errors and explicit event omissions.
+   Independent screens need exactly one screenPresentation; containers keep null.
+   Missing/wrong hooks and duplicate views block completion; an omission cannot waive them.
+4. Feature changes require [preservation](../state-preservation/SKILL.md): actual
+   input/selection/filter/parent owners, saved drafts, rebuilt sources, secret/runtime
+   exclusions, fresh restoration wiring and no shadow flags/caches. Dialog sessions
+   remain unsaved; accepted results belong to the screen's draft. No-state changes
+   need an impact assessment only.
+5. UI/design work compares real consumers and declared design states through
+   [visual review](references/visual-review.md). Source compliance does not prove
+   rendered fidelity; note states/platforms that could not be inspected.
+6. Review real source/diff and run checks within the user's authorization. Builds
+   prove compilation; static checks do not prove native lifecycle, SDK delivery,
+   generated DI runtime or restoration. Do not create automated test sources,
+   dependencies or capture infrastructure without an explicit request.
 
-A task has produced code (builders ran) and must clear the gate before it is
-accepted. Use whenever you would otherwise dispatch the validator wave +
-reviewer loop, or when asked to review a diff, check an anti-pattern, trace
-acceptance criteria, or confirm scope did not leak.
+## Findings and review loop
 
-Do NOT use this skill to *write* product code — it only validates and reviews.
+Report file/line, concrete trigger, consequence and required correction. Severity:
+blocking (incorrect behavior, broken contract, privacy leak or mandatory gate),
+nonblocking suggestion, or cosmetic nit. Preserve useful evidence from multiple
+reviewers; route a shared defect once, at its highest justified severity.
 
-## Required inputs
+The author self-reviews, then a reviewer independent of that area reviews it.
+Fix blocking findings and re-review the changed area. Two rounds returning the
+same unresolved issue require a clear cause/question, not an endless retry.
+An explicit user decision to retain a known behavior closes that finding as an
+accepted risk, not a fix or PASS. Record the trigger and consequence; do not infer
+acceptance from silence or use it to waive unrelated mandatory coverage gates.
+Unavailable independent review must be disclosed; self-review never substitutes
+for it. Follow [local execution](../task-orchestrator/SKILL.md).
 
-- The task spec or authorized review scope (acceptance criteria, footprint);
-  include `task-intake` kind tags for an orchestrator task.
-- The produced change set (files touched) for the task.
-- The planner's `Behavioral edge-cases` list for an orchestrator task; otherwise
-  derive relevant checks from the authorized scope and actual source.
+## Completion record
 
-If acceptance criteria or the change set are missing, **stop** — a gate cannot
-run on an unknown footprint (fail-closed, do not pass by default).
-
-## Workflow
-
-Review coroutine changes against the [project coroutine rules](references/forbidden-patterns.md#coroutines),
-including the prohibition on adding manual `ensureActive()` checks in production.
-
-For feature behavior changes, the semantic reviewer reads
-[feature-analytics](../feature-analytics/SKILL.md) and assesses the affected coverage
-matrix against actual instrumentation and omissions. Review eligible ViewModel
-callbacks, whole-operation result/error/cancellation preservation and the shared
-foundation screen lifecycle before navigation delivery. Visual-only changes need
-an impact assessment, not new events. Use the existing reviewer gate and report.
-Apply its [mandatory screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate):
-check every screen of a new feature and every affected screen against actual
-routes/rendered surfaces and VM hooks. Missing/wrong hooks, ownerless screen enum
-entries or duplicate container/child views fail review; an omissions row cannot
-waive required screen coverage. Containers must keep default null.
-
-For new or changed features, also apply the mandatory
-[state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
-Reconcile affected fields with their owners, saved drafts, rebuilt sources and
-runtime exclusions; review fresh-component archive wiring and secret omission.
-Reject private restoration/edit flags, previous-source caches and equivalent
-shadow data in State, helpers, providers or mutable closures. Check that fresh
-form population runs once, restored Empty/null/default values survive and source
-refresh/pause/resume does not overwrite the draft. Review the actual subscription
-disconnect grace; manual lifecycle checks must wait past it before resume. See the owning skill's
-[draft policy](../state-preservation/SKILL.md#data-backed-form-synchronization).
-Follow the user's verification scope and report actual shell limitations.
-
-For a configured orchestrator task, two layers are required; neither replaces the other.
-
-1. **Machine validators** — emit `validator-finding`. The three always-on
-   validators (`build-validator`, `scope-leak-validator`, `acceptance-tracer`)
-   run on EVERY task regardless of intake. Conditional validators run when
-   their kind applies; a required conditional that does not run **must emit a
-   `skipped` finding with a `skip_reason`** — it fails closed, it does not
-   silently vanish.
-   Always-on assessment does not authorize a build: `build-validator` reviews
-   source/configuration when compilation is excluded and records compile/assemble
-   checks as unrun with that reason, without a false PASS or scaffold blocker.
-2. **Independent reviewers** — `internal-reviewer` or the official Codex plugin
-   command keep the semantic judgement. Both normalize to `reviewer-output`
-   (reviewer-agnostic). The reviewer is the pipeline's **only
-   logic-correctness gate**, and it is the only place the reviewer-only gaps are
-   enforced.
-
-Routing rules (frozen):
-- **Dedup by `(file, rule_id)`** — the same call site from two validators counts
-  as one. Known duplicate-finding cases are listed in the gap register and are
-  intentionally kept (parity), not collapsed.
-- `suggestion_only` / advisory findings are not routed as blocking; high-severity
-  = `Critical|Major` (validators) / `Blocker|Critical|Major` per finding severity.
-- **A missing required report fails the gate.**
-- **Keep reviewer-only checks explicit.** This checkout's applicable rules are
-  flagged in [forbidden-patterns.md](references/forbidden-patterns.md) and the
-  owning skills. A configured orchestrator additionally requires its
-  `orchestrator/skills/_index/known-gaps.md` register; verify that input exists.
-
-## Stop and ask
-
-- A required conditional validator cannot run and you cannot determine its
-  `skip_reason` — stop, do not pass.
-- A finding implies a breaking API/enum change, a deletion/relocation, or a
-  build-config change — escalate (see `references/when-to-stop-and-ask.md`).
-- The reviewer reports a logic-correctness defect the builders cannot self-route.
-
-## References to read
-
-This skill carries its OWN core validator rules. Integration validators and
-feature-specific semantic review also defer to the owning skill references below.
-
-- Reference routing (validator/topic → file): `references/index.md`.
-- Anti-patterns reference (owned; routing target for `anti-pattern-scanner` and the
-  reviewer): `references/forbidden-patterns.md`.
-- Feature behavior analytics impact, coverage and semantic checks:
-  [feature-analytics](../feature-analytics/SKILL.md).
-- Stop-and-ask escalation points (owned; for `scope-leak-validator` + reviewer):
-  `references/when-to-stop-and-ask.md`.
-- Review/verify gate selectors (`codexEnabled` / `verifyEnabled`):
-  `references/config-gates.md`.
-- Permitted visual review of previews/app screenshots:
-  `references/visual-review.md`.
-- Configured source/spec comparison (`figma-spec-validator` procedure and its
-  `spec-<stem>.json` report): `references/spec-fidelity-gate.md`.
-- Reviewer-only rules in `references/forbidden-patterns.md` and owning skills;
-  configured orchestrator tasks also require their `known-gaps.md` register.
-- Per-validator frozen contracts: `orchestrator/contracts/agents/<validator>.md`.
-
-## Validators / gates
-
-Always-on (every task): `build-validator`, `scope-leak-validator`,
-`acceptance-tracer`.
-
-Pre-flight (every task, Step 1a — not conditional): `inputs-resolver`.
-
-Conditional (run when the intake kind applies, fail-closed on skip):
-`architecture-validator`, `mvi-contract-validator`, `di-validator`,
-`data-layer-validator`, `compose-stability-validator`,
-`naming-convention-validator`, `anti-pattern-scanner`,
-`figma-component-coverage`, `figma-drift`, `figma-spec-validator`
-(`figmaEnabled` + non-`none` `## Design`; runs the machine baseline and authors
-its source/spec report via `write-spec-report.mjs`
-— see `references/spec-fidelity-gate.md`), `figma-screenshot-validator`
-(`figmaEnabled` + ANY non-`none` `## Design` bullet — any kind
-(screen/dialog/component/overlay); inspect permitted rendered/design inputs and
-record unavailable runtime checks
-— see `references/visual-review.md`), `backend-contract-drift`.
-
-Reviewer gate (semantic, logic-correctness, reviewer-only gaps):
-`internal-reviewer` or `Skill(skill: "codex:review", args: "--wait --scope working-tree")`.
-
-## Output contract
-
-- Machine validators → `orchestrator/contracts/validator-finding.md`.
-- Acceptance tracer transient per-bullet report →
-  `orchestrator/contracts/acceptance-tracer-report.md`.
-- Validator-invocation envelope (which ran / were expected, fail-closed) →
-  `orchestrator/contracts/validation-run.md`.
-- Reviewers → `orchestrator/contracts/reviewer-output.md`.
+Record reviewed scope, unresolved findings, actual checks/results and unverified
+runtime/platform behavior. No missing input or unrun check is a PASS. An unavailable
+runtime/build check alone does not block completion after the required source gate,
+provided its limitation is explicit and no unaccepted source defect remains.
+For scope decisions use [when to ask](references/when-to-stop-and-ask.md).

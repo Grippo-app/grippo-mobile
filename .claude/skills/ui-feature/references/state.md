@@ -53,7 +53,7 @@ Usage in state: `val title: UiText = UiText.Res(Res.string.foo)`; with args `UiT
 
 - `String` in state for localizable values.
 - Pre-resolving `UiText` at VM construction by injecting `StringProvider` (pass it raw; let the UI resolve — exception: when it crosses a boundary like a notification).
-- `UiText.Res(Res.string.foo, listOf(arg))` — `listOf` is mutable; use `persistentListOf`.
+- `UiText.Res(Res.string.foo, listOf(arg))` — regular List does not guarantee deep immutability; use `persistentListOf`.
 - `uiText.text(stringProvider)` from a `@Composable` — use the `@Composable` `text()`.
 - `UiText.Str` for a localized `strings.xml` value — use `UiText.Res`.
 - Wrapping a `String?` as `UiText.Str(it)` — use `UiText?` and null-check at render.
@@ -145,9 +145,9 @@ Rules (MUST):
 4. **Default ctor values for every property** — `FooState()` is the initial state for `BaseViewModel(FooState())` and previews. No `companion object Empty` (the companion stays for thresholds/derived helpers/shared constants only).
 5. **Field order**: required first, optional last; primitives last (or grouped by domain).
 
-**Goes in state**: display values; form-field values as `*FormatState`; filter/pagination state; derived display flags the UI doesn't compute; sub-states.
+**Goes in state**: display values; form-field values as `*FormatState`; filter/pagination state; business validation/eligibility; sub-states.
 
-**Does NOT go in state**: domain objects directly when a transformed representation is needed (map via `:data-mappers:domain-to-state`); loaders (use `loaders` on the VM); computed booleans derivable from other state (use `remember(...)` in the Composable); unchanging configuration (companion/`val`).
+**Does NOT go in state**: domain objects directly when a transformed representation is needed (map via `:data-mappers:domain-to-state`); loaders (use `loaders` on the VM); pure presentation booleans derivable from other state (compute in the Composable; business decisions remain VM/domain-owned); unchanging configuration (companion/`val`).
 
 State must not hide restoration/edit flags or previous-source copies removed from
 the ViewModel. Store actual draft values and needed display data; follow the
@@ -173,7 +173,7 @@ be serializable:
 - Primitives, `String`, `enum` — natively `@Serializable`.
 - `LocalDateTime` / `LocalDate` / `Duration` — covered by `kotlinx-serialization` + `kotlinx-datetime`.
 - `DateRange` / `*FormatState` — declared `@Serializable` in `:toolkit:date-utils` / `:ui-core:state`.
-- `ImmutableList<T>` — the project's custom `ImmutableListSerializer` (in `:ui-core:state`), opted in per field: `@Serializable(with = ImmutableListSerializer::class)`. No `ImmutableMap` serializer ships; model a map as a list of records or a regular `Map`.
+- `ImmutableList<T>` — the project's custom `ImmutableListSerializer` (in `:ui-core:state`), opted in per field: `@Serializable(with = ImmutableListSerializer::class)`. No `ImmutableMap` serializer ships; model persisted entries as an immutable list of serializable records. Do not put regular Map in immutable State.
 - `UiText` — `@Stable` only, **not** `@Serializable`. Do not put it in a serialized router payload; store a serializable identifier or a plain `String`. It is allowed in live dialog configs.
 
 If state crosses no serialization boundary (lives in the VM, rebuilt from data

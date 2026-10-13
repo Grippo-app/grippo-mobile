@@ -198,7 +198,7 @@ buttons (see `BottomSheetToolbar`).
 
 ## `Input` family
 
-This template specializes the family per domain rather than offering a generic
+Grippo specializes the family per domain rather than offering a generic
 `InputText` — required infrastructure variants (`InputEmail`, `InputPassword`, `InputName`,
 `InputDate`) plus product-specific ones (`InputAmount`, `InputSearch`, `InputToken`, and any
 `<Domain>` extras the product needs). Each:
@@ -347,7 +347,7 @@ the base `Chip(...)`.
 
 ## Selectable cards
 
-This template splits this into two siblings rather than a single `SelectableCard`:
+Grippo splits this into two siblings rather than a single `SelectableCard`:
 
 - **`CheckSelectableCard`** — checkmark-style selection (`Large` / `Medium` / `Small` size
   variants under `cards/selectable/`). Used in lists where the user picks one or more
@@ -362,7 +362,7 @@ Each entry point delegates to an internal per-size implementation (`CheckSelecta
 ## `Toggle`
 
 Custom toggle / switch primitive (`Toggle.kt`), themed via `AppTokens.colors.toggle.*` and
-sized via `AppTokens.dp.toggle.*`. This template does not ship general-purpose `Switch`,
+sized via `AppTokens.dp.toggle.*`. Grippo does not ship general-purpose `Switch`,
 `Checkbox`, or `RadioGroup` composables — Material3 primitives are not re-exported as
 design-system entries. When a "checkbox" feel is needed, prefer `CheckSelectableCard`; when a
 "switch" feel is needed, prefer `ToggleSelectableCard` or `Toggle`.
@@ -371,13 +371,11 @@ design-system entries. When a "checkbox" feel is needed, prefer `CheckSelectable
 
 - **Read `AppTokens` for visual values**, or take them as parameters if the component is in
   `:compose-libs:*`.
-- **Annotate every input type and enum for Compose stability.** `@Stable` is the baseline
-  (always correct, and what the shared primitives use); use `@Immutable` only for
+- **Annotate every input type and enum for Compose stability.** Use `@Stable` only when its contract is satisfied; use `@Immutable` only for
   deeply-immutable data (all `val`, no lambdas or mutable state). A type that carries a
   lambda or `@Composable` slot — e.g. `ChipTrailing.Content`, `ChipStyle.Clickable` — must
-  be `@Stable`, never `@Immutable`. (This template's `Toolbar.kt` predates this rule and
-  still marks `Leading.Back`/`Leading.Profile` `@Immutable` — follow the rule and the
-  `Chip.kt` convention, not that file.)
+  be `@Stable`, never `@Immutable`. Current `Toolbar.Leading.Back` and
+  `Toolbar.Leading.Profile` already follow this convention.
 - **Names are nouns** (`Toolbar`, `Button`, `Chip`) — not verbs or adjectives.
 - **One file per component** (with related types in the same file: `Toolbar.kt` contains
   `Toolbar`, `ToolbarStyle`, `Leading`).
@@ -387,14 +385,14 @@ design-system entries. When a "checkbox" feel is needed, prefer `CheckSelectable
   tabs), `row/` (list-style rows), `indicator/` (badge, page indicator, step bar), `text/`
   (inline rich text). The `package` declaration matches the directory (directory = package —
   see `packages.md`), e.g. `navigation/Toolbar.kt` declares
-  `package com.<org>.<product>.design.components.navigation`. A new widget goes in the
+  `package com.grippo.design.components.navigation`. A new widget goes in the
   matching category; add a new category sub-package only when the widget fits none of the
   existing ones.
 - **Public API only** — every component is `public`. The implementation may have `private`
   helpers in the same file.
 - **At least one `@AppPreview`** below each component.
 - **`modifier: Modifier = Modifier` is the first parameter** of every public composable in
-  this module (the template's convention diverges from the official Compose guideline
+  this module (the project's convention diverges from the official Compose guideline
   of "modifier after required inputs"). Required content / state inputs follow. **The one
   exception is `Toggle`**, where `modifier` trails `onCheckedChange` — a known outlier, not a
   pattern to copy (see `../../ui-feature/references/compose-rules.md`

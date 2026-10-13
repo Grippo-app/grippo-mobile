@@ -183,7 +183,8 @@ local catch, second launch, extra loader or recovery wrapper.
 
 The pipeline shows the error and runs `onError` after dialog dismissal. It does
 not automatically retry or resume the failed block. Infrastructure retries with
-backoff and attempt limits belong in the Repository (`TokenProvider.retryWithBackoff`).
+backoff and attempt limits stay in their existing owning layer (for example the
+backend TokenProvider), rather than becoming a ViewModel recovery loop.
 A feature may explicitly continue or retry its business operation from `onError`
 after the user dismisses the dialog. Relaunch the complete required sequence through
 `safeLaunch` in the existing ViewModel scope; do not add a new scope, a retry loop
@@ -193,7 +194,7 @@ before dismissal or an analytics retry policy.
 
 - **Local catches that hide or present failures** — use `getOrThrow()` and the shared pipeline, including private suspend helpers; no suppression or extra launch.
 - **`Result.getOrNull()` in ViewModel** without handling `null` — silently drops failures.
-- **Returning `Result<T>` from a Feature observation** — observation must always succeed (cached data); errors are values for mutations only.
+- **Adding Flow<Result<T>> for ordinary cached observations** instead of preserving Flow<Domain>. Observation failures still propagate through Flow.safeLaunch; cached data does not guarantee a successful stream.
 - **Showing custom error dialogs** — use `DialogConfig.ErrorDisplay` via the pipeline.
 - **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it.
 - **Recording an exception to Firebase manually** from a ViewModel — the pipeline does this; duplicates inflate Crashlytics.

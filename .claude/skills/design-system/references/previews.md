@@ -1,215 +1,25 @@
-# `@AppPreview` and `PreviewContainer`
+# AppPreview and PreviewContainer
 
-Every Screen and every reusable Composable has a preview directly below its definition. Two
-helpers make previews concise and consistent:
+Use the existing [preview helpers](../../../../design-system/preview/src/commonMain/kotlin/com/grippo/design.preview/Preview.kt),
+not copied annotation/theme/Coil implementations. AppPreview supplies the current
+phone/locale configurations; PreviewContainer owns preview tokens/theme and image
+handling. Inspect its real signature before choosing an additional theme/config.
 
-- **`@AppPreview`** — a multi-preview annotation that expands to two `@Preview`
-  configurations (small phone in a non-default locale + big phone in `en`).
-- **`PreviewContainer { ... }`** — wraps preview content in `AppTheme(darkTheme = true)`, a
-  Coil image preview handler, and a padded `Column`.
+- A changed/new screen or widget has at least one private named AppPreview in its
+  file, inside PreviewContainer. Screens/dialogs use Contract.Empty; widgets use
+  lightweight parameters and existing stub data, never a live ViewModel/Koin.
+- Cover meaningful empty/loading/content/error/selection variants relevant to the
+  change. Start from existing ui-core state stubs and explicitly override the facts
+  that distinguish the variant; keep compared IDs/dates/set counts deterministic.
+- Do not add fictional AppPreviewLight/Tablet APIs, a source opt-in already covered
+  by conventions or a duplicate provider. New preview facilities need a real
+  requested use case, not a generic template suggestion.
+- Component previews alone do not establish whole-screen visual quality. Inspect
+  consumers, layout/insets, enlarged fonts and declared themes/locale states when
+  rendering is permitted; do not infer visual success from compilation.
+- Use actual supplied design content for fidelity comparisons. Record unrendered
+  states and unavailable platform/runtime inputs. Do not add capture automation,
+  test sources/dependencies or production verification hooks.
 
-Both live in `:design-system:preview`. Use these normal helpers for IDE inspection.
-
-## `@AppPreview` annotation
-
-```kotlin
-@Preview(
-    name = "Phone • <locale> • Small",
-    group = "📱 Phone",
-    widthDp = 360, heightDp = 800,
-    locale = "<locale>",
-)
-@Preview(
-    name = "Phone • EN • Big",
-    group = "📱 Phone",
-    widthDp = 412, heightDp = 915,
-    locale = "en",
-)
-public annotation class AppPreview
-```
-
-Applied to a `private @Composable fun ...Preview()`:
-
-- **Two configurations** — a smaller non-default-locale device and a larger EN device —
-  catch issues with localization (longer strings in some languages) and density (narrow vs
-  wide screens).
-- **Grouped** under "📱 Phone" for IDE filtering.
-- **No light/dark split** by default — `PreviewContainer` is dark-themed; if a screen needs
-  a light variant, add a separate `@AppPreviewLight` annotation or pass a parameter.
-
-For tablet or landscape previews, define additional multi-previews (`@AppPreviewTablet`,
-`@AppPreviewLandscape`) following the same pattern.
-
-## `PreviewContainer` composable
-
-```kotlin
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-public fun PreviewContainer(
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    val previewHandler = AsyncImagePreviewHandler {
-        ColorImage(Color.Black.copy(alpha = 0.2f).toArgb())
-    }
-
-    CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
-        Column {
-            AppTheme(darkTheme = true, localeTag = "en") {
-                Column(
-                    modifier = Modifier
-                        .background(Color.Black)
-                        .padding(12.dp),
-                    content = content,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                )
-            }
-        }
-    }
-}
-```
-
-What it provides:
-
-- **`AppTheme(darkTheme = true, localeTag = "en")`** — uniform theme + locale for all
-  previews.
-- **`AsyncImagePreviewHandler`** — Coil image previews render a fallback color instead of
-  trying to fetch from network in the IDE.
-- **Padded `Column`** — visual breathing room for nested content.
-- **Black background** — matches the dark-theme screen background.
-
-## Usage pattern
-
-```kotlin
-@Composable
-internal fun NoteDetailScreen(
-    state: NoteDetailState,
-    loaders: ImmutableSet<NoteDetailLoader>,
-    contract: NoteDetailContract,
-) {
-    BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.screen)) {
-        // ... real content
-    }
-}
-
-@AppPreview
-@Composable
-private fun NoteDetailScreenPreview() {
-    PreviewContainer {
-        NoteDetailScreen(
-            state = NoteDetailState(
-                amount = AmountFormatState.of(value = 72.0, unit = "unit"),
-                notes = stubNotes(),
-                user = stubUser(),
-            ),
-            loaders = persistentSetOf(),
-            contract = NoteDetailContract.Empty,
-        )
-    }
-}
-```
-
-## Usage rules
-
-- **Preview function is `private`**, named `<ScreenName>Preview` (matches the screen).
-- **Lives in the same file** as the screen.
-- **Uses stub data** from `:ui-core:state` (`stubNotes()`, `stubUser()`, ...).
-- **Uses `Contract.Empty`** for the contract argument.
-- **One preview per Composable**. Multiple variants get multiple `*Preview` functions
-  (`...EmptyStatePreview()`, `...LoadingPreview()`).
-
-Every component has **≥1 `@AppPreview`** covering the default state, inside
-`PreviewContainer`, using explicit stub inputs, `private`. `Contract.Empty` is
-for screen/dialog previews; design-system components do not have MVI contracts.
-
-## Stub data
-
-Stubs live in `:ui-core:state` next to the corresponding State class:
-
-```kotlin
-// :ui-core:state/.../NoteState.kt
-public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
-    NoteState(id = "n1", date = LocalDate(2026, 1, 1), title = "First note"),
-    NoteState(id = "n2", date = LocalDate(2026, 1, 8), title = "Second note"),
-    NoteState(id = "n3", date = LocalDate(2026, 1, 15), title = "Third note"),
-)
-
-// stubUser() lives next to User-related state
-public fun stubUser(): UserState = UserState(
-    id = "preview-user",
-    name = "Alex",
-    email = "alex@example.com",
-    avatarUrl = null,
-)
-```
-
-Single source of realistic preview data: all previews use the same stubs.
-
-## Why dark by default
-
-The product's primary identity in the reference is dark-themed. Light theme has fewer
-surfaces and edge cases — previewing dark catches more issues.
-
-For light-theme previews, add a `@AppPreviewLight` annotation or a per-screen light variant:
-
-```kotlin
-@AppPreview
-@Composable
-private fun FooScreenPreview() {
-    PreviewContainer { FooScreen(...) }
-}
-
-@Preview(name = "Phone • EN • Light", widthDp = 412, heightDp = 915, locale = "en")
-@Composable
-private fun FooScreenLightPreview() {
-    Column(Modifier.background(Color.White).padding(12.dp)) {
-        AppTheme(darkTheme = false, localeTag = "en") {
-            FooScreen(...)
-        }
-    }
-}
-```
-
-## Coil preview handler
-
-Coil's `AsyncImagePreviewHandler` resolves all `AsyncImage(...)` calls to a fixed color in
-previews. Without it, Coil would try to load from network in the IDE — slow and unreliable.
-
-The handler returns a translucent black square. For richer previews (a real avatar), pass an
-explicit `ContentScale.Fit` `painter` to the Composable instead of relying on `AsyncImage`.
-
-## Visual review
-
-Use normal `@AppPreview` states and preview containers for IDE inspection. For a
-Figma-backed change, seed actual design content and choose the relevant theme,
-locale and dimensions. Compare a permitted rendered preview or app screenshot
-with the design; record states you could not inspect. Follow the
-[visual review reference](../../validation-gates/references/visual-review.md).
-Do not introduce special capture wrappers or recording infrastructure.
-
-## Anti-patterns
-
-- **Plain `@Preview`** without `@AppPreview`. Single-config previews miss density/locale
-  issues.
-- **Preview without `PreviewContainer`**. Missing tokens
-  (`AppTokens.colors.background.screen` is null) — screen renders blank.
-- **Constructing stub data inline in the preview** — copy-paste of stub values across
-  previews diverges.
-- **Calling a real `ViewModel`** in a preview. Screen/dialog previews must use
-  `Contract.Empty`; component previews use lightweight inline stub inputs.
-  ViewModels need Koin, which isn't available in previews.
-- **Preview function `public`**. Previews are file-local; `private`.
-- **Preview takes parameters.** Compose previews don't support parameters (use
-  `@PreviewParameter` if absolutely needed, but prefer multiple `*Preview` functions).
-
-## Preview state examples and whole-screen review
-
-For meaningful variants, start from an existing stub and explicitly override
-the fields that determine the state. Keep compared names, values, dates and
-set counts deterministic; random stubs alone cannot reliably demonstrate a
-preset, partially completed or completed exercise. Use a small file-local
-preview-data helper when several previews repeat the same setup.
-
-A component preview checks its own rendering. It does not demonstrate harmony
-with a toolbar, adjacent cards or a pinned action. For changes to shared card
-layout, follow [visual-consistency.md](visual-consistency.md) and inspect the
-whole-screen consumers as well.
+Follow [visual review](../../validation-gates/references/visual-review.md) and
+[visual consistency](visual-consistency.md) for affected whole-screen consumers.

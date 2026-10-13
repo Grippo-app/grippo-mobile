@@ -10,12 +10,12 @@ All resource files live in `:design-system:resources:provider/src/commonMain/com
   src/commonMain/composeResources/
     values/strings.xml              # default (English)
     values-<locale>/strings.xml     # one folder per non-default locale
-    drawable/                       # raster (.webp) / vector drawables
-    font/                           # font files (<typeface> variants)
+    drawable/                       # raster imagery (.webp; justified PNG)
+    font/                           # font files (manrope variants)
 ```
 
 The Compose Resources plugin generates a `Res` object at build time. Resources are accessed
-as `Res.string.<key>`, `Res.drawable.<key>`, `Res.font.<key>`. This template does not
+as `Res.string.<key>`, `Res.drawable.<key>`, `Res.font.<key>`. Grippo does not
 currently ship a `values/plurals.xml` — add one (with matching `values-<locale>/plurals.xml`
 per locale) only when a feature actually needs plural-aware strings.
 
@@ -31,7 +31,7 @@ kotlin {
 ```
 
 This is mandatory, not optional. With AGP 9 and the `com.android.kotlin.multiplatform.library`
-plugin (this template's KMP Android plugin), Compose Resources' `CopyResourcesToAndroidAssetsTask`
+plugin (Grippo's KMP Android plugin), Compose Resources' `CopyResourcesToAndroidAssetsTask`
 is **silently skipped** unless Android resources are enabled on the module: the generated
 `composeResources` (`.cvr`) assets are never copied into Android assets, never reach the
 APK, and the app crashes at runtime with
@@ -94,7 +94,7 @@ stabilizes.
 
 ## `plurals.xml`
 
-Not present in the template yet. When a plural-aware string is needed, add
+Not present in the project yet. When a plural-aware string is needed, add
 `values/plurals.xml` (and a matching variant in every `values-XX/`) following the standard
 Compose Resources / Android shape:
 
@@ -120,8 +120,8 @@ Access (once a plural is defined):
 // VM
 val message = stringProvider.plural(Res.plurals.notes_count, count, count)
 
-// Composable
-val message = pluralStringResource(Res.plurals.notes_count, count, count)
+// AppString has no plural accessor yet. Add it for this real requirement,
+// then call it through AppTokens; do not bypass the facade.
 ```
 
 `StringProvider.plural(...)` is already declared in `:design-system:resources:provider`
@@ -138,7 +138,7 @@ soon as the XML is added.
       tag_badge.webp
       empty_state.webp
       welcome_hero.webp
-      // ... add vector / .xml drawables here if needed
+      // UI icons live in AppIcon extension files
 ```
 
 ### Conventions
@@ -146,11 +146,10 @@ soon as the XML is added.
 - **`snake_case` bare nouns** (`note_thumbnail`, `tag_badge`, `empty_state`). Drawables
   stay suffix-less because line-art **icons** live as `ImageVector`
   extension properties under `icons/` (see `accessors.md`), so the `drawable/` bucket is
-  reserved for raster product imagery and decorative illustrations. Add an `img_*` / `bg_*`
-  prefix only if a real naming collision appears.
-- **`.webp` is the default** raster format in the template — small payload, good
-  quality. Use SVG / vector `.xml` when an asset needs to scale crisply; use PNG only when
-  its lossless encoding is required.
+  reserved for raster product imagery and decorative illustrations. Resolve naming
+  collisions with a more descriptive noun, not an `img_*` / `bg_*` prefix.
+- **WebP is the default** raster format. PNG needs a documented lossless/tooling
+  reason. UI icons use ImageVector extensions on AppIcon.
 - **One file per resource.** No sprite sheets.
 
 Access:
@@ -175,16 +174,16 @@ Icon(
 :design-system:resources:provider/
   src/commonMain/composeResources/
     font/
-      <typeface>_regular.ttf
-      <typeface>_medium.ttf
-      <typeface>_semi_bold.ttf
-      <typeface>_bold.ttf
-      <typeface>_extra_bold.ttf
-      <typeface>_light.ttf
-      <typeface>_extra_light.ttf
+      manrope_regular.ttf
+      manrope_medium.ttf
+      manrope_semi_bold.ttf
+      manrope_bold.ttf
+      manrope_extra_bold.ttf
+      manrope_light.ttf
+      manrope_extra_light.ttf
 ```
 
-Wired into `AppTypography` via `<typeface>()` helper. See `typography.md`.
+Wired into `AppTypography` via `manrope()` helper. See `typography.md`.
 
 ## Why everything in one module
 

@@ -81,7 +81,7 @@ Groups:
 ### `:data-features:*` — domain layer
 
 - `:feature-api` — `*Feature` interfaces + `*UseCase` classes + domain models. **Only this** is visible to UI modules.
-- Implementations: `:trainings`, `:user`, `:weight-history`, `:goal`, `:muscle`, `:equipment`, `:exercise-examples`, `:exercise-metrics`, `:excluded-muscles`, `:excluded-equipments`, `:authorization`, `:local-settings`. Each has its own Koin `*FeatureModule(includes = [BackendModule, DatabaseModule])`. Inside: `data/<X>RepositoryImpl` + `domain/<X>Repository` + `domain/<X>FeatureImpl`. Repository — `@Single(binds = [<X>Repository::class])`, FeatureImpl — `@Single(binds = [<X>Feature::class])`. Repository **internal**, Feature **public**.
+- Implementations: `:trainings`, `:user`, `:weight-history`, `:goal`, `:muscle`, `:equipment`, `:exercise-examples`, `:exercise-metrics`, `:excluded-muscles`, `:excluded-equipments`, `:authorization`, `:local-settings`. Each has its own Koin `*FeatureModule` including only the actual service dependencies (Backend/Database for API-backed features, DataStore for local settings). Inside: `data/<X>RepositoryImpl` + `domain/<X>Repository` + `domain/<X>FeatureImpl`. Repository — `@Single(binds = [<X>Repository::class])`, FeatureImpl — `@Single(binds = [<X>Feature::class])`. Repository and FeatureImpl **internal**; Feature interface **public**.
 
 ### `:data-mappers:*` — directional mappers
 
@@ -91,7 +91,7 @@ Groups:
 
 - `:analytics:analytics-api` defines one stateless `<Feature>Analytics` service with typed `trackEvent`, complete generic `trackOperation` and typed `presentScreen` as implemented by the current scope. Screen-only integration exposes presentScreen and its enum; event/operation APIs and models accompany actual instrumentation, with no empty scaffolding. Sibling `models/` hold closed event/operation families, screens and necessary feature enums; common/models reuses InputStatus/InputKeyboardAction/ControlAction. Public feature events are observations, not toolkit wire events. `:analytics:<feature>` keeps implementation/encoding/schema matrices internal and exposes one annotated module. UI main depends on the API; shared wires implementations. No feature analytics factories, snapshots, classifiers or capability hierarchy; no UI/domain/service/SDK dependencies in implementations.
 - Analytics decorates complete business operations. It does not determine navigation, fallback or results; login/register keep preparation private. Route identity types remain navigation-owned and do not enter the stateless analytics service. Ordinary reporting exceptions cannot block business work/navigation/lifecycle; caller cancellation and fatal Errors remain unchanged.
-- Feature analytics lives in ViewModels: inject the stateless service as `analytics` inside the Component's normal retainedInstance construction. Every independent screen must override protected BaseViewModel.screenPresentation `(NavigationReason) -> ScreenPresentation`; BaseComponent calls internal VM.bindScreen(lifecycle) during existing doOnCreate after obtaining the retained VM. Foundation ScreenAnalytics owns Initial/Restore and pause/destroy close. Graph/container VMs must keep the default null hook: no binding or lifecycle service resolution. Components/routes/factories/Render add no analytics parameters, events or lifecycle wiring; UI analytics/ retains only needed input mapping. Keep normal VM lifecycle ownership and no analytics state/retention keys. Text status uses existing old/new validation, without a cache. Follow [feature-standard](tasks/analytics/feature-standard.md) and [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep actual coverage and event omissions current. Before completion apply the canonical screen coverage gate to every screen of a new feature and every affected screen; missing hooks or duplicate container/child views block completion.
+- Feature analytics lives in ViewModels: inject the stateless service as `analytics` inside the Component's normal retainedInstance construction. Every independent screen must override protected BaseViewModel.screenPresentation `(NavigationReason) -> ScreenPresentation`; BaseComponent calls internal VM.bindScreen(lifecycle) during existing doOnCreate after obtaining the retained VM. Foundation ScreenAnalytics owns Initial/Restore and pause/destroy close. Graph/container VMs must keep the default null hook: no binding or lifecycle service resolution. Components/routes/factories/Render add no analytics parameters, events or lifecycle wiring; UI analytics/ retains only needed input mapping. Keep normal VM lifecycle ownership and no analytics state/retention keys. Text status uses existing old/new validation, without a cache. Follow the [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep actual coverage and event omissions current. Before completion apply the canonical screen coverage gate to every screen of a new feature and every affected screen; missing hooks or duplicate container/child views block completion.
 
 ### `:toolkit:*` — platform-aware utilities
 
@@ -172,7 +172,7 @@ A module-level `build.gradle.kts` contains **only** `plugins { id("...convention
 | KMP module with Compose UI | `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention` |
 | Module with Koin DI | + `koin.annotation.convention` |
 | `:data-services:database` | + `room.convention` (KSP + Room compiler for all iOS targets) |
-| `:shared` | all four: `android.library.convention` + `kotlin.multiplatform.convention` + `ios.swiftpackage.convention` + `compose.multiplatform.convention` + `koin.annotation.convention` |
+| `:shared` | all five: `android.library.convention` + `kotlin.multiplatform.convention` + `ios.swiftpackage.convention` + `compose.multiplatform.convention` + `koin.annotation.convention` |
 
 What each does:
 
@@ -186,7 +186,7 @@ What each does:
 
 Additional global settings (`gradle.properties`):
 
-- `kotlin.native.binary.gc=cms` — concurrent mark+sweep GC, reduces stop-the-world pauses on iOS.
+- `kotlin.native.binary.gc=cms` is commented out; no explicit collector override is active.
 - `kotlin.native.binary.smallBinary=true` — smaller iOS frameworks.
 - `org.gradle.workers.max=1` — peak memory during native release linking.
 - `kotlin.daemon.jvmargs=-Xmx2g`, `kotlin.native.jvmArgs=-Xmx6g`, `org.gradle.jvmargs=-Xmx8g`.
@@ -442,27 +442,17 @@ Standard patterns:
 
 `GrippoApi` — flat class, **one method per endpoint**, sections marked with `/* * * * * Auth service * * * * */` comments:
 
-```kotlin
-@Single
-public class GrippoApi internal constructor(private val client: BackendClient) {
+Use the actual flat API in
+`data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/GrippoApi.kt`.
+Each endpoint returns its existing `Result<T>`; cancellation propagates rather
+than becoming `Result.failure`. At a suspend Result boundary, rethrow
+`CancellationException` and preserve ordinary exceptions as the caller's failure.
 
-    public suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>> =
-        request(method = HttpMethod.Get, path = "/trainings",
-            queryParams = mapOf("start" to start, "end" to end))
-
-    private suspend inline fun <reified T> request(
-        method: HttpMethod, path: String,
-        body: Any? = null, queryParams: Map<String, String>? = null,
-    ): Result<T> = runCatching {
-        client.invoke(method, path, body, queryParams).body()
-    }
-}
-```
 
 `BackendClient` (Ktor):
 - `defaultRequest`: `host = "grippo-app.com"`, `URLProtocol.HTTPS`, JSON content type, **`Accept-Language = AppLocale.current()`** on every request.
 - `HttpTimeout`: 10s (request, connect, socket).
-- `Logging` plugin (`LogLevel.ALL`, custom `ClientLogger`).
+- `Logging` uses `LogLevel.INFO`, custom `ClientLogger`, and excludes `/auth/` requests. Never log credentials, headers or bodies on auth traffic; any custom auth metadata is limited to method/path/status.
 - `Auth` plugin with custom `TokenProvider : AuthProvider`.
 - `withContext(Dispatchers.IO)` wraps every `invoke`.
 
@@ -473,7 +463,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
 - If backend returns 401 on refresh → `RefreshUnauthorizedException` → tokens are deleted from DB (`tokenDao.delete(userId)`) → `RootViewModel.authorizationFeature.getToken()` will see `null` and call `navigateTo(RootDirection.Login)`.
 - `retryWithBackoff(maxAttempts = 3, initialDelay = 500ms, factor = 2.0)` for transient errors (but not for `RefreshUnauthorizedException`).
 
-DTOs: `package com.grippo.services.backend.dto.<area>`, file `*Response.kt` or `*Body.kt`, `@Serializable data class` with all fields `@SerialName` and **nullable + default `= null`** (defense against partial responses).
+DTOs: `package com.grippo.services.backend.dto.<area>`, file `*Response.kt` or `*Body.kt`, `@Serializable data class` with every field `@SerialName` and **nullable + default `= null`**, including request bodies and collections. Request construction still supplies required business values; this defensive Kotlin shape does not make API-required fields optional.
 
 ### Database layer
 
@@ -631,7 +621,7 @@ Compose Multiplatform Resources in `:design-system:resources:provider`:
 
 - Strings — `commonMain/composeResources/values/strings.xml` (en) + `values-uk/`, `values-ru/` for localizations. Access — `Res.string.<key>`.
 - Drawables — `commonMain/composeResources/drawable/`. Access — `Res.drawable.<key>`.
-- Plurals — `commonMain/composeResources/values/plurals.xml`. Access — `Res.plurals.<key>`.
+- No plural resource/accessor exists currently. When needed, add localized plural resources and a real AppTokens/StringProvider wrapper; never document an invented API as available.
 - All keys — `snake_case`, descriptive (`registration_title`, not `title1`).
 - Changing Accept-Language on backend ⇒ changing `AppLocale.current` locally (`AppLocale.current` and `AppTheme.current` — expect/actual `@Composable` functions; in `RootScreen` they switch `AppTheme(darkTheme, localeTag)` and trigger `DateFormatting.install(systemLocaleTag)`).
 
@@ -754,7 +744,7 @@ init {
   subscriptions/requests directly; a startup operation reused after error-dialog
   dismissal belongs in a private class-level method, called from `init` and
   `onError`, rather than duplicated or declared locally.
-- Coroutines — **only** `safeLaunch` / `Flow.safeLaunch`. No `viewModelScope.launch`, `runBlocking`, `GlobalScope`.
+- ViewModel coroutine launches — **only** `safeLaunch` / `Flow.safeLaunch`. Toolkit/platform workers use their existing owned scopes. No `viewModelScope.launch`, `runBlocking` or `GlobalScope`.
 - Collections in State and Loaders — **only** `kotlinx-collections-immutable` (`ImmutableList`, `ImmutableSet`, `PersistentList`). No `List`/`Set`/`MutableList` in `@Immutable` classes.
 - Unwrap a Result-returning call with `.getOrThrow()` inside `safeLaunch` (inside the decorated block when tracked); existing direct-value throwing calls remain direct. Original exceptions bubble to `BaseViewModel.sendError` → `ErrorProvider`.
 - Every `@Composable internal fun <X>Screen` takes three arguments in the same order: `state, loaders, contract` (sometimes also `component` for the cross-feature navigator).
@@ -767,7 +757,7 @@ init {
 - Recomposition: state classes — `@Immutable`/`@Stable`, immutable collections. Compose stability metrics enabled in convention plugin.
 - Global `optIn`s (Material3, Foundation, Coroutines, ForeignApi, etc.) are already enabled in `KotlinMultiplatformConventionPlugin` — **do not duplicate in source files** via `@OptIn`.
 - `LaunchedEffect(Unit)` for one-shot navigation side effects is **forbidden** — navigation goes through `Direction` + `eventListener`. `LaunchedEffect` is allowed only for non-navigational side effects (animation kickoff, system API init).
-- `BottomSheetToolbar` for all bottom sheets; regular `Toolbar` for screens.
+- Regular `Toolbar` belongs to screens. Dialogs follow the current session host/title layout; do not add a second toolbar to hosted dialog content.
 - In LazyColumn — always `key = { it.id }` for stability and `Modifier.animateItem()` for transitions.
 - `BottomOverlayContainer` (`:design-system:components`) — standard "list + bottom CTA" pattern, propagates padding into content for correct bottom overscroll.
 
@@ -791,195 +781,31 @@ public class TrainingsFeatureModule
 
 Hand-writing `module { single { ... } }` DSL for new modules is **forbidden**. Use only annotations.
 
-All Koin modules are collected in `:shared/Koin.kt`:
-
-```kotlin
-public object Koin {
-    public fun init(appDeclaration: KoinAppDeclaration = {}): KoinApplication =
-        KoinPlatformTools.defaultContext().startKoin {
-            appDeclaration()
-            modules(
-                ContextModule().module,
-                DatabaseModule().module,
-                BackendModule().module,
-                // ... every module is listed explicitly
-            )
-        }
-}
-```
-
-A new module is added to this list **manually**.
+All Koin modules are explicitly enumerated in
+`shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt`. Its `Koin.init` returns
+`ApplicationBootstrap`, exposing typed analytics/crash-reporting/messaging startup
+contracts. Reuse the real implementation; do not copy a former KoinApplication
+startup recipe. A new module is registered manually within its authorized scope.
+The existing `FeatureApiModule` UseCase aggregator is the sole hand-written DSL
+exception; authorized UseCase additions may extend it, never create a second DSL module.
 
 ---
 
-## Cookbook (step-by-step recipes)
+## Implementation recipes
 
-### 1. Add a new screen inside an existing feature
+Read the owning project skill and only the references relevant to the change:
 
-Example: a "Workout history" screen in `:ui-screen-features:profile`.
+| Change | Owning skill |
+|---|---|
+| Screen, dialog, navigation, UI state | [ui-feature](.claude/skills/ui-feature/SKILL.md) |
+| Business operation, endpoint, persistence | [data-layer](.claude/skills/data-layer/SKILL.md) |
+| DTO/Entity/Domain/State conversion | [mappers](.claude/skills/mappers/SKILL.md) |
+| Koin bindings and composition | [di-modules](.claude/skills/di-modules/SKILL.md) |
+| Tokens, widgets, resources | [design-system](.claude/skills/design-system/SKILL.md) |
+| Platforms, modules, build configuration | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
 
-1. Create the package `com.grippo.profile.workouthistory`.
-2. Seven files:
-   - `ProfileWorkoutHistoryState.kt` — `@Immutable internal data class ProfileWorkoutHistoryState(...)` or `data object` if static.
-   - `ProfileWorkoutHistoryDirection.kt` — `internal sealed interface ProfileWorkoutHistoryDirection : BaseDirection { data object Back : ... }`.
-   - `ProfileWorkoutHistoryLoader.kt` — `@Immutable internal sealed interface ProfileWorkoutHistoryLoader : BaseLoader { @Immutable data object LoadHistory : ... }`.
-   - `ProfileWorkoutHistoryContract.kt` — `@Immutable internal interface ProfileWorkoutHistoryContract { fun onBack(); ...; companion object Empty : ... }`.
-   - `ProfileWorkoutHistoryViewModel.kt` — `internal class ProfileWorkoutHistoryViewModel(private val feature: WorkoutHistoryFeature) : BaseViewModel<...>, ProfileWorkoutHistoryContract { ... }`.
-   - `ProfileWorkoutHistoryComponent.kt` — `internal class ProfileWorkoutHistoryComponent(componentContext, private val back: () -> Unit) : BaseComponent<ProfileWorkoutHistoryDirection>(componentContext) { override val viewModel = componentContext.retainedInstance { ProfileWorkoutHistoryViewModel(getKoin().get()) }; override suspend fun eventListener(direction) = when (direction) { Back -> back() }; @Composable override fun Render() { ... } }`.
-   - `ProfileWorkoutHistoryScreen.kt` — `@Composable internal fun ProfileWorkoutHistoryScreen(state, loaders, contract) = BaseComposeScreen(...) { ... }` + `@AppPreview private fun Preview() { PreviewContainer { ProfileWorkoutHistoryScreen(stub..., persistentSetOf(), ProfileWorkoutHistoryContract.Empty) } }`.
-3. In `:ui-screen-features:screen-api/ProfileRouter.kt` add `@Serializable public data object WorkoutHistory : ProfileRouter()`.
-4. In `ProfileComponent.createChild`: `ProfileRouter.WorkoutHistory -> WorkoutHistory(ProfileWorkoutHistoryComponent(context, back = viewModel::onBack))`.
-5. In `ProfileComponent.Child` sealed add `data class WorkoutHistory(override val component: ProfileWorkoutHistoryComponent) : Child(component)`.
-6. Verify the iOS XCFramework build (`./gradlew :shared:assembleSharedDebugXCFramework`).
-
-**No** new Koin modules needed — VM dependencies come from existing ones.
-
-### 2. Add a new cross-feature navigation point
-
-Example: open a new screen in `:profile` from `:home`.
-
-1. If the route doesn't exist yet — add it to the corresponding `<Feature>Router` in `:screen-api`.
-2. In `RootDirection` add `data object NewProfileTab : RootDirection`.
-3. In `RootContract` + `RootViewModel` add `fun toNewProfileTab() { navigateTo(RootDirection.NewProfileTab) }`.
-4. In `RootComponent.eventListener`: `RootDirection.NewProfileTab -> navigation.push(RootRouter.Profile(ProfileRouter.NewTab))`.
-5. In `HomeRootComponent` (or the specific child) — add a `private val toNewProfileTab: () -> Unit` parameter to the constructor, threaded through `RootComponent.createChild`.
-
-### 3. Add a new dialog (bottom sheet)
-
-Example: `:ui-dialog-features:rating-picker`.
-
-1. Create the module `:ui-dialog-features:rating-picker` in `settings.gradle.kts`.
-2. `build.gradle.kts`:
-   ```kotlin
-   plugins {
-       id("android.library.convention")
-       id("kotlin.multiplatform.convention")
-       id("compose.multiplatform.convention")
-   }
-   kotlin {
-       android { namespace = "com.grippo.rating.picker" }
-       sourceSets.commonMain.dependencies {
-           implementation(projects.uiCore.foundation)
-           implementation(projects.uiCore.state)
-           implementation(projects.designSystem.core)
-           implementation(projects.designSystem.components)
-           implementation(libs.immutable.collections)
-       }
-   }
-   ```
-3. Seven MVI files like a screen, but `<Name>Component`/`<Name>Screen` are called `RatingPickerComponent`/`RatingPickerScreen`. Component constructor is usually: `(componentContext, initial: <Type>, onResult: (<Type>) -> Unit, back: () -> Unit)`.
-4. In `:ui-dialog-features:dialog-api/DialogConfig.kt` add:
-   ```kotlin
-   public data class RatingPicker(
-       override val title: UiText,
-       val initial: Int,
-       val onResult: (Int) -> Unit = {},
-   ) : DialogConfig()
-   ```
-   Add its branch to the exhaustive `hasSameContentAs` comparison, comparing `initial` and excluding `onResult` (the common title comparison already runs first).
-5. In `:shared/dialog/content/DialogContentComponent`, add the child factory. Resolve the step-bound `dialogNavigation = navigationFor(step)`, deliver `onResult` directly through `dialogNavigation.finish { router.onResult(value) }`, and route Back through `dialogNavigation.finish(null)`. No named local helper.
-6. Open from an ordinary screen ViewModel with `dialogController.open(DialogConfig.RatingPicker(title = UiText.Str("Rating"), initial = 5, onResult = { v -> update { ... } }))`. For nested opening, emit a feature-specific intention (for example `PickRating(initial)`) and let the host construct and push the config. Do not add a dialog-api dependency to the initiating feature.
-
-### 4. Add a new data feature module
-
-Example: `:data-features:notifications`.
-
-1. Add modules to `settings.gradle.kts`.
-2. `:feature-api` is shared — add to it:
-   - `feature-api/.../notifications/NotificationsFeature.kt` (interface + UseCases).
-   - `feature-api/.../notifications/models/Notification.kt` (domain model).
-3. New module `:data-features:notifications` `build.gradle.kts`:
-   ```kotlin
-   plugins {
-       id("android.library.convention")
-       id("kotlin.multiplatform.convention")
-       id("koin.annotation.convention")
-   }
-   kotlin {
-       android { namespace = "com.grippo.data.features.notifications" }
-       sourceSets.commonMain.dependencies {
-           implementation(projects.dataFeatures.featureApi)
-           implementation(projects.dataServices.backend)
-           implementation(projects.dataServices.database)
-           implementation(projects.toolkit.logger)
-       }
-   }
-   ```
-4. Files:
-   - `data/NotificationsRepositoryImpl.kt` — `@Single(binds = [NotificationsRepository::class]) internal class NotificationsRepositoryImpl(private val api: GrippoApi, private val dao: NotificationsDao) : NotificationsRepository`.
-   - `domain/NotificationsRepository.kt` — `internal interface NotificationsRepository { ... }`.
-   - `domain/NotificationsFeatureImpl.kt` — `@Single(binds = [NotificationsFeature::class]) internal class NotificationsFeatureImpl(private val repository: NotificationsRepository) : NotificationsFeature`.
-   - `NotificationsFeatureModule.kt` — `@Module(includes = [BackendModule::class, DatabaseModule::class]) @ComponentScan public class NotificationsFeatureModule`.
-5. In `:shared/build.gradle.kts` add `implementation(projects.dataFeatures.notifications)`.
-6. In `:shared/Koin.kt` add `NotificationsFeatureModule().module` to `modules(...)`.
-
-### 5. Add a new mapper
-
-Example: add `NotificationResponse → NotificationEntity`.
-
-1. File `data-mappers/dto-to-entity/src/commonMain/kotlin/com/grippo/dto/entity/notification/NotificationMapper.kt`:
-   ```kotlin
-   public fun NotificationResponse.toEntityOrNull(): NotificationEntity? {
-       val id = AppLogger.Mapping.log(id) { "NotificationResponse.id is null" } ?: return null
-       val title = AppLogger.Mapping.log(title) { "NotificationResponse.title is null" } ?: return null
-       // ...
-       return NotificationEntity(id = id, title = title, ...)
-   }
-   public fun List<NotificationResponse>.toEntities(): List<NotificationEntity> = mapNotNull { it.toEntityOrNull() }
-   ```
-2. If a reverse direction is needed — separate file in `:domain-to-dto` with `Notification.toBody(): NotificationBody`.
-3. If state/domain are needed — separate files in `:entity-to-domain` and `:domain-to-state`.
-4. **Do not** add dependencies between mapper modules: each direction is isolated.
-
-### 6. Add a new Room migration
-
-**Only on request.** Steps (for context):
-
-1. Bump `@Database(version = N+1)` in `Database.kt`.
-2. Create `migrations/Migration<N>To<N+1>.kt`:
-   ```kotlin
-   internal object Migration5To6 : Migration(5, 6) {
-       override fun migrate(connection: SQLiteConnection) {
-           connection.execSQL("ALTER TABLE ...")
-       }
-   }
-   ```
-3. Add to `DatabaseMigrations.all`.
-4. If an entity changes — update the `@Entity` class.
-5. After Android build — verify `data-services/database/schemas/` (exported JSON schemas) — a new one must appear.
-6. **MANDATORY** — verify iOS — `./gradlew :shared:assembleSharedDebugXCFramework` — Room on iOS uses the same migration path.
-
-### 7. Add a new endpoint to `GrippoApi`
-
-1. If there's a new response/body — `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/dto/<area>/<Name>Response.kt` (or `<Name>Body.kt`):
-   ```kotlin
-   @Serializable
-   public data class NotificationResponse(
-       @SerialName("id") val id: String? = null,
-       @SerialName("title") val title: String? = null,
-       @SerialName("createdAt") val createdAt: String? = null,
-   )
-   ```
-   All fields nullable, default `= null`.
-2. In `GrippoApi`, in the right section (`/* * * Notifications service * * */`):
-   ```kotlin
-   public suspend fun getNotifications(): Result<List<NotificationResponse>> =
-       request(method = HttpMethod.Get, path = "/notifications")
-
-   public suspend fun markNotificationRead(id: String): Result<Unit> =
-       request(method = HttpMethod.Put, path = "/notifications/$id/read")
-   ```
-3. Cross-check with the backend contract (Swagger at `/docs`). Any drift — backend wins; mobile does not invent.
-
-### 8. Add a new resource/string
-
-1. `design-system/resources/provider/src/commonMain/composeResources/values/strings.xml` — add `<string name="my_new_key">English text</string>`.
-2. Same in `values-uk/strings.xml`, `values-ru/strings.xml`.
-3. Usage:
-   - In Composable: `AppTokens.strings.res(Res.string.my_new_key)`.
-   - In VM: `stringProvider.get(Res.string.my_new_key)`.
-   - In State: `UiText.Res(Res.string.my_new_key, formatArgs = persistentListOf(arg1))`.
-4. Plurals — `<plurals name="key">` with `<item quantity="one|other">...</item>`. Access — `Res.plurals.key`.
+Feature work also applies analytics and preservation gates. Recipes do not grant
+new scope or require redundant confirmation of work already authorized.
 
 ---
 
@@ -989,8 +815,8 @@ No explicit budgets in code. Default priorities:
 
 - Don't block the main thread. All IO/CPU — via `safeLaunch(dispatcher = Dispatchers.IO)` or `withContext(Dispatchers.IO)` (like `BackendClient`).
 - Recomposition stability: state — `@Immutable`/`@Stable`, immutable collections everywhere, Compose metrics in `build/compose-metrics`.
-- Don't break the iOS XCFramework: any change in public API of `:shared`/`:ui-core:foundation`/`:design-system`/`:data-features:feature-api` is verified on iOS — `./gradlew :shared:assembleSharedDebugXCFramework` must pass.
-- `kotlin.native.binary.gc=cms` (concurrent mark+sweep) enabled to reduce stop-the-world pauses on iOS.
+- Public API changes in shared/foundation/design/data-feature contracts require assessing both platforms. Run `./gradlew :shared:assembleSharedDebugXCFramework` when authorized and available; record an unrun check and the remaining integration risk otherwise.
+- The explicit `gc=cms` override is disabled in `gradle.properties`; do not describe it as enabled.
 - `kotlin.native.binary.smallBinary=true` for smaller iOS frameworks.
 - `org.gradle.workers.max=1` to reduce peak memory during native release linking.
 
@@ -1024,7 +850,7 @@ verification-only hooks, flags, wrappers or production dependencies.
 - Convention plugins in `build-logic/` — the only way to configure modules.
 - All Koin modules collected in `:shared/Koin.kt` explicitly.
 - 7 mapper directions in 7 modules `:data-mappers:*`. Inline DTO↔Domain↔State conversion in ViewModel is forbidden.
-- DTO fields are all nullable + default `= null`. Null mapping goes through `AppLogger.Mapping.log(...) ?: return null`.
+- Response and request DTO fields, including collections, are nullable + default `= null`. Required inbound values use `AppLogger.Mapping.log(...) ?: return null`; required outbound values remain supplied by business code.
 - API contract is owned by backend; codegen is NOT used — DTOs in `data-services/backend/dto` are written by hand.
 - Resources (`Res.string`, `Res.drawable`) — Compose Multiplatform Resources, **not** `androidx.compose.ui.res`, not Moko Resources.
 
@@ -1046,6 +872,15 @@ verification-only hooks, flags, wrappers or production dependencies.
 
 ## When to stop and ask
 
+The following changes need to be within the user's authorized scope. Existing
+explicit or implied authorization is sufficient: do not ask again for a necessary
+step of the requested feature/migration. Ask in this chat if the change expands
+scope, changes a locked decision or requires an unresolved product/API decision.
+Use short questions with alternatives and an evidence-supported recommendation;
+when no recommendation is defensible, state which information is missing.
+Do not send messages to external people/services without explicit instructions.
+
+
 - Any new module or removal of an existing one.
 - Changes to `BaseViewModel`, `BaseComponent`, `BaseScreen`, `OperationManager`, `ErrorProvider`, `ResultManager`.
 - Changes to `RootComponent`/`RootRouter` or public `*Router` sealed classes in `:ui-screen-features:screen-api`.
@@ -1066,7 +901,7 @@ verification-only hooks, flags, wrappers or production dependencies.
 - Mutable collections (`MutableList`, `mutableStateListOf`, `mutableMapOf`) in `@Immutable` state.
 - Business logic in `Component`, `Screen`, mappers, or DTOs. Logic — in `ViewModel` or domain layer (`*Repository`/`*UseCase`/`*FeatureImpl`).
 - Business-model DTO/Entity/Domain/State conversions outside `:data-mappers:*`, including inline conversion in ViewModel/Screen — forbidden. UI→telemetry fact mapping (existing validation state/enum → bounded analytics status/code) stays in the feature UI `analytics/` package; call that mapping from the VM rather than embedding it there. This does not permit business conversions or validation changes for analytics.
-- Direct dependency of a UI module on `:data-services:*` — only via `:data-features:*`.
+- Direct UI dependency on domain-shaped `:data-services:*` — use `:data-features:feature-api`. Existing authorization credential wrappers (`google-auth`, `apple-auth`) are the narrow exception.
 - Creating a Koin module via hand-written `module { ... }` DSL for a new module.
 - `LaunchedEffect(Unit)` for navigation — use `Direction` + `eventListener`.
 - Local `try/catch`, `runCatching` or result failure handlers that hide, replace or present failures in a ViewModel, including private helpers. Use `getOrThrow()` → `safeLaunch` → `ErrorProvider` and pure `mapError` only for dialog mapping. No recovery wrappers, extra launches or analytics-owned recovery. `onError` runs after dialog dismissal.
@@ -1082,26 +917,27 @@ verification-only hooks, flags, wrappers or production dependencies.
 
 ---
 
-## Orchestrator workflow
+## Local skill workflow
 
-The implementation/review skills are installed in `.claude/skills/`; their
-pipeline contracts are reference records in `.claude/contracts/`. This checkout
-does not contain the `orchestrator/` runtime, task board, project-config or gate
-scripts. Do not claim its machine gates ran or introduce that scaffold for
-ordinary feature work.
+Project skills live in `.claude/skills/`. [task-prep](.claude/skills/task-prep/SKILL.md)
+clarifies scope and dependencies; [task-orchestrator](.claude/skills/task-orchestrator/SKILL.md)
+coordinates implementation and independent review; [validation-gates](.claude/skills/validation-gates/SKILL.md)
+defines completion checks. Work directly with repository source and the user's
+request. No task-board runtime, generated machine reports or bootstrap scaffold
+is required.
 
-Use the user's authorized scope and the owning skills' mandatory semantic gates,
-including analytics coverage and state preservation. Run permitted checks and
-record unavailable/unrun checks. The task-orchestrator loop, task-board transitions,
-machine reports and Figma/backend gate commands apply only in a separately
-configured orchestrator workspace with the required inputs and tools.
+Self-review actual source/diff, obtain independent review, fix blocking findings
+and review the changed area again. Repeated unresolved findings require a clear
+question or limitation, not an endless loop or invented PASS. Keep every affected
+screen's analytics coverage and field preservation assessment current. Reports
+must distinguish source review, successful builds and unverified runtime behavior.
 
 ### Backend contract rules
 
-Verify the authoritative backend contract before changing DTOs, `GrippoApi`
-methods or mappers; never invent endpoints, fields, types or nullability. A
-configured orchestrator's validated snapshot and `contract:paths` resolve its
-inventory; its probe/refresh/drift gates require that workspace. Without it,
-use an available authoritative contract and resolve missing details before
-changing the API. Keep the all-nullable defensive response DTO discipline
-regardless of what the spec declares.
+Before changing endpoints, wire keys, payload meaning or required request values,
+verify an authoritative backend API/source contract and record its revision/source.
+Do not invent fields, types or endpoints. The chosen nullable DTO standard applies
+to both responses and request bodies, including collections; it does not change
+server requirements. A Kotlin-nullability-only alignment may preserve existing
+verified wire keys and call-site values without redefining the API. Missing
+contract details that affect wire behavior must be resolved before implementation.
