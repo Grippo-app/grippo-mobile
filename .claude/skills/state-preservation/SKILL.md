@@ -122,6 +122,13 @@ A selection already committed to an existing durable settings owner need not gai
 an additional StateKeeper copy solely for restoration. Record that source in the
 inventory; this does not replace local preservation of unfinished screen drafts.
 
+Keep an unfinished selection distinct from the committed source when both exist.
+For example, checking an analytics opt-in draft is not a stored permission to
+collect. Persist the unfinished input with the screen draft and rebuild the source;
+do not let a late source emission erase the input or an old draft overwrite a known
+decision. Choose the smallest state representation that preserves these meanings;
+this does not mandate two fields for every settings control.
+
 When restored settings arrive asynchronously, review the interval before their
 first value as well as the loaded state. Dependent requests MUST NOT use a fallback
 as though it were the restored selection; apply the fallback once absence is known.

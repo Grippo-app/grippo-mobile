@@ -12,6 +12,10 @@ Visual-only changes need an impact assessment, not new events. Read `CLAUDE.md`,
 coverage matrix. For UI wiring read [ViewModel integration](references/viewmodel.md).
 Stay within the requested feature and verification scope.
 
+For collection consent, core/SDK transport, asynchronous attribution or schema
+compatibility changes, read [collection and core contracts](references/collection-and-core.md).
+Ordinary feature instrumentation does not require changing those owners.
+
 For a behavior change, inventory affected leaf/graph routes, callbacks, inputs and
 complete operations in the coverage matrix. Reuse or extend the feature's single
 API/implementation; wire only the affected VMs. Before completion reconcile the
@@ -136,6 +140,14 @@ the bounded typed fact to the analytics API.
   requested scope defines a separate typed presentation contract and owner.
 - Keep only observed facts. Do not add transition/flow events, error classifiers,
   provider-cancel outcomes or extra orchestration for a more detailed funnel.
+- Use DismissRequested for an observed user request to leave/close a surface,
+  encoded as dismiss_requested. It records intent, not completed dismissal or
+  cancellation. Keep navigation Back/onBack names where they describe navigation;
+  do not rename business contracts merely to match telemetry. Programmatic pop,
+  lifecycle close and successful completion are not user dismissal requests.
+  A telemetry rename must reconcile public events, internal action types/matrices,
+  wire encoders, VM callers and current coverage together; retain no compatibility
+  alias without a released-consumer requirement.
 
 ## Mandatory screen coverage gate
 
@@ -172,6 +184,10 @@ reason, callbacks/inputs/operations, omissions and checks.
   reporting decision; a version bump alone does not make reports compatible.
   Validation changes also require assessing status meaning/event population even
   when the wire schema is unchanged. Do not silently add dropped funnel mechanisms.
+- New schemas start at v1. The current unreleased catalog remains v1 by the user's
+  explicit decision; do not increment versions for each implementation correction.
+  Once a schema has produced released data, assess consumers and compatibility
+  before changing its meaning; do not reset released versions to apply this rule.
 - Operation decoration supplies fresh OperationId, monotonic duration and
   started/completed/failed/interrupted factories. Preserve original results/errors;
   completed means the caller block completed, not an inferred business success.

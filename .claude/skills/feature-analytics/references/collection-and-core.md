@@ -1,0 +1,78 @@
+# Collection, attribution and core contracts
+
+Read for changes to collection policy, analytics core/SDK adapters, operation
+attribution or schema compatibility. Apply the [feature skill](../SKILL.md) for
+instrumentation and its coverage gate. This reference owns analytics-specific
+policy; storage and UI implementation follow their existing skills.
+
+## Ownership and source
+
+Inspect current source rather than copying signatures or catalog counts:
+
+- `toolkit/analytics/api` and `core`: collection, identity, catalog, operation
+  decorators, queue/worker and presentation contracts.
+- `shared/.../bootstrap/ApplicationBootstrap.kt`: application-lifetime consent
+  observation; `shared/.../Koin.kt`: catalog/implementation composition.
+- `data-features/local-settings` and `feature-api`: durable consent meaning and
+  mutation contract; Login and Profile Settings: actual UI consumers.
+- `androidApp`, `data-services/firebase` and `iosApp`: platform initialization,
+  disabled SDK defaults and adapter attachment.
+
+Do not move SDK policy into feature analytics implementations. Core validation
+and transport diagnostics must not expose raw payloads, user inputs or secrets.
+
+## Collection and consent
+
+Grippo currently collects optional usage analytics only after explicit consent.
+Missing storage is Undecided, saved false is Denied, saved true is Granted;
+a pending UI read is separate from all three. Only Granted authorizes collection.
+Platform SDK defaults must keep automatic collection disabled before the shared
+policy is applied. A privacy-policy sentence, selected draft or successful login
+does not grant permission. Changing this policy requires an explicit product
+decision; this skill does not make jurisdiction/store-compliance claims.
+
+Consent is currently an installation preference in LocalSettings. Preserve both
+saved true and saved false across account cleanup with clearUserSettings; do not
+add backend fields or account synchronization without an authorized requirement.
+UI reads the real source and writes through the normal error pipeline. An
+unfinished checkbox remains a screen draft under
+[state preservation](../../state-preservation/SKILL.md#initialization-from-persistent-settings).
+Consent controls and disclosure interactions are deliberately unreported.
+
+Review every actual entry path, including native provider sign-in and registration
+navigation. Current Login saves an undecided choice on accepted continuation and
+allows refusal; pending source reads do not block unrelated authentication or
+overwrite a known decision. Review persistence failures separately from reporting
+failures: a failed business settings write is not a telemetry exception to swallow.
+
+Unknown/Denied events are discarded, never buffered for later consent or replayed.
+The bounded pre-sink queue is for already-permitted events only. Granting consent
+does not synthesize old interactions or a new screen view. Revocation invalidates
+queued work; an SDK call already in flight cannot be retracted. Do not promise
+instant remote deletion or zero in-flight sends from a local policy change.
+
+## Asynchronous attribution
+
+An operation may finish after navigation changes the active screen. Current
+operation schemas omit active navigation context so their lifecycle events cannot
+inherit whichever screen happens to be visible at completion. Keep the complete
+operation's typed identity and fresh OperationId; do not infer origin from mutable
+global context or add route/saved-state provenance to recover it.
+
+Review schema context rules and actual encoding, not only the caller's screen hook.
+User interactions may carry their directly observed screen; operation attribution
+requires its own explicit contract if the reporting requirement changes.
+
+## Verification limits
+
+For an affected policy/core change, trace: disabled startup → source decision →
+core update → SDK configuration → eligible enqueue/send. Review source-read/write
+failure, revocation, identity change, stale presentation close and worker revision
+checks where affected. Preserve business results, exceptions and cancellation.
+Use permitted checks under CLAUDE.md; do not add test infrastructure by implication.
+
+Distinguish observation, enqueue, adapter acceptance and remote delivery. Source
+review and compilation establish none of the runtime delivery guarantees. Record
+actual adapter/runtime checks separately, including any unverified scheduling
+interval after consent persistence. Sign-in, sends and uploads require their
+existing authorization; documentation review alone does not authorize them.
