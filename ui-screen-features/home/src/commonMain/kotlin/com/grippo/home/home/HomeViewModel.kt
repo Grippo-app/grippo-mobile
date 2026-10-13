@@ -1,5 +1,7 @@
 package com.grippo.home.home
 
+import com.grippo.analytics.home.HomeAnalytics
+import com.grippo.analytics.home.models.HomeScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
@@ -44,6 +46,8 @@ import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.user.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.range.toDomain
+import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
@@ -60,6 +64,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 
 internal class HomeViewModel(
+    private val analytics: HomeAnalytics,
     private val trainingFeature: TrainingFeature,
     private val localSettingsFeature: LocalSettingsFeature,
     private val dialogController: DialogController,
@@ -79,6 +84,10 @@ internal class HomeViewModel(
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(HomeScreen.Home, reason)
+    }
 
     init {
         userFeature
@@ -209,7 +218,7 @@ internal class HomeViewModel(
 
         val goalProgress = goalFollowingUseCase
             .fromTrainingsByPrimary(list)
-            ?.toState()
+            ?.toState(now = DateTimeUtils.now())
 
         update {
             it.copy(

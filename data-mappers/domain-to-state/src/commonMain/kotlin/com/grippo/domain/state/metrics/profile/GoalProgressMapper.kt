@@ -6,12 +6,11 @@ import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.domain.state.user.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 
-public fun GoalAdherence.toState(): GoalProgressState {
-    val now = DateTimeUtils.now()
+public fun GoalAdherence.toState(now: LocalDateTime): GoalProgressState {
     val startDate = goal.createdAt.date
     val targetDate = goal.target.date
 
