@@ -74,7 +74,7 @@ Calendar presentation rebuilds do not restart requests for an unchanged range.
 
 Source/diff and independent review cover hooks, route ownership, descriptor/key
 wiring, transient fields, caller identity creation and cancellation boundaries.
-Final authorized builds, rerun after adding IncompleteResponse, passed on 2026-10-13: `:androidApp:assembleDebug` and
+Final authorized builds, rerun after adding IncompleteResponse and removing auth sanitation, passed on 2026-10-13: `:androidApp:assembleDebug` and
 `:shared:assembleSharedDebugXCFramework` (device and simulator frameworks).
 Fresh native process
 restoration, pause/resume timing, actual request serialization and SDK presentation
