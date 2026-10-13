@@ -80,7 +80,8 @@ struct iOSApp: App {
 Use the maintained sources rather than duplicating the shell in this reference:
 
 - `iosApp/iosApp/AppDeletage.swift`: one lazy RootComponent, DI/bootstrap and
-  existing ApplicationLifecycle ownership. Restore ApplicationState before
+  existing ApplicationLifecycle ownership. Keep the root setter private to
+  AppDelegate. Restore ApplicationState before
   constructing DefaultComponentContext, pass its stateKeeper, and guard saving
   with the initialized optional state so it cannot construct a root. Clearing
   on active is also a no-op before initialization, preserving the checkpoint

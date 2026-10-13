@@ -357,3 +357,19 @@ Xcode TestAction без testables не является отдельным те�
 Свежие проверки этого удаления: Swift syntax parse, actual PBX/Info.plist и оба PBX
 templates lint, остаточные references, exact source scope и git diff --check.
 Android/iOS builds и runtime tests в этом проходе не запускались.
+
+### Аудит iOS после удаления тестов
+
+Повторный независимый source review store/codec/shell/RootComponent и actual
+Essenty ApplicationLifecycle не выявил новых lifecycle/order/archive дефектов.
+Root получил private(set): другие Swift-файлы читают тот же lazy instance, но не
+могут заменить его отдельно от ApplicationState/BackDispatcher. Каноническая shell
+reference уточняет это владение. Restore/save/clear, wire format, scenePhase,
+component construction, shared/common tests и Android остаются прежними.
+
+Свежие проверки: Swift syntax parse всех app sources, actual PBX/Info.plist и
+двух PBX templates lint, references/test-tail scan, archive/lifecycle source order,
+canonical docs/examples/links, exact source scope и git diff --check.
+Удалённый iOS runner не восстановлен. Android/iOS builds, Gradle/KSP, platform
+typecheck, UIKit/scene delivery и runtime tests не запускались; прежние PASS выше
+не выдаются за новые runtime проверки.

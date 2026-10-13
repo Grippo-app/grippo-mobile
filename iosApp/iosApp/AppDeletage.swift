@@ -18,7 +18,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     private let stateStore = ApplicationStateStore()
     private var applicationState: ApplicationState?
 
-    lazy var root: RootComponent = {
+    private(set) lazy var root: RootComponent = {
         let state: ApplicationState
         do {
             if let savedState = try stateStore.restore() {
