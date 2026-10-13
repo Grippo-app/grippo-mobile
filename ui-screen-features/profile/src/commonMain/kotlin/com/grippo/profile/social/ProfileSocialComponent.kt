@@ -14,6 +14,7 @@ internal class ProfileSocialComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileSocialViewModel(
+            analytics = getKoin().get(),
             linkOpener = getKoin().get()
         )
     }

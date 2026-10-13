@@ -1,20 +1,29 @@
 package com.grippo.profile.muscles
 
+import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.state.muscles.toState
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.combine
 
 internal class ProfileMusclesViewModel(
+    private val analytics: ProfileAnalytics,
+    initialState: ProfileMusclesState,
     muscleFeature: MuscleFeature,
     private val excludedMusclesFeature: ExcludedMusclesFeature,
 ) : BaseViewModel<ProfileMusclesState, ProfileMusclesDirection, ProfileMusclesLoader>(
-    ProfileMusclesState()
+    initialState
 ), ProfileMusclesContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(ProfileScreen.Muscles, reason)
+    }
 
     init {
         combine(
@@ -31,20 +40,33 @@ internal class ProfileMusclesViewModel(
 
     private fun provideMuscles(list: List<MuscleGroup>, excluded: List<Muscle>) {
         val suggestions = list.toState()
-        val selectedIds = suggestions
+        val allIds = suggestions
             .flatMap { it.muscles }
             .map { it.value.id }
-            .minus(excluded.map { it.id }.toSet())
-            .toPersistentList()
+        if (allIds.isEmpty()) {
+            update { it.copy(suggestions = suggestions) }
+            return
+        }
+        val excludedIds = excluded.map { it.id }.toSet()
 
-        update {
-            val selectedGroupId = it.selectedGroupId
+        update { previous ->
+            val knownIds = previous.knownMuscleIds.toSet()
+            val selectedIds = previous.selectedMuscleIds.toSet()
+            val selectedMuscleIds = allIds.filter { id ->
+                if (id !in knownIds) {
+                    id !in excludedIds
+                } else {
+                    id in selectedIds
+                }
+            }.toPersistentList()
+            val selectedGroupId = previous.selectedGroupId
                 ?.takeIf { id -> suggestions.any { group -> group.id == id } }
                 ?: suggestions.firstOrNull()?.id
 
-            it.copy(
+            previous.copy(
                 suggestions = suggestions,
-                selectedMuscleIds = selectedIds,
+                selectedMuscleIds = selectedMuscleIds,
+                knownMuscleIds = allIds.toPersistentList(),
                 selectedGroupId = selectedGroupId
             )
         }
@@ -57,9 +79,9 @@ internal class ProfileMusclesViewModel(
     override fun onSelect(id: String) {
         update {
             val selectedMuscleIds = if (id in it.selectedMuscleIds) {
-                it.selectedMuscleIds.removing(id)
+                it.selectedMuscleIds.toPersistentList().removing(id)
             } else {
-                it.selectedMuscleIds.adding(id)
+                it.selectedMuscleIds.toPersistentList().adding(id)
             }
             it.copy(selectedMuscleIds = selectedMuscleIds)
         }
@@ -67,9 +89,11 @@ internal class ProfileMusclesViewModel(
 
     override fun onApply() {
         val current = state.value
-        val excludedMuscleIds = current.suggestions
+        val allIds = current.suggestions
             .flatMap { it.muscles }
-            .map { it.value.id } - current.selectedMuscleIds
+            .map { it.value.id }
+        if (allIds.isEmpty()) return
+        val excludedMuscleIds = allIds - current.selectedMuscleIds
 
         safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
             excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds).getOrThrow()

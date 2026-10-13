@@ -132,9 +132,10 @@ internal fun ProfileEquipmentsScreen(
         bottom = {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            val buttonState = remember(loaders) {
+            val buttonState = remember(loaders, state.suggestions) {
                 when {
                     loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
+                    state.suggestions.all { it.equipments.isEmpty() } -> ButtonState.Disabled
                     else -> ButtonState.Enabled
                 }
             }

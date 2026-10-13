@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class ProfileMusclesComponent(
@@ -14,6 +15,8 @@ internal class ProfileMusclesComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileMusclesViewModel(
+            analytics = getKoin().get(),
+            initialState = restoreState(DRAFT) ?: ProfileMusclesState(),
             muscleFeature = getKoin().get(),
             excludedMusclesFeature = getKoin().get(),
         )
@@ -22,6 +25,7 @@ internal class ProfileMusclesComponent(
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
     }
 
@@ -36,5 +40,9 @@ internal class ProfileMusclesComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         ProfileMusclesScreen(state.value, loaders.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("ProfileMusclesDraft", ProfileMusclesState.serializer())
     }
 }

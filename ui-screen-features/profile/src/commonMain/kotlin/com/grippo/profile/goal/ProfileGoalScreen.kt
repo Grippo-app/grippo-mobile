@@ -52,7 +52,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
 internal fun ProfileGoalScreen(
@@ -241,7 +240,7 @@ private fun PersonalizationGroup(
     modifier: Modifier = Modifier,
     category: PersonalizationKeyEnumState.Category,
     items: ImmutableList<PersonalizationKeyEnumState>,
-    selected: ImmutableSet<PersonalizationKeyEnumState>,
+    selected: ImmutableList<PersonalizationKeyEnumState>,
     onSelect: (PersonalizationKeyEnumState) -> Unit,
 ) {
     Column(
@@ -286,7 +285,7 @@ private fun ProfileGoalScreenPreview() {
                 selectedPersonalization = PersonalizationKeyEnumState.entries
                     .shuffled()
                     .take(6)
-                    .toPersistentSet(),
+                    .toPersistentList(),
             ),
             loaders = persistentSetOf(),
             contract = ProfileGoalContract.Empty,

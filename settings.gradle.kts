@@ -144,3 +144,4 @@ include(":toolkit:messaging:core")
 
 include(":analytics:analytics-api")
 include(":analytics:authorization")
+include(":analytics:profile")

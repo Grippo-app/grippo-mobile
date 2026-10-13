@@ -1,5 +1,7 @@
 package com.grippo.profile.body
 
+import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.UiText
@@ -19,23 +21,31 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
 import com.grippo.screen.api.deeplink.Deeplink
+import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileBodyViewModel(
+    private val analytics: ProfileAnalytics,
     private val dialogController: DialogController,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val userFeature: UserFeature,
     private val updateWeightUseCase: UpdateWeightUseCase,
     private val notificationManager: NotificationManager,
     private val stringProvider: StringProvider,
+    initialState: ProfileBodyState?,
 ) : BaseViewModel<ProfileBodyState, ProfileBodyDirection, ProfileBodyLoader>(
-    ProfileBodyState()
+    initialState ?: ProfileBodyState()
 ), ProfileBodyContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(ProfileScreen.Body, reason)
+    }
 
     init {
         safeLaunch {
@@ -48,7 +58,7 @@ internal class ProfileBodyViewModel(
 
         userFeature
             .observeUser()
-            .onEach(::provideUser)
+            .onEach(if (initialState == null) ::provideInitialUser else ::provideUser)
             .safeLaunch()
 
         weightHistoryFeature
@@ -64,7 +74,26 @@ internal class ProfileBodyViewModel(
 
     private fun provideUser(value: User?) {
         val user = value?.toState() ?: return
-        update { it.copy(weight = user.weight, height = user.height, user = user) }
+        update { it.copy(user = user) }
+    }
+
+    private fun provideInitialUser(value: User?) {
+        val user = value?.toState() ?: return
+        update {
+            it.copy(
+                weight = if (it.user == null && it.weight == WeightFormatState.Empty()) {
+                    user.weight
+                } else {
+                    it.weight
+                },
+                height = if (it.user == null && it.height == HeightFormatState.Empty()) {
+                    user.height
+                } else {
+                    it.height
+                },
+                user = user,
+            )
+        }
     }
 
     override fun onHeightPickerClick() {
@@ -104,7 +133,7 @@ internal class ProfileBodyViewModel(
                 userFeature.setHeight(height).getOrThrow()
             }
 
-            delay(500)
+            delay(500.milliseconds)
 
             val notification = AppNotification(
                 id = NotificationKey.ChangeWeight,

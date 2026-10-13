@@ -73,9 +73,10 @@ internal fun ProfileMusclesScreen(
         bottom = {
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
-            val buttonState = remember(loaders) {
+            val buttonState = remember(loaders, state.suggestions) {
                 when {
                     loaders.contains(ProfileMusclesLoader.ApplyButton) -> ButtonState.Loading
+                    state.suggestions.all { it.muscles.isEmpty() } -> ButtonState.Disabled
                     else -> ButtonState.Enabled
                 }
             }

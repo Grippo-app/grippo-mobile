@@ -12,6 +12,9 @@
 > **State preservation:** apply [state-preservation](../../state-preservation/SKILL.md).
 > Classify user-owned drafts and current filters before implementation; verify a
 > fresh-component archive roundtrip. Route inputs seed state; restored drafts win.
+> Apply the [draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization):
+> no runtime flags/source caches; fresh forms populate once. This recipe's live
+> items observer rebuilds display data and must not reinitialize editable inputs.
 
 > **Figma-enabled (`figmaEnabled: true`) + a `## Design` bullet:** the builder's design-cache gate applies BEFORE any file from this recipe is written — read the cached spec/mock and stop on unmapped components (see SKILL.md "Stop and ask"). This recipe owns the code shape; that gate owns when you may start.
 

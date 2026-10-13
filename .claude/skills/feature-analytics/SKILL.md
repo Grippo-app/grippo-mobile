@@ -26,6 +26,9 @@ Current skill/standard/source define the contract; historical review reports do 
 - One stateless `<Feature>Analytics` interface in `:analytics:analytics-api`:
   `trackEvent(FeatureEvent)`, generic `trackOperation(FeatureOperation, block)` and
   `presentScreen(FeatureScreen, reason)`. Events do not perform business actions.
+  Expose only implemented capabilities in the requested scope. Screen-only
+  integration uses presentScreen and a screen enum; add event/operation methods
+  with their actual instrumentation, without empty models or placeholder methods.
 - Put closed event/operation families, screen enums and necessary feature enums
   in sibling `models/`. One standalone type per file; related sealed variants stay
   together. Constructors receive direct typed facts, not nested action wrappers.
@@ -57,7 +60,10 @@ Current skill/standard/source define the contract; historical review reports do 
   Rejected callbacks emit neither accepted intent nor operation events; verify
   both accepted and rejected paths without changing business guards.
 - Ordinary reporting exceptions cannot prevent business/lifecycle or replace
-  success/errors. Isolate them in the implementation; fatal Error stays fatal.
+  success/errors. Keep the existing isolation boundary; fatal Error stays fatal.
+  Foundation ScreenAnalytics isolates screen present/close Exceptions. Feature
+  presentScreen passes typed navigation and the original presentation through,
+  without duplicate catches, no-op fallbacks or wrappers.
 - ViewModels unwrap Result with `getOrThrow()` inside existing `safeLaunch`.
   Follow the [error pipeline](../ui-feature/references/error-pipeline.md): no local
   recovery catch/wrapper; pure mapError changes dialog presentation only, onError

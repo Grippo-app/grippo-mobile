@@ -89,7 +89,7 @@ Groups:
 
 ### `:analytics:*` — feature telemetry
 
-- `:analytics:analytics-api` defines one stateless `<Feature>Analytics` service with typed `trackEvent`, complete generic `trackOperation` and typed `presentScreen`. Sibling `models/` hold closed event/operation families, screens and necessary feature enums; common/models reuses InputStatus/InputKeyboardAction/ControlAction. Public feature events are observations, not toolkit wire events. `:analytics:<feature>` keeps implementation/encoding/schema matrices internal and exposes one annotated module. UI main depends on the API; shared wires implementations. No feature analytics factories, snapshots, classifiers or capability hierarchy; no UI/domain/service/SDK dependencies in implementations.
+- `:analytics:analytics-api` defines one stateless `<Feature>Analytics` service with typed `trackEvent`, complete generic `trackOperation` and typed `presentScreen` as implemented by the current scope. Screen-only integration exposes presentScreen and its enum; event/operation APIs and models accompany actual instrumentation, with no empty scaffolding. Sibling `models/` hold closed event/operation families, screens and necessary feature enums; common/models reuses InputStatus/InputKeyboardAction/ControlAction. Public feature events are observations, not toolkit wire events. `:analytics:<feature>` keeps implementation/encoding/schema matrices internal and exposes one annotated module. UI main depends on the API; shared wires implementations. No feature analytics factories, snapshots, classifiers or capability hierarchy; no UI/domain/service/SDK dependencies in implementations.
 - Analytics decorates complete business operations. It does not determine navigation, fallback or results; login/register keep preparation private. Route identity types remain navigation-owned and do not enter the stateless analytics service. Ordinary reporting exceptions cannot block business work/navigation/lifecycle; caller cancellation and fatal Errors remain unchanged.
 - Feature analytics lives in ViewModels: inject the stateless service as `analytics` inside the Component's normal retainedInstance construction. Every independent screen must override protected BaseViewModel.screenPresentation `(NavigationReason) -> ScreenPresentation`; BaseComponent calls internal VM.bindScreen(lifecycle) during existing doOnCreate after obtaining the retained VM. Foundation ScreenAnalytics owns Initial/Restore and pause/destroy close. Graph/container VMs must keep the default null hook: no binding or lifecycle service resolution. Components/routes/factories/Render add no analytics parameters, events or lifecycle wiring; UI analytics/ retains only needed input mapping. Keep normal VM lifecycle ownership and no analytics state/retention keys. Text status uses existing old/new validation, without a cache. Follow [feature-standard](tasks/analytics/feature-standard.md) and [canonical skill](.claude/skills/feature-analytics/SKILL.md); keep actual coverage and event omissions current. Before completion apply the canonical screen coverage gate to every screen of a new feature and every affected screen; missing hooks or duplicate container/child views block completion.
 
@@ -230,6 +230,14 @@ Manual `ensureActive()` / `currentCoroutineContext().ensureActive()` checks are
 forbidden in production as unwanted cancellation boilerplate. Preserve owned
 scopes and cancellation propagation; follow the [project coroutine rules](.claude/skills/validation-gates/references/forbidden-patterns.md#coroutines).
 
+ViewModels keep feature data in State and change it through update. Private runtime
+flags, previous-source caches and shadow snapshots for initialization, restoration,
+edit detection or synchronization are forbidden, including restorePending,
+previousSource and previousSourceSelection. Do not hide equivalents in State,
+wrappers or mutable closures. Derive conditions from actual data and use the existing
+initialState boundary for one-time initialization; follow the
+[draft policy](.claude/skills/state-preservation/SKILL.md#data-backed-form-synchronization).
+
 When to use which dispatcher:
 
 - `Dispatchers.Main.immediate` (default) — state updates, dialog show, navigation.
@@ -317,6 +325,12 @@ initial inputs. Retained VM and local draft take priority over those inputs/defa
 Do not copy unfinished drafts of destroyed children into parent/global state.
 Verify a real archive roundtrip and Back/pop/re-entry with fresh Components/VMs;
 no generic BaseViewModel persistence, extra providers or per-edit navigation updates.
+Data-backed forms persist actual values, without edit flags or previous-source
+caches. Fresh forms populate once; restored full snapshots keep their values,
+including Empty/null/default. Later source updates rebuild presentation, while the
+open form keeps its current draft. Values may remain stale under this policy.
+Catalogs preserve known choices and seed only new IDs. See the canonical skill's
+[synchronization policy](.claude/skills/state-preservation/SKILL.md#data-backed-form-synchronization).
 
 `Deeplink` — a simple `enum class Deeplink(val key: String)` with `fromKey(key)`. Handled in `RootViewModel` (`enqueueDeeplink` for cold start / `applyDeeplink` for warm / `parseDeeplink` to map to a Direction).
 

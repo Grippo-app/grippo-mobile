@@ -63,6 +63,12 @@ For new or changed features, also apply the mandatory
 [state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
 Reconcile affected fields with their owners, saved drafts, rebuilt sources and
 runtime exclusions; review fresh-component archive tests and secret omission.
+Reject private restoration/edit flags, previous-source caches and equivalent
+shadow data in State, helpers, providers or mutable closures. Check that fresh
+form population runs once, restored Empty/null/default values survive and source
+refresh/pause/resume does not overwrite the draft. Lifecycle tests must cross the
+actual disconnect grace before resume; see the owning skill's
+[draft policy](../state-preservation/SKILL.md#data-backed-form-synchronization).
 Follow the user's verification scope and report actual shell limitations.
 
 For a configured orchestrator task, two layers are required; neither replaces the other.

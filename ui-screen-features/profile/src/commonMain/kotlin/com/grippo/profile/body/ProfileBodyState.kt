@@ -7,11 +7,18 @@ import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.WeightHistoryState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Immutable
+@Serializable
+@JsonIgnoreUnknownKeys
 internal data class ProfileBodyState(
+    @Transient
     val user: UserState? = null,
     val weight: WeightFormatState = WeightFormatState.Empty(),
     val height: HeightFormatState = HeightFormatState.Empty(),
+    @Transient
     val history: ImmutableList<WeightHistoryState> = persistentListOf()
 )

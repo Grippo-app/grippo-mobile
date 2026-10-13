@@ -89,8 +89,13 @@ and cancel when the ViewModel is destroyed.
 
 | Mode | When |
 |---|---|
-| `Infinity` | Streams that must remain subscribed off-screen until cancellation. |
+| `Infinity` | VM-owned work that continues off-screen until completion/cancellation, including finite first-source initialization. |
 | `WhileActive` | Streams that pause off-screen: list observers, real-time stats. Default for `Flow.safeLaunch()`. |
+
+`take(1)` inside WhileActive may run again on a new subscription after resume.
+One-time form population uses the existing block safeLaunch or a finite Infinity
+Flow, with no private initialization flag. Restored inputs and the open draft stay
+authoritative; follow the [draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 
 ### Dispatchers (SHOULD)
 
@@ -109,6 +114,10 @@ Closes the navigator channel and cancels the VM's `coroutineScope`; `Flow.safeLa
 
 ### What MUST NOT be in a ViewModel
 
+- Private restoration/edit flags, previous-source caches or shadow State copies,
+  including equivalents hidden in wrappers or mutable closures. Keep feature data
+  in State/update and derive conditions from existing values; apply the
+  [canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 - `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present failures, including private helpers; use `getOrThrow()` inside `safeLaunch`. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
 
 ### Minimal VM template

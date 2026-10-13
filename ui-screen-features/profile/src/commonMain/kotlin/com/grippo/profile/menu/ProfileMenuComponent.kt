@@ -16,6 +16,7 @@ internal class ProfileMenuComponent(
 
     override val viewModel: ProfileMenuViewModel = componentContext.retainedInstance {
         ProfileMenuViewModel(
+            analytics = getKoin().get(),
             userFeature = getKoin().get(),
             goalFeature = getKoin().get(),
             excludedMusclesFeature = getKoin().get(),

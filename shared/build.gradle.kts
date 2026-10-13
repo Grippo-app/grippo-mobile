@@ -53,6 +53,7 @@ kotlin {
         implementation(projects.toolkit.analytics.core)
 
         implementation(projects.analytics.authorization)
+        implementation(projects.analytics.profile)
 
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)

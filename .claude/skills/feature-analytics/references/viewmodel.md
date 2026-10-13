@@ -61,6 +61,9 @@ Authorization has eight screen hooks and three null-hook hosts:
 AuthViewModel, AuthProcessViewModel and ProfileCreationViewModel. The last adds
 shared progress decoration, not a separate page. The complete mapping is in
 [authorization coverage](../../../../tasks/analytics/authorization-coverage.md).
+Profile has eight independent screen hooks and one null-hook ProfileViewModel
+container; its screen-only API introduces no event/operation families. See
+[Profile coverage](../../../../tasks/analytics/profile-coverage.md).
 Dialogs, pickers and overlays do not automatically become screens; their dedicated
 presentation telemetry needs the separate contract described below.
 

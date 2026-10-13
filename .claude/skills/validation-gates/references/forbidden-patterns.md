@@ -135,6 +135,13 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## State
 
+- **Private ViewModel runtime flags, previous-source caches or shadow snapshots**
+  for initialization, restoration, edit detection or synchronization, including
+  `restorePending`, `previousSource` and `previousSourceSelection`. Equivalent
+  flags/copies hidden in State, wrappers, providers or mutable closures are also
+  forbidden. Keep actual feature values in State/update and use existing initial
+  inputs for one-time population; see
+  [the draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 - **`String` for localizable values.** Use `UiText`.
 - **`String` for form fields.** Use `*FormatState`.
 - **`var` in state classes.** All `val`.

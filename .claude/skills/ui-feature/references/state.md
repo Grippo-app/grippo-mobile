@@ -149,6 +149,10 @@ Rules (MUST):
 
 **Does NOT go in state**: domain objects directly when a transformed representation is needed (map via `:data-mappers:domain-to-state`); loaders (use `loaders` on the VM); computed booleans derivable from other state (use `remember(...)` in the Composable); unchanging configuration (companion/`val`).
 
+State must not hide restoration/edit flags or previous-source copies removed from
+the ViewModel. Store actual draft values and needed display data; follow the
+[canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
+
 ### Immutable collections (MUST)
 
 `ImmutableList<T>` for read-only; `PersistentList<T>` to build incrementally (`.add`/`.remove` returning new lists). Both Compose-stable. `List<T>` / `MutableList<T>` are **forbidden** in state.

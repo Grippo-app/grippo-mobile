@@ -18,6 +18,11 @@ suspend fun <T> trackOperation(operation: FeatureOperation, block: suspend () ->
 fun presentScreen(screen: FeatureScreen, reason: NavigationReason): ScreenPresentation
 ```
 
+API содержит реализованные возможности текущего scope. Для подключения только
+показов достаточно presentScreen и screen enum, как у ProfileAnalytics.
+trackEvent/trackOperation и их модели добавляются вместе с фактическими вызовами;
+пустые семейства и методы на будущее не создаются.
+
 `analytics-api/<feature>/models` содержит закрытые event/operation families,
 screen enum и необходимые enums. Один самостоятельный тип на файл, связанные
 sealed variants вместе. Fact constructors получают прямые typed values.
@@ -48,7 +53,10 @@ async business block и возвращает caller T без интерпрет�
 подменяет начало запроса. Запросы/validation/retry/fallback/navigation решает бизнес.
 Use case не делится на публичные prepare/stages ради аналитики; новых scope/job/
 dispatcher или retry для неё нет. Оригинальные errors/cancellation сохраняются.
-Обычные reporting Exceptions изолированы внутри реализации; fatal Error остаётся fatal.
+Обычные reporting Exceptions изолированы на существующей границе; fatal Error
+остаётся fatal. Для screen present/close эту границу реализует foundation
+ScreenAnalytics. Feature presentScreen передаёт typed navigation и исходный
+presentation без дополнительных catch, no-op fallback или wrapper.
 
 Return/error contract остаётся прежним: Result разворачивается существующим
 getOrThrow внутри tracked block, direct-value throwing use case вызывается напрямую.

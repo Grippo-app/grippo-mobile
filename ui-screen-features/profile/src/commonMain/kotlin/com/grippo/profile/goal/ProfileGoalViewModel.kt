@@ -1,5 +1,7 @@
 package com.grippo.profile.goal
 
+import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.UiText
@@ -15,34 +17,55 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
 import com.grippo.state.domain.goal.toDomain
-import kotlinx.collections.immutable.toPersistentSet
+import com.grippo.toolkit.analytics.context.NavigationReason
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 
 internal class ProfileGoalViewModel(
+    private val analytics: ProfileAnalytics,
     private val goalFeature: GoalFeature,
     private val dialogController: DialogController,
+    initialState: ProfileGoalState?,
 ) : BaseViewModel<ProfileGoalState, ProfileGoalDirection, ProfileGoalLoader>(
-    ProfileGoalState()
+    initialState ?: ProfileGoalState.initial()
 ), ProfileGoalContract {
 
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(ProfileScreen.Goal, reason)
+    }
+
     init {
-        goalFeature.observeGoal()
-            .onEach(::provideGoal)
-            .safeLaunch()
+        if (initialState == null) {
+            goalFeature.observeGoal()
+                .filterNotNull()
+                .take(1)
+                .onEach(::provideGoal)
+                .safeLaunch(processing = Processing.Infinity)
+        }
 
         safeLaunch {
             goalFeature.getGoal().getOrThrow()
         }
     }
 
-    private fun provideGoal(goal: Goal?) {
-        val goalState = goal?.toState() ?: return
+    private fun provideGoal(goal: Goal) {
+        val goalState = goal.toState()
         update {
             it.copy(
-                selectedPrimary = goalState.primaryGoal,
-                selectedSecondary = goalState.secondaryGoal,
-                selectedTarget = goalState.target,
-                selectedPersonalization = goalState.personalizations.toPersistentSet(),
+                selectedPrimary = it.selectedPrimary ?: goalState.primaryGoal,
+                selectedSecondary = it.selectedSecondary ?: goalState.secondaryGoal,
+                selectedTarget = if (it.selectedTarget.value == it.limitations.from) {
+                    goalState.target
+                } else {
+                    it.selectedTarget
+                },
+                selectedPersonalization = if (it.selectedPersonalization.isEmpty()) {
+                    goalState.personalizations.distinct().toPersistentList()
+                } else {
+                    it.selectedPersonalization
+                },
             )
         }
     }
@@ -73,7 +96,7 @@ internal class ProfileGoalViewModel(
                             value = result,
                             range = it.limitations,
                             format = it.selectedTarget.format,
-                        )
+                        ),
                     )
                 }
             }
@@ -86,7 +109,7 @@ internal class ProfileGoalViewModel(
         val config = DialogConfig.PrimaryGoalPicker(
             initial = state.value.selectedPrimary,
             title = UiText.Res(Res.string.goal_picker_primary_title),
-            onResult = { update { current -> current.copy(selectedPrimary = it) } }
+            onResult = { value -> update { it.copy(selectedPrimary = value) } }
         )
 
         dialogController.open(config)
@@ -96,7 +119,7 @@ internal class ProfileGoalViewModel(
         val config = DialogConfig.SecondaryGoalPicker(
             initial = state.value.selectedSecondary,
             title = UiText.Res(Res.string.goal_picker_secondary_title),
-            onResult = { update { current -> current.copy(selectedSecondary = it) } }
+            onResult = { value -> update { it.copy(selectedSecondary = value) } }
         )
 
         dialogController.open(config)
@@ -104,14 +127,14 @@ internal class ProfileGoalViewModel(
 
     override fun onPersonalizationClick(item: PersonalizationKeyEnumState) {
         update { current ->
-            val selected = current.selectedPersonalization.toMutableSet()
-            if (selected.contains(item)) {
-                selected.remove(item)
+            val selected = current.selectedPersonalization.toPersistentList()
+            val personalizations = if (item in selected) {
+                selected.removing(item)
             } else {
-                selected.add(item)
+                selected.adding(item)
             }
 
-            current.copy(selectedPersonalization = selected.toPersistentSet())
+            current.copy(selectedPersonalization = personalizations)
         }
     }
 

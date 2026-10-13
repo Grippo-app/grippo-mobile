@@ -1,5 +1,7 @@
 package com.grippo.profile.menu
 
+import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
@@ -9,17 +11,23 @@ import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileMenuViewModel(
+    private val analytics: ProfileAnalytics,
     userFeature: UserFeature,
     goalFeature: GoalFeature,
     excludedMusclesFeature: ExcludedMusclesFeature,
     excludedEquipmentsFeature: ExcludedEquipmentsFeature,
 ) : BaseViewModel<ProfileMenuState, ProfileMenuDirection, ProfileMenuLoader>(ProfileMenuState()),
     ProfileMenuContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(ProfileScreen.Menu, reason)
+    }
 
     init {
         safeLaunch(loader = ProfileMenuLoader.User) {

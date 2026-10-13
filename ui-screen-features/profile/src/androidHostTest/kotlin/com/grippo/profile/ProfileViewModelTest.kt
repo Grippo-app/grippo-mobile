@@ -4,11 +4,27 @@ import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.screen.api.ProfileRouter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import kotlin.test.BeforeTest
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ProfileViewModelTest {
+    @BeforeTest
+    fun prepareDispatcher() {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @AfterTest
+    fun resetDispatcher() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun profileMenuItemsOpenTheirScreensInsideTheProfileFeature() = runBlocking {
         val viewModel = ProfileViewModel()

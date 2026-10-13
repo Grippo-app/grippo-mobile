@@ -25,6 +25,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                         optIn("androidx.compose.ui.ExperimentalComposeUiApi")
                         optIn("androidx.compose.foundation.layout.ExperimentalLayoutApi")
                         optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                        optIn("kotlinx.serialization.ExperimentalSerializationApi")
                         optIn("androidx.compose.ui.unit.ExperimentalUnitApi")
                         optIn("androidx.compose.animation.ExperimentalAnimationApi")
                         optIn("kotlin.time.ExperimentalTime")

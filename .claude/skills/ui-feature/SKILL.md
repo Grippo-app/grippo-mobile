@@ -36,6 +36,12 @@ reused after error-dialog dismissal may be a private class-level method called
 from `init` and `onError`; do not duplicate its sequence or use a local function.
 Do not add `initialize`/`loadInitialData` helpers solely to hide orchestration.
 
+Keep feature data in State/update. Private runtime flags, previous-source caches
+and shadow snapshots for initialization/restoration/edit synchronization are
+forbidden; do not relocate them into State, wrappers or mutable closures.
+Fresh forms populate once and restored drafts keep their values; apply the
+[canonical draft policy](../state-preservation/SKILL.md#data-backed-form-synchronization).
+
 Follow the [shared error pipeline](references/error-pipeline.md): unwrap failures
 with `getOrThrow()` inside `safeLaunch`. Do not hide, replace or present unhandled
 failures with local catches, `runCatching` or result failure handlers, including

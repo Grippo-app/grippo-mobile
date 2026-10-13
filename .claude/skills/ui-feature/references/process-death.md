@@ -156,6 +156,13 @@ plugin; use `@Serializable` draft state and the existing ImmutableListSerializer
 for immutable lists. Preserve FormatState values, including invalid display text.
 Exclude catalogs, localized presentation data and other rebuilt suggestions with
 `@Transient` and a default; re-subscribe to their existing data Flows.
+For data-backed forms, follow the
+[draft initialization policy](../../state-preservation/SKILL.md#data-backed-form-synchronization):
+persist actual values, populate a fresh form once and preserve restored snapshots.
+Keep no private runtime flags, previous-source caches or shadow snapshots; later
+source updates rebuild presentation without replacing form inputs. An absent
+archive and a saved all-default snapshot are distinct; the VM can receive nullable
+initialState at this boundary while BaseViewModel always receives a complete state.
 Catalog selection must preserve which IDs were known and selected (or excluded),
 so the first restored emission cannot treat all known items as newly selected.
 An initial empty cache emission must not erase the draft before data arrives.

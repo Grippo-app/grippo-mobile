@@ -31,12 +31,17 @@ Before completing feature work:
 3. Implement the required preservation at its existing owner using the pattern
    below. Keep data-backed state rebuilt from its existing source. Do not serialize
    all state indiscriminately or move ordinary screen drafts to a global store.
+   Inspect ViewModel members, closures and State fields: reject restoration/edit
+   flags, previous-source caches and equivalent shadow data hidden behind helpers.
 4. Verify real save → serialization roundtrip → destroy old lifecycle and
    InstanceKeeper → fresh ComponentContext/InstanceKeeper → restore. Check exact
    unfinished input/selection, Back, parent-to-child values and final business
    inputs. Where a child can be destroyed and entered again, verify accepted
    parent values seed its fresh state without an archive. Retained instances or
    a State-only copy are insufficient proof of wiring.
+   Check pause/resume without repeating form initialization. For lifecycle-aware
+   subscriptions, advance virtual time past the actual disconnect grace so the
+   test exercises resubscription rather than continuous collection.
 5. Reconcile the inventory with implementation and tests. Reject missing required
    fields, stale route-prefill restoration, secret leakage and duplicate ownership.
    Record actual checks and shell limitations; honor no-build/test restrictions.
@@ -56,12 +61,15 @@ Use this compact inventory in the existing feature record:
   class names, toString, route IDs or live-instance identity. The descriptor is
   metadata and does not belong in State/Router payloads or DI.
 - The owning Component calls protected `restoreState(DRAFT)` inside the existing
-  retainedInstance factory, passes typed non-null `initialState` to a fresh VM and
+  retainedInstance factory, passes typed `initialState` to a fresh VM and
   calls `saveState(DRAFT) { viewModel.state.value }` once during construction. This
   registers a lazy local supplier; the shell's StateKeeper.save creates the snapshot.
   Use these helpers rather than raw draft StateKeeper.consume/register calls.
   No aliases, extensions or DI are needed for the descriptor.
   Child ComponentContexts isolate identical descriptors for separate live owners.
+  A data-backed form may accept nullable initialState to distinguish an absent
+  archive from a saved snapshot, including an all-default snapshot. BaseViewModel
+  still receives a complete non-null state; evaluate dynamic fresh defaults once.
 - Restore accepted parent-flow data before constructing children that use it.
   Pass already accepted parent values as ordinary business initial inputs to a
   fresh child with no local archive. Priority is retained VM, then local saved
@@ -77,6 +85,10 @@ Use this compact inventory in the existing feature record:
   Saved fields need stable defaults: a date-dependent default can be omitted
   during encoding and change on restoration. Apply dynamic initial values only
   when no saved draft exists.
+  When removing saved fields, check the actual StateKeeper codec against an old
+  archive. If only obsolete metadata is removed, class-scoped JsonIgnoreUnknownKeys
+  can preserve recognized typed values without legacy fields or recovery fallbacks.
+  Known fields must still reject invalid types; global opt-ins belong to convention.
 - Rebuild catalogs, localized presentation and provider availability from current
   sources. Preserve catalog selection intent across an initial empty emission;
   saved known/selected or excluded IDs must distinguish deselected and new items.
@@ -101,3 +113,33 @@ Use this compact inventory in the existing feature record:
   [iOS policy](../ui-feature/references/process-death.md#ios-specifics), including
   format/build invalidation when archive schemas change. Dialog sessions stay
   unsaved; accepted results belong to the owning screen's draft.
+
+## Data-backed form synchronization
+
+The current State owns the draft while the screen is open. Populate a fresh form
+once from its business source; a restored snapshot keeps its saved values,
+including Empty/null/default values. Use the existing initialState boundary to
+choose initialization, without storing another mode or source snapshot. Preserve
+nondefault values entered before the first source arrives. A choice equal to a
+fresh default carries no separate edit history and may receive initial source data.
+
+ViewModels MUST NOT keep private runtime flags, previous-source caches or shadow
+snapshots for restoration, edit detection or synchronization. This includes
+restorePending, previousSource and previousSourceSelection, regardless of type.
+Do not move equivalent flags/copies into State, a wrapper, a provider or a mutable
+closure. Persist actual values without hasEdited/selectionEdited/dirty metadata.
+Use State/update for feature data and derive conditions from existing values.
+
+Later source observations rebuild actual display data and catalogs, without
+resynchronizing form inputs. Both fresh and restored drafts may therefore remain
+older than server values while open. Do not reconstruct field provenance or add
+automatic merge machinery. A one-shot initialization must not restart on ordinary
+pause/resume; use the existing VM-owned safeLaunch, or Processing.Infinity for a
+finite Flow, rather than a lifecycle-repeated subscription.
+
+Catalog known/selected IDs are business identity, not edit flags: keep them where
+required to distinguish deselected known items from new items and preserve accepted
+parent exclusions. Preserve choices for known IDs, seed new IDs from the current
+business source and discard IDs absent from a nonempty current catalog. Empty
+catalog emissions must not erase the draft. Verify first-load edits, restored
+defaults, pause/resume, changed sources, empty catalogs and final requests.

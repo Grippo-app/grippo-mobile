@@ -1,20 +1,29 @@
 package com.grippo.profile.equipments
 
+import com.grippo.analytics.profile.ProfileAnalytics
+import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.domain.state.equipment.toState
+import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.combine
 
 internal class ProfileEquipmentsViewModel(
+    private val analytics: ProfileAnalytics,
+    initialState: ProfileEquipmentsState,
     equipmentFeature: EquipmentFeature,
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
 ) : BaseViewModel<ProfileEquipmentsState, ProfileEquipmentsDirection, ProfileEquipmentsLoader>(
-    ProfileEquipmentsState()
+    initialState
 ), ProfileEquipmentsContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(ProfileScreen.Equipments, reason)
+    }
 
     init {
         combine(
@@ -34,20 +43,33 @@ internal class ProfileEquipmentsViewModel(
         excluded: List<Equipment>
     ) {
         val suggestions = list.toState()
-        val selectedIds = suggestions
+        val allIds = suggestions
             .flatMap { it.equipments }
             .map { it.id }
-            .minus(excluded.map { it.id }.toSet())
-            .toPersistentList()
+        if (allIds.isEmpty()) {
+            update { it.copy(suggestions = suggestions) }
+            return
+        }
+        val excludedIds = excluded.map { it.id }.toSet()
 
-        update {
-            val selectedGroupId = it.selectedGroupId
+        update { previous ->
+            val knownIds = previous.knownEquipmentIds.toSet()
+            val selectedIds = previous.selectedEquipmentIds.toSet()
+            val selectedEquipmentIds = allIds.filter { id ->
+                if (id !in knownIds) {
+                    id !in excludedIds
+                } else {
+                    id in selectedIds
+                }
+            }.toPersistentList()
+            val selectedGroupId = previous.selectedGroupId
                 ?.takeIf { id -> suggestions.any { group -> group.id == id } }
                 ?: suggestions.firstOrNull()?.id
 
-            it.copy(
+            previous.copy(
                 suggestions = suggestions,
-                selectedEquipmentIds = selectedIds,
+                selectedEquipmentIds = selectedEquipmentIds,
+                knownEquipmentIds = allIds.toPersistentList(),
                 selectedGroupId = selectedGroupId
             )
         }
@@ -64,9 +86,9 @@ internal class ProfileEquipmentsViewModel(
     override fun onSelectEquipment(id: String) {
         update {
             val selectedEquipmentIds = if (id in it.selectedEquipmentIds) {
-                it.selectedEquipmentIds.removing(id)
+                it.selectedEquipmentIds.toPersistentList().removing(id)
             } else {
-                it.selectedEquipmentIds.adding(id)
+                it.selectedEquipmentIds.toPersistentList().adding(id)
             }
             it.copy(selectedEquipmentIds = selectedEquipmentIds)
         }
@@ -74,9 +96,11 @@ internal class ProfileEquipmentsViewModel(
 
     override fun onApply() {
         val current = state.value
-        val excludedEquipmentIds = current.suggestions
+        val allIds = current.suggestions
             .flatMap { it.equipments }
-            .map { it.id } - current.selectedEquipmentIds
+            .map { it.id }
+        if (allIds.isEmpty()) return
+        val excludedEquipmentIds = allIds - current.selectedEquipmentIds
 
         safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton) {
             excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds).getOrThrow()
