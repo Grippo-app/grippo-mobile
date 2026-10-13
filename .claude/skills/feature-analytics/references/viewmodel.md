@@ -5,6 +5,10 @@ ViewModels and `ui-core/foundation` BaseComponent/BaseViewModel/ScreenAnalytics.
 
 ## Conventional injection
 
+ViewModel constructor parameters MUST follow the canonical
+[UI constructor order](../../ui-feature/references/mvi-contract.md#nameviewmodelkt):
+caller arguments, analytics, other dependencies, initial State last.
+
 The Component only constructs its retained ViewModel and resolves dependencies:
 
 ```kotlin

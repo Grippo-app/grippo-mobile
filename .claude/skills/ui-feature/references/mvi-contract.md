@@ -146,6 +146,12 @@ Rules:
   feature analytics and necessary route inputs or restored `initialState`.
   No direct API/DAO/repository dependencies. Authorization's documented
   Google/Apple credential-provider exception stays local to that feature.
+- Constructor parameters MUST follow this order: caller-supplied screen/route
+  arguments first, then `analytics`, then all other permitted injected dependencies,
+  then initial State (`initialState`) last. With no caller arguments, analytics is
+  first. Omit absent groups; this ordering does not require an unused analytics
+  dependency or a new State parameter. Apply the order when creating or changing
+  a ViewModel constructor and update its callers within scope.
 - Initial state in the `BaseViewModel` constructor.
 - `init { }` starts Flow subscriptions and startup loads through `safeLaunch`. A
   complete startup operation reused after error-dialog dismissal may be a private
