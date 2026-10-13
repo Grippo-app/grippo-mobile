@@ -1,5 +1,7 @@
 package com.grippo.trainings.trainings
 
+import com.grippo.analytics.trainings.TrainingsAnalytics
+import com.grippo.analytics.trainings.models.TrainingsScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
@@ -20,6 +22,7 @@ import com.grippo.design.resources.provider.value_statistics
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
+import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -39,20 +42,25 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 
 internal class TrainingsViewModel(
+    private val analytics: TrainingsAnalytics,
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val trainingDigestUseCase: TrainingDigestUseCase,
     private val deleteTrainingUseCase: DeleteTrainingUseCase,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
+    initialState: TrainingsState?,
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
-    TrainingsState()
+    initialState ?: TrainingsState(date = TrainingsTimelinePeriod.Monthly().defaultRange())
 ), TrainingsContract {
+
+    override val screenPresentation = { reason: NavigationReason ->
+        analytics.presentScreen(TrainingsScreen.Calendar, reason)
+    }
 
     init {
         val rangeFlow = state
-            .map { Triple(it.date, it.limitations, it.period) }
+            .map { it.period.effectiveRange(it.date.from, it.limitations) }
             .distinctUntilChanged()
-            .map { (date, limitations, period) -> period.effectiveRange(date.from, limitations) }
 
         rangeFlow
             .mapLatest { range ->

@@ -4,6 +4,7 @@ import com.grippo.analytics.authorization.AuthAnalyticsModule
 import com.grippo.analytics.home.HomeAnalyticsModule
 import com.grippo.analytics.profile.ProfileAnalyticsModule
 import com.grippo.analytics.training.TrainingAnalyticsModule
+import com.grippo.analytics.trainings.TrainingsAnalyticsModule
 import com.grippo.core.error.provider.impl.ErrorModule
 import com.grippo.core.foundation.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -53,6 +54,7 @@ public object Koin {
                 AuthAnalyticsModule().module,
                 ProfileAnalyticsModule().module,
                 TrainingAnalyticsModule().module,
+                TrainingsAnalyticsModule().module,
                 HomeAnalyticsModule().module,
                 CrashReportingModule().module,
                 MessagingModule().module,

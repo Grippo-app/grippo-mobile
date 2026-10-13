@@ -23,15 +23,19 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Immutable
+@Serializable
 internal data class TrainingsState(
     val period: TrainingsTimelinePeriod = TrainingsTimelinePeriod.Monthly(),
-    val date: DateRange = TrainingsTimelinePeriod.Monthly().defaultRange(),
-    val limitations: DateRange = DateTimeUtils.trailingYear(),
+    val date: DateRange,
+    @Transient val limitations: DateRange = DateTimeUtils.trailingYear(),
 )
 
 @Immutable
+@Serializable
 internal sealed interface TrainingsTimelinePeriod {
     val id: String
     val text: UiText
@@ -43,11 +47,12 @@ internal sealed interface TrainingsTimelinePeriod {
     fun effectiveRange(anchor: LocalDateTime, limitations: DateRange): DateRange
 
     @Immutable
+    @Serializable
     data class Daily(
-        val items: ImmutableList<TimelineState.Daily.Item> = persistentListOf(),
+        @Transient val items: ImmutableList<TimelineState.Daily.Item> = persistentListOf(),
     ) : TrainingsTimelinePeriod {
-        override val id: String = ID
-        override val text: UiText = UiText.Res(Res.string.trainings_period_daily)
+        @Transient override val id: String = ID
+        @Transient override val text: UiText = UiText.Res(Res.string.trainings_period_daily)
 
         override fun defaultRange(): DateRange = DateRangePresets.daily()
 
@@ -67,17 +72,18 @@ internal sealed interface TrainingsTimelinePeriod {
     }
 
     @Immutable
+    @Serializable
     data class Monthly(
-        val monthReference: DateFormatState = defaultMonthReference(),
-        val digest: DigestState = DigestState.Empty(
+        @Transient val monthReference: DateFormatState = defaultMonthReference(),
+        @Transient val digest: DigestState = DigestState.Empty(
             range = DateRangeFormatState.of(DateRangePresets.monthly()),
         ),
-        val weekDayLabels: ImmutableList<String> = DateTimeUtils.weekDayShortLabels()
+        @Transient val weekDayLabels: ImmutableList<String> = DateTimeUtils.weekDayShortLabels()
             .toPersistentList(),
-        val weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>> = persistentListOf(),
+        @Transient val weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>> = persistentListOf(),
     ) : TrainingsTimelinePeriod {
-        override val id: String = ID
-        override val text: UiText = UiText.Res(Res.string.trainings_period_monthly)
+        @Transient override val id: String = ID
+        @Transient override val text: UiText = UiText.Res(Res.string.trainings_period_monthly)
 
         override fun defaultRange(): DateRange = DateRangePresets.monthly()
 
