@@ -1,50 +1,68 @@
 package com.grippo.services.backend.dto.training
 
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class TrainingBody(
     @SerialName("duration")
-    val duration: Long,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val duration: Long? = null,
     @SerialName("exercises")
-    val exercises: List<ExerciseBody>,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val exercises: List<ExerciseBody>? = null,
     @SerialName("intensity")
-    val intensity: Float,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val intensity: Float? = null,
     @SerialName("volume")
-    val volume: Float,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val volume: Float? = null,
     @SerialName("repetitions")
-    val repetitions: Int,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val repetitions: Int? = null,
 )
 
 @Serializable
 public data class ExerciseBody(
     @SerialName("repetitions")
-    val repetitions: Int,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val repetitions: Int? = null,
     @SerialName("intensity")
-    val intensity: Float,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val intensity: Float? = null,
     @SerialName("iterations")
-    val iterations: List<IterationBody>,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val iterations: List<IterationBody>? = null,
     @SerialName("name")
-    val name: String,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val name: String? = null,
     @SerialName("volume")
-    val volume: Float,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val volume: Float? = null,
     @SerialName("exerciseExampleId")
-    val exerciseExampleId: String?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val exerciseExampleId: String? = null,
 )
 
 @Serializable
 public data class IterationBody(
     @SerialName("repetitions")
-    val repetitions: Int,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val repetitions: Int? = null,
     @SerialName("extraWeight")
-    val extraWeight: Float?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val extraWeight: Float? = null,
     @SerialName("bodyWeight")
-    val bodyWeight: Float?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val bodyWeight: Float? = null,
     @SerialName("bodyMultiplier")
-    val bodyMultiplier: Float?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val bodyMultiplier: Float? = null,
     @SerialName("assistWeight")
-    val assistWeight: Float?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val assistWeight: Float? = null,
     @SerialName("externalWeight")
-    val externalWeight: Float?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val externalWeight: Float? = null,
 )

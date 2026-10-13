@@ -1,20 +1,27 @@
 package com.grippo.services.backend.dto.user
 
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class CreateProfileBody(
     @SerialName("name")
-    val name: String,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val name: String? = null,
     @SerialName("weight")
-    val weight: Float,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val weight: Float? = null,
     @SerialName("height")
-    val height: Int,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val height: Int? = null,
     @SerialName("experience")
-    val experience: String,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val experience: String? = null,
     @SerialName("excludeMuscleIds")
-    val excludeMuscleIds: List<String>?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val excludeMuscleIds: List<String>? = null,
     @SerialName("excludeEquipmentIds")
-    val excludeEquipmentIds: List<String>?,
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val excludeEquipmentIds: List<String>? = null,
 )

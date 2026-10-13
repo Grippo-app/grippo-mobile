@@ -12,7 +12,7 @@ public data class TrainingResponse(
     @SerialName("duration")
     val duration: Long? = null,
     @SerialName("exercises")
-    val exercises: List<ExerciseResponse> = emptyList(),
+    val exercises: List<ExerciseResponse>? = null,
     @SerialName("id")
     val id: String? = null,
     @SerialName("intensity")
@@ -38,7 +38,7 @@ public data class ExerciseResponse(
     @SerialName("intensity")
     val intensity: Float? = null,
     @SerialName("iterations")
-    val iterations: List<IterationResponse> = emptyList(),
+    val iterations: List<IterationResponse>? = null,
     @SerialName("name")
     val name: String? = null,
     @SerialName("volume")

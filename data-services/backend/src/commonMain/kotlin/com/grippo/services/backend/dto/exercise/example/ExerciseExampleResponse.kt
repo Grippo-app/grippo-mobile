@@ -10,7 +10,7 @@ public data class ExerciseExampleResponse(
     @SerialName("id")
     val id: String? = null,
     @SerialName("exerciseExampleBundles")
-    val exerciseExampleBundles: List<ExerciseExampleBundleResponse> = emptyList(),
+    val exerciseExampleBundles: List<ExerciseExampleBundleResponse>? = null,
     @SerialName("name")
     val name: String? = null,
     @SerialName("forceType")
@@ -32,5 +32,5 @@ public data class ExerciseExampleResponse(
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("equipmentRefs")
-    val equipmentRefs: List<ExerciseExampleEquipmentRefResponse> = emptyList()
+    val equipmentRefs: List<ExerciseExampleEquipmentRefResponse>? = null
 )

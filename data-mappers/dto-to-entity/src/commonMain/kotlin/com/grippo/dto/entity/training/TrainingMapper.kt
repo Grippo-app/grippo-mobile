@@ -41,6 +41,16 @@ public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
         "TrainingResponse.profileId is null"
     } ?: return null
 
+    val entityExercises = AppLogger.Mapping.log(exercises) {
+        "TrainingResponse.exercises is null"
+    } ?: return null
+
+    for (exercise in entityExercises) {
+        AppLogger.Mapping.log(exercise.iterations) {
+            "ExerciseResponse.iterations is null"
+        } ?: return null
+    }
+
     return TrainingEntity(
         id = entityId,
         duration = entityDuration,

@@ -287,7 +287,6 @@ private class GoogleTokenClient(
             error.rethrowCancellationOrFatal()
             throw GoogleAuthException.CredentialManagerFailed(
                 "Failed to exchange Google authorization code",
-                error,
             )
         }
 
@@ -296,18 +295,13 @@ private class GoogleTokenClient(
                 error.rethrowCancellationOrFatal()
                 throw GoogleAuthException.TokenParseFailed(
                     "Google token endpoint returned unexpected payload",
-                    error,
                 )
             }
 
         val errorCode = payload["error"]?.jsonPrimitive?.contentOrNull
         if (!errorCode.isNullOrBlank()) {
             val errorDescription = payload["error_description"]?.jsonPrimitive?.contentOrNull
-            val msg = if (!errorDescription.isNullOrBlank()) {
-                "Google token endpoint error: $errorCode ($errorDescription)"
-            } else {
-                "Google token endpoint error: $errorCode"
-            }
+            val msg = "Google token endpoint rejected the authorization request"
 
             val mapped = when {
                 errorCode.contains("invalid_grant", ignoreCase = true) &&

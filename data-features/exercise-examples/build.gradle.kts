@@ -10,6 +10,7 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        implementation(projects.uiCore.error.errorProvider)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
