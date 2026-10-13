@@ -32,7 +32,9 @@ import com.grippo.toolkit.local.notification.NotificationManager
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 
 internal class ProfileBodyViewModel(
     private val analytics: ProfileAnalytics,
@@ -52,6 +54,14 @@ internal class ProfileBodyViewModel(
     }
 
     init {
+        if (initialState == null) {
+            userFeature.observeUser()
+                .filterNotNull()
+                .take(1)
+                .onEach(::provideInitialUser)
+                .safeLaunch(processing = Processing.Infinity)
+        }
+
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshWeightHistory) {
                 weightHistoryFeature.getWeightHistory().getOrThrow()
@@ -66,7 +76,7 @@ internal class ProfileBodyViewModel(
 
         userFeature
             .observeUser()
-            .onEach(if (initialState == null) ::provideInitialUser else ::provideUser)
+            .onEach(::provideUser)
             .safeLaunch()
 
         weightHistoryFeature
@@ -85,21 +95,20 @@ internal class ProfileBodyViewModel(
         update { it.copy(user = user) }
     }
 
-    private fun provideInitialUser(value: User?) {
-        val user = value?.toState() ?: return
+    private fun provideInitialUser(value: User) {
+        val user = value.toState()
         update {
             it.copy(
-                weight = if (it.user == null && it.weight == WeightFormatState.Empty()) {
+                weight = if (it.weight == WeightFormatState.Empty()) {
                     user.weight
                 } else {
                     it.weight
                 },
-                height = if (it.user == null && it.height == HeightFormatState.Empty()) {
+                height = if (it.height == HeightFormatState.Empty()) {
                     user.height
                 } else {
                     it.height
                 },
-                user = user,
             )
         }
     }

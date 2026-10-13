@@ -42,7 +42,8 @@ internal fun HomeScreen(
     )
 ) {
     val isEmptyState = (state.user?.stats?.trainingsCount ?: 0) < 1
-    val isLoading = (loaders.contains(HomeLoader.Trainings) || state.user == null) && isEmptyState
+    val isLoading = state.range.value == null ||
+        ((loaders.contains(HomeLoader.Trainings) || state.user == null) && isEmptyState)
 
     if (isLoading) {
         Loader(

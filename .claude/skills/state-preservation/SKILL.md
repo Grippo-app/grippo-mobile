@@ -116,6 +116,20 @@ Use this compact inventory in the existing feature record:
   format/build invalidation when archive schemas change. Dialog sessions stay
   unsaved; accepted results belong to the owning screen's draft.
 
+## Initialization from persistent settings
+
+A selection already committed to an existing durable settings owner need not gain
+an additional StateKeeper copy solely for restoration. Record that source in the
+inventory; this does not replace local preservation of unfinished screen drafts.
+
+When restored settings arrive asynchronously, review the interval before their
+first value as well as the loaded state. Dependent requests MUST NOT use a fallback
+as though it were the restored selection; apply the fallback once absence is known.
+Dependent controls must either wait for that value or preserve permitted early
+edits under the existing draft policy. Inspect actual render conditions and callback
+eligibility, not only the subscription. Reuse meaningful State and existing loading
+or eligibility mechanisms; do not add restoration flags or block unrelated controls.
+
 ## Data-backed form synchronization
 
 The current State owns the draft while the screen is open. Populate a fresh form

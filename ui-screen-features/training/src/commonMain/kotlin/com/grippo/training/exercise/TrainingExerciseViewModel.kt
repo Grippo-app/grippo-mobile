@@ -1,6 +1,7 @@
 package com.grippo.training.exercise
 
 import com.grippo.analytics.training.TrainingAnalytics
+import com.grippo.analytics.training.models.TrainingEvent
 import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.foundation.models.Result
@@ -133,6 +134,7 @@ internal class TrainingExerciseViewModel(
 
     override fun onAddIteration() {
         val example = state.value.exerciseExample ?: return
+        analytics.trackEvent(TrainingEvent.Exercise.AddIteration)
         safeLaunch {
             val initial = buildBlankIteration(example)
                 .withResolvedBodyWeight(example)
@@ -156,6 +158,7 @@ internal class TrainingExerciseViewModel(
     }
 
     override fun onDeleteIteration(id: String) {
+        analytics.trackEvent(TrainingEvent.Exercise.DeleteIteration)
         mutateIterations { iterations -> iterations.filter { it.id != id } }
     }
 
@@ -166,15 +169,18 @@ internal class TrainingExerciseViewModel(
         val to = iterations.indexOfFirst { it.id == toId }
         if (from < 0 || to < 0) return
 
+        analytics.trackEvent(TrainingEvent.Exercise.ReorderIterations)
         val reordered = iterations.toMutableList().apply { add(to, removeAt(from)) }
         update { it.copy(exercise = it.exercise.copy(iterations = reordered.toPersistentList())) }
     }
 
     override fun onEndReorderIterations() {
+        analytics.trackEvent(TrainingEvent.Exercise.ReorderFinished)
         updateExercise(state.value.exercise)
     }
 
     override fun onExampleClick() {
+        analytics.trackEvent(TrainingEvent.Exercise.ExampleOpened)
         val exampleId = state.value.exercise.exerciseExample.id
         val title = UiText.Res(Res.string.change_btn)
         val dialog = DialogConfig.ExerciseExample(
@@ -189,14 +195,17 @@ internal class TrainingExerciseViewModel(
     }
 
     override fun onSave() {
+        analytics.trackEvent(TrainingEvent.Exercise.Save)
         navigateTo(TrainingExerciseDirection.Save(exercise = state.value.exercise))
     }
 
     override fun onBack() {
+        analytics.trackEvent(TrainingEvent.Exercise.Back)
         navigateTo(TrainingExerciseDirection.Back)
     }
 
     private fun showExerciseLibrary(navigation: Session, exampleId: String) {
+        analytics.trackEvent(TrainingEvent.Exercise.ReplaceExample)
         navigation.close()
         navigateTo(TrainingExerciseDirection.ToLibrary(
             ExercisesRouter.Library(
@@ -210,6 +219,7 @@ internal class TrainingExerciseViewModel(
         val current = state.value.exercise
         if (current.exerciseExample.id == value.value.id) return
 
+        analytics.trackEvent(TrainingEvent.Exercise.ExampleSelected)
         val updated = current.copy(
             name = value.value.name,
             exerciseExample = value.value,
@@ -224,6 +234,11 @@ internal class TrainingExerciseViewModel(
         val index = iterations.indexOfFirst { it.id == id }
         if (index < 0) return
 
+        when (focus) {
+            IterationFocusState.VOLUME -> analytics.trackEvent(TrainingEvent.Exercise.EditVolume)
+            IterationFocusState.REPETITIONS -> analytics.trackEvent(TrainingEvent.Exercise.EditRepetitions)
+            IterationFocusState.UNIDENTIFIED -> Unit
+        }
         safeLaunch {
             val initial = iterations[index]
                 .withResolvedBodyWeight(example)
@@ -268,9 +283,13 @@ internal class TrainingExerciseViewModel(
             previousIteration = state.value.previousIterations.getOrNull(number - 1),
             focus = focus,
             example = example,
-            onResult = onResult,
+            onResult = { iteration ->
+                analytics.trackEvent(TrainingEvent.Exercise.IterationConfirmed)
+                onResult(iteration)
+            },
         )
 
+        analytics.trackEvent(TrainingEvent.Exercise.IterationOpened)
         dialogController.open(dialog)
     }
 

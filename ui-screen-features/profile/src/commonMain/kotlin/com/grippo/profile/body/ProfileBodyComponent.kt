@@ -2,6 +2,7 @@ package com.grippo.profile.body
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.models.PersistenceKey
@@ -25,8 +26,11 @@ internal class ProfileBodyComponent(
         )
     }
 
+    private val backCallback = BackCallback(onBack = viewModel::onBack)
+
     init {
         saveState(DRAFT) { viewModel.state.value }
+        backHandler.register(backCallback)
     }
 
     override suspend fun eventListener(direction: ProfileBodyDirection) {

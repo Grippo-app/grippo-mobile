@@ -180,6 +180,9 @@ reason, callbacks/inputs/operations, omissions and checks.
   Consent/identity/SDK transport stay owned by core/application policy.
 - Maintain route/control/input/operation coverage with actual owners and explicit
   omissions. One feature does not prove global coverage or Firebase delivery.
+  Reconcile existing summaries and omission lists with the final scoped matrix;
+  appending a new section must not leave contradictory current-coverage claims.
+  Keep historical results explicitly scoped to their original change.
 - Self-review naming/boundaries/DI/event matrix/privacy/error isolation and overhead;
   fix findings and review again. Remove obsolete API/callers/helpers/docs.
 - Verify actual payloads, results/errors/cancellation, reporting-failure injection,

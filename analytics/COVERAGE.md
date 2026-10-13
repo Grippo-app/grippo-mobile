@@ -12,30 +12,25 @@ Update it when these owners or their instrumentation change.
 | Training calendar graph | TrainingsRootComponent → TrainingsRootViewModel | Default null | Container renders its child; no duplicate presentation |
 | Training recording, Add/Edit/Draft entry | TrainingRecordingComponent → TrainingRecordingViewModel | TrainingScreen.Recording / training_recording | Typed VM hook; one screen for all modes |
 | Training exercise editor | TrainingExerciseComponent → TrainingExerciseViewModel | TrainingScreen.Exercise / training_exercise | Typed VM hook; original navigation/result owner |
+| Training completion, saving loader and summary | TrainingCompletedComponent → TrainingCompletedViewModel | TrainingScreen.Completed / training_completed | Typed VM hook; saved outcome ID and rebuilt presentation |
 | Training graph | TrainingComponent → TrainingViewModel | Default null | Container renders stack; no duplicate presentation |
 | DraftTraining, StartTraining, TrainingGoalDetails dialogs | Respective dialog VM | No dedicated presentation contract | Live dialog sessions remain outside independent-screen tracking |
 
-HomeAnalytics, TrainingAnalytics and TrainingsAnalytics expose only presentScreen. Implementations
-encode existing built-in presentation schemas; no event/operation scaffolding,
-UI/domain imports or feature lifecycle observers are added. Shared registers the
-generated annotated modules. Foundation supplies Initial/Restore and closes on
-pause/destroy. The unchanged completed/library pages are outside this affected
-inventory; no screen enum entry claims them.
-
-The following observations are deliberately uninstrumented in this change:
-Home controls/filter/goal operations, calendar date/period/menu controls,
-recording submit/add/edit/delete/reorder,
-exercise field/iteration callbacks and dialog open/accepted-result callbacks.
-This task repairs mapping/ownership/preservation and adds required affected-screen
-presentations; it does not define new behavioral telemetry or change eligibility.
-No raw input, entity ID, body measurement, credential or exception payload is
-encoded by the new feature analytics APIs.
+The initial presentation integration established typed leaf hooks and null
+container hooks. Foundation supplies Initial/Restore and closes on pause/destroy;
+shared registers the generated annotated modules. Later scoped sections below
+record the current behavioral instrumentation and additional affected surfaces.
+Home now observes its controls and three operations; Training has its current
+[expanded coverage](#training-analytics-and-recreation-preservation) for three screens,
+32 interaction observations and seven operation kinds. TrainingsAnalytics remains presentation-only: calendar
+controls are still an explicit omission. No raw inputs, entity IDs, measurements,
+credentials or exception payloads enter the feature telemetry.
 
 ## Preservation inventory
 
 | Owner | Field/group | Policy | Source/key and restoration |
 |---|---|---|---|
-| HomeViewModel | Range/filter selection | Rebuild from existing persistent owner | LocalSettings observation; no duplicate StateKeeper range owner |
+| HomeViewModel | Range/filter selection | Preserve in existing persistent owner; rebuild formatted date bounds | LocalSettings/DataStore `range`; initial Empty waits for the persisted selection, null resolves Last30Days; no duplicate StateKeeper owner |
 | HomeViewModel | Dashboard, goals, adherence presentation | Rebuild | Existing Feature/UseCase flows and caller-provided current time |
 | Trainings calendar | Daily/Monthly selection and selected date range | Preserve | Component DRAFT / TrainingsDraft; required date has no dynamic serializer default |
 | Trainings calendar | Limitations, timelines, digest, weeks and localized labels | Rebuild | Current date limits and existing DAO/UseCase observations; transient presentation fields |
@@ -219,7 +214,8 @@ retainedInstance factory. Containers add neither binding nor service resolution.
 Foundation alone binds screenPresentation, assigns Initial/Restore and closes on
 pause/destroy. Alternate initial routes and restored child stacks use the same
 owners. Profile's parent navigation and the main tab shell emit no fake menu/Back
-clicks; system stack handling may navigate without invoking a leaf Back callback.
+clicks. Editor, Settings and Social system Back callbacks invoke their owning VMs;
+Menu has no leaf Back control/event, so container stack handling remains unreported.
 
 | Owner | Observed callbacks / payload facts | Complete operations |
 |---|---|---|
@@ -330,10 +326,53 @@ results imply Valid internally. Goal.TargetDateConfirmed alone accepts the exist
 formatter status. GoalPicker remains the closed selector for open callbacks only.
 The profile_picker_confirmed version-1 wire payload, fields and status values are
 unchanged; no report migration, dual emission or StateKeeper change is needed.
-Follow-up verification: source invariants and git diff --check passed; final
+Contract follow-up verification: source invariants and git diff --check passed;
 :ui-screen-features:profile:compileKotlinIosSimulatorArm64 and
 :shared:compileKotlinIosSimulatorArm64 passed (BUILD SUCCESSFUL). Device runtime
-and Android compilation were not rerun for this contract-only refinement.
+and Android compilation were not rerun for that contract-only refinement.
+
+### Profile restoration and Back follow-up (2026-10-13)
+
+The eight leaf routes and null-hook Profile container above were reconciled with
+the current child factory, rendered surfaces, retained VM injection and foundation
+binding. All twelve operation values have actual VM callers; existing typed event
+schemas and privacy omissions remain unchanged.
+
+Body now registers the same leaf BackCallback as the other profile editors:
+system Back invokes Body.Back before the existing parent pop, just like toolbar
+Back. Parent/programmatic navigation still does not synthesize user events.
+
+Body's fresh height/weight population consumes the first nonnull user observation
+once in the VM-owned Processing.Infinity subscription. Nondefault picker values
+entered before that observation win. A restored snapshot, including empty or
+invalid formats, skips population entirely. The separate lifecycle-aware user
+and history subscriptions rebuild presentation without rewriting inputs; ordinary
+pause/resume does not restart population. No edit flags, source caches, new keys
+or archive schema changes were introduced. The five local draft suppliers and
+serializers in the inventory above remain the restoration owners. Menu rebuilds
+its summaries; Settings, Social and the container need no editable-state supplier.
+
+Manual scenarios still required: save an unfinished draft in each of the five
+editors, destroy the old lifecycle/InstanceKeeper, restore the archive through
+fresh Components and confirm selections plus final save arguments. Include empty
+and invalid Body formats, accepted picker results, an empty first catalog emission,
+changed catalogs, a delayed first user observation and pause/resume beyond the
+foundation disconnect grace. Confirm toolbar/system Back reports once and pops
+once, and re-entry after pop initializes from current business data. Dialog
+sessions, jobs, loaders and telemetry provenance remain unsaved. Android needs
+shell-supplied saved state; iOS needs a completed compatible background checkpoint.
+Abrupt active termination is not a guaranteed restoration path.
+
+Follow-up verification: scoped `:ui-screen-features:profile:compileAndroidMain`,
+`:analytics:profile:compileAndroidMain` and
+`:ui-screen-features:profile:compileKotlinIosSimulatorArm64` finished with
+BUILD SUCCESSFUL. Source/diff review and `git diff --check` passed; generated
+profile service/schema bindings were inspected. Existing opt-in warnings remain.
+No automated tests/infrastructure were added. Device restoration, native checkpoint
+delivery, runtime Back/lifecycle timing, payload delivery and reporting-failure
+injection remain unverified; the manual scenarios above are pending.
+Independent source review of the profile owners and Body diff found no blocking
+defects; it did not execute runtime restoration or lifecycle scenarios.
 
 ## Exercises analytics and process restoration
 
@@ -415,3 +454,231 @@ binding and single qualified schema catalog. Existing opt-in/expect-actual and
 other project warnings remain. The initial sandboxed wrapper attempt could not
 write its cache lock; the authorized retry succeeded. Device restoration, native
 framework linking/runtime, SDK delivery and failure-injection checks were not run.
+
+## Home interactions and restoration (2026-10-13)
+
+Scope: `ui-screen-features/home`. Actual route `HomeRouter.Home`, reached through
+main's Home tab, creates HomeComponent and its retained HomeViewModel. Loading,
+WelcomeHomeContent and DashboardHomeContent are variants of that same surface:
+exactly one `HomeScreen.Home` presentation hook covers all of them. HomeRootScreen
+only renders its child stack; HomeRootViewModel keeps the default null hook.
+The existing shared HomeAnalyticsModule registration now contributes the uniquely
+qualified `home_analytics` catalog; foundation still owns lifecycle presentation.
+
+| Observation owner / callback | Typed event / operation | Eligibility / wire payload |
+|---|---|---|
+| HomeViewModel.onOpenTrainings | TrainingsClicked | Existing unconditional navigation; no parameters |
+| onOpenExample | ExerciseClicked | Existing dialog opening; exercise ID excluded |
+| onOpenMuscleLoading | MuscleLoadingClicked | Only after nonnull range guard |
+| onOpenTrainingStreak | TrainingStreakClicked | Only after nonnull range guard |
+| onOpenGoalDetails | GoalDetailsClicked | Only after nonnull range guard |
+| onPerformanceMetricClick | PerformanceMetricClicked | Only after nonnull range guard; metric values/type omitted |
+| onOpenPeriodPicker | PeriodPickerClicked | Existing dialog opening |
+| PeriodPicker.onResult in HomeViewModel | PeriodConfirmed / SavePeriod | Accepted result; complete setRange/getOrThrow block |
+| onAddGoal / TrainingGoalDetails.onAddGoal closure | AddGoalClicked | Existing navigation at the callback owner; no reporting context propagated |
+| onBack | Back | Existing Back callback |
+| Range-driven mapLatest / withLoader | RefreshTrainings | Complete getTrainings/getOrThrow block; waits for resolved persisted range |
+| Existing startup safeLaunch | RefreshExerciseExamples | Complete getExerciseExamples/getOrThrow block |
+
+All interaction schemas are version 1 and parameterless. Each operation uses
+version 1 home_task_started/completed/failed/interrupted schemas with the closed
+home_operation enum; terminal events add duration_ms. Toolkit decoration owns
+fresh operation IDs, monotonic timing, original return values/exceptions and
+cancellation. Ordinary reporting exceptions are isolated by the feature event
+boundary or toolkit operation decorator. Failed Result values now reach the
+standard error pipeline instead of being silently discarded by startup refreshes.
+No entity IDs, selected date bounds, raw input, measurements or errors are encoded.
+
+Deliberate omissions: dialog presentation/close/cancellation, metric type and
+selected period attribution, notification permission/scheduling and welcome
+celebration operations. onWelcomeConfettiShown is a rendering callback, not a
+user click. Metric aggregation remains data-backed computation, not a newly
+tracked operation. Root forwarding callbacks do not duplicate leaf events.
+
+| Owner | Field/group | Preserve / Rebuild / Runtime only | Source / restore and checks |
+|---|---|---|---|
+| HomeRootComponent | Child navigation | Preserve | Existing HomeRouter serializer and HomeRootComponent childStack key; no route inputs/drafts |
+| HomeRootViewModel | HomeRootState | Runtime only | Stateless container; no supplier required |
+| HomeViewModel | Accepted range kind | Preserve via existing persistent owner | LocalSettings setRange → DataStore `range`; observeRange resolves saved kind before training observation/request; absent preference selects Last30Days |
+| HomeViewModel | Range date bounds / display | Rebuild | DateRangeFormatState.of(kind) uses current date/locale; no stale formatted snapshot |
+| HomeViewModel | user, lastTraining, muscleLoad, streak, performance, goalProgress, spotlights | Rebuild | UserFeature, TrainingFeature observations and existing metric use cases |
+| HomeViewModel | excludedMusclesCount, missingEquipmentCount, hasGoal | Rebuild | Existing excluded-muscle/equipment and goal observations |
+| HomeViewModel | showWelcomeConfetti | Runtime only | Existing persistent HomeWelcomeStatus prevents ordinary replay; unfinished animation is not a draft |
+| Home and its dialogs | Loaders/jobs, focus, callbacks, error/dialog sessions, analytics provenance | Runtime only | No StateKeeper archive or secret-bearing feature fields |
+
+Source gates: route → rendered variants → retained VM → typed hook reconciled;
+container has no hook; no telemetry-only navigation/state arguments; every new
+model is consumed. Preservation inventory contains no unfinished screen form,
+accepted parent draft or local filter without a persistent owner. Consequently no
+local StateKeeper supplier or HomeState serializer is added. Existing DataStore
+owns the user's accepted selection and is not duplicated in an archive.
+
+Permitted manual checks still unrun: choose a nondefault period, wait for save,
+destroy lifecycle/InstanceKeeper and construct fresh components with the shell
+archive; verify the persisted period and current date bounds, then Back/re-entry.
+Check a fresh installation's Last30Days fallback, pause/resume including the
+foundation subscription disconnect grace, pending/failed period saves, range
+changes cancelling refreshes, reporter-failure injection, and one presentation
+for loading/welcome/dashboard. Dialog unfinished inputs are expected to disappear.
+Android saved-state navigation and iOS completed-background-checkpoint restoration
+retain their existing shell limits; abrupt iOS termination before checkpoint is
+not guaranteed. No runtime restoration or Firebase delivery is claimed.
+
+Home verification result: `git diff --check` passed. Scoped
+`:analytics:home:compileAndroidMain :ui-screen-features:home:compileAndroidMain
+--offline` passed, including common KSP; generated HomeAnalyticsModule contains
+both HomeAnalytics binding and the qualified home_analytics schema. Existing
+unresolved global opt-in warnings remain. `compileKotlinMetadata` was skipped by
+Gradle and is not counted as compilation evidence. Review covered event guards,
+parameterless payloads, all operation terminal schemas and toolkit isolation.
+No automated test sources/infrastructure were introduced. iOS compilation and
+device/runtime/manual checks above were not run.
+
+## Training analytics and recreation preservation
+
+Current training scope reviewed on 2026-10-13; this section supersedes the earlier
+screen-only training omissions. Actual TrainingRouter has Recording (Add, Edit,
+Draft), Exercise (with an exercise seed/result key), Exercises (delegated library)
+and Completed (stage/exercises/startAt). All are serializable stack routes.
+
+| Route / rendered surface | Component → VM | Typed presentation / ownership |
+|---|---|---|
+| Recording, Add/Edit/Draft including draft deeplink | TrainingRecordingComponent → TrainingRecordingViewModel | TrainingScreen.Recording / training_recording; existing typed hook |
+| Exercise, new/edit/replacement-library return | TrainingExerciseComponent → TrainingExerciseViewModel | TrainingScreen.Exercise / training_exercise; existing typed hook |
+| Completed, saving loader and summary | TrainingCompletedComponent → TrainingCompletedViewModel | TrainingScreen.Completed / training_completed; new typed hook |
+| Exercises / Library | ExercisesRootComponent → ExerciseLibraryComponent → ExerciseLibraryViewModel | Delegated ExercisesScreen.Library / exercise_library; existing owning feature hook |
+| Training stack host | TrainingComponent → TrainingViewModel | Default null; renders only child content |
+| Exercises stack host | ExercisesRootComponent → ExercisesRootViewModel | Default null; renders only child content |
+
+The three training leaves resolve TrainingAnalytics in their retainedInstance
+factories. Foundation remains the sole lifecycle binding owner and assigns
+Initial/Restore; no lifecycle listener, reporting state or route attribution is added.
+
+### Observations and operation coverage
+
+| Owner / callbacks | Observation and eligibility |
+|---|---|
+| Recording onAddExercise/onEditExercise/onDeleteExercise | Add/Edit/Delete intent; Edit emits only after finding the exercise. Empty-start confirmation invokes shared library navigation without a synthetic Add click. Existing Delete has no eligibility guard. |
+| Recording reorder start/end | Preserve existing ID/index guards and reorder mutations; report ReorderExercises at accepted nonempty end, avoiding per-drag event volume. Invalid/no-op start is omitted. |
+| Recording onSave/onBack | Existing Save/Back intent; no new guards or eligibility changes. Confirmations remain business-owned. |
+| Recording StartTraining | Open after delay/current-draft guard; confirmed only on empty-start action or accepted nonempty exercise list. No unaccepted dialog values are saved. |
+| Recording unfinished/completion/discard dialogs | Separate opened and confirmed facts in owning callbacks; completion opens only when completed sets exist. |
+| Recording library/editor result | LibrarySelected and ExerciseUpdated on actual accepted callbacks, without IDs/values. Editor Remove calls removeExercise business path and does not fake a Recording Delete click. |
+| Exercise add/edit iteration | Add after current example exists; EditVolume/EditRepetitions after example/iteration guards. IterationOpened when constructing/opening the dialog, IterationConfirmed on accepted result. |
+| Exercise delete/reorder/end/save/back | Existing Delete/Save/Back intent; reorder emits after existing ID/index guards; end emits separately. No extra business guards or loaders. |
+| Exercise details/replacement library | ExampleOpened, ReplaceExample on actual detail action, ExampleSelected after different-ID guard; IDs omitted. |
+| Completed summary/exercise/back | SummaryOpened after training-ID guard, ExerciseOpened/Back in existing callbacks. Error-dismissal navigation bypasses the user Back event. |
+
+Seven typed operations decorate complete existing Feature/UseCase calls:
+DeleteDraft (including initialization/clear/discard/completed cleanup), LoadDraft,
+LoadTraining (recording initial edit/completed summary), SaveDraft, CreateTraining,
+UpdateTraining, RefreshExamples. Result-returning calls unwrap inside the block;
+finite source observations keep their existing firstOrNull contract. Null local
+read results and null successful write IDs remain returned values, not invented
+failures. Continuous catalogs, validation, total calculations, weight lookup and
+notification scheduling are not new artificial operations. No coroutine/retry,
+dispatcher, cancellation guard or business branch is added for telemetry.
+
+TrainingAnalyticsModule registers one qualified training_analytics catalog with
+training_interaction (closed training_action codes) and training_task_started,
+training_task_completed, training_task_failed, training_task_interrupted, all
+version 1. Internal exhaustive encoders own wire codes. Operation lifecycle uses
+the common fresh OperationId/monotonic duration decorator, preserving caller values,
+original errors and cancellation. Ordinary reporting Exceptions are isolated;
+fatal Errors remain fatal. Existing Recording/Exercise wire identities are unchanged;
+Completed and behavioral schemas are additive, without historical backfill.
+
+No raw weights/repetitions/duration/date, exercise names, entity IDs, input lengths,
+credentials, errors/messages, URLs or bodies enter reporting. The training_action
+code embeds the observed owner, without transported cross-screen reporting context.
+Dialog presentation/close/dismiss/cancel outcomes, internal unaccepted picker edits,
+focus/IME, referrer/funnel attribution and per-drag telemetry are deliberate omissions.
+Consent, identity and SDK delivery remain application/core-owned.
+
+### Preservation inventory
+
+| Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or source | Restore/default and check |
+|---|---|---|---|---|
+| Recording | stage, startAt, exercises, iteration values/IDs/order including pending and empty values | Preserve | Existing TrainingRecordingDraft / TrainingRecordingState.serializer | Local archive wins; null exercises resumes existing initialization; nonnull empty remains empty. Required startAt has no dynamic serialization default. |
+| Recording | catalogs/examples/muscles | Rebuild | Existing observations; transient fields | Populate current presentation without replacing loaded draft. |
+| Exercise | ExerciseState, current example identity, iterations/formats/IDs/order | Preserve | Existing TrainingExerciseDraft / TrainingExerciseState.serializer | Local draft wins over route seed; accepted parent values seed fresh editor on re-entry. |
+| Exercise | current example presentation/history/validation artifacts | Rebuild | Existing example/context observations; transient fields | Recompute from restored exercise without replaying interaction callbacks. |
+| Completed | ID of successful saved training | Preserve | New TrainingCompletedDraft / TrainingCompletedState.serializer | ID is committed to current State immediately after successful nonnull save; restored ID bypasses Create/Update and resumes cleanup/presentation rebuild. |
+| Completed | timeline, training summary, muscleLoad | Rebuild | Existing TrainingFeature observation and timeline/distribution use cases; transient fields | Load by restored ID; no serialized localized/display snapshots. |
+| Training/container | stack, completed accepted exercises/stage/startAt, editor seed/result key | Existing navigation preservation | Existing TrainingRouter.serializer / TrainingComponent childStack | No duplicate container draft; route inputs remain ordinary business inputs. |
+| Owning recording/editor | accepted picker/library/editor values | Preserve at existing owner | Existing result/config callbacks and latest lazy suppliers | Child result updates parent draft; popped child local draft is discarded; fresh editor receives accepted parent exercise. |
+| Dialogs/all owners | unfinished dialog input, sessions/errors, loaders/jobs, focus and telemetry provenance | Runtime only | Excluded from archives | Fresh restoration opens no old live session; pending Add initialization may reopen its business start dialog. |
+
+Components restore inside retainedInstance factories and register one local lazy
+supplier of current State. No new source/edit flags, previous-source caches, global
+store, callback synchronization or route mutation is introduced. These drafts have
+no authentication secrets. Existing recording/editor addresses and serialized
+fields remain unchanged. The new completed supplier is additive; old archives
+without it use fresh state and the existing save behavior. Existing iOS build/format
+validation and Android saved-state boundaries remain unchanged.
+
+Completed checkpointing is not transactional server idempotency: process termination
+or a checkpoint made before the successful ID is captured can still replay an
+in-flight write. This task preserves a known completed business outcome; it does
+not change backend contracts or invent an idempotency mechanism. The existing
+early Add during initial Edit/Draft loading risk recorded above remains unchanged.
+
+### Source gates and manual verification
+
+Review covers actual routes/render bodies, exactly three training leaf hooks and
+null containers, delegated Library ownership, retained dependency injection, common
+foundation binding, complete catalog/encoders/callers, current eligibility and
+no synthetic init/error-navigation interactions. Preservation source gate covers
+local suppliers/serializers, restored-empty precedence, accepted parent seeds,
+transient data/runtime fields and completed outcome rebuilding. UI layout is unchanged;
+existing previews remain applicable. No automated test sources or infrastructure added.
+
+Manual checks not run: StateKeeper.save → platform serialization roundtrip → destroy
+old lifecycle/InstanceKeeper → fresh contexts/VMs; Add/Edit/Draft exact and empty
+exercise lists, pending iteration formats/order and accepted dialog values; editor
+replacement-library/Back/pop/re-entry; pause/resume beyond subscription grace;
+Completed restore after saved ID with no second write; restore during an in-flight
+write; reporting-failure/cancellation injection and SDK delivery. Android saved state
+and completed iOS background checkpoints are supported shell boundaries; abrupt
+active iOS termination has no guaranteed checkpoint. Compilation does not prove these.
+
+Verification results on 2026-10-13: final source/diff review and `git diff --check`
+passed. Inline source invariants confirmed all 32 event consumers/exhaustive matrix
+entries, seven operation consumers, three leaf hooks/draft suppliers, null training
+container, transient completed presentation, analytics dependency boundaries and
+shared module registration. Independent read-only reviewer found no blocking source
+findings and confirmed final coverage reconciliation and absence of synthetic Add/Back
+interaction events. Generated Koin source has the TrainingAnalytics service binding
+and one qualified training_analytics AnalyticsSchema provider.
+Final combined `:analytics:training:compileKotlinIosSimulatorArm64`,
+`:ui-screen-features:training:compileKotlinIosSimulatorArm64`,
+`:shared:compileKotlinIosSimulatorArm64`, `:androidApp:assembleDebug` passed
+(BUILD SUCCESSFUL, final rerun 15s; initial integrated run 1m 15s).
+The initial sandboxed Gradle wrapper could not write its cache lock; authorized
+build execution succeeded. No device execution, framework linking, fresh-process
+restoration, reporting-failure injection or SDK delivery was run; the manual
+scenarios above remain unverified. Unrelated concurrent home/profile/transport
+working-tree changes were preserved.
+
+Home follow-up review: the fresh VM alone seeds an unresolved Empty range;
+HomeState retains a resolved default for previews. HomeScreen shows its existing
+loader until the persistent range is resolved, including returning-user dashboards,
+so no default-period picker can open before restoration. Range resolution releases
+the same Home screen presentation without replaying callbacks. No additional
+screen, event, saved field or lifecycle wiring is introduced. All ten event variants
+and three operation values have VM consumers and exhaustive encoders; no obsolete
+Home helper/model was found. The opening coverage summary now describes the current
+behavioral integrations instead of claiming they are presentation-only.
+
+Follow-up verification: scoped Android compilation of home and analytics/home
+passed (BUILD SUCCESSFUL, 3s); `git diff --check` and inline source gates passed.
+Device restoration, UI preview rendering and iOS compilation were not run in
+this follow-up. Concurrent changes outside Home were preserved.
+
+Training residual review on 2026-10-13: current source and independent read-only
+review found no orphan event/operation declarations, unused new imports, missing
+local draft suppliers or synthetic restoration/control callbacks. All 32 events
+and seven operation kinds have consumers and exhaustive encoders. The introductory
+inventory now includes Completed and references current training instrumentation.
+Source/diff checks passed; this follow-up changes documentation only, so application
+builds were not repeated. Runtime limitations above remain.

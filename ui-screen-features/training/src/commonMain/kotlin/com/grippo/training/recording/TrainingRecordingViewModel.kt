@@ -1,6 +1,8 @@
 package com.grippo.training.recording
 
 import com.grippo.analytics.training.TrainingAnalytics
+import com.grippo.analytics.training.models.TrainingEvent
+import com.grippo.analytics.training.models.TrainingOperation
 import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.foundation.models.Result
@@ -106,18 +108,26 @@ internal class TrainingRecordingViewModel(
             safeLaunch {
                 when (val stage = state.value.stage) {
                     StageState.Add -> {
-                        trainingFeature.deleteDraftTraining().getOrThrow()
+                        analytics.trackOperation(TrainingOperation.DeleteDraft) {
+                            trainingFeature.deleteDraftTraining().getOrThrow()
+                        }
                         showStartTrainingDialog()
                     }
 
                     is StageState.Edit -> {
-                        trainingFeature.deleteDraftTraining().getOrThrow()
-                        val training = trainingFeature.observeTraining(stage.id).firstOrNull()
+                        analytics.trackOperation(TrainingOperation.DeleteDraft) {
+                            trainingFeature.deleteDraftTraining().getOrThrow()
+                        }
+                        val training = analytics.trackOperation(TrainingOperation.LoadTraining) {
+                            trainingFeature.observeTraining(stage.id).firstOrNull()
+                        }
                         provideTraining(training)
                     }
 
                     StageState.Draft -> {
-                        val draft = trainingFeature.getDraftTraining().firstOrNull()
+                        val draft = analytics.trackOperation(TrainingOperation.LoadDraft) {
+                            trainingFeature.getDraftTraining().firstOrNull()
+                        }
                         provideDraftTraining(draft)
                     }
                 }
@@ -130,9 +140,13 @@ internal class TrainingRecordingViewModel(
         if (state.value.exercises != null) return
         val dialog = DialogConfig.StartTraining(
             title = UiText.Res(Res.string.start_training_title),
-            onStartEmpty = ::onAddExercise,
+            onStartEmpty = {
+                analytics.trackEvent(TrainingEvent.Recording.StartConfirmed)
+                openExerciseLibrary()
+            },
             onUseExercises = { exercises ->
                 if (exercises.isEmpty()) return@StartTraining
+                analytics.trackEvent(TrainingEvent.Recording.StartConfirmed)
                 val refreshed = exercises
                     .map { it.withRecalculatedTotal() }
                     .toPersistentList()
@@ -140,6 +154,7 @@ internal class TrainingRecordingViewModel(
                 saveDraftTraining()
             },
         )
+        analytics.trackEvent(TrainingEvent.Recording.StartOpened)
         dialogController.open(dialog)
     }
 
@@ -195,6 +210,11 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddExercise() {
+        analytics.trackEvent(TrainingEvent.Recording.AddExercise)
+        openExerciseLibrary()
+    }
+
+    private fun openExerciseLibrary() {
         if (state.value.exercises == null) {
             update { it.copy(exercises = persistentListOf()) }
         }
@@ -207,15 +227,18 @@ internal class TrainingRecordingViewModel(
     }
 
     fun acceptLibrarySelection(example: ExerciseExampleState) {
+        analytics.trackEvent(TrainingEvent.Recording.LibrarySelected)
         navigateTo(TrainingRecordingDirection.ToExercise(createExerciseFromExample(example.value), EXERCISE_RESULT_KEY))
     }
 
     override fun onEditExercise(id: String) {
         val exercise = state.value.exercises.orEmpty().find { it.id == id } ?: return
+        analytics.trackEvent(TrainingEvent.Recording.EditExercise)
         navigateTo(TrainingRecordingDirection.ToExercise(exercise, EXERCISE_RESULT_KEY))
     }
 
     fun updateExercise(value: ExerciseState) {
+        analytics.trackEvent(TrainingEvent.Recording.ExerciseUpdated)
         val refreshed = value.withRecalculatedTotal()
 
         update { current ->
@@ -234,6 +257,11 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onDeleteExercise(id: String) {
+        analytics.trackEvent(TrainingEvent.Recording.DeleteExercise)
+        removeExercise(id)
+    }
+
+    fun removeExercise(id: String) {
         update { current -> current.copy(exercises = current.exercises.orEmpty().filterNot { it.id == id }.toPersistentList()) }
 
         if (state.value.exercises.orEmpty().isEmpty()) {
@@ -258,16 +286,20 @@ internal class TrainingRecordingViewModel(
 
     override fun onEndReorderExercises() {
         if (state.value.exercises.orEmpty().isEmpty()) return
+        analytics.trackEvent(TrainingEvent.Recording.ReorderExercises)
         saveDraftTraining()
     }
 
     private fun clearDraftTraining() {
         safeLaunch {
-            trainingFeature.deleteDraftTraining().getOrThrow()
+            analytics.trackOperation(TrainingOperation.DeleteDraft) {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+            }
         }
     }
 
     override fun onSave() {
+        analytics.trackEvent(TrainingEvent.Recording.Save)
         val hasPending = state.value.exercises.orEmpty().any { exercise -> exercise.iterations.any { it.isPending } }
 
         if (!hasPending) {
@@ -278,8 +310,12 @@ internal class TrainingRecordingViewModel(
         val dialog = DialogConfig.Confirmation(
             title = UiText.Res(Res.string.planned_sets_unfinished_title),
             description = UiText.Res(Res.string.planned_sets_unfinished_description),
-            onResult = ::showCompletionDialog
+            onResult = {
+                analytics.trackEvent(TrainingEvent.Recording.UnfinishedConfirmed)
+                showCompletionDialog()
+            }
         )
+        analytics.trackEvent(TrainingEvent.Recording.UnfinishedOpened)
         dialogController.open(dialog)
     }
 
@@ -293,6 +329,7 @@ internal class TrainingRecordingViewModel(
             title = UiText.Res(Res.string.confirm_training_completion_title),
             initial = duration,
             onResult = { result ->
+                analytics.trackEvent(TrainingEvent.Recording.CompletionConfirmed)
                 val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
                 update { current ->
                     val cleaned = current.exercises.orEmpty()
@@ -312,6 +349,7 @@ internal class TrainingRecordingViewModel(
             }
         )
 
+        analytics.trackEvent(TrainingEvent.Recording.CompletionOpened)
         dialogController.open(dialog)
     }
 
@@ -327,6 +365,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(TrainingEvent.Recording.Back)
         if (state.value.exercises.orEmpty().isEmpty()) {
             discardDraftAndExit()
             return
@@ -335,14 +374,20 @@ internal class TrainingRecordingViewModel(
         val dialog = DialogConfig.Confirmation(
             title = UiText.Res(Res.string.training_progress_lost_title),
             description = UiText.Res(Res.string.training_progress_lost_description),
-            onResult = ::discardDraftAndExit,
+            onResult = {
+                analytics.trackEvent(TrainingEvent.Recording.DiscardConfirmed)
+                discardDraftAndExit()
+            },
         )
+        analytics.trackEvent(TrainingEvent.Recording.DiscardOpened)
         dialogController.open(dialog)
     }
 
     private fun discardDraftAndExit() {
         safeLaunch {
-            trainingFeature.deleteDraftTraining().getOrThrow()
+            analytics.trackOperation(TrainingOperation.DeleteDraft) {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+            }
             navigateTo(TrainingRecordingDirection.Back)
         }
     }
@@ -355,7 +400,9 @@ internal class TrainingRecordingViewModel(
                 duration = DateTimeUtils.ago(snapshot.startAt),
                 exercises = snapshot.exercises.orEmpty().toDraftDomain(),
             )
-            trainingFeature.setDraftTraining(draft).getOrThrow()
+            analytics.trackOperation(TrainingOperation.SaveDraft) {
+                trainingFeature.setDraftTraining(draft).getOrThrow()
+            }
             scheduleNotificationReminder()
         }
     }

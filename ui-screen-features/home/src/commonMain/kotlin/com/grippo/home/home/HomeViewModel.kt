@@ -1,6 +1,8 @@
 package com.grippo.home.home
 
 import com.grippo.analytics.home.HomeAnalytics
+import com.grippo.analytics.home.models.HomeEvent
+import com.grippo.analytics.home.models.HomeOperation
 import com.grippo.analytics.home.models.HomeScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -47,6 +49,7 @@ import com.grippo.domain.state.user.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.range.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
@@ -82,7 +85,8 @@ internal class HomeViewModel(
     excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     goalFeature: GoalFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
-    HomeState()
+    // Resolve the persisted selection before rendering or requesting trainings.
+    HomeState(range = DateRangeFormatState.Empty(kind = DateRangeKind.Last30Days))
 ), HomeContract {
 
     override val screenPresentation = { reason: NavigationReason ->
@@ -148,14 +152,17 @@ internal class HomeViewModel(
             .distinctUntilChanged()
             .mapLatest { period ->
                 withLoader(HomeLoader.Trainings) {
-                    trainingFeature
-                        .getTrainings(start = period.from, end = period.to)
+                    analytics.trackOperation(HomeOperation.RefreshTrainings) {
+                        trainingFeature.getTrainings(start = period.from, end = period.to).getOrThrow()
+                    }
                 }
             }
             .safeLaunch()
 
         safeLaunch {
-            exerciseExampleFeature.getExerciseExamples()
+            analytics.trackOperation(HomeOperation.RefreshExerciseExamples) {
+                exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            }
         }
 
         safeLaunch {
@@ -174,7 +181,7 @@ internal class HomeViewModel(
     }
 
     private fun provideRange(value: Range?) {
-        val kind = value?.toState() ?: return
+        val kind = value?.toState() ?: DateRangeKind.Last30Days
         update { it.copy(range = DateRangeFormatState.of(kind)) }
     }
 
@@ -234,6 +241,7 @@ internal class HomeViewModel(
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
         val range = state.value.range.value ?: return
+        analytics.trackEvent(HomeEvent.PerformanceMetricClicked)
 
         val rangeLabel = state.value.range.label()
         val metricLabel = type.labelText()
@@ -251,6 +259,7 @@ internal class HomeViewModel(
 
     override fun onOpenMuscleLoading() {
         val range = state.value.range.value ?: return
+        analytics.trackEvent(HomeEvent.MuscleLoadingClicked)
 
         val rangeLabel = state.value.range.label()
         val title = rangeLabel?.let {
@@ -264,16 +273,21 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainings() {
+        analytics.trackEvent(HomeEvent.TrainingsClicked)
         navigateTo(HomeDirection.Trainings)
     }
 
     override fun onOpenPeriodPicker() {
+        analytics.trackEvent(HomeEvent.PeriodPickerClicked)
         val dialog = DialogConfig.PeriodPicker(
             title = UiText.Res(Res.string.period_picker_title),
             initial = state.value.range.kind,
             onResult = { result ->
+                analytics.trackEvent(HomeEvent.PeriodConfirmed)
                 safeLaunch {
-                    localSettingsFeature.setRange(result.toDomain()).getOrThrow()
+                    analytics.trackOperation(HomeOperation.SavePeriod) {
+                        localSettingsFeature.setRange(result.toDomain()).getOrThrow()
+                    }
                 }
             }
         )
@@ -282,6 +296,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenExample(id: String) {
+        analytics.trackEvent(HomeEvent.ExerciseClicked)
         val dialog = DialogConfig.ExerciseExample(
             title = UiText.Res(Res.string.exercise_details_btn),
             id = id
@@ -292,6 +307,7 @@ internal class HomeViewModel(
 
     override fun onOpenTrainingStreak() {
         val range = state.value.range.value ?: return
+        analytics.trackEvent(HomeEvent.TrainingStreakClicked)
 
         val rangeLabel = state.value.range.label()
         val title = rangeLabel?.let {
@@ -307,17 +323,22 @@ internal class HomeViewModel(
 
     override fun onOpenGoalDetails() {
         val range = state.value.range.value ?: return
+        analytics.trackEvent(HomeEvent.GoalDetailsClicked)
 
         val dialog = DialogConfig.TrainingGoalDetails(
             title = UiText.Res(Res.string.goal_details_title),
             range = range,
-            onAddGoal = { navigateTo(HomeDirection.Goal) }
+            onAddGoal = {
+                analytics.trackEvent(HomeEvent.AddGoalClicked)
+                navigateTo(HomeDirection.Goal)
+            }
         )
 
         dialogController.open(dialog)
     }
 
     override fun onAddGoal() {
+        analytics.trackEvent(HomeEvent.AddGoalClicked)
         navigateTo(HomeDirection.Goal)
     }
 
@@ -326,6 +347,7 @@ internal class HomeViewModel(
     }
 
     override fun onBack() {
+        analytics.trackEvent(HomeEvent.Back)
         navigateTo(HomeDirection.Back)
     }
 }

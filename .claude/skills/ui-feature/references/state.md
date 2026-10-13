@@ -121,6 +121,14 @@ Rules (MUST):
 4. **Meaningful initial state** — constructor defaults MAY represent valid empty/loading/input values. Pass required data explicitly through the existing initialState/route boundary; MUST NOT invent empty IDs or placeholder business data just to enable `FooState()`. Shared models do not require a no-argument constructor. No `companion object Empty` snapshot (the companion stays for thresholds/derived helpers/shared constants only).
 5. **Field order**: required first, optional last; primitives last (or grouped by domain).
 
+When changing constructor defaults or VM initialization, inspect all affected
+State constructors, including previews. A preview of loaded content must supply
+its required resolved data rather than accidentally exercise startup loading.
+Runtime initialization and preview inputs may differ; neither requires forcing
+all constructor defaults to be loaded or empty. Follow the
+[persistent-settings initialization policy](../../state-preservation/SKILL.md#initialization-from-persistent-settings)
+when values arrive asynchronously.
+
 **Goes in state**: display values; form-field values as `*FormatState`; filter/pagination state; business validation/eligibility; sub-states.
 
 **Does NOT go in state**: domain objects directly when a transformed representation is needed (map via `:data-mappers:domain-to-state`); loaders (use `loaders` on the VM); pure presentation booleans derivable from other state (compute in the Composable; business decisions remain VM/domain-owned); unchanging configuration (companion/`val`).
