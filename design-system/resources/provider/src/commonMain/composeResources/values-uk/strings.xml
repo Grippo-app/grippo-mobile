@@ -860,8 +860,5 @@
     <string name="exercise_library">Бібліотека вправ</string>
     <string name="analytics_consent_title">Аналітика використання</string>
     <string name="analytics_consent_description">Дозвольте події використання, щоб допомогти покращити застосунок. Введений текст і вимірювання тіла не надсилаються. Можна вимкнути будь-коли.</string>
-    <string name="login_analytics_consent">Дозволити аналітику використання (необов’язково)</string>
-    <string name="login_analytics_consent_details">Що збирається?</string>
-    <string name="login_analytics_consent_description">З вашого дозволу ми надсилаємо екрани, дії та технічні дані подій до Google Analytics for Firebase, щоб покращувати Grippo. У цих подіях ми не надсилаємо введений текст, облікові дані чи вимірювання тіла. Вибір зберігається на цьому пристрої та змінюється тут або в налаштуваннях. Вхід доступний і без цієї згоди.</string>
-    <string name="login_analytics_consent_preferences">Налаштування аналітики</string>
+    <string name="onboarding_get_started">Розпочати</string>
 </resources>

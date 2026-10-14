@@ -1,7 +1,6 @@
 package com.grippo.authorization.login
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,26 +10,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
-import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -51,9 +40,6 @@ import com.grippo.design.resources.provider.continue_with_google
 import com.grippo.design.resources.provider.icons.Apple
 import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.icons.GrippoLogo
-import com.grippo.design.resources.provider.login_analytics_consent
-import com.grippo.design.resources.provider.login_analytics_consent_description
-import com.grippo.design.resources.provider.login_analytics_consent_details
 import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
@@ -84,7 +70,6 @@ internal fun LoginScreen(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f)
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -135,7 +120,7 @@ internal fun LoginScreen(
             onValueChange = contract::onPasswordChange
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.weight(1f))
 
         val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
             when {
@@ -261,64 +246,6 @@ internal fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        var showConsentDetails by remember { mutableStateOf(false) }
-        val consent = state.analyticsConsent
-        val consentGranted = consent != AnalyticsConsent.Denied
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(
-                modifier = Modifier.weight(1f).toggleable(
-                    value = consentGranted,
-                    enabled = consent != null && loaders.isEmpty(),
-                    role = Role.Checkbox,
-                    onValueChange = contract::onAnalyticsConsentChange,
-                ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    checked = consentGranted,
-                    onCheckedChange = null,
-                    enabled = consent != null && loaders.isEmpty(),
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = AppTokens.colors.text.secondary,
-                        uncheckedColor = AppTokens.colors.text.secondary,
-                        checkmarkColor = AppTokens.colors.background.screen,
-                        disabledCheckedColor = AppTokens.colors.button.backgroundDisabled,
-                        disabledUncheckedColor = AppTokens.colors.button.backgroundDisabled,
-                    ),
-                )
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = AppTokens.strings.res(Res.string.login_analytics_consent),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
-            Text(
-                modifier = Modifier
-                    .clickable(role = Role.Button) { showConsentDetails = !showConsentDetails }
-                    .padding(
-                        horizontal = AppTokens.dp.contentPadding.subContent,
-                        vertical = AppTokens.dp.contentPadding.content,
-                    ),
-                text = AppTokens.strings.res(Res.string.login_analytics_consent_details),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-        if (showConsentDetails) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.login_analytics_consent_description),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-
         Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
 
         Spacer(Modifier.navigationBarsPadding())
@@ -331,13 +258,12 @@ private fun ScreenPreviewEmpty() {
     PreviewContainer {
         LoginScreen(
             state = LoginState(
-                analyticsConsent = AnalyticsConsent.Granted,
                 email = EmailFormatState.Empty(),
                 password = PasswordFormatState.Empty(),
                 isGoogleLoginAvailable = true,
                 isAppleLoginAvailable = true,
             ),
-            loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
+            loaders = persistentSetOf(),
             contract = LoginContract.Empty
         )
     }
@@ -349,7 +275,6 @@ private fun ScreenPreviewFilled() {
     PreviewContainer {
         LoginScreen(
             state = LoginState(
-                analyticsConsent = AnalyticsConsent.Granted,
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123"),
                 isGoogleLoginAvailable = false,
@@ -367,7 +292,6 @@ private fun ScreenPreviewLoading() {
     PreviewContainer {
         LoginScreen(
             state = LoginState(
-                analyticsConsent = AnalyticsConsent.Granted,
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123"),
                 isGoogleLoginAvailable = true,
@@ -375,22 +299,6 @@ private fun ScreenPreviewLoading() {
             ),
             loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
             contract = LoginContract.Empty
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ScreenPreviewConsentPending() {
-    PreviewContainer {
-        LoginScreen(
-            state = LoginState(
-                analyticsConsent = null,
-                isGoogleLoginAvailable = true,
-                isAppleLoginAvailable = true,
-            ),
-            loaders = persistentSetOf(),
-            contract = LoginContract.Empty,
         )
     }
 }

@@ -9,14 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -24,6 +20,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -79,25 +76,11 @@ internal fun ProfileSettingsScreen(
                     color = AppTokens.colors.text.secondary,
                 )
             }
-            Switch(
-            modifier = Modifier.semantics { contentDescription = consentTitle },
+            Toggle(
                 checked = state.analyticsConsent == true,
                 enabled = state.analyticsConsent != null && ProfileSettingsLoader.AnalyticsConsent !in loaders,
-                onCheckedChange = contract::onAnalyticsConsentChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = AppTokens.colors.toggle.checkedThumb,
-                    checkedTrackColor = AppTokens.colors.toggle.checkedTrack1,
-                    checkedBorderColor = AppTokens.colors.toggle.checkedTrack1,
-                    uncheckedThumbColor = AppTokens.colors.toggle.uncheckedThumb,
-                    uncheckedTrackColor = AppTokens.colors.toggle.uncheckedTrack1,
-                    uncheckedBorderColor = AppTokens.colors.toggle.uncheckedTrack1,
-                    disabledCheckedThumbColor = AppTokens.colors.button.contentDisabled,
-                    disabledCheckedTrackColor = AppTokens.colors.button.backgroundDisabled,
-                    disabledCheckedBorderColor = AppTokens.colors.button.backgroundDisabled,
-                    disabledUncheckedThumbColor = AppTokens.colors.button.contentDisabled,
-                    disabledUncheckedTrackColor = AppTokens.colors.button.backgroundDisabled,
-                    disabledUncheckedBorderColor = AppTokens.colors.button.backgroundDisabled,
-                ),
+                contentDescription = consentTitle,
+                onCheckedChange = { contract.onAnalyticsConsentChange(state.analyticsConsent != true) },
             )
         }
 

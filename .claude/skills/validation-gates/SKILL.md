@@ -22,6 +22,13 @@ these from the request/source before asking for missing information.
    callbacks, complete-operation results/errors and explicit event omissions.
    Independent screens MUST have exactly one screenPresentation; containers MUST keep null.
    Missing/wrong hooks and duplicate views block completion; an omission cannot waive them.
+   Operational analytics work also MUST pass the owning
+   [live admin synchronization gate](../feature-analytics/references/admin-sync.md).
+   Verify the browser access attempt or concrete user request, correct property and
+   affected streams, code/release-to-admin mapping, dependency-safe cleanup and
+   re-opened saved settings or authorized live API/read-back evidence, under the
+   owning gate's access alternatives. Configuration, actual delivery and legacy history are
+   separate verification results. Apply its editorial/review-only scope exceptions.
 4. Feature changes require [preservation](../state-preservation/SKILL.md): actual
    input/selection/filter/parent owners, saved drafts, rebuilt sources, secret/runtime
    exclusions, fresh restoration wiring and no shadow flags/caches. Dialog sessions

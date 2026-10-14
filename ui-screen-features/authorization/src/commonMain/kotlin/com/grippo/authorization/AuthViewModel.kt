@@ -9,6 +9,14 @@ public class AuthViewModel : BaseViewModel<AuthState, AuthDirection, AuthLoader>
         navigateTo(AuthDirection.Back)
     }
 
+    override fun toSplash() {
+        navigateTo(AuthDirection.Splash)
+    }
+
+    override fun toOnboarding() {
+        navigateTo(AuthDirection.Onboarding)
+    }
+
     override fun toAuthProcess() {
         navigateTo(AuthDirection.AuthProcess)
     }

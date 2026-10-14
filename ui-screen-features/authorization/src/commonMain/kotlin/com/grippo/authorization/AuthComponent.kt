@@ -13,6 +13,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent.Child.AuthProcess
 import com.grippo.authorization.AuthComponent.Child.Splash
 import com.grippo.authorization.auth.process.AuthProcessComponent
+import com.grippo.authorization.onboarding.OnboardingComponent
 import com.grippo.authorization.profile.creation.ProfileCreationComponent
 import com.grippo.authorization.splash.SplashComponent
 import com.grippo.core.foundation.BaseComponent
@@ -38,6 +39,8 @@ public class AuthComponent(
 
     override suspend fun eventListener(direction: AuthDirection) {
         when (direction) {
+            AuthDirection.Splash -> navigation.replaceAll(AuthRouter.Splash)
+            AuthDirection.Onboarding -> navigation.replaceAll(AuthRouter.Onboarding)
             AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess())
             AuthDirection.Back -> close.invoke()
             AuthDirection.Home -> toHome.invoke()
@@ -50,7 +53,7 @@ public class AuthComponent(
     internal val childStack: Value<ChildStack<AuthRouter, Child>> = childStack(
         source = navigation,
         serializer = AuthRouter.serializer(),
-        initialConfiguration = initial,
+        initialStack = { listOf(initial) },
         key = "AuthComponent",
         handleBackButton = false,
         childFactory = ::createChild,
@@ -61,10 +64,18 @@ public class AuthComponent(
             AuthRouter.Splash -> Splash(
                 SplashComponent(
                     componentContext = context,
+                    toOnboarding = viewModel::toOnboarding,
                     toAuthProcess = viewModel::toAuthProcess,
                     toHome = viewModel::toHome,
                     toProfileCreation = viewModel::toProfileCreation,
                     back = viewModel::onBack
+                ),
+            )
+
+            AuthRouter.Onboarding -> Child.Onboarding(
+                OnboardingComponent(
+                    componentContext = context,
+                    toSplash = viewModel::toSplash,
                 ),
             )
 
@@ -96,6 +107,7 @@ public class AuthComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Onboarding(override val component: OnboardingComponent) : Child(component)
         data class Splash(override val component: SplashComponent) : Child(component)
         data class AuthProcess(override val component: AuthProcessComponent) : Child(component)
         data class ProfileCreation(override val component: ProfileCreationComponent) :

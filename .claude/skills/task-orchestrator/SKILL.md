@@ -13,6 +13,12 @@ The coordinating agent may implement work; a separate reviewer supplies independ
 
 1. Read the actual scope, source and relevant owning skills. Preserve unrelated
    user changes; inspect the working tree before editing and never reset it.
+   Operational analytics scope, under the owning trigger and exceptions, MUST start
+   the feature skill's
+   [live admin synchronization](../feature-analytics/references/admin-sync.md)
+   access attempt early, so a missing browser tab can be requested while independent
+   source work continues. Assign one owner for admin mutations; reviewers inspect
+   evidence without concurrently changing the property.
 2. Implement the smallest coherent slice that meets a concrete acceptance outcome.
    Update every necessary caller within an authorized migration, rather than leaving
    incompatible callers for a hypothetical follow-up.
@@ -52,6 +58,10 @@ The coordinating agent may implement work; a separate reviewer supplies independ
 - Every changed caller, dependency and resource is reconciled; no obsolete helper
   or broken reference remains in the changed scope.
 - Actual verification results and runtime/platform limitations are recorded.
+- Operational analytics scope MUST include the owning admin synchronization gate
+  and its actual property/configuration evidence from browser or authorized live API.
+  Missing admin access, unsaved changes or pending delivery
+  MUST retain their distinct unfinished/unverified status; no source-only override.
 - The final answer explains behavior changed, verification and remaining material
   risks using the canonical [completion response format](../validation-gates/SKILL.md#final-response-format).
   No commit, push, deployment or external message is implied by this skill.

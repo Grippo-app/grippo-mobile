@@ -6,7 +6,6 @@ import com.grippo.services.google.auth.GoogleAuthUiContext
 
 @Immutable
 internal interface LoginContract {
-    fun onAnalyticsConsentChange(granted: Boolean)
     fun onEmailChange(value: String)
     fun onPasswordChange(value: String)
     fun onEmailFocused()
@@ -23,7 +22,6 @@ internal interface LoginContract {
 
     @Immutable
     companion object Empty : LoginContract {
-        override fun onAnalyticsConsentChange(granted: Boolean) {}
         override fun onEmailChange(value: String) {}
         override fun onPasswordChange(value: String) {}
         override fun onEmailFocused() {}

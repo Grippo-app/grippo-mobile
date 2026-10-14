@@ -19,6 +19,8 @@ internal object AuthEventMatrix {
     fun event(event: AuthEvent): AnalyticsEvent {
         return when (event) {
             AuthEvent.Splash.DismissRequested -> clicked(AuthScreen.Splash, InteractionAction.DismissRequested)
+            AuthEvent.Onboarding.GetStarted -> clicked(AuthScreen.Onboarding, InteractionAction.Next)
+            AuthEvent.Onboarding.DismissRequested -> clicked(AuthScreen.Onboarding, InteractionAction.DismissRequested)
             is AuthEvent.Login -> login(event)
             is AuthEvent.Registration -> registration(event)
             is AuthEvent.User -> user(event)

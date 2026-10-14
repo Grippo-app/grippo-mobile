@@ -9,6 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class SplashComponent(
     componentContext: ComponentContext,
+    private val toOnboarding: () -> Unit,
     private val toAuthProcess: () -> Unit,
     private val toHome: () -> Unit,
     private val toProfileCreation: () -> Unit,
@@ -21,6 +22,7 @@ internal class SplashComponent(
             equipmentFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             authorizationFeature = getKoin().get(),
+            localSettingsFeature = getKoin().get(),
             userFeature = getKoin().get()
         )
     }
@@ -33,6 +35,7 @@ internal class SplashComponent(
 
     override suspend fun eventListener(direction: SplashDirection) {
         when (direction) {
+            SplashDirection.Onboarding -> toOnboarding.invoke()
             SplashDirection.AuthProcess -> toAuthProcess.invoke()
             SplashDirection.Home -> toHome.invoke()
             SplashDirection.CreateProfile -> toProfileCreation.invoke()

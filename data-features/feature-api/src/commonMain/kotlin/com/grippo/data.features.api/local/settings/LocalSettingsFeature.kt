@@ -8,6 +8,9 @@ import kotlinx.datetime.LocalDateTime
 
 public interface LocalSettingsFeature {
 
+    public fun observeOnboardingShown(): Flow<Boolean>
+    public suspend fun setOnboardingShown(): Result<Unit>
+
     public fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
     public suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
 
@@ -20,6 +23,6 @@ public interface LocalSettingsFeature {
     public fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus>
     public suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit>
 
-    /** Clears account preferences, preserving this installation's analytics decision. */
+    /** Clears account preferences, preserving this installation's onboarding and analytics preferences. */
     public suspend fun clearUserSettings(): Result<Unit>
 }

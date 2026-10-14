@@ -14,7 +14,8 @@ Inspect current source rather than copying signatures or catalog counts:
 - `shared/.../bootstrap/ApplicationBootstrap.kt`: application-lifetime consent
   observation; `shared/.../Koin.kt`: catalog/implementation composition.
 - `data-features/local-settings` and `feature-api`: durable consent meaning and
-  mutation contract; Login and Profile Settings: actual UI consumers.
+  mutation contract; Profile Settings: current consent UI consumer. Login and
+  onboarding are entry paths without consent mutation.
 - `androidApp`, `data-services/firebase` and `iosApp`: platform initialization,
   disabled SDK defaults and adapter attachment.
 
@@ -23,28 +24,29 @@ and transport diagnostics must not expose raw payloads, user inputs or secrets.
 
 ## Collection and consent
 
-Grippo currently collects optional usage analytics only after explicit consent.
-Missing storage is Undecided, saved false is Denied, saved true is Granted;
-a pending UI read is separate from all three. Only Granted authorizes collection.
-Platform SDK defaults must keep automatic collection disabled before the shared
-policy is applied. A privacy-policy sentence, selected draft or successful login
-does not grant permission. Changing this policy requires an explicit product
-decision; this skill does not make jurisdiction/store-compliance claims.
+Grippo currently collects optional usage analytics after an explicit saved opt-in.
+Missing storage and saved false map to Denied; saved true maps to Granted. A pending
+UI read is separate from both and cannot authorize collection. Platform SDK defaults
+remain disabled until shared policy is applied. A selected draft or successful
+login does not grant permission. Changing this policy requires an explicit product
+decision; this reference does not claim jurisdiction/store compliance.
 
 Consent is currently an installation preference in LocalSettings. Preserve both
 saved true and saved false across account cleanup with clearUserSettings; do not
 add backend fields or account synchronization without an authorized requirement.
-UI reads the real source and persists each checkbox change immediately through
+UI reads the real source and persists each accepted consent-control change through
 the normal error pipeline; there is no separate consent draft. Rebuild the transient
 UI value from LocalSettings under
 [state preservation](../../state-preservation/SKILL.md#initialization-from-persistent-settings).
-Consent controls and disclosure interactions are deliberately unreported.
+Login has no consent control. Consent remains editable in Profile Settings; the
+new onboarding is currently a blank-content placeholder with Get started, not a
+consent request. Its display flag never grants analytics permission. Consent
+controls are deliberately unreported.
 
 Review every actual entry path, including native provider sign-in and registration
-navigation. Current Login saves an undecided choice on accepted continuation and
-allows refusal; pending source reads do not block unrelated authentication or
-overwrite a known decision. Review persistence failures separately from reporting
-failures: a failed business settings write is not a telemetry exception to swallow.
+navigation. Login continuation does not write consent or require agreement;
+untouched absence stays disabled. Settings read/write failures use their existing
+business error pipeline and must not be swallowed as reporting failures.
 
 Unknown/Denied events are discarded, never buffered for later consent or replayed.
 The bounded pre-sink queue is for already-permitted events only. Granting consent

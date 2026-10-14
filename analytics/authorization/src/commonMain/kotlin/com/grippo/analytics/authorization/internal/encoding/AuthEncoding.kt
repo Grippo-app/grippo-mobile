@@ -18,6 +18,7 @@ internal object AuthEncoding {
     fun code(value: AuthScreen): String {
         return when (value) {
             AuthScreen.Splash -> "auth_splash"
+            AuthScreen.Onboarding -> "auth_onboarding"
             AuthScreen.Login -> "auth_login"
             AuthScreen.Registration -> "auth_registration"
             AuthScreen.User -> "profile_creation_user"

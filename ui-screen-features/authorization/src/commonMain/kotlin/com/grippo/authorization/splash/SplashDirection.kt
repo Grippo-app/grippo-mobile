@@ -3,6 +3,7 @@ package com.grippo.authorization.splash
 import com.grippo.core.foundation.models.BaseDirection
 
 internal sealed interface SplashDirection : BaseDirection {
+    data object Onboarding : SplashDirection
     data object AuthProcess : SplashDirection
     data object Home : SplashDirection
     data object CreateProfile : SplashDirection

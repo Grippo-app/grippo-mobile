@@ -1,6 +1,6 @@
 ---
 name: feature-analytics
-description: Implement and review simple typed Grippo KMP feature analytics alongside feature behavior changes. Keep typed events and complete operation decorators in ViewModels, use the shared foundation screen hook, internal schema matrices and an honest coverage matrix.
+description: Implement and review typed Grippo KMP feature analytics and reconcile its live analytics admin configuration with code and released schemas. Use for instrumentation, analytics reporting/admin tasks and feature behavior changes; preserve observation, privacy and coverage gates.
 ---
 
 # Feature analytics
@@ -11,6 +11,20 @@ Apply when feature behavior changes, even without an explicit tracking request.
 Visual-only changes need an impact assessment, not new events. Read `CLAUDE.md`, current analytics contracts and the affected
 coverage matrix. For UI wiring read [ViewModel integration](references/viewmodel.md).
 Stay within the requested feature and verification scope.
+
+Operational analytics tasks MUST read and pass
+[live admin synchronization](references/admin-sync.md). This includes affected
+instrumentation during feature work: attempt browser inspection early, ask the
+user to open the correct analytics admin tab if unavailable, reconcile affected
+definitions/key events/reports with code and released schemas, and re-open saved
+settings to verify them, or use the gate's authorized live API/read-back alternative.
+Source review alone MUST NOT substitute for this gate.
+Editorial-only analytics instruction changes and visual-only feature work with a
+documented no-analytics-impact assessment need that assessment only, with no browser
+access gate or admin mutations. Analytics setup/report changes still require the
+gate even when app telemetry is unchanged. Review-only requests permit inspection,
+not unrequested writes; an explicitly user-restricted source-only review follows
+the owning gate's access exemption and labels admin state uninspected.
 
 For collection consent, core/SDK transport, asynchronous attribution or schema
 compatibility changes, read [collection and core contracts](references/collection-and-core.md).

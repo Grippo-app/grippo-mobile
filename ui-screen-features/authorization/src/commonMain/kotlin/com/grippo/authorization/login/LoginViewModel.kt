@@ -13,8 +13,6 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.LoginUseCase
-import com.grippo.data.features.api.local.settings.LocalSettingsFeature
-import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.services.apple.auth.AppleAuthException
 import com.grippo.services.apple.auth.AppleAuthProvider
 import com.grippo.services.apple.auth.AppleAuthUiContext
@@ -22,18 +20,15 @@ import com.grippo.services.google.auth.GoogleAuthException
 import com.grippo.services.google.auth.GoogleAuthProvider
 import com.grippo.services.google.auth.GoogleAuthUiContext
 import com.grippo.toolkit.analytics.context.NavigationReason
-import kotlinx.coroutines.flow.onEach
 
 internal class LoginViewModel(
     private val analytics: AuthAnalytics,
-    private val localSettingsFeature: LocalSettingsFeature,
     private val loginUseCase: LoginUseCase,
     private val googleAuthProvider: GoogleAuthProvider,
     private val appleAuthProvider: AppleAuthProvider,
     initialState: LoginState = LoginState(),
 ) : BaseViewModel<LoginState, LoginDirection, LoginLoader>(
     initialState.copy(
-        analyticsConsent = null,
         isGoogleLoginAvailable = googleAuthProvider.isSupported,
         isAppleLoginAvailable = appleAuthProvider.isSupported,
     )
@@ -41,26 +36,6 @@ internal class LoginViewModel(
 
     override val screenPresentation = { reason: NavigationReason ->
         analytics.presentScreen(AuthScreen.Login, reason)
-    }
-
-    init {
-        observeAnalyticsConsent()
-    }
-
-    private fun observeAnalyticsConsent() {
-        update { it.copy(analyticsConsent = null) }
-        localSettingsFeature.observeAnalyticsConsent()
-            .onEach { consent -> update { it.copy(analyticsConsent = consent) } }
-            .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
-    }
-
-    override fun onAnalyticsConsentChange(granted: Boolean) {
-        val consent = state.value.analyticsConsent ?: return
-        if (loaders.value.isNotEmpty()) return
-        if ((consent == AnalyticsConsent.Granted) == granted) return
-        safeLaunch(loader = LoginLoader.AnalyticsConsent) {
-            localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
-        }
     }
 
     override fun onEmailChange(value: String) {

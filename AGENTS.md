@@ -11,6 +11,18 @@ its screen coverage gate for every new feature screen or affected existing scree
 Independent screens require their VM's `screenPresentation`; containers keep null.
 Visual-only changes require an impact assessment, not new events.
 
+Operational analytics tasks MUST apply the feature skill's
+[live admin synchronization gate](.claude/skills/feature-analytics/references/admin-sync.md).
+Apply its trigger and editorial/no-impact exceptions.
+MUST attempt to inspect the analytics browser tab early; if unavailable, ask the
+user to open the correct property's analytics admin tab. Reconcile affected code
+events and admin definitions, key events and reports, verify saved changes, and
+record release/legacy compatibility. Authorized live API/read-back evidence may
+complete reconciliation when browser inspection is unavailable, as the gate defines.
+Missing admin access MUST remain an explicit
+unfinished synchronization outcome; source/build checks cannot waive it.
+Removal requires usage/dependency evidence and the owning gate's deletion safeguards.
+
 New or changed features MUST apply [state preservation](.claude/skills/state-preservation/SKILL.md).
 MUST inventory every new screen or affected state owner, preserve required nonsecret
 user inputs/selections/filters/parent drafts with local StateKeeper, rebuild

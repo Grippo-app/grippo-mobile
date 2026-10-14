@@ -10,6 +10,11 @@ public sealed interface AuthEvent {
         public data object DismissRequested : Splash
     }
 
+    public sealed interface Onboarding : AuthEvent {
+        public data object GetStarted : Onboarding
+        public data object DismissRequested : Onboarding
+    }
+
     public sealed interface Login : AuthEvent {
         public data class InputChanged(public val field: CredentialField, public val status: InputStatus) : Login
         public data class InputFocused(public val field: CredentialField) : Login

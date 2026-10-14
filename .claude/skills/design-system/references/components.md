@@ -28,9 +28,16 @@ callback behavior; this reference does not duplicate component implementations.
   adds highlight only, not skeleton shape/loading semantics. Apply
   it after clip/background; owning component supplies shape/semantics. Opacity
   belongs to shimmer tokens. MUST NOT migrate unrelated loaders incidentally.
-- Existing CheckSelectableCard/ToggleSelectableCard/Toggle variants serve selection
+- Existing Check/CheckSelectableCard/ToggleSelectableCard/Toggle variants serve selection
   roles. MUST inspect actual sizes/contracts rather than assume a generic Switch,
   Checkbox, RadioGroup or a nonexistent product wrapper.
+- Toggle owns its Switch state/disabled semantics. Use its enabled input for
+  unavailable controls and contentDescription for a label; do not rebuild a
+  feature-specific Material Switch or duplicate state semantics in a consumer.
+- [Check](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/selectors/Check.kt)
+  follows Toggle's controlled-state, callback, token and animation ownership.
+  Selection semantics and interaction stay inside the component; consumers pass
+  checked state/callback and supply a label, without a duplicate parent click.
 - MuscleSelection's measured bottom slot reserves list space before adaptive hero
   sizing. Keep bounded layout, immutable inputs and caller-owned selection. Group
   changes may restart scrolling without clearing caller selection.

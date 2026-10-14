@@ -35,4 +35,5 @@ private fun AuthComponent.Child.animator(): StackAnimator =
         is AuthComponent.Child.AuthProcess -> fade()
         is AuthComponent.Child.ProfileCreation -> platformStackAnimator()
         is AuthComponent.Child.Splash -> fade()
+        is AuthComponent.Child.Onboarding -> fade()
     }

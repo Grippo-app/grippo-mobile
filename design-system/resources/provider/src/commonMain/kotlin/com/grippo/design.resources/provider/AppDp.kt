@@ -82,6 +82,7 @@ public data object AppDp {
     val iterationsCard: IterationsCard = IterationsCard
     val chip: Chip = Chip
     val toggle: Toggle = Toggle
+    val check: Check = Check
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
@@ -517,6 +518,14 @@ public data object AppDp {
     public data object IterationCard {
         val borderWidth: Dp = 1.dp
         val radius: Dp = AppDp.radius.small
+    }
+
+    public data object Check {
+        val size: Dp = icon.small
+        val iconSize: Dp = icon.extraSmall
+        val radius: Dp = padding.extraSmall
+        val touchSize: Dp = 48.dp
+        val borderWidth: Dp = 1.dp
     }
 
     public data object Toggle {

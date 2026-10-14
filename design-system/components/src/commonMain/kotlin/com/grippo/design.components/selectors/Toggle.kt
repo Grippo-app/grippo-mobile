@@ -16,9 +16,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -29,6 +33,8 @@ public fun Toggle(
     checked: Boolean,
     onCheckedChange: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    contentDescription: String? = null,
 ) {
     val toggle = AppTokens.colors.toggle
     val dp = AppTokens.dp.toggle
@@ -38,20 +44,32 @@ public fun Toggle(
         label = "ToggleThumb"
     )
     val click = rememberUpdatedState(onCheckedChange)
+    val disabledTrack = AppTokens.colors.button.backgroundDisabled
+    val disabledThumb = AppTokens.colors.button.contentDisabled
 
     Box(
         modifier = modifier
             .semantics {
-                this.selected = checked
-                stateDescription = if (checked) "On" else "Off"
+                role = Role.Switch
+                toggleableState = if (checked) ToggleableState.On else ToggleableState.Off
+                if (contentDescription != null) this.contentDescription = contentDescription
+                if (!enabled) disabled()
             }
-            .scalableClick(onClick = click.value, haptic = true)
+            .scalableClick(enabled = enabled, onClick = click.value, haptic = true, role = Role.Switch)
             .size(width = dp.width, height = dp.height)
             .background(color = Color.Transparent)
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
-            val background1Color = if (checked) toggle.checkedTrack1 else toggle.uncheckedTrack1
-            val background2Color = if (checked) toggle.checkedTrack2 else toggle.uncheckedTrack2
+            val background1Color = when {
+                !enabled -> disabledTrack
+                checked -> toggle.checkedTrack1
+                else -> toggle.uncheckedTrack1
+            }
+            val background2Color = when {
+                !enabled -> disabledTrack
+                checked -> toggle.checkedTrack2
+                else -> toggle.uncheckedTrack2
+            }
 
             drawRoundRect(
                 brush = Brush.horizontalGradient(
@@ -68,7 +86,11 @@ public fun Toggle(
                 fraction = thumbPosition
             )
 
-            val thumbColor = if (checked) toggle.checkedThumb else toggle.uncheckedThumb
+            val thumbColor = when {
+                !enabled -> disabledThumb
+                checked -> toggle.checkedThumb
+                else -> toggle.uncheckedThumb
+            }
 
             drawCircle(
                 color = thumbColor,
@@ -98,5 +120,8 @@ private fun TogglePreview() {
             checked = false,
             onCheckedChange = {}
         )
+
+        Toggle(checked = false, enabled = false, onCheckedChange = {})
+        Toggle(checked = true, enabled = false, onCheckedChange = {})
     }
 }

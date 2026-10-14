@@ -8,6 +8,9 @@ import kotlinx.datetime.LocalDateTime
 
 internal interface LocalSettingsRepository {
 
+    fun observeOnboardingShown(): Flow<Boolean>
+    suspend fun setOnboardingShown(): Result<Unit>
+
     fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
     suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
 

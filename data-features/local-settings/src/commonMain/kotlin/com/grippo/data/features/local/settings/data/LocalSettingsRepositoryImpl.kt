@@ -22,16 +22,32 @@ internal class LocalSettingsRepositoryImpl(
 ) : LocalSettingsRepository {
 
     companion object {
+        val OnboardingShownKey = booleanPreferencesKey("onboarding_shown")
         val AnalyticsConsentKey = booleanPreferencesKey("analytics_consent")
         val RangeKey = stringPreferencesKey("range")
         val LastGoalSuggestionShownAtKey = stringPreferencesKey("last_goal_suggestion_shown_at")
         val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
     }
 
+    override fun observeOnboardingShown(): Flow<Boolean> {
+        return dataStore.data.map { preferences -> preferences[OnboardingShownKey] ?: false }
+    }
+
+    override suspend fun setOnboardingShown(): Result<Unit> {
+        return try {
+            dataStore.edit { preferences -> preferences[OnboardingShownKey] = true }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
+        }
+    }
+
     override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> {
         return dataStore.data.map { preferences ->
             when (preferences[AnalyticsConsentKey]) {
-                null -> AnalyticsConsent.Undecided
+                null -> AnalyticsConsent.Denied
                 false -> AnalyticsConsent.Denied
                 true -> AnalyticsConsent.Granted
             }
@@ -118,8 +134,10 @@ internal class LocalSettingsRepositoryImpl(
         return try {
             dataStore.edit { preferences ->
                 val consent = preferences[AnalyticsConsentKey]
+                val onboardingShown = preferences[OnboardingShownKey]
                 preferences.clear()
                 if (consent != null) preferences[AnalyticsConsentKey] = consent
+                if (onboardingShown != null) preferences[OnboardingShownKey] = onboardingShown
             }
             Result.success(Unit)
         } catch (error: CancellationException) {

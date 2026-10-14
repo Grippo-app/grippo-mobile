@@ -1,0 +1,8 @@
+package com.grippo.authorization.onboarding
+
+import androidx.compose.runtime.Immutable
+
+@Immutable
+internal data class OnboardingState(
+    val isReady: Boolean = false,
+)
