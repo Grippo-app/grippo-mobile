@@ -41,13 +41,13 @@ internal class SplashViewModel(
             loader = SplashLoader.AppContent,
             onError = ::loadContent,
         ) {
+            muscleFeature.getMuscles().getOrThrow()
+            equipmentFeature.getEquipments().getOrThrow()
             if (!localSettingsFeature.observeOnboardingShown().first()) {
                 navigateTo(SplashDirection.Onboarding)
                 return@safeLaunch
             }
             if (authorizationFeature.getToken().firstOrNull() == null) {
-                muscleFeature.getMuscles().getOrThrow()
-                equipmentFeature.getEquipments().getOrThrow()
                 navigateTo(SplashDirection.AuthProcess)
             } else {
                 loadProfile()

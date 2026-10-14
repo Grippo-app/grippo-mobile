@@ -14,8 +14,10 @@ were removed. Settings retains its previous source-ready/write-loader eligibilit
 and direct durable-source rendering. No event population, wire schema, account
 operation or Login button layout was changed by this repair.
 
-Source checks passed across 204 direct observation sites and 47 operation call
-sites: 149 literal schemas have unique valid bounded names and v1;
+The repeated source audit covers all 182 public event variants: each has a real UI
+reference and an implementation mapping, with no unused observation variant or
+open raw-text/error fact. Checks passed across 204 direct observation sites and
+47 operation call sites: 149 literal schemas have unique valid bounded names and v1;
 30 feature implementation modules are registered once with unique schema qualifiers;
 implementation visibility/lifetimes/dependencies and event-failure isolation were
 reviewed. All 24 typed screen identities have exactly one leaf owner; nine real
@@ -42,21 +44,46 @@ Onboarding Get started/display flags do not grant consent and fresh onboarding
 telemetry is suppressed until permission exists. Existing shown-flag policy is
 entry-based, not completion-based; no future multi-step draft is invented.
 
-The original source pass attempted native Chrome access to property
-519002689/account 379805710 but did not change or revalidate saved admin objects.
-The subsequent authorized [Live GA4 setup review](#live-ga4-setup-review--2026-10-14)
-verified the affected saved rules, definitions and reporting consumers. Onboarding
-uses existing bounded screen/control contracts and definitions; no additional
-admin object is required. That later configuration evidence closes this pass's
-pending admin reconciliation, without proving current SDK delivery or widget
-behavior. The source pass's other verification limits below remain scoped to it.
+The repeated audit inspected live property 519002689/account 379805710 and matched
+both mobile streams' package/bundle and Firebase app IDs to local configuration.
+Both derived rules retain exact event + operation/action conditions and copied
+parameters; both product key events use once-per-event counting with no monetary
+default. Neither mobile stream has event modification rules. All eleven Grippo
+event dimensions and the event-scoped Milliseconds metric were inspected; IDs and
+unused attribution remain unregistered. Saved audiences/segments have no custom
+event dependencies. The app comparison is exactly iOS OR Android. The only data
+filter is Internal Traffic / Exclude / Testing; no active exclusion was listed.
+Personal test tagging is not established by that configuration.
+
+One admin semantic defect was corrected: the auth_action description claimed
+login meant an existing account. It now describes the invoked email/provider
+login versus email registration scenario without inferring account novelty.
+The saved description, Event scope and unchanged parameter were re-opened and
+verified. No wire event, schema, collection policy or raw history changed.
+
+Both published detail reports retain their app-only filters, Event count / Total
+users and source-accurate Library descriptions. The diagnostic report's twelve
+primary selectors include the bounded operation/action dimensions. The closed
+Explore funnel has exact profile-setup-completed → training-create-completed
+steps, an enabled seven-day indirect sequence and web exclusion. Its diagnostic
+tab retains Event name rows, App version columns, both metrics and all three
+AND filters (create_training, Android/iOS, four operation states); saved settings
+were checked again after reload. Legacy copies remain labelled and unassigned;
+no deletion was justified or performed. The detailed consumer mapping remains in
+[Live GA4 setup review](#live-ga4-setup-review--2026-10-14).
+
+Onboarding reuses existing screen/control definitions; no new admin object is
+required. Configuration reconciliation is complete for this scope. New derived
+events have no received data in the inspected historical period; neither empty
+reports nor legacy test traffic verifies current SDK delivery. Default-denied
+consent suppresses first-run/onboarding events; no retrospective replay is claimed.
 
 No compilation, generated DI/runtime, rendered widget, native restoration, provider
 sign-in, reporting-failure injection or remote event-delivery scenarios were run.
-No automated test infrastructure was added. Independent review of that original
-source/widget pass was unavailable under its delegation restrictions and remains
-unperformed. Toggle previews
-include enabled/disabled on/off; material UI fidelity/contrast is unverified.
+No automated test infrastructure was added. Independent review is unperformed:
+no permitted reviewer was available under the current delegation restrictions.
+Toggle previews include enabled/disabled on/off; material UI fidelity/contrast
+is unverified. Login authentication button source was compared without edits.
 
 ---
 
@@ -71,11 +98,22 @@ include enabled/disabled on/off; material UI fidelity/contrast is unverified.
 | AuthProcessRouter.Login, Email/Google/Apple/Registration callbacks | LoginComponent → retained LoginViewModel | AuthScreen.Login / auth_login; existing hook |
 | Auth and AuthProcess hosts, Root host | Existing container VMs | Default null; child pages own views |
 
-Splash reads observeOnboardingShown().first() before catalog/session/profile work.
+Splash loads muscles and equipment sequentially before reading
+observeOnboardingShown().first(), then performs session/profile work as needed.
 False/missing directs to Onboarding; true preserves the original session path to
 Login, ProfileCreation or Home. Auth replaces its stack rather than pushing the
 placeholder into Back history. Root's token-null observer does not replace an
 already-active Authorization child; queued deeplinks still resolve at Home.
+
+Catalog ordering update: every Splash initialization/retry loads both catalogs,
+including the return from Onboarding. Errors propagate through the existing
+safeLaunch dialog/retry before any onward navigation. Analytics contracts, hooks,
+callbacks and the hasProfile-only SessionCheck block are unchanged; catalog work
+remains untracked and requires no admin definition change. Preservation assessment:
+Splash has no user draft, catalogs stay Room-backed and loaders/jobs stay runtime-only.
+Source ordering/error/screen ownership review, scoped authorization compileAndroidMain
+with --offline and git diff --check passed. Device startup/error/retry and iOS
+runtime remain unverified; independent review was unavailable under delegation restrictions.
 
 Onboarding reads the durable flag during preparation. If already true (including
 a restored stale Onboarding route), it redirects to Splash without a synthetic
@@ -121,7 +159,7 @@ resuming a future unfinished multi-step onboarding.
 
 Source/diff self-review, screen and preservation source gates passed: seven MVI
 files, typed route/factory/animation wiring, 24 independent screen hooks, null
-containers, early shown-source gate, current readiness/error/retry guards, durable
+containers, shown-source gate, current readiness/error/retry guards, durable
 cleanup retention, cancellation boundaries and exact Login button source were
 inspected. EN/UK/RU resource XML/key parity and git diff --check passed.
 Affected admin configuration was subsequently reconciled in the
@@ -387,7 +425,8 @@ the earlier build evidence does not verify the later Onboarding revision.
 AuthProcess uses one Login owner for its actual entry paths. Its FlowId is route
 identity, not telemetry; AuthorizationEntryPoint and its former reason codes are
 no longer part of the current contract.
-Splash can navigate to Onboarding before catalog/session work, then to Home,
+Splash loads catalogs before it can navigate to Onboarding or check the session,
+then navigates to Home,
 AuthProcess or ProfileCreation after the shown-state gate. Successful login or
 registration can navigate to Home or ProfileCreation; these paths do not add
 screen owners. Restored stacks use the same retained factories and typed hooks.
