@@ -882,4 +882,13 @@
     <string name="analytics_consent_title">Usage analytics</string>
     <string name="analytics_consent_description">Allow usage events to help improve the app. No entered text or body measurements are sent. You can turn this off at any time.</string>
     <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_title">Make every workout count</string>
+    <string name="onboarding_description">Your training journal, built around you. Record your sessions and see how far you have come.</string>
+    <string name="onboarding_workouts_title">Keep every set</string>
+    <string name="onboarding_workouts_description">Weights, reps and exercises — all in one place.</string>
+    <string name="onboarding_progress_title">See your progress</string>
+    <string name="onboarding_progress_description">Follow your strength, consistency and training history.</string>
+    <string name="onboarding_setup_title">Train your way</string>
+    <string name="onboarding_setup_description">Choose your muscles, equipment and experience level.</string>
+    <string name="onboarding_analytics_consent">Allow usage analytics</string>
 </resources>

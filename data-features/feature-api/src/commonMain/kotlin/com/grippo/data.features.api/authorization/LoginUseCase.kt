@@ -2,7 +2,6 @@ package com.grippo.data.features.api.authorization
 
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
-import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
@@ -12,7 +11,6 @@ public class LoginUseCase(
     private val userFeature: UserFeature,
     private val excludedMusclesFeature: ExcludedMusclesFeature,
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
     private val weightHistoryFeature: WeightHistoryFeature,
     private val goalFeature: GoalFeature,
 ) {
@@ -36,7 +34,6 @@ public class LoginUseCase(
         if (hasProfile) {
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
-            exerciseExampleFeature.getExerciseExamples().getOrThrow()
             weightHistoryFeature.getWeightHistory().getOrThrow()
             goalFeature.getGoal().getOrThrow()
         }

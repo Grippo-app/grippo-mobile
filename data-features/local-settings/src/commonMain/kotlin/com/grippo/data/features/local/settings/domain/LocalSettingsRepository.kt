@@ -12,6 +12,7 @@ internal interface LocalSettingsRepository {
     suspend fun setOnboardingShown(): Result<Unit>
 
     fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
+    suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit>
     suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
 
     fun observeRange(): Flow<Range?>

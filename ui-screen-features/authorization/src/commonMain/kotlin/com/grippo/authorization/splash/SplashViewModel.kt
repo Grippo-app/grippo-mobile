@@ -43,36 +43,26 @@ internal class SplashViewModel(
         ) {
             muscleFeature.getMuscles().getOrThrow()
             equipmentFeature.getEquipments().getOrThrow()
-            if (!localSettingsFeature.observeOnboardingShown().first()) {
-                navigateTo(SplashDirection.Onboarding)
-                return@safeLaunch
-            }
-            if (authorizationFeature.getToken().firstOrNull() == null) {
-                navigateTo(SplashDirection.AuthProcess)
-            } else {
-                loadProfile()
-            }
+            navigateTo(resolveDirection())
         }
     }
 
-    private suspend fun loadProfile() {
-        val hasProfile = analytics.trackOperation(AuthOperation.SessionCheck) {
-            hasProfile()
+    private suspend fun resolveDirection(): SplashDirection {
+        return when {
+            !localSettingsFeature.observeOnboardingShown().first() -> SplashDirection.Onboarding
+            authorizationFeature.getToken().firstOrNull() == null -> SplashDirection.AuthProcess
+            hasProfile() -> SplashDirection.Home
+            else -> SplashDirection.ProfileCreation
         }
-
-        val destination = if (hasProfile) {
-            SplashDirection.Home
-        } else {
-            SplashDirection.CreateProfile
-        }
-        navigateTo(destination)
     }
 
     private suspend fun hasProfile(): Boolean {
-        val cachedUser = userFeature.observeUser().firstOrNull()
-        if (cachedUser != null) {
-            return true
+        return analytics.trackOperation(AuthOperation.SessionCheck) {
+            val cachedUser = userFeature.observeUser().firstOrNull()
+            if (cachedUser != null) {
+                return@trackOperation true
+            }
+            userFeature.getUser().getOrThrow()
         }
-        return userFeature.getUser().getOrThrow()
     }
 }

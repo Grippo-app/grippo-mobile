@@ -12,6 +12,7 @@ public interface LocalSettingsFeature {
     public suspend fun setOnboardingShown(): Result<Unit>
 
     public fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
+    public suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit>
     public suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
 
     public fun observeRange(): Flow<Range?>

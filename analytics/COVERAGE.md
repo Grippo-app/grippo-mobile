@@ -1,3 +1,47 @@
+# Startup analytics admin follow-up (2026-10-14)
+
+Scope: reconcile the sequential Splash/onboarding continuation and removal of
+exercise-example preloads from Login/Register/CreateProfile with live reporting.
+No app instrumentation change was needed. The preceding implementation's source
+checks/build evidence remains scoped below; this follow-up changed admin settings
+and this coverage record only.
+
+Property 519002689/account 379805710 was inspected in native Chrome. The previously
+verified mobile mappings remain Android stream 13265245917/com.grippo.android and
+iOS stream 13348167981/com.grippo.app; web stream 13688917680 is outside app reports.
+
+| Emitting contract | Admin consumer / decision |
+|---|---|
+| `home_task_started/completed/failed/interrupted`, `home_operation` = `refresh_trainings/refresh_exercise_examples/save_period` | Added bounded Event-scoped `Grippo Home operation` (`home_operation`) and a thirteenth primary selector to existing diagnostic report `События и экраны` (16123956244). Refresh failures can now be separated by their actual Home owner. No new event, key mark or derived success rule. |
+| `auth_session_check_*` | Retained raw event-name diagnostics. The existing decorator measures `hasProfile` only after the shown-onboarding gate and with a token. The latest product rule always routes first onboarding to Login; no session check occurs before it. Collection still requires granted consent; completion does not prove successful navigation. No destination/provenance dimension. |
+| `auth_attempt_started/succeeded/failed/interrupted` with `auth_action/auth_method`, `profile_operation_*` with `profile_action` | Existing bounded definitions remain accurate for complete revised caller blocks. Exercise failures now belong to Home, so old test builds' auth/profile failure populations and durations are not an unchanged baseline. |
+| `auth_control_clicked`, Onboarding `next/dismiss_requested`; built-in screen views | Existing interaction/screen definitions retained. Checkbox/default writes deliberately emit no event; navigation changes add no synthetic click/view. Leaf and container hook inventory is unchanged from the sequential-startup record below. |
+| `profile_operation_completed` + `profile_action=create` → `grippo_profile_created` | Existing exact mobile-derived rules/key-event counting retained: completion of setup/readbacks/local status, not exercise-cache readiness or unique account/entity creation. Existing `Профиль и тренировки` and observed funnel descriptions still express that contract. |
+
+Read-back: reopened the saved Home definition and verified name, description,
+Event scope and immutable `home_operation` parameter. Reopened report 16123956244
+after saving and verified Home selector, original twelve selectors, Event name
+default, Event count/Total users and `Platform matches regex '^(Android|iOS)$'`.
+The existing published `Grippo — главное` collection remains the report consumer.
+Report-data saving cleared its Library description; restored and updated it, then
+reopened Rename to verify the complete saved text: event/user units, failure versus
+interruption, possible already-created profile, operation selectors, separate Home
+exercise refresh, the shown-onboarding SessionCheck gate, older-build semantic boundary
+and screen/SDK context. No raw history, legacy report, rule or key event was removed.
+
+Current unreleased catalog remains v1 by the owner's decision. Historical personal
+test events are preserved, not relabelled or treated as current SDK delivery.
+New custom-dimension registration does not establish historical backfill; actual
+parameter processing/receipt from the current Android/iOS build remains unverified.
+No synthetic sends, SDK sign-in or release deployment performed. The original admin-only follow-up had no state/UI impact. Subsequent product
+clarification removed onboarding destination and restored the shown-first gate;
+its Android/iOS Simulator compilation passed. Full XCFramework linking and device
+restoration were not repeated after that clarification.
+Source/mapping self-review and `git diff --check` passed. Independent review remains
+unperformed under the current delegation restrictions.
+
+---
+
 # Analytics flow follow-up audit (2026-10-14)
 
 Scope: current feature event/callback matrices, operation decorators and complete
@@ -40,9 +84,10 @@ it is not interpreted as attribution or registered as a reporting dimension.
 Dialog host exits/views and undocumented provenance stay explicit omissions, not
 inferred completions. Training create completion can return a nullable ID; goal
 operation return can be false; neither is relabelled as a proven business success.
-Onboarding Get started/display flags do not grant consent and fresh onboarding
-telemetry is suppressed until permission exists. Existing shown-flag policy is
-entry-based, not completion-based; no future multi-step draft is invented.
+Onboarding Get started/display flags do not themselves grant consent. First entry
+now initializes absent consent to true immediately, per the product decision below;
+saved false is preserved. Initial events before that source update remain discarded.
+Shown-flag policy remains entry-based, not completion-based.
 
 The repeated audit inspected live property 519002689/account 379805710 and matched
 both mobile streams' package/bundle and Firebase app IDs to local configuration.
@@ -76,7 +121,8 @@ Onboarding reuses existing screen/control definitions; no new admin object is
 required. Configuration reconciliation is complete for this scope. New derived
 events have no received data in the inspected historical period; neither empty
 reports nor legacy test traffic verifies current SDK delivery. Default-denied
-consent suppresses first-run/onboarding events; no retrospective replay is claimed.
+startup discards events before onboarding initializes absent consent; saved denial
+still suppresses events. No retrospective replay is claimed.
 
 No compilation, generated DI/runtime, rendered widget, native restoration, provider
 sign-in, reporting-failure injection or remote event-delivery scenarios were run.
@@ -87,6 +133,141 @@ is unverified. Login authentication button source was compared without edits.
 
 ---
 
+# Sequential authorization startup (2026-10-14)
+
+Latest product clarification: onboarding is the one-time first screen and always
+continues to Login, including Back. Splash loads muscles/equipment, then its flat
+resolveDirection checks onboarding_shown first. If shown: no token → AuthProcess;
+token + profile → Home; token + no profile → ProfileCreation. SessionCheck therefore
+runs only with a token after onboarding has already been shown. No generic Continue,
+Destination enum/payload, cross-leaf dispatcher or onboarding session requests remain.
+SessionCheck's decorator now lives inside hasProfile; it still encloses the same
+cached-user read and optional getUser/getOrThrow call, once per invocation. Its
+eligibility, result/error/cancellation and event population remain unchanged;
+this extraction needs no admin change or additional saved state.
+AuthProcess/ProfileCreation replace the previous authorization stage; Root replaces
+authorization with Home. Login↔Registration keeps ordinary push/pop. Retry Splash
+may repeat its successful earlier catalog requests; no additional caching was added.
+
+Exercise-example first loading belongs to HomeViewModel. LoginUseCase,
+RegisterUseCase and CreateProfileUseCase no longer request exercise examples or
+inject that Feature; their three Koin factories are reconciled. Required profile,
+exclusion, weight-history, goal and push-token steps retain their original error
+contracts. Home's RefreshExerciseExamples still decorates its actual API request.
+Later workout/library operations keep their independently needed refreshes.
+Home training presentation observes Room's exercise_example/iteration/exercise/
+training tables (confirmed in generated TrainingDao); arrival of examples rebuilds
+that data-backed presentation rather than requiring an auth preload.
+
+Screen coverage: SplashComponent/VM → AuthScreen.Splash; OnboardingComponent/VM
+→ AuthScreen.Onboarding; LoginComponent/VM → AuthScreen.Login. Each retains one
+foundation presentation hook. Auth/AuthProcess/Root/ProfileCreation hosts remain
+containers with null hooks; profile-creation leaves keep their existing hooks.
+Get started/Back still observe next/dismiss_requested with original source/busy
+guards. SessionCheck still measures hasProfile only, and now runs after the shown
+onboarding gate when a token exists. Consent still controls event eligibility;
+no suppressed earlier operation/view is replayed after the onboarding default grant.
+Login/Register/CreateProfile decorators keep their whole revised business blocks;
+a failed exercise refresh now belongs to Home, not auth/profile creation. Durations
+and failure populations across older installed builds are not an unchanged baseline.
+
+Preservation inventory: AuthRouter.Onboarding is again a payload-free serializable
+object with its original serial name and unchanged AuthComponent stack key.
+JsonIgnoreUnknownKeys is scoped to that object for the intermediate development
+route's obsolete destination field; no compatibility business field or secret is
+retained. Restored onboarding routes stay interactive and always continue to Login.
+Consent rebuilds from LocalSettings, with no duplicate StateKeeper copy. Existing
+saved false remains protected by atomic default initialization. Device archive
+roundtrip remains unverified; Android/iOS Simulator compilation passed after removal.
+
+Admin reconciliation: fresh native Chrome readback on property
+519002689/account 379805710 confirmed existing Library descriptions for События и
+экраны and Профиль и тренировки describe observed views/events and complete current
+operation blocks, without claiming exercise-cache readiness or an explicit opt-in.
+Profile creation still includes its required data readbacks/local welcome status.
+Existing screen/control definitions and key events need no new rule/mark/report;
+no schema, admin mutation or deletion was introduced in that implementation slice.
+The subsequent Home reporting addition is recorded in Startup analytics admin
+follow-up above. Current schemas remain v1.
+SDK receipt and deployment are unverified; older builds retain their own startup
+and auth-preparation populations, with no invented release cutoff or raw-data rewrite.
+
+Source checks cover three destinations with/without onboarding, captured route
+restoration inputs, accepted/busy callbacks, replacement callbacks, obsolete
+wiring/dependencies, leaf/container hooks and unchanged storage/error ownership.
+Authorization Android and iOS Simulator Kotlin compilation passed; git diff --check
+passed. :shared:assembleSharedDebugXCFramework --offline also succeeded for device
+and simulator (6m 46s), producing shared.xcframework. Compilation/linking does not
+prove device navigation, restoration or SDK delivery.
+Independent review is unavailable under the current delegation restrictions.
+No automated test sources or infrastructure added.
+
+# Onboarding welcome and immediate analytics preference (2026-10-14)
+
+Product decision: the checkbox is on by default, saved immediately on first entry
+and on every accepted change. This is opt-out behavior, not confirmation through
+Get started. LocalSettings.setDefaultAnalyticsConsent writes only when its Boolean
+key is absent, within DataStore.edit; known grants and denials survive first entry,
+retry, restoration and account cleanup. The shown flag stays entry-based. Already
+shown saved Onboarding routes rebuild their source and remain interactive instead
+of redirecting before the choice is available. Ordinary cold starts still use the
+Splash shown-state gate. No backend, SDK-default or analytics schema change.
+
+Coverage: AuthRouter.Onboarding → OnboardingComponent → retained OnboardingViewModel
+→ OnboardingScreen retains exactly one AuthScreen.Onboarding presentation. Splash,
+Login and their Auth/Root containers keep their existing hooks/null classification.
+Get started/Back still observe next/dismiss_requested through auth_control_clicked;
+both require a known source and no loaders. Checkbox changes reject
+pending, unchanged and busy input, persist via safeLaunch/getOrThrow and deliberately
+emit no event. Initialization is also deliberately untracked. Collection is applied
+by the existing ApplicationBootstrap observer; pre-grant observations are discarded,
+never replayed or turned into a synthetic screen view. Delivery timing after a
+saved preference remains an asynchronous core/SDK concern, not a UI guarantee.
+
+Preservation inventory: analyticsConsent is nullable rebuilt presentation of an
+immediately committed installation preference, not an unfinished draft. Preparation
+is represented by its loader; there is no separate readiness flag or StateKeeper copy. Jobs/loaders,
+error sessions and presentation provenance are runtime-only; no secret inputs added.
+Observation uses Processing.Infinity; source retry clears pending presentation.
+A failed write retains the actual stored value, and a failed initial write prevents
+marking onboarding shown or continuing. Cancellation is rethrown at storage boundaries.
+
+UI uses existing AppTokens, GrippoLogo, Check and Primary Button, with scrollable
+welcome/benefit content and a pinned compact checkbox/text row immediately above
+the continuation action. Nine new strings
+are translated in EN/UK/RU. Screen previews cover on/off, preparation, writing,
+light/dark EN/UK phone configurations.
+Visual-only follow-up removes the consent card and long description; persistence,
+control eligibility, screen hooks and event contracts are unchanged. No analytics
+admin or state-preservation change is required for this layout/text-only edit.
+Before the compact follow-up, Android Studio rendered the standard full-screen
+EN dark and UK light previews; only their overview was inspected. The compact
+footer revision and detailed enlarged-text, interactive toggle,
+process recreation, live app and iOS visual checks remain unverified.
+
+Live admin readback: property 519002689/account 379805710; Android stream
+13265245917 (com.grippo.android), iOS stream 13348167981 (com.grippo.app).
+Existing Event definitions screen_id, interaction_screen and interaction_action
+match auth_onboarding/next/dismiss_requested. Key events remain
+Grippo profile-created and training-create-completed; onboarding/consent requires
+no key mark or derived event. Library reports События и экраны, Профиль и тренировки
+and the saved profile→training path retain source-accurate descriptions and explain
+permitted analytics/GA4 users/test history. None claims an explicit opt-in event or
+requires a consent parameter; no affected admin object needs a mutation or deletion.
+No admin configuration was changed. This reconciliation does not prove delivery of
+the new revision. Old installed builds/historical self-test traffic keep their old
+collection population; do not compare before/after consent policy as an unchanged
+baseline or invent a release cutoff. Current schemas remain v1.
+
+Checks: source/diff, screen ownership, durable-state/error/cancellation gates and
+EN/UK/RU XML/key parity passed. authorization and local-settings Android and iOS
+Simulator Kotlin compilation passed. For that welcome-only revision, full shared XCFramework linking, device
+restoration, SDK collection/delivery and independent review were unperformed;
+the later routing revision above now has successful XCFramework evidence, while
+the device/delivery/independent-review limitations remain;
+no permitted independent reviewer is available under delegation restrictions.
+No automated test sources, dependencies or capture infrastructure added.
+
 # One-time onboarding and Login cleanup (2026-10-14)
 
 ## Route and behavior coverage
@@ -94,19 +275,20 @@ is unverified. Login authentication button source was compared without edits.
 | Surface/route | Owner | Screen identity/hook |
 |---|---|---|
 | RootRouter.Auth(AuthRouter.Splash), startup loading | SplashComponent → retained SplashViewModel | AuthScreen.Splash / auth_splash; one hook |
-| AuthRouter.Onboarding, empty content + Get started | OnboardingComponent → retained OnboardingViewModel | AuthScreen.Onboarding / auth_onboarding; one hook |
+| AuthRouter.Onboarding, welcome content + analytics checkbox + Get started | OnboardingComponent → retained OnboardingViewModel | AuthScreen.Onboarding / auth_onboarding; one hook |
 | AuthProcessRouter.Login, Email/Google/Apple/Registration callbacks | LoginComponent → retained LoginViewModel | AuthScreen.Login / auth_login; existing hook |
 | Auth and AuthProcess hosts, Root host | Existing container VMs | Default null; child pages own views |
 
-Splash loads muscles and equipment sequentially before reading
-observeOnboardingShown().first(), then performs session/profile work as needed.
-False/missing directs to Onboarding; true preserves the original session path to
-Login, ProfileCreation or Home. Auth replaces its stack rather than pushing the
+Splash loads muscles and equipment sequentially and resolves Login/ProfileCreation/
+Home from the token/profile before reading observeOnboardingShown().first().
+False/missing directs to Onboarding carrying that destination; true continues
+directly to the resolved screen. Auth replaces its stack rather than pushing the
 placeholder into Back history. Root's token-null observer does not replace an
 already-active Authorization child; queued deeplinks still resolve at Home.
 
-Catalog ordering update: every Splash initialization/retry loads both catalogs,
-including the return from Onboarding. Errors propagate through the existing
+Catalog ordering update: every Splash initialization/retry loads both catalogs.
+Onboarding now continues directly to its saved destination, so it does not recreate Splash or
+repeat catalog loading. Errors propagate through the existing
 safeLaunch dialog/retry before any onward navigation. Analytics contracts, hooks,
 callbacks and the hasProfile-only SessionCheck block are unchanged; catalog work
 remains untracked and requires no admin definition change. Preservation assessment:
@@ -115,44 +297,55 @@ Source ordering/error/screen ownership review, scoped authorization compileAndro
 with --offline and git diff --check passed. Device startup/error/retry and iOS
 runtime remain unverified; independent review was unavailable under delegation restrictions.
 
-Onboarding reads the durable flag during preparation. If already true (including
-a restored stale Onboarding route), it redirects to Splash without a synthetic
-click. Otherwise it writes true, then enables Get started. This is a **shown/entered**
-flag, not completion: closing/restarting after that successful write does not show
-it again. It records entry, not proof of pixel rendering. A read/write error uses
-safeLaunch with retry after dialog dismissal; readiness stays false, so the CTA
-cannot continue without a successful durable decision. Cancellation propagates.
+Onboarding reads the durable shown flag during preparation. On first entry it
+initializes absent analytics consent to true through an atomic conditional
+LocalSettings write, then marks onboarding shown. Existing saved true/false values
+are preserved. Shown remains an entry-based flag: closing/restarting after its
+successful write does not show onboarding again. A restored Onboarding route stays
+on its screen and rebuilds its checkbox from LocalSettings. Initialization failure
+uses safeLaunch retry after dismissal; consent stays pending until preparation
+succeeds. Cancellation propagates.
+
+The checkbox and Get started/Back require a non-null source after successful preparation
+and no active loaders. Accepted changed checkbox values are saved immediately through
+safeLaunch; the Infinity source observation supplies actual display state. Consent
+controls/initialization emit no analytics event. Failed source reads clear the
+presentation to null before retry and disable dependent controls. Existing shared
+ApplicationBootstrap applies the saved choice to collection; UI never calls the SDK.
 
 Accepted Get started emits AuthEvent.Onboarding.GetStarted, encoded by the existing
 v1 auth_control_clicked schema with interaction_screen=auth_onboarding and
-interaction_action=next, then returns to Splash. Back observes DismissRequested
+interaction_action=next, then continues to the saved Login/Home/ProfileCreation
+destination. Back observes DismissRequested
 (encoded dismiss_requested) and follows the same continuation. Busy/not-ready
 callbacks emit nothing. Presentation uses only the existing foundation hook.
 No persistence operation telemetry or new wire schema is added; permission still
-controls actual collection. Startup source/storage actions do not imply consent.
+controls actual collection. Get started is continuation, not an opt-in event;
+collection follows the separately saved installation preference.
 
 Login's consent UI, callback, observation, injection, loader, transient field and
 localized label were removed. Its authentication button-group source remains
 identical to the pre-change copy. Existing email LoginDraft ownership, password
 exclusion and old-draft compatibility remain. Check stays a reusable design-system
-component from the earlier explicit request, with no new onboarding use assumed.
+component from the earlier explicit request and is now reused in onboarding.
 
 ## Preservation inventory
 
 | Owner | Field/group | Policy / source |
 |---|---|---|
 | LocalSettingsRepository | onboarding_shown | Durable installation Boolean; absent false, one-way true write; clearUserSettings preserves it atomically with analytics_consent across logout/delete |
-| OnboardingState | isReady | Rebuild after successful current preparation; no editable draft or StateKeeper supplier |
-| Onboarding | content, jobs/loaders, error/Back sessions | Empty content; runtime-only; no secrets/inputs/selections or restoration flags |
-| AuthRouter/stack | Onboarding page identity | Serializable data object; existing keyed stack/serializer, initialStack follows project root convention |
+| LocalSettingsRepository | analytics_consent | Durable installation Boolean; first onboarding initializes absent true only, existing true/false preserved atomically; accepted checkbox changes persist immediately |
+| OnboardingState | analyticsConsent | Rebuild nullable durable consent through Infinity observation after preparation; no readiness flag, unfinished draft or StateKeeper copy |
+| Onboarding | content, jobs/loaders, error/Back sessions | Localized welcome/benefit/consent content; jobs/loaders/errors remain runtime-only; no secrets or restoration flags |
+| AuthRouter/stack | Onboarding page identity / destination | Serializable route and closed continuation enum; existing keyed stack/serializer; old missing destination defaults to Login |
 | Splash | shown-state read and existing loading | Rebuild through existing VM startup/error lifecycle; no source cache or draft |
 | LoginState | email / password / provider availability | Existing email draft retained; password excluded, availability rebuilt; removed consent presentation is not archived |
 
 Scope is one existing feature module with seven new MVI files, no new module, DI
 registry or startup shell. LocalSettings keeps its API/repository/feature ownership.
 EN/UK/RU Get started resources and ready/preparation previews are supplied. There
-is no consent choice in the placeholder; analytics remains off until explicitly
-enabled in Settings. Display-only one-time semantics intentionally do not promise
+is an immediately saved consent choice in onboarding, editable later in Settings.
+Display-only one-time semantics intentionally do not promise
 resuming a future unfinished multi-step onboarding.
 
 ## Verification
@@ -192,7 +385,8 @@ historical evidence for their original revisions, not verification of this revis
 
 ## Collection policy and Settings
 
-Collection is disabled by default and enabled only after a saved opt-in. `analytics_consent` is a Boolean preference in the
+Collection starts disabled until a saved grant is applied. Onboarding now initializes
+absent consent to true on entry; known false is preserved. `analytics_consent` is a Boolean preference in the
 existing LocalSettings/DataStore owner; absence and saved false map to Denied. ApplicationBootstrap
 owns one application-lifetime observation before platform sink attachment. It applies
 Granted/Denied through Analytics; read failures deny collection while the existing
@@ -217,7 +411,7 @@ Preservation inventory: consent is immediately committed to the existing durable
 owner, not an unfinished form; Settings rebuilds it through an Infinity observation.
 No StateKeeper copy or restore cache is needed. LogoutUseCase/DeleteProfileUseCase call clearUserSettings, atomically preserving
 this installation's saved consent while clearing account preferences. New installs
-remain disabled by default. Jobs/loaders/focus, telemetry IDs and live dialogs are runtime-only.
+remain disabled until first onboarding initialization; its default grant then applies. Jobs/loaders/focus, telemetry IDs and live dialogs are runtime-only.
 
 ## Screens and central actions
 
@@ -410,7 +604,7 @@ the earlier build evidence does not verify the later Onboarding revision.
 | Route / surface | Component → ViewModel | AuthScreen / wire identity | Hook |
 |---|---|---|---|
 | AuthRouter.Splash / launch loading | SplashComponent → SplashViewModel | Splash / auth_splash | Typed screenPresentation |
-| AuthRouter.Onboarding / one-time placeholder | OnboardingComponent → OnboardingViewModel | Onboarding / auth_onboarding | Typed screenPresentation |
+| AuthRouter.Onboarding / one-time welcome and consent | OnboardingComponent → OnboardingViewModel | Onboarding / auth_onboarding | Typed screenPresentation |
 | AuthProcessRouter.Login | LoginComponent → LoginViewModel | Login / auth_login | Typed screenPresentation |
 | AuthProcessRouter.Registration / optional email seed | RegistrationComponent → RegistrationViewModel | Registration / auth_registration | Typed screenPresentation |
 | ProfileCreationRouter.User | UserComponent → UserViewModel | User / profile_creation_user | Typed screenPresentation |
@@ -425,9 +619,9 @@ the earlier build evidence does not verify the later Onboarding revision.
 AuthProcess uses one Login owner for its actual entry paths. Its FlowId is route
 identity, not telemetry; AuthorizationEntryPoint and its former reason codes are
 no longer part of the current contract.
-Splash loads catalogs before it can navigate to Onboarding or check the session,
-then navigates to Home,
-AuthProcess or ProfileCreation after the shown-state gate. Successful login or
+Splash loads catalogs and checks the session before navigating to Onboarding or
+the selected Home/AuthProcess/ProfileCreation destination. Onboarding carries and
+continues the same selected destination. Successful login or
 registration can navigate to Home or ProfileCreation; these paths do not add
 screen owners. Restored stacks use the same retained factories and typed hooks.
 All nine leaf factories resolve AuthAnalytics only inside retainedInstance.
@@ -437,7 +631,7 @@ owns Initial/Restore and close on pause/destroy. Containers resolve no screen se
 | Owner | Observed callbacks / inputs | Complete operations and eligibility |
 |---|---|---|
 | SplashViewModel | Back | SessionCheck wraps hasProfile only when a session token exists; cache hit and remote lookup both complete normally; startup retry remains business-owned |
-| OnboardingViewModel | Accepted Get started / Back → Next / DismissRequested | Both callbacks require isReady and no active loaders; preparation reads/writes the durable shown flag without a persistence-operation event; already-shown routes return to Splash without a synthetic click |
+| OnboardingViewModel | Accepted Get started / Back → Next / DismissRequested | Both callbacks require a known consent source and no active loaders; preparation initializes absent consent and marks shown without persistence telemetry; restored routes rebuild saved consent; checkbox writes are deliberately unreported |
 | LoginViewModel | Email/password status transitions, focus, email clear, Next/Done IME, password visibility, submit by Email/Google/Apple, Register, Back | Login includes the whole use case and provider sign-in for Google/Apple; submit follows busy guard and email/password validity for Email; Register follows busy guard |
 | RegistrationViewModel | Email/password status transitions, focus, email clear, Next/Done IME, password visibility, Submit, Back | Register wraps createAccount including private preparation; submit follows busy and validity guards |
 | UserViewModel | Name status transitions/focus/clear/Done; Height/Weight picker open and accepted confirmation; Next, Back | Logout wraps execute on accepted Back; picker open and Back follow busy guard; Next also requires valid name/weight/height |
@@ -1579,7 +1773,7 @@ does not truncate to two months; key-event data follows user-data retention.
 | Goal operation with Boolean result | No goal-success key event: successful return may contain false. |
 | `start_training_task_completed` / `option=preset` | Building start options may complete with no generated preset. Keep option selection as an observation; no generation-success key or availability rate is inferred. |
 | SDK identity / screen context | No app caller updates analytics identity; current user counts are GA4 identities, not registered accounts. Native SDK screen context does not prove an operation's owner/origin; operation payload deliberately omits the app's navigation context. |
-| Onboarding `screen_view` / `auth_control_clicked` | Existing `screen_id=auth_onboarding` and `interaction_screen=auth_onboarding`, `interaction_action=next/dismiss_requested` are covered by existing Event dimensions. Native `screen_name` needs no new custom definition. No new derived rule or key event is required; receipt is unverified under default-denied consent. |
+| Onboarding `screen_view` / `auth_control_clicked` | Existing `screen_id=auth_onboarding` and `interaction_screen=auth_onboarding`, `interaction_action=next/dismiss_requested` are covered by existing Event dimensions. Native `screen_name` needs no new custom definition. No new derived rule or key event is required; receipt is unverified; first onboarding now initializes absent consent to granted, preserving saved denial. |
 
 Saved and inspected reporting configuration:
 
@@ -1751,7 +1945,7 @@ Outstanding / verification limits:
 - Concurrent authorization changes add `auth_onboarding` through the existing
   `screen_view` and `auth_control_clicked` contracts (`interaction_screen=
   auth_onboarding`, `interaction_action=next/dismiss_requested`). Existing custom
-  dimensions cover them. The current placeholder has no opt-in before login;
+  dimensions cover them. At that earlier inspection the placeholder had no opt-in before login;
   default Denied discards onboarding/auth telemetry until a real opt-in. No
   complete fresh-install denominator or delivery is asserted, and no concurrent
   feature work was changed for an admin report.
@@ -1846,8 +2040,9 @@ cover 147 feature schemas plus two toolkit built-ins (149 unique, all v1, longes
 SDK receipt; the runtime limitations above remain.
 
 A subsequent independent review corrected the canonical collection reference's
-stale consent-owner inventory: Profile Settings is the current control owner;
-Login/onboarding do not mutate consent. The control rejects a pending source,
+stale consent-owner inventory at that revision: Profile Settings was the control
+owner and Login/onboarding did not mutate consent. The later onboarding policy
+below supersedes that owner inventory. The control rejects a pending source,
 unchanged values and an ongoing consent write; accepted changes use the existing
 persistence error pipeline. Re-review found no
 remaining defect in that correction. Fresh live inspection again verified all

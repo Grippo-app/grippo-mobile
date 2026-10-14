@@ -861,4 +861,13 @@
     <string name="analytics_consent_title">Аналітика використання</string>
     <string name="analytics_consent_description">Дозвольте події використання, щоб допомогти покращити застосунок. Введений текст і вимірювання тіла не надсилаються. Можна вимкнути будь-коли.</string>
     <string name="onboarding_get_started">Розпочати</string>
+    <string name="onboarding_title">Кожне тренування має значення</string>
+    <string name="onboarding_description">Твій щоденник тренувань. Записуй заняття та стеж за тим, як далеко ти просунувся.</string>
+    <string name="onboarding_workouts_title">Зберігай кожен підхід</string>
+    <string name="onboarding_workouts_description">Вага, повторення та вправи — усе в одному місці.</string>
+    <string name="onboarding_progress_title">Бач свій прогрес</string>
+    <string name="onboarding_progress_description">Стеж за силою, регулярністю та історією тренувань.</string>
+    <string name="onboarding_setup_title">Тренуйся по-своєму</string>
+    <string name="onboarding_setup_description">Обери м’язи, обладнання та свій рівень досвіду.</string>
+    <string name="onboarding_analytics_consent">Дозволити аналітику</string>
 </resources>

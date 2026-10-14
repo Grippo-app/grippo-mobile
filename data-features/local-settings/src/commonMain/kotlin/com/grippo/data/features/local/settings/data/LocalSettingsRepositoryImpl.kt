@@ -54,6 +54,21 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
+    override suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit> {
+        return try {
+            dataStore.edit { preferences ->
+                if (preferences[AnalyticsConsentKey] == null) {
+                    preferences[AnalyticsConsentKey] = granted
+                }
+            }
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(error)
+        }
+    }
+
     override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
         return try {
             dataStore.edit { preferences -> preferences[AnalyticsConsentKey] = granted }

@@ -11,6 +11,7 @@ public sealed class AuthRouter : BaseRouter {
     @Serializable
     public data object Splash : AuthRouter()
 
+    @JsonIgnoreUnknownKeys
     @Serializable
     public data object Onboarding : AuthRouter()
 

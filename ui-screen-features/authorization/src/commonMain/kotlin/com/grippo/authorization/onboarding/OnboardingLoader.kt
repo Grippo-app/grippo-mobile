@@ -7,4 +7,7 @@ import com.grippo.core.foundation.models.BaseLoader
 internal sealed interface OnboardingLoader : BaseLoader {
     @Immutable
     data object Preparation : OnboardingLoader
+
+    @Immutable
+    data object AnalyticsConsent : OnboardingLoader
 }

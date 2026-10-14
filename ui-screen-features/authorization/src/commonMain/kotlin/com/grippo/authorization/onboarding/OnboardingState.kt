@@ -4,5 +4,5 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 internal data class OnboardingState(
-    val isReady: Boolean = false,
+    val analyticsConsent: Boolean? = null,
 )

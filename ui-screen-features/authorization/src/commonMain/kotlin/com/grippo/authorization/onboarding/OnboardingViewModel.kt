@@ -5,8 +5,10 @@ import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
+import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 
 internal class OnboardingViewModel(
     private val analytics: AuthAnalytics,
@@ -24,24 +26,40 @@ internal class OnboardingViewModel(
 
     private fun prepare() {
         safeLaunch(loader = OnboardingLoader.Preparation, onError = ::prepare) {
-            if (localSettingsFeature.observeOnboardingShown().first()) {
-                navigateTo(OnboardingDirection.Splash)
-                return@safeLaunch
+            if (!localSettingsFeature.observeOnboardingShown().first()) {
+                localSettingsFeature.setDefaultAnalyticsConsent(granted = true).getOrThrow()
+                localSettingsFeature.setOnboardingShown().getOrThrow()
             }
-            localSettingsFeature.setOnboardingShown().getOrThrow()
-            update { it.copy(isReady = true) }
+            observeAnalyticsConsent()
+        }
+    }
+
+    private fun observeAnalyticsConsent() {
+        update { it.copy(analyticsConsent = null) }
+        localSettingsFeature.observeAnalyticsConsent()
+            .onEach { consent -> update { it.copy(analyticsConsent = consent == AnalyticsConsent.Granted) } }
+            .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
+    }
+
+    override fun onAnalyticsConsentChange(granted: Boolean) {
+        if (loaders.value.isNotEmpty()) return
+        val current = state.value.analyticsConsent ?: return
+        if (current == granted) return
+        safeLaunch(loader = OnboardingLoader.AnalyticsConsent) {
+            localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
         }
     }
 
     override fun onGetStarted() {
-        if (!state.value.isReady || loaders.value.isNotEmpty()) return
+        if (state.value.analyticsConsent == null || loaders.value.isNotEmpty()) return
         analytics.trackEvent(AuthEvent.Onboarding.GetStarted)
-        navigateTo(OnboardingDirection.Splash)
+        navigateTo(OnboardingDirection.Login)
     }
 
     override fun onBack() {
-        if (!state.value.isReady || loaders.value.isNotEmpty()) return
+        if (state.value.analyticsConsent == null || loaders.value.isNotEmpty()) return
         analytics.trackEvent(AuthEvent.Onboarding.DismissRequested)
-        navigateTo(OnboardingDirection.Splash)
+        navigateTo(OnboardingDirection.Login)
     }
+
 }

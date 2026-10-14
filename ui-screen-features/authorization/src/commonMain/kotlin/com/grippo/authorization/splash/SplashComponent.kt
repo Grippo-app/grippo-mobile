@@ -38,7 +38,7 @@ internal class SplashComponent(
             SplashDirection.Onboarding -> toOnboarding.invoke()
             SplashDirection.AuthProcess -> toAuthProcess.invoke()
             SplashDirection.Home -> toHome.invoke()
-            SplashDirection.CreateProfile -> toProfileCreation.invoke()
+            SplashDirection.ProfileCreation -> toProfileCreation.invoke()
             SplashDirection.Back -> back.invoke()
         }
     }

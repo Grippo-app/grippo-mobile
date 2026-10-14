@@ -41,7 +41,6 @@ public class FeatureApiModule {
                 userFeature = get(),
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
-                exerciseExampleFeature = get(),
                 weightHistoryFeature = get(),
                 goalFeature = get()
             )
@@ -103,7 +102,6 @@ public class FeatureApiModule {
                 userFeature = get(),
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
-                exerciseExampleFeature = get(),
                 weightHistoryFeature = get(),
                 goalFeature = get()
             )
@@ -114,7 +112,6 @@ public class FeatureApiModule {
                 userFeature = get(),
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
-                exerciseExampleFeature = get(),
                 weightHistoryFeature = get()
             )
         }

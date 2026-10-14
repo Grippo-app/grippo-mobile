@@ -6,6 +6,6 @@ internal sealed interface SplashDirection : BaseDirection {
     data object Onboarding : SplashDirection
     data object AuthProcess : SplashDirection
     data object Home : SplashDirection
-    data object CreateProfile : SplashDirection
+    data object ProfileCreation : SplashDirection
     data object Back : SplashDirection
 }

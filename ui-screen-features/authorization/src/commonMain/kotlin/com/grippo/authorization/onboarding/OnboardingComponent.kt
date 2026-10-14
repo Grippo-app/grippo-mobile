@@ -9,7 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class OnboardingComponent(
     componentContext: ComponentContext,
-    private val toSplash: () -> Unit,
+    private val toLogin: () -> Unit,
 ) : BaseComponent<OnboardingDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -27,7 +27,7 @@ internal class OnboardingComponent(
 
     override suspend fun eventListener(direction: OnboardingDirection) {
         when (direction) {
-            OnboardingDirection.Splash -> toSplash.invoke()
+            OnboardingDirection.Login -> toLogin.invoke()
         }
     }
 

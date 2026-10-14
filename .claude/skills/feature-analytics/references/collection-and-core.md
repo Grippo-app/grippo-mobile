@@ -14,8 +14,8 @@ Inspect current source rather than copying signatures or catalog counts:
 - `shared/.../bootstrap/ApplicationBootstrap.kt`: application-lifetime consent
   observation; `shared/.../Koin.kt`: catalog/implementation composition.
 - `data-features/local-settings` and `feature-api`: durable consent meaning and
-  mutation contract; Profile Settings: current consent UI consumer. Login and
-  onboarding are entry paths without consent mutation.
+  mutation contract; Profile Settings and Onboarding are consent UI consumers.
+  Login remains an entry path without consent mutation.
 - `androidApp`, `data-services/firebase` and `iosApp`: platform initialization,
   disabled SDK defaults and adapter attachment.
 
@@ -24,7 +24,12 @@ and transport diagnostics must not expose raw payloads, user inputs or secrets.
 
 ## Collection and consent
 
-Grippo currently collects optional usage analytics after an explicit saved opt-in.
+Grippo collects optional usage analytics when the installation preference is saved
+as granted. By the explicit product decision of 2026-10-14, first onboarding
+initializes absent consent to granted immediately on opening, with its checkbox
+on by default. Existing saved true/false decisions are preserved atomically; each
+accepted checkbox change is persisted immediately. This is an opt-out onboarding
+policy, not a claim that the user explicitly opted in through Get started.
 Missing storage and saved false map to Denied; saved true maps to Granted. A pending
 UI read is separate from both and cannot authorize collection. Platform SDK defaults
 remain disabled until shared policy is applied. A selected draft or successful
@@ -38,10 +43,12 @@ UI reads the real source and persists each accepted consent-control change throu
 the normal error pipeline; there is no separate consent draft. Rebuild the transient
 UI value from LocalSettings under
 [state preservation](../../state-preservation/SKILL.md#initialization-from-persistent-settings).
-Login has no consent control. Consent remains editable in Profile Settings; the
-new onboarding is currently a blank-content placeholder with Get started, not a
-consent request. Its display flag never grants analytics permission. Consent
-controls are deliberately unreported.
+Login has no consent control. Consent is editable in Onboarding and Profile
+Settings. Onboarding initializes absent consent before marking its shown flag and
+reads the durable choice; restored onboarding routes rebuild this value instead
+of resetting it or immediately redirecting. Get started/Back do not write consent.
+The display flag itself never grants analytics permission. Consent controls and
+initialization are deliberately unreported.
 
 Review every actual entry path, including native provider sign-in and registration
 navigation. Login continuation does not write consent or require agreement;

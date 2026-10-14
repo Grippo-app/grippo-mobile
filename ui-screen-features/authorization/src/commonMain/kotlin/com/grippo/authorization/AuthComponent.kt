@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
@@ -39,12 +38,11 @@ public class AuthComponent(
 
     override suspend fun eventListener(direction: AuthDirection) {
         when (direction) {
-            AuthDirection.Splash -> navigation.replaceAll(AuthRouter.Splash)
             AuthDirection.Onboarding -> navigation.replaceAll(AuthRouter.Onboarding)
             AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess())
             AuthDirection.Back -> close.invoke()
             AuthDirection.Home -> toHome.invoke()
-            AuthDirection.ProfileCreation -> navigation.push(AuthRouter.ProfileCreation)
+            AuthDirection.ProfileCreation -> navigation.replaceAll(AuthRouter.ProfileCreation)
         }
     }
 
@@ -75,7 +73,7 @@ public class AuthComponent(
             AuthRouter.Onboarding -> Child.Onboarding(
                 OnboardingComponent(
                     componentContext = context,
-                    toSplash = viewModel::toSplash,
+                    toLogin = viewModel::toAuthProcess,
                 ),
             )
 
