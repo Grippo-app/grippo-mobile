@@ -71,6 +71,8 @@ public object DarkColor : AppColor {
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
+        override val onboardingHeroStart = AppPalette.DarkAccent.Orange.copy(alpha = 0.16f)
+        override val onboardingHeroEnd = AppPalette.DarkAccent.Red.copy(alpha = 0.04f)
         override val screen = AppPalette.NeutralDark.N100
         override val dialog = AppPalette.NeutralDark.N150
         override val card = AppPalette.NeutralDark.N200

@@ -32,7 +32,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.training.ExerciseCard
@@ -41,10 +41,10 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.empty_exercises
 import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.ArrowRight
-import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.icons.Muscle
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Timer
@@ -139,9 +139,10 @@ private fun EmptyPage(
                 .weight(1f)
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         ) {
-            EmptyState(
+            IllustratedEmptyState(
                 modifier = Modifier.fillMaxSize(),
-                value = AppTokens.icons.EmptyExercise,
+                painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
+                contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.content),
                 text = AppTokens.strings.res(Res.string.empty_training_exercises),
             )
 

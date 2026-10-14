@@ -19,6 +19,8 @@ import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
+import com.grippo.design.components.illustration.Illustration
+import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.components.welcome.WelcomeBlock
@@ -28,6 +30,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
 import com.grippo.design.resources.provider.icons.LineUp
@@ -223,6 +226,15 @@ private fun HeroBlock(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Illustration(
+            modifier = Modifier
+                .fillMaxWidth(),
+            painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+            style = IllustrationStyle.Large,
+        )
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.welcome_title),

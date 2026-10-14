@@ -13,6 +13,10 @@ The coordinating agent may implement work; a separate reviewer supplies independ
 
 1. Read the actual scope, source and relevant owning skills. Preserve unrelated
    user changes; inspect the working tree before editing and never reset it.
+   Creating, refining or reviewing product artwork MUST apply
+   [illustrations](../illustrations/SKILL.md); use its canonical reference and scope
+   decisions. For integration, inspect the selected export before updating consumers
+   through design-system. A standalone asset does not require a new UI consumer.
    Operational analytics scope, under the owning trigger and exceptions, MUST start
    the feature skill's
    [live admin synchronization](../feature-analytics/references/admin-sync.md)

@@ -15,6 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Dumbbell
+import com.grippo.design.resources.provider.onboarding_workouts_description
+import com.grippo.design.resources.provider.onboarding_workouts_title
 
 @Composable
 internal fun OnboardingBenefit(
@@ -30,15 +36,15 @@ internal fun OnboardingBenefit(
     ) {
         Box(
             modifier = Modifier
-                .background(AppTokens.colors.background.card, RoundedCornerShape(AppTokens.dp.focusFrame.radius))
-                .padding(AppTokens.dp.contentPadding.content),
+                .background(AppTokens.colors.background.onboardingHeroStart, RoundedCornerShape(AppTokens.dp.focusFrame.radius))
+                .padding(AppTokens.dp.contentPadding.subContent),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 modifier = Modifier.size(AppTokens.dp.bannerCard.icon),
                 imageVector = icon,
                 contentDescription = null,
-                tint = AppTokens.colors.icon.secondary,
+                tint = AppTokens.colors.button.backgroundPrimary1,
             )
         }
         Column(
@@ -48,5 +54,17 @@ internal fun OnboardingBenefit(
             Text(title, style = AppTokens.typography.h6(), color = AppTokens.colors.text.primary)
             Text(description, style = AppTokens.typography.b13Med(), color = AppTokens.colors.text.secondary)
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun OnboardingBenefitPreview() {
+    PreviewContainer {
+        OnboardingBenefit(
+            icon = AppTokens.icons.Dumbbell,
+            title = AppTokens.strings.res(Res.string.onboarding_workouts_title),
+            description = AppTokens.strings.res(Res.string.onboarding_workouts_description),
+        )
     }
 }

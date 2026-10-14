@@ -26,14 +26,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
@@ -45,9 +43,11 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
+import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.swipe.SwipeRevealAction
 import com.grippo.design.components.swipe.SwipeToReveal
@@ -60,9 +60,9 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.delete_btn
+import com.grippo.design.resources.provider.empty_sets
 import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Check
-import com.grippo.design.resources.provider.icons.EmptyExercise
 import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.sets_value
@@ -137,33 +137,15 @@ internal fun TrainingExerciseScreen(
                 targetState = state.exercise.iterations.isEmpty()
             ) {
                 when (it) {
-                    true -> Column(
+                    true -> IllustratedEmptyState(
                         modifier = Modifier.fillMaxSize()
                             .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(48.dp),
-                            imageVector = AppTokens.icons.EmptyExercise,
-                            contentDescription = null,
-                            tint = AppTokens.colors.text.secondary,
-                        )
-                        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-                        Text(
-                            text = AppTokens.strings.res(Res.string.training_no_sets),
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                            textAlign = TextAlign.Center,
-                        )
-                        Spacer(Modifier.size(AppTokens.dp.contentPadding.subContent))
-                        Text(
-                            text = AppTokens.strings.res(Res.string.training_first_set_hint),
-                            style = AppTokens.typography.b14Med(),
-                            color = AppTokens.colors.text.secondary,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                        painter = AppTokens.drawables.res(Res.drawable.empty_sets),
+                        illustrationStyle = IllustrationStyle.Medium,
+                        title = AppTokens.strings.res(Res.string.training_no_sets),
+                        text = AppTokens.strings.res(Res.string.training_first_set_hint),
+                        contentPadding = resolvedPadding,
+                    )
 
                     false -> {
                         val dragDropState = rememberDragDropListState(

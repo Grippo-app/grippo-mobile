@@ -26,7 +26,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
-import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.swipe.SwipeRevealAction
 import com.grippo.design.components.swipe.SwipeToReveal
@@ -39,7 +39,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.empty_training_exercises
-import com.grippo.design.resources.provider.icons.EmptyExercise
+import com.grippo.design.resources.provider.empty_exercises
 import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.training.recording.TrainingRecordingContract
@@ -72,10 +72,12 @@ internal fun ColumnScope.ExercisesPage(
             ) { s ->
                 when (s) {
                     true -> {
-                        EmptyState(
+                        IllustratedEmptyState(
                             modifier = Modifier
-                                .fillMaxSize(),
-                            value = AppTokens.icons.EmptyExercise,
+                                .fillMaxSize()
+                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                            painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
+                            contentPadding = resolvedPadding,
                             text = AppTokens.strings.res(Res.string.empty_training_exercises)
                         )
                     }

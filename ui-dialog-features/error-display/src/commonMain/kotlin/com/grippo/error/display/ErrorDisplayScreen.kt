@@ -2,7 +2,6 @@ package com.grippo.error.display
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,10 +15,13 @@ import com.grippo.core.state.error.AppErrorState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.illustration.Illustration
+import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.error_dialog
 import com.grippo.design.resources.provider.got_it_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -33,6 +35,14 @@ internal fun ErrorDisplayScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
+    Illustration(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        painter = AppTokens.drawables.res(Res.drawable.error_dialog),
+        style = IllustrationStyle.Compact,
+    )
+
     val description = state.error.description()
 
     if (description != null) {
@@ -41,8 +51,7 @@ internal fun ErrorDisplayScreen(
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth()
-                .heightIn(max = AppTokens.dp.dialog.maxMessageHeight),
+                .fillMaxWidth(),
             text = description.text(),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,

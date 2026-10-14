@@ -37,6 +37,10 @@ these from the request/source before asking for missing information.
 5. UI/design work compares real consumers and declared design states through
    [visual review](references/visual-review.md). Source compliance does not prove
    rendered fidelity; note states/platforms that could not be inspected.
+   Product artwork MUST also pass the owning
+   [illustration completion gate](../illustrations/SKILL.md#completion): review the
+   exported asset against the canonical style reference, not only generator output.
+   Apply whole-screen checks only when a consumer is within scope.
 6. Review real source/diff and run checks within the user's authorization. Builds
    prove compilation; static checks do not prove native lifecycle, SDK delivery,
    generated DI runtime or restoration. MUST follow the canonical

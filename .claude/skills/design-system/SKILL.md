@@ -9,6 +9,11 @@ Read `CLAUDE.md` and [the reference index](references/index.md); read the releva
 reference and actual producer/component/callers before editing. Use the user's
 scope, existing packages, resource locales and font factory from source.
 
+For product artwork creation, refinement or review, MUST apply
+[illustrations](../illustrations/SKILL.md)
+for the approved Grippo illustration style. This skill still owns integration,
+resource formats, tokens and previews; ordinary UI icons/logos do not trigger it.
+
 ## Required rules
 
 - Consumers use `AppTokens.colors|dp|typography|icons|strings|drawables`.

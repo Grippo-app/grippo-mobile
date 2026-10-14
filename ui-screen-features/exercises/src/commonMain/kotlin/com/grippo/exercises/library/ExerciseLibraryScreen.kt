@@ -34,7 +34,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExample
-import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
@@ -49,7 +49,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_exercise_examples
 import com.grippo.design.resources.provider.exercise_library
-import com.grippo.design.resources.provider.icons.EmptyExerciseExample
+import com.grippo.design.resources.provider.empty_exercises
 import com.grippo.exercises.library.internal.Header
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -128,11 +128,12 @@ internal fun ExerciseLibraryScreen(
         targetState = isEmpty
     ) {
         when (it) {
-            true -> EmptyState(
+            true -> IllustratedEmptyState(
                 modifier = Modifier
                     .fillMaxSize()
                     .navigationBarsPadding(),
-                value = AppTokens.icons.EmptyExerciseExample,
+                painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
+                contentPadding = PaddingValues(AppTokens.dp.screen.horizontalPadding),
                 text = AppTokens.strings.res(Res.string.empty_exercise_examples)
             )
 

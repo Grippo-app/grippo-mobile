@@ -1,3 +1,45 @@
+# Illustration integration review (2026-10-14)
+
+Subsequent presentation refactor: Illustration owns decorative image layout and
+three existing token sizes; IllustratedEmptyState also accepts an optional title
+with supporting text. All eight surfaces use the shared image component. Assets,
+business callbacks, telemetry and user-owned state are unchanged.
+
+Visual-only scope: onboarding, daily training list, exercise library, recording
+exercise list, start-training empty option, empty sets, Home welcome and error
+dialog. Five shared WebP assets have eight production consumers. Resource reuse,
+decorative accessibility, token-owned sizes and removed icon/component callers
+were reviewed. No screen identities, callbacks, business operations, consent,
+navigation or user-owned fields changed; no new events, admin synchronization or
+StateKeeper data is needed. Error dialog keeps a simple non-scrolling illustration/message/button layout
+at the owner's request; exceptional long-message/compact-screen adaptation is
+outside the requested scope. Additional compact/font-scale and long-message preview fixtures were removed
+at the owner's request; existing standard previews remain. They are not rendered
+verification.
+Asset alpha, unique file contents, live source references and project-skill links
+were checked. Whole-screen layout/runtime and iOS rendering remain unverified.
+Independent review was not performed under the current delegation restrictions.
+
+# Onboarding illustration and visual polish (2026-10-14)
+
+Visual-only change: generated transparent dumbbell/progress artwork is bundled as
+onboarding_hero.webp (768px, about 104KB), with a token-owned warm gradient in both
+LightColor/DarkColor, a smaller logo and compact accent benefit icons. Existing
+localized title/descriptions, checkbox/CTA, busy/source eligibility, callbacks,
+LocalSettings, navigation, requests and analytics hooks remain unchanged. No
+event/consent/state impact, new admin object or live synchronization needed.
+Screen previews retain consent on/off/preparing/saving, light/dark and UK/EN
+configurations; Intro/Benefit now have their own AppPreview fixtures.
+Generated artwork and alpha/export were inspected. Source/diff review passed;
+initial Android/iOS Simulator compile passed. Native Studio whole-screen preview
+attempts were interrupted by user app changes; device/font-scale/layout rendering
+remains unverified. No test/capture infrastructure or runtime state added.
+Final Android compilation and shared debug XCFramework assembly passed (device
+and simulator, 10m55s). The first full build failed on a missing transformed KLIB
+in confirm-training-completion; only that generated build cache was regenerated
+before the successful retry. No unrelated source/infrastructure repair performed.
+Independent review was unperformed under the current delegation restrictions.
+
 # Startup analytics admin follow-up (2026-10-14)
 
 Scope: reconcile the sequential Splash/onboarding continuation and removal of

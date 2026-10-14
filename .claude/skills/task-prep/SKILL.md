@@ -29,6 +29,9 @@ MUST NOT invent product behavior, backend contracts or absent infrastructure.
    [data](../data-layer/SKILL.md), [mappers](../mappers/SKILL.md),
    [DI](../di-modules/SKILL.md), [design](../design-system/SKILL.md),
    [platform/build](../platform-build-toolkit/SKILL.md). Read only needed references.
+   Requested product artwork MUST route to [illustrations](../illustrations/SKILL.md)
+   for style, reuse and asset acceptance; design-system retains resource/UI ownership.
+   Distinguish standalone delivery from screen integration before planning consumers.
 3. Order by actual producers and consumers: a screen needs its used contracts,
    state and widgets; an endpoint needs its verified API shape; a mapper needs
    its source/target types. Dialogs have the same real prerequisites as screens.

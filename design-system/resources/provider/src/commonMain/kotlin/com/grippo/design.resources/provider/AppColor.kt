@@ -98,6 +98,8 @@ public interface AppColor {
     }
 
     public interface BackgroundColors {
+        public val onboardingHeroStart: Color
+        public val onboardingHeroEnd: Color
         public val screen: Color
         public val dialog: Color
         public val card: Color

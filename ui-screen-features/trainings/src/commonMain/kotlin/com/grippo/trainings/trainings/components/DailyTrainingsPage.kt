@@ -24,7 +24,7 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.TimelineIndicator
-import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -32,7 +32,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_daily_trainings
-import com.grippo.design.resources.provider.icons.EmptyExercise
+import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.icons.MoreVertical
 import com.grippo.trainings.factory.timelineStyle
 import com.grippo.trainings.trainings.TrainingsLoader
@@ -55,10 +55,11 @@ internal fun DailyTrainingsPage(
     val isLoading = loaders.contains(TrainingsLoader.Trainings)
 
     if (isEmpty && isLoading.not()) {
-        EmptyState(
+        IllustratedEmptyState(
             modifier = modifier.fillMaxSize(),
-            value = AppTokens.icons.EmptyExercise,
-            text = AppTokens.strings.res(Res.string.empty_daily_trainings)
+            painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+            text = AppTokens.strings.res(Res.string.empty_daily_trainings),
+            contentPadding = contentPadding,
         )
         return
     }

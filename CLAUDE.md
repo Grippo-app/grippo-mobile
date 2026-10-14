@@ -728,6 +728,7 @@ Read the owning project skill and only the references relevant to the change:
 | DTO/Entity/Domain/State conversion | [mappers](.claude/skills/mappers/SKILL.md) |
 | Koin bindings and composition | [di-modules](.claude/skills/di-modules/SKILL.md) |
 | Tokens, widgets, resources | [design-system](.claude/skills/design-system/SKILL.md) |
+| Product illustrations and their visual style | [illustrations](.claude/skills/illustrations/SKILL.md) |
 | Platforms, modules, build configuration | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
 
 Feature work also applies analytics and preservation gates. Recipes do not grant

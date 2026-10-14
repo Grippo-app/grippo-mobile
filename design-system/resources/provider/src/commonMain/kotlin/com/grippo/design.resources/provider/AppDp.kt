@@ -87,7 +87,7 @@ public data object AppDp {
     val metrics: Metrics = Metrics
     val userCard: UserCard = UserCard
     val welcome: Welcome = Welcome
-    val empty: Empty = Empty
+    val illustration: Illustration = Illustration
     val badge: Badge = Badge
     val bannerCard: BannerCard = BannerCard
     val focusFrame: FocusFrame = FocusFrame
@@ -120,6 +120,9 @@ public data object AppDp {
 
     public data object Screen {
         val logoSize: Dp = 80.dp
+        val onboardingLogoSize: Dp = 32.dp
+        val onboardingHeroHeight: Dp = 220.dp
+        val onboardingHeroRadius: Dp = radius.large
         val toolbar: Toolbar = Toolbar
         val horizontalPadding: Dp = padding.xLarge
         val verticalPadding: Dp = padding.xLarge
@@ -461,8 +464,10 @@ public data object AppDp {
         }
     }
 
-    public data object Empty {
-        val image: Dp = icon.xxxxLarge
+    public data object Illustration {
+        val compact: Dp = 128.dp
+        val medium: Dp = 180.dp
+        val large: Dp = 220.dp
     }
 
     public data object Input {
