@@ -15,8 +15,8 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 public fun GoalFitDriftingCard(
-    findings: ImmutableList<GoalFitFindingState>,
     modifier: Modifier = Modifier,
+    findings: ImmutableList<GoalFitFindingState>,
 ) {
     val drifting = remember(findings) {
         findings

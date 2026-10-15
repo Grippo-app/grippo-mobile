@@ -27,8 +27,11 @@ them in `@Immutable` state.
   hardcoded product palette.
 - Add only a demanded semantic slot; update every implementation. A new group
   requires a real meaning that does not fit the existing groups and authorized scope.
-- AppColor stores Color slots, not Brush. Components may assemble gradients from
-  token colors; MUST NOT create a parallel consumer palette.
+- AppColor owns semantic Color slots, not Brush. For a caller-supplied hue, its
+  existing role may expose a demanded opacity or blend coefficient implemented by
+  both themes; components may apply that coefficient without replacing the hue.
+  Static colors use Color slots. Components may assemble gradients from token
+  colors; MUST NOT create a parallel consumer palette.
 - Keep the existing nested-group structure. Prefer shallow semantic paths; inspect
   current deeper chart groups rather than flattening or inventing signatures.
 - Both themes MUST implement the same interface. ProvideResources owns selection;

@@ -13,15 +13,18 @@ time pressure. Every edit must leave it more decidable, not longer.
 | Topic | Owner |
 |---|---|
 | Project map, definitions, stack, module map, dependency rules, locked decisions, scope discipline, verification policy, definition of done, records, delivery pointer, roster, skills index | `CLAUDE.md` |
-| Pointer for non-Claude tools | `AGENTS.md` |
+| Entry point for Codex and other tools | `AGENTS.md` |
 | Human entry point to the ecosystem | `.claude/README.md` |
 | Task clarification and ordering | `task-prep/SKILL.md` |
 | Execution loop, delegation, independent review, recurring findings | `task-orchestrator/SKILL.md` |
+| Claude Code / Codex role launch, capability mapping and protection | `task-orchestrator/references/agent-runtimes.md` |
+| Initial user changes, task delta, concurrent writes and error attribution | `task-orchestrator/references/change-attribution.md` |
 | Cross-cut review, final response format | `validation-gates/SKILL.md` |
 | Forbidden patterns | `validation-gates/references/forbidden-patterns.md` |
-| Kotlin/Compose style, naming, packages, ViewModel layout (constructor order, `init`, handlers, `update`, named arguments) | `validation-gates/references/code-style.md` |
+| Kotlin style, naming, packages, ViewModel layout (constructor order, `init`, handlers, `update`, named arguments) | `validation-gates/references/code-style.md` |
 | Scope questions | `validation-gates/references/when-to-stop-and-ask.md` |
-| MVI, base classes, navigation, dialogs, results, UI error pipeline, UI state, process death | `ui-feature/references/*.md` |
+| Compose signatures, structure, modifier use, stability contracts, memoization, presentation effect lifetimes, hot paths, interaction semantics, full component audits | `compose-components/SKILL.md` + references |
+| MVI, base classes, feature composition, navigation, dialogs, results, UI error pipeline, UI state, process death | `ui-feature/references/*.md` |
 | Feature/Repository/UseCase, operation outcomes and cache, Room, DataStore, backend client, auth session | `data-layer/references/*.md` |
 | Backend evidence gate | `backend-contract-client/SKILL.md` |
 | Mapper directions and null guards | `mappers/SKILL.md` + references |
@@ -42,6 +45,9 @@ writing the rule anywhere else.
 
 ## Document schemas
 
+- Frontmatter descriptions are nonempty YAML strings; quote punctuation or
+  implicit values such as numbers when they are intended as text. Simple trailing
+  YAML comments are supported by the checker.
 - `CLAUDE.md` is loaded into every session. It stays a map (at most 400 lines):
   definitions, tables, pointers. No API listings, no code excerpts longer than a
   line, no second statement of a rule that an owner holds. The checker fails
@@ -56,21 +62,29 @@ writing the rule anywhere else.
   - `name` equals the file stem.
   - `description` starts with the role and names the trigger ("Use proactively
     after..." or "Use when...").
-  - `model`: `inherit` for judgment, `sonnet` for mechanical work.
+  - `model`: `inherit` for judgment, `sonnet` for mechanical work in Claude;
+    other runtimes use the [launch adapter](../task-orchestrator/references/agent-runtimes.md).
   - `tools`: an allowlist. `disallowedTools`: `mcp__*` for agents that need no
     MCP tools, and `Agent` always (no nesting).
-  - `skills`: a YAML list of preloaded SKILL.md files. References are not
-    preloaded, so the body names the reference files the agent must read.
+    Only `analytics-admin-auditor` (browser) and `runtime-verifier` (simulator)
+    allow MCP tools; other roles exclude them, including ordinary reviewers.
+    Their native provider allowances are named in the role definitions; change
+    those definitions and the checker's capability allowlists together.
+  - `skills`: a YAML list of nonempty required skill names, not a comma-separated
+    scalar. Native loading or explicit
+    reading follows the launch adapter; the body names required references.
   - `hooks`: the Bash guard in `readonly` (reviewers, scouts, auditors),
     `readonly-build` (verifiers: builds and device tools, no writes inside the
     repository) or `no-git-write` (implementers, maintainer) mode.
+    Bash access requires the canonical `PreToolUse` command hook with matcher
+    `Bash`; keep its structure and command explicit so the checker can validate it.
   - Body sections in this order: Role, Rights, Inputs you must receive, Duties,
     Report format.
 - `.claude/hooks/bash-guard.py` enforces agent rights for Bash; change its
   allowlists together with the agent definitions that rely on them and re-run
   its test matrix (see the script header).
-- Agents are loaded at session start; a new or changed agent needs a new
-  session before `subagent_type` resolves it.
+- Agent loading and fallback follow the launch adapter; client-specific
+  registration never changes the role's canonical owner.
 
 ## Writing rules
 
@@ -115,7 +129,8 @@ writing the rule anywhere else.
 2. Write `.claude/agents/<name>.md` per the schema; add the roster row in
    `CLAUDE.md`; mention the agent in `task-orchestrator` only if the delegation
    rules change.
-3. Run the checker; start a new session to confirm `subagent_type` resolves.
+3. Run the checker and verify role loading through the launch adapter available
+   in the current client; report native loading separately from explicit-role use.
 
 ### Retire a rule, skill or agent
 
@@ -128,10 +143,13 @@ file, run the checker. Never leave a tombstone paragraph explaining the removal.
 python3 -I .claude/hooks/check-rulebook.py
 ```
 
-It validates relative links and anchors across the rulebook, skill and agent
-frontmatter, preloaded skill names, guard modes, and the roster table in
-`CLAUDE.md`. Zero problems is a precondition for reporting a rulebook change
-complete. The checker proves structure, not meaning: re-read for contradictions.
+It validates relative links and anchors, skill and agent identities, required
+models/tools/exclusions, required skill names, canonical Bash hook structure and
+the role's guard mode, plus the roster in `CLAUDE.md`. Read-only roles must exclude
+editing tools; agents without allowed MCP tools must block MCP access, and every
+agent must exclude delegation. Zero problems is a precondition for reporting a
+rulebook change complete. The checker proves configuration structure, not runtime
+enforcement or meaning: verify the launch adapter and re-read for contradictions.
 
 ## Completion gate
 

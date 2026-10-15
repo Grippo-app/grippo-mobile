@@ -3,6 +3,8 @@ package com.grippo.design.components.indicators.internal
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import com.grippo.design.resources.provider.AppColor
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 internal sealed interface LineIndicatorStyle {
@@ -17,8 +19,8 @@ internal sealed interface LineIndicatorStyle {
 
     @Immutable
     data class Gradient(
-        val colors: List<Color>,
-        val stops: List<Float>? = null,
+        val colors: ImmutableList<Color>,
+        val stops: ImmutableList<Float>? = null,
         override val track: Color,
     ) : LineIndicatorStyle {
         init {
@@ -40,6 +42,10 @@ internal fun AppColor.Charts.IndicatorColors.IndicatorColors.toStyle(): LineIndi
     return if (colors.size == 1) {
         LineIndicatorStyle.Solid(color = colors.first(), track = track)
     } else {
-        LineIndicatorStyle.Gradient(colors = colors, stops = stops, track = track)
+        LineIndicatorStyle.Gradient(
+            colors = colors.toImmutableList(),
+            stops = stops?.toImmutableList(),
+            track = track,
+        )
     }
 }

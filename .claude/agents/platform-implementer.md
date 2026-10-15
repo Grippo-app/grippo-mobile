@@ -45,6 +45,9 @@ building, and whether Android and/or iOS builds are authorized.
    are preloaded; references are not). Inspect the actual plugin sources under
    `build-logic/convention/src/main/kotlin/`; ignore any stale copies under
    `build-logic/convention/bin/`.
+   When changing Compose code in `compose-libs`, read and apply
+   `.claude/skills/compose-components/SKILL.md` and
+   `.claude/skills/compose-components/references/structure-and-runtime.md`.
 2. New modules: `include` in `settings.gradle.kts`, a `build.gradle.kts` using
    only convention plugins and catalog aliases (no repositories, SDK or opt-in
    duplication), slash-separated package directories, and registration of any

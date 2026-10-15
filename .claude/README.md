@@ -6,11 +6,11 @@ Human entry point. Nothing here is a rule; the rules live where the links point.
 
 ```
 CLAUDE.md                 map: definitions, module map, policies, roster, skills index (always loaded)
-AGENTS.md                 pointer for other tools
+AGENTS.md                 entry point for Codex and other tools
 .claude/
   README.md               this overview
   skills/<skill>/         SKILL.md (rule owner) + references/ (long form)
-  agents/<agent>.md       subagent definitions: rights, duties, preloaded skills, report format
+  agents/<agent>.md       shared roles: rights, duties, required skills, report format
   hooks/bash-guard.py     PreToolUse guard for agents' Bash: readonly | readonly-build | no-git-write
   hooks/check-rulebook.py validates links, anchors, frontmatter and the roster
   settings.local.json     personal permissions (not shared)
@@ -21,20 +21,19 @@ docs/records/             dated decision/review records, written on request
 
 ## How a task flows
 
-1. **Clarify** - `task-prep`: scope, acceptance criteria, questions as a quiz,
-   slices ordered by real dependencies.
-2. **Execute** - `task-orchestrator`: implement slice by slice (yourself or
-   through `ui-/data-/design-/platform-implementer`), self-review, then
-   independent review by `code-reviewer`, `design-reviewer` and `gate-auditor`
-   as the change requires; `scout` for inventories, `backend-contract-auditor`
-   before wire changes, `analytics-admin-auditor` for live analytics admin work.
-3. **Verify** - `build-verifier` runs the scoped Gradle targets; `runtime-verifier`
-   runs the app on an emulator/simulator when the user allows it
-   (`runtime-verification` skill).
-4. **Complete** - `validation-gates`: definition of done, final reply in Russian,
-   records updated, proposed commit message (`delivery`); nobody commits unless asked.
+1. [Prepare](skills/task-prep/SKILL.md) the scope and dependencies.
+2. [Execute and review](skills/task-orchestrator/SKILL.md) the slices.
+3. [Verify](skills/runtime-verification/SKILL.md) the authorized checks.
+4. [Complete](skills/validation-gates/SKILL.md) and [hand off](skills/delivery/SKILL.md).
 
-Bugs follow `bug-investigation`; rule changes follow `rulebook-maintenance`.
+[Agent runtimes](skills/task-orchestrator/references/agent-runtimes.md) explains
+launching the same roles in Claude Code and Codex.
+[Change attribution](skills/task-orchestrator/references/change-attribution.md)
+separates the user's initial working state from each task's changes.
+
+Compose implementation and review use [compose-components](skills/compose-components/SKILL.md),
+with [design-system](skills/design-system/SKILL.md) and [brand-design](skills/brand-design/SKILL.md)
+for visual work. Bugs follow `bug-investigation`; rule changes follow `rulebook-maintenance`.
 
 ## Working on the rulebook
 
@@ -43,5 +42,4 @@ python3 -I .claude/hooks/check-rulebook.py     # zero problems before reporting 
 zsh .claude/hooks/bash-guard-tests.sh          # guard matrix after touching bash-guard.py (main session only; read-only agents cannot run zsh)
 ```
 
-Agents are loaded at session start: after adding or changing a file in
-`.claude/agents/`, start a new session before invoking it.
+Role loading and fallback follow agent runtimes above.

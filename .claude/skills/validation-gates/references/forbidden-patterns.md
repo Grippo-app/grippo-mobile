@@ -56,20 +56,10 @@ An existing deviation in the code never authorizes copying it.
 
 ## Compose
 
-- **`LaunchedEffect(Unit) { navigateTo(...) }`** for navigation. Use `Direction` + `eventListener`.
-- **`mutableStateOf(...)` for logical state**. Logical state goes in the ViewModel; `mutableStateOf` is for local UI animations.
-- **`stringResource(R.string.foo)`** from `androidx.compose.ui.res`. Android-only — breaks iOS build.
-- **`painterResource(R.drawable.foo)`** from `androidx.compose.ui.res`. Same.
-- **Product color/dimension/typography literals in consumers.** Use AppTokens.
-  Neutral technical constants (`0.dp`, `Color.Transparent`) and explicit
-  representative preview fixtures are permitted; MUST NOT become substitute
-  product styling. Apply [Compose rules](../../ui-feature/references/compose-rules.md#anti-patterns-must-avoid).
-- **Product `TextStyle(fontSize = ...)` inline** in feature code. Use `AppTokens.typography.<token>()`; the explicit preview-fixture exception above still applies.
-- **`MaterialTheme.colorScheme.*`** in feature code. Use `AppTokens.colors.*`.
-- **`androidx.compose.material3.Button`** in feature code. Use `:design-system:components/Button`.
-- **`@Composable` calls from a `BaseViewModel`.** VMs don't know Compose.
-- **Flat-scalar explosion of a domain entity in a composable signature.** A composable that renders an entity takes its `*State` model as one parameter, not `name: String, surname: String, avatarUrl: String, …` mirroring the model. Exception: domain-agnostic primitives in `:design-system:components` / `:compose-libs:*` (Button, Chip) stay slot/enum-driven. See the ui-feature skill, references/compose-rules.md § "Entity composables". Not mechanically greppable — reviewer-enforced.
-- **Non-`*Screen` UI placed flat beside the seven MVI files**, or inlined into a fat `*Screen.kt`, instead of the sub-screen's `components/` subfolder (one cohesive composable per file). See the ui-feature skill, references/module-structure.md § "File layout for a feature". Reviewer-enforced.
+Apply [shared Compose rules](../../compose-components/references/structure-and-runtime.md),
+[feature composition rules](../../ui-feature/references/compose-rules.md) and
+[design-system rules](../../design-system/SKILL.md) for their owned prohibitions.
+A ViewModel never calls composables; follow [base-class boundaries](../../ui-feature/references/base-classes.md).
 
 ## Data layer
 

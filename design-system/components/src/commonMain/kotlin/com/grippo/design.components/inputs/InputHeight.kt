@@ -23,9 +23,13 @@ public fun InputHeight(
     placeholder: String = AppTokens.strings.res(Res.string.height_placeholder),
     onClick: () -> Unit
 ) {
+    val unitLabel = AppTokens.strings.res(Res.string.cm)
+    val valueDescription = if (value.display.isBlank()) unitLabel else "${value.display} $unitLabel"
+
     Input(
         modifier = modifier,
         value = value.display,
+        valueDescription = valueDescription,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(
@@ -34,8 +38,8 @@ public fun InputHeight(
         error = value.toInputError(),
         trailing = { color ->
             Text(
-                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
-                text = AppTokens.strings.res(Res.string.cm),
+                modifier = Modifier.padding(end = AppTokens.dp.input.unitEndPadding),
+                text = unitLabel,
                 style = AppTokens.typography.b15Med(),
                 color = color
             )

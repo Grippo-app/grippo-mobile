@@ -39,8 +39,8 @@ internal fun Sparkline(
         fill = SparklineStyle.Fill(
             provider = { rect ->
                 Brush.verticalGradient(
-                    0f to charts.sparkline.fillBase.copy(alpha = 0.18f),
-                    1f to charts.sparkline.fillBase.copy(alpha = 0f),
+                    0f to charts.sparkline.fillStart,
+                    1f to charts.sparkline.fillEnd,
                     startY = rect.top,
                     endY = rect.bottom
                 )
@@ -82,8 +82,8 @@ internal fun Sparkline(
             color = null
         ),
         extremes = SparklineStyle.Extremes.Visible(
-            minColor = AppTokens.colors.semantic.warning,
-            maxColor = AppTokens.colors.semantic.success,
+            minColor = charts.sparkline.minimumMarker,
+            maxColor = charts.sparkline.maximumMarker,
             radius = AppTokens.dp.metrics.charts.sparkline.markerRadius
         )
     )
@@ -107,6 +107,28 @@ private fun SparklinePreview() {
         Sparkline(
             modifier = Modifier.size(300.dp),
             data = ds
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SparklineEmptyPreview() {
+    PreviewContainer {
+        Sparkline(
+            modifier = Modifier.size(300.dp),
+            data = SparklineData(points = emptyList()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SparklineSinglePointPreview() {
+    PreviewContainer {
+        Sparkline(
+            modifier = Modifier.size(300.dp),
+            data = SparklineData(points = listOf(SparklinePoint(0f, 82f))),
         )
     }
 }

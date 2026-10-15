@@ -23,7 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
@@ -41,6 +46,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -87,6 +93,7 @@ internal fun Input(
     modifier: Modifier = Modifier,
     value: String,
     placeholder: InputPlaceholder,
+    valueDescription: String = value,
     enabled: Boolean = true,
     error: InputError = InputError.None,
     inputStyle: InputStyle,
@@ -102,126 +109,102 @@ internal fun Input(
 ) {
     val colors = AppTokens.colors
     val shape = RoundedCornerShape(AppTokens.dp.input.radius)
-    val height = AppTokens.dp.input.height
-
     val isClickable = inputStyle is InputStyle.Clickable
-
-    val hasFocus = remember { mutableStateOf(false) }
-
-    // Internal TextFieldValue to control selection
-    var tfv by remember {
+    var hasFocus by remember { mutableStateOf(false) }
+    var editorValue by remember {
         mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
     }
+    // The caller's text stays authoritative when a formatter rejects an edit.
+    val textFieldValue = editorValue.copy(text = value)
 
-    // Sync internal TFV with external String, preserving selection when possible
-    LaunchedEffect(value) {
-        if (value != tfv.text) {
-            val s = tfv.selection.start.coerceIn(0, value.length)
-            val e = tfv.selection.end.coerceIn(0, value.length)
-            tfv = tfv.copy(text = value, selection = TextRange(s, e))
+    SideEffect {
+        if (textFieldValue.selection != editorValue.selection ||
+            textFieldValue.composition != editorValue.composition
+        ) {
+            editorValue = textFieldValue
         }
     }
 
-    // Suppress error styling while the field is focused: we don't want to flash
-    // the user red mid-typing (e.g. partial email doesn't match the regex yet).
-    // Error becomes visible only after the user leaves the field.
-    val showError = error is InputError.Error && !hasFocus.value
+    // Keep validation quiet during editing; reveal it when the field loses focus.
+    val showError = error is InputError.Error && !hasFocus
     val errorMessage = if (error is InputError.Error) {
         error.msg.ifBlank { AppTokens.strings.res(Res.string.input_invalid_value) }
     } else {
         ""
     }
-
     val borderColor = when {
         showError -> colors.semantic.error
         !enabled -> Color.Transparent
-        hasFocus.value -> colors.border.focus
+        hasFocus -> colors.border.focus
         else -> colors.border.default
     }
-    val backgroundColor = when (enabled) {
-        true -> colors.background.card
-        else -> colors.input.backgroundDisabled
-    }
-    val placeholderColor = when {
-        showError -> colors.input.placeholder
-        !enabled -> colors.input.placeholderDisabled
-        else -> colors.input.placeholder
-    }
-    val labelColor = when {
-        showError -> colors.input.label
-        !enabled -> colors.input.placeholderDisabled
-        else -> colors.input.label
-    }
+    val backgroundColor = if (enabled) colors.background.card else colors.input.backgroundDisabled
+    val useActiveDecorations = enabled || showError
+    val placeholderColor = if (useActiveDecorations) colors.input.placeholder else colors.input.placeholderDisabled
+    val labelColor = if (useActiveDecorations) colors.input.label else colors.input.placeholderDisabled
     val contentColor = when {
         showError -> colors.semantic.error
         !enabled -> colors.input.textDisabled
         else -> colors.input.text
     }
-    val leadingColor = when {
-        showError -> colors.input.leading
-        !enabled -> colors.input.textDisabled
-        else -> colors.input.leading
-    }
-    val trailingColor = when {
-        showError -> colors.input.trailing
-        !enabled -> colors.input.textDisabled
-        else -> colors.input.trailing
-    }
-
-    val textStyleAnimateFraction = animateFloatAsState(
-        targetValue = if (hasFocus.value || tfv.text.isNotBlank()) 1f else 0f,
+    val leadingColor = if (useActiveDecorations) colors.input.leading else colors.input.textDisabled
+    val trailingColor = if (useActiveDecorations) colors.input.trailing else colors.input.textDisabled
+    val isLabelFloating = hasFocus || textFieldValue.text.isNotBlank()
+    val labelFraction by animateFloatAsState(
+        targetValue = if (isLabelFloating) 1f else 0f,
         animationSpec = tween(durationMillis = 100),
+        label = "InputLabel",
     )
+    val interactionModifier = if (isClickable) {
+        Modifier
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = listOfNotNull(
+                    (placeholder as? InputPlaceholder.OverInput)?.value,
+                    valueDescription.takeIf { it.isNotBlank() },
+                ).joinToString(", ")
+                if (!enabled) disabled()
+                if (showError) this.error(errorMessage)
+            }
+            .scalableClick(enabled = enabled, onClick = inputStyle.onClick)
+    } else {
+        Modifier
+    }
+    val editorSemantics = if (isClickable) {
+        // The disabled native editor allows iOS taps through; the parent is the action.
+        Modifier.clearAndSetSemantics { }
+    } else {
+        Modifier.semantics { if (showError) this.error(errorMessage) }
+    }
 
-    Box(
-        modifier = modifier
-            .then(
-                if (isClickable && enabled)
-                    Modifier.scalableClick(
-                        onClick = inputStyle.onClick
-                    )
-                else Modifier
-            )
-    ) {
+    Box(modifier = modifier.then(interactionModifier)) {
         BasicTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics {
-                    if (showError) this.error(errorMessage)
-                }
+                .then(editorSemantics)
                 .background(color = backgroundColor, shape = shape)
                 .border(width = AppTokens.dp.input.borderWidth, color = borderColor, shape = shape)
-                .heightIn(min = height)
+                .heightIn(min = AppTokens.dp.input.height)
                 .onFocusChanged { focus ->
-                    val wasFocused = hasFocus.value
-                    hasFocus.value = focus.hasFocus
+                    val wasFocused = hasFocus
+                    hasFocus = focus.hasFocus
                     if (focus.hasFocus && !wasFocused) {
                         onFocused()
                     }
                 }
                 .animateContentSize(),
-            value = tfv,
+            value = textFieldValue,
             cursorBrush = SolidColor(contentColor),
-            onValueChange = { new ->
-                tfv = new
-                when (inputStyle) {
-                    is InputStyle.Clickable -> Unit
-
-                    is InputStyle.Default -> {
-                        if (new.text != value) {
-                            inputStyle.onValueChange(new.text)
-                        }
-                    }
+            onValueChange = { updatedValue ->
+                editorValue = updatedValue
+                if (inputStyle is InputStyle.Default && updatedValue.text != value) {
+                    inputStyle.onValueChange(updatedValue.text)
                 }
             },
             readOnly = isClickable,
             minLines = minLines,
             textStyle = textStyle.copy(color = contentColor),
-            // iOS-critical: enabled = false disables the native UITextView's
-            // userInteractionEnabled, so taps pass through to the outer
-            // Box.clickable. readOnly = true alone is NOT enough — the native
-            // field still swallows touches (especially inside LazyColumn,
-            // where it also competes with the list's scroll gestures).
+            // iOS needs a disabled native editor for taps to reach the clickable parent.
             enabled = enabled && !isClickable,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
@@ -229,77 +212,46 @@ internal fun Input(
             maxLines = maxLines,
             singleLine = maxLines == 1,
             decorationBox = { innerTextField ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(intrinsicSize = IntrinsicSize.Min)
+                        .padding(vertical = AppTokens.dp.input.verticalPadding),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
 
-                val rowModifier = Modifier
-                    .fillMaxWidth()
-                    .height(intrinsicSize = IntrinsicSize.Min)
-                    .padding(vertical = AppTokens.dp.input.verticalPadding)
-
-                when (placeholder) {
-                    InputPlaceholder.Empty -> Row(
-                        modifier = rowModifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-
-                        if (leading != null) {
-                            leading.invoke(leadingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .animateContentSize(),
-                            content = { innerTextField() }
-                        )
-
-                        if (trailing != null) {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
-                            trailing.invoke(trailingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.trailingPadding))
-                        } else {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-                        }
+                    if (leading != null) {
+                        leading(leadingColor)
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
                     }
 
-                    is InputPlaceholder.OverInput -> Row(
-                        modifier = rowModifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-
-                        if (leading != null) {
-                            leading.invoke(leadingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .animateContentSize()
-                        ) {
-                            Column {
+                    Box(modifier = Modifier.weight(1f).animateContentSize()) {
+                        when (placeholder) {
+                            InputPlaceholder.Empty -> innerTextField()
+                            is InputPlaceholder.OverInput -> Column {
                                 Text(
                                     text = placeholder.value,
                                     style = lerp(
-                                        start = AppTokens.typography.b14Med()
-                                            .copy(color = placeholderColor),
-                                        stop = AppTokens.typography.b12Med()
-                                            .copy(color = labelColor),
-                                        fraction = textStyleAnimateFraction.value,
+                                        start = AppTokens.typography.b14Med().copy(color = placeholderColor),
+                                        stop = AppTokens.typography.b12Med().copy(color = labelColor),
+                                        fraction = labelFraction,
                                     ),
                                 )
-                                if (hasFocus.value || tfv.text.isNotBlank()) innerTextField()
+                                // Keep the editor composed once, including the empty idle state.
+                                Box(modifier = if (isLabelFloating) Modifier else Modifier.height(0.dp)) {
+                                    innerTextField()
+                                }
                             }
                         }
-                        if (trailing != null) {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
-                            trailing.invoke(trailingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.trailingPadding))
-                        } else {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-                        }
+                    }
+
+                    if (trailing != null) {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
+                        trailing(trailingColor)
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.trailingPadding))
+                    } else {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
                     }
                 }
             },
@@ -350,6 +302,24 @@ private fun InputClickablePreview() {
         Input(
             value = "Tap me",
             placeholder = InputPlaceholder.OverInput("Action"),
+            inputStyle = InputStyle.Clickable(onClick = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputClickableStatesPreview() {
+    PreviewContainer {
+        Input(
+            value = "",
+            placeholder = InputPlaceholder.OverInput("Select a value"),
+            inputStyle = InputStyle.Clickable(onClick = {}),
+        )
+        Input(
+            value = "Current value",
+            placeholder = InputPlaceholder.OverInput("Selection unavailable"),
+            enabled = false,
             inputStyle = InputStyle.Clickable(onClick = {}),
         )
     }

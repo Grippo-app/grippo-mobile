@@ -28,10 +28,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.ArrowRight
 
-/**
- * Severity of a goal insight row. Drives the accent stripe color so users
- * can scan a list of insights and immediately see which are good / off.
- */
 @Immutable
 public enum class GoalInsightSeverity {
     /** Something is working well - green. */
@@ -55,17 +51,6 @@ public enum class GoalInsightSeverity {
     }
 }
 
-/**
- * A single diagnostic row about the goal: a colored vertical accent stripe
- * communicating severity at a glance, followed by a headline, an
- * explanation, and an optional action — the next step paired to this signal.
- *
- * The action line shares the severity accent so a user can scan a
- * red insight and immediately see the red-accented action that pairs to it.
- *
- * All dimensions come from `AppTokens.dp.metrics.profile.goal.insight` so the card
- * stays consistent with the rest of the goal widgets.
- */
 @Composable
 public fun GoalInsightCard(
     modifier: Modifier = Modifier,
@@ -91,7 +76,7 @@ public fun GoalInsightCard(
                 .align(Alignment.CenterStart)
                 .fillMaxHeight()
                 .width(AppTokens.dp.accent.smallWidth)
-                .background(accent.copy(alpha = 0.7f)),
+                .background(accent),
         )
 
         Column(
@@ -123,10 +108,14 @@ public fun GoalInsightCard(
 }
 
 @Composable
-private fun ActionRow(text: String, accent: Color) {
+private fun ActionRow(
+    modifier: Modifier = Modifier,
+    text: String,
+    accent: Color,
+) {
     val tokens = AppTokens.dp.metrics.profile.goal.insight
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {

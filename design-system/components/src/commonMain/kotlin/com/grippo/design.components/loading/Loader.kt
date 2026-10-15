@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
@@ -32,7 +32,6 @@ import com.grippo.design.resources.provider.loading
 
 @Composable
 public fun Loader(modifier: Modifier = Modifier) {
-
     val infiniteRotation = rememberInfiniteTransition(label = "loader")
 
     val rotation by infiniteRotation.animateFloat(
@@ -63,7 +62,7 @@ public fun Loader(modifier: Modifier = Modifier) {
             Icon(
                 modifier = Modifier
                     .size(AppTokens.dp.loader.icon)
-                    .rotate(rotation),
+                    .graphicsLayer { rotationZ = rotation },
                 imageVector = AppTokens.icons.Spinner,
                 tint = AppTokens.colors.illustration.accent,
                 contentDescription = null

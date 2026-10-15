@@ -13,6 +13,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.brand.BrandHeader
+import com.grippo.design.components.brand.BrandHeaderStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -60,6 +61,7 @@ internal fun ExcludedMusclesScreen(
                 .fillMaxWidth(),
             title = AppTokens.strings.res(Res.string.registration_muscles_title),
             description = AppTokens.strings.res(Res.string.registration_muscles_description),
+            style = BrandHeaderStyle.Compact,
         )
 
         Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
@@ -95,7 +97,7 @@ internal fun ExcludedMusclesScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreviewSelected() {
+private fun ExcludedMusclesSelectedPreview() {
     PreviewContainer {
         ExcludedMusclesScreen(
             state = ExcludedMusclesState(
@@ -114,7 +116,7 @@ private fun ScreenPreviewSelected() {
 
 @AppPreview
 @Composable
-private fun ScreenPreviewUnselected() {
+private fun ExcludedMusclesUnselectedPreview() {
     PreviewContainer {
         ExcludedMusclesScreen(
             state = ExcludedMusclesState(
@@ -124,6 +126,18 @@ private fun ScreenPreviewUnselected() {
             ),
             loaders = persistentSetOf(),
             contract = ExcludedMusclesContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExcludedMusclesEmptyCatalogPreview() {
+    PreviewContainer {
+        ExcludedMusclesScreen(
+            state = ExcludedMusclesState(),
+            loaders = persistentSetOf(),
+            contract = ExcludedMusclesContract.Empty,
         )
     }
 }

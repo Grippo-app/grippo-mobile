@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -58,17 +58,15 @@ internal fun DigestHeader(
             text = title,
             style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
 
         if (subtitle.isNotBlank()) {
             Text(
+                modifier = Modifier.weight(1f, fill = false),
                 text = subtitle,
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.tertiary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.End,
             )
         }
     }
@@ -93,16 +91,12 @@ internal fun DigestHero(
             } else {
                 AppTokens.colors.text.primary
             },
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
 
         Text(
             text = label,
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.tertiary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -121,6 +115,25 @@ private fun DigestsSectionPreview() {
         DigestHero(
             value = "3 250 kg",
             label = "Volume",
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DigestHeaderLongDatePreview() {
+    PreviewContainer {
+        DigestHeader(
+            icon = AppTokens.icons.Trophy,
+            iconColor = AppTokens.colors.context.volume,
+            title = "Training summary",
+            subtitle = "September 15 – October 15, 2026",
+        )
+        DigestHeader(
+            icon = AppTokens.icons.Trophy,
+            iconColor = AppTokens.colors.context.volume,
+            title = "Training summary",
+            subtitle = "",
         )
     }
 }

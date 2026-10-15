@@ -13,8 +13,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.select_date
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 public fun InputDate(
@@ -44,8 +44,11 @@ private fun InputDatePreview() {
     PreviewContainer {
         InputDate(
             value = DateTimeFormatState.of(
-                value = DateTimeUtils.now(),
-                range = DateRangePresets.yearly(),
+                value = LocalDateTime(2026, 1, 15, 12, 0),
+                range = DateRange(
+                    from = LocalDateTime(2026, 1, 1, 0, 0),
+                    to = LocalDateTime(2026, 12, 31, 23, 59),
+                ),
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
             onClick = {}

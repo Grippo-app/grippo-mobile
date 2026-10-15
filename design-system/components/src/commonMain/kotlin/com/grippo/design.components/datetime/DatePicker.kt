@@ -8,6 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.grippo.design.components.button.Button
@@ -68,10 +71,12 @@ public fun DatePicker(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier.scalableClick(
-                enabled = enabled,
-                onClick = onSelect
-            ),
+            modifier = Modifier
+                .semantics {
+                    role = Role.Button
+                    if (!enabled) disabled()
+                }
+                .scalableClick(enabled = enabled, onClick = onSelect),
             text = text,
             style = AppTokens.typography.h6(),
             color = titleColor

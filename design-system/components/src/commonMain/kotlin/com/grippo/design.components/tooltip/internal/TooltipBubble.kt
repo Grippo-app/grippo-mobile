@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.tooltip.TooltipContent
 import com.grippo.design.components.tooltip.TooltipPlacement
@@ -30,10 +34,11 @@ import com.grippo.design.resources.provider.icons.Warning
 
 @Composable
 internal fun TooltipBubble(
+    modifier: Modifier = Modifier,
     content: TooltipContent,
     colors: TooltipColorTokens,
     placement: TooltipPlacement,
-    modifier: Modifier = Modifier,
+    arrowPositionPx: Float? = null,
 ) {
     val dp = AppTokens.dp.tooltip
     val density = LocalDensity.current
@@ -42,8 +47,14 @@ internal fun TooltipBubble(
     val arrowBasePx = with(density) { dp.arrowWidth.toPx() }
     val radiusPx = with(density) { dp.radius.toPx() }
 
-    val shape = remember(placement, arrowDepthPx, arrowBasePx, radiusPx) {
-        tooltipShape(placement, arrowDepthPx, arrowBasePx, radiusPx)
+    val shape = remember(placement, arrowDepthPx, arrowBasePx, radiusPx, arrowPositionPx) {
+        tooltipShape(
+            placement = placement,
+            arrowDepthPx = arrowDepthPx,
+            arrowBasePx = arrowBasePx,
+            cornerRadiusPx = radiusPx,
+            arrowPositionPx = arrowPositionPx,
+        )
     }
 
     // The arrow region "eats into" one side — push content padding on
@@ -67,7 +78,7 @@ internal fun TooltipBubble(
                 spotColor = AppTokens.colors.overlay.shadow,
             )
             .clip(shape)
-            .background(AppTokens.colors.background.dialog) // Under layer
+            .background(AppTokens.colors.background.dialog)
             .background(colors.background)
             .border(dp.borderWidth, colors.border, shape)
             .padding(start = padStart, end = padEnd, top = padTop, bottom = padBottom),
@@ -127,20 +138,64 @@ internal fun TooltipBubble(
 
 @AppPreview
 @Composable
+private fun TooltipBubbleShiftedArrowPreview() {
+    PreviewContainer {
+        val density = LocalDensity.current
+        val nearEdge = with(density) { 8.dp.toPx() }
+        val beyondEdge = with(density) { 280.dp.toPx() }
+        val colors = resolveTooltipColors(TooltipVariant.Default)
+
+        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            TooltipBubble(
+                modifier = Modifier.width(240.dp),
+                content = TooltipContent.Simple("Anchor near the left edge"),
+                colors = colors,
+                placement = TooltipPlacement.Top,
+                arrowPositionPx = nearEdge,
+            )
+            TooltipBubble(
+                modifier = Modifier.width(240.dp),
+                content = TooltipContent.Simple("Anchor beyond the right edge"),
+                colors = colors,
+                placement = TooltipPlacement.Bottom,
+                arrowPositionPx = beyondEdge,
+            )
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                TooltipBubble(
+                    modifier = Modifier.width(240.dp),
+                    content = TooltipContent.Rich(
+                        title = "RTL start placement",
+                        subtitle = "The arrow stays near the top of the physical left edge.",
+                    ),
+                    colors = colors,
+                    placement = TooltipPlacement.Start,
+                    arrowPositionPx = nearEdge,
+                )
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
 private fun TooltipBubblePlacementsPreview() {
     PreviewContainer {
         Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            listOf(
-                TooltipPlacement.Top to "Arrow down (Top)",
-                TooltipPlacement.Bottom to "Arrow up (Bottom)",
-                TooltipPlacement.Start to "Arrow right (Start)",
-                TooltipPlacement.End to "Arrow left (End)",
-            ).forEach { (placement, label) ->
-                TooltipBubble(
-                    content = TooltipContent.Simple(text = label),
-                    colors = resolveTooltipColors(TooltipVariant.Default),
-                    placement = placement,
-                )
+            LayoutDirection.entries.forEach { layoutDirection ->
+                CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                    listOf(
+                        TooltipPlacement.Top to "Top",
+                        TooltipPlacement.Bottom to "Bottom",
+                        TooltipPlacement.Start to "Start",
+                        TooltipPlacement.End to "End",
+                    ).forEach { (placement, label) ->
+                        TooltipBubble(
+                            content = TooltipContent.Simple(text = "$label · $layoutDirection"),
+                            colors = resolveTooltipColors(TooltipVariant.Default),
+                            placement = placement,
+                        )
+                    }
+                }
             }
         }
     }

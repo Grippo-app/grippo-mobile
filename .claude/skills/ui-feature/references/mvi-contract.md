@@ -16,15 +16,14 @@ same names, same shape, same flow of data.
   <Name>Loader.kt          // @Immutable sealed interface : BaseLoader (active operations)
   <Name>ViewModel.kt       // BaseViewModel<State, Direction, Loader>, implements Contract
   <Name>Screen.kt          // @Composable internal fun (state, loaders, contract)
-  components/              // optional — non-*Screen UI the Screen composes, one composable per file
+  components/              // optional — extracted feature composables
 ```
 
 `<Name>` is the screen/dialog name (e.g. `NoteEditor`, `AmountPicker`). Files are
 siblings in the same package. `Screen` is the **only** UI file among the seven.
-Any non-`*Screen` UI it composes — headers, cards, rows, banners, content blocks —
-lives in a sibling `components/` subfolder, **one cohesive composable per file**,
-never inlined into `Screen.kt` or spread across the other six.
-(See `references/module-structure.md` § File layout.)
+Apply the [Compose extraction criteria](../../compose-components/references/structure-and-runtime.md#read-from-top-to-bottom)
+to its composition and helpers; [feature file layout](module-structure.md#file-layout-for-a-feature)
+owns the placement of extracted composables.
 
 ## Flow of data
 
@@ -185,7 +184,7 @@ Rules:
 - `@Composable internal fun`. **Three** arguments: `state`, `loaders`, `contract`. Optionally a `component: <Name>Component` if the screen needs to render a child stack/slot.
 - Wraps content in `BaseComposeScreen(background = ...)`.
 - Reads all strings/colors/dp via `AppTokens.*`.
-- Follow [recomposition discipline](compose-rules.md#recomposition-discipline-should) for derived rendering values; simple checks stay inline.
+- Follow [recomposition discipline](../../compose-components/references/structure-and-runtime.md#stability-and-recomposition) for derived rendering values; simple checks stay inline.
 - New or visually changed screens MUST have private `@AppPreview`s for the significant states ([definitions](../../../../CLAUDE.md#definitions)), wrapped in `PreviewContainer { ... }` with explicit fixture data and `Contract.Empty`. Nonvisual changes assess visual impact and reuse existing previews; they need no unrelated preview expansion. Shared model stubs stay in ui-core:state; private screen-State fixture builders may live with the preview.
 - **No** `LaunchedEffect(Unit)` for navigation. Navigation goes via `Direction` only.
 - **No** business logic. Only rendering and event forwarding via `contract.onXxx*()`.
@@ -218,7 +217,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 
 ## Architecture cross-cuts (always-on)
 
-- **MVI** — every screen/dialog is this seven-file package; `Screen` is the only UI file; non-`*Screen` UI goes in `components/`.
+- **MVI** — every screen/dialog is this seven-file package; apply the linked Compose extraction criteria and [feature file layout](module-structure.md#file-layout-for-a-feature).
 - **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; multi-screen features expose a container root with an internal stack; a single-screen feature may expose its screen Component directly. (`references/navigation.md`.)
 - **Dialogs** — `DialogComponent` in `:shared` hosts a separate `SlotNavigation<DialogSession>` parallel to the screen stack; its content uses the internal `StackNavigation<DialogStep>`. Both use `serializer = null`. Plain `DialogConfig` carries the required `title: UiText`, typed content and live callbacks; `hasSameContentAs` compares content/titles excluding callbacks. Ordinary screen ViewModels call `DialogController.open`; nested features forward semantic directions and typed callbacks to the host's step-bound Session. The host removes the step or closes the root sheet, invokes dismissal callbacks, then delivers the pending typed result. These sessions are not restored after process death. See [dialogs.md](dialogs.md).
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.

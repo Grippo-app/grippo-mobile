@@ -14,6 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.badge.internal.resolveBadgeTokens
@@ -21,6 +26,10 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.accessibility_status_error
+import com.grippo.design.resources.provider.accessibility_status_success
+import com.grippo.design.resources.provider.accessibility_status_warning
 
 @Immutable
 public sealed interface BadgeStyle {
@@ -41,8 +50,16 @@ public fun Badge(
     label: UiText? = null,
     style: BadgeStyle,
     onClick: (() -> Unit)? = null,
+    contentDescription: String? = null,
 ) {
     val tokens = resolveBadgeTokens(style)
+    val statusLabel = AppTokens.strings.res(
+        when (style) {
+            BadgeStyle.Error -> Res.string.accessibility_status_error
+            BadgeStyle.Warning -> Res.string.accessibility_status_warning
+            BadgeStyle.Success -> Res.string.accessibility_status_success
+        },
+    )
 
     val dp = AppTokens.dp.badge
     val shape = RoundedCornerShape(dp.radius)
@@ -51,8 +68,15 @@ public fun Badge(
 
     Row(
         modifier = modifier
+            .clip(shape)
             .background(color = tokens.background, shape = shape)
-            .let { if (onClick != null) it.scalableClick(onClick = onClick) else it }
+            .semantics(mergeDescendants = true) {
+                stateDescription = statusLabel
+                if (contentDescription != null) {
+                    this.contentDescription = contentDescription
+                }
+            }
+            .let { if (onClick != null) it.scalableClick(role = Role.Button, onClick = onClick) else it }
             .sizeIn(minWidth = dp.minSize, minHeight = dp.minSize)
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically,

@@ -18,6 +18,9 @@ This skill owns implementation; [CONSISTENCY.md](../../../design-system/CONSISTE
 owns concrete role-to-token choices. Changes without visual impact require only
 an impact assessment and relevant source/caller review.
 
+Compose implementation and source review apply
+[compose-components](../compose-components/SKILL.md).
+
 Product artwork creation, refinement and style review MUST apply
 [illustrations](../illustrations/SKILL.md). Resource/UI integration remains here;
 ordinary UI icons and existing logos do not trigger artwork generation.

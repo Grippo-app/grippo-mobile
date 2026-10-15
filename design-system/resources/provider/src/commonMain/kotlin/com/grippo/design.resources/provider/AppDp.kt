@@ -69,6 +69,7 @@ public data object AppDp {
     val input: Input = Input
     val button: Button = Button
     val loader: Loader = Loader
+    val konfetti: Konfetti = Konfetti
     val segment: Segment = Segment
     val menu: Menu = Menu
     val checkSelectableCard: CheckSelectableCard = CheckSelectableCard
@@ -111,12 +112,17 @@ public data object AppDp {
         val actionHeight: Dp = 48.dp
         val actionRadius: Dp = radius.medium
         val actionSpacing: Dp = padding.small
+        val actionIconSize: Dp = icon.medium
     }
 
     public data object Shadow {
         val component: Dp = 2.dp
         val card: Dp = 4.dp
         val container: Dp = 6.dp
+    }
+
+    public data object Konfetti {
+        val heightFraction: Float = 0.7f
     }
 
     public data object MuscleSelection {
@@ -239,7 +245,6 @@ public data object AppDp {
                 val spacing: Dp = padding.medium
                 val radius: Dp = 10.dp
                 val labelPadding: Dp = padding.small
-                val minInnerPadding: Dp = 6.dp
             }
 
             public data object Radar {
@@ -268,7 +273,7 @@ public data object AppDp {
 
         val panel: Panel = Panel
         val status: Status = Status
-        val lastTraining: LastTraining = LastTraining
+        val overview: Overview = Overview
         val trainingSummary: TrainingSummary = TrainingSummary
 
         val engagement: Engagement = Engagement
@@ -303,10 +308,12 @@ public data object AppDp {
             }
         }
 
-        public data object LastTraining {
-            val image: Dp = icon.xxxxLarge
-            val metaIcon: Dp = icon.small
-            val checkIcon: Dp = icon.small
+        public data object Overview {
+            val muscleImageWidth: Dp = 144.dp
+            val muscleImageHeight: Dp = 140.dp
+            val detailsIcon: Dp = Icon.small
+            val rhythmIcon: Dp = icon.xLarge
+            val insightCardWidth: Dp = 320.dp
         }
 
         public data object TrainingSummary {
@@ -348,6 +355,7 @@ public data object AppDp {
 
             public data object Trend {
                 val icon: Dp = AppDp.icon.extraSmall
+                val historyAspectRatio: Float = 2.2f
             }
         }
 
@@ -383,6 +391,7 @@ public data object AppDp {
 
             public data object Chart {
                 val height: Dp = icon.xxxLarge
+                val aspectRatio: Float = 1.7f
             }
         }
     }
@@ -522,6 +531,7 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.extraSmall
         val trailingPadding: Dp = padding.extraSmall
+        val unitEndPadding: Dp = padding.small
         val contentSpacing: Dp = padding.small
         val icon: Dp = AppDp.icon.medium
     }
@@ -605,6 +615,7 @@ public data object AppDp {
     }
 
     public data object WeightHistoryCard {
+        val chartAspectRatio: Float = 2.2f
         val borderWidth: Dp = 1.dp
         val radius: Dp = AppDp.radius.large
         val horizontalPadding: Dp = padding.medium

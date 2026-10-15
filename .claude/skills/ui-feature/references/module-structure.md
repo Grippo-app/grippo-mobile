@@ -79,8 +79,8 @@ ui-screen-features/profile/
     ProfileScreen.kt              // renders ChildStack of sub-screens
     summary/                      // sub-screen "summary" — internal
       ProfileSummaryComponent.kt  ProfileSummaryContract.kt  ... (seven files)
-      ProfileSummaryScreen.kt     // composes the components/ pieces; holds no large UI itself
-      components/                 // non-*Screen UI — one composable per file
+      ProfileSummaryScreen.kt     // screen composition
+      components/                 // optional — extracted feature composables
         ProfileSummaryHeader.kt   //   entry composable + private helpers + @AppPreview
         ProfileStatsCard.kt
     settings/ ...
@@ -94,7 +94,7 @@ Dialog feature: `ui-dialog-features/amount-picker/src/commonMain/kotlin/com/grip
 
 - One module per feature. Don't put two unrelated features in the same module.
 - One package per sub-screen / sub-dialog; the seven MVI files at its root, plus an optional `components/` subfolder.
-- **Non-`*Screen` UI lives in `components/`** — one cohesive composable per file (file name = the entry composable, with its `private` helpers and `@AppPreview`s co-located). The `Screen` orchestrates; it doesn't inline large UI or scatter it across the seven. A widget reused across features graduates to `:design-system:components` / `:compose-libs:*`.
+- Apply the [Compose extraction criteria](../../compose-components/references/structure-and-runtime.md#read-from-top-to-bottom) before splitting feature UI. Extracted feature composables live in the sibling `components/` folder, one entry composable per file named after it, with its private implementation helpers and previews co-located. Shared widget ownership follows [module ownership](#when-to-extract-a-widget-into-compose-libs).
 - Sub-screens are `internal`; the feature-root component is `public` (so `:shared`'s `RootComponent.createChild` can instantiate it).
 - A Component with a saved draft defines one typed `DRAFT = PersistenceKey("stable address", State.serializer())` in a private companion object at the bottom of the class and uses protected BaseComponent.restoreState/saveState. No separate metadata file, feature-wide matrix or raw draft StateKeeper.consume/register bindings.
 - A screen feature exposes routes via `:ui-screen-features:screen-api`; a dialog feature exposes config via `:ui-dialog-features:dialog-api`. **Direct symbol imports between feature modules are forbidden.**
@@ -161,7 +161,7 @@ Reference modules: `:compose-libs:chart`, `:konfetti`, `:wheel-picker`, `:segmen
 2. **No data-layer access.** Input arrives as Composable parameters (`List<ChartPoint>`, `ImmutableList<WheelOption>`), never from a feature/repository.
 3. **Stateless or self-contained state.** Owns animation/gesture state via `remember`/`rememberSaveable`; no ViewModel dependency.
 4. **Public API.** All types/Composables `public`.
-5. Stability annotations MUST match the actual contract: deeply immutable data may use @Immutable; callback/composable-slot contracts use @Stable when its contract holds. A sealed hierarchy alone does not justify either annotation.
+5. Apply [Compose stability contracts](../../compose-components/references/structure-and-runtime.md#stability-and-recomposition).
 
 Build (typical): `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention`; namespace `com.grippo.compose.libs.<name>`; deps `compose.foundation` (+ `compose.material3` only if it uses Material3 primitives, immutable-collections). **No Koin. No `:toolkit:*`. No `:design-system:*`.**
 

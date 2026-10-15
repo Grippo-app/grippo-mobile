@@ -31,11 +31,11 @@ internal fun MuscleLoadingPerMuscle(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         muscleEntries.forEachIndexed { index, colored ->
-            key(index) {
+            key(colored.entry.group, colored.entry.muscles) {
                 MuscleLoadingItem(
                     entry = colored.entry,
                     label = colored.entry.muscles.firstOrNull()?.title()?.text() ?: "-",
-                    indicatorColors = indicatorColorsForRank(index, muscleEntries.size),
+                    indicatorColors = rememberMuscleLoadIndicatorColors(colored.color),
                     dominant = index == 0,
                 )
             }

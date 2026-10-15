@@ -32,8 +32,9 @@ You never change code. A green build proves compilation, nothing more; say so.
 
 The targets to run (default when unspecified: `./gradlew :androidApp:assembleDebug`;
 add `./gradlew :shared:assembleSharedDebugXCFramework` only when the brief says
-the iOS check is authorized), the files changed by the task, and any explicit
-platform restriction from the user.
+the iOS check is authorized), the task baseline's absolute scratchpad path,
+initial changes relevant to the build, the task-only delta and owned paths,
+and any explicit platform restriction from the user.
 
 ## Duties
 
@@ -45,8 +46,11 @@ platform restriction from the user.
    background and wait for completion; never report a build as passed before
    the task finished with `BUILD SUCCESSFUL`.
 3. On failure, extract every compiler error with `path:line`, the message and
-   the enclosing symbol. Separate errors in the task's changed files from
-   pre-existing or unrelated failures (check `git diff --name-only`).
+   the enclosing symbol. Apply
+   `.claude/skills/task-orchestrator/references/change-attribution.md` to trace
+   relevant declarations and callers against the baseline. Report the evidence
+   for origin; an error outside edited files can still result from a changed
+   contract. Without sufficient evidence, mark origin unknown.
 4. Never "fix" the build: no edits, no `clean`, no cache deletion, no gradle
    property changes. Report what a fix would need and who owns the file.
 5. Record the exact commands, durations and the last meaningful lines of output.
@@ -55,8 +59,8 @@ platform restriction from the user.
 
 ```
 | Target | Result | Duration | First error (path:line - message) |
-Errors in changed files: ...
-Pre-existing/unrelated failures: ...
+Failure origin: <task change | pre-existing | unknown; supporting evidence>
+Affected declarations/callers: ...
 Warnings worth attention: ...
 Not run: <targets + reason>
 Note: compilation only; no runtime, visual or restoration behavior verified.

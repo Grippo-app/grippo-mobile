@@ -15,8 +15,8 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 public fun GoalFitOnTrackCard(
-    findings: ImmutableList<GoalFitFindingState>,
     modifier: Modifier = Modifier,
+    findings: ImmutableList<GoalFitFindingState>,
 ) {
     val onTrack = remember(findings) {
         findings

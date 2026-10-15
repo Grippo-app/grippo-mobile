@@ -51,6 +51,8 @@ public object LightColor : AppColor {
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
+        override val disabledThumb = AppPalette.NeutralLight.N450
+        override val disabledTrack = AppPalette.NeutralLight.N200
         override val checkedThumb = AppPalette.Common.White
         override val checkedTrack1 = AppPalette.LightAccent.Orange
         override val checkedTrack2 = AppPalette.LightAccent.Orange
@@ -61,6 +63,7 @@ public object LightColor : AppColor {
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
         override val default = AppPalette.NeutralLight.N250
+        override val subtle = border.default.copy(alpha = 0.4f)
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
@@ -130,6 +133,7 @@ public object LightColor : AppColor {
     override val semantic: AppColor.SemanticColors = object : AppColor.SemanticColors {
         override val success = AppPalette.LightAccent.Green
         override val error = AppPalette.LightAccent.Red
+        override val errorBorder = error.copy(alpha = 0.5f)
         override val warning = AppPalette.LightAccent.Orange
         override val info = AppPalette.LightAccent.Blue
         override val notice = AppPalette.LightAccent.Yellow
@@ -150,6 +154,8 @@ public object LightColor : AppColor {
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
+        override val shadowSpotAlphaMultiplier: Float = 1.5f
+        override val bottomActionAlpha: Float = 0.9f
         override val shadow = AppPalette.Common.Black.copy(alpha = 0.12f)
         override val overlay = AppPalette.NeutralLight.N100.copy(alpha = 0.90f)
     }
@@ -223,6 +229,8 @@ public object LightColor : AppColor {
     }
 
     public override val profile: AppColor.ProfileColors = object : AppColor.ProfileColors {
+        override val avatarBaseAlpha: Float = 0.95f
+        override val avatarRingAlpha: Float = 0.35f
         override val avatarShade: Color = AppPalette.NeutralLight.N800.copy(alpha = 0.12f)
 
         override val experience: AppColor.ProfileColors.ExperienceColors =
@@ -243,10 +251,20 @@ public object LightColor : AppColor {
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
+        override val bar = object : AppColor.Charts.BarColors {
+            override val grid = divider.default.copy(alpha = 0.2f)
+            override val axis = border.default.copy(alpha = 0.4f)
+            override val baseline = border.default.copy(alpha = 0.45f)
+            override val highlightMix: Float = 0.25f
+            override val gradientEndAlpha: Float = 0.85f
+        }
         override val sparkline = object : AppColor.Charts.SparklineColors {
             override val lineA = AppPalette.LightAccent.Blue
             override val lineB = AppPalette.LightAccent.Green
-            override val fillBase = AppPalette.LightAccent.Blue
+            override val fillStart = AppPalette.LightAccent.Blue.copy(alpha = 0.18f)
+            override val fillEnd = AppPalette.LightAccent.Blue.copy(alpha = 0f)
+            override val minimumMarker = AppPalette.LightAccent.Sky
+            override val maximumMarker = AppPalette.LightAccent.Purple
         }
         override val tooltip = object : AppColor.Charts.TooltipColor {
             override val background: Color = AppPalette.NeutralLight.N050
@@ -258,14 +276,18 @@ public object LightColor : AppColor {
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.LightAccent.Green
             override val lineB = AppPalette.LightAccent.Blue
-            override val fillBase = AppPalette.LightAccent.Green
+            override val fillStart = AppPalette.LightAccent.Green.copy(alpha = 0.18f)
+            override val fillEnd = AppPalette.LightAccent.Green.copy(alpha = 0f)
             override val glow = AppPalette.LightAccent.Green
             override val dot = AppPalette.LightAccent.Green
         }
         override val radar = object : AppColor.Charts.RadarColors {
+            override val fillAlpha: Float = 0.35f
             override val grid = AppPalette.NeutralLight.N250
         }
         override val progress = object : AppColor.Charts.ProgressColors {
+            override val gradientStartAlpha: Float = 0.95f
+            override val gradientEndAlpha: Float = 0.7f
             override val track = AppPalette.NeutralLight.N250
         }
         override val ring = object : AppColor.Charts.RingColor {

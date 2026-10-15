@@ -7,8 +7,9 @@ NoteArchive below is an educational, nonexistent API, not a current route catalo
 ## 1. Establish ownership
 
 Inspect existing routes, entry paths, parent flow inputs and dependencies.
-A leaf lives in its feature's sub-screen package with the seven MVI files;
-non-Screen UI lives in sibling components/, one cohesive composable per file.
+A leaf lives in its feature's sub-screen package with the seven MVI files.
+Choose UI extraction under [Compose structure](../../compose-components/references/structure-and-runtime.md#read-from-top-to-bottom)
+and place extracted composables under [feature file layout](module-structure.md#file-layout-for-a-feature).
 MUST NOT add a separate feature/module/root graph merely for one sub-screen.
 
 ## 2. Implement the seven-file contract

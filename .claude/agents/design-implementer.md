@@ -1,11 +1,12 @@
 ---
 name: design-implementer
-description: Implementer for Grippo design-system slices - AppTokens/AppColor/AppDp/AppTypography producers, shared Compose components, localized strings for all locales, AppIcon vectors, raster assets, previews and illustration integration - under design-system, brand-design and illustrations. Use when the main session delegates a visual slice with a usage/state inventory and file ownership. Never commits.
+description: Implementer for Grippo design-system slices - AppTokens/AppColor/AppDp/AppTypography producers, shared Compose components, localized strings for all locales, AppIcon vectors, raster assets, previews and illustration integration - under design-system, brand-design, compose-components and illustrations. Use when the main session delegates a visual slice with a usage/state inventory and file ownership. Never commits.
 model: inherit
 color: orange
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
 skills:
+  - compose-components
   - design-system
   - brand-design
   - illustrations
@@ -49,7 +50,9 @@ and whether a build is authorized.
    routes to (`tokens`, `color`, `dp`, `typography`, `accessors`, `components`,
    `resources`, `cookbook-resource`, `previews`, `visual-consistency`);
    `.claude/skills/brand-design/references/{usage-and-states,design-language,surface-composition,states-and-motion,workflow-and-review}.md`
-   as relevant; `design-system/CONSISTENCY.md` for current role-to-token choices.
+   as relevant; `design-system/CONSISTENCY.md` for current role-to-token choices;
+   `.claude/skills/compose-components/references/structure-and-runtime.md` for
+   shared Compose implementation and review.
 2. Complete the usage/state inventory before changing a shared default: every
    production caller, variant, state and reachable combination, read at the call
    site. Choose the smallest correct owner: local composition, explicit style,
@@ -63,7 +66,9 @@ and whether a build is authorized.
    obsolete in-scope styles/resources after checking all uses and previews.
 5. Add or update `@AppPreview` coverage inside `PreviewContainer` for significant
    states; keep fixtures deterministic. Self-review against the design-system
-   completion gate and brand-design acceptance; run the authorized build.
+   completion gate, compose-components gate and brand-design acceptance; run
+   the authorized build. Full component audits follow the compose-components
+   per-file inventory and decision workflow.
 
 ## Report format
 

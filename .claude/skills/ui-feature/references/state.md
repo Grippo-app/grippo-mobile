@@ -187,7 +187,7 @@ discarded on process death.
 
 ### Sub-state pattern
 
-Factor nested data into sub-state classes (`HeaderState`, `NoteRowState`). Sub-states are passed to sub-Composables **as one model** (`HeaderComposable(state = state.header, ...)`) — never spread flat. Compose stability inference works per-field (changing a `NoteRowState` skips unrelated `HeaderState` rendering).
+Factor cohesive data into sub-state classes (`HeaderState`, `NoteRowState`); component parameters follow [model boundaries](../../compose-components/references/structure-and-runtime.md#signatures-and-data-boundaries).
 
 ### No flat scalar piles (MUST)
 
@@ -219,5 +219,5 @@ public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
 - Domain references that need formatting (map via `:data-mappers:domain-to-state`).
 - `null` checks scattered through the screen (use sealed states for discrete modes).
 - State that mirrors a Feature's signature 1:1 (if it adds nothing over domain, you're missing the mapper).
-- Spreading a `*State` model into a composable's flat parameters (see `references/compose-rules.md` § Entity composables).
+- Component model boundaries follow [Compose signatures](../../compose-components/references/structure-and-runtime.md#signatures-and-data-boundaries).
 - Flat scalar pile (group the clusters; see above).

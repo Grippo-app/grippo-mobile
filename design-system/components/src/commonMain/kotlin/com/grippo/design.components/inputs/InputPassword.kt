@@ -27,6 +27,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.input_show_password
+import com.grippo.design.resources.provider.input_hide_password
 import com.grippo.design.resources.provider.icons.EyeOff
 import com.grippo.design.resources.provider.icons.EyeOn
 import com.grippo.design.resources.provider.icons.Lock
@@ -79,6 +81,7 @@ public fun InputPassword(
                     visible = !passwordVisible,
                     icon = AppTokens.icons.EyeOn,
                     tint = color,
+                    contentDescription = AppTokens.strings.res(Res.string.input_show_password),
                     onClick = {
                         passwordVisible = true
                         onVisibilityChange(true)
@@ -88,6 +91,7 @@ public fun InputPassword(
                     visible = passwordVisible,
                     icon = AppTokens.icons.EyeOff,
                     tint = color,
+                    contentDescription = AppTokens.strings.res(Res.string.input_hide_password),
                     onClick = {
                         passwordVisible = false
                         onVisibilityChange(false)

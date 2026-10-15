@@ -14,8 +14,12 @@ callers use the existing dialog host factory. There are no nested screens or
 containers owned by this module. The Component injects the stateless analytics API
 inside its retainedInstance factory. Shared registers the generated annotated
 module and the uniquely qualified `muscle_loading_details_analytics` schema catalog.
-No host, route, lifecycle or screen identity changes are needed. Visual impact is
-absent: Screen, layout, previews and rendering state are unchanged.
+No host, route, lifecycle or screen identity changes are needed. The shared balance
+card distinguishes an empty group distribution (no-data text), one loaded group
+(a localized factual label with the group name), and multiple groups (the existing
+bias comparison). Score, status, differences and gap calculations are unchanged.
+This presentation-only branch adds no control, hook, event, parameter or draft;
+the existing State, Contract, Direction and all data owners remain unchanged.
 
 ## Callback and operation coverage
 

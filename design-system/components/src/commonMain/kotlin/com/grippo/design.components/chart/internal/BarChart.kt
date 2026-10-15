@@ -53,14 +53,14 @@ internal fun BarChart(
         ),
         grid = BarStyle.Grid(
             show = true,
-            color = colors.divider.default.copy(alpha = 0.2f),
+            color = colors.charts.bar.grid,
             strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         yAxis = BarStyle.YAxis.Labels(
             ticks = 4,
             textStyle = typography.b10Reg().copy(color = colors.text.secondary),
             formatter = formatter,
-            tickMarkColor = colors.border.default.copy(alpha = 0.4f),
+            tickMarkColor = colors.charts.bar.axis,
             tickMarkWidth = AppTokens.dp.metrics.charts.axis.strokeWidth,
             tickMarkLength = AppTokens.dp.metrics.charts.axis.tickLength
         ),
@@ -89,7 +89,7 @@ internal fun BarChart(
             showLabel = true,
         ),
         yAxisLine = BarStyle.AxisLine(
-            color = colors.border.default.copy(alpha = 0.4f),
+            color = colors.charts.bar.axis,
             width = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         xAxis = if (xAxisLabels == BarChartXAxisLabels.WithLabels) {
@@ -102,19 +102,19 @@ internal fun BarChart(
             BarStyle.XAxis.None
         },
         xBaseline = BarStyle.Baseline(
-            color = colors.border.default.copy(alpha = 0.45f),
+            color = colors.charts.bar.baseline,
             width = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         bars = BarStyle.Bars(
             corner = AppTokens.dp.metrics.charts.bar.radius,
             brushProvider = { entry, _, rect ->
-                val topColor = lerp(entry.color, colors.static.white, 0.25f)
+                val topColor = lerp(entry.color, colors.static.white, colors.charts.bar.highlightMix)
                 val midColor = entry.color
                 Brush.verticalGradient(
                     colorStops = arrayOf(
                         0f to topColor,
                         0.6f to midColor,
-                        1f to midColor.copy(alpha = 0.85f)
+                        1f to midColor.copy(alpha = colors.charts.bar.gradientEndAlpha)
                     ),
                     startY = rect.top,
                     endY = rect.bottom
@@ -209,6 +209,34 @@ private fun BarChartPreview() {
         BarChart(
             modifier = Modifier.size(300.dp),
             data = ds,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun BarChartWithoutLabelsPreview() {
+    PreviewContainer {
+        BarChart(
+            modifier = Modifier.size(300.dp),
+            data = BarData(
+                items = listOf(
+                    BarEntry("First", 0f, AppTokens.colors.palette.palette7BlueGrowth.first()),
+                    BarEntry("Second", 1_250f, AppTokens.colors.palette.palette7BlueGrowth.last()),
+                ),
+            ),
+            xAxisLabels = BarChartXAxisLabels.WithoutLabels,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun BarChartEmptyPreview() {
+    PreviewContainer {
+        BarChart(
+            modifier = Modifier.size(300.dp),
+            data = BarData(items = emptyList()),
         )
     }
 }

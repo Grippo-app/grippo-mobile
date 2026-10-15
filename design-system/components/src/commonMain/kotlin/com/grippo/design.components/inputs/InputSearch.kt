@@ -18,6 +18,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.input_clear
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Search
 import com.grippo.design.resources.provider.search_placeholder
@@ -52,6 +53,7 @@ public fun InputSearch(
                 visible = value.isNotEmpty(),
                 icon = AppTokens.icons.Cancel,
                 tint = color,
+                contentDescription = AppTokens.strings.res(Res.string.input_clear),
                 onClick = { onValueChange("") },
             )
         },
@@ -71,7 +73,7 @@ public fun InputSearch(
 
 @AppPreview
 @Composable
-private fun InputNamePreview() {
+private fun InputSearchPreview() {
     PreviewContainer {
         InputSearch(
             value = "Search something",

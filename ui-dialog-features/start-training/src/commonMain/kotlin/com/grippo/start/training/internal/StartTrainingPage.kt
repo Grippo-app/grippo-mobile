@@ -243,7 +243,7 @@ private fun ExercisesPage(
                         ExerciseCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = exercise,
-                            style = ExerciseCardStyle.Medium {},
+                            style = ExerciseCardStyle.Medium(),
                         )
                     }
                 }

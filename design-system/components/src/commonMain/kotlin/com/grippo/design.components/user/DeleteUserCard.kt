@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,11 +33,13 @@ public fun DeleteUserCard(
     isDeleteLoading: Boolean,
     onDeleteClick: () -> Unit
 ) {
+    val deleteState = if (isDeleteLoading) ButtonState.Loading else ButtonState.Enabled
+
     Column(
         modifier = modifier
             .border(
                 width = AppTokens.dp.deleteUserCard.borderWidth,
-                color = AppTokens.colors.semantic.error.copy(alpha = 0.5f),
+                color = AppTokens.colors.semantic.errorBorder,
                 shape = RoundedCornerShape(AppTokens.dp.deleteUserCard.radius)
             )
             .padding(
@@ -60,13 +61,6 @@ public fun DeleteUserCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
-
-            val deleteState = remember(isDeleteLoading) {
-                when {
-                    isDeleteLoading -> ButtonState.Loading
-                    else -> ButtonState.Enabled
-                }
-            }
 
             Button(
                 modifier = Modifier,

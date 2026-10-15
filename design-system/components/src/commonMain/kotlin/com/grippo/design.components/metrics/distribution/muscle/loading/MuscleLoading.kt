@@ -19,8 +19,8 @@ public enum class MuscleLoadingMode {
 
 @Composable
 public fun MuscleLoading(
-    summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
+    summary: MuscleLoadSummaryState,
     mode: MuscleLoadingMode,
 ) {
     when (mode) {

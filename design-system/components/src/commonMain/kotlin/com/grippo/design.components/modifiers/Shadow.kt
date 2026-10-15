@@ -42,7 +42,8 @@ public fun Modifier.shadowDefault(
 
     if (elevation == ShadowElevation.Non) return this
 
-    val spotColor = color.copy(alpha = (color.alpha * 1.5F).coerceIn(0f, 1f))
+    val spotAlpha = (color.alpha * AppTokens.colors.overlay.shadowSpotAlphaMultiplier).coerceIn(0f, 1f)
+    val spotColor = color.copy(alpha = spotAlpha)
 
     val hasTop = Side.TOP in sides
     val hasBottom = Side.BOTTOM in sides

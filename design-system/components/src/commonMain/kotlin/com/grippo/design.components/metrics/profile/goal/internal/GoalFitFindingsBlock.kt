@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.profile.GoalFitFindingState
 import com.grippo.core.state.metrics.profile.GoalFitRuleState
 import com.grippo.core.state.metrics.profile.GoalFitSeverityState
@@ -33,6 +32,13 @@ import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+
+@Immutable
+private data class FindingGroup(
+    val rule: GoalFitRuleState,
+    val findings: ImmutableList<GoalFitFindingState>,
+    val worstSeverity: GoalFitSeverityState,
+)
 
 @Composable
 internal fun GoalFitFindingsBlock(
@@ -130,7 +136,6 @@ private fun FindingSingleRow(
         finding = finding,
         modifier = modifier,
         titleStyle = AppTokens.typography.b14Med(),
-        titleMaxLines = 2,
     )
 }
 
@@ -158,15 +163,11 @@ private fun FindingInversionRow(
                 text = title,
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.primary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = finding.inversionStatusText(),
                 style = AppTokens.typography.b11Reg(),
                 color = statusColor,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -182,7 +183,6 @@ private fun FindingSubRow(
         finding = finding,
         modifier = modifier.padding(start = AppTokens.dp.contentPadding.content),
         titleStyle = AppTokens.typography.b13Med(),
-        titleMaxLines = 1,
     )
 }
 
@@ -192,7 +192,6 @@ private fun FindingValueRow(
     title: String,
     finding: GoalFitFindingState,
     titleStyle: TextStyle,
-    titleMaxLines: Int,
 ) {
     Row(
         modifier = modifier,
@@ -206,15 +205,12 @@ private fun FindingValueRow(
             text = title,
             style = titleStyle,
             color = AppTokens.colors.text.primary,
-            maxLines = titleMaxLines,
-            overflow = TextOverflow.Ellipsis,
         )
         Text(
+            modifier = Modifier.weight(1f, fill = false),
             text = finding.valueTargetText(),
             style = AppTokens.typography.b13Med(),
             color = finding.valueColor(),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -231,13 +227,6 @@ private fun SeverityDot(
             .background(color, CircleShape),
     )
 }
-
-@Immutable
-private data class FindingGroup(
-    val rule: GoalFitRuleState,
-    val findings: ImmutableList<GoalFitFindingState>,
-    val worstSeverity: GoalFitSeverityState,
-)
 
 @AppPreview
 @Composable

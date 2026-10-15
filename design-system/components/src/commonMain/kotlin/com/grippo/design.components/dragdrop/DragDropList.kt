@@ -211,9 +211,9 @@ public fun <K : Any> rememberDragDropListState(
 
 @Composable
 public fun <K : Any> LazyItemScope.DraggableItem(
+    modifier: Modifier = Modifier,
     state: DragDropListState<K>,
     key: K,
-    modifier: Modifier = Modifier,
     content: @Composable BoxScope.(isDragging: Boolean) -> Unit,
 ) {
     DisposableEffect(state, key) {
@@ -221,7 +221,7 @@ public fun <K : Any> LazyItemScope.DraggableItem(
         onDispose { state.unregisterKey(key) }
     }
 
-    val haptic = LocalHapticFeedback.current
+    val haptic by rememberUpdatedState(LocalHapticFeedback.current)
     val isDragging by remember(state, key) {
         derivedStateOf { state.isDragging(key) }
     }

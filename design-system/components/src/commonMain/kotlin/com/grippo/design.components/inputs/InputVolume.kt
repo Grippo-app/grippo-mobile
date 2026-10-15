@@ -43,7 +43,7 @@ public fun InputVolume(
         ),
         trailing = { color ->
             Text(
-                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
+                modifier = Modifier.padding(end = AppTokens.dp.input.unitEndPadding),
                 text = AppTokens.strings.res(Res.string.kg),
                 style = AppTokens.typography.b15Med(),
                 color = color

@@ -26,14 +26,14 @@ public fun RepetitionsChip(
     size: ChipSize,
     style: RepetitionsChipStyle
 ) {
-    val text = when (style) {
+    val label = when (style) {
         RepetitionsChipStyle.SHORT -> ChipLabel.Empty
-        RepetitionsChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.repetitions_chip)))
+        RepetitionsChipStyle.LONG -> ChipLabel.Text(UiText.Res(Res.string.repetitions_chip))
     }
 
     Chip(
         modifier = modifier,
-        label = text,
+        label = label,
         value = value.short(),
         leading = ChipLeading.Icon(AppTokens.icons.Repeat),
         size = size,

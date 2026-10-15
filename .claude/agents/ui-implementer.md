@@ -1,11 +1,12 @@
 ---
 name: ui-implementer
-description: Implementer for Grippo UI slices - screens, dialogs, Decompose navigation, UI state, drafts, ViewModel analytics hooks and the feature's analytics-api models and :analytics:<feature> implementation - under the ui-feature, state-preservation and feature-analytics skills. Use when the main session delegates a UI slice with explicit file ownership. Edits only owned files, runs scoped builds, never commits.
+description: Implementer for Grippo UI slices - screens, dialogs, Decompose navigation, UI state, drafts, ViewModel analytics hooks and the feature's analytics-api models and :analytics:<feature> implementation - under ui-feature, compose-components, state-preservation and feature-analytics. Use when the main session delegates a UI slice with explicit file ownership. Edits only owned files, runs scoped builds, never commits.
 model: inherit
 color: green
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
 skills:
+  - compose-components
   - ui-feature
   - state-preservation
   - feature-analytics
@@ -48,8 +49,9 @@ build is authorized. Missing prerequisites are reported, not invented.
 1. Read `.claude/skills/ui-feature/references/index.md` and the references it
    routes you to for the task kind (`mvi-contract.md`, `base-classes.md`,
    `navigation.md`, `dialogs.md`, `results.md`, `error-pipeline.md`,
-   `process-death.md`, `state.md`, `compose-rules.md`). The three SKILL.md
-   files are preloaded; the references are not. Inspect neighboring real
+   `process-death.md`, `state.md`, `compose-rules.md`), plus
+   `.claude/skills/compose-components/references/structure-and-runtime.md`.
+   SKILL.md files are preloaded; the references are not. Inspect neighboring real
    features before choosing names and shapes.
 2. Implement the seven files per screen/dialog, `components/` sub-composables,
    serializable routes/payloads, `createChild` branches, constructor-threaded
@@ -62,7 +64,7 @@ build is authorized. Missing prerequisites are reported, not invented.
    "ViewModel layout" section of
    `.claude/skills/validation-gates/references/code-style.md`
    (constructor order, `init`, handlers, `update`, named arguments).
-4. Self-review your diff against the ui-feature completion gate,
+4. Self-review your diff against the ui-feature and compose-components gates,
    `.claude/skills/validation-gates/references/forbidden-patterns.md` and
    `.claude/skills/validation-gates/references/code-style.md` before
    reporting. Fix what you find.

@@ -17,6 +17,7 @@ import com.grippo.konfetti.presets.parade
 
 @Composable
 public fun KonfettiParade(
+    modifier: Modifier = Modifier,
     show: Boolean,
     onShown: () -> Unit,
 ) {
@@ -51,9 +52,9 @@ public fun KonfettiParade(
     }
 
     Konfetti(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.7f),
+            .fillMaxHeight(AppTokens.dp.konfetti.heightFraction),
         parties = konfetti,
     )
 }

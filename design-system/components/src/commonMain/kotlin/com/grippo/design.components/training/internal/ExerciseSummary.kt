@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.formatters.MultiplierFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
@@ -15,15 +18,16 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_max_weight
 import com.grippo.design.resources.provider.exercise_sets_count
+import com.grippo.design.resources.provider.kg
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun ExerciseSummary(
-    value: ExerciseState,
     modifier: Modifier = Modifier,
+    value: ExerciseState,
 ) {
     val completedCount = value.iterations.count { !it.isPending }
-
     val totalCount = value.iterations.size
 
     val setsColor = when {
@@ -47,8 +51,8 @@ internal fun ExerciseSummary(
         )
         if (maximum != null) {
             val maximumWeight = when (maximum) {
-                0f -> VolumeFormatState.Valid(display = "0", value = 0f)
-                else -> VolumeFormatState.of(maximum)
+                0f -> "0${AppTokens.strings.res(Res.string.kg)}"
+                else -> VolumeFormatState.of(maximum).short()
             }
             Text(
                 text = "·",
@@ -56,11 +60,27 @@ internal fun ExerciseSummary(
                 color = AppTokens.colors.text.tertiary,
             )
             Text(
-                text = AppTokens.strings.res(Res.string.exercise_max_weight, maximumWeight.short()),
+                text = AppTokens.strings.res(Res.string.exercise_max_weight, maximumWeight),
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseSummaryZeroLoadPreview() {
+    PreviewContainer {
+        val completedIteration = stubPendingIteration().copy(
+            bodyWeight = WeightFormatState.of(80f),
+            bodyMultiplier = MultiplierFormatState.of(1f),
+            assistWeight = VolumeFormatState.of(80f),
+            repetitions = RepetitionsFormatState.of(10),
+        )
+        ExerciseSummary(
+            value = stubExercise().copy(iterations = persistentListOf(completedIteration)),
+        )
     }
 }
 

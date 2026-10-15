@@ -40,7 +40,7 @@ public fun Modifier.scalableClick(
 
     val scaleDown = 0.97f
     val minPressDuration = 100.milliseconds
-    val hapticFeedback = LocalHapticFeedback.current
+    val hapticFeedback by rememberUpdatedState(LocalHapticFeedback.current)
     val coroutineScope = rememberCoroutineScope()
     val hapticEnabled by rememberUpdatedState(haptic)
     var pressed by remember { mutableStateOf(false) }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,8 +25,8 @@ import com.grippo.design.resources.provider.tonnage
 
 @Composable
 public fun VolumeMetricChart(
-    value: VolumeSeriesState,
     modifier: Modifier = Modifier,
+    value: VolumeSeriesState,
     xAxisLabels: BarChartXAxisLabels
 ) {
     MetricSectionPanel(
@@ -33,7 +34,6 @@ public fun VolumeMetricChart(
         style = MetricSectionPanelStyle.Large,
     ) {
         Text(
-            modifier = Modifier.weight(1f),
             text = AppTokens.strings.res(Res.string.tonnage),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
@@ -45,7 +45,7 @@ public fun VolumeMetricChart(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = AppTokens.dp.metrics.volume.chart.height)
-                .aspectRatio(1.7f),
+                .aspectRatio(AppTokens.dp.metrics.volume.chart.aspectRatio),
             data = value.toBarData(),
             xAxisLabels = xAxisLabels
         )
@@ -55,19 +55,21 @@ public fun VolumeMetricChart(
 @Composable
 private fun VolumeSeriesState.toBarData(): BarData {
     val palette = AppTokens.colors.palette.palette7BlueGrowth
-    val values = entries.map { it.value }
-    val minValue = values.minOrNull() ?: 0f
-    val maxValue = values.maxOrNull() ?: minValue
-    val colors = assignColors(values, palette, minValue, maxValue)
+    return remember(entries, palette) {
+        val values = entries.map { it.value }
+        val minValue = values.minOrNull() ?: 0f
+        val maxValue = values.maxOrNull() ?: minValue
+        val colors = assignColors(values, palette, minValue, maxValue)
 
-    val items = entries.mapIndexed { index, entry ->
-        BarEntry(
-            label = entry.label,
-            value = entry.value,
-            color = colors[index]
-        )
+        val items = entries.mapIndexed { index, entry ->
+            BarEntry(
+                label = entry.label,
+                value = entry.value,
+                color = colors[index]
+            )
+        }
+        BarData(items = items)
     }
-    return BarData(items = items)
 }
 
 private fun assignColors(

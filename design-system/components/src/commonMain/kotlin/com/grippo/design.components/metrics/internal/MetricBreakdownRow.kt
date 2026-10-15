@@ -16,7 +16,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -51,7 +50,7 @@ internal fun MetricBreakdownRow(
                     modifier = Modifier
                         .width(AppTokens.dp.metrics.trainingSummary.dividerWidth)
                         .fillMaxHeight()
-                        .background(AppTokens.colors.border.default.copy(alpha = 0.4f)),
+                        .background(AppTokens.colors.divider.subtle),
                 )
             }
         }
@@ -78,8 +77,6 @@ private fun MetricBreakdownCell(
             } else {
                 AppTokens.colors.text.primary
             },
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
 
@@ -87,8 +84,6 @@ private fun MetricBreakdownCell(
             text = label,
             style = AppTokens.typography.b11Med(),
             color = AppTokens.colors.text.secondary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
     }
@@ -119,6 +114,20 @@ private fun MetricBreakdownRowDimmedPreview() {
                 MetricBreakdownItem(label = "Sets", value = "0", dimmed = true),
                 MetricBreakdownItem(label = "Reps", value = "0", dimmed = true),
             )
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MetricBreakdownRowLongValuesPreview() {
+    PreviewContainer {
+        MetricBreakdownRow(
+            items = persistentListOf(
+                MetricBreakdownItem(label = "Training duration", value = "23 h 59 min"),
+                MetricBreakdownItem(label = "Completed exercise sets", value = "1 234"),
+                MetricBreakdownItem(label = "Total repetitions", value = "123 456"),
+            ),
         )
     }
 }

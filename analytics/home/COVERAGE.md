@@ -27,11 +27,60 @@ closes without an event.
 
 | Route / rendered surface | Component → ViewModel | Presentation identity | Coverage |
 |---|---|---|---|
-| `HomeRouter.Home`: one surface with three render variants (loader while the persisted range is unresolved, WelcomeHomeContent for a user with no trainings, DashboardHomeContent otherwise; the toolbar title is hidden in the welcome variant) | HomeComponent → HomeViewModel | `HomeScreen.Home` / `home` | One typed screenPresentation covers all variants; HomeAnalytics resolved inside `retainedInstance`; foundation binds before activation and supplies Initial/Restore |
+| `HomeRouter.Home`: one surface with three render variants (HomeLoadingContent for initial range/user/metrics readiness or an active trainings refresh without period content, WelcomeHomeContent for a ready user with no trainings, DashboardHomeContent otherwise; welcome owns its status-bar inset without an empty toolbar) | HomeComponent → HomeViewModel | `HomeScreen.Home` / `home` | One typed screenPresentation covers all variants; HomeAnalytics resolved inside `retainedInstance`; foundation binds before activation and supplies Initial/Restore |
 | Home graph | HomeRootComponent → HomeRootViewModel | Default null | Container renders only the child stack; its Contract methods forward to HomeRootDirection; no analytics dependency |
 | Overlays opened from Home: ExerciseExample, MuscleLoadingDetails, TrainingStreakDetails, PerformanceTrendDetails, TrainingGoalDetails, PeriodPicker | DialogContentComponent factories → the dialogs' own VMs | Live overlays; no screen hook under the dialog policy | Home reports only open intent and accepted results; the five Home-specific configs are constructed only in HomeViewModel, ExerciseExample also elsewhere |
 
 ## Callbacks and operations
+
+Dashboard cards use concise `Overview` presentations. The existing card actions
+open MuscleLoadingDetails, TrainingStreakDetails, PerformanceTrendDetails and
+TrainingGoalDetails. The latter three retain `Detailed` card presentations for
+full history, best values and timeline data; the muscle dialog retains its full
+distribution and PerGroup/PerMuscle selector. Overview card headings use the same
+primary style and decorative top-right chevron, with their existing parent click
+as the sole detail action; Calendar and Update retain their explicit callbacks.
+Performance metrics retain their order, individual click owners and null-item
+omission; each pair shares a natural-height row to align card boundaries.
+Goal Overview adds the existing analyzed-session count for the selected period
+and actual goal target date beside its unchanged fit ring/status; the count covers
+only sessions with eligible analysis statistics, not lifetime or goal-date totals.
+Detailed goal rendering and remaining/Update conditions stay unchanged.
+The full-width muscle summary shows
+existing estimated-load shares for up to three groups, selected-period workouts
+and sets, and the most-loaded muscle when only one group is represented. Missing
+groups are not displayed as zero or assigned a training recommendation. The
+Home map opts into a compact centered image layout in the same 144×140 slot;
+muscle details retain their original image spacing and selectors. The
+separate rhythm summary places the existing streak/cadence beside the active-day
+counter, followed by unchanged progress; its chevron adds no separate control.
+TrainingStreakDetails retains its existing Detailed layout and history, while
+performance includes prior average and latest-vs-average percentage only with a
+valid baseline. Duration shows only the neutral percentage comparison, avoiding a
+misleading numeric baseline truncated to whole minutes. The last-training recap
+identifies the selected-period scope and shows date, duration, volume and exercise
+count; its existing Calendar action opens the training history with the exercise
+details. Spotlight cards retain their complete insight text and exercise
+action in a horizontally scrollable gallery. Its cards share a content-driven
+height; the full-screen-width viewport keeps start/end gutters inside the scroll
+content. Gallery changes add no callback or domain/persistence state.
+The spotlight's colored edge stripe is omitted; its localized semantic chip still
+identifies the insight kind. Header chevrons add no callback or telemetry.
+Welcome groups identity and artwork in one hero, then setup progress,
+experience/facts and benefits. No additional
+control callback, observation, analytics parameter, schema or screen identity is
+introduced by these presentation choices.
+Initial loading uses noninteractive Home skeleton cards with the shared shimmer;
+no successful metric publication is represented by an empty performance list,
+whereas a completed empty period contains five Empty-status metrics. An active
+trainings refresh without period content also shows the skeleton; populated
+cached cards stay visible. The existing period picker and its callback remain
+available for returning users after range restoration, including during loading.
+Skeleton slots add no event, operation, feature callback or persisted field,
+and do not impose a minimum loading duration. Existing shared
+error feedback still owns failures before the first successful metric publication.
+The Progress hint is present only alongside a goal, muscle or streak summary;
+it explains the existing card action and adds no control or observation.
 
 | Observation owner / callback | Typed event / operation | Eligibility / wire payload |
 |---|---|---|
@@ -89,9 +138,10 @@ DismissRequested.
 | HomeViewModel | `lastTraining`, `muscleLoad`, `streak`, `performance`, `goalProgress`, `spotlights` | Rebuild | `observeTrainings(range)` under flatMapLatest → metric use cases with the caller-provided current time; Room relation query over training/exercise/iteration/exercise_example tables | An empty list resets to defaults; refreshed by RefreshTrainings |
 | HomeViewModel | `excludedMusclesCount`, `missingEquipmentCount`, `hasGoal` | Rebuild | Excluded-muscle/equipment and goal observations | Defaults 0/0/false |
 | HomeViewModel | `showWelcomeConfetti` | Runtime only | `observeHomeWelcomeStatus().first()` then `setHomeWelcomeStatus(Celebrated)`; DataStore `home_welcome_status`, default Idle | True once per fresh VM only when PendingCelebration; consumed inside WelcomeHomeContent and reset at animation start; no celebration on retained recreation; an unfinished animation is not a draft |
-| HomeViewModel / HomeScreen | Loader gating | Runtime only | Trainings loader; `isLoading = range unresolved || ((Trainings loading || user null) && empty state)` | The loader shows until the persisted range resolves for every user, so no period picker is reachable before restoration; returning users see the dashboard while RefreshTrainings is still loading |
+| HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing range/user readiness, initial empty performance list, and Trainings loader without period content (or lifetime count <1) | Home skeleton until initial readiness; a real empty period has five Empty metrics and resolves after the loader. Populated cached content remains visible during refresh; the existing picker stays available for returning users after range restoration, even during loading. Shared error feedback remains the failure owner; no new loading flag/draft/timer |
 | HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings; a range change cancels the in-flight refresh; no restoration flags, previous-source caches or shadow copies |
 | Home dialogs | Unaccepted picker selection; `onResult`/`onAddGoal` closures | Runtime only | Dialog slot/step stacks unserialized; the picker value lives only in the dialog VM | The accepted period goes straight to DataStore through SavePeriod; a result still queued at process death has no durability |
+| Home composables | Dashboard and spotlight-gallery scroll positions | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |
 
 No PersistenceKey, `restoreState`/`saveState`, `@Serializable`, `@Transient` or
 `var` member exists in the home module; HomeState is `@Immutable` only and

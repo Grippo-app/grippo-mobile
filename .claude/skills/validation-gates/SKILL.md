@@ -5,9 +5,11 @@ description: Review a Grippo change against the request, architecture, forbidden
 
 # Validation and review
 
-Read [CLAUDE.md](../../../CLAUDE.md), the user's accepted scope and the actual
-change set (`git diff`, `git status`). A review needs an identifiable outcome and
-footprint; recover them from the request and the source before asking.
+Read [CLAUDE.md](../../../CLAUDE.md), the user's accepted scope and the
+[task delta against its baseline](../task-orchestrator/references/change-attribution.md).
+Use the current source and full working-tree diff as context, not as proof that
+every existing edit belongs to this task. A review needs an identifiable outcome
+and footprint; recover them from the request and the source before asking.
 
 ## Mandatory review
 

@@ -18,6 +18,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.input_clear
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.name_placeholder
 
@@ -48,6 +49,7 @@ public fun InputName(
                 visible = value.display.isNotEmpty(),
                 icon = AppTokens.icons.Cancel,
                 tint = color,
+                contentDescription = AppTokens.strings.res(Res.string.input_clear),
                 onClick = {
                     onValueChange("")
                     onClear()

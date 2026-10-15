@@ -23,7 +23,7 @@ public sealed interface ExerciseCardStyle {
 
     @Stable
     public data class Medium(
-        val onClick: () -> Unit
+        val onClick: (() -> Unit)? = null,
     ) : ExerciseCardStyle
 
     @Immutable
@@ -36,7 +36,6 @@ public fun ExerciseCard(
     value: ExerciseState,
     style: ExerciseCardStyle,
 ) {
-
     when (style) {
         is ExerciseCardStyle.Small -> ExerciseCardSmall(
             modifier = modifier,
@@ -53,6 +52,17 @@ public fun ExerciseCard(
             modifier = modifier,
             value = value,
             onClick = style.onClick
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseCardReadOnlyPreview() {
+    PreviewContainer {
+        ExerciseCard(
+            value = stubExercise(),
+            style = ExerciseCardStyle.Medium(),
         )
     }
 }

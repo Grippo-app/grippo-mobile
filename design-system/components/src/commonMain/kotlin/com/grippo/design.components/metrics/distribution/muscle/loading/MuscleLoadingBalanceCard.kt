@@ -16,6 +16,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.design.components.chart.internal.RingChart
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -32,19 +33,40 @@ import com.grippo.design.resources.provider.muscle_load_balance_status_strong
 import com.grippo.design.resources.provider.muscle_load_bias
 import com.grippo.design.resources.provider.muscle_load_gap
 import com.grippo.design.resources.provider.muscle_load_no_data
+import com.grippo.design.resources.provider.muscle_load_single_group
 import com.grippo.design.resources.provider.muscle_load_trainings_count
 import com.grippo.design.resources.provider.percent
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
 
 @Composable
 public fun MuscleLoadingBalanceCard(
-    summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
+    summary: MuscleLoadSummaryState,
 ) {
     val groupEntries = summary.perGroup.entries
-    val topEntry = groupEntries.maxByOrNull { it.value }
+    if (groupEntries.isEmpty()) {
+        MetricSectionPanel(
+            modifier = modifier,
+            style = MetricSectionPanelStyle.Small,
+        ) {
+            Text(
+                text = AppTokens.strings.res(Res.string.muscle_load_balance),
+                style = AppTokens.typography.h5(),
+                color = AppTokens.colors.text.primary,
+            )
+            Text(
+                text = AppTokens.strings.res(Res.string.muscle_load_no_data),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.tertiary,
+            )
+        }
+        return
+    }
+
+    val topEntry = groupEntries.maxBy { it.value }
     val secondEntry = groupEntries.filterNot { it == topEntry }.maxByOrNull { it.value }
-    val gapEntry = groupEntries.minByOrNull { it.hitTrainingsCount }
+    val gapEntry = groupEntries.minBy { it.hitTrainingsCount }
 
     val topShare = summary.groupDominance.top1SharePercent.coerceIn(0f, 100f)
     val balanceScore = (100 - topShare).roundToInt().coerceIn(0, 100)
@@ -57,7 +79,7 @@ public fun MuscleLoadingBalanceCard(
 
     val status = AppTokens.strings.res(statusRes)
 
-    val biasLine = if (topEntry != null && secondEntry != null) {
+    val biasLine = if (secondEntry != null) {
         val diff = (topEntry.value - secondEntry.value).roundToInt().coerceAtLeast(0)
         AppTokens.strings.res(
             Res.string.muscle_load_bias,
@@ -68,19 +90,15 @@ public fun MuscleLoadingBalanceCard(
         null
     }
 
-    val gapLine = if (gapEntry != null) {
-        val trainingsCount = AppTokens.strings.res(
-            Res.string.muscle_load_trainings_count,
-            gapEntry.hitTrainingsCount
-        )
-        AppTokens.strings.res(
-            Res.string.muscle_load_gap,
-            gapEntry.group.title().text(),
-            trainingsCount
-        )
-    } else {
-        null
-    }
+    val trainingsCount = AppTokens.strings.res(
+        Res.string.muscle_load_trainings_count,
+        gapEntry.hitTrainingsCount,
+    )
+    val gapLine = AppTokens.strings.res(
+        Res.string.muscle_load_gap,
+        gapEntry.group.title().text(),
+        trainingsCount,
+    )
 
     MetricSectionPanel(
         modifier = modifier,
@@ -124,25 +142,26 @@ public fun MuscleLoadingBalanceCard(
                     Text(
                         text = biasLine,
                         style = AppTokens.typography.b13Semi(),
-                        color = AppTokens.colors.semantic.warning
+                        color = AppTokens.colors.text.secondary
                     )
                 } else {
                     Text(
-                        text = AppTokens.strings.res(Res.string.muscle_load_no_data),
+                        text = AppTokens.strings.res(
+                            Res.string.muscle_load_single_group,
+                            topEntry.group.title().text(),
+                        ),
                         style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.tertiary
+                        color = AppTokens.colors.text.secondary,
                     )
                 }
 
-                if (gapLine != null) {
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
-                    Text(
-                        text = gapLine,
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.primary
-                    )
-                }
+                Text(
+                    text = gapLine,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.primary
+                )
 
                 Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
             }
@@ -158,9 +177,9 @@ public fun MuscleLoadingBalanceCard(
 
 @Composable
 private fun BalanceRing(
+    modifier: Modifier = Modifier,
     score: Int,
     caption: String,
-    modifier: Modifier = Modifier,
 ) {
     val colors = when {
         score >= 70 -> AppTokens.colors.charts.ring.success
@@ -215,14 +234,42 @@ private fun MuscleLoadingBalanceCardPreview() {
         MuscleLoadingBalanceCard(
             summary = stubMuscleLoadSummary()
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingBalanceCardSingleGroupPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        val entry = summary.perGroup.entries.first {
+            it.group == MuscleGroupEnumState.ARMS_AND_FOREARMS
+        }.copy(value = 100f)
         MuscleLoadingBalanceCard(
-            summary = stubMuscleLoadSummary()
+            summary = summary.copy(
+                perGroup = summary.perGroup.copy(entries = persistentListOf(entry)),
+                groupDominance = summary.groupDominance.copy(
+                    top1SharePercent = 100f,
+                    top2SharePercent = 100f,
+                ),
+            ),
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingBalanceCardEmptyPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
         MuscleLoadingBalanceCard(
-            summary = stubMuscleLoadSummary()
-        )
-        MuscleLoadingBalanceCard(
-            summary = stubMuscleLoadSummary()
+            summary = summary.copy(
+                perGroup = summary.perGroup.copy(entries = persistentListOf()),
+                groupDominance = summary.groupDominance.copy(
+                    top1SharePercent = 0f,
+                    top2SharePercent = 0f,
+                ),
+            ),
         )
     }
 }

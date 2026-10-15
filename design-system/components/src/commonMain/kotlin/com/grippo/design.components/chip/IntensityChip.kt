@@ -26,14 +26,14 @@ public fun IntensityChip(
     size: ChipSize,
     style: IntensityChipStyle
 ) {
-    val text = when (style) {
+    val label = when (style) {
         IntensityChipStyle.SHORT -> ChipLabel.Empty
-        IntensityChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.intensity_chip)))
+        IntensityChipStyle.LONG -> ChipLabel.Text(UiText.Res(Res.string.intensity_chip))
     }
 
     Chip(
         modifier = modifier,
-        label = text,
+        label = label,
         value = value.short(),
         leading = ChipLeading.Icon(AppTokens.icons.Flame),
         size = size,

@@ -32,13 +32,8 @@ Keep it in the reply (the task report), in the user's language like every reply
 
 ## Questions
 
-Ask only for scope expansion, a locked-decision change or a behavior-affecting
-fact that neither the request nor the source provides
-([when to stop and ask](../validation-gates/references/when-to-stop-and-ask.md)).
-Batch the questions into one quiz: each with 2-3 alternatives, the recommended
-option first with its reason, in the user's language. Continue every independent
-slice while an answer is pending; never implement the dependent slice on an
-assumed answer. Silence is not acceptance; an answered question is not asked again.
+Use [scope questions](../validation-gates/references/when-to-stop-and-ask.md)
+for the triggers, wording and handling of unanswered decisions.
 
 ## Dependency plan
 
@@ -61,6 +56,8 @@ assumed answer. Silence is not acceptance; an answered question is not asked aga
    slices (`screen-api` routers, `shared/.../Koin.kt`, `DialogConfig`,
    `CONSISTENCY.md`, `strings.xml`) belong to exactly one slice or to the main
    session; dependent slices run sequentially.
+   Establish the [task baseline](../task-orchestrator/references/change-attribution.md)
+   before the first edit; include existing user changes in delegation briefs.
 5. Enumerate per slice the gate items that will have to pass: screens needing a
    `screenPresentation`, fields needing a draft, callers needing migration,
    locales needing strings.

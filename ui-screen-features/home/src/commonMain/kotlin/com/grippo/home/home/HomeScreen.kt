@@ -1,23 +1,12 @@
 package com.grippo.home.home
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
-import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
-import com.grippo.core.state.metrics.performance.stubExerciseSpotlightGoodFrequency
-import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNearBest
-import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNeedsAttention
-import com.grippo.core.state.metrics.performance.stubExerciseSpotlightProgressWin
-import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
-import com.grippo.core.state.metrics.profile.stubGoalProgressList
-import com.grippo.core.state.profile.stubUser
-import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.loading.Loader
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -26,7 +15,11 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.dashboard
 import com.grippo.home.home.components.DashboardHomeContent
+import com.grippo.home.home.components.HomeLoadingContent
 import com.grippo.home.home.components.WelcomeHomeContent
+import com.grippo.home.home.components.homePreviewEmptyPerformance
+import com.grippo.home.home.components.homePreviewState
+import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -42,31 +35,37 @@ internal fun HomeScreen(
     )
 ) {
     val isEmptyState = (state.user?.stats?.trainingsCount ?: 0) < 1
-    val isLoading = state.range.value == null ||
-        ((loaders.contains(HomeLoader.Trainings) || state.user == null) && isEmptyState)
+    val hasPeriodContent = state.lastTraining != null || state.muscleLoad != null ||
+        state.streak != null || state.goalProgress != null || state.spotlights.isNotEmpty() ||
+        state.performance.any { !it.isEmpty() }
+    // A completed empty period still publishes five Empty-status performance metrics.
+    val awaitsInitialMetrics = state.performance.isEmpty()
+    val isLoading = state.range.value == null || state.user == null ||
+        awaitsInitialMetrics ||
+        (loaders.contains(HomeLoader.Trainings) && (isEmptyState || !hasPeriodContent))
 
     if (isLoading) {
-        Loader(
-            modifier = Modifier.fillMaxSize()
+        Toolbar(
+            modifier = Modifier.fillMaxWidth(),
+            style = ToolbarStyle.Transparent,
+            title = AppTokens.strings.res(Res.string.dashboard),
+        )
+        HomeLoadingContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            state = state,
+            onPeriodChange = contract::onOpenPeriodPicker,
         )
         return@BaseComposeScreen
     }
 
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        style = ToolbarStyle.Transparent,
-        title = if (isEmptyState && state.user != null) {
-            null
-        } else {
-            AppTokens.strings.res(Res.string.dashboard)
-        },
-    )
-
-    if (isEmptyState && state.user != null) {
+    if (isEmptyState) {
         WelcomeHomeContent(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
+                .weight(1f)
+                .statusBarsPadding(),
             user = state.user,
             experience = state.user.experience,
             excludedMusclesCount = state.excludedMusclesCount,
@@ -77,6 +76,12 @@ internal fun HomeScreen(
         )
         return@BaseComposeScreen
     }
+
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        style = ToolbarStyle.Transparent,
+        title = AppTokens.strings.res(Res.string.dashboard),
+    )
 
     DashboardHomeContent(
         modifier = Modifier
@@ -89,22 +94,127 @@ internal fun HomeScreen(
 
 @AppPreview
 @Composable
-private fun HomeScreenPreview() {
+private fun HomeScreenPopulatedPreview() {
     PreviewContainer {
         HomeScreen(
-            state = HomeState(
-                lastTraining = stubTraining(),
-                spotlights = persistentListOf(
-                    stubExerciseSpotlightNeedsAttention(),
-                    stubExerciseSpotlightProgressWin(),
-                    stubExerciseSpotlightGoodFrequency(),
-                    stubExerciseSpotlightNearBest(),
-                ),
-                muscleLoad = stubMuscleLoadSummary(),
-                streak = stubTrainingStreaks().first(),
-                performance = stubPerformanceMetrics(),
-                goalProgress = stubGoalProgressList().first(),
-                user = stubUser()
+            state = homePreviewState(),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenWelcomeWithGoalPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState(lifetimeTrainingCount = 0),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenWelcomeWithoutGoalPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState(lifetimeTrainingCount = 0, hasGoal = false),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenFirstTrainingLoadingPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState(lifetimeTrainingCount = 1, hasGoal = false).copy(
+                lastTraining = null,
+                muscleLoad = null,
+                streak = null,
+                spotlights = persistentListOf(),
+                performance = persistentListOf(),
+            ),
+            loaders = persistentSetOf(HomeLoader.Trainings),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenReturningUserLoadingPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState().copy(
+                lastTraining = null,
+                muscleLoad = null,
+                streak = null,
+                goalProgress = null,
+                spotlights = persistentListOf(),
+                performance = persistentListOf(),
+            ),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenUserLoadingPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState().copy(user = null),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenEmptyCacheRefreshingPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState().copy(
+                lastTraining = null,
+                muscleLoad = null,
+                streak = null,
+                goalProgress = null,
+                spotlights = persistentListOf(),
+                performance = homePreviewEmptyPerformance(),
+            ),
+            loaders = persistentSetOf(HomeLoader.Trainings),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenCachedRefreshingPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState(),
+            loaders = persistentSetOf(HomeLoader.Trainings),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenDurationUnlockedPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState(lifetimeTrainingCount = 2, hasGoal = false).copy(
+                spotlights = persistentListOf(),
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty
@@ -114,17 +224,51 @@ private fun HomeScreenPreview() {
 
 @AppPreview
 @Composable
-private fun HomeScreenEmptyPreview() {
-    val stub = remember { stubUser() }
+private fun HomeScreenAllMetricsUnlockedPreview() {
     PreviewContainer {
         HomeScreen(
-            state = HomeState(
-                user = stub.copy(stats = stub.stats.copy(trainingsCount = 0)),
-                excludedMusclesCount = 3,
-                missingEquipmentCount = 5,
+            state = homePreviewState(lifetimeTrainingCount = 3).copy(
+                spotlights = persistentListOf(),
             ),
             loaders = persistentSetOf(),
-            contract = HomeContract.Empty
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenGoalOnlyBannerPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState(lifetimeTrainingCount = 3, hasGoal = false).copy(
+                lastTraining = null,
+                muscleLoad = null,
+                streak = null,
+                spotlights = persistentListOf(),
+                performance = homePreviewEmptyPerformance(),
+            ),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenEmptyPeriodPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = homePreviewState().copy(
+                lastTraining = null,
+                muscleLoad = null,
+                streak = null,
+                goalProgress = null,
+                spotlights = persistentListOf(),
+                performance = homePreviewEmptyPerformance(),
+            ),
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty,
         )
     }
 }
@@ -134,7 +278,9 @@ private fun HomeScreenEmptyPreview() {
 private fun HomeScreenLoadingPreview() {
     PreviewContainer {
         HomeScreen(
-            state = HomeState(),
+            state = HomeState(
+                range = DateRangeFormatState.Empty(kind = DateRangeKind.Last30Days),
+            ),
             loaders = persistentSetOf(HomeLoader.Trainings),
             contract = HomeContract.Empty,
         )

@@ -18,6 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.constrainHeight
 import com.grippo.design.components.button.Button
@@ -28,8 +31,11 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.dialog_back
 import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.User
+import com.grippo.design.resources.provider.profile
 
 @Immutable
 public enum class ToolbarStyle {
@@ -59,6 +65,8 @@ public fun Toolbar(
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val titleGap = AppTokens.dp.contentPadding.text
+    val backLabel = AppTokens.strings.res(Res.string.dialog_back)
+    val profileLabel = AppTokens.strings.res(Res.string.profile)
 
     Column(
         modifier = modifier
@@ -82,6 +90,7 @@ public fun Toolbar(
                 Box(contentAlignment = Alignment.Center) {
                     when (leading) {
                         is Leading.Back -> Button(
+                            modifier = Modifier.semantics { contentDescription = backLabel },
                             content = ButtonContent.Icon(
                                 icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
                             ),
@@ -90,6 +99,7 @@ public fun Toolbar(
                             onClick = leading.onClick,
                         )
                         is Leading.Profile -> Button(
+                            modifier = Modifier.semantics { contentDescription = profileLabel },
                             content = ButtonContent.Icon(
                                 icon = ButtonIcon.Icon(AppTokens.icons.User)
                             ),
@@ -103,6 +113,7 @@ public fun Toolbar(
                 Box(contentAlignment = Alignment.Center) {
                     title?.let {
                         Text(
+                            modifier = Modifier.semantics { heading() },
                             text = it,
                             style = AppTokens.typography.h3(),
                             color = AppTokens.colors.text.primary,
@@ -140,6 +151,30 @@ public fun Toolbar(
         }
 
         content?.invoke(this)
+    }
+}
+
+@AppPreview
+@Composable
+private fun ToolbarActionsPreview() {
+    PreviewContainer {
+        Toolbar(
+            title = "Choose your training equipment",
+            leading = Leading.Back(onClick = {}),
+            trailing = {
+                Button(
+                    modifier = Modifier.semantics { contentDescription = "Profile" },
+                    content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.User)),
+                    style = ButtonStyle.Transparent,
+                    size = ButtonSize.Small,
+                    onClick = {},
+                )
+            },
+        )
+        Toolbar(
+            title = "Home",
+            leading = Leading.Profile(onClick = {}),
+        )
     }
 }
 

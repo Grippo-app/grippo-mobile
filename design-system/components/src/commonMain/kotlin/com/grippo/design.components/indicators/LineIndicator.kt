@@ -16,9 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.grippo.design.components.indicators.internal.LineIndicatorBar
 import com.grippo.design.components.indicators.internal.toStyle
 import com.grippo.design.core.AppTokens
@@ -39,10 +41,14 @@ public fun LineIndicator(
 ) {
     val style = remember(colors) { colors.toStyle() }
     val hasLabels = startLabel != null || endLabel != null
+    val sanitizedProgress = if (progress.isNaN()) 0f else progress.coerceIn(0f, 1f)
+    val progressModifier = modifier.semantics(mergeDescendants = true) {
+        progressBarRangeInfo = ProgressBarRangeInfo(current = sanitizedProgress, range = 0f..1f)
+    }
 
     if (!hasLabels) {
         LineIndicatorBar(
-            modifier = modifier,
+            modifier = progressModifier,
             progress = progress,
             style = style,
             barHeight = barHeight,
@@ -51,7 +57,7 @@ public fun LineIndicator(
         return
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = progressModifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(labelSpacing),
@@ -160,7 +166,7 @@ private fun LineIndicatorPreview() {
             marker = {
                 Text(
                     text = "🏋️",
-                    style = AppTokens.typography.h4().copy(fontSize = 22.sp),
+                    style = AppTokens.typography.h3(),
                 )
             },
         )

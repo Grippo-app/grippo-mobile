@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
@@ -28,11 +29,17 @@ import kotlinx.collections.immutable.toPersistentList
 internal fun ExerciseCardRow(
     modifier: Modifier = Modifier,
     value: ExerciseState,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
 ) {
+    val clickModifier = if (onClick == null) {
+        Modifier
+    } else {
+        Modifier.scalableClick(role = Role.Button, onClick = onClick)
+    }
+
     Row(
         modifier = modifier
-            .scalableClick(onClick = onClick)
+            .then(clickModifier)
             .padding(vertical = AppTokens.dp.contentPadding.subContent),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalAlignment = Alignment.CenterVertically,
@@ -53,12 +60,14 @@ internal fun ExerciseCardRow(
             )
             ExerciseSummary(value = value, modifier = Modifier.fillMaxWidth())
         }
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.exerciseCard.chevron),
-            imageVector = AppTokens.icons.ArrowRight,
-            contentDescription = null,
-            tint = AppTokens.colors.text.tertiary,
-        )
+        if (onClick != null) {
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.exerciseCard.chevron),
+                imageVector = AppTokens.icons.ArrowRight,
+                contentDescription = null,
+                tint = AppTokens.colors.text.tertiary,
+            )
+        }
     }
 }
 

@@ -10,16 +10,18 @@ Checks:
      existing file, and every #anchor matches a heading in the target.
   2. Every .claude/skills/<name>/SKILL.md has frontmatter with name == directory
      and a non-empty description.
-  3. Every .claude/agents/<name>.md has frontmatter with name == file stem, a
-     description, every preloaded skill in `skills:` (string or YAML list) exists,
-     the guard mode is known, and every backticked `.claude/...` path in the body
-     (with {a,b} brace expansion) exists.
+  3. Every .claude/agents/<name>.md has valid identity, model, tool rights,
+     preloaded skills and a canonical PreToolUse Bash guard for its rights.
+     Every backticked `.claude/...` path in the body (with {a,b} brace expansion)
+     exists.
   4. Every agent named in the CLAUDE.md roster table exists as a file, and every
      agent file is listed in the roster.
   5. No `.claude/skills/*/agents/openai.yaml` leftovers and no empty skill dirs.
   6. CLAUDE.md stays a map: at most 400 lines.
 Exit code 1 when any problem is found.
 """
+from fnmatch import fnmatchcase
+import json
 import os
 import re
 import sys
@@ -88,35 +90,143 @@ def check_links():
 
 
 def frontmatter(path):
-    """Minimal YAML reader: scalar `key: value` and `key:` + `  - item` lists."""
+    """Read scalar fields and flat lists; retain the nested hooks block verbatim."""
     with open(path, encoding="utf-8") as f:
         text = f.read()
     if not text.startswith("---\n"):
         return None
-    end = text.find("\n---", 4)
-    if end < 0:
+    match = re.match(r"---\n(.*?)\n---(?:\n|$)", text, flags=re.S)
+    if not match:
         return None
-    block = text[4:end]
     data, current = {}, None
-    for line in block.splitlines():
+    for ln, line in enumerate(match.group(1).splitlines(), 2):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
         m = re.match(r"^([A-Za-z][A-Za-z0-9_-]*):\s*(.*)$", line)
         if m:
             current = m.group(1)
-            data[current] = m.group(2).strip()
+            if current in data:
+                problems.append(f"duplicate frontmatter field: {rel(path)}:{ln} {current}")
+                return None
+            raw = m.group(2).strip()
+            if raw.startswith("#"):
+                raw = ""
+            value = scalar(raw, f"{rel(path)}:{ln}")
+            if value is None:
+                return None
+            data[current] = [] if not raw else value
             continue
-        item = re.match(r"^\s+-\s+(.+)$", line)
-        if item and current and data.get(current, "") in ("", None) or (item and isinstance(data.get(current), list)):
-            if not isinstance(data.get(current), list):
-                data[current] = []
-            data[current].append(item.group(1).strip())
+        if current == "hooks" and isinstance(data[current], list):
+            data[current].append(line)
+            continue
+        item = re.match(r"^  -\s+(.+)$", line)
+        if item and current and isinstance(data[current], list):
+            value = scalar(item.group(1).strip(), f"{rel(path)}:{ln}")
+            if value is None:
+                return None
+            data[current].append(value)
+            continue
+        problems.append(f"unsupported frontmatter syntax: {rel(path)}:{ln}; use scalar fields or two-space lists")
+        return None
     return data
 
 
-def skills_of(fm):
-    value = fm.get("skills", "")
+NON_STRING = object()
+YAML_NON_STRING = re.compile(
+    r"(?:~|null|true|false|yes|no|on|off|[-+]?(?:\.(?:inf|nan)|0x[0-9a-f_]+|0o[0-7_]+|0b[01_]+|"
+    r"[0-9][0-9_]*(?::[0-5]?[0-9])+(?:\.[0-9_]*)?|"
+    r"(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:e[-+]?[0-9_]+)?))", re.I)
+
+
+def scalar(value, where):
+    """Read the supported one-line YAML scalar subset, including trailing comments."""
+    if value.startswith("'"):
+        match = re.fullmatch(r"'((?:[^']|'')*)'(?:[ \t]+#.*)?", value)
+        if match:
+            return match.group(1).replace("''", "'")
+        problems.append(f"invalid single-quoted scalar: {where}; close quotes and double internal apostrophes")
+        return None
+    if value.startswith('"'):
+        try:
+            decoded, end = json.JSONDecoder().raw_decode(value)
+            if value[end:] and not re.fullmatch(r"[ \t]+#.*", value[end:]):
+                raise ValueError("text after closing quote")
+            return decoded
+        except ValueError:
+            problems.append(f"invalid double-quoted scalar: {where}; use JSON-style escapes or YAML single quotes")
+            return None
+    value = re.split(r"(?:^|[ \t]+)#", value, maxsplit=1)[0].rstrip()
+    if re.search(r":(?:\s|$)", value) or re.match(r"[-?](?:\s|$)", value) or value.startswith(("[", "]", "{", "}", ",", "&", "*", "!", "|", ">", "@", "`", "%")):
+        problems.append(f"unsupported plain YAML scalar: {where}; quote text containing YAML syntax")
+        return None
+    if YAML_NON_STRING.fullmatch(value) or re.fullmatch(
+            r"[0-9]{4}-[0-9]{2}-[0-9]{2}(?:(?:[Tt]| +)[0-9]{1,2}:[0-9]{2}:[0-9]{2}"
+            r"(?:\.[0-9]*)?(?: *(?:[Zz]|[-+][0-9]{1,2}(?::[0-9]{2})?))?)?", value):
+        return NON_STRING
+    return value
+
+
+def names_of(fm, key):
+    value = fm.get(key, "")
     if isinstance(value, list):
-        return [v.strip() for v in value if v.strip()]
-    return [x.strip() for x in value.split(",") if x.strip()]
+        return [v.strip() for v in value if v.strip()] if all(isinstance(v, str) for v in value) else []
+    return [x.strip() for x in value.split(",") if x.strip()] if isinstance(value, str) else []
+
+
+WRITE_TOOLS = {"Edit", "Write", "NotebookEdit"}
+VERIFIERS = {"build-verifier", "runtime-verifier"}
+MCP_ALLOWANCES = {
+    "analytics-admin-auditor": ("mcp__claude-in-chrome__*",),
+    "runtime-verifier": ("mcp__Claude_Code_iOS_Simulator__control", "mcp__Claude_Code_iOS_Simulator__build"),
+}
+
+
+def check_agent_rights(path, stem, fm):
+    label = rel(path)
+    if fm.get("model") not in ("inherit", "sonnet"):
+        problems.append(f"agent needs model inherit or sonnet: {label}")
+    tools = set(names_of(fm, "tools"))
+    denied = set(names_of(fm, "disallowedTools"))
+    if not tools or any(not re.fullmatch(r"(?:[A-Za-z][A-Za-z0-9_]*|mcp__[A-Za-z0-9_*-]+)", t) for t in tools):
+        problems.append(f"agent needs a non-empty tool allowlist: {label}")
+    if "Agent" not in denied or "Agent" in tools:
+        problems.append(f"agent must exclude Agent from tools and include it in disallowedTools: {label}")
+    mcp_tools = {t for t in tools if t.startswith("mcp__")}
+    extra_mcp = {t for t in mcp_tools if not any(fnmatchcase(t, p) for p in MCP_ALLOWANCES.get(stem, ()))}
+    if extra_mcp:
+        problems.append(f"agent allows MCP tools outside its role's capabilities: {label}; remove {', '.join(sorted(extra_mcp))}")
+    if (stem not in MCP_ALLOWANCES or not mcp_tools) and "mcp__*" not in denied:
+        problems.append(f"agent without MCP tools must disallow mcp__*: {label}")
+    readonly = stem == "scout" or stem in VERIFIERS or stem.endswith(("-reviewer", "-auditor"))
+    if readonly and (tools & WRITE_TOOLS or not WRITE_TOOLS <= denied):
+        problems.append(f"read-only agent must exclude Edit, Write and NotebookEdit from tools and disallow them: {label}")
+    mode = "readonly-build" if stem in VERIFIERS else "no-git-write" if tools & WRITE_TOOLS and not readonly else "readonly"
+    check_agent_guard(path, fm.get("hooks"), mode)
+
+
+def check_agent_guard(path, lines, mode):
+    expected = f'python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" {mode}'
+    label = rel(path)
+    # Accept the one canonical hook, with YAML quoting and consistent indentation.
+    # Extra keys (async, alternate events, etc.) can change whether the guard runs.
+    patterns = (r" +PreToolUse:(?: +#.*)?", r" +- matcher: (.+)", r" +hooks:(?: +#.*)?", r" +- type: (.+)", r" +command: (.+)")
+    matches = [re.fullmatch(p, line) for p, line in zip(patterns, lines)] if isinstance(lines, list) else []
+    if len(matches) != 5 or len(lines) != 5 or not all(matches):
+        problems.append(f"agent needs one PreToolUse Bash command hook: {label}; command: {expected}")
+        return
+    indent = [len(line) - len(line.lstrip(" ")) for line in lines]
+    if not (indent[1] > indent[0] and indent[2] == indent[1] + 2 and indent[3] > indent[2] and indent[4] == indent[3] + 2):
+        problems.append(f"invalid Bash guard hook indentation: {label}")
+        return
+    matcher = scalar(matches[1].group(1), f"{label} hook matcher")
+    hook_type = scalar(matches[3].group(1), f"{label} hook type")
+    command = scalar(matches[4].group(1), f"{label} hook command")
+    if None in (matcher, hook_type, command):
+        return
+    if matcher != "Bash" or hook_type != "command":
+        problems.append(f"agent guard must match Bash and use type command: {label}")
+    if command != expected:
+        problems.append(f"agent guard must run exact command: {label}; expected: {expected}")
 
 
 BACKTICK_PATH = re.compile(r"`(\.claude/[^`\s]+)`")
@@ -160,8 +270,8 @@ def check_skills():
             continue
         if fm.get("name") != d:
             problems.append(f"skill name mismatch: .claude/skills/{d}/SKILL.md name={fm.get('name')!r}")
-        if not fm.get("description"):
-            problems.append(f"skill without description: .claude/skills/{d}/SKILL.md")
+        if not isinstance(fm.get("description"), str) or not fm["description"].strip():
+            problems.append(f"skill needs a non-empty scalar string description: .claude/skills/{d}/SKILL.md")
         if os.path.exists(os.path.join(full, "agents", "openai.yaml")):
             problems.append(f"stale Codex metadata: .claude/skills/{d}/agents/openai.yaml")
         names.append(d)
@@ -185,14 +295,18 @@ def check_agents(skill_names):
             continue
         if fm.get("name") != stem:
             problems.append(f"agent name mismatch: .claude/agents/{f} name={fm.get('name')!r}")
-        if not fm.get("description"):
-            problems.append(f"agent without description: .claude/agents/{f}")
-        for s in skills_of(fm):
-            if s not in skill_names:
-                problems.append(f"agent preloads unknown skill: .claude/agents/{f} skills={s}")
-        hooks_cmd = re.search(r"bash-guard\.py\" (\w[\w-]*)", open(path, encoding="utf-8").read())
-        if hooks_cmd and hooks_cmd.group(1) not in ("readonly", "readonly-build", "no-git-write"):
-            problems.append(f"agent uses unknown guard mode: .claude/agents/{f} mode={hooks_cmd.group(1)}")
+        if not isinstance(fm.get("description"), str) or not fm["description"].strip():
+            problems.append(f"agent needs a non-empty scalar string description: .claude/agents/{f}")
+        if "skills" in fm:
+            if not isinstance(fm["skills"], list) or not fm["skills"]:
+                problems.append(f"agent skills must be a non-empty two-space YAML list: .claude/agents/{f}")
+            else:
+                for s in fm["skills"]:
+                    if not isinstance(s, str) or not s.strip():
+                        problems.append(f"agent skill name must be a non-empty scalar string: .claude/agents/{f}")
+                    elif s not in skill_names:
+                        problems.append(f"agent preloads unknown skill: .claude/agents/{f} skills={s}")
+        check_agent_rights(path, stem, fm)
         check_backtick_paths(path)
         agents.add(stem)
     return agents
@@ -219,6 +333,8 @@ def check_map_size(limit=400):
 
 
 def main():
+    if not os.path.isfile(os.path.join(ROOT, ".claude/hooks/bash-guard.py")):
+        problems.append("missing guard file: .claude/hooks/bash-guard.py must be a regular file")
     check_links()
     skills = check_skills()
     agents = check_agents(skills)

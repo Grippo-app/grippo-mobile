@@ -8,7 +8,9 @@ Build Grippo UI features using the current source and the topic references below
 Designing, redesigning or visually reviewing product UI MUST apply
 [brand-design](../brand-design/SKILL.md) for intent, composition and brand acceptance,
 with design-system for implementation. This skill retains feature/state/navigation
-ownership. Changes without visual impact do not trigger the brand workflow.
+ownership. Compose source implementation/review applies
+[compose-components](../compose-components/SKILL.md). Changes without visual impact
+do not trigger the brand workflow.
 
 ## When to use
 
@@ -101,8 +103,9 @@ impact assessment defined in [CLAUDE.md](../../../CLAUDE.md#definitions).
    Nonvisual changes assess visual impact and reuse existing previews without
    unrelated preview expansion. Shared model stubs live in ui-core:state; private
    screen-State fixture builders may live beside the feature preview.
-   Screen-specific sub-composables go in a sibling `components/` folder, one per
-   file, entity composables bound to their `*State` as one param.
+   Choose extraction under [Compose structure](../compose-components/references/structure-and-runtime.md#read-from-top-to-bottom)
+   and place extracted feature composables under [feature file layout](references/module-structure.md#file-layout-for-a-feature).
+   Entity composables bind their `*State` as one parameter.
 4. **For a dialog**: no toolbar, `ScreenBackground.Color(...background.dialog)`;
    add a plain `DialogConfig.<Name>` subtype with the required `title: UiText`,
    live typed callbacks, and its typed `hasSameContentAs` branch (compare content,
@@ -180,7 +183,8 @@ and present it as an existing project convention.
 
 ## References to read
 
-The UI mechanics are **self-contained** under `references/`. Feature behavior
+Feature mechanics are routed under `references/`. Shared Compose implementation
+belongs to [compose-components](../compose-components/SKILL.md). Feature behavior
 also requires the canonical [feature-analytics skill](../feature-analytics/SKILL.md).
 Start with `references/index.md` (the routing table); it maps each task-kind to
 the reference file(s) to read.

@@ -52,9 +52,11 @@ swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
 - Existing Check/CheckSelectableCard/ToggleSelectableCard/Toggle variants serve
   selection roles. Inspect their actual size and state contracts; role-to-token
   choices stay in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md).
-- Toggle owns its Switch state/disabled semantics. Use its enabled input for
-  unavailable controls and contentDescription for a label; do not rebuild a
-  feature-specific Material Switch or duplicate state semantics in a consumer.
+- Toggle with a callback owns its Switch state/disabled semantics. Use its enabled
+  input for unavailable controls and contentDescription for a label. Without a
+  callback it is a passive indicator inside a parent that owns the single Switch
+  action and state; do not add a second interactive target or rebuild a
+  feature-specific Material Switch.
 - [Check](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/selectors/Check.kt)
   is the shared circular check for selection. Pass a callback and label for a
   standalone checkbox with its own touch target/semantics. Omit the callback for
@@ -68,10 +70,11 @@ swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
 
 ## Contract and placement gate
 
-Signatures, entity-model parameters, callback/slot stability and visibility follow
-[Compose rules](../../ui-feature/references/compose-rules.md). An annotation cannot
-conceal mutable observable data. Place widgets in the actual matching category and
-preserve existing package layout. [Preview rules](previews.md) own coverage.
+Shared signature, structure, runtime and interaction checks follow
+[compose-components](../../compose-components/SKILL.md); visibility follows
+[code style](../../validation-gates/references/code-style.md). Place widgets in the
+actual matching category and preserve existing package layout.
+[Preview rules](previews.md) own coverage.
 
 Reusable widgets with product token/UI-state semantics belong to design-system.
 Product-independent widgets accept style/data parameters in compose-libs. Use

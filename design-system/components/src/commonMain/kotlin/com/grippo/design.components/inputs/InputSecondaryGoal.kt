@@ -27,7 +27,6 @@ public fun InputSecondaryGoal(
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
-        trailing = { _ -> },
         placeholder = InputPlaceholder.OverInput(
             value = placeholder
         ),

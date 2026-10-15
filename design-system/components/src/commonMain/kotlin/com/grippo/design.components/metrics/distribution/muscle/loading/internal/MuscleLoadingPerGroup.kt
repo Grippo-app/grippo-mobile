@@ -35,7 +35,7 @@ internal fun MuscleLoadingPerGroup(
                 MuscleLoadingItem(
                     entry = colored.entry,
                     label = colored.entry.group.title().text(),
-                    indicatorColors = indicatorColorsForRank(index, entries.size),
+                    indicatorColors = rememberMuscleLoadIndicatorColors(colored.color),
                     dominant = index == 0,
                 )
             }

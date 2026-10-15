@@ -17,8 +17,8 @@ import kotlin.math.roundToInt
 
 @Composable
 public fun TrainingStreakInsightsCard(
-    value: TrainingStreakState,
     modifier: Modifier = Modifier,
+    value: TrainingStreakState,
 ) {
     val confidencePercent = (value.featured.confidence * 100).roundToInt()
 
@@ -48,7 +48,7 @@ public fun TrainingStreakInsightsCard(
 private fun TrainingStreakInsightsCardPreview() {
     PreviewContainer {
         TrainingStreakInsightsCard(
-            value = stubTrainingStreaks().random()
+            value = stubTrainingStreaks().first()
         )
     }
 }

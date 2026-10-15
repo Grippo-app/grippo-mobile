@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TimelineState.Companion.exercise
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
@@ -34,6 +36,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_daily_trainings
 import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.icons.MoreVertical
+import com.grippo.design.resources.provider.menu
 import com.grippo.trainings.factory.timelineStyle
 import com.grippo.trainings.trainings.TrainingsLoader
 import kotlinx.collections.immutable.ImmutableList
@@ -100,6 +103,7 @@ private fun DailyTimelineItem(
         style = style
     ) {
         if (value is TimelineState.DateTime) {
+            val menuLabel = AppTokens.strings.res(Res.string.menu)
             val clickProvider = remember(value.trainingId) {
                 { onTrainingMenuClick(value.trainingId) }
             }
@@ -127,6 +131,7 @@ private fun DailyTimelineItem(
                 Spacer(Modifier.weight(1f))
 
                 Button(
+                    modifier = Modifier.semantics { contentDescription = menuLabel },
                     content = ButtonContent.Icon(
                         icon = ButtonIcon.Icon(AppTokens.icons.MoreVertical),
                     ),

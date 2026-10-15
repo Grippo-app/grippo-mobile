@@ -1,12 +1,14 @@
 package com.grippo.home.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -52,10 +53,19 @@ internal fun HomeUnlockBanner(
 
     val isNewUser = lifetimeCount < HomeUnlock.NEW_USER_THRESHOLD
     val showGoalSection = !hasGoal
+    val panel = AppTokens.dp.metrics.panel
+    val shape = RoundedCornerShape(panel.large.radius)
 
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(AppTokens.colors.background.card, shape)
+            .border(panel.borderWidth, AppTokens.colors.border.default, shape)
+            .padding(
+                horizontal = panel.large.horizontalPadding,
+                vertical = panel.large.verticalPadding,
+            ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
         if (isNewUser) {
             LifetimeStatsRow(
@@ -78,7 +88,7 @@ internal fun HomeUnlockBanner(
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = BannerCardStyle.Custom(
-                    tint = AppTokens.colors.text.tertiary,
+                    tint = AppTokens.colors.icon.secondary,
                     surface = AppTokens.colors.bannerCard.mutedBackground,
                 ),
                 icon = AppTokens.icons.Lock,
@@ -110,7 +120,7 @@ private fun MilestoneCard(
     BannerCard(
         modifier = modifier.fillMaxWidth(),
         style = BannerCardStyle.Custom(
-            tint = AppTokens.colors.text.tertiary,
+            tint = AppTokens.colors.icon.secondary,
             surface = AppTokens.colors.bannerCard.mutedBackground,
         ),
         icon = icon,
@@ -128,10 +138,8 @@ private fun MilestoneCard(
                         vertical = AppTokens.dp.contentPadding.text,
                     ),
                 text = progressLabel,
-                style = AppTokens.typography.b11Semi(),
-                color = AppTokens.colors.text.tertiary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
             )
         },
     )
@@ -187,16 +195,12 @@ private fun StatsCell(
             text = value,
             style = AppTokens.typography.h5(),
             color = valueColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
         Text(
             text = label,
             style = AppTokens.typography.b11Med(),
             color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
     }
@@ -245,8 +249,6 @@ private fun HomeUnlockBannerNewUserPreview() {
     }
 }
 
-// Verifies `filterNot { isUnlocked }` hides DurationTrend once it's unlocked,
-// keeping only the still-locked PerformanceTrends milestone.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerDurationUnlockedPreview() {
@@ -295,8 +297,6 @@ private fun HomeUnlockBannerNewUserHasGoalPreview() {
     }
 }
 
-// Layout stress test: large numbers exercise `short()` compaction,
-// multi-hour duration display, and ellipsis.
 @AppPreview
 @Composable
 private fun HomeUnlockBannerHighVolumePreview() {

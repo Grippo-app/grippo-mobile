@@ -12,7 +12,8 @@ and a proposed commit message; commits happen only when the user asks.
 
 - Subagents never run `git add`, `commit`, `push`, `reset`, `checkout`,
   `stash`, `rebase`, `merge`, `tag` or branch creation, and never open or edit
-  pull requests. The Bash guard enforces this for project agents.
+  pull requests. Apply role protection through
+  [agent runtimes](../task-orchestrator/references/agent-runtimes.md).
 - The main session commits, pushes, branches or opens a pull request only on
   the user's explicit request in the current conversation ("закоммить",
   "запушь", "сделай PR"). A request to implement something is not a request to
@@ -26,10 +27,15 @@ and a proposed commit message; commits happen only when the user asks.
 1. Run the checks the verification policy requires for the change (rulebook
    checker for documentation, scoped build for code) if they have not run on
    the final revision.
-2. Read `git status --short` and `git diff --stat`. The working tree often holds
-   the user's unrelated, uncommitted work: stage only the files of the task.
-   When task files and unrelated edits are mixed inside one file, say so and
-   ask which hunks to include instead of committing both.
+2. Read `git status --short`, the staged diff and the task-only delta established
+   by [change attribution](../task-orchestrator/references/change-attribution.md).
+   Stage only the requested task's actual delta. Separate hunks in a pre-dirty
+   file may be staged selectively without another question; verify their staged
+   content against the baseline. When initial and task edits are inseparable,
+   ask which changes to include before staging that overlap. Existing staged
+   user work is not automatically part of the requested commit: preserve it and
+   exclude it unless the user includes it. If the available commit mechanism
+   cannot do both, ask before changing the user's staging or committing it.
 3. Never stage `secure/**` contents, `local.properties`, `build/` outputs,
    `.claude/settings.local.json`, IDE files or generated binaries. Room schema
    JSON under `data-services/database/schemas/` is intentionally tracked and is
@@ -72,5 +78,7 @@ Finish the reply with a proposed commit message in a fenced block:
 <why / what / checks>
 ```
 
-and the list of files to stage. If the working tree mixes the task with
-unrelated changes, name the unrelated files so the user can keep them apart.
+and the list of files with task changes. Mark pre-dirty files as requiring
+selective staging; do not recommend staging their full contents. Name relevant
+initial changes separately using the baseline, without attributing them to the
+task.

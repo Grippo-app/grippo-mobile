@@ -68,113 +68,101 @@ internal fun resolveTooltipColors(variant: TooltipVariant): TooltipColorTokens {
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Unified bubble + arrow GenericShape
-//
-// Single continuous path: rounded rect + directional arrow.
-// Border and fill share the same shape — no seam, no gap.
-//
-//  aD  = arrow depth  (protrusion from the edge, px)
-//  aHB = half arrow base (px)
-//  r   = corner radius (px)
-// ─────────────────────────────────────────────────────────────
-
 internal fun tooltipShape(
     placement: TooltipPlacement,
     arrowDepthPx: Float,
     arrowBasePx: Float,
     cornerRadiusPx: Float,
-): GenericShape = GenericShape { size, _ ->
-    val w = size.width
-    val h = size.height
-    val aD = arrowDepthPx
-    val aHB = arrowBasePx / 2f
-    val r = cornerRadiusPx
-    val cx = w / 2f
-    val cy = h / 2f
+    arrowPositionPx: Float? = null,
+): GenericShape = GenericShape { size, layoutDirection ->
+    val width = size.width
+    val height = size.height
+    val absolutePlacement = placement.toAbsolute(layoutDirection)
+    val isVertical = absolutePlacement == TooltipPlacement.Top ||
+        absolutePlacement == TooltipPlacement.Bottom
+    val arrowDepth = arrowDepthPx.coerceIn(0f, if (isVertical) height else width)
+    val bodyWidth = if (isVertical) width else width - arrowDepth
+    val bodyHeight = if (isVertical) height - arrowDepth else height
+    val radius = cornerRadiusPx.coerceIn(0f, minOf(bodyWidth, bodyHeight) / 2f)
+    val edgeLength = if (isVertical) width else height
+    val halfArrowBase = (arrowBasePx / 2f).coerceIn(0f, (edgeLength / 2f - radius).coerceAtLeast(0f))
+    val edgeInset = radius + halfArrowBase
+    val arrowCenter = (arrowPositionPx ?: edgeLength / 2f).coerceIn(edgeInset, edgeLength - edgeInset)
 
-    when (placement) {
-        // Arrow at bottom, tip pointing DOWN
+    when (absolutePlacement) {
         TooltipPlacement.Top -> {
-            val bH = h - aD
-            moveTo(r, 0f)
-            lineTo(w - r, 0f)
-            arcTo(Rect(w - 2 * r, 0f, w, 2 * r), -90f, 90f, false)
-            lineTo(w, bH - r)
-            arcTo(Rect(w - 2 * r, bH - 2 * r, w, bH), 0f, 90f, false)
-            lineTo(cx + aHB, bH)
-            lineTo(cx, h)
-            lineTo(cx - aHB, bH)
-            lineTo(r, bH)
-            arcTo(Rect(0f, bH - 2 * r, 2 * r, bH), 90f, 90f, false)
-            lineTo(0f, r)
-            arcTo(Rect(0f, 0f, 2 * r, 2 * r), 180f, 90f, false)
+            val bodyBottom = height - arrowDepth
+            moveTo(radius, 0f)
+            lineTo(width - radius, 0f)
+            arcTo(Rect(width - 2 * radius, 0f, width, 2 * radius), -90f, 90f, false)
+            lineTo(width, bodyBottom - radius)
+            arcTo(Rect(width - 2 * radius, bodyBottom - 2 * radius, width, bodyBottom), 0f, 90f, false)
+            lineTo(arrowCenter + halfArrowBase, bodyBottom)
+            lineTo(arrowCenter, height)
+            lineTo(arrowCenter - halfArrowBase, bodyBottom)
+            lineTo(radius, bodyBottom)
+            arcTo(Rect(0f, bodyBottom - 2 * radius, 2 * radius, bodyBottom), 90f, 90f, false)
+            lineTo(0f, radius)
+            arcTo(Rect(0f, 0f, 2 * radius, 2 * radius), 180f, 90f, false)
             close()
         }
 
-        // Arrow at top, tip pointing UP
         TooltipPlacement.Bottom -> {
-            val bY = aD
-            moveTo(cx - aHB, bY)
-            lineTo(cx, 0f)
-            lineTo(cx + aHB, bY)
-            lineTo(w - r, bY)
-            arcTo(Rect(w - 2 * r, bY, w, bY + 2 * r), -90f, 90f, false)
-            lineTo(w, h - r)
-            arcTo(Rect(w - 2 * r, h - 2 * r, w, h), 0f, 90f, false)
-            lineTo(r, h)
-            arcTo(Rect(0f, h - 2 * r, 2 * r, h), 90f, 90f, false)
-            lineTo(0f, bY + r)
-            arcTo(Rect(0f, bY, 2 * r, bY + 2 * r), 180f, 90f, false)
+            val bodyTop = arrowDepth
+            moveTo(arrowCenter - halfArrowBase, bodyTop)
+            lineTo(arrowCenter, 0f)
+            lineTo(arrowCenter + halfArrowBase, bodyTop)
+            lineTo(width - radius, bodyTop)
+            arcTo(Rect(width - 2 * radius, bodyTop, width, bodyTop + 2 * radius), -90f, 90f, false)
+            lineTo(width, height - radius)
+            arcTo(Rect(width - 2 * radius, height - 2 * radius, width, height), 0f, 90f, false)
+            lineTo(radius, height)
+            arcTo(Rect(0f, height - 2 * radius, 2 * radius, height), 90f, 90f, false)
+            lineTo(0f, bodyTop + radius)
+            arcTo(Rect(0f, bodyTop, 2 * radius, bodyTop + 2 * radius), 180f, 90f, false)
             close()
         }
 
-        // Arrow at right, tip pointing RIGHT
         TooltipPlacement.Start -> {
-            val bW = w - aD
-            moveTo(r, 0f)
-            lineTo(bW - r, 0f)
-            arcTo(Rect(bW - 2 * r, 0f, bW, 2 * r), -90f, 90f, false)
-            lineTo(bW, cy - aHB)
-            lineTo(w, cy)
-            lineTo(bW, cy + aHB)
-            lineTo(bW, h - r)
-            arcTo(Rect(bW - 2 * r, h - 2 * r, bW, h), 0f, 90f, false)
-            lineTo(r, h)
-            arcTo(Rect(0f, h - 2 * r, 2 * r, h), 90f, 90f, false)
-            lineTo(0f, r)
-            arcTo(Rect(0f, 0f, 2 * r, 2 * r), 180f, 90f, false)
+            val bodyRight = width - arrowDepth
+            moveTo(radius, 0f)
+            lineTo(bodyRight - radius, 0f)
+            arcTo(Rect(bodyRight - 2 * radius, 0f, bodyRight, 2 * radius), -90f, 90f, false)
+            lineTo(bodyRight, arrowCenter - halfArrowBase)
+            lineTo(width, arrowCenter)
+            lineTo(bodyRight, arrowCenter + halfArrowBase)
+            lineTo(bodyRight, height - radius)
+            arcTo(Rect(bodyRight - 2 * radius, height - 2 * radius, bodyRight, height), 0f, 90f, false)
+            lineTo(radius, height)
+            arcTo(Rect(0f, height - 2 * radius, 2 * radius, height), 90f, 90f, false)
+            lineTo(0f, radius)
+            arcTo(Rect(0f, 0f, 2 * radius, 2 * radius), 180f, 90f, false)
             close()
         }
 
-        // Arrow at left, tip pointing LEFT
         TooltipPlacement.End -> {
-            val bX = aD
-            moveTo(bX + r, 0f)
-            lineTo(w - r, 0f)
-            arcTo(Rect(w - 2 * r, 0f, w, 2 * r), -90f, 90f, false)
-            lineTo(w, h - r)
-            arcTo(Rect(w - 2 * r, h - 2 * r, w, h), 0f, 90f, false)
-            lineTo(bX + r, h)
-            arcTo(Rect(bX, h - 2 * r, bX + 2 * r, h), 90f, 90f, false)
-            lineTo(bX, cy + aHB)
-            lineTo(0f, cy)
-            lineTo(bX, cy - aHB)
-            lineTo(bX, r)
-            arcTo(Rect(bX, 0f, bX + 2 * r, 2 * r), 180f, 90f, false)
+            val bodyLeft = arrowDepth
+            moveTo(bodyLeft + radius, 0f)
+            lineTo(width - radius, 0f)
+            arcTo(Rect(width - 2 * radius, 0f, width, 2 * radius), -90f, 90f, false)
+            lineTo(width, height - radius)
+            arcTo(Rect(width - 2 * radius, height - 2 * radius, width, height), 0f, 90f, false)
+            lineTo(bodyLeft + radius, height)
+            arcTo(Rect(bodyLeft, height - 2 * radius, bodyLeft + 2 * radius, height), 90f, 90f, false)
+            lineTo(bodyLeft, arrowCenter + halfArrowBase)
+            lineTo(0f, arrowCenter)
+            lineTo(bodyLeft, arrowCenter - halfArrowBase)
+            lineTo(bodyLeft, radius)
+            arcTo(Rect(bodyLeft, 0f, bodyLeft + 2 * radius, 2 * radius), 180f, 90f, false)
             close()
         }
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Popup position provider
-//
-// Positions the tooltip popup relative to the anchor, with
-// a small gap offset so the arrow tip touches the anchor edge.
-// ─────────────────────────────────────────────────────────────
-
-internal fun tooltipPositionProvider(placement: TooltipPlacement): PopupPositionProvider =
+internal fun tooltipPositionProvider(
+    placement: TooltipPlacement,
+    onArrowPositionResolved: (Float) -> Unit,
+): PopupPositionProvider =
     object : PopupPositionProvider {
         override fun calculatePosition(
             anchorBounds: IntRect,
@@ -182,40 +170,51 @@ internal fun tooltipPositionProvider(placement: TooltipPlacement): PopupPosition
             layoutDirection: LayoutDirection,
             popupContentSize: IntSize,
         ): IntOffset {
-            val cx = anchorBounds.left + anchorBounds.width / 2
-            val cy = anchorBounds.top + anchorBounds.height / 2
-            return when (placement) {
+            val centerX = anchorBounds.left + anchorBounds.width / 2
+            val centerY = anchorBounds.top + anchorBounds.height / 2
+            val desiredPosition = when (placement.toAbsolute(layoutDirection)) {
                 TooltipPlacement.Top -> IntOffset(
-                    x = (cx - popupContentSize.width / 2).coerceIn(
-                        0,
-                        windowSize.width - popupContentSize.width
-                    ),
+                    x = centerX - popupContentSize.width / 2,
                     y = anchorBounds.top - popupContentSize.height,
                 )
-
                 TooltipPlacement.Bottom -> IntOffset(
-                    x = (cx - popupContentSize.width / 2).coerceIn(
-                        0,
-                        windowSize.width - popupContentSize.width
-                    ),
+                    x = centerX - popupContentSize.width / 2,
                     y = anchorBounds.bottom,
                 )
-
                 TooltipPlacement.Start -> IntOffset(
                     x = anchorBounds.left - popupContentSize.width,
-                    y = (cy - popupContentSize.height / 2).coerceIn(
-                        0,
-                        windowSize.height - popupContentSize.height
-                    ),
+                    y = centerY - popupContentSize.height / 2,
                 )
-
                 TooltipPlacement.End -> IntOffset(
                     x = anchorBounds.right,
-                    y = (cy - popupContentSize.height / 2).coerceIn(
-                        0,
-                        windowSize.height - popupContentSize.height
-                    ),
+                    y = centerY - popupContentSize.height / 2,
                 )
             }
+            val maxX = (windowSize.width - popupContentSize.width).coerceAtLeast(0)
+            val maxY = (windowSize.height - popupContentSize.height).coerceAtLeast(0)
+            val position = IntOffset(
+                x = desiredPosition.x.coerceIn(0, maxX),
+                y = desiredPosition.y.coerceIn(0, maxY),
+            )
+            val arrowPosition = when (placement) {
+                TooltipPlacement.Top, TooltipPlacement.Bottom ->
+                    anchorBounds.left + anchorBounds.width / 2f - position.x
+                TooltipPlacement.Start, TooltipPlacement.End ->
+                    anchorBounds.top + anchorBounds.height / 2f - position.y
+            }
+            onArrowPositionResolved(arrowPosition)
+            return position
         }
     }
+
+private fun TooltipPlacement.toAbsolute(layoutDirection: LayoutDirection): TooltipPlacement {
+    return if (layoutDirection == LayoutDirection.Rtl) {
+        when (this) {
+            TooltipPlacement.Start -> TooltipPlacement.End
+            TooltipPlacement.End -> TooltipPlacement.Start
+            TooltipPlacement.Top, TooltipPlacement.Bottom -> this
+        }
+    } else {
+        this
+    }
+}

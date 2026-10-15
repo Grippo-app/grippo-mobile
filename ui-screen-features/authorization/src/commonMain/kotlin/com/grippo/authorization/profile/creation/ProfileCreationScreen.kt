@@ -14,15 +14,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesContract
+import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesScreen
+import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesState
+import com.grippo.authorization.profile.creation.experience.ExperienceContract
+import com.grippo.authorization.profile.creation.experience.ExperienceScreen
+import com.grippo.authorization.profile.creation.experience.ExperienceState
+import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsContract
+import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsScreen
+import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsState
 import com.grippo.authorization.profile.creation.user.UserContract
 import com.grippo.authorization.profile.creation.user.UserScreen
 import com.grippo.authorization.profile.creation.user.UserState
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.foundation.platform.platformAnimation
+import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.muscles.stubMuscleGroup
+import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.design.components.indicators.StepProgressIndicator
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -106,6 +118,73 @@ private fun ProfileCreationUserPreview() {
                 modifier = Modifier.align(Alignment.TopCenter),
                 stepCount = PROFILE_CREATION_FLOW.size - 1,
                 currentStep = 0,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileCreationExperiencePreview() {
+    PreviewContainer {
+        Box(modifier = Modifier.fillMaxSize()) {
+            ExperienceScreen(
+                state = ExperienceState(selected = ExperienceEnumState.INTERMEDIATE),
+                loaders = persistentSetOf(),
+                contract = ExperienceContract.Empty,
+            )
+            ProfileCreationProgress(
+                modifier = Modifier.align(Alignment.TopCenter),
+                stepCount = PROFILE_CREATION_FLOW.size - 1,
+                currentStep = 1,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileCreationMusclesPreview() {
+    PreviewContainer {
+        val groups = stubMuscleGroup()
+        Box(modifier = Modifier.fillMaxSize()) {
+            ExcludedMusclesScreen(
+                state = ExcludedMusclesState(
+                    suggestions = groups,
+                    selectedGroupId = groups.first().id,
+                    selectedMuscleIds = persistentListOf(groups.first().muscles.first().value.id),
+                ),
+                loaders = persistentSetOf(),
+                contract = ExcludedMusclesContract.Empty,
+            )
+            ProfileCreationProgress(
+                modifier = Modifier.align(Alignment.TopCenter),
+                stepCount = PROFILE_CREATION_FLOW.size - 1,
+                currentStep = 2,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileCreationEquipmentsPreview() {
+    PreviewContainer {
+        val groups = stubEquipments()
+        Box(modifier = Modifier.fillMaxSize()) {
+            MissingEquipmentsScreen(
+                state = MissingEquipmentsState(
+                    suggestions = groups,
+                    selectedGroupId = groups.first().id,
+                    selectedEquipmentIds = persistentListOf(groups.first().equipments.first().id),
+                ),
+                loaders = persistentSetOf(),
+                contract = MissingEquipmentsContract.Empty,
+            )
+            ProfileCreationProgress(
+                modifier = Modifier.align(Alignment.TopCenter),
+                stepCount = PROFILE_CREATION_FLOW.size - 1,
+                currentStep = 3,
             )
         }
     }

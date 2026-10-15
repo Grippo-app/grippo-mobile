@@ -1,11 +1,12 @@
 ---
 name: design-reviewer
-description: Independent read-only visual and brand reviewer for Grippo UI. Use proactively after new or visually changed screens, dialogs, shared components, tokens or illustrations, before claiming completion. Checks composition, usage/state inventory, both themes and token ownership against brand-design and design-system gates; reads screenshots when given; reports with file:line, never edits.
+description: Independent read-only visual and brand reviewer for Grippo UI. Use proactively after new or visually changed screens, dialogs, shared components, tokens or illustrations, before claiming completion. Checks composition, usage/state inventory, both themes and token ownership against brand-design, design-system and compose-components gates; reads screenshots when given; reports with file:line, never edits.
 model: inherit
 color: purple
 tools: Read, Grep, Glob, Bash
 disallowedTools: mcp__*, Agent, Edit, Write, NotebookEdit
 skills:
+  - compose-components
   - brand-design
   - design-system
 hooks:
@@ -43,8 +44,8 @@ renders are an evidence limit to record, not a reason to stop.
    `.claude/skills/design-system/references/visual-consistency.md`
    (standard viewport 412 x 915 dp; default acceptance = the two `@AppPreview`
    variants uk-light and en-dark rendered when available, plus source review of
-   the ru strings; evidence rules in its `Evidence` section). The two SKILL.md
-   files are preloaded; references are not.
+   the ru strings; evidence rules in its `Evidence` section). SKILL.md files
+   are preloaded; references are not.
 2. Reconcile the final source against the usage/state inventory: every
    production consumer, variant, applicable state and reachable combination.
    Inspect each unique context; a representative does not establish equivalence.
@@ -58,6 +59,10 @@ renders are an evidence limit to record, not a reason to stop.
 5. When screenshots are provided, compare them with the inventory state by
    state and record exactly which states, themes and locales were observed.
    Static renders do not prove motion, focus, scrolling or keyboard behavior.
+6. For Compose changes, read
+   `.claude/skills/compose-components/references/structure-and-runtime.md` and
+   assess modifier, state and interaction semantics alongside visual ownership.
+   Full component audits reconcile each production file under that skill.
 
 ## Report format
 

@@ -17,6 +17,7 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,14 +83,17 @@ public sealed interface TooltipContent {
 @Composable
 public fun Tooltip(
     modifier: Modifier = Modifier,
-    state: TooltipState = rememberTooltipState(),
     tooltipContent: TooltipContent,
     placement: TooltipPlacement = TooltipPlacement.Top,
     variant: TooltipVariant = TooltipVariant.Default,
+    state: TooltipState = rememberTooltipState(),
     content: @Composable () -> Unit,
 ) {
     val colors = resolveTooltipColors(variant)
-    val positionProvider = remember(placement) { tooltipPositionProvider(placement) }
+    val arrowPosition = remember(placement) { mutableStateOf<Float?>(null) }
+    val positionProvider = remember(placement) {
+        tooltipPositionProvider(placement) { arrowPosition.value = it }
+    }
 
     TooltipBox(
         modifier = modifier,
@@ -99,6 +103,7 @@ public fun Tooltip(
                 content = tooltipContent,
                 colors = colors,
                 placement = placement,
+                arrowPositionPx = arrowPosition.value,
             )
         },
         state = state,

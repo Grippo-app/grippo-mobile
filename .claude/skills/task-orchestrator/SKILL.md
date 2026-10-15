@@ -12,10 +12,9 @@ live in `.claude/agents/`; the roster is in
 
 ## Execution loop
 
-1. **Start from the prepared scope** ([task-prep](../task-prep/SKILL.md)). Run
-   `git status --short`; the working tree usually holds the user's unrelated,
-   uncommitted work - preserve it, never reset or revert it. Read the owning
-   skills of the slices you will touch.
+1. **Start from the prepared scope** ([task-prep](../task-prep/SKILL.md)). Capture
+   the initial working state under [change attribution](references/change-attribution.md)
+   before editing, and read the owning skills of the slices you will touch.
 2. **Implement the smallest coherent slice** that meets a concrete acceptance
    outcome, yourself or through an implementer agent (rules below). Update every
    necessary caller inside the authorized scope; never leave a broken caller for
@@ -23,7 +22,8 @@ live in `.claude/agents/`; the roster is in
    `backend-contract-auditor` before a wire change; the usage/state inventory
    before a shared visual change; the admin-sync access attempt early for
    analytics work so a missing browser tab is requested while source work continues.
-3. **Self-review the diff** for correctness, simplicity, boundaries, privacy,
+3. **Self-review the task delta against the baseline** and its source context
+   for correctness, simplicity, boundaries, privacy,
    lifecycle and cancellation against the owning skill's completion gate,
    [forbidden patterns](../validation-gates/references/forbidden-patterns.md) and
    [code style](../validation-gates/references/code-style.md). Fix what you find.
@@ -45,7 +45,9 @@ live in `.claude/agents/`; the roster is in
    redefine a failure as a pass.
 6. **Checks.** Run the default build rule from the
    [verification policy](../../../CLAUDE.md#verification-policy) through
-   `build-verifier` (a single-module compile may run directly); run runtime
+   `build-verifier` (a single-module compile may run directly), using the
+   [unavailable-delegation fallback](references/agent-runtimes.md#unavailable-delegation)
+   when needed; run runtime
    scenarios through `runtime-verifier`
    when the user allows the app to run. If fixes changed checked code, repeat only
    the affected checks. Update the [records](../../../CLAUDE.md#records) the task
@@ -69,28 +71,21 @@ live in `.claude/agents/`; the roster is in
   slice, by default the main session: `screen-api` routers, `shared/.../Koin.kt`,
   `shared/build.gradle.kts`, `settings.gradle.kts`, `DialogConfig`,
   `DialogContentComponent`, `strings.xml`, `CONSISTENCY.md`.
-- Subagents never commit, never expand scope, never delegate further, never
-  change infrastructure outside their brief. The Bash guard enforces the git
-  and build limits; the brief enforces the rest.
-- Built-in `Explore`/`Plan` agents may do read-only research; they are not
-  independent reviewers because they load no project gates.
-- Agents start with a fresh context: the brief must carry everything they need.
-  Briefs are written in English (the agents' working language); replies to the
-  user follow the final response format.
+- Launch roles and apply their rights through
+  [agent runtimes](references/agent-runtimes.md), for both Claude Code and Codex.
+  Briefs are written in English; replies to the user follow the final response
+  format. Include everything the role needs regardless of context inheritance.
 - Linked sessions count as writers: a file another session is editing is
   off-limits until that session reports it done; coordinate by message, never
   by editing the same file.
-- Agents are loaded at session start. If a roster agent is not available in the
-  current session (it was just added or changed), report independent review as
-  unperformed and ask the user to start a new session; a `general-purpose` agent
-  loads no project gates and has no guard, so it does not count as independent
-  review. Never report an independent review that did not happen.
 
 ### Brief template
 
 ```
 Outcome and acceptance criteria: ...
 Owned paths (edit only these): ...
+Role definition and runtime capabilities/protection: ...
+Baseline location, initial user changes and task-only delta: ...
 Prerequisites available: contracts / evidence / inventory / decisions ...
 Gates that must pass: analytics (screens, callbacks), preservation (fields), visual (states), backend evidence ...
 Build authorized: :androidApp:assembleDebug [+ XCFramework] / none
@@ -101,7 +96,7 @@ Required additions per agent (each definition's "Inputs you must receive"):
 
 | Agent | Add to the brief |
 |---|---|
-| `code-reviewer` | request, diff command, decisions taken, checks run with results, owning skills |
+| `code-reviewer` | request, task delta against baseline, decisions taken, checks run with results, owning skills |
 | `gate-auditor` | feature(s), changed files, new vs existing feature, the author's claims per slice (visual-only / no state impact) |
 | `design-reviewer` | visual intent or supplied design, usage/state inventory, accepted departures, renders (path, theme, locale, viewport) |
 | `backend-contract-auditor` | operations/schemas, evidence location and revision, mobile files involved |

@@ -1,33 +1,28 @@
 package com.grippo.home.home.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.core.state.profile.UserState
-import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.modifiers.illustrationBackground
-import com.grippo.design.components.user.UserCard
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
 import com.grippo.design.components.welcome.WelcomeChecklistItem
@@ -134,25 +129,8 @@ private fun WelcomeBody(
     ) {
         item("hero") {
             HeroBlock(
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        item("user-card") {
-            UserCard(
                 modifier = Modifier.fillMaxWidth(),
-                value = user,
-            )
-        }
-
-        item("welcome-block") {
-            WelcomeBlock(
-                modifier = Modifier.fillMaxWidth(),
-                experience = experience,
-                heightDisplay = user.height.display,
-                weightDisplay = user.weight.display,
-                excludedMusclesCount = excludedMusclesCount,
-                missingEquipmentCount = missingEquipmentCount,
+                user = user,
             )
         }
 
@@ -174,6 +152,17 @@ private fun WelcomeBody(
             }
         }
 
+        item("welcome-block") {
+            WelcomeBlock(
+                modifier = Modifier.fillMaxWidth(),
+                experience = experience,
+                heightDisplay = user.height.display,
+                weightDisplay = user.weight.display,
+                excludedMusclesCount = excludedMusclesCount,
+                missingEquipmentCount = missingEquipmentCount,
+            )
+        }
+
         item("benefits") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -185,22 +174,15 @@ private fun WelcomeBody(
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                 )
-                val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
                 Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .background(AppTokens.colors.background.card, shape)
-                        .border(AppTokens.dp.welcome.card.borderWidth, AppTokens.colors.border.default, shape)
-                        .padding(
-                            horizontal = AppTokens.dp.welcome.card.horizontalPadding,
-                            vertical = AppTokens.dp.welcome.card.verticalPadding,
-                        ),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
                 ) {
                     BannerCard(
                         modifier = Modifier.fillMaxWidth(),
                         style = BannerCardStyle.Custom(
-                            tint = AppTokens.colors.illustration.accent,
-                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                            tint = AppTokens.colors.icon.secondary,
+                            surface = AppTokens.colors.bannerCard.mutedBackground,
                         ),
                         icon = AppTokens.icons.Sparkle,
                         title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
@@ -210,8 +192,8 @@ private fun WelcomeBody(
                     BannerCard(
                         modifier = Modifier.fillMaxWidth(),
                         style = BannerCardStyle.Custom(
-                            tint = AppTokens.colors.illustration.accent,
-                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                            tint = AppTokens.colors.icon.secondary,
+                            surface = AppTokens.colors.bannerCard.mutedBackground,
                         ),
                         icon = AppTokens.icons.LineUp,
                         title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
@@ -221,8 +203,8 @@ private fun WelcomeBody(
                     BannerCard(
                         modifier = Modifier.fillMaxWidth(),
                         style = BannerCardStyle.Custom(
-                            tint = AppTokens.colors.illustration.accent,
-                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                            tint = AppTokens.colors.icon.secondary,
+                            surface = AppTokens.colors.bannerCard.mutedBackground,
                         ),
                         icon = AppTokens.icons.Stack,
                         title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
@@ -232,8 +214,8 @@ private fun WelcomeBody(
                     BannerCard(
                         modifier = Modifier.fillMaxWidth(),
                         style = BannerCardStyle.Custom(
-                            tint = AppTokens.colors.illustration.accent,
-                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                            tint = AppTokens.colors.icon.secondary,
+                            surface = AppTokens.colors.bannerCard.mutedBackground,
                         ),
                         icon = if (hasGoal) AppTokens.icons.Medal else AppTokens.icons.Lock,
                         title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
@@ -248,51 +230,59 @@ private fun WelcomeBody(
 
 @Composable
 private fun HeroBlock(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    user: UserState,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
     Column(
         modifier = modifier
             .illustrationBackground(shape)
             .padding(AppTokens.dp.contentPadding.block),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        Illustration(
-            modifier = Modifier
-                .fillMaxWidth(),
-            painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
-            style = IllustrationStyle.Large,
-        )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.welcome_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
+            text = user.name,
+            style = AppTokens.typography.b14Semi(),
+            color = AppTokens.colors.text.secondary,
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = AppTokens.strings.res(Res.string.welcome_title),
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary,
+            )
+
+            Illustration(
+                modifier = Modifier.width(AppTokens.dp.illustration.compact),
+                painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+                style = IllustrationStyle.Compact,
+            )
+        }
 
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.welcome_subtitle),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun WelcomeHomeContentPreview() {
+private fun WelcomeHomeContentWithGoalPreview() {
+    val user = requireNotNull(homePreviewState(lifetimeTrainingCount = 0).user)
     PreviewContainer {
         WelcomeHomeContent(
             modifier = Modifier.fillMaxSize(),
-            user = stubUser(),
+            user = user.copy(experience = ExperienceEnumState.PRO),
             experience = ExperienceEnumState.PRO,
             excludedMusclesCount = 3,
             missingEquipmentCount = 5,
@@ -306,10 +296,11 @@ private fun WelcomeHomeContentPreview() {
 @AppPreview
 @Composable
 private fun WelcomeHomeContentWithoutGoalPreview() {
+    val user = requireNotNull(homePreviewState(lifetimeTrainingCount = 0, hasGoal = false).user)
     PreviewContainer {
         WelcomeHomeContent(
             modifier = Modifier.fillMaxSize(),
-            user = stubUser().copy(experience = ExperienceEnumState.BEGINNER),
+            user = user.copy(experience = ExperienceEnumState.BEGINNER),
             experience = ExperienceEnumState.BEGINNER,
             excludedMusclesCount = 0,
             missingEquipmentCount = 0,
@@ -323,10 +314,11 @@ private fun WelcomeHomeContentWithoutGoalPreview() {
 @AppPreview
 @Composable
 private fun WelcomeHomeContentCelebrationPreview() {
+    val user = requireNotNull(homePreviewState(lifetimeTrainingCount = 0, hasGoal = false).user)
     PreviewContainer {
         WelcomeHomeContent(
             modifier = Modifier.fillMaxSize(),
-            user = stubUser(),
+            user = user.copy(experience = ExperienceEnumState.BEGINNER),
             experience = ExperienceEnumState.BEGINNER,
             excludedMusclesCount = 0,
             missingEquipmentCount = 0,

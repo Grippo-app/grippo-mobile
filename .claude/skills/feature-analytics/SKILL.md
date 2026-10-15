@@ -13,12 +13,17 @@ to every analytics task: instrumentation, setup, reports and audits. A visual-on
 change (same definitions) needs an impact assessment instead of new events: one
 sentence naming the analytics-facing symbols checked (the list and a worked
 example are owned by [live admin synchronization](references/admin-sync.md#trigger-and-access-gate-must)).
-The affected scope of a change to an existing feature is the set of screens
-whose seven MVI files or router entries appear in the diff, plus their container.
+For an existing feature, establish the affected scope from behavior impact and
+actual callers. Start with changed screens/routes, then trace changed shared
+inputs, formatters, components and domain operations to the consuming screens,
+containers and callbacks whose data, eligibility or observed facts change. Include
+those consumers even when their seven MVI files and router entries are absent
+from the diff. Bound the inventory with caller evidence; sharing a dependency
+alone does not make every screen affected.
 Read the current analytics contracts and the affected feature's
 `analytics/<feature>/COVERAGE.md` ([records](../../../CLAUDE.md#records)). For UI
 wiring read [ViewModel integration](references/viewmodel.md). Stay within the
-requested feature and verification scope.
+affected scope established above and the authorized verification scope.
 
 Analytics tasks and instrumentation changes also pass
 [live admin synchronization](references/admin-sync.md). That reference owns its
@@ -222,9 +227,10 @@ behavior and reports to the owning ViewModel, which decides what to observe.
 
 ## Mandatory screen coverage gate
 
-Before completing a new feature or an affected screen/navigation change:
+Before completing a new feature or a change affecting existing screens/navigation:
 
-1. Enumerate actual routes and rendered surfaces, including nested/tab screens
+1. Establish the affected scope using the caller tracing in [Scope](#scope).
+   Enumerate its actual routes and rendered surfaces, including nested/tab screens
    and alternative entry paths. Trace each to its Component and retained ViewModel.
    Do not use only the FeatureScreen enum or coverage matrix as the inventory.
 2. Classify each surface. An independent screen needs exactly one correctly typed

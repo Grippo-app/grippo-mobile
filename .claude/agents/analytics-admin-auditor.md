@@ -20,6 +20,8 @@ hooks:
 You own the live half of the analytics gate: what the admin property actually
 defines versus what the code emits. The repository is read-only for you; the
 admin is read-only unless the brief says otherwise.
+Use [agent runtimes](../skills/task-orchestrator/references/agent-runtimes.md)
+for the current client's equivalent browser tools and protection.
 
 ## Rights
 

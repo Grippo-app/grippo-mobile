@@ -74,3 +74,22 @@ private fun RingChartPreview() {
         )
     }
 }
+
+@AppPreview
+@Composable
+private fun RingChartBoundsPreview() {
+    PreviewContainer {
+        RingChart(
+            modifier = Modifier.size(120.dp),
+            value = 0f,
+            max = 100f,
+            colors = AppTokens.colors.charts.ring.muted,
+        )
+        RingChart(
+            modifier = Modifier.size(120.dp),
+            value = 100f,
+            max = 100f,
+            colors = AppTokens.colors.charts.ring.success,
+        )
+    }
+}

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState
@@ -17,12 +18,18 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.percent
 import kotlin.math.roundToInt
 
+@Immutable
+internal data class ColoredEntry(
+    val entry: MuscleLoadEntryState,
+    val color: Color,
+)
+
 @Composable
 internal fun MuscleLoadingItem(
+    modifier: Modifier = Modifier,
     entry: MuscleLoadEntryState,
     label: String,
     indicatorColors: AppColor.Charts.IndicatorColors.IndicatorColors,
-    modifier: Modifier = Modifier,
     dominant: Boolean = false,
 ) {
     val progress = (entry.value / 100f).coerceIn(0f, 1f)
@@ -31,8 +38,6 @@ internal fun MuscleLoadingItem(
         if (dominant) AppTokens.typography.h6()
         else AppTokens.typography.b13Med()
 
-    // Values use a lighter weight than labels so percentages stop competing
-    // with card titles for visual attention.
     val valueStyle =
         if (dominant) AppTokens.typography.b15Med()
         else AppTokens.typography.b12Med()
@@ -54,7 +59,6 @@ internal fun MuscleLoadingItem(
                 text = label,
                 style = labelStyle,
                 color = textColor,
-                maxLines = 1,
             )
         },
         endLabel = {
@@ -71,7 +75,6 @@ internal fun MuscleLoadingItem(
 internal fun colorizeEntries(
     entries: List<MuscleLoadEntryState>,
     palette: List<Color>,
-    colorTransformer: (index: Int, Color) -> Color = { _, color -> color },
 ): List<ColoredEntry> {
     if (entries.isEmpty()) return emptyList()
 
@@ -81,13 +84,12 @@ internal fun colorizeEntries(
     val useMaxColor = entries.size == 1
     val maxPaletteColor = palette.lastOrNull() ?: Color.Unspecified
 
-    return entries.mapIndexed { index, entry ->
-        val baseColor = if (useMaxColor) {
+    return entries.map { entry ->
+        val color = if (useMaxColor) {
             maxPaletteColor
         } else {
             colorByValue(entry.value, minValue, range, palette)
         }
-        val color = colorTransformer(index, baseColor)
         ColoredEntry(entry = entry, color = color)
     }
 }
@@ -104,23 +106,16 @@ private fun colorByValue(
     return palette[index]
 }
 
-@Immutable
-internal data class ColoredEntry(
-    val entry: MuscleLoadEntryState,
-    val color: Color,
-)
-
 @Composable
-internal fun indicatorColorsForRank(
-    index: Int,
-    total: Int,
+internal fun rememberMuscleLoadIndicatorColors(
+    color: Color,
 ): AppColor.Charts.IndicatorColors.IndicatorColors {
-    if (total <= 0) return AppTokens.colors.charts.indicator.success
-    val third = total / 3f
-    return when {
-        index < third -> AppTokens.colors.charts.indicator.success
-        index < 2f * third -> AppTokens.colors.charts.indicator.warning
-        else -> AppTokens.colors.charts.indicator.error
+    val trackColor = AppTokens.colors.charts.indicator.muted.track
+    return remember(color, trackColor) {
+        object : AppColor.Charts.IndicatorColors.IndicatorColors {
+            override val colors = listOf(color)
+            override val track = trackColor
+        }
     }
 }
 
@@ -134,8 +129,22 @@ private fun MuscleLoadingItemPreview() {
         MuscleLoadingItem(
             entry = entry,
             label = entry.group.title().text(),
-            indicatorColors = AppTokens.colors.charts.indicator.success,
+            indicatorColors = rememberMuscleLoadIndicatorColors(AppTokens.colors.muscle.palette6MuscleCalm.last()),
             dominant = true,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingItemLongLabelPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        val entry = summary.perGroup.entries.first()
+        MuscleLoadingItem(
+            entry = entry,
+            label = "Pectoralis major, sternocostal and clavicular portions",
+            indicatorColors = rememberMuscleLoadIndicatorColors(AppTokens.colors.muscle.palette6MuscleCalm.last()),
         )
     }
 }

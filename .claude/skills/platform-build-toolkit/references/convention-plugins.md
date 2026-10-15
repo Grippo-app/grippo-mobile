@@ -63,9 +63,8 @@ declare no repositories.
 
 ## Version catalog
 
-`gradle/libs.versions.toml` is authoritative. The current pins are listed once in the
-[CLAUDE.md stack table](../../../../CLAUDE.md#stack); do not repeat them here. Read the
-catalog before claiming any version.
+Read [the version catalog](../../../../gradle/libs.versions.toml) before claiming
+any dependency version; platform pins belong to the convention sources above.
 
 ## Rules
 

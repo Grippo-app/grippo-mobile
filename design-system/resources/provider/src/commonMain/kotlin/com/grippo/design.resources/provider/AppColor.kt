@@ -40,6 +40,7 @@ public interface AppColor {
 
     public interface DividerColors {
         public val default: Color
+        public val subtle: Color
     }
 
     public interface TimelineColors {
@@ -79,6 +80,8 @@ public interface AppColor {
     }
 
     public interface ToggleColors {
+        public val disabledThumb: Color
+        public val disabledTrack: Color
         public val checkedThumb: Color
         public val checkedTrack1: Color
         public val checkedTrack2: Color
@@ -146,6 +149,7 @@ public interface AppColor {
     public interface SemanticColors {
         public val success: Color
         public val error: Color
+        public val errorBorder: Color
         public val warning: Color
         public val info: Color
         public val notice: Color
@@ -158,7 +162,9 @@ public interface AppColor {
 
     public interface OverlayColors {
         public val shadow: Color
+        public val shadowSpotAlphaMultiplier: Float
         public val overlay: Color
+        public val bottomActionAlpha: Float
     }
 
     public interface ShimmerColors {
@@ -199,6 +205,8 @@ public interface AppColor {
 
     public interface ProfileColors {
         public val avatarShade: Color
+        public val avatarBaseAlpha: Float
+        public val avatarRingAlpha: Float
         public val experience: ExperienceColors
 
         public interface ExperienceColors {
@@ -271,6 +279,7 @@ public interface AppColor {
 
     public interface Charts {
         public val area: AreaColors
+        public val bar: BarColors
         public val progress: ProgressColors
         public val radar: RadarColors
         public val sparkline: SparklineColors
@@ -310,7 +319,10 @@ public interface AppColor {
         public interface SparklineColors {
             public val lineA: Color
             public val lineB: Color
-            public val fillBase: Color
+            public val fillStart: Color
+            public val fillEnd: Color
+            public val minimumMarker: Color
+            public val maximumMarker: Color
         }
 
         public interface TooltipColor {
@@ -323,18 +335,30 @@ public interface AppColor {
 
         public interface RadarColors {
             public val grid: Color
+            public val fillAlpha: Float
         }
 
         public interface AreaColors {
             public val lineA: Color
             public val lineB: Color
-            public val fillBase: Color
+            public val fillStart: Color
+            public val fillEnd: Color
             public val glow: Color
             public val dot: Color
         }
 
         public interface ProgressColors {
             public val track: Color
+            public val gradientStartAlpha: Float
+            public val gradientEndAlpha: Float
+        }
+
+        public interface BarColors {
+            public val grid: Color
+            public val axis: Color
+            public val baseline: Color
+            public val highlightMix: Float
+            public val gradientEndAlpha: Float
         }
     }
 

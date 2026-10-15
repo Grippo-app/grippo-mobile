@@ -28,7 +28,8 @@ own implementation constraints. Apply the completion gate in [SKILL.md](../SKILL
 | Visual intent/composition and mandatory usage/state analysis | [brand-design](../../brand-design/SKILL.md) |
 | Product artwork style, generation and asset acceptance | [illustrations](../../illustrations/SKILL.md) |
 | Kotlin style, naming, visibility and existing package conventions | [Code style](../../validation-gates/references/code-style.md) |
-| Compose signatures, stability, state models and side effects | [Compose rules](../../ui-feature/references/compose-rules.md) |
+| Compose signatures, structure, stability, effects, performance and interaction semantics | [Compose components](../../compose-components/SKILL.md) |
+| Feature Screen/MVI composition and keyboard integration | [UI composition](../../ui-feature/references/compose-rules.md) |
 | Feature extraction and design-system versus compose-libs | [Module ownership](../../ui-feature/references/module-structure.md) |
 | Cross-cut forbidden patterns | [Validation rules](../../validation-gates/references/forbidden-patterns.md) |
 | Scope boundaries and unresolved decisions | [Scope policy](../../../../CLAUDE.md#scope-discipline), [questions](../../validation-gates/references/when-to-stop-and-ask.md) |

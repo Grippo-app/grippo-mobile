@@ -1,7 +1,6 @@
 package com.grippo.design.components.swipe
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -47,7 +46,7 @@ public fun SwipeRevealAction(
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            modifier = Modifier.size(AppTokens.dp.button.medium.icon),
+            modifier = Modifier.size(AppTokens.dp.swipe.actionIconSize),
             imageVector = icon,
             contentDescription = null,
             tint = color,

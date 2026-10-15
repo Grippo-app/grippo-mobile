@@ -15,6 +15,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.brand.BrandHeader
+import com.grippo.design.components.brand.BrandHeaderStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -63,6 +64,7 @@ internal fun MissingEquipmentsScreen(
                 .fillMaxWidth(),
             title = AppTokens.strings.res(Res.string.registration_equipment_title),
             description = AppTokens.strings.res(Res.string.registration_equipment_description),
+            style = BrandHeaderStyle.Compact,
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
@@ -98,7 +100,7 @@ internal fun MissingEquipmentsScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreviewSelected() {
+private fun MissingEquipmentsSelectedPreview() {
     PreviewContainer {
         val groups = stubEquipments()
         MissingEquipmentsScreen(
@@ -115,7 +117,7 @@ private fun ScreenPreviewSelected() {
 
 @AppPreview
 @Composable
-private fun ScreenPreviewUnselected() {
+private fun MissingEquipmentsUnselectedPreview() {
     PreviewContainer {
         val groups = stubEquipments()
         MissingEquipmentsScreen(
@@ -126,6 +128,18 @@ private fun ScreenPreviewUnselected() {
             ),
             loaders = persistentSetOf(),
             contract = MissingEquipmentsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MissingEquipmentsEmptyCatalogPreview() {
+    PreviewContainer {
+        MissingEquipmentsScreen(
+            state = MissingEquipmentsState(),
+            loaders = persistentSetOf(),
+            contract = MissingEquipmentsContract.Empty,
         )
     }
 }

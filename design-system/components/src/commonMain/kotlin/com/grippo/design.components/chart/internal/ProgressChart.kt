@@ -35,8 +35,8 @@ internal fun ProgressChart(
             trackColor = charts.progress.track,
             brushProvider = { entry, _, rect ->
                 Brush.horizontalGradient(
-                    0f to entry.color.copy(alpha = 0.95f),
-                    1f to entry.color.copy(alpha = 0.70f),
+                    0f to entry.color.copy(alpha = charts.progress.gradientStartAlpha),
+                    1f to entry.color.copy(alpha = charts.progress.gradientEndAlpha),
                     startX = rect.left,
                     endX = rect.right
                 )
@@ -47,15 +47,13 @@ internal fun ProgressChart(
         labels = ProgressStyle.Labels(
             textStyle = AppTokens.typography.b12Semi().copy(color = AppTokens.colors.text.primary)
         ),
-        values = ProgressStyle.Values.Inside(
-            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.static.white),
-            formatter = { v, d -> ceil(v).toInt().toString() },
-            minInnerPadding = AppTokens.dp.metrics.charts.progress.minInnerPadding,
-            insideColor = null,
+        values = ProgressStyle.Values.Outside(
+            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
+            formatter = { value, _ -> ceil(value).toInt().toString() },
             preferNormalizedLabels = true,
         ),
         target = null,
-        progression = ProgressStyle.Progression.Power(0.5f)
+        progression = ProgressStyle.Progression.Linear,
     )
 
     ProgressChart(
@@ -82,6 +80,35 @@ private fun ProgressChartPreview() {
         ProgressChart(
             modifier = Modifier.size(300.dp),
             data = ds
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProgressChartBoundsPreview() {
+    PreviewContainer {
+        ProgressChart(
+            modifier = Modifier.size(300.dp),
+            data = ProgressData(
+                items = listOf(
+                    ProgressChartData("Not started", 0f, AppTokens.colors.muscle.palette6MuscleCalm.first()),
+                    ProgressChartData("Small share", 1f, AppTokens.colors.muscle.palette6MuscleCalm.first()),
+                    ProgressChartData("Quarter", 25f, AppTokens.colors.muscle.palette6MuscleCalm.first()),
+                    ProgressChartData("Complete", 100f, AppTokens.colors.muscle.palette6MuscleCalm.last()),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProgressChartEmptyPreview() {
+    PreviewContainer {
+        ProgressChart(
+            modifier = Modifier.size(300.dp),
+            data = ProgressData(items = emptyList()),
         )
     }
 }

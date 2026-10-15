@@ -20,6 +20,7 @@ import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.design.components.brand.BrandHeader
+import com.grippo.design.components.brand.BrandHeaderStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -74,6 +75,7 @@ internal fun UserScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = AppTokens.strings.res(Res.string.registration_user_title),
                 description = AppTokens.strings.res(Res.string.registration_name_description),
+                style = BrandHeaderStyle.Compact,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
@@ -131,7 +133,7 @@ internal fun UserScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun UserEmptyPreview() {
     PreviewContainer {
         UserScreen(
             state = UserState(
@@ -146,7 +148,7 @@ private fun ScreenPreview() {
 
 @AppPreview
 @Composable
-private fun ScreenPreviewFilled() {
+private fun UserFilledPreview() {
     PreviewContainer {
         UserScreen(
             state = UserState(
@@ -155,6 +157,32 @@ private fun ScreenPreviewFilled() {
                 height = HeightFormatState.of(178),
             ),
             loaders = persistentSetOf(),
+            contract = UserContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserInvalidNamePreview() {
+    PreviewContainer {
+        UserScreen(
+            state = UserState(
+                name = NameFormatState.of("Alex ".repeat(13)),
+            ),
+            loaders = persistentSetOf(),
+            contract = UserContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserBusyPreview() {
+    PreviewContainer {
+        UserScreen(
+            state = UserState(name = NameFormatState.of("Alex")),
+            loaders = persistentSetOf(UserLoader.Logout),
             contract = UserContract.Empty,
         )
     }

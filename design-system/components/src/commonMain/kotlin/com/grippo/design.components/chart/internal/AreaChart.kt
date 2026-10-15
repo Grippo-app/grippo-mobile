@@ -60,8 +60,8 @@ internal fun AreaChart(
         glow = AreaStyle.Glow(width = AppTokens.dp.metrics.charts.area.glowWidth, color = charts.area.glow),
         fill = AreaStyle.Fill { sz ->
             Brush.verticalGradient(
-                0f to charts.area.fillBase.copy(alpha = 0.18f),
-                1f to charts.area.fillBase.copy(alpha = 0.00f),
+                0f to charts.area.fillStart,
+                1f to charts.area.fillEnd,
                 startY = 0f, endY = sz.height
             )
         },
@@ -98,6 +98,17 @@ private fun AreaChartPreview() {
         AreaChart(
             modifier = Modifier.size(300.dp),
             data = ds
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun AreaChartEmptyPreview() {
+    PreviewContainer {
+        AreaChart(
+            modifier = Modifier.size(300.dp),
+            data = AreaData(points = emptyList()),
         )
     }
 }

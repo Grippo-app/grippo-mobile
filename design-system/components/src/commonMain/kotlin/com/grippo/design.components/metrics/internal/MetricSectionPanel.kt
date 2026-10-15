@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -60,7 +58,6 @@ internal fun MetricSectionPanel(
     Box(
         modifier = modifier
             .clip(shape)
-            .height(intrinsicSize = IntrinsicSize.Min)
             .background(AppTokens.colors.background.card, shape)
             .border(
                 width = AppTokens.dp.metrics.panel.borderWidth,

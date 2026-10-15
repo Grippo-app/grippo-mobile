@@ -17,6 +17,7 @@ A compact navigation item and a screen heading do not need the same font size.
 | Supporting information | `b13Med`; `b14Med` for longer body text | `text.secondary` |
 | Small labels and timestamps | `b11Med`–`b12Med` | `text.secondary` / `text.tertiary` |
 | Primary metric | `h4`–`h5` | `text.primary` |
+| Overview performance value (concise Home tile) | `h2` | `text.primary` |
 
 ## Color and state
 
@@ -29,6 +30,26 @@ A compact navigation item and a screen heading do not need the same font size.
   supplies the accent. Custom framed content supplies its tint and background
   explicitly, rather than deriving opacity inside the component.
 - Ordinary weights, counts, dates and instructions use neutral text colors.
+- Destructive account outlines use `semantic.errorBorder`; quiet summary dividers
+  use `divider.subtle`. Disabled switches use their own `toggle.disabledTrack`
+  and `toggle.disabledThumb` roles.
+- Chart grid/axis/baseline colors and area/sparkline fill endpoints belong to
+  their chart color groups. Dynamic series gradients retain the supplied series
+  hue and use their chart group's blend/opacity coefficients. Avatar fills/rings
+  retain experience hues through the profile coefficients; bottom action fades
+  retain their host surface hue through `overlay.bottomActionAlpha`. Shadow spot
+  strength uses `overlay.shadowSpotAlphaMultiplier` without changing its hue.
+- Sparkline extrema use `charts.sparkline.minimumMarker` and `maximumMarker`
+  data colors. A minimum or maximum alone does not imply warning or success,
+  including in bodyweight history.
+- Detailed muscle-distribution rows keep the same calm data hues as the map;
+  rank alone carries no success/warning/error meaning. Goal diagnostic stripes
+  use their severity accent directly while their explanatory text stays neutral.
+- Empty muscle-balance summaries show neutral unavailable information without an
+  inferred score or status. The top-two load difference is neutral data, not a
+  warning on its own; the existing balance status/ring conveys the assessment.
+  Progress bars use linear proportions and outside
+  values; pie slices preserve their actual shares.
 - Timeline points use `timeline.marker/markerBackground` for a warm chronological
   anchor with a soft halo; connectors stay `divider.default`. The marker does not
   represent selection or workout completion. Keep content and rail geometry stable.
@@ -77,6 +98,12 @@ A compact navigation item and a screen heading do not need the same font size.
 
 ## Layout and accessibility
 
+- Profile creation's four working steps use `BrandHeaderStyle.Compact`: a warm
+  illustration region with the existing 28 dp radius, leading `h3` title and
+  `b14Med` supporting copy, and `contentPadding.content` vertical padding. Keep
+  the neutral fields and choices aligned with the header and primary action.
+  The shared centered default remains the introduction for login/registration;
+  profile completion uses `BrandSplash` with its existing operation loader.
 - Profile Menu uses a compact warm identity region through UserProfileHeader:
   illustration.backgroundStart/backgroundEnd on the existing user-card shape,
   h3 name and neutral supporting email. Experience avatar colors retain their
@@ -92,9 +119,69 @@ A compact navigation item and a screen heading do not need the same font size.
   shape and 22 dp glyph. Context icon colors retain their meaning. Default uses
   the screen tone inside its card; Subtle stays unframed with a card-tone icon
   container and secondary heading. Header gaps use `content`; values stay neutral.
-- The digest header on Home uses the same neutral 32 dp icon tile with the
+- DigestHeader uses the same neutral 32 dp icon tile with the
   `context.volume` glyph; working metric panels carry no decorative illustration
-  spot, which stays with the welcome/hero region.
+  spot. Home's welcome and last-workout recap own the warm illustration regions.
+- Home uses `MetricCardPresentation.Overview` for goal, muscle, streak and
+  performance summaries; goal, streak and performance dialogs retain `Detailed`,
+  while muscle details keep the full distribution and PerGroup/PerMuscle selector.
+  Overview includes the context needed to interpret the current value: muscle
+  distribution and session/set counts, inferred training rhythm and active days,
+  and a guarded comparison with previous workouts' average. Full history, best
+  values and timeline breakdowns remain available through the existing card action.
+  A quiet hint under Progress identifies the summary cards as detail entry points;
+  it appears only when at least one of those cards is present.
+- Home card headings use `h5` and `text.primary`; section headings retain `h4`,
+  while values and secondary metadata keep their distinct roles. Whole-card
+  detail entries (goal, muscle, streak, performance and exercise highlights) use
+  `MetricOverviewHeader`: one decorative 18 dp `icon.secondary` chevron at the
+  right of the heading. Calendar and Update remain their existing explicit buttons.
+- Home's initial loading and an active refresh without period content use
+  noninteractive skeleton cards with the dashboard's toolbar, gutters and geometry.
+  Neutral `divider.default` slots use the shared shimmer after clip/background;
+  text slots follow typography line heights. One localized indeterminate loading
+  node describes the skeleton; the real period picker remains independently
+  accessible for returning users once the range resolves. Known goal/unlock
+  availability controls those slots.
+  Cached populated content stays visible during refresh; completed empty periods
+  retain their real empty presentation. No minimum loading duration is introduced.
+- The last-workout recap names its selected-period scope. Title/date and two
+  training facts share a row with the unchanged compact journal illustration;
+  exercise count and Calendar share the footer. It keeps the illustration gradient
+  and large card shape, with content-driven height and complete values.
+- Home muscle and training-rhythm summaries are separate full-width large panels;
+  neither is stretched to a neighbor's height. Muscle distribution pairs a 144×140 dp
+  front/back map with up to three real groups and their existing load shares.
+  Its compact image row removes the generic weighted outer spacers, uses two
+  equal image slots with an 8 dp gap and centers the complete bodies vertically.
+  The muscle-details image layout retains its original default spacing.
+  Map and bars share colors derived from the full calm muscle palette before
+  selecting rows. Percentages are labelled as estimated-load shares; the context
+  counts selected-period workouts/sets. A single group names its most-loaded
+  individual muscle when that fact exists. Missing groups are not invented zeros.
+- The training-rhythm overview has the common heading/chevron and a compact row:
+  the existing streak headline and cadence on the left, active-day count on the
+  right, with its short localized caption. Both columns wrap naturally; the
+  existing thin progress indicator follows below. Full history stays in Details.
+- Goal ring percentages are labelled as goal fit, distinct from elapsed days.
+  Home pairs the ring with the primary goal/status, analyzed-workout count scoped
+  to the selected period and the actual target date. Only sessions eligible for
+  goal analysis contribute to that count; it is not the lifetime workout total.
+  Overview content determines its own height without filler spacers; the existing
+  remaining/overdue message and Update eligibility are preserved.
+  Performance labels explain weight/minute and average weight; overview compares
+  the latest workout with the prior positive-workout average only when available.
+  Numeric averages and their percentage comparison occupy separate lines so both
+  remain visible within the metric panel's intrinsic height.
+  Duration comparison stays neutral and omits the numeric average truncated to
+  whole minutes; its always-Stable chip is omitted in Home.
+- Exercise highlights form a horizontal gallery with regular 64 dp thumbnails,
+  complete insight text and existing detail actions; a next-card peek signals more
+  items without repeating a tall vertical report. Cards share the tallest content's
+  natural height. The gallery scroll viewport reaches the screen edges; internal
+  start/end gutters align the first and last cards with the other Home sections.
+  Insight kind is conveyed by its existing localized semantic chip; the card has
+  no colored edge stripe. Its image/title/chevron header shares the card hierarchy.
 - MenuValueRow keeps neutral labels/values and a quiet chevron, with a 56 dp
   minimum height and 12 dp vertical padding/gaps. Optional leading icons use a
   32 dp card-surface tile with 12 dp corners; caller-supplied channel/destructive
@@ -117,8 +204,14 @@ A compact navigation item and a screen heading do not need the same font size.
   uses a graphite thumb on the bright orange track; check marks use `selection.onAccent`.
 - Tabs announce selection, equipment/muscle switches announce their labels and
   checklist rows announce completion independently of decorative icons/colors.
-- Performance cards keep the metric name beside its icon and the status below the
-  value. Names, units, comparison text and statuses wrap within the existing grid.
+- Toggle selection cards expose one Switch action and state at the enclosing
+  row; their trailing Toggle is passive. Input clear/copy/password actions have
+  separate localized labels. Read-only exercise summaries have no click target
+  or detail chevron; recording/completed-workout rows retain their detail action.
+- Detailed performance cards keep the metric name beside its icon and the status
+  below the value. Home uses the common title/chevron header; names, units,
+  comparison text and statuses wrap naturally. Its paired metric cards share an
+  intrinsic-height row, so localized headings can grow without uneven card bottoms.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
   Compact inline exercise references may use the existing small variant.
 - Exercise image slots use `background.card`, a thin `border.default` boundary

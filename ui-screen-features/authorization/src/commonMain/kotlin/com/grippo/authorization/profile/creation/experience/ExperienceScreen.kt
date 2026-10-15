@@ -20,6 +20,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.design.components.brand.BrandHeader
+import com.grippo.design.components.brand.BrandHeaderStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -69,6 +70,7 @@ internal fun ExperienceScreen(
                 .fillMaxWidth(),
             title = AppTokens.strings.res(Res.string.registration_experience_title),
             description = AppTokens.strings.res(Res.string.registration_experience_description),
+            style = BrandHeaderStyle.Compact,
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

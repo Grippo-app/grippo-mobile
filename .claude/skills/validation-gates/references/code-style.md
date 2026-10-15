@@ -1,6 +1,6 @@
 # Code style and naming (owner)
 
-This reference owns Grippo's cross-cutting Kotlin and Compose style. Owning
+This reference owns Grippo's cross-cutting Kotlin style. Owning
 skills link here; they do not restate these rules. Current source establishes
 actual signatures; an existing deviation does not weaken a rule.
 
@@ -216,30 +216,14 @@ internal class NoteViewModel(
 
 ## Compose
 
-- Every `<Name>Screen` takes `(state, loaders, contract)` in that order, with an
-  optional leading `component` only when it renders a child stack or slot.
-- Product colors, dimensions, typography, strings, icons and drawables come
-  from `AppTokens.*`. Neutral technical constants (`0.dp`, `Color.Transparent`)
-  and explicitly marked preview fixtures are allowed; they never become product
-  styling. Do not use `MaterialTheme.colorScheme.*`, `androidx.compose.ui.res`
-  resources or Material3 `Button` in feature code.
-- Global experimental opt-ins already live in `KotlinMultiplatformConventionPlugin`;
-  do not add `@OptIn` for them in source files.
-- `LaunchedEffect(Unit)` for navigation is forbidden; navigation goes through
-  `Direction` + `eventListener`. `LaunchedEffect`/`DisposableEffect` are for
-  presentation and system effects, keyed on their changing inputs, with teardown.
-- Lazy items use stable unique keys from actual identity (`.id` when the model
-  owns one); add `animateItem()` only for intended insert/remove/reorder.
-- `remember` is for expensive pure computations or required identity, keyed on
-  all inputs; simple derived checks stay inline.
-- A composable that renders a domain entity takes its `*State` model as one
-  parameter, not a flat list of scalars. Generic design-system primitives
-  (`Button`, `Chip`, `Toolbar`) stay slot/enum driven.
-- Non-`*Screen` UI lives in the sub-screen's `components/` folder, one cohesive
-  composable per file; `Screen` composes, it does not inline large UI.
-- Regular `Toolbar` belongs to screens; dialogs never add a second toolbar.
-- `BottomOverlayContainer` is the "list + bottom CTA" pattern; pass its resolved
-  padding into the scrolling content.
+Shared Compose API, structure and runtime rules belong to
+[compose-components](../../compose-components/SKILL.md); feature integration belongs
+to [UI composition](../../ui-feature/references/compose-rules.md); product values and
+visual implementation belong to [design-system](../../design-system/SKILL.md).
+
+Global experimental opt-ins live in
+[the convention](../../../../build-logic/convention/src/main/kotlin/KotlinMultiplatformConventionPlugin.kt);
+do not add source-level opt-ins for APIs it already covers.
 
 ## Comments
 

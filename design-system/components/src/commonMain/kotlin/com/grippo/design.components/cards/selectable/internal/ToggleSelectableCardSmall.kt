@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardVariants
 import com.grippo.design.components.modifiers.scalableClick
@@ -41,7 +45,10 @@ internal fun ToggleSelectableCardSmall(
 
     Row(
         modifier = modifier
-            .scalableClick(onClick = onClick)
+            .semantics(mergeDescendants = true) {
+                toggleableState = if (isSelected) ToggleableState.On else ToggleableState.Off
+            }
+            .scalableClick(role = Role.Switch, haptic = true, onClick = onClick)
             .background(backgroundColor, shape)
             .border(AppTokens.dp.toggleSelectableCard.borderWidth, borderColor, shape)
             .heightIn(min = AppTokens.dp.toggleSelectableCard.small.height)
@@ -59,11 +66,7 @@ internal fun ToggleSelectableCardSmall(
             color = AppTokens.colors.text.primary,
         )
 
-        Toggle(
-            checked = isSelected,
-            onCheckedChange = onClick,
-            contentDescription = style.title,
-        )
+        Toggle(checked = isSelected)
     }
 }
 

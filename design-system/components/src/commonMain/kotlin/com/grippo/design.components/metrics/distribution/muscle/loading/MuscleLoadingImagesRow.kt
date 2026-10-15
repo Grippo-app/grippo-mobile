@@ -1,11 +1,15 @@
 package com.grippo.design.components.metrics.distribution.muscle.loading
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,7 +36,8 @@ public enum class MuscleLoadingImagesMode {
 public fun MuscleLoadingImagesRow(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
-    mode: MuscleLoadingImagesMode
+    mode: MuscleLoadingImagesMode,
+    compact: Boolean = false,
 ) {
     val muscleColors = AppTokens.colors.muscle
     val palette = AppTokens.colors.muscle.palette6MuscleCalm
@@ -55,24 +60,44 @@ public fun MuscleLoadingImagesRow(
         generateMuscleImages(muscleEntries, muscleColors)
     }
 
-    Row(modifier = modifier) {
-        Spacer(Modifier.weight(0.2f))
+    if (compact) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                modifier = Modifier.weight(1f),
+                imageVector = images.front,
+                contentDescription = null,
+            )
 
-        Image(
-            modifier = Modifier.weight(0.8f),
-            imageVector = images.front,
-            contentDescription = null
-        )
+            Image(
+                modifier = Modifier.weight(1f),
+                imageVector = images.back,
+                contentDescription = null,
+            )
+        }
+    } else {
+        Row(modifier = modifier) {
+            Spacer(Modifier.weight(0.2f))
 
-        Spacer(Modifier.weight(0.2f))
+            Image(
+                modifier = Modifier.weight(0.8f),
+                imageVector = images.front,
+                contentDescription = null
+            )
 
-        Image(
-            modifier = Modifier.weight(0.8f),
-            imageVector = images.back,
-            contentDescription = null
-        )
+            Spacer(Modifier.weight(0.2f))
 
-        Spacer(Modifier.weight(0.2f))
+            Image(
+                modifier = Modifier.weight(0.8f),
+                imageVector = images.back,
+                contentDescription = null
+            )
+
+            Spacer(Modifier.weight(0.2f))
+        }
     }
 }
 
@@ -155,6 +180,21 @@ private fun MuscleLoadingCardPreview() {
         MuscleLoadingImagesRow(
             summary = stubMuscleLoadSummary(),
             mode = MuscleLoadingImagesMode.PerGroup
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingImagesRowCompactPreview() {
+    PreviewContainer {
+        MuscleLoadingImagesRow(
+            modifier = Modifier
+                .width(AppTokens.dp.metrics.overview.muscleImageWidth)
+                .height(AppTokens.dp.metrics.overview.muscleImageHeight),
+            summary = stubMuscleLoadSummary(),
+            mode = MuscleLoadingImagesMode.PerGroup,
+            compact = true,
         )
     }
 }

@@ -24,8 +24,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.max
 
-private const val OverlayEndAlpha = 0.9f
-
 private object BottomOverlaySlots {
     const val BOTTOM = "bottom"
     const val CONTENT = "content"
@@ -40,8 +38,6 @@ public fun BottomOverlayContainer(
     overlay: Color,
     content: @Composable (Modifier, PaddingValues) -> Unit
 ) {
-    // Fast-path: when there's no bottom slot we don't need SubcomposeLayout at all.
-    // SubcomposeLayout is the most expensive piece here — skip it when possible.
     if (bottom == null) {
         Box(modifier = modifier) {
             content(Modifier, contentPadding)
@@ -49,15 +45,12 @@ public fun BottomOverlayContainer(
         return
     }
 
-    // Hoist the gradient brush. Without this, every measure pass re-allocates a
-    // new ShaderBrush + Color instances (the overlay subcompose lambda captures
-    // bottomHeight, so it re-runs on each measure), which forces the overlay
-    // layer to redraw on every frame and pressures the iOS render thread.
-    val overlayBrush = remember(overlay) {
+    val overlayAlpha = AppTokens.colors.overlay.bottomActionAlpha
+    val overlayBrush = remember(overlay, overlayAlpha) {
         Brush.verticalGradient(
             colors = listOf(
                 overlay.copy(alpha = 0f),
-                overlay.copy(alpha = OverlayEndAlpha),
+                overlay.copy(alpha = overlayAlpha),
             )
         )
     }
@@ -65,7 +58,7 @@ public fun BottomOverlayContainer(
     SubcomposeLayout(modifier = modifier) { constraints ->
         val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
 
-        // 1) Measure the bottom slot first so we know how much vertical space it takes.
+        // Bottom content is measured first so its real height becomes the scroll inset.
         val bottomPlaceables: List<Placeable> = subcompose(BottomOverlaySlots.BOTTOM) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -75,7 +68,6 @@ public fun BottomOverlayContainer(
 
         val bottomHeight: Int = bottomPlaceables.maxOfOrNull { it.height } ?: 0
 
-        // 2) Build padding for the content slot — user padding + bottom inset.
         val layoutDirection: LayoutDirection = this.layoutDirection
         val startPad = contentPadding.calculateStartPadding(layoutDirection)
         val endPad = contentPadding.calculateEndPadding(layoutDirection)
@@ -89,13 +81,10 @@ public fun BottomOverlayContainer(
             bottom = bottomPad + overlayInset
         )
 
-        // 3) Measure content with the resolved padding propagated to it.
         val contentPlaceables: List<Placeable> = subcompose(BottomOverlaySlots.CONTENT) {
             content(Modifier, resolvedPadding)
         }.map { it.measure(constraints.copy(minHeight = 0)) }
 
-        // 4) Measure overlay only if there's a bottom slot to fade behind.
-        // Constraints pin the overlay height exactly — no extra `.height(...)` modifier needed.
         val overlayPlaceables: List<Placeable> = if (bottomHeight > 0) {
             subcompose(BottomOverlaySlots.OVERLAY) {
                 Box(
@@ -132,6 +121,24 @@ public fun BottomOverlayContainer(
             }
             bottomPlaceables.forEach { it.placeRelative(0, anchorY) }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun BottomOverlayContainerWithoutActionPreview() {
+    PreviewContainer {
+        BottomOverlayContainer(
+            overlay = AppTokens.colors.background.screen,
+            content = { contentModifier, contentPadding ->
+                Text(
+                    modifier = contentModifier.padding(contentPadding),
+                    text = "Content without a pinned action",
+                    color = AppTokens.colors.text.primary,
+                    style = AppTokens.typography.b14Med(),
+                )
+            },
+        )
     }
 }
 

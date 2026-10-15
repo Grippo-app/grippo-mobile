@@ -19,9 +19,10 @@ there rather than duplicated in each recipe.
 | Process-death / restoration (7 hard rules) | `process-death.md` |
 | Error pipeline (sendError, ErrorProvider, dialog mapping, error triad) | `error-pipeline.md` |
 | Data-side operation outcomes, cancellation, cache reconciliation | [operation-outcomes](../../data-layer/references/operation-outcomes.md) (data-layer owns it) |
-| Kotlin/Compose style, naming, packages, ViewModel layout | [code-style](../../validation-gates/references/code-style.md) (validation-gates owns it) |
+| Kotlin style, naming, packages, ViewModel layout | [code-style](../../validation-gates/references/code-style.md) (validation-gates owns it) |
 | `:ui-core:state` models / `UiText` / `*FormatState` / state conventions / `stub*` | `state.md` → `module-structure.md` (§ ui-core), `error-pipeline.md` (§ error triad) |
-| Compose / stability / previews / lists / modifiers | `compose-rules.md` → `base-classes.md` (§ BaseComposeScreen) |
+| Shared Compose structure, stability, effects, lazy identity and modifiers | [compose-components](../../compose-components/SKILL.md) |
+| Feature Screen/MVI composition and keyboard integration | `compose-rules.md` → `base-classes.md` (§ BaseComposeScreen) |
 | Base classes (`BaseViewModel`/`BaseComponent`/`BaseComposeScreen`/models/`OperationManager`/platform helpers) | `base-classes.md` |
 | ViewModel data flow (observe vs get, `safeLaunch`) | `mvi-contract.md` (§ ViewModel rules) → `results.md` (§ Data boundary for result producers and receivers) |
 | Analytics impact, typed VM events/operations, mandatory independent-screen hook and coverage | [feature-analytics](../../feature-analytics/SKILL.md) → [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
@@ -39,7 +40,7 @@ there rather than duplicated in each recipe.
 | `process-death.md` | StateKeeper mechanism, 7 hard rules, `retainedInstance`, iOS specifics, anti-patterns |
 | `base-classes.md` | `BaseViewModel`/`BaseComponent`/`BaseComposeScreen` API + rules, marker interfaces, `OperationManager`, platform helpers, current source ownership |
 | `state.md` | `UiText`, `*FormatState`, state conventions, sealed-interface states, no flat scalar piles, `stub*` |
-| `compose-rules.md` | stability, function/screen signatures, entity composables, side effects, modifiers, lists, Material3 wrappers, anti-patterns |
+| `compose-rules.md` | feature Screen/MVI composition, placement, navigation effects, secret keyboards and product primitives |
 | `module-structure.md` | `:ui-screen-features:*`/`:ui-dialog-features:*` shape + file layout, `:ui-core:*` modules, app shells, feature-to-feature anti-pattern, `:compose-libs:*` |
 | `add-screen.md` | step-by-step recipe to add a sub-screen |
 

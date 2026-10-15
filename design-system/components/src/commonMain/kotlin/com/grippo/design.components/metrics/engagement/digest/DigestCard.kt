@@ -3,8 +3,9 @@ package com.grippo.design.components.metrics.engagement.digest
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
-import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHeader
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHero
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
@@ -22,8 +23,10 @@ import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.total
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
-import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDateTime
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 public fun DigestCard(
@@ -112,7 +115,7 @@ private fun ContentDigestBody(
 private fun DigestCardPreview() {
     PreviewContainer {
         DigestCard(
-            value = stubDigest(),
+            value = digestPreviewValue(),
         )
     }
 }
@@ -123,8 +126,36 @@ private fun DigestCardEmptyPreview() {
     PreviewContainer {
         DigestCard(
             value = DigestState.Empty(
-                range = DateRangeFormatState.of(DateRangePresets.monthly()),
+                range = digestPreviewValue().range,
             ),
         )
     }
 }
+
+@AppPreview
+@Composable
+private fun DigestCardLongValuesPreview() {
+    PreviewContainer {
+        DigestCard(
+            value = digestPreviewValue().copy(
+                duration = DurationFormatState.of(123.hours + 59.minutes),
+                total = VolumeFormatState.of(184_829.5f),
+                totalSets = 12_345,
+                trainingsCount = 123,
+            ),
+        )
+    }
+}
+
+private fun digestPreviewValue(): DigestState.Content = DigestState.Content(
+    range = DateRangeFormatState.of(
+        from = LocalDateTime(2026, 10, 1, 0, 0),
+        to = LocalDateTime(2026, 10, 31, 23, 59),
+    ),
+    trainingsCount = 5,
+    duration = DurationFormatState.of(7.hours),
+    total = VolumeFormatState.of(540f),
+    avgVolume = VolumeFormatState.of(108f),
+    totalSets = 32,
+    activeDays = 4,
+)

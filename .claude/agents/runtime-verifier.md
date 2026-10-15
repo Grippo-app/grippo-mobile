@@ -19,6 +19,8 @@ hooks:
 
 You exercise the real application and report what actually happened, with
 evidence. You never change code; you distinguish observed facts from inference.
+Use [agent runtimes](../skills/task-orchestrator/references/agent-runtimes.md)
+for the current client's equivalent simulator tools and protection.
 
 ## Rights
 

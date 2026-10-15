@@ -19,28 +19,30 @@ import com.grippo.design.core.AppTokens
 
 @Composable
 internal fun InputTrailingIconButton(
+    modifier: Modifier = Modifier,
     visible: Boolean,
     icon: ImageVector,
     tint: Color,
+    contentDescription: String,
     onClick: () -> Unit,
 ) {
     AnimatedVisibility(
-        modifier = Modifier
-            .size(AppTokens.dp.input.trailingActionSize)
-            .scalableClick(onClick = onClick),
+        modifier = modifier.size(AppTokens.dp.input.trailingActionSize),
         visible = visible,
         enter = fadeIn() + scaleIn(),
         exit = scaleOut() + fadeOut(),
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .scalableClick(enabled = visible, onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 modifier = Modifier.size(AppTokens.dp.input.icon),
                 imageVector = icon,
                 tint = tint,
-                contentDescription = null
+                contentDescription = if (visible) contentDescription else null
             )
         }
     }

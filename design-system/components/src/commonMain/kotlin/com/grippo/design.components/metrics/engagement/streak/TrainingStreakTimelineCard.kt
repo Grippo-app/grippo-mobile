@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.engagement.TrainingStreakProgressState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
@@ -15,6 +17,9 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_period_value
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 public fun TrainingStreakTimelineCard(
@@ -55,7 +60,6 @@ private fun TrainingStreakTimelineRow(
                 text = entry.range.display,
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.primary,
-                maxLines = 1,
             )
         },
         endLabel = {
@@ -67,7 +71,7 @@ private fun TrainingStreakTimelineRow(
                 ),
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
-                maxLines = 1,
+                textAlign = TextAlign.End,
             )
         },
     )
@@ -77,17 +81,25 @@ private fun TrainingStreakTimelineRow(
 @Composable
 private fun TrainingStreakTimelineCardPreview() {
     PreviewContainer {
-        TrainingStreakTimelineCard(
-            entries = stubTrainingStreaks().random().timeline
-        )
-        TrainingStreakTimelineCard(
-            entries = stubTrainingStreaks().random().timeline
-        )
-        TrainingStreakTimelineCard(
-            entries = stubTrainingStreaks().random().timeline
-        )
-        TrainingStreakTimelineCard(
-            entries = stubTrainingStreaks().random().timeline
-        )
+        stubTrainingStreaks().forEach { value ->
+            TrainingStreakTimelineCard(
+                entries = value.timeline.map { entry ->
+                    entry.copy(
+                        range = DateRangeFormatState.of(
+                            from = LocalDateTime(2026, 10, 5, 0, 0),
+                            to = LocalDateTime(2026, 10, 11, 23, 59),
+                        ),
+                    )
+                }.toPersistentList(),
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakTimelineCardEmptyPreview() {
+    PreviewContainer {
+        TrainingStreakTimelineCard(entries = persistentListOf())
     }
 }

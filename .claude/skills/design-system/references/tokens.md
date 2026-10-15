@@ -2,7 +2,9 @@
 
 Read [AppTokens](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/AppTokens.kt)
 and its [provider](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/internal/ResourceProvider.kt).
-The facade has composable read-only getters.
+The facade uses regular public properties with composable read-only getters.
+A facade getter annotated `@ReadOnlyComposable` must keep its entire call chain
+within that read-only contract.
 
 | Getter | Producer | Purpose |
 |---|---|---|

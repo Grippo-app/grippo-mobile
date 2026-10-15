@@ -4,18 +4,16 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.disabled
@@ -28,11 +26,12 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
+/** Without [onCheckedChange], renders a passive indicator for an interactive parent. */
 @Composable
 public fun Toggle(
     modifier: Modifier = Modifier,
     checked: Boolean,
-    onCheckedChange: () -> Unit,
+    onCheckedChange: (() -> Unit)? = null,
     enabled: Boolean = true,
     contentDescription: String? = null,
 ) {
@@ -43,39 +42,50 @@ public fun Toggle(
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "ToggleThumb"
     )
-    val click = rememberUpdatedState(onCheckedChange)
-    val disabledTrack = AppTokens.colors.button.backgroundDisabled
-    val disabledThumb = AppTokens.colors.button.contentDisabled
-
-    Box(
-        modifier = modifier
+    val trackStart = when {
+        !enabled -> toggle.disabledTrack
+        checked -> toggle.checkedTrack1
+        else -> toggle.uncheckedTrack1
+    }
+    val trackEnd = when {
+        !enabled -> toggle.disabledTrack
+        checked -> toggle.checkedTrack2
+        else -> toggle.uncheckedTrack2
+    }
+    val trackBrush = remember(trackStart, trackEnd) {
+        Brush.horizontalGradient(listOf(trackStart, trackEnd))
+    }
+    val thumbColor = when {
+        !enabled -> toggle.disabledThumb
+        checked -> toggle.checkedThumb
+        else -> toggle.uncheckedThumb
+    }
+    val interactionModifier = if (onCheckedChange != null) {
+        Modifier
             .semantics {
                 role = Role.Switch
                 toggleableState = if (checked) ToggleableState.On else ToggleableState.Off
                 if (contentDescription != null) this.contentDescription = contentDescription
                 if (!enabled) disabled()
             }
-            .scalableClick(enabled = enabled, onClick = click.value, haptic = true, role = Role.Switch)
+            .scalableClick(
+                enabled = enabled,
+                onClick = onCheckedChange,
+                haptic = true,
+                role = Role.Switch,
+            )
+    } else {
+        Modifier
+    }
+
+    Box(
+        modifier = modifier
+            .then(interactionModifier)
             .size(width = dp.width, height = dp.height)
-            .background(color = Color.Transparent)
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
-            val background1Color = when {
-                !enabled -> disabledTrack
-                checked -> toggle.checkedTrack1
-                else -> toggle.uncheckedTrack1
-            }
-            val background2Color = when {
-                !enabled -> disabledTrack
-                checked -> toggle.checkedTrack2
-                else -> toggle.uncheckedTrack2
-            }
-
             drawRoundRect(
-                brush = Brush.horizontalGradient(
-                    0f to background1Color,
-                    1f to background2Color,
-                ),
+                brush = trackBrush,
                 size = Size(size.width, size.height),
                 cornerRadius = CornerRadius(dp.radius.toPx(), dp.radius.toPx())
             )
@@ -85,12 +95,6 @@ public fun Toggle(
                 stop = size.width - dp.horizontalPadding.toPx(),
                 fraction = thumbPosition
             )
-
-            val thumbColor = when {
-                !enabled -> disabledThumb
-                checked -> toggle.checkedThumb
-                else -> toggle.uncheckedThumb
-            }
 
             drawCircle(
                 color = thumbColor,
@@ -123,5 +127,16 @@ private fun TogglePreview() {
 
         Toggle(checked = false, enabled = false, onCheckedChange = {})
         Toggle(checked = true, enabled = false, onCheckedChange = {})
+    }
+}
+
+@AppPreview
+@Composable
+private fun ToggleIndicatorPreview() {
+    PreviewContainer {
+        Toggle(checked = false)
+        Toggle(checked = true)
+        Toggle(checked = false, enabled = false)
+        Toggle(checked = true, enabled = false)
     }
 }

@@ -26,7 +26,7 @@ internal fun PieChart(
             width = AppTokens.dp.metrics.charts.pie.arcWidth,
             paddingAngleDeg = 2f,
             cornerRadius = AppTokens.dp.metrics.charts.pie.radius,
-            minVisualPercent = 0.15f,   // ← 15% minimum per slice (visual)
+            minVisualPercent = 0f,
         ),
         labels = PieStyle.Labels.Outside(
             textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
@@ -65,6 +65,33 @@ private fun PieChartPreview() {
         PieChart(
             modifier = Modifier.size(300.dp),
             data = data,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PieChartEmptyPreview() {
+    PreviewContainer {
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = PieData(slices = emptyList()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PieChartTinySharePreview() {
+    PreviewContainer {
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = PieData(
+                slices = listOf(
+                    PieSlice("majority", "Majority", 99f, AppTokens.colors.muscle.palette6MuscleCalm.first()),
+                    PieSlice("minority", "Minority", 1f, AppTokens.colors.muscle.palette6MuscleCalm.last()),
+                ),
+            ),
         )
     }
 }

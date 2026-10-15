@@ -46,8 +46,8 @@ public enum class ExerciseExampleImageStyle {
 @Composable
 public fun ExerciseExampleImage(
     modifier: Modifier = Modifier,
+    value: String?,
     style: ExerciseExampleImageStyle,
-    value: String?
 ) {
     val dimensions = AppTokens.dp.exerciseExampleImage
     val size = when (style) {
@@ -121,16 +121,16 @@ private class InsetPainter(
     }
 
     override fun DrawScope.onDraw() {
-        val p = padding.toPx()
-        val w = (size.width - 2f * p).coerceAtLeast(0f)
-        val h = (size.height - 2f * p).coerceAtLeast(0f)
+        val inset = padding.toPx()
+        val contentWidth = (size.width - 2f * inset).coerceAtLeast(0f)
+        val contentHeight = (size.height - 2f * inset).coerceAtLeast(0f)
 
-        if (w <= 0f || h <= 0f) return
+        if (contentWidth <= 0f || contentHeight <= 0f) return
 
-        withTransform({ translate(left = p, top = p) }) {
+        withTransform({ translate(left = inset, top = inset) }) {
             with(base) {
                 draw(
-                    size = Size(w, h),
+                    size = Size(contentWidth, contentHeight),
                     alpha = appliedAlpha,
                     colorFilter = appliedColorFilter ?: tint
                 )

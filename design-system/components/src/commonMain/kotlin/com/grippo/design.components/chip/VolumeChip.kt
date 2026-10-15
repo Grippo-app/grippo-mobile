@@ -26,14 +26,14 @@ public fun VolumeChip(
     size: ChipSize,
     style: VolumeChipStyle
 ) {
-    val text = when (style) {
+    val label = when (style) {
         VolumeChipStyle.SHORT -> ChipLabel.Empty
-        VolumeChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.tonnage_chip)))
+        VolumeChipStyle.LONG -> ChipLabel.Text(UiText.Res(Res.string.tonnage_chip))
     }
 
     Chip(
         modifier = modifier,
-        label = text,
+        label = label,
         value = value.short(),
         leading = ChipLeading.Icon(AppTokens.icons.Stack),
         size = size,

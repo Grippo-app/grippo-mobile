@@ -44,9 +44,6 @@ internal fun LineIndicatorBar(
         modifier = modifier
             .defaultMinSize(minHeight = barHeight)
             .drawWithCache {
-                // Everything that depends only on size + style is computed once
-                // and reused across animation frames. Cache invalidates when the
-                // canvas size or any captured input (style, barHeight) changes.
                 val canvasWidth = size.width
                 val canvasHeight = size.height
                 val barPx = barHeight.toPx().coerceAtMost(canvasHeight)
@@ -103,27 +100,26 @@ internal fun LineIndicatorBar(
         },
     ) { measurables, constraints ->
         val markerPlaceable = measurables.firstOrNull()?.measure(Constraints())
-        val markerH = markerPlaceable?.height ?: 0
+        val markerHeight = markerPlaceable?.height ?: 0
         val barPx = barHeight.roundToPx()
-        val desiredH = maxOf(barPx, markerH)
+        val desiredHeight = maxOf(barPx, markerHeight)
 
         val width = when {
             constraints.hasBoundedWidth -> constraints.maxWidth
             else -> constraints.minWidth
         }
-        val height = desiredH.coerceIn(constraints.minHeight, constraints.maxHeight)
+        val height = desiredHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
 
         layout(width, height) {
             if (markerPlaceable != null) {
-                val markerW = markerPlaceable.width
-                val halfW = markerW / 2
+                val halfMarkerWidth = markerPlaceable.width / 2
                 val progressX = (width * animatedProgress).toInt()
-                val maxCenter = (width - halfW).coerceAtLeast(halfW)
-                val centerX = progressX.coerceIn(halfW, maxCenter)
+                val maxCenter = (width - halfMarkerWidth).coerceAtLeast(halfMarkerWidth)
+                val centerX = progressX.coerceIn(halfMarkerWidth, maxCenter)
                 val centerY = height / 2
                 markerPlaceable.place(
-                    x = centerX - halfW,
-                    y = centerY - markerH / 2,
+                    x = centerX - halfMarkerWidth,
+                    y = centerY - markerHeight / 2,
                 )
             }
         }

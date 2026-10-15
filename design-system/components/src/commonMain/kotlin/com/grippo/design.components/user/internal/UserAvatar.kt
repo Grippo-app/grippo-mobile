@@ -33,11 +33,13 @@ internal fun UserAvatar(
 ) {
     val initials = remember(name) { name.toInitials() }
 
-    val shade = AppTokens.colors.profile.avatarShade
-    val gradient = remember(color, shade) {
+    val profileColors = AppTokens.colors.profile
+    val shade = profileColors.avatarShade
+    val baseAlpha = profileColors.avatarBaseAlpha
+    val gradient = remember(color, shade, baseAlpha) {
         Brush.linearGradient(
             colors = listOf(
-                color.copy(alpha = 0.95f),
+                color.copy(alpha = baseAlpha),
                 shade.compositeOver(color),
             )
         )
@@ -47,7 +49,7 @@ internal fun UserAvatar(
         Modifier
             .border(
                 width = ringWidth,
-                color = color.copy(alpha = 0.35f),
+                color = color.copy(alpha = profileColors.avatarRingAlpha),
                 shape = CircleShape
             )
             .padding(ringWidth)

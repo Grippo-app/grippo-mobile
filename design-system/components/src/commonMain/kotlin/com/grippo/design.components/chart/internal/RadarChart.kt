@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.radar.RadarAxis
 import com.grippo.chart.radar.RadarChart
@@ -39,7 +40,6 @@ internal fun RadarChart(
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
 
-    // --- convert colors -> (fraction, color) stops ---
     val scaleStopsOrangeRed: List<Pair<Float, Color>> = remember(palette.palette5OrangeRedGrowth) {
         val colors = palette.palette5OrangeRedGrowth
         val last = (colors.size - 1).coerceAtLeast(1)
@@ -50,6 +50,7 @@ internal fun RadarChart(
 
     val labelTextStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary)
     val axisLabelLayouts: List<TextLayoutResult> = remember(
+        measurer,
         showLabels,
         data.axes,
         labelTextStyle,
@@ -118,7 +119,7 @@ internal fun RadarChart(
         labels = labels,
         polygon = RadarStyle.Polygon(
             strokeWidth = AppTokens.dp.metrics.charts.radar.seriesWidth,
-            fillAlpha = 0.35f,
+            fillAlpha = charts.radar.fillAlpha,
         ),
         vertices = RadarStyle.Vertices.Visible(
             radius = AppTokens.dp.metrics.charts.radar.dotRadius,
@@ -177,7 +178,7 @@ private fun computeHeightForWidthPx(
     widthPx: Int,
     data: RadarData,
     style: RadarStyle,
-    density: androidx.compose.ui.unit.Density,
+    density: Density,
     axisLabelLayouts: List<TextLayoutResult>,
 ): Int {
     if (widthPx <= 0 || data.axes.isEmpty()) return 0
@@ -187,7 +188,8 @@ private fun computeHeightForWidthPx(
     val dir = if (style.layout.clockwise) 1f else -1f
     val angleStep = (2f * PI.toFloat() / n) * dir
     val startRad = style.layout.startAngleDeg * PI.toFloat() / 180f
-    val angles = FloatArray(n) { i -> startRad + i * angleStep }
+    val horizontalDirections = FloatArray(n) { index -> cos(startRad + index * angleStep) }
+    val verticalDirections = FloatArray(n) { index -> sin(startRad + index * angleStep) }
 
     val gridInset = with(density) { style.grid.strokeWidth.toPx() } * 0.5f
     val polygonInset = with(density) { style.polygon.strokeWidth.toPx() } * 0.5f
@@ -200,55 +202,52 @@ private fun computeHeightForWidthPx(
     val labelPadPx = with(density) { style.layout.labelPadding.toPx() }
     val reserveLabels = axisLabelLayouts.isNotEmpty() && style.layout.reserveAxisLabelSpace
 
-    fun requiredWidthForRadius(r: Float): Float {
-        var minX = Float.POSITIVE_INFINITY
-        var maxX = Float.NEGATIVE_INFINITY
-        for (i in 0 until n) {
-            val c = cos(angles[i])
-            val x = r * c
-            minX = min(minX, x)
-            maxX = max(maxX, x)
-        }
-        if (reserveLabels) {
-            val rr = r + labelPadPx
-            for (i in 0 until n) {
-                val c = cos(angles[i])
-                val halfW = axisLabelLayouts[i].size.width * 0.5f
-                val x = rr * c
-                minX = min(minX, x - halfW)
-                maxX = max(maxX, x + halfW)
-            }
-        }
-        return (maxX - minX).coerceAtLeast(0f) + inset * 2f
-    }
-
-    var hi = max(0f, w)
+    var upperRadius = max(0f, w)
     repeat(8) {
-        if (requiredWidthForRadius(hi) >= w || hi <= 0f) return@repeat
-        hi = (hi * 1.5f).coerceAtMost(w * 4f)
+        val requiredWidth = requiredWidthForRadius(
+            radius = upperRadius,
+            horizontalDirections = horizontalDirections,
+            labelLayouts = axisLabelLayouts,
+            labelPadding = labelPadPx,
+            inset = inset,
+            reserveLabels = reserveLabels,
+        )
+        if (requiredWidth < w && upperRadius > 0f) {
+            upperRadius = (upperRadius * 1.5f).coerceAtMost(w * 4f)
+        }
     }
 
-    var lo = 0f
+    var lowerRadius = 0f
     repeat(26) {
-        val mid = (lo + hi) * 0.5f
-        if (requiredWidthForRadius(mid) <= w) lo = mid else hi = mid
+        val candidateRadius = (lowerRadius + upperRadius) * 0.5f
+        val requiredWidth = requiredWidthForRadius(
+            radius = candidateRadius,
+            horizontalDirections = horizontalDirections,
+            labelLayouts = axisLabelLayouts,
+            labelPadding = labelPadPx,
+            inset = inset,
+            reserveLabels = reserveLabels,
+        )
+        if (requiredWidth <= w) {
+            lowerRadius = candidateRadius
+        } else {
+            upperRadius = candidateRadius
+        }
     }
-    val radius = lo
+    val radius = lowerRadius
 
     var minY = Float.POSITIVE_INFINITY
     var maxY = Float.NEGATIVE_INFINITY
     for (i in 0 until n) {
-        val s = sin(angles[i])
-        val y = radius * s
+        val y = radius * verticalDirections[i]
         minY = min(minY, y)
         maxY = max(maxY, y)
     }
     if (reserveLabels) {
         val rr = radius + labelPadPx
         for (i in 0 until n) {
-            val s = sin(angles[i])
             val halfH = axisLabelLayouts[i].size.height * 0.5f
-            val y = rr * s
+            val y = rr * verticalDirections[i]
             minY = min(minY, y - halfH)
             maxY = max(maxY, y + halfH)
         }
@@ -256,6 +255,30 @@ private fun computeHeightForWidthPx(
 
     val contentHeight = (maxY - minY).coerceAtLeast(0f)
     return ceil(contentHeight + inset * 2f).toInt()
+}
+
+private fun requiredWidthForRadius(
+    radius: Float,
+    horizontalDirections: FloatArray,
+    labelLayouts: List<TextLayoutResult>,
+    labelPadding: Float,
+    inset: Float,
+    reserveLabels: Boolean,
+): Float {
+    var minX = Float.POSITIVE_INFINITY
+    var maxX = Float.NEGATIVE_INFINITY
+    horizontalDirections.forEachIndexed { index, direction ->
+        val x = radius * direction
+        minX = min(minX, x)
+        maxX = max(maxX, x)
+        if (reserveLabels) {
+            val labelX = (radius + labelPadding) * direction
+            val halfWidth = labelLayouts[index].size.width * 0.5f
+            minX = min(minX, labelX - halfWidth)
+            maxX = max(maxX, labelX + halfWidth)
+        }
+    }
+    return (maxX - minX).coerceAtLeast(0f) + inset * 2f
 }
 
 @AppPreview
@@ -294,6 +317,45 @@ private fun RadarChartPreview() {
             data = ds,
             showLabels = true,
             clickable = true
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun RadarChartWithoutLabelsPreview() {
+    PreviewContainer {
+        RadarChart(
+            modifier = Modifier.size(300.dp),
+            data = RadarData(
+                axes = listOf(
+                    RadarAxis("chest", "Chest"),
+                    RadarAxis("back", "Back"),
+                    RadarAxis("legs", "Legs"),
+                ),
+                series = listOf(
+                    RadarSeries(
+                        name = "Current",
+                        color = AppTokens.colors.context.muscle,
+                        values = RadarValues.ByIndex(listOf(0f, 0.5f, 1f)),
+                    ),
+                ),
+            ),
+            showLabels = false,
+            clickable = false,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun RadarChartEmptyPreview() {
+    PreviewContainer {
+        RadarChart(
+            modifier = Modifier.size(300.dp),
+            data = RadarData(axes = emptyList(), series = emptyList()),
+            showLabels = true,
+            clickable = true,
         )
     }
 }
