@@ -1,7 +1,9 @@
 package com.grippo.design.components.menu
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -33,13 +35,14 @@ public enum class MenuSectionStyle {
 
 @Composable
 public fun MenuSection(
-    title: String,
     modifier: Modifier = Modifier,
+    title: String,
     style: MenuSectionStyle = MenuSectionStyle.Default,
     icon: ImageVector? = null,
     iconColor: Color = AppTokens.colors.icon.secondary,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -48,32 +51,55 @@ public fun MenuSection(
                     MenuSectionStyle.Default -> AppTokens.colors.background.card
                     MenuSectionStyle.Subtle -> Color.Transparent
                 },
-                shape = RoundedCornerShape(AppTokens.dp.menu.radius),
+                shape = shape,
             )
-            .padding(AppTokens.dp.contentPadding.content),
+            .border(
+                width = AppTokens.dp.menu.borderWidth,
+                color = when (style) {
+                    MenuSectionStyle.Default -> AppTokens.colors.border.default
+                    MenuSectionStyle.Subtle -> Color.Transparent
+                },
+                shape = shape,
+            )
+            .padding(AppTokens.dp.menu.contentPadding),
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
             icon?.let {
-                Icon(
-                    modifier = Modifier.size(AppTokens.dp.menu.item.icon),
-                    imageVector = it,
-                    tint = iconColor,
-                    contentDescription = null,
-                )
+                Box(
+                    modifier = Modifier
+                        .size(AppTokens.dp.menu.headerIconContainer)
+                        .background(
+                            color = when (style) {
+                                MenuSectionStyle.Default -> AppTokens.colors.background.screen
+                                MenuSectionStyle.Subtle -> AppTokens.colors.background.card
+                            },
+                            shape = RoundedCornerShape(AppTokens.dp.menu.headerIconRadius),
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(AppTokens.dp.menu.headerIcon),
+                        imageVector = it,
+                        tint = iconColor,
+                        contentDescription = null,
+                    )
+                }
             }
             Text(
+                modifier = Modifier.weight(1f),
                 text = title,
-                style = AppTokens.typography.h5(),
+                style = AppTokens.typography.h4(),
                 color = when (style) {
                     MenuSectionStyle.Default -> AppTokens.colors.text.primary
                     MenuSectionStyle.Subtle -> AppTokens.colors.text.secondary
                 },
             )
         }
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
         content()
     }
 }
@@ -105,6 +131,42 @@ private fun MenuSectionSubtlePreview() {
                 onClick = {},
                 showDivider = false,
             )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuSectionLoadingPreview() {
+    PreviewContainer {
+        MenuSection(title = "Body", icon = AppTokens.icons.Body, iconColor = AppTokens.colors.context.body) {
+            MenuValueRow(title = "Weight", loading = true, onClick = {})
+            MenuValueRow(title = "Height", value = "Not set", onClick = {}, showDivider = false)
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuSectionLongContentPreview() {
+    PreviewContainer {
+        MenuSectionStyle.entries.forEach { style ->
+            MenuSection(
+                title = "Налаштування та обмеження тренувань",
+                style = style,
+                icon = AppTokens.icons.Tune,
+            ) {
+                MenuValueRow(
+                    title = "Рівень тренувального досвіду",
+                    value = "Досвідчений спортсмен",
+                    onClick = {},
+                )
+                MenuValueRow(
+                    title = "Спільнота та підтримка",
+                    onClick = {},
+                    showDivider = false,
+                )
+            }
         }
     }
 }

@@ -62,7 +62,10 @@ internal fun GoalSetupSuggestionScreen(
             val (title, description) = code.text()
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
+                style = BannerCardStyle.Custom(
+                    tint = AppTokens.colors.illustration.accent,
+                    surface = AppTokens.colors.bannerCard.illustrationBackground,
+                ),
                 icon = code.icon(),
                 title = title,
                 description = description,

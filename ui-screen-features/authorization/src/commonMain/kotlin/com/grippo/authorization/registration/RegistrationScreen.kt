@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -18,6 +20,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
+import com.grippo.design.components.brand.BrandHeader
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -62,55 +65,50 @@ internal fun RegistrationScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            BrandHeader(
+                modifier = Modifier.fillMaxWidth(),
+                title = AppTokens.strings.res(Res.string.registration_title),
+                description = AppTokens.strings.res(Res.string.registration_description),
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
+            InputEmail(
+                value = state.email,
+                onFocused = contract::onEmailFocused,
+                onClear = contract::onEmailCleared,
+                onNext = contract::onEmailKeyboardNext,
+                onValueChange = contract::onEmailChange
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        InputEmail(
-            value = state.email,
-            onFocused = contract::onEmailFocused,
-            onClear = contract::onEmailCleared,
-            onNext = contract::onEmailKeyboardNext,
-            onValueChange = contract::onEmailChange
-        )
+            InputPassword(
+                value = state.password,
+                onFocused = contract::onPasswordFocused,
+                onVisibilityChange = contract::onPasswordVisibilityChange,
+                onDone = contract::onPasswordKeyboardDone,
+                onValueChange = contract::onPasswordChange
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-        InputPassword(
-            value = state.password,
-            onFocused = contract::onPasswordFocused,
-            onVisibilityChange = contract::onPasswordVisibilityChange,
-            onDone = contract::onPasswordKeyboardDone,
-            onValueChange = contract::onPasswordChange
-        )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = state.password.hint(),
+                style = AppTokens.typography.b12Semi(),
+                color = AppTokens.colors.text.tertiary,
+                textAlign = TextAlign.End
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.password.hint(),
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.text.tertiary,
-            textAlign = TextAlign.End
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        }
 
         val buttonState = remember(loaders, state.email, state.password) {
             when {
@@ -162,6 +160,36 @@ private fun ScreenPreviewFilled() {
             state = RegistrationState(
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123")
+            ),
+            loaders = persistentSetOf(),
+            contract = RegistrationContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        RegistrationScreen(
+            state = RegistrationState(
+                email = EmailFormatState.of("user@email.com"),
+                password = PasswordFormatState.of("qwerty123")
+            ),
+            loaders = persistentSetOf(RegistrationLoader.RegisterButton),
+            contract = RegistrationContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewInvalid() {
+    PreviewContainer {
+        RegistrationScreen(
+            state = RegistrationState(
+                email = EmailFormatState.of("user@"),
+                password = PasswordFormatState.of("123")
             ),
             loaders = persistentSetOf(),
             contract = RegistrationContract.Empty

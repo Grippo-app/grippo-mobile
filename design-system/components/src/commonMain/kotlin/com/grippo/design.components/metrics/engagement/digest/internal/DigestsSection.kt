@@ -1,10 +1,13 @@
 package com.grippo.design.components.metrics.engagement.digest.internal
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,21 +25,33 @@ import com.grippo.design.resources.provider.icons.Trophy
 internal fun DigestHeader(
     modifier: Modifier = Modifier,
     icon: ImageVector,
-    accentColor: Color,
+    iconColor: Color,
     title: String,
     subtitle: String,
 ) {
+    val dp = AppTokens.dp.metrics.engagement.digest
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.metrics.engagement.digest.icon),
-            imageVector = icon,
-            contentDescription = null,
-            tint = accentColor,
-        )
+        Box(
+            modifier = Modifier
+                .size(dp.iconContainer)
+                .background(
+                    color = AppTokens.colors.background.screen,
+                    shape = RoundedCornerShape(dp.iconRadius),
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                modifier = Modifier.size(dp.icon),
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor,
+            )
+        }
 
         Text(
             modifier = Modifier.weight(1f),
@@ -98,7 +113,7 @@ private fun DigestsSectionPreview() {
     PreviewContainer {
         DigestHeader(
             icon = AppTokens.icons.Trophy,
-            accentColor = AppTokens.colors.brand.color6,
+            iconColor = AppTokens.colors.context.volume,
             title = "Total",
             subtitle = "Apr 2026",
         )

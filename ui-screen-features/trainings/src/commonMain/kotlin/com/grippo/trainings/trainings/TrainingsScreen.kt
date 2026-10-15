@@ -76,7 +76,6 @@ internal fun TrainingsScreen(
                     is TrainingsTimelinePeriod.Daily -> DateFormat.DateOnly.DateDdMmm
                     is TrainingsTimelinePeriod.Monthly -> DateFormat.DateOnly.Mmmm
                 },
-                limitations = state.limitations,
                 onSelect = contract::onOpenDateSelector,
                 onNext = contract::onSelectNextDate,
                 onPrevious = contract::onSelectPreviousDate

@@ -35,10 +35,11 @@ public fun VolumeChip(
         modifier = modifier,
         label = text,
         value = value.short(),
-        trailing = ChipTrailing.Icon(AppTokens.icons.Stack),
+        leading = ChipLeading.Icon(AppTokens.icons.Stack),
         size = size,
-        stype = ChipStype.Default,
+        interaction = ChipInteraction.Static,
         textColor = AppTokens.colors.text.primary,
+        labelColor = AppTokens.colors.text.secondary,
         iconColor = AppTokens.colors.context.volume,
         brush = SolidColor(AppTokens.colors.background.card)
     )

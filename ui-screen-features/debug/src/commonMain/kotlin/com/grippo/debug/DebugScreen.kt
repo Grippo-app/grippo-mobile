@@ -101,3 +101,15 @@ private fun ScreenPreview() {
         )
     }
 }
+
+@AppPreview
+@Composable
+private fun DebugScreenLoadingPreview() {
+    PreviewContainer {
+        DebugScreen(
+            state = DebugState(),
+            loaders = persistentSetOf(DebugLoader.Logs),
+            contract = DebugContract.Empty,
+        )
+    }
+}

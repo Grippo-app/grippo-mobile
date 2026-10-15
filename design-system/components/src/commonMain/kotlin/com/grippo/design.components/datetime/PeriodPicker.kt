@@ -3,19 +3,18 @@ package com.grippo.design.components.datetime
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonState
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -36,21 +35,13 @@ public fun PeriodPicker(
         false -> AppTokens.colors.text.disabled
     }
 
-    when (enabled) {
-        true -> AppTokens.colors.text.secondary
-        false -> AppTokens.colors.text.disabled
-    }
-
-    when (enabled) {
-        true -> AppTokens.colors.icon.tertiary
-        false -> AppTokens.colors.icon.disabled
-    }
-
     Row(
-        modifier = modifier.scalableClick(
-            enabled = enabled,
-            onClick = onSelect
-        ),
+        modifier = modifier
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                if (!enabled) disabled()
+            }
+            .scalableClick(enabled = enabled, onClick = onSelect),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -62,21 +53,11 @@ public fun PeriodPicker(
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
-        val buttonState = remember(enabled) {
-            when (enabled) {
-                true -> ButtonState.Enabled
-                false -> ButtonState.Disabled
-            }
-        }
-
-        Button(
-            content = ButtonContent.Icon(
-                icon = ButtonIcon.Icon(AppTokens.icons.ArrowDown)
-            ),
-            state = buttonState,
-            size = ButtonSize.Small,
-            style = ButtonStyle.Transparent,
-            onClick = onSelect
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.periodPicker.icon),
+            imageVector = AppTokens.icons.ArrowDown,
+            contentDescription = null,
+            tint = if (enabled) AppTokens.colors.icon.secondary else AppTokens.colors.icon.disabled,
         )
     }
 }

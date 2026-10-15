@@ -4,6 +4,11 @@ MUST read [CLAUDE.md](CLAUDE.md) for architecture, scope and verification policy
 Project skills have one canonical source in `.claude/skills/`; MUST NOT create
 parallel copies or treat historical reports as current rules.
 
+New UI, visual redesigns and visual reviews of screens, dialogs and shared
+components MUST apply [brand design](.claude/skills/brand-design/SKILL.md).
+It owns visual intent and composition; design-system owns implementation and
+illustrations owns artwork. Changes without visual impact need no brand workflow.
+
 Feature behavior changes (screens, dialogs, navigation, entry points, operations,
 validation or outcomes) MUST apply [feature analytics](.claude/skills/feature-analytics/SKILL.md)
 even without an explicit tracking request. MUST update affected coverage and pass

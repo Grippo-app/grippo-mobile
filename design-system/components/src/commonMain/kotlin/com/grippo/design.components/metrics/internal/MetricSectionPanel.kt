@@ -1,6 +1,7 @@
 package com.grippo.design.components.metrics.internal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -21,7 +22,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Immutable
-public enum class MetricSectionPanelStyle {
+internal enum class MetricSectionPanelStyle {
     Small,
     Large
 }
@@ -54,14 +55,17 @@ internal fun MetricSectionPanel(
         MetricSectionPanelStyle.Small -> AppTokens.dp.metrics.panel.small.spacer
         MetricSectionPanelStyle.Large -> AppTokens.dp.metrics.panel.large.spacer
     }
+    val shape = RoundedCornerShape(radius)
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(radius))
+            .clip(shape)
             .height(intrinsicSize = IntrinsicSize.Min)
-            .background(
-                AppTokens.colors.background.card,
-                shape = RoundedCornerShape(radius)
+            .background(AppTokens.colors.background.card, shape)
+            .border(
+                width = AppTokens.dp.metrics.panel.borderWidth,
+                color = AppTokens.colors.border.default,
+                shape = shape,
             )
     ) {
         decorator?.invoke(this)

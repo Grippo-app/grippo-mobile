@@ -101,9 +101,9 @@ private fun HomeScreenPreview() {
                     stubExerciseSpotlightNearBest(),
                 ),
                 muscleLoad = stubMuscleLoadSummary(),
-                streak = stubTrainingStreaks().random(),
+                streak = stubTrainingStreaks().first(),
                 performance = stubPerformanceMetrics(),
-                goalProgress = stubGoalProgressList().random(),
+                goalProgress = stubGoalProgressList().first(),
                 user = stubUser()
             ),
             loaders = persistentSetOf(),
@@ -125,6 +125,18 @@ private fun HomeScreenEmptyPreview() {
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenLoadingPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = HomeState(),
+            loaders = persistentSetOf(HomeLoader.Trainings),
+            contract = HomeContract.Empty,
         )
     }
 }

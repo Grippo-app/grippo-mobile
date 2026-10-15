@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
+import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.components.user.internal.UserAvatar
 import com.grippo.design.core.AppTokens
@@ -31,14 +32,18 @@ import com.grippo.design.resources.provider.profile_name_not_set
 
 @Composable
 public fun UserProfileHeader(
-    value: UserState?,
     modifier: Modifier = Modifier,
+    value: UserState?,
     loading: Boolean = false,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = AppTokens.dp.contentPadding.content),
+            .illustrationBackground(RoundedCornerShape(AppTokens.dp.userCard.card.radius))
+            .padding(
+                horizontal = AppTokens.dp.userCard.card.horizontalPadding,
+                vertical = AppTokens.dp.userCard.card.verticalPadding,
+            ),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -65,18 +70,18 @@ public fun UserProfileHeader(
             if (loading) {
                 Box(
                     Modifier
-                        .fillMaxWidth(0.4f)
-                        .height(AppTokens.dp.menu.item.icon)
-                        .clip(RoundedCornerShape(AppTokens.dp.contentPadding.text))
+                        .fillMaxWidth(AppTokens.dp.userCard.headerLoading.nameWidthFraction)
+                        .height(AppTokens.dp.userCard.headerLoading.nameHeight)
+                        .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
                         .background(AppTokens.colors.divider.default)
                         .shimmer()
                         .semantics { progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate },
                 )
                 Box(
                     Modifier
-                        .fillMaxWidth(0.6f)
-                        .height(AppTokens.dp.contentPadding.content)
-                        .clip(RoundedCornerShape(AppTokens.dp.contentPadding.text))
+                        .fillMaxWidth(AppTokens.dp.userCard.headerLoading.emailWidthFraction)
+                        .height(AppTokens.dp.userCard.headerLoading.emailHeight)
+                        .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
                         .background(AppTokens.colors.divider.default)
                         .shimmer(),
                 )
@@ -84,7 +89,7 @@ public fun UserProfileHeader(
                 val name = value?.name?.takeIf { it.isNotBlank() }
                 Text(
                     text = name ?: AppTokens.strings.res(Res.string.profile_name_not_set),
-                    style = AppTokens.typography.h5(),
+                    style = AppTokens.typography.h3(),
                     color = if (name == null) AppTokens.colors.text.tertiary else AppTokens.colors.text.primary,
                 )
                 value?.email?.takeIf { it.isNotBlank() }?.let { email ->
@@ -104,7 +109,43 @@ public fun UserProfileHeader(
 private fun UserProfileHeaderPreview() {
     PreviewContainer {
         UserProfileHeader(value = stubUser().copy(name = "Alex", email = "alex@grippo.app"))
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserProfileHeaderEmptyPreview() {
+    PreviewContainer {
         UserProfileHeader(value = null)
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserProfileHeaderLoadingPreview() {
+    PreviewContainer {
         UserProfileHeader(value = null, loading = true)
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserProfileHeaderPartialPreview() {
+    PreviewContainer {
+        UserProfileHeader(value = stubUser().copy(name = "", email = "alex@grippo.app"))
+        UserProfileHeader(value = stubUser().copy(name = "Alex", email = ""))
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserProfileHeaderLongContentPreview() {
+    PreviewContainer {
+        UserProfileHeader(
+            value = stubUser().copy(
+                name = "Олександр Костянтинович",
+                email = "oleksandr.kostiantynovych@grippo.app",
+            ),
+        )
     }
 }

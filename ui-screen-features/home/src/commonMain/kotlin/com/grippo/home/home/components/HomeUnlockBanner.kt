@@ -42,10 +42,10 @@ import kotlin.time.Duration.Companion.minutes
 
 @Composable
 internal fun HomeUnlockBanner(
+    modifier: Modifier = Modifier,
     stats: UserStatsState,
     hasGoal: Boolean,
     onAddGoal: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val lifetimeCount = stats.trainingsCount
     if (!HomeUnlock.shouldShowBanner(lifetimeCount = lifetimeCount, hasGoal = hasGoal)) return
@@ -77,7 +77,10 @@ internal fun HomeUnlockBanner(
         if (showGoalSection) {
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
+                style = BannerCardStyle.Custom(
+                    tint = AppTokens.colors.text.tertiary,
+                    surface = AppTokens.colors.bannerCard.mutedBackground,
+                ),
                 icon = AppTokens.icons.Lock,
                 title = AppTokens.strings.res(Res.string.home_unlock_set_goal_title),
                 description = AppTokens.strings.res(Res.string.home_unlock_set_goal_description),
@@ -98,15 +101,18 @@ internal fun HomeUnlockBanner(
 
 @Composable
 private fun MilestoneCard(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
     progressLabel: String,
-    modifier: Modifier = Modifier,
     icon: ImageVector = AppTokens.icons.Lock,
 ) {
     BannerCard(
         modifier = modifier.fillMaxWidth(),
-        style = BannerCardStyle.Custom(AppTokens.colors.text.tertiary),
+        style = BannerCardStyle.Custom(
+            tint = AppTokens.colors.text.tertiary,
+            surface = AppTokens.colors.bannerCard.mutedBackground,
+        ),
         icon = icon,
         title = title,
         description = description,
@@ -114,7 +120,7 @@ private fun MilestoneCard(
             Text(
                 modifier = Modifier
                     .background(
-                        AppTokens.colors.text.tertiary.copy(alpha = 0.14f),
+                        AppTokens.colors.bannerCard.mutedBackground,
                         CircleShape,
                     )
                     .padding(

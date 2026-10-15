@@ -1,9 +1,8 @@
 package com.grippo.profile.menu
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -54,6 +53,7 @@ internal fun ProfileMenuScreen(
     }
     LazyColumn(
         modifier = Modifier.fillMaxWidth().weight(1f),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
         contentPadding = PaddingValues(
             start = AppTokens.dp.screen.horizontalPadding,
             end = AppTokens.dp.screen.horizontalPadding,
@@ -66,7 +66,6 @@ internal fun ProfileMenuScreen(
                 value = state.user,
                 loading = userLoading,
             )
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
         }
         item(key = "menu", contentType = "menu") {
             ProfileMenuContent(
@@ -133,6 +132,56 @@ private fun ProfileMenuScreenPartialPreview() {
         ProfileMenuScreen(
             state = profileMenuPreviewState().copy(goal = null),
             loaders = persistentSetOf(ProfileMenuLoader.Goal),
+            contract = ProfileMenuContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileMenuScreenRefreshingPreview() {
+    PreviewContainer {
+        ProfileMenuScreen(
+            state = profileMenuPreviewState(),
+            loaders = persistentSetOf(
+                ProfileMenuLoader.User,
+                ProfileMenuLoader.Goal,
+                ProfileMenuLoader.Muscles,
+                ProfileMenuLoader.Equipments,
+            ),
+            contract = ProfileMenuContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileMenuScreenLongIdentityPreview() {
+    PreviewContainer {
+        ProfileMenuScreen(
+            state = profileMenuPreviewState().copy(
+                user = profileMenuPreviewState().user?.copy(
+                    name = "Олександр Костянтинович",
+                    email = "oleksandr.kostiantynovych@grippo.app",
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = ProfileMenuContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileMenuScreenAdminPreview() {
+    PreviewContainer {
+        ProfileMenuScreen(
+            state = profileMenuPreviewState().copy(
+                user = profileMenuPreviewState().user?.copy(role = RoleEnumState.ADMIN),
+                excludedMusclesCount = 0,
+                excludedEquipmentsCount = 0,
+            ),
+            loaders = persistentSetOf(),
             contract = ProfileMenuContract.Empty,
         )
     }

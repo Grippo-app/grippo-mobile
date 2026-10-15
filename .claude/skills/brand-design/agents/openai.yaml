@@ -1,0 +1,4 @@
+interface:
+  display_name: "Grippo Brand Design"
+  short_description: "Branded Grippo UI, composition and visual review"
+  default_prompt: "Use $brand-design to design, refresh or review Grippo UI through the existing design system, preserving behavior and the warm graphite-and-orange visual language."

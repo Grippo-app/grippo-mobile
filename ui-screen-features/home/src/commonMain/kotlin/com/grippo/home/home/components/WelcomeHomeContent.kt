@@ -1,5 +1,7 @@
 package com.grippo.home.home.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +26,7 @@ import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.konfetti.KonfettiParade
+import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
@@ -125,7 +130,7 @@ private fun WelcomeBody(
     LazyColumn(
         modifier = modifier,
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
         item("hero") {
             HeroBlock(
@@ -151,68 +156,91 @@ private fun WelcomeBody(
             )
         }
 
-        item("progress-header") {
-            Text(
+        item("progress") {
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.welcome_section_progress_title),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
-            )
-        }
-
-        item("checklist") {
-            WelcomeChecklist(
-                modifier = Modifier.fillMaxWidth(),
-                items = checklistItems,
-            )
-        }
-
-        item("benefits-header") {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.welcome_section_benefits_title),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
-            )
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.welcome_section_progress_title),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+                WelcomeChecklist(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = checklistItems,
+                )
+            }
         }
 
         item("benefits") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
-                BannerCard(
+                Text(
                     modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
-                    icon = AppTokens.icons.Sparkle,
-                    title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
-                    description = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
+                    text = AppTokens.strings.res(Res.string.welcome_section_benefits_title),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
                 )
+                val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                        .background(AppTokens.colors.background.card, shape)
+                        .border(AppTokens.dp.welcome.card.borderWidth, AppTokens.colors.border.default, shape)
+                        .padding(
+                            horizontal = AppTokens.dp.welcome.card.horizontalPadding,
+                            vertical = AppTokens.dp.welcome.card.verticalPadding,
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                ) {
+                    BannerCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = BannerCardStyle.Custom(
+                            tint = AppTokens.colors.illustration.accent,
+                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                        ),
+                        icon = AppTokens.icons.Sparkle,
+                        title = AppTokens.strings.res(Res.string.welcome_benefit_pack_title),
+                        description = AppTokens.strings.res(Res.string.welcome_benefit_pack_subtitle),
+                    )
 
-                BannerCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
-                    icon = AppTokens.icons.LineUp,
-                    title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
-                    description = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
-                )
+                    BannerCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = BannerCardStyle.Custom(
+                            tint = AppTokens.colors.illustration.accent,
+                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                        ),
+                        icon = AppTokens.icons.LineUp,
+                        title = AppTokens.strings.res(Res.string.welcome_benefit_progress_title),
+                        description = AppTokens.strings.res(Res.string.welcome_benefit_progress_subtitle),
+                    )
 
-                BannerCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
-                    icon = AppTokens.icons.Stack,
-                    title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
-                    description = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
-                )
+                    BannerCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = BannerCardStyle.Custom(
+                            tint = AppTokens.colors.illustration.accent,
+                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                        ),
+                        icon = AppTokens.icons.Stack,
+                        title = AppTokens.strings.res(Res.string.welcome_benefit_history_title),
+                        description = AppTokens.strings.res(Res.string.welcome_benefit_history_subtitle),
+                    )
 
-                BannerCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = BannerCardStyle.Custom(AppTokens.colors.brand.color6),
-                    icon = if (hasGoal) AppTokens.icons.Medal else AppTokens.icons.Lock,
-                    title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
-                    description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),
-                    enabled = hasGoal,
-                )
+                    BannerCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = BannerCardStyle.Custom(
+                            tint = AppTokens.colors.illustration.accent,
+                            surface = AppTokens.colors.bannerCard.illustrationBackground,
+                        ),
+                        icon = if (hasGoal) AppTokens.icons.Medal else AppTokens.icons.Lock,
+                        title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
+                        description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),
+                        enabled = hasGoal,
+                    )
+                }
             }
         }
     }
@@ -222,8 +250,11 @@ private fun WelcomeBody(
 private fun HeroBlock(
     modifier: Modifier = Modifier
 ) {
+    val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .illustrationBackground(shape)
+            .padding(AppTokens.dp.contentPadding.block),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Illustration(
@@ -249,7 +280,7 @@ private fun HeroBlock(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.welcome_subtitle),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
     }

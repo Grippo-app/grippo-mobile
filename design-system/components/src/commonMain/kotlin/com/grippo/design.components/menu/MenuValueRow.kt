@@ -34,12 +34,18 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.ArrowRight
+import com.grippo.design.resources.provider.icons.Body
+import com.grippo.design.resources.provider.icons.Edit
+import com.grippo.design.resources.provider.icons.Info
+import com.grippo.design.resources.provider.icons.Instagram
+import com.grippo.design.resources.provider.icons.Threads
+import com.grippo.design.resources.provider.icons.Trash
 
 @Composable
 public fun MenuValueRow(
+    modifier: Modifier = Modifier,
     title: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     value: String? = null,
     loading: Boolean = false,
     showDivider: Boolean = true,
@@ -49,23 +55,33 @@ public fun MenuValueRow(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-            val valueMaxWidth = maxWidth * 0.45f
+            val valueMaxWidth = maxWidth * AppTokens.dp.menu.item.valueMaxWidthFraction
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = AppTokens.dp.button.medium.height)
+                    .heightIn(min = AppTokens.dp.menu.item.minHeight)
                     .scalableClick(role = Role.Button, onClick = onClick)
-                    .padding(vertical = AppTokens.dp.contentPadding.subContent),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    .padding(vertical = AppTokens.dp.menu.item.verticalPadding),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.menu.item.space),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 icon?.let {
-                    Icon(
-                        modifier = Modifier.size(AppTokens.dp.menu.item.icon),
-                        imageVector = it,
-                        tint = iconColor,
-                        contentDescription = null,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(AppTokens.dp.menu.item.iconContainer)
+                            .background(
+                                color = AppTokens.colors.background.card,
+                                shape = RoundedCornerShape(AppTokens.dp.menu.item.iconRadius),
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(AppTokens.dp.menu.item.icon),
+                            imageVector = it,
+                            tint = iconColor,
+                            contentDescription = null,
+                        )
+                    }
                 }
                 Text(
                     modifier = Modifier.weight(1f),
@@ -91,7 +107,7 @@ public fun MenuValueRow(
         if (showDivider) {
             HorizontalDivider(
                 modifier = if (icon == null) Modifier else Modifier.padding(
-                    start = AppTokens.dp.menu.item.icon + AppTokens.dp.contentPadding.subContent,
+                    start = AppTokens.dp.menu.item.iconContainer + AppTokens.dp.menu.item.space,
                 ),
                 color = AppTokens.colors.divider.default,
             )
@@ -101,17 +117,17 @@ public fun MenuValueRow(
 
 @Composable
 private fun MenuRowValue(
+    modifier: Modifier = Modifier,
     value: String?,
     loading: Boolean,
-    modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
 ) {
     when {
         loading -> Box(
             modifier = modifier
-                .width(AppTokens.dp.userCard.avatar.small)
-                .height(AppTokens.dp.menu.item.icon)
-                .clip(RoundedCornerShape(AppTokens.dp.contentPadding.text))
+                .width(AppTokens.dp.menu.item.loadingWidth)
+                .height(AppTokens.dp.menu.item.loadingHeight)
+                .clip(RoundedCornerShape(AppTokens.dp.menu.item.loadingRadius))
                 .background(AppTokens.colors.divider.default)
                 .shimmer()
                 .semantics { progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate },
@@ -130,9 +146,94 @@ private fun MenuRowValue(
 @Composable
 private fun MenuValueRowPreview() {
     PreviewContainer {
-        MenuSection(title = "Body") {
+        MenuSection(title = "Body", icon = AppTokens.icons.Body, iconColor = AppTokens.colors.context.body) {
             MenuValueRow(title = "Weight", value = "82 kg", onClick = {})
-            MenuValueRow(title = "Height", loading = true, onClick = {}, showDivider = false)
+            MenuValueRow(title = "Height", value = "178 cm", loading = true, onClick = {})
+            MenuValueRow(title = "Experience", value = "—", onClick = {}, showDivider = false)
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuValueRowSettingsPreview() {
+    PreviewContainer {
+        MenuSection(title = "Settings", style = MenuSectionStyle.Subtle) {
+            MenuValueRow(title = "Account", titleColor = AppTokens.colors.text.secondary, onClick = {})
+            MenuValueRow(title = "Community", titleColor = AppTokens.colors.text.secondary, onClick = {})
+            MenuValueRow(
+                title = "Debug",
+                titleColor = AppTokens.colors.semantic.error,
+                onClick = {},
+                showDivider = false,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuValueRowSocialPreview() {
+    PreviewContainer {
+        Column {
+            MenuValueRow(
+                title = "Instagram",
+                icon = AppTokens.icons.Instagram,
+                iconColor = AppTokens.colors.brand.color1,
+                onClick = {},
+            )
+            MenuValueRow(
+                title = "Threads",
+                icon = AppTokens.icons.Threads,
+                iconColor = AppTokens.colors.text.primary,
+                onClick = {},
+                showDivider = false,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuValueRowDialogPreview() {
+    PreviewContainer {
+        Column(
+            modifier = Modifier
+                .background(AppTokens.colors.background.dialog)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        ) {
+            MenuValueRow(
+                title = "Details",
+                icon = AppTokens.icons.Info,
+                iconColor = AppTokens.colors.brand.color5,
+                onClick = {},
+            )
+            MenuValueRow(
+                title = "Edit",
+                icon = AppTokens.icons.Edit,
+                iconColor = AppTokens.colors.brand.color2,
+                onClick = {},
+            )
+            MenuValueRow(
+                title = "Delete",
+                icon = AppTokens.icons.Trash,
+                titleColor = AppTokens.colors.semantic.error,
+                iconColor = AppTokens.colors.semantic.error,
+                onClick = {},
+                showDivider = false,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuValueRowLongContentPreview() {
+    PreviewContainer {
+        MenuSection(title = "Тренувальні налаштування") {
+            MenuValueRow(title = "Основна ціль тренувань", value = "Нарощування м’язової маси", onClick = {})
+            MenuValueRow(title = "Виключене обладнання", value = "0", onClick = {})
+            MenuValueRow(title = "Досвід тренувань", value = "Не вказано", onClick = {}, showDivider = false)
         }
     }
 }

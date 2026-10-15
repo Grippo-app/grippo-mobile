@@ -37,6 +37,9 @@ these from the request/source before asking for missing information.
 5. UI/design work compares real consumers and declared design states through
    [visual review](references/visual-review.md). Source compliance does not prove
    rendered fidelity; note states/platforms that could not be inspected.
+   New or visually changed product UI and visual UI reviews MUST also pass
+   [brand-design acceptance](../brand-design/SKILL.md#completion) for composition,
+   role-based emphasis and consistency, alongside design-system implementation gates.
    Product artwork MUST also pass the owning
    [illustration completion gate](../illustrations/SKILL.md#completion): review the
    exported asset against the canonical style reference, not only generator output.

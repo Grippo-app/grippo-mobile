@@ -1,7 +1,7 @@
 # Grippo theme ownership
 
-Read current `AppTheme.kt` and `internal/ResourceProvider.kt` under
-`design-system/core/src/commonMain/kotlin/com/grippo/design.core/`.
+Read current [AppTheme](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/AppTheme.kt)
+and [ResourceProvider](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/internal/ResourceProvider.kt).
 
 The root wraps content in `AppTheme(darkTheme, localeTag, content)`; previews use
 PreviewContainer. Internal ProvideResources selects DarkColor or LightColor and

@@ -29,6 +29,10 @@ MUST NOT invent product behavior, backend contracts or absent infrastructure.
    [data](../data-layer/SKILL.md), [mappers](../mappers/SKILL.md),
    [DI](../di-modules/SKILL.md), [design](../design-system/SKILL.md),
    [platform/build](../platform-build-toolkit/SKILL.md). Read only needed references.
+   Designing, redesigning or visually reviewing product UI MUST also apply
+   [brand-design](../brand-design/SKILL.md): establish the surface's purpose,
+   composition, existing shared owners and meaningful states before choosing
+   widgets. Keep its brief in the current task context, not a mandatory new file.
    Requested product artwork MUST route to [illustrations](../illustrations/SKILL.md)
    for style, reuse and asset acceptance; design-system retains resource/UI ownership.
    Distinguish standalone delivery from screen integration before planning consumers.

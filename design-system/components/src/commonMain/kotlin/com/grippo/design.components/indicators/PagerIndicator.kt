@@ -8,14 +8,18 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,12 +47,20 @@ public fun PagerIndicator(
         label = "pager-indicator-visibility",
     ) { visible ->
         if (visible) {
+            val shape = RoundedCornerShape(AppTokens.dp.pagerIndicator.radius)
+
             Row(
                 modifier = Modifier
                     .background(
-                        color = AppTokens.colors.semantic.notice.copy(0.18f),
-                        shape = CircleShape,
-                    ).padding(
+                        color = AppTokens.colors.background.card,
+                        shape = shape,
+                    )
+                    .border(
+                        width = AppTokens.dp.pagerIndicator.borderWidth,
+                        color = AppTokens.colors.border.default,
+                        shape = shape,
+                    )
+                    .padding(
                         horizontal = AppTokens.dp.contentPadding.content,
                         vertical = AppTokens.dp.contentPadding.subContent,
                     ),
@@ -73,9 +85,9 @@ public fun PagerIndicator(
 
                     val color by animateColorAsState(
                         targetValue = if (selected) {
-                            AppTokens.colors.semantic.notice
+                            AppTokens.colors.selection.accent
                         } else {
-                            AppTokens.colors.text.primary
+                            AppTokens.colors.icon.tertiary
                         },
                         animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
                         label = "indicatorColor"
@@ -105,8 +117,30 @@ public fun PagerIndicator(
 @Composable
 private fun PagerIndicatorPreview() {
     PreviewContainer {
-        PagerIndicator(pageCount = 1, selectedIndex = 0)
-        PagerIndicator(pageCount = 4, selectedIndex = 0)
-        PagerIndicator(pageCount = 4, selectedIndex = 2)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTokens.colors.background.dialog)
+                .padding(AppTokens.dp.contentPadding.content),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            PagerIndicator(pageCount = 0, selectedIndex = 0)
+            PagerIndicator(pageCount = 1, selectedIndex = 0)
+
+            PagerIndicator(pageCount = 2, selectedIndex = 0)
+            PagerIndicator(pageCount = 2, selectedIndex = 1)
+
+            PagerIndicator(pageCount = 4, selectedIndex = 0)
+            PagerIndicator(pageCount = 4, selectedIndex = 2)
+            PagerIndicator(pageCount = 4, selectedIndex = 3)
+
+            PagerIndicator(pageCount = 12, selectedIndex = 0)
+            PagerIndicator(pageCount = 12, selectedIndex = 5)
+            PagerIndicator(pageCount = 12, selectedIndex = 11)
+
+            // A shrinking pager may briefly keep its previous selected index.
+            PagerIndicator(pageCount = 3, selectedIndex = 11)
+        }
     }
 }

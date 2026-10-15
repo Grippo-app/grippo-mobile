@@ -1,6 +1,7 @@
 package com.grippo.design.components.metrics.profile.goal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,10 +68,10 @@ public enum class GoalInsightSeverity {
  */
 @Composable
 public fun GoalInsightCard(
+    modifier: Modifier = Modifier,
     severity: GoalInsightSeverity,
     headline: String,
     detail: String,
-    modifier: Modifier = Modifier,
     action: String? = null,
 ) {
     val accent = severity.color()
@@ -82,6 +83,7 @@ public fun GoalInsightCard(
             .fillMaxWidth()
             .clip(shape)
             .background(AppTokens.colors.background.card, shape)
+            .border(AppTokens.dp.metrics.panel.borderWidth, AppTokens.colors.border.default, shape)
             .height(intrinsicSize = IntrinsicSize.Min),
     ) {
         Box(

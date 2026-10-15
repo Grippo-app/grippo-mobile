@@ -2,6 +2,7 @@ package com.grippo.design.components.chip
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -51,28 +52,28 @@ public sealed interface ChipSize {
 }
 
 @Stable
-public sealed interface ChipTrailing {
+public sealed interface ChipLeading {
     @Stable
     public data class Content(
-        val lambda: @Composable () -> Unit
-    ) : ChipTrailing
+        val content: @Composable () -> Unit
+    ) : ChipLeading
 
     @Stable
     public data class Icon(
         val icon: ImageVector,
-    ) : ChipTrailing
+    ) : ChipLeading
 
     @Stable
-    public data object Empty : ChipTrailing
+    public data object Empty : ChipLeading
 }
 
 @Stable
-public sealed interface ChipStype {
+public sealed interface ChipInteraction {
     @Stable
-    public data class Clickable(val onClick: () -> Unit) : ChipStype
+    public data class Clickable(val onClick: () -> Unit) : ChipInteraction
 
     @Stable
-    public data object Default : ChipStype
+    public data object Static : ChipInteraction
 }
 
 @Composable
@@ -80,12 +81,14 @@ public fun Chip(
     modifier: Modifier = Modifier,
     label: ChipLabel,
     value: String,
-    stype: ChipStype,
-    trailing: ChipTrailing,
+    interaction: ChipInteraction,
+    leading: ChipLeading,
     size: ChipSize,
     textColor: Color,
     iconColor: Color,
     brush: Brush,
+    labelColor: Color = textColor,
+    borderColor: Color = AppTokens.colors.border.default,
 ) {
     val tokens = resolveChipStyle(size)
 
@@ -97,16 +100,22 @@ public fun Chip(
             .background(
                 brush = brush,
                 shape = shape
-            ).let {
-                if (stype is ChipStype.Clickable) it.scalableClick(
-                    onClick = stype.onClick,
+            )
+            .border(
+                width = AppTokens.dp.chip.borderWidth,
+                color = borderColor,
+                shape = shape,
+            )
+            .let {
+                if (interaction is ChipInteraction.Clickable) it.scalableClick(
+                    onClick = interaction.onClick,
                     haptic = true
                 ) else it
             }
             .heightIn(min = tokens.height)
             .padding(
                 horizontal = tokens.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.text / 2,
+                vertical = AppTokens.dp.chip.verticalPadding,
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -115,25 +124,25 @@ public fun Chip(
             modifier = Modifier.weight(weight = 1f, fill = false),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            when (trailing) {
-                is ChipTrailing.Content -> {
-                    Box(modifier = Modifier.size(tokens.trailingSize)) {
-                        trailing.lambda.invoke()
+            when (leading) {
+                is ChipLeading.Content -> {
+                    Box(modifier = Modifier.size(tokens.leadingSize)) {
+                        leading.content()
                     }
                 }
 
-                is ChipTrailing.Icon -> {
+                is ChipLeading.Icon -> {
                     Icon(
-                        modifier = Modifier.size(tokens.trailingSize),
-                        imageVector = trailing.icon,
+                        modifier = Modifier.size(tokens.leadingSize),
+                        imageVector = leading.icon,
                         contentDescription = null,
                         tint = iconColor
                     )
                 }
 
-                ChipTrailing.Empty -> Unit
+                ChipLeading.Empty -> Unit
             }
-            if (trailing != ChipTrailing.Empty) {
+            if (leading != ChipLeading.Empty) {
                 Spacer(modifier = Modifier.width(tokens.spaceBetween))
             }
 
@@ -147,7 +156,7 @@ public fun Chip(
                         style = tokens.labelTextStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = textColor
+                        color = labelColor
                     )
                 }
 
@@ -173,22 +182,24 @@ private fun ChipPreview() {
             modifier = Modifier.fillMaxWidth(),
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
-            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
             brush = SolidColor(AppTokens.colors.background.card),
             textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
             iconColor = AppTokens.colors.text.primary,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             size = ChipSize.Medium
         )
 
         Chip(
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
-            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
             brush = SolidColor(AppTokens.colors.background.card),
             textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
             iconColor = AppTokens.colors.text.primary,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             size = ChipSize.Medium
         )
 
@@ -196,11 +207,12 @@ private fun ChipPreview() {
             modifier = Modifier.width(150.dp),
             label = ChipLabel.Text(UiText.Str(value = "Label Label Label")),
             value = "value",
-            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
             brush = SolidColor(AppTokens.colors.background.card),
             textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
             iconColor = AppTokens.colors.text.primary,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             size = ChipSize.Medium
         )
 
@@ -208,22 +220,24 @@ private fun ChipPreview() {
             modifier = Modifier.fillMaxWidth(),
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
-            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
             brush = SolidColor(AppTokens.colors.background.card),
             textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
             iconColor = AppTokens.colors.text.primary,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             size = ChipSize.Small
         )
 
         Chip(
             label = ChipLabel.Text(UiText.Str(value = "Label label label")),
             value = "Value",
-            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
             brush = SolidColor(AppTokens.colors.background.card),
             textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
             iconColor = AppTokens.colors.text.primary,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             size = ChipSize.Small
         )
 
@@ -231,12 +245,54 @@ private fun ChipPreview() {
             modifier = Modifier.width(100.dp),
             label = ChipLabel.Text(UiText.Str(value = "Label Label Label")),
             value = "value",
-            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
             brush = SolidColor(AppTokens.colors.background.card),
             textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
             iconColor = AppTokens.colors.text.primary,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             size = ChipSize.Small
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ChipContentVariantsPreview() {
+    PreviewContainer {
+        Chip(
+            label = ChipLabel.Empty,
+            value = "12 500 kg",
+            leading = ChipLeading.Icon(AppTokens.icons.Weight),
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.context.volume,
+            interaction = ChipInteraction.Static,
+            size = ChipSize.Small,
+        )
+
+        Chip(
+            label = ChipLabel.Text(UiText.Str("Supporting label")),
+            value = "Value",
+            leading = ChipLeading.Empty,
+            brush = SolidColor(AppTokens.colors.background.card),
+            textColor = AppTokens.colors.text.primary,
+            labelColor = AppTokens.colors.text.secondary,
+            iconColor = AppTokens.colors.icon.secondary,
+            interaction = ChipInteraction.Static,
+            size = ChipSize.Medium,
+        )
+
+        Chip(
+            label = ChipLabel.Empty,
+            value = "12",
+            leading = ChipLeading.Empty,
+            brush = SolidColor(AppTokens.colors.selection.background),
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.icon.secondary,
+            borderColor = AppTokens.colors.selection.accent,
+            interaction = ChipInteraction.Clickable(onClick = {}),
+            size = ChipSize.Medium,
         )
     }
 }

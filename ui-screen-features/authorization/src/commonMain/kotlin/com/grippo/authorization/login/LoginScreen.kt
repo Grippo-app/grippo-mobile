@@ -1,25 +1,31 @@
 package com.grippo.authorization.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
+import com.grippo.design.components.brand.BrandHeader
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -29,8 +35,6 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
 import com.grippo.design.components.spliter.ContentSpliter
-import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -39,7 +43,6 @@ import com.grippo.design.resources.provider.continue_with_apple
 import com.grippo.design.resources.provider.continue_with_google
 import com.grippo.design.resources.provider.icons.Apple
 import com.grippo.design.resources.provider.icons.Google
-import com.grippo.design.resources.provider.icons.GrippoLogo
 import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
@@ -61,194 +64,183 @@ internal fun LoginScreen(
         value = AppTokens.colors.background.screen,
     ),
 ) {
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        style = ToolbarStyle.Transparent
-    )
-
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f)
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .statusBarsPadding()
+            .imePadding()
+            .padding(top = AppTokens.dp.screen.verticalPadding),
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight)
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        Image(
-            modifier = Modifier.size(AppTokens.dp.screen.logoSize),
-            imageVector = AppTokens.icons.GrippoLogo,
-            contentDescription = null,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.login_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.track_real_progress_no_fluff),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        InputEmail(
-            value = state.email,
-            onFocused = contract::onEmailFocused,
-            onClear = contract::onEmailCleared,
-            onNext = contract::onEmailKeyboardNext,
-            onValueChange = contract::onEmailChange
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        InputPassword(
-            value = state.password,
-            onFocused = contract::onPasswordFocused,
-            onVisibilityChange = contract::onPasswordVisibilityChange,
-            onDone = contract::onPasswordKeyboardDone,
-            onValueChange = contract::onPasswordChange
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
-            when {
-                loaders.contains(LoginLoader.LoginByEmailButton) -> ButtonState.Loading
-                loaders.isNotEmpty() -> ButtonState.Disabled
-                state.email is EmailFormatState.Invalid -> ButtonState.Disabled
-                state.email is EmailFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.login_button_login)),
-            state = buttonLoginByEmailState,
-            style = ButtonStyle.Primary,
-            onClick = contract::onLoginByEmailClick
-        )
-        if (state.isGoogleLoginAvailable || state.isAppleLoginAvailable) {
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            ContentSpliter(
+            BrandHeader(
                 modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.or_continue_with)
+                title = AppTokens.strings.res(Res.string.login_title),
+                description = AppTokens.strings.res(Res.string.track_real_progress_no_fluff),
+                showLogo = true,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-        }
 
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (state.isGoogleLoginAvailable) {
-
-                val googleAuthUiContext = rememberGoogleAuthUiContext()
-
-                val buttonLoginByGoogleState = remember(
-                    loaders,
-                    googleAuthUiContext
-                ) {
-                    when {
-                        googleAuthUiContext == null -> ButtonState.Disabled
-                        loaders.contains(LoginLoader.LoginByGoogleButton) -> ButtonState.Loading
-                        loaders.isNotEmpty() -> ButtonState.Disabled
-                        else -> ButtonState.Enabled
-                    }
-                }
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.continue_with_google),
-                        startIcon = ButtonIcon.Image(AppTokens.icons.Google)
-                    ),
-                    state = buttonLoginByGoogleState,
-                    style = ButtonStyle.Secondary,
-                    onClick = { googleAuthUiContext?.let(contract::onLoginByGoogleClick) }
-                )
-            }
-
-            if (state.isAppleLoginAvailable) {
-
-                val appleAuthUiContext = rememberAppleAuthUiContext()
-
-                val buttonLoginByAppleState = remember(
-                    loaders,
-                    appleAuthUiContext
-                ) {
-                    when {
-                        appleAuthUiContext == null -> ButtonState.Disabled
-                        loaders.contains(LoginLoader.LoginByAppleButton) -> ButtonState.Loading
-                        loaders.isNotEmpty() -> ButtonState.Disabled
-                        else -> ButtonState.Enabled
-                    }
-                }
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.continue_with_apple),
-                        startIcon = ButtonIcon.Icon(AppTokens.icons.Apple)
-                    ),
-                    state = buttonLoginByAppleState,
-                    style = ButtonStyle.Secondary,
-                    onClick = { appleAuthUiContext?.let(contract::onLoginByAppleClick) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(
-                AppTokens.dp.contentPadding.text,
-                Alignment.CenterHorizontally
+            InputEmail(
+                value = state.email,
+                onFocused = contract::onEmailFocused,
+                onClear = contract::onEmailCleared,
+                onNext = contract::onEmailKeyboardNext,
+                onValueChange = contract::onEmailChange
             )
-        ) {
-            Text(
-                text = AppTokens.strings.res(Res.string.login_button_registration_label),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            InputPassword(
+                value = state.password,
+                onFocused = contract::onPasswordFocused,
+                onVisibilityChange = contract::onPasswordVisibilityChange,
+                onDone = contract::onPasswordKeyboardDone,
+                onValueChange = contract::onPasswordChange
             )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
+                when {
+                    loaders.contains(LoginLoader.LoginByEmailButton) -> ButtonState.Loading
+                    loaders.isNotEmpty() -> ButtonState.Disabled
+                    state.email is EmailFormatState.Invalid -> ButtonState.Disabled
+                    state.email is EmailFormatState.Empty -> ButtonState.Disabled
+                    state.password is PasswordFormatState.Empty -> ButtonState.Disabled
+                    state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+            }
 
             Button(
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.login_button_registration),
-                ),
-                size = ButtonSize.Small,
-                style = ButtonStyle.Transparent,
-                state = if (loaders.isEmpty()) {
-                    ButtonState.Enabled
-                } else {
-                    ButtonState.Disabled
-                },
-                onClick = contract::onRegisterClick
+                modifier = Modifier.fillMaxWidth(),
+                content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.login_button_login)),
+                state = buttonLoginByEmailState,
+                style = ButtonStyle.Primary,
+                onClick = contract::onLoginByEmailClick
             )
+            if (state.isGoogleLoginAvailable || state.isAppleLoginAvailable) {
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                ContentSpliter(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.or_continue_with)
+                )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            }
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (state.isGoogleLoginAvailable) {
+
+                    val googleAuthUiContext = rememberGoogleAuthUiContext()
+
+                    val buttonLoginByGoogleState = remember(
+                        loaders,
+                        googleAuthUiContext
+                    ) {
+                        when {
+                            googleAuthUiContext == null -> ButtonState.Disabled
+                            loaders.contains(LoginLoader.LoginByGoogleButton) -> ButtonState.Loading
+                            loaders.isNotEmpty() -> ButtonState.Disabled
+                            else -> ButtonState.Enabled
+                        }
+                    }
+
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.continue_with_google),
+                            startIcon = ButtonIcon.Image(AppTokens.icons.Google)
+                        ),
+                        state = buttonLoginByGoogleState,
+                        style = ButtonStyle.Secondary,
+                        onClick = { googleAuthUiContext?.let(contract::onLoginByGoogleClick) }
+                    )
+                }
+
+                if (state.isAppleLoginAvailable) {
+
+                    val appleAuthUiContext = rememberAppleAuthUiContext()
+
+                    val buttonLoginByAppleState = remember(
+                        loaders,
+                        appleAuthUiContext
+                    ) {
+                        when {
+                            appleAuthUiContext == null -> ButtonState.Disabled
+                            loaders.contains(LoginLoader.LoginByAppleButton) -> ButtonState.Loading
+                            loaders.isNotEmpty() -> ButtonState.Disabled
+                            else -> ButtonState.Enabled
+                        }
+                    }
+
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.continue_with_apple),
+                            startIcon = ButtonIcon.Icon(AppTokens.icons.Apple)
+                        ),
+                        state = buttonLoginByAppleState,
+                        style = ButtonStyle.Secondary,
+                        onClick = { appleAuthUiContext?.let(contract::onLoginByAppleClick) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                itemVerticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                horizontalArrangement = Arrangement.spacedBy(
+                    AppTokens.dp.contentPadding.text,
+                    Alignment.CenterHorizontally
+                )
+            ) {
+                Text(
+                    text = AppTokens.strings.res(Res.string.login_button_registration_label),
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+
+                Button(
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.login_button_registration),
+                    ),
+                    size = ButtonSize.Small,
+                    style = ButtonStyle.Transparent,
+                    state = if (loaders.isEmpty()) {
+                        ButtonState.Enabled
+                    } else {
+                        ButtonState.Disabled
+                    },
+                    onClick = contract::onRegisterClick
+                )
+            }
+
+            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+
+            Spacer(Modifier.navigationBarsPadding())
         }
-
-        Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
-
-        Spacer(Modifier.navigationBarsPadding())
     }
 }
 
@@ -298,6 +290,23 @@ private fun ScreenPreviewLoading() {
                 isAppleLoginAvailable = true,
             ),
             loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
+            contract = LoginContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewInvalid() {
+    PreviewContainer {
+        LoginScreen(
+            state = LoginState(
+                email = EmailFormatState.of("user@"),
+                password = PasswordFormatState.of("qwerty123"),
+                isGoogleLoginAvailable = true,
+                isAppleLoginAvailable = false,
+            ),
+            loaders = persistentSetOf(),
             contract = LoginContract.Empty
         )
     }

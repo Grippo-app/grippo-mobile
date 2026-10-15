@@ -98,8 +98,6 @@ public fun MuscleSelection(
                         style = SegmentStyle.Outline
                     )
 
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
                     HorizontalDivider(color = AppTokens.colors.divider.default)
 
                     key(selectedGroupId) {

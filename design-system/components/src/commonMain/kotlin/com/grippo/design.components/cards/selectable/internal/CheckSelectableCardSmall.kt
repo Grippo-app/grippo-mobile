@@ -1,20 +1,19 @@
 package com.grippo.design.components.cards.selectable.internal
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardVariants
 import com.grippo.design.components.modifiers.scalableClick
@@ -31,47 +30,34 @@ internal fun CheckSelectableCardSmall(
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.checkSelectableCard.small.radius)
 
-    val transition = updateTransition(targetState = isSelected, label = "check-card-transition")
-
-    val textColor = transition.animateColor(
-        transitionSpec = { tween(durationMillis = 220, easing = FastOutSlowInEasing) },
-        label = "text-color"
-    ) { selected -> if (selected) AppTokens.colors.static.white else AppTokens.colors.text.primary }
-
-    val backgroundColor1 = transition.animateColor(
-        transitionSpec = { tween(durationMillis = 220, easing = FastOutSlowInEasing) },
-        label = "background-color-1"
-    ) { selected -> if (selected) AppTokens.colors.selectableCardColors.small.selectedBackground1 else AppTokens.colors.background.card }
-
-    val backgroundColor2 = transition.animateColor(
-        transitionSpec = { tween(durationMillis = 220, easing = FastOutSlowInEasing) },
-        label = "background-color-2"
-    ) { selected -> if (selected) AppTokens.colors.selectableCardColors.small.selectedBackground2 else AppTokens.colors.background.card }
+    val colors = AppTokens.colors.selection
+    val backgroundColor by animateColorAsState(
+        if (isSelected) colors.background else AppTokens.colors.background.card,
+        label = "backgroundColor"
+    )
+    val borderColor by animateColorAsState(
+        if (isSelected) colors.accent else AppTokens.colors.border.default,
+        label = "borderColor"
+    )
 
     Row(
         modifier = modifier
+            .semantics { selected = isSelected }
             .scalableClick(onClick = onClick)
-            .background(
-                Brush.horizontalGradient(
-                    0f to backgroundColor1.value,
-                    1f to backgroundColor2.value,
-                ), shape
-            )
+            .clip(shape)
+            .background(backgroundColor, shape)
+            .border(AppTokens.dp.checkSelectableCard.borderWidth, borderColor, shape)
             .padding(
                 horizontal = AppTokens.dp.checkSelectableCard.small.horizontalPadding,
                 vertical = AppTokens.dp.checkSelectableCard.small.verticalPadding,
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
-
         Text(
             text = style.title,
             style = AppTokens.typography.h6(),
-            color = textColor.value
+            color = AppTokens.colors.text.primary
         )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
     }
 }
 
@@ -81,7 +67,7 @@ private fun CheckSelectableCardSmallPreview() {
     PreviewContainer {
         CheckSelectableCardVariants(
             CheckSelectableCardStyle.Small(
-                title = "Test Title",
+                title = "Upper body",
             )
         )
     }

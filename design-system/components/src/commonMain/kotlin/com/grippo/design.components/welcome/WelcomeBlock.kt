@@ -1,6 +1,7 @@
 package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -47,18 +45,6 @@ public fun WelcomeBlock(
 ) {
     val description = experience.description().text()
     val motto = experience.motto()
-    val accent = experience.color()
-    val cardColor = AppTokens.colors.background.card
-
-    val gradient = remember(accent) {
-        Brush.verticalGradient(
-            colors = listOf(
-                accent.copy(alpha = 0.18f),
-                Color.Transparent,
-            )
-        )
-    }
-
     val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
 
     val heightUnit = AppTokens.strings.res(Res.string.cm)
@@ -84,8 +70,8 @@ public fun WelcomeBlock(
 
     Column(
         modifier = modifier
-            .background(color = cardColor, shape = shape)
-            .background(brush = gradient, shape = shape)
+            .background(color = AppTokens.colors.background.card, shape = shape)
+            .border(AppTokens.dp.welcome.card.borderWidth, AppTokens.colors.border.default, shape)
             .padding(
                 horizontal = AppTokens.dp.welcome.card.horizontalPadding,
                 vertical = AppTokens.dp.welcome.card.verticalPadding
@@ -174,8 +160,6 @@ private fun FactRow(
             text = text,
             style = AppTokens.typography.b13Semi(),
             color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }

@@ -13,6 +13,10 @@ The coordinating agent may implement work; a separate reviewer supplies independ
 
 1. Read the actual scope, source and relevant owning skills. Preserve unrelated
    user changes; inspect the working tree before editing and never reset it.
+   Designing, redesigning or visually reviewing product UI MUST apply
+   [brand-design](../brand-design/SKILL.md). Pass its compact visual brief, affected
+   shared owners/variants and accepted decisions to implementers and reviewers;
+   use the existing execution loop rather than a separate design-agent roster.
    Creating, refining or reviewing product artwork MUST apply
    [illustrations](../illustrations/SKILL.md); use its canonical reference and scope
    decisions. For integration, inspect the selected export before updating consumers
@@ -32,6 +36,8 @@ The coordinating agent may implement work; a separate reviewer supplies independ
    Subagents must not expand scope or delegate without authorization.
 4. Self-review actual source/diff for correctness, simplicity, boundaries, privacy,
    lifecycle and cancellation. Apply each owning skill's mandatory completion gate.
+   Applicable visual work also passes brand-design's composition/brand acceptance
+   criteria with representative consumers; token compliance alone is insufficient.
    Feature work also requires analytics screen/control/operation coverage and the
    preservation inventory; a build cannot replace either source gate.
 5. MUST obtain independent review for behavior, architecture or multi-owner changes

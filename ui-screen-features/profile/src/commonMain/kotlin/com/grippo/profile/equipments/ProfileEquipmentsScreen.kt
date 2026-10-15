@@ -1,18 +1,11 @@
 package com.grippo.profile.equipments
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,11 +18,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.equipment.EquipmentRow
-import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.segment.Segment
-import com.grippo.design.components.segment.SegmentStyle
-import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.equipment.EquipmentSelection
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -54,10 +43,6 @@ internal fun ProfileEquipmentsScreen(
         value = AppTokens.colors.background.screen
     )
 ) {
-    val segmentItems = remember(state.suggestions) {
-        state.suggestions.map { it.id to it.type.title() }.toPersistentList()
-    }
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.equipments),
@@ -77,58 +62,16 @@ internal fun ProfileEquipmentsScreen(
             )
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-            Segment(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(),
-                items = segmentItems,
-                selected = state.selectedGroupId,
-                onSelect = contract::onSelectGroup,
-                segmentWidth = SegmentWidth.Unspecified,
-                style = SegmentStyle.Outline
-            )
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-            HorizontalDivider(color = AppTokens.colors.divider.default)
         }
     )
 
-    val equipments = remember(state.selectedGroupId, state.suggestions) {
-        state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
-    }
-
-    val basePadding = PaddingValues(
-        start = AppTokens.dp.screen.horizontalPadding,
-        end = AppTokens.dp.screen.horizontalPadding,
-        top = AppTokens.dp.contentPadding.content
-    )
-
-    BottomOverlayContainer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        contentPadding = basePadding,
-        overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
-            LazyColumn(
-                modifier = containerModifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                contentPadding = resolvedPadding
-            ) {
-                items(items = equipments, key = { it.id }) { equipment ->
-                    EquipmentRow(
-                        equipment = equipment,
-                        selectedEquipmentIds = state.selectedEquipmentIds,
-                        selectEquipment = contract::onSelectEquipment,
-                    )
-                }
-            }
-        },
+    EquipmentSelection(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        groups = state.suggestions,
+        selectedGroupId = state.selectedGroupId,
+        selectedEquipmentIds = state.selectedEquipmentIds,
+        onGroupSelect = contract::onSelectGroup,
+        onEquipmentSelect = contract::onSelectEquipment,
         bottom = {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -163,11 +106,30 @@ internal fun ProfileEquipmentsScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
+        val groups = stubEquipments()
         ProfileEquipmentsScreen(
             state = ProfileEquipmentsState(
-                suggestions = stubEquipments()
+                suggestions = groups,
+                selectedGroupId = groups.first().id,
+                selectedEquipmentIds = groups.first().equipments.take(3).map { it.id }.toPersistentList(),
             ),
             loaders = persistentSetOf(),
+            contract = ProfileEquipmentsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        val groups = stubEquipments()
+        ProfileEquipmentsScreen(
+            state = ProfileEquipmentsState(
+                suggestions = groups,
+                selectedGroupId = groups.first().id,
+            ),
+            loaders = persistentSetOf(ProfileEquipmentsLoader.ApplyButton),
             contract = ProfileEquipmentsContract.Empty
         )
     }

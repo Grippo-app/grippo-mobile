@@ -1,32 +1,33 @@
 package com.grippo.design.resources.provider.colors
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import com.grippo.design.resources.provider.AppColor
 
 public object LightColor : AppColor {
 
     override val bottomBar: AppColor.BottomBarColors = object : AppColor.BottomBarColors {
-        override val activeContent = AppPalette.LightAccent.Blue
+        override val activeContent = AppPalette.LightAccent.Orange
         override val inactiveContent = AppPalette.NeutralLight.N500
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = AppPalette.NeutralLight.N250
-        override val focus = AppPalette.LightAccent.Blue
+        override val focus = AppPalette.LightAccent.Orange
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
         override val backgroundPrimary1 = AppPalette.LightAccent.Orange
-        override val backgroundPrimary2 = AppPalette.LightAccent.Red
-        override val borderPrimary = AppPalette.LightAccent.Coral
+        override val backgroundPrimary2 = lerp(AppPalette.LightAccent.Orange, AppPalette.LightAccent.Copper, 0.25f)
+        override val borderPrimary = backgroundPrimary2
         override val textPrimary = AppPalette.Common.White
         override val iconPrimary = AppPalette.Common.White
 
-        override val backgroundSecondary1 = AppPalette.NeutralLight.N800
-        override val backgroundSecondary2 = AppPalette.NeutralLight.N700
-        override val borderSecondary = AppPalette.NeutralLight.N700
-        override val textSecondary = AppPalette.Common.White
-        override val iconSecondary = AppPalette.Common.White
+        override val backgroundSecondary1 = AppPalette.NeutralLight.N200
+        override val backgroundSecondary2 = AppPalette.NeutralLight.N200
+        override val borderSecondary = AppPalette.NeutralLight.N300
+        override val textSecondary = AppPalette.NeutralLight.N800
+        override val iconSecondary = AppPalette.NeutralLight.N700
 
         override val textTertiary: Color = AppPalette.NeutralLight.N800
         override val borderTertiary: Color = Color.Transparent
@@ -34,6 +35,9 @@ public object LightColor : AppColor {
 
         override val textTransparent = AppPalette.NeutralLight.N800
         override val iconTransparent = AppPalette.NeutralLight.N700
+
+        override val backgroundError = AppPalette.LightAccent.Red
+        override val contentError = AppPalette.Common.White
 
         override val backgroundDisabled = AppPalette.NeutralLight.N200
         override val contentDisabled = AppPalette.NeutralLight.N450
@@ -48,8 +52,8 @@ public object LightColor : AppColor {
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
         override val checkedThumb = AppPalette.Common.White
-        override val checkedTrack1 = AppPalette.LightAccent.Green
-        override val checkedTrack2 = AppPalette.LightAccent.Green
+        override val checkedTrack1 = AppPalette.LightAccent.Orange
+        override val checkedTrack2 = AppPalette.LightAccent.Orange
         override val uncheckedThumb = AppPalette.Common.White
         override val uncheckedTrack1 = AppPalette.NeutralLight.N300
         override val uncheckedTrack2 = AppPalette.NeutralLight.N400
@@ -71,18 +75,37 @@ public object LightColor : AppColor {
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val onboardingHeroStart = AppPalette.LightAccent.Orange.copy(alpha = 0.16f)
-        override val onboardingHeroEnd = AppPalette.LightAccent.Red.copy(alpha = 0.04f)
         override val screen = AppPalette.NeutralLight.N100
         override val dialog = AppPalette.NeutralLight.N050
         override val card = AppPalette.NeutralLight.N150
+    }
+
+    override val timeline: AppColor.TimelineColors = object : AppColor.TimelineColors {
+        override val marker = AppPalette.LightAccent.Orange
+        override val markerBackground = lerp(background.screen, marker, 0.12f)
+    }
+
+    override val illustration: AppColor.IllustrationColors = object : AppColor.IllustrationColors {
+        override val accent = AppPalette.LightAccent.Orange
+        override val backgroundStart = AppPalette.LightAccent.Orange.copy(alpha = 0.16f)
+        override val backgroundEnd = AppPalette.LightAccent.Red.copy(alpha = 0.04f)
+    }
+
+    override val bannerCard: AppColor.BannerCardColors = object : AppColor.BannerCardColors {
+        override val disabledBackground = AppPalette.NeutralLight.N400.copy(alpha = 0.14f)
+        override val illustrationBackground = AppPalette.LightAccent.Orange.copy(alpha = 0.14f)
+        override val mutedBackground = AppPalette.NeutralLight.N500.copy(alpha = 0.14f)
+    }
+
+    override val welcomeChecklist: AppColor.WelcomeChecklistColors = object : AppColor.WelcomeChecklistColors {
+        override val completedBackground = AppPalette.LightAccent.Green.copy(alpha = 0.18f)
+        override val pendingBackground = AppPalette.LightAccent.Yellow.copy(alpha = 0.18f)
     }
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
         override val color1: Color = AppPalette.LightAccent.Magenta
         override val color2: Color = AppPalette.LightAccent.Coral
 
-        override val color3: Color = AppPalette.LightAccent.Green
         override val color4: Color = AppPalette.LightAccent.Teal
 
         override val color5: Color = AppPalette.LightAccent.Sky
@@ -110,12 +133,17 @@ public object LightColor : AppColor {
         override val warning = AppPalette.LightAccent.Orange
         override val info = AppPalette.LightAccent.Blue
         override val notice = AppPalette.LightAccent.Yellow
+        override val successBackground = lerp(background.card, success, 0.10f)
+        override val errorBackground = lerp(background.card, error, 0.10f)
+        override val warningBackground = lerp(background.card, warning, 0.10f)
+        override val infoBackground = lerp(background.card, info, 0.10f)
+        override val noticeBackground = lerp(background.card, notice, 0.10f)
     }
 
     override val shimmer: AppColor.ShimmerColors = object : AppColor.ShimmerColors {
         override val highlight = AppPalette.NeutralLight.N800.copy(alpha = 0.16f)
-        override val buttonPrimary = AppPalette.Common.Black.copy(alpha = 0.14f)
-        override val buttonSecondary = AppPalette.Common.White.copy(alpha = 0.16f)
+        override val buttonPrimary = AppPalette.Common.White.copy(alpha = 0.08f)
+        override val buttonSecondary = AppPalette.NeutralLight.N800.copy(alpha = 0.12f)
         override val buttonTertiary = AppPalette.Common.Black.copy(alpha = 0.14f)
         override val buttonTransparent = AppPalette.NeutralLight.N800.copy(alpha = 0.12f)
         override val buttonError = AppPalette.Common.Black.copy(alpha = 0.14f)
@@ -127,7 +155,7 @@ public object LightColor : AppColor {
     }
 
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
-        override val selector = AppPalette.LightAccent.Blue
+        override val selector = AppPalette.LightAccent.Orange
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
@@ -143,13 +171,18 @@ public object LightColor : AppColor {
         override val confettiColor10 = AppPalette.NeutralLight.N700
     }
 
-    override val selectableCardColors: AppColor.SelectableCardColors =
-        object : AppColor.SelectableCardColors {
-            override val small: AppColor.SelectableCardColors.Small =
-                object : AppColor.SelectableCardColors.Small {
-                    override val selectedBackground1: Color = AppPalette.Blue.P600
-                    override val selectedBackground2: Color = AppPalette.Blue.P500
-                }
+    override val stepProgressIndicator: AppColor.StepProgressIndicatorColors =
+        object : AppColor.StepProgressIndicatorColors {
+            override val fillStart = AppPalette.LightAccent.Orange
+            override val fillEnd = lerp(fillStart, AppPalette.LightAccent.Copper, 0.25f)
+            override val track = AppPalette.NeutralLight.N450
+        }
+
+    override val selection: AppColor.SelectionColors =
+        object : AppColor.SelectionColors {
+            override val accent = AppPalette.LightAccent.Orange
+            override val background = lerp(LightColor.background.card, accent, 0.08f)
+            override val onAccent = AppPalette.Common.White
         }
 
     override val context: AppColor.ContextColors = object : AppColor.ContextColors {

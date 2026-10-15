@@ -1,57 +1,55 @@
-# Visual consistency and whole-screen review
+# Whole-screen visual checks
 
-Use this reference for shared-card/layout changes and explicit cross-screen
-consistency audits. Scale the review to the affected consumers; a small change
-does not require capturing the entire application.
+Use for affected whole-screen consumers and cross-screen audits. Start from
+brand-design's [usage/state inventory](../../brand-design/references/usage-and-states.md)
+and [acceptance gate](../../brand-design/references/workflow-and-review.md#design-acceptance).
+[CONSISTENCY.md](../../../../design-system/CONSISTENCY.md) owns concrete product
+role-to-token choices; this reference owns the checks.
 
-## Product rules
+## Default viewport scope
 
-Read the project’s maintained [visual usage rules](../../../../design-system/CONSISTENCY.md)
-for the role-to-token table, exercise summary semantics and adaptive layouts.
-Keep those concrete product choices in that document rather than duplicating
-another table here. Explicit user design changes take precedence.
+The project targets one standard phone viewport for design acceptance: **412 × 915 dp**
+at the normal system font scale. Review both themes and actual supported locales
+at that size through the existing AppPreview owner.
 
-Compare by role: screen headings, section headings, regular card titles,
-compact items, primary metrics and supporting labels. Consistency does not
-require giving every role the same size or eliminating meaningful chart colors.
-Use neutral ordinary values and metadata; reserve accents for actions, status,
-validation and data series. Check the complete screen for competing accents.
+Very small devices and narrow-screen layouts are outside the default design scope.
+MUST NOT add special layouts, shrink content, spend a review loop or block completion
+because of their appearance. Do not expand the default checks into a device-size or
+font-scale stress matrix. Additional sizes/scales require an explicit user request;
+existing supplemental fixtures do not make those checks mandatory. Keyboard, insets,
+scrolling, control semantics and real feature states still matter at the standard size.
 
-Keep readable product imagery at its intended size. Resolve text pressure with
-wrapping, growing minimum heights or changing the arrangement. Do not silently
-shrink exercise thumbnails to make a title fit.
+## Inspection scope
 
-## Verification scope
+- Source-review every affected consumer/context. Inspect representative whole
+  screens for every distinct inventoried role/layout/state group; equivalent
+  occurrences may share renders after inspection.
+- Include neighboring headers/cards, backgrounds, toolbar/bottom-bar and pinned
+  actions in both existing themes. Check hierarchy, semantic meaning, grouping,
+  corners/padding and actual imagery at its intended size.
+- When text layout changes, use the standard viewport above and a supported locale
+  with longer labels. Use existing layout owners/tokens.
+  Resolve pressure through wrapping/growing/rearrangement, not hidden useful text
+  or shrunken regular imagery.
+- Inspect applicable states, meaningful combinations and content boundaries from
+  the inventory, including missing images and zero/partial values where supported.
+  Exercise transitions, focus/keyboard and gestures separately from static captures.
+- Inspect scrolled content: final items/actions remain reachable above overlays;
+  localized labels, toolbar actions, dates and tags do not overlap or clip.
 
-- Find shared-component consumers and inspect representative whole screens,
-  including neighboring cards, toolbars and pinned actions in both themes.
-- Include a 360 dp viewport, 150–200% font scale and a supported locale with
-  longer labels when the change affects text layout. Use existing tokens for
-  adaptation thresholds and dimensions.
-- Exercise empty, pending, partial and completed states where relevant. Check
-  long titles, missing images and zero values; use representative preview state.
-- Check scrolled content too: the final item must remain reachable above the
-  pinned action. Check title/action overlap, separate date slots, tag wrapping
-  and button labels at enlarged fonts.
-- Verify semantic color consistency between a component and its screen header.
-  A token-only static scan cannot prove hierarchy, contrast or readable layout.
+## Capture and evidence
 
-## Reliable capture and cleanup
+Use existing previews or authorized app screenshots. Capture the intended state
+after layout settles and inspect actual title/content, scale and system overlays.
+A successful capture command is not evidence of a current frame. Reacquire stale
+transition captures; avoid competing resource-heavy work when it invalidates them.
 
-Use permitted rendered previews or authorized app screenshots and compare the
-actual content with the design when relevant. Wait for the intended state and
-layout to settle. Verify the image’s
-actual title/content and absence of system overlays; a ready log or successful
-capture command alone does not prove that the frame is current. Cold-launch
-and recapture stale transition frames. Avoid resource-heavy builds during
-emulator captures when they cause timing failures or system dialogs.
+Restore device locale, font scale, viewport and theme changed for checks. Record
+source/fixture mapping and distinguish component renders, whole-screen renders,
+live-data checks and platforms actually inspected. Preview image placeholders do
+not verify loaded imagery; see [preview limits](previews.md#what-a-preview-establishes).
 
-Do not add capture harnesses, production hooks or recording dependencies. Restore device locale, font scale,
-viewport and theme after checks; retain requested preview variants. Record the
-preview/source mapping and distinguish component captures, whole-screen
-captures, live-data checks and platforms actually inspected. Do not claim iOS
-visual coverage from compilation or complete runtime coverage from previews.
-
-Before delivery, check removed-component callers, imports, locale placeholders,
-callback-bearing stability annotations, and the final diff. Run platform builds only when permitted by the user’s scope. Report specific evidence
-and remaining limits rather than asserting absolute certainty.
+Review the final diff and recheck affected groups after corrections. Report missing
+renders/runtime observations specifically. Compilation establishes neither visual
+quality nor iOS runtime coverage. Verification facilities and builds follow
+[project policy](../../../../CLAUDE.md#verification-policy).

@@ -25,8 +25,8 @@ public fun ForceTypeChip(
         modifier = modifier,
         label = ChipLabel.Empty,
         value = value.title().text(),
-        trailing = ChipTrailing.Content(
-            lambda = {
+        leading = ChipLeading.Content(
+            content = {
                 Box(
                     Modifier
                         .fillMaxHeight()
@@ -41,7 +41,7 @@ public fun ForceTypeChip(
             }
         ),
         size = size,
-        stype = ChipStype.Default,
+        interaction = ChipInteraction.Static,
         textColor = AppTokens.colors.text.primary,
         iconColor = value.color(),
         brush = SolidColor(AppTokens.colors.background.card)
@@ -66,5 +66,15 @@ private fun ForceTypeChipPreview() {
             value = ForceTypeEnumState.HINGE,
             size = ChipSize.Medium
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ForceTypeChipSmallPreview() {
+    PreviewContainer {
+        ForceTypeEnumState.entries.forEach { value ->
+            ForceTypeChip(value = value, size = ChipSize.Small)
+        }
     }
 }

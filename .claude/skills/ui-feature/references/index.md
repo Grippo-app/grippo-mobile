@@ -8,6 +8,7 @@ there rather than duplicated in each recipe.
 
 | task-kind / topic | read |
 |---|---|
+| New UI, visual redesign or brand/composition review | [brand-design](../../brand-design/SKILL.md), alongside the applicable UI mechanics below |
 | Add a sub-screen (recipe) | `add-screen.md` → `mvi-contract.md`, `base-classes.md`, `compose-rules.md` |
 | Author the seven-file MVI contract | `mvi-contract.md` → `base-classes.md`, `state.md` |
 | Add a dialog / picker / modal (recipe + nav) | `dialogs.md` → `mvi-contract.md`, `base-classes.md` |

@@ -1,5 +1,7 @@
 package com.grippo.date.picker.internal
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -10,7 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.components.wheel.WheelItemRow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -18,10 +23,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateCompose.rememberFormat
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
+import com.grippo.wheel.picker.MultiWheelPickerConfig
 import com.grippo.wheel.picker.WheelColumn
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -166,16 +171,31 @@ internal fun DateWheelPicker(
         listState = yearState
     )
 
-    MultiWheelPicker(
+    val config = MultiWheelPickerConfig()
+
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
-        selectorProperties = DefaultSelectorProperties(
-            shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-            color = AppTokens.colors.background.card,
-        ),
-        columns = listOf(dayColumn, monthColumn, yearColumn)
-    )
+    ) {
+        FocusFrame(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxWidth()
+                .height(maxHeight / config.rowCount),
+            content = {},
+        )
+
+        MultiWheelPicker(
+            modifier = Modifier.fillMaxSize(),
+            selectorProperties = DefaultSelectorProperties(
+                shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
+                color = Color.Transparent,
+            ),
+            config = config,
+            columns = listOf(dayColumn, monthColumn, yearColumn),
+        )
+    }
 }
 
 // Inclusive allowed month bounds for the given year
@@ -236,8 +256,11 @@ private fun checkYearValidity(year: Int, limitations: DateRange): Boolean {
 private fun DateWheelPickerPreview() {
     PreviewContainer {
         DateWheelPicker(
-            initial = DateTimeUtils.now(),
-            limitations = DateRangePresets.last365Days(),
+            initial = LocalDateTime(2026, 9, 18, 12, 0),
+            limitations = DateRange(
+                from = LocalDateTime(2025, 9, 5, 0, 0),
+                to = LocalDateTime(2026, 10, 21, 23, 59),
+            ),
             select = {}
         )
     }

@@ -1,8 +1,8 @@
 # Tokens — the AppTokens facade
 
-Read actual `AppTokens.kt` and `internal/ResourceProvider.kt` under
-`design-system/core/src/commonMain/kotlin/com/grippo/design.core/`.
-AppTokens is a stateless facade with composable read-only getters.
+Read [AppTokens](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/AppTokens.kt)
+and its [provider](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/internal/ResourceProvider.kt).
+The facade has composable read-only getters.
 
 | Getter | Producer | Purpose |
 |---|---|---|
@@ -13,10 +13,10 @@ AppTokens is a stateless facade with composable read-only getters.
 | drawables | AppDrawable | Raster product imagery |
 | icons | AppIcon extensions | ImageVector UI icons |
 
-Consumers read AppTokens; concrete producers own raw literals. Both DarkColor
-and LightColor are wired by current ProvideResources. localeTag currently does
-not control resource language. ViewModels use injected StringProvider, never
-composable getters. Do not cache CompositionLocal values outside composition.
+Consumers read AppTokens; concrete producers own raw literals. ViewModels use
+injected StringProvider, never composable getters. Do not cache CompositionLocal
+values outside composition. [Theme](theme.md) owns provider/locale behavior;
+[accessors](accessors.md) own resource resolution APIs.
 
 ## When to add a new token
 
@@ -30,7 +30,7 @@ Product color/dimension/style literals still do not belong in consumers.
 
 The six existing categories are the default. A new category requires authorized
 scope and a concrete need that cannot fit them; ask a quiz for an unresolved
-scope/design choice. Do not add AppSpacing aliases or alternate access paths.
+scope/design choice. Do not add aliases or alternate access paths without a real need.
 
 Review actual producers, composition wiring and all affected consumers. Token
 compliance alone does not prove visual fidelity; use permitted rendered checks.

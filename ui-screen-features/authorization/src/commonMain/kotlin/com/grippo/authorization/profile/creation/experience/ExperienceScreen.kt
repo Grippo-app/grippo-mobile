@@ -12,16 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.profile.ExperienceEnumState
+import com.grippo.design.components.brand.BrandHeader
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -65,36 +63,19 @@ internal fun ExperienceScreen(
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
+        BrandHeader(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                 .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_experience_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_experience_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
+            title = AppTokens.strings.res(Res.string.registration_experience_title),
+            description = AppTokens.strings.res(Res.string.registration_experience_description),
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        HorizontalDivider(color = AppTokens.colors.divider.default)
-
         val basePadding = PaddingValues(
             start = AppTokens.dp.screen.horizontalPadding,
             end = AppTokens.dp.screen.horizontalPadding,
-            top = AppTokens.dp.contentPadding.content,
         )
 
         BottomOverlayContainer(

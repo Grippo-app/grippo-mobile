@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -20,13 +22,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Immutable
-public enum class TimeLinePointStyle {
+public enum class TimelineStyle {
     Start,
     Middle,
     End,
@@ -38,10 +42,9 @@ public enum class TimeLinePointStyle {
 @Composable
 public fun TimelineIndicator(
     modifier: Modifier = Modifier,
-    style: TimeLinePointStyle,
+    style: TimelineStyle,
     content: @Composable RowScope.() -> Unit
 ) {
-    val dotColor = AppTokens.colors.semantic.info
     val lineColor = AppTokens.colors.divider.default
     val lineWidth = AppTokens.dp.timeline.lineWidth
 
@@ -56,17 +59,13 @@ public fun TimelineIndicator(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (style) {
-                TimeLinePointStyle.Start -> {
+                TimelineStyle.Start -> {
                     Spacer(
                         modifier = Modifier
                             .width(lineWidth)
                             .weight(1f)
                     )
-                    Box(
-                        modifier = Modifier
-                            .size(AppTokens.dp.timeline.dot)
-                            .background(dotColor, CircleShape)
-                    )
+                    TimelineMarker()
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -75,18 +74,14 @@ public fun TimelineIndicator(
                     )
                 }
 
-                TimeLinePointStyle.Middle -> {
+                TimelineStyle.Middle -> {
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .width(lineWidth)
                             .background(lineColor)
                     )
-                    Box(
-                        modifier = Modifier
-                            .size(AppTokens.dp.timeline.dot)
-                            .background(dotColor, CircleShape)
-                    )
+                    TimelineMarker()
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -95,18 +90,14 @@ public fun TimelineIndicator(
                     )
                 }
 
-                TimeLinePointStyle.End -> {
+                TimelineStyle.End -> {
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .width(lineWidth)
                             .background(lineColor)
                     )
-                    Box(
-                        modifier = Modifier
-                            .size(AppTokens.dp.timeline.dot)
-                            .background(dotColor, CircleShape)
-                    )
+                    TimelineMarker()
                     Spacer(
                         modifier = Modifier
                             .width(lineWidth)
@@ -114,17 +105,13 @@ public fun TimelineIndicator(
                     )
                 }
 
-                TimeLinePointStyle.Single -> {
+                TimelineStyle.Single -> {
                     Spacer(
                         modifier = Modifier
                             .width(lineWidth)
                             .weight(1f)
                     )
-                    Box(
-                        modifier = Modifier
-                            .size(AppTokens.dp.timeline.dot)
-                            .background(dotColor, CircleShape)
-                    )
+                    TimelineMarker()
                     Spacer(
                         modifier = Modifier
                             .width(lineWidth)
@@ -132,7 +119,7 @@ public fun TimelineIndicator(
                     )
                 }
 
-                TimeLinePointStyle.Line -> {
+                TimelineStyle.Line -> {
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -141,7 +128,7 @@ public fun TimelineIndicator(
                     )
                 }
 
-                TimeLinePointStyle.Empty -> {
+                TimelineStyle.Empty -> {
                     Spacer(
                         modifier = Modifier
                             .width(lineWidth)
@@ -162,16 +149,87 @@ public fun TimelineIndicator(
     }
 }
 
+@Composable
+private fun TimelineMarker() {
+    val background = AppTokens.colors.timeline.markerBackground
+    val halo = AppTokens.dp.timeline.markerHalo
+
+    Box(
+        modifier = Modifier
+            .size(AppTokens.dp.timeline.dot)
+            // Keep the halo above both adjacent connectors without changing their geometry.
+            .zIndex(1f)
+            .drawBehind {
+                drawCircle(
+                    color = background,
+                    radius = size.minDimension / 2f + halo.toPx(),
+                )
+            }
+            .background(AppTokens.colors.timeline.marker, CircleShape)
+    )
+}
+
 @AppPreview
 @Composable
 private fun TimelineIndicatorPreviews() {
     PreviewContainer {
-        TimeLinePointStyle.entries.forEach { style ->
-            TimelineIndicator(
-                modifier = Modifier.height(20.dp),
-                style = style,
-                content = { Text(text = style.name) }
-            )
+        Column {
+            TimelineStyle.entries.forEach { style ->
+                TimelineIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    style = style,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                        text = style.name,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun TimelineIndicatorConnectedRowsPreview() {
+    PreviewContainer {
+        Column {
+            TimelineIndicator(style = TimelineStyle.Start) {
+                Text(
+                    modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                    text = "08:00 – 08:45",
+                    style = AppTokens.typography.h6(),
+                )
+            }
+            TimelineIndicator(style = TimelineStyle.Line) {
+                Text(
+                    modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                    text = "Exercise with a longer localized name\n3 × 12 · 24 kg",
+                )
+            }
+            TimelineIndicator(style = TimelineStyle.Middle) {
+                Text(
+                    modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                    text = "12:00 – 12:30",
+                    style = AppTokens.typography.h6(),
+                )
+            }
+            TimelineIndicator(style = TimelineStyle.Line) {
+                Spacer(Modifier.height(48.dp))
+            }
+            TimelineIndicator(style = TimelineStyle.End) {
+                Text(
+                    modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                    text = "18:00 – 19:00",
+                    style = AppTokens.typography.h6(),
+                )
+            }
+            TimelineIndicator(style = TimelineStyle.Empty) {
+                Text(
+                    modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                    text = "Last exercise\n3 × 8 · 32 kg",
+                )
+            }
         }
     }
 }

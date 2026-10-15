@@ -3,6 +3,7 @@ package com.grippo.design.components.metrics.performance
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,8 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
@@ -36,18 +36,16 @@ import com.grippo.design.resources.provider.highlight_vs_average
 
 @Composable
 public fun PerformanceMetricCard(
-    metric: PerformanceMetricState,
     modifier: Modifier = Modifier,
+    metric: PerformanceMetricState,
 ) {
     val empty = metric.isEmpty()
     val hasComparison = metric.hasComparison()
     val fullMode = !empty && hasComparison
 
-    val accentColor = if (fullMode) {
-        performanceStatusColor(metric.status)
-    } else {
-        AppTokens.colors.text.tertiary
-    }
+    val (accentColor, accentBackground) = performanceStatusColors(
+        status = if (fullMode) metric.status else PerformanceTrendStatusState.Empty,
+    )
     val valueColor = if (empty) {
         AppTokens.colors.text.tertiary
     } else {
@@ -73,7 +71,7 @@ public fun PerformanceMetricCard(
             Box(
                 modifier = Modifier
                     .clip(iconShape)
-                    .background(accentColor.copy(alpha = 0.14f), shape = iconShape)
+                    .background(accentBackground, shape = iconShape)
                     .padding(AppTokens.dp.contentPadding.text),
                 contentAlignment = Alignment.Center
             ) {
@@ -90,48 +88,38 @@ public fun PerformanceMetricCard(
                 text = metric.type.label(),
                 style = AppTokens.typography.b12Semi(),
                 color = labelColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
-
-            if (fullMode) {
-                PerformanceTrendChip(status = metric.status)
-            }
         }
 
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = if (empty) EMPTY_VALUE_PLACEHOLDER else metric.currentDisplay(),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.h4(),
             color = valueColor,
         )
 
         if (fullMode) {
+            PerformanceTrendChip(status = metric.status)
+
             val vsAverage = AppTokens.strings.res(Res.string.highlight_vs_average)
             val averageDisplay = metric.averageDisplay()
             val bestLabel =
                 AppTokens.strings.res(Res.string.highlight_best_value, metric.bestDisplay())
 
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                verticalAlignment = Alignment.CenterVertically
+                itemVerticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
                 Text(
-                    modifier = Modifier.weight(1f),
                     text = "$vsAverage $averageDisplay",
                     style = AppTokens.typography.b12Med(),
                     color = AppTokens.colors.text.secondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Text(
                     text = formatTrendDelta(metric.currentVsAveragePercentage),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                     style = AppTokens.typography.b13Semi(),
                     color = performanceAverageDeltaColor(metric),
                 )
@@ -139,8 +127,6 @@ public fun PerformanceMetricCard(
 
             Text(
                 text = bestLabel,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 style = AppTokens.typography.b11Semi(),
                 color = AppTokens.colors.text.tertiary
             )
@@ -181,14 +167,14 @@ private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
         PerformanceTrendStatusState.Empty -> return
     }
 
-    val color = performanceStatusColor(status)
+    val (_, background) = performanceStatusColors(status)
 
     val shape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
 
     Text(
         modifier = Modifier
             .clip(shape)
-            .background(color.copy(alpha = 0.18f), shape = shape)
+            .background(background, shape = shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.status.horizontalPadding,
                 vertical = AppTokens.dp.metrics.status.verticalPadding
@@ -196,21 +182,24 @@ private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
         text = label,
         style = AppTokens.typography.b11Semi(),
         color = AppTokens.colors.text.primary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
     )
 }
 
 @Composable
-private fun performanceStatusColor(status: PerformanceTrendStatusState): Color {
+private fun performanceStatusColors(status: PerformanceTrendStatusState): Pair<Color, Color> {
     return when (status) {
-        PerformanceTrendStatusState.Empty -> AppTokens.colors.text.tertiary
+        PerformanceTrendStatusState.Empty ->
+            AppTokens.colors.text.tertiary to AppTokens.colors.background.screen
 
         PerformanceTrendStatusState.Record,
-        PerformanceTrendStatusState.Improved -> AppTokens.colors.semantic.success
+        PerformanceTrendStatusState.Improved ->
+            AppTokens.colors.semantic.success to AppTokens.colors.semantic.successBackground
 
-        PerformanceTrendStatusState.Stable -> AppTokens.colors.text.secondary
-        PerformanceTrendStatusState.Declined -> AppTokens.colors.semantic.warning
+        PerformanceTrendStatusState.Stable ->
+            AppTokens.colors.text.secondary to AppTokens.colors.background.screen
+
+        PerformanceTrendStatusState.Declined ->
+            AppTokens.colors.semantic.warning to AppTokens.colors.semantic.warningBackground
     }
 }
 
@@ -226,20 +215,21 @@ private fun formatTrendDelta(delta: Int): String {
 @Composable
 private fun PerformanceTrendCardPreviewCard() {
     PreviewContainer {
-        PerformanceMetricCard(
-            modifier = Modifier.size(150.dp),
-            metric = stubPerformanceMetrics().random()
-        )
+        PerformanceMetricGridPreview()
+    }
+}
 
-        PerformanceMetricCard(
-            metric = stubPerformanceMetrics().random()
-        )
-        PerformanceMetricCard(
-            metric = stubPerformanceMetrics().random()
-        )
-        PerformanceMetricCard(
-            metric = stubPerformanceMetrics().random()
-        )
+@Composable
+private fun PerformanceMetricGridPreview() {
+    stubPerformanceMetrics().chunked(2).forEach { metrics ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            metrics.forEach { metric ->
+                PerformanceMetricCard(modifier = Modifier.weight(1f), metric = metric)
+            }
+        }
     }
 }
 
@@ -249,6 +239,14 @@ private fun PerformanceMetricCardEmptyPreview() {
     PreviewContainer {
         PerformanceMetricCard(
             metric = stubEmptyPerformanceMetric(),
+        )
+        val metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Volume>().first()
+        PerformanceMetricCard(
+            metric = metric.copy(
+                average = VolumeFormatState.of(0f),
+                currentVsAveragePercentage = 0,
+                status = PerformanceTrendStatusState.Stable,
+            ),
         )
     }
 }

@@ -35,32 +35,32 @@ internal fun resolveTooltipColors(variant: TooltipVariant): TooltipColorTokens {
         )
 
         TooltipVariant.Success -> TooltipColorTokens(
-            background = AppTokens.colors.semantic.success.copy(alpha = 0.15f),
-            border = AppTokens.colors.semantic.success.copy(alpha = 0.40f),
-            text = AppTokens.colors.semantic.success,
-            subtext = AppTokens.colors.text.primary,
+            background = AppTokens.colors.semantic.successBackground,
+            border = AppTokens.colors.border.default,
+            text = AppTokens.colors.text.primary,
+            subtext = AppTokens.colors.text.secondary,
             icon = AppTokens.colors.semantic.success,
         )
 
         TooltipVariant.Error -> TooltipColorTokens(
-            background = AppTokens.colors.semantic.error.copy(alpha = 0.15f),
-            border = AppTokens.colors.semantic.error.copy(alpha = 0.40f),
-            text = AppTokens.colors.semantic.error,
-            subtext = AppTokens.colors.text.primary,
+            background = AppTokens.colors.semantic.errorBackground,
+            border = AppTokens.colors.border.default,
+            text = AppTokens.colors.text.primary,
+            subtext = AppTokens.colors.text.secondary,
             icon = AppTokens.colors.semantic.error,
         )
 
         TooltipVariant.Warning -> TooltipColorTokens(
-            background = AppTokens.colors.semantic.warning.copy(alpha = 0.15f),
-            border = AppTokens.colors.semantic.warning.copy(alpha = 0.40f),
-            text = AppTokens.colors.semantic.warning,
-            subtext = AppTokens.colors.text.primary,
+            background = AppTokens.colors.semantic.warningBackground,
+            border = AppTokens.colors.border.default,
+            text = AppTokens.colors.text.primary,
+            subtext = AppTokens.colors.text.secondary,
             icon = AppTokens.colors.semantic.warning,
         )
 
         TooltipVariant.Info -> TooltipColorTokens(
-            background = AppTokens.colors.semantic.info.copy(alpha = 0.10f),
-            border = AppTokens.colors.semantic.info.copy(alpha = 0.30f),
+            background = AppTokens.colors.semantic.infoBackground,
+            border = AppTokens.colors.border.default,
             text = AppTokens.colors.text.primary,
             subtext = AppTokens.colors.text.secondary,
             icon = AppTokens.colors.semantic.info,

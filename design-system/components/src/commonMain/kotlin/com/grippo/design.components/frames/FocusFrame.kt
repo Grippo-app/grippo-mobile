@@ -19,7 +19,8 @@ import com.grippo.design.preview.PreviewContainer
 @Composable
 public fun FocusFrame(
     modifier: Modifier = Modifier,
-    accent: Color = AppTokens.colors.semantic.notice,
+    accent: Color = AppTokens.colors.selection.accent,
+    background: Color = AppTokens.colors.selection.background,
     content: @Composable () -> Unit,
 ) {
     val shape: Shape = RoundedCornerShape(AppTokens.dp.focusFrame.radius)
@@ -31,10 +32,10 @@ public fun FocusFrame(
 
     Box(
         modifier = modifier
-            .background(color = accent.copy(alpha = 0.12f), shape = shape)
+            .background(color = background, shape = shape)
             .border(
                 width = AppTokens.dp.focusFrame.borderWidth,
-                color = accent.copy(alpha = 0.28f),
+                color = accent,
                 shape = shape
             )
             .padding(contentPadding),
@@ -51,7 +52,7 @@ private fun FocusFramePreview() {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = "Default — semantic.notice",
+                text = "Highlighted content",
                 style = AppTokens.typography.b14Semi(),
                 color = AppTokens.colors.text.primary,
             )
@@ -60,6 +61,7 @@ private fun FocusFramePreview() {
         FocusFrame(
             modifier = Modifier.fillMaxWidth(),
             accent = AppTokens.colors.semantic.info,
+            background = AppTokens.colors.semantic.infoBackground,
         ) {
             Text(
                 text = "Info accent",
@@ -71,6 +73,7 @@ private fun FocusFramePreview() {
         FocusFrame(
             modifier = Modifier.fillMaxWidth(),
             accent = AppTokens.colors.semantic.success,
+            background = AppTokens.colors.semantic.successBackground,
         ) {
             Text(
                 text = "Success accent",
@@ -81,10 +84,11 @@ private fun FocusFramePreview() {
 
         FocusFrame(
             modifier = Modifier.fillMaxWidth(),
-            accent = AppTokens.colors.brand.color2,
+            accent = AppTokens.colors.border.default,
+            background = AppTokens.colors.background.card,
         ) {
             Text(
-                text = "Custom brand accent",
+                text = "Neutral content",
                 style = AppTokens.typography.b14Semi(),
                 color = AppTokens.colors.text.primary,
             )

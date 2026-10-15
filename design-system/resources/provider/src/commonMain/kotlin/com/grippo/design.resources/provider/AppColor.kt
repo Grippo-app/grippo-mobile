@@ -10,10 +10,14 @@ public interface AppColor {
     public val dialog: DialogColors
     public val text: TextColors
     public val divider: DividerColors
+    public val timeline: TimelineColors
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val shimmer: ShimmerColors
     public val border: BorderColors
+    public val illustration: IllustrationColors
+    public val bannerCard: BannerCardColors
+    public val welcomeChecklist: WelcomeChecklistColors
     public val brand: BrandColors
     public val icon: IconColors
     public val toggle: ToggleColors
@@ -26,7 +30,8 @@ public interface AppColor {
     public val palette: PaletteColors
     public val static: Static
     public val context: ContextColors
-    public val selectableCardColors: SelectableCardColors
+    public val selection: SelectionColors
+    public val stepProgressIndicator: StepProgressIndicatorColors
 
     public interface BottomBarColors {
         public val activeContent: Color
@@ -35,6 +40,11 @@ public interface AppColor {
 
     public interface DividerColors {
         public val default: Color
+    }
+
+    public interface TimelineColors {
+        public val marker: Color
+        public val markerBackground: Color
     }
 
     public interface Static {
@@ -60,6 +70,9 @@ public interface AppColor {
 
         public val textTransparent: Color
         public val iconTransparent: Color
+
+        public val backgroundError: Color
+        public val contentError: Color
 
         public val backgroundDisabled: Color
         public val contentDisabled: Color
@@ -88,18 +101,32 @@ public interface AppColor {
         public val placeholderDisabled: Color
     }
 
+    public interface IllustrationColors {
+        public val accent: Color
+        public val backgroundStart: Color
+        public val backgroundEnd: Color
+    }
+
+    public interface BannerCardColors {
+        public val disabledBackground: Color
+        public val illustrationBackground: Color
+        public val mutedBackground: Color
+    }
+
+    public interface WelcomeChecklistColors {
+        public val completedBackground: Color
+        public val pendingBackground: Color
+    }
+
     public interface BrandColors {
         public val color1: Color
         public val color2: Color
-        public val color3: Color
         public val color4: Color
         public val color5: Color
         public val color6: Color
     }
 
     public interface BackgroundColors {
-        public val onboardingHeroStart: Color
-        public val onboardingHeroEnd: Color
         public val screen: Color
         public val dialog: Color
         public val card: Color
@@ -122,6 +149,11 @@ public interface AppColor {
         public val warning: Color
         public val info: Color
         public val notice: Color
+        public val successBackground: Color
+        public val errorBackground: Color
+        public val warningBackground: Color
+        public val infoBackground: Color
+        public val noticeBackground: Color
     }
 
     public interface OverlayColors {
@@ -225,13 +257,16 @@ public interface AppColor {
         public val confettiColor10: Color
     }
 
-    public interface SelectableCardColors {
-        public val small: Small
+    public interface SelectionColors {
+        public val accent: Color
+        public val background: Color
+        public val onAccent: Color
+    }
 
-        public interface Small {
-            public val selectedBackground1: Color
-            public val selectedBackground2: Color
-        }
+    public interface StepProgressIndicatorColors {
+        public val fillStart: Color
+        public val fillEnd: Color
+        public val track: Color
     }
 
     public interface Charts {

@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -22,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,47 +34,63 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
-import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.formatters.EmailFormatState
+import com.grippo.core.state.formatters.PasswordFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.design.components.inputs.InputEmail
+import com.grippo.design.components.inputs.InputPassword
+import com.grippo.design.components.inputs.InputRepetitions
+import com.grippo.design.components.inputs.InputSearch
+import com.grippo.design.components.inputs.InputVolume
+import com.grippo.design.components.inputs.InputWeight
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.input_invalid_value
 
-@Immutable
+@Stable
 internal sealed class InputStyle {
+    @Stable
     data class Default(
         val onValueChange: (String) -> Unit,
     ) : InputStyle()
 
+    @Stable
     data class Clickable(val onClick: () -> Unit) : InputStyle()
 }
 
 @Immutable
 internal sealed class InputError {
-    data object Non : InputError()
+    data object None : InputError()
     data class Error(val msg: String) : InputError()
 }
 
 @Immutable
-internal sealed class PlaceHolder(open val value: String) {
-    data class OverInput(override val value: String) : PlaceHolder(value = value)
-    data object Empty : PlaceHolder(value = "")
+internal sealed class InputPlaceholder(open val value: String) {
+    data class OverInput(override val value: String) : InputPlaceholder(value = value)
+    data object Empty : InputPlaceholder(value = "")
 }
 
 @Composable
 internal fun Input(
     modifier: Modifier = Modifier,
     value: String,
-    placeholder: PlaceHolder,
+    placeholder: InputPlaceholder,
     enabled: Boolean = true,
-    error: InputError = InputError.Non,
+    error: InputError = InputError.None,
     inputStyle: InputStyle,
-    textStyle: TextStyle = AppTokens.typography.b14Semi(),
+    textStyle: TextStyle = AppTokens.typography.b15Med(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     leading: (@Composable (color: Color) -> Unit)? = null,
@@ -107,12 +126,17 @@ internal fun Input(
     // the user red mid-typing (e.g. partial email doesn't match the regex yet).
     // Error becomes visible only after the user leaves the field.
     val showError = error is InputError.Error && !hasFocus.value
+    val errorMessage = if (error is InputError.Error) {
+        error.msg.ifBlank { AppTokens.strings.res(Res.string.input_invalid_value) }
+    } else {
+        ""
+    }
 
     val borderColor = when {
         showError -> colors.semantic.error
         !enabled -> Color.Transparent
         hasFocus.value -> colors.border.focus
-        else -> Color.Transparent
+        else -> colors.border.default
     }
     val backgroundColor = when (enabled) {
         true -> colors.background.card
@@ -162,6 +186,9 @@ internal fun Input(
         BasicTextField(
             modifier = Modifier
                 .fillMaxWidth()
+                .semantics {
+                    if (showError) this.error(errorMessage)
+                }
                 .background(color = backgroundColor, shape = shape)
                 .border(width = AppTokens.dp.input.borderWidth, color = borderColor, shape = shape)
                 .heightIn(min = height)
@@ -206,9 +233,10 @@ internal fun Input(
                 val rowModifier = Modifier
                     .fillMaxWidth()
                     .height(intrinsicSize = IntrinsicSize.Min)
+                    .padding(vertical = AppTokens.dp.input.verticalPadding)
 
                 when (placeholder) {
-                    PlaceHolder.Empty -> Row(
+                    InputPlaceholder.Empty -> Row(
                         modifier = rowModifier,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -216,7 +244,7 @@ internal fun Input(
 
                         if (leading != null) {
                             leading.invoke(leadingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
                         }
 
                         Box(
@@ -227,15 +255,15 @@ internal fun Input(
                         )
 
                         if (trailing != null) {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
                             trailing.invoke(trailingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.trailingPadding))
                         } else {
                             Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
                         }
                     }
 
-                    is PlaceHolder.OverInput -> Row(
+                    is InputPlaceholder.OverInput -> Row(
                         modifier = rowModifier,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -243,7 +271,7 @@ internal fun Input(
 
                         if (leading != null) {
                             leading.invoke(leadingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
                         }
 
                         Box(
@@ -255,22 +283,20 @@ internal fun Input(
                                 Text(
                                     text = placeholder.value,
                                     style = lerp(
-                                        start = AppTokens.typography.b13Semi()
+                                        start = AppTokens.typography.b14Med()
                                             .copy(color = placeholderColor),
-                                        stop = AppTokens.typography.b13Semi()
+                                        stop = AppTokens.typography.b12Med()
                                             .copy(color = labelColor),
                                         fraction = textStyleAnimateFraction.value,
                                     ),
-                                    maxLines = maxLines,
-                                    overflow = TextOverflow.Ellipsis,
                                 )
                                 if (hasFocus.value || tfv.text.isNotBlank()) innerTextField()
                             }
                         }
                         if (trailing != null) {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.contentSpacing))
                             trailing.invoke(trailingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
+                            Spacer(modifier = Modifier.width(AppTokens.dp.input.trailingPadding))
                         } else {
                             Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
                         }
@@ -287,7 +313,7 @@ private fun InputDefaultEmptyPreview() {
     PreviewContainer {
         Input(
             value = "",
-            placeholder = PlaceHolder.Empty,
+            placeholder = InputPlaceholder.Empty,
             inputStyle = InputStyle.Default(onValueChange = {}),
         )
     }
@@ -299,7 +325,7 @@ private fun InputDefaultWithPlaceholderPreview() {
     PreviewContainer {
         Input(
             value = "",
-            placeholder = PlaceHolder.OverInput("Label"),
+            placeholder = InputPlaceholder.OverInput("Label"),
             inputStyle = InputStyle.Default(onValueChange = {}),
         )
     }
@@ -311,7 +337,7 @@ private fun InputDefaultWithTextPreview() {
     PreviewContainer {
         Input(
             value = "Some text",
-            placeholder = PlaceHolder.OverInput("Label"),
+            placeholder = InputPlaceholder.OverInput("Label"),
             inputStyle = InputStyle.Default(onValueChange = {}),
         )
     }
@@ -323,7 +349,7 @@ private fun InputClickablePreview() {
     PreviewContainer {
         Input(
             value = "Tap me",
-            placeholder = PlaceHolder.OverInput("Action"),
+            placeholder = InputPlaceholder.OverInput("Action"),
             inputStyle = InputStyle.Clickable(onClick = {}),
         )
     }
@@ -335,7 +361,7 @@ private fun InputErrorPreview() {
     PreviewContainer {
         Input(
             value = "Wrong",
-            placeholder = PlaceHolder.OverInput("Error label"),
+            placeholder = InputPlaceholder.OverInput("Error label"),
             error = InputError.Error("Invalid input"),
             inputStyle = InputStyle.Default(onValueChange = {}),
         )
@@ -348,9 +374,87 @@ private fun InputDisabledPreview() {
     PreviewContainer {
         Input(
             value = "Disabled",
-            placeholder = PlaceHolder.OverInput("Disabled"),
+            placeholder = InputPlaceholder.OverInput("Disabled"),
             inputStyle = InputStyle.Default(onValueChange = {}),
             enabled = false
+        )
+        Input(
+            value = "",
+            placeholder = InputPlaceholder.OverInput("Disabled empty"),
+            inputStyle = InputStyle.Default(onValueChange = {}),
+            enabled = false,
+        )
+        Input(
+            value = "Invalid",
+            placeholder = InputPlaceholder.OverInput("Disabled invalid"),
+            error = InputError.Error("Invalid input"),
+            inputStyle = InputStyle.Default(onValueChange = {}),
+            enabled = false,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputFormPreview() {
+    PreviewContainer {
+        InputEmail(value = EmailFormatState.Empty(), onValueChange = {})
+        InputEmail(value = EmailFormatState.of("athlete@example.com"), onValueChange = {})
+        InputEmail(value = EmailFormatState.of("athlete@"), onValueChange = {})
+        InputPassword(value = PasswordFormatState.of("Grippo123!"), onValueChange = {})
+        InputSearch(value = "Жим гантелей", onValueChange = {})
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputCompactSheetPreview() {
+    PreviewContainer {
+        Column(
+            modifier = Modifier.background(AppTokens.colors.background.dialog),
+            verticalArrangement = Arrangement.spacedBy(
+                AppTokens.dp.contentPadding.content
+            ),
+        ) {
+            InputWeight(
+                value = WeightFormatState.of(72.5f),
+                placeholder = "Вага тіла · 100%",
+                onClick = {},
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                InputVolume(
+                    modifier = Modifier.weight(1f),
+                    value = VolumeFormatState.of("123.5"),
+                    placeholder = "Додаткова вага",
+                    onValueChange = {},
+                )
+                InputRepetitions(
+                    modifier = Modifier.weight(1f),
+                    value = RepetitionsFormatState.of("12"),
+                    onValueChange = {},
+                )
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputLongContentPreview() {
+    PreviewContainer {
+        InputEmail(
+            value = EmailFormatState.of("oleksandr.kovalenko@example.com"),
+            placeholder = "Адреса електронної пошти користувача",
+            onValueChange = {},
+        )
+        Input(
+            value = "Перший рядок\nДругий рядок\nТретій рядок",
+            placeholder = InputPlaceholder.Empty,
+            inputStyle = InputStyle.Default(onValueChange = {}),
+            minLines = 2,
+            maxLines = 3,
         )
     }
 }

@@ -23,19 +23,19 @@ internal fun resolveBadgeTokens(style: BadgeStyle): BadgeTokens {
     val icons = AppTokens.icons
     return when (style) {
         BadgeStyle.Error -> BadgeTokens(
-            background = semantic.error.copy(alpha = 0.15f),
+            background = semantic.errorBackground,
             content = semantic.error,
             icon = icons.Cancel,
         )
 
         BadgeStyle.Warning -> BadgeTokens(
-            background = semantic.warning.copy(alpha = 0.15f),
+            background = semantic.warningBackground,
             content = semantic.warning,
             icon = icons.Warning,
         )
 
         BadgeStyle.Success -> BadgeTokens(
-            background = semantic.success.copy(alpha = 0.15f),
+            background = semantic.successBackground,
             content = semantic.success,
             icon = icons.Check,
         )

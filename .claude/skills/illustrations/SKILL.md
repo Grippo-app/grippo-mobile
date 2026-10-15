@@ -95,6 +95,11 @@ different image service/model if the tool is unavailable.
 
 ## Resource and UI integration
 
+For an actual UI composition or integration change, apply
+[brand-design](../brand-design/SKILL.md) to choose artwork emphasis and placement
+within the screen/dialog hierarchy. Standalone artwork delivery does not require
+a screen redesign or full UI review; this skill remains the artwork style owner.
+
 Apply [design-system](../design-system/SKILL.md) and its
 [resource policy](../design-system/references/resources.md) for integration.
 That skill owns paths, formats, accessors, tokens and previews; this skill owns
@@ -122,15 +127,17 @@ Keep decorative art separate from the container background. Compose owns soft
 theme-aware gradients and localized text; use existing AppTokens or add necessary
 semantic slots in their real producers for both themes. Preserve aspect ratio,
 avoid cropping the subject and keep illustrations from consuming space needed
-for controls on small screens. Decorative images use null contentDescription;
+for controls at the [standard phone viewport](../design-system/references/visual-consistency.md#default-viewport-scope).
+Decorative images use null contentDescription;
 meaningful information needs a localized accessible equivalent.
 
 ## Completion
 
 MUST inspect the exported image at the intended display size on light/dark backgrounds:
 alpha, silhouette, edge/glow artifacts, material/style match and subject clarity.
-For UI integration, review the whole-screen consumer for spacing, CTA access and
-enlarged fonts using the project's permitted Preview/manual workflow. Fix observed problems, rather
+For UI integration, review the whole-screen consumer for spacing and CTA access at
+the [standard viewport](../design-system/references/visual-consistency.md#default-viewport-scope)
+using the project's permitted Preview/manual workflow. Fix observed problems, rather
 than adding more ornament. Report unrendered variants honestly; an artwork preview
 or successful build is not a verified screenshot of the application.
 

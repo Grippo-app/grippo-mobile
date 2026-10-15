@@ -1,6 +1,7 @@
 package com.grippo.design.components.user
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,12 +27,11 @@ public fun WeightHistoryCard(
     modifier: Modifier = Modifier,
     value: WeightHistoryState,
 ) {
+    val shape = RoundedCornerShape(AppTokens.dp.weightHistoryCard.radius)
     Column(
         modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.weightHistoryCard.radius)
-            )
+            .background(AppTokens.colors.background.card, shape)
+            .border(AppTokens.dp.weightHistoryCard.borderWidth, AppTokens.colors.border.default, shape)
             .padding(
                 horizontal = AppTokens.dp.weightHistoryCard.horizontalPadding,
                 vertical = AppTokens.dp.weightHistoryCard.verticalPadding

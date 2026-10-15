@@ -23,14 +23,14 @@ internal fun resolveBannerCardTokens(
     enabled: Boolean,
 ): BannerCardTokens {
     val titleStyle = AppTokens.typography.b14Semi()
-    val descriptionStyle = AppTokens.typography.b12Med()
+    val descriptionStyle = AppTokens.typography.b13Med()
 
     if (!enabled) {
         val disabledIcon = AppTokens.colors.icon.disabled
         val disabledText = AppTokens.colors.text.disabled
         return BannerCardTokens(
             accent = disabledIcon,
-            surface = disabledIcon.copy(alpha = 0.14f),
+            surface = AppTokens.colors.bannerCard.disabledBackground,
             titleColor = disabledText,
             descriptionColor = disabledText,
             titleStyle = titleStyle,
@@ -39,18 +39,18 @@ internal fun resolveBannerCardTokens(
     }
 
     val semantic = AppTokens.colors.semantic
-    val accent = when (style) {
-        BannerCardStyle.Notice -> semantic.notice
-        BannerCardStyle.Info -> semantic.info
-        BannerCardStyle.Success -> semantic.success
-        BannerCardStyle.Warning -> semantic.warning
-        BannerCardStyle.Error -> semantic.error
-        is BannerCardStyle.Custom -> style.tint
+    val (accent, surface) = when (style) {
+        BannerCardStyle.Notice -> semantic.notice to semantic.noticeBackground
+        BannerCardStyle.Info -> semantic.info to semantic.infoBackground
+        BannerCardStyle.Success -> semantic.success to semantic.successBackground
+        BannerCardStyle.Warning -> semantic.warning to semantic.warningBackground
+        BannerCardStyle.Error -> semantic.error to semantic.errorBackground
+        is BannerCardStyle.Custom -> style.tint to style.surface
     }
 
     return BannerCardTokens(
         accent = accent,
-        surface = accent.copy(alpha = 0.14f),
+        surface = surface,
         titleColor = AppTokens.colors.text.primary,
         descriptionColor = AppTokens.colors.text.secondary,
         titleStyle = titleStyle,

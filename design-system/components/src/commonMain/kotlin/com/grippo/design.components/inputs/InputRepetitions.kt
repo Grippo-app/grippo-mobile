@@ -14,7 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
-import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.InputPlaceholder
 import com.grippo.design.components.inputs.core.toInputError
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -50,7 +50,7 @@ public fun InputRepetitions(
                 color = color
             )
         },
-        placeholder = PlaceHolder.OverInput(
+        placeholder = InputPlaceholder.OverInput(
             value = placeholder
         ),
         keyboardActions = KeyboardActions(

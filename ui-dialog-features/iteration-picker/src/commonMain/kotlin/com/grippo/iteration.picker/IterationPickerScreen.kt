@@ -49,8 +49,8 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.ChipStype
-import com.grippo.design.components.chip.ChipTrailing
+import com.grippo.design.components.chip.ChipInteraction
+import com.grippo.design.components.chip.ChipLeading
 import com.grippo.design.components.inputs.InputRepetitions
 import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.components.inputs.InputWeight
@@ -324,10 +324,10 @@ internal fun IterationPickerScreen(
 
 @Composable
 private fun SuggestionChip(
+    modifier: Modifier = Modifier,
     value: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
@@ -338,15 +338,17 @@ private fun SuggestionChip(
     ) {
         Chip(
             label = ChipLabel.Empty,
-            stype = ChipStype.Default,
+            interaction = ChipInteraction.Static,
             value = value,
-            trailing = ChipTrailing.Empty,
-            textColor = if (isSelected) AppTokens.colors.border.focus
+            leading = ChipLeading.Empty,
+            textColor = if (isSelected) AppTokens.colors.text.primary
                 else AppTokens.colors.text.secondary,
+            borderColor = if (isSelected) AppTokens.colors.selection.accent
+                else AppTokens.colors.border.default,
             iconColor = AppTokens.colors.text.secondary,
             size = ChipSize.Medium,
             brush = SolidColor(
-                if (isSelected) AppTokens.colors.border.focus.copy(alpha = 0.12f)
+                if (isSelected) AppTokens.colors.selection.background
                 else AppTokens.colors.background.card
             )
         )
@@ -378,6 +380,16 @@ private fun IterationState.suggestionLabel(components: ExerciseExampleComponents
         is ExerciseExampleComponentsState.BodyOnly -> ""
     }
     return "${if (weight.isEmpty()) "" else "$weight "}× ${repetitions.value ?: "–"}"
+}
+
+@AppPreview
+@Composable
+private fun SuggestionChipsPreview() {
+    PreviewContainer {
+        SuggestionChip(value = "8", isSelected = false, onClick = {})
+        SuggestionChip(value = "12", isSelected = true, onClick = {})
+        SuggestionChip(value = "Минулого разу: 80 kg × 12", isSelected = true, onClick = {})
+    }
 }
 
 @AppPreview

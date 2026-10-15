@@ -10,6 +10,7 @@ import com.grippo.chart.pie.PieSlice
 import com.grippo.chart.pie.PieStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun PieChart(
@@ -49,19 +50,21 @@ internal fun PieChart(
 @AppPreview
 @Composable
 private fun PieChartPreview() {
-    val data = PieData(
-        slices = listOf(
-            PieSlice("legs", "Legs", 26f, AppTokens.colors.muscle.palette6MuscleCalm[0]),
-            PieSlice("back", "Back", 18f, AppTokens.colors.muscle.palette6MuscleCalm[1]),
-            PieSlice("chest", "Chest", 22f, AppTokens.colors.muscle.palette6MuscleCalm[2]),
-            PieSlice("arms", "Arms", 12f, AppTokens.colors.muscle.palette6MuscleCalm[3]),
-            PieSlice("shoulders", "Shoulders", 10f, AppTokens.colors.muscle.palette6MuscleCalm[4]),
-            PieSlice("core", "Core", 12f, AppTokens.colors.muscle.palette6MuscleCalm[5]),
+    PreviewContainer {
+        val data = PieData(
+            slices = listOf(
+                PieSlice("legs", "Legs", 26f, AppTokens.colors.muscle.palette6MuscleCalm[0]),
+                PieSlice("back", "Back", 18f, AppTokens.colors.muscle.palette6MuscleCalm[1]),
+                PieSlice("chest", "Chest", 22f, AppTokens.colors.muscle.palette6MuscleCalm[2]),
+                PieSlice("arms", "Arms", 12f, AppTokens.colors.muscle.palette6MuscleCalm[3]),
+                PieSlice("shoulders", "Shoulders", 10f, AppTokens.colors.muscle.palette6MuscleCalm[4]),
+                PieSlice("core", "Core", 12f, AppTokens.colors.muscle.palette6MuscleCalm[5]),
+            )
         )
-    )
 
-    PieChart(
-        modifier = Modifier.size(300.dp),
-        data = data,
-    )
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = data,
+        )
+    }
 }

@@ -2,32 +2,21 @@ package com.grippo.design.components.equipment
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
-import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.cards.selectable.ToggleSelectableCard
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun EquipmentRow(
-    equipment: EquipmentState,
-    selectedEquipmentIds: ImmutableList<String>,
-    selectEquipment: (id: String) -> Unit,
     modifier: Modifier = Modifier,
+    equipment: EquipmentState,
+    isSelected: Boolean,
+    onSelect: () -> Unit,
 ) {
-    val selectProvider = remember(equipment.id) {
-        { selectEquipment(equipment.id) }
-    }
-
-    val isSelected = remember(equipment.id, selectedEquipmentIds) {
-        selectedEquipmentIds.contains(equipment.id)
-    }
-
     ToggleSelectableCard(
         modifier = modifier.fillMaxWidth(),
         style = ToggleSelectableCardStyle.Medium(
@@ -35,7 +24,7 @@ public fun EquipmentRow(
             icon = equipment.image(),
         ),
         isSelected = isSelected,
-        onSelect = selectProvider
+        onSelect = onSelect
     )
 }
 
@@ -43,17 +32,22 @@ public fun EquipmentRow(
 @Composable
 private fun EquipmentRowPreview() {
     PreviewContainer {
-        val equip = stubEquipments().random().equipments.random()
-        EquipmentRow(
-            equipment = equip,
-            selectEquipment = {},
-            selectedEquipmentIds = persistentListOf(equip.id)
+        val equipments = listOf(
+            EquipmentState(id = "barbell", type = EquipmentEnumState.BARBELL),
+            EquipmentState(id = "smith", type = EquipmentEnumState.SMITH_MACHINES),
         )
+        equipments.forEach { equipment ->
+            EquipmentRow(
+                equipment = equipment,
+                isSelected = true,
+                onSelect = {},
+            )
 
-        EquipmentRow(
-            equipment = equip,
-            selectEquipment = {},
-            selectedEquipmentIds = persistentListOf()
-        )
+            EquipmentRow(
+                equipment = equipment,
+                isSelected = false,
+                onSelect = {},
+            )
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.grippo.design.components.training
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
@@ -21,12 +22,11 @@ public fun IterationsCard(
     modifier: Modifier = Modifier,
     value: ImmutableList<IterationState>,
 ) {
+    val shape = RoundedCornerShape(AppTokens.dp.iterationsCard.radius)
     FlowRow(
         modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.iterationsCard.radius)
-            )
+            .background(AppTokens.colors.background.card, shape)
+            .border(AppTokens.dp.iterationsCard.borderWidth, AppTokens.colors.border.default, shape)
             .padding(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),

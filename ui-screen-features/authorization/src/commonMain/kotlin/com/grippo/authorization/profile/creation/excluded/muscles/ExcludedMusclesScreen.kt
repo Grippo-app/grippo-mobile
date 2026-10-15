@@ -6,14 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.muscles.stubMuscleGroup
+import com.grippo.design.components.brand.BrandHeader
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -55,26 +54,12 @@ internal fun ExcludedMusclesScreen(
             .weight(1f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
+        BrandHeader(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                 .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_muscles_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_muscles_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
+            title = AppTokens.strings.res(Res.string.registration_muscles_title),
+            description = AppTokens.strings.res(Res.string.registration_muscles_description),
         )
 
         Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))

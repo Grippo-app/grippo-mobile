@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.design.components.inputs.core.Input
 import com.grippo.design.components.inputs.core.InputStyle
-import com.grippo.design.components.inputs.core.PlaceHolder
+import com.grippo.design.components.inputs.core.InputPlaceholder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,7 +28,7 @@ public fun InputSecondaryGoal(
             onClick = onClick
         ),
         trailing = { _ -> },
-        placeholder = PlaceHolder.OverInput(
+        placeholder = InputPlaceholder.OverInput(
             value = placeholder
         ),
     )

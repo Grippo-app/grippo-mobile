@@ -12,7 +12,7 @@ internal data class ChipStyle(
     val radius: Dp,
     val horizontalPadding: Dp,
     val height: Dp,
-    val trailingSize: Dp,
+    val leadingSize: Dp,
     val spaceBetween: Dp,
     val labelTextStyle: TextStyle,
     val valueTextStyle: TextStyle
@@ -26,20 +26,20 @@ internal fun resolveChipStyle(size: ChipSize): ChipStyle {
             radius = dp.small.radius,
             horizontalPadding = dp.small.horizontalPadding,
             height = dp.small.height,
-            trailingSize = dp.small.trailingSize,
+            leadingSize = dp.small.leadingSize,
             spaceBetween = dp.small.spaceBetween,
-            labelTextStyle = AppTokens.typography.b11Semi(),
-            valueTextStyle = AppTokens.typography.b11Bold(),
+            labelTextStyle = AppTokens.typography.b11Med(),
+            valueTextStyle = AppTokens.typography.b11Semi(),
         )
 
         ChipSize.Medium -> ChipStyle(
             radius = dp.medium.radius,
             horizontalPadding = dp.medium.horizontalPadding,
             height = dp.medium.height,
-            trailingSize = dp.medium.trailingSize,
+            leadingSize = dp.medium.leadingSize,
             spaceBetween = dp.medium.spaceBetween,
-            labelTextStyle = AppTokens.typography.b14Semi(),
-            valueTextStyle = AppTokens.typography.b14Bold(),
+            labelTextStyle = AppTokens.typography.b14Med(),
+            valueTextStyle = AppTokens.typography.b14Semi(),
         )
     }
 }

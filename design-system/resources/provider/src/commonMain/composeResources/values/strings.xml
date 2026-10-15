@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Grippo</string>
     <string name="kg">kg</string>
     <string name="reps">reps</string>
     <string name="repetitions">Repetitions</string>
@@ -891,4 +892,9 @@
     <string name="onboarding_setup_title">Train your way</string>
     <string name="onboarding_setup_description">Choose your muscles, equipment and experience level.</string>
     <string name="onboarding_analytics_consent">Allow usage analytics</string>
+    <string name="input_invalid_value">Invalid value</string>
+    <string name="accessibility_completed">Completed</string>
+    <string name="accessibility_not_completed">Not completed</string>
+    <string name="accessibility_previous_period">Previous period</string>
+    <string name="accessibility_next_period">Next period</string>
 </resources>

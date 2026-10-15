@@ -35,10 +35,11 @@ public fun IntensityChip(
         modifier = modifier,
         label = text,
         value = value.short(),
-        trailing = ChipTrailing.Icon(AppTokens.icons.Flame),
+        leading = ChipLeading.Icon(AppTokens.icons.Flame),
         size = size,
-        stype = ChipStype.Default,
+        interaction = ChipInteraction.Static,
         textColor = AppTokens.colors.text.primary,
+        labelColor = AppTokens.colors.text.secondary,
         iconColor = AppTokens.colors.context.intensity,
         brush = SolidColor(AppTokens.colors.background.card)
     )

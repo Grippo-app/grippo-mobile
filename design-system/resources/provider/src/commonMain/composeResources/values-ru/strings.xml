@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Grippo</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
     <string name="repetitions">Повторения</string>
@@ -879,4 +880,9 @@
     <string name="onboarding_setup_title">Тренируйся по-своему</string>
     <string name="onboarding_setup_description">Выбери мышцы, оборудование и свой уровень опыта.</string>
     <string name="onboarding_analytics_consent">Разрешить аналитику</string>
+    <string name="input_invalid_value">Некорректное значение</string>
+    <string name="accessibility_completed">Выполнено</string>
+    <string name="accessibility_not_completed">Не выполнено</string>
+    <string name="accessibility_previous_period">Предыдущий период</string>
+    <string name="accessibility_next_period">Следующий период</string>
 </resources>

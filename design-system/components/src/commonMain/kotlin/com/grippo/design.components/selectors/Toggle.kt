@@ -30,9 +30,9 @@ import com.grippo.design.preview.PreviewContainer
 
 @Composable
 public fun Toggle(
+    modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckedChange: () -> Unit,
-    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     contentDescription: String? = null,
 ) {

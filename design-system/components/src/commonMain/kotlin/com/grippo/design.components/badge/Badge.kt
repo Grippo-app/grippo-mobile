@@ -3,9 +3,11 @@ package com.grippo.design.components.badge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,19 +45,18 @@ public fun Badge(
     val tokens = resolveBadgeTokens(style)
 
     val dp = AppTokens.dp.badge
-
-    val verticalPadding = when {
-        label == null -> dp.horizontalPadding
-        else -> dp.verticalPadding
-    }
+    val shape = RoundedCornerShape(dp.radius)
+    val horizontalPadding = if (label == null) dp.iconOnlyPadding else dp.horizontalPadding
+    val verticalPadding = if (label == null) dp.iconOnlyPadding else dp.verticalPadding
 
     Row(
         modifier = modifier
-            .background(color = tokens.background, shape = CircleShape)
+            .background(color = tokens.background, shape = shape)
             .let { if (onClick != null) it.scalableClick(onClick = onClick) else it }
-            .padding(horizontal = dp.horizontalPadding, vertical = verticalPadding),
+            .sizeIn(minWidth = dp.minSize, minHeight = dp.minSize)
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dp.spaceBetween),
+        horizontalArrangement = Arrangement.spacedBy(dp.spaceBetween, Alignment.CenterHorizontally),
     ) {
         Icon(
             modifier = Modifier.size(dp.icon),
@@ -68,7 +69,7 @@ public fun Badge(
             Text(
                 text = label.text(),
                 style = AppTokens.typography.b11Semi(),
-                color = tokens.content,
+                color = AppTokens.colors.text.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -80,19 +81,35 @@ public fun Badge(
 @Composable
 private fun BadgePreview() {
     PreviewContainer {
-        // Error — with label and icon-only
-        Badge(label = UiText.Str(value = "Error"), style = BadgeStyle.Error)
-        Badge(style = BadgeStyle.Error)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        ) {
+            Badge(label = UiText.Str(value = "Error"), style = BadgeStyle.Error)
+            Badge(style = BadgeStyle.Error)
+        }
 
-        // Warning — with label and icon-only
-        Badge(label = UiText.Str(value = "Warning"), style = BadgeStyle.Warning)
-        Badge(style = BadgeStyle.Warning)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        ) {
+            Badge(label = UiText.Str(value = "Warning"), style = BadgeStyle.Warning)
+            Badge(style = BadgeStyle.Warning)
+        }
 
-        // Success — with label and icon-only
-        Badge(label = UiText.Str(value = "Success"), style = BadgeStyle.Success)
-        Badge(style = BadgeStyle.Success)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        ) {
+            Badge(label = UiText.Str(value = "Success"), style = BadgeStyle.Success)
+            Badge(style = BadgeStyle.Success)
+        }
 
-        // Clickable
         Badge(label = UiText.Str(value = "Clickable"), style = BadgeStyle.Success, onClick = {})
+        Badge(
+            modifier = Modifier.fillMaxWidth(),
+            label = UiText.Str(value = "Довге локалізоване повідомлення про помилку"),
+            style = BadgeStyle.Error,
+        )
     }
 }

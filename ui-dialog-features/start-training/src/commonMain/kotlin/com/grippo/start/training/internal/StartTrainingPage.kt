@@ -62,6 +62,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun StartTrainingPage(
@@ -126,6 +127,7 @@ private fun EmptyPage(
                 .fillMaxWidth()
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             accent = AppTokens.colors.text.tertiary,
+            background = AppTokens.colors.background.card,
             icon = AppTokens.icons.Muscle,
             title = AppTokens.strings.res(Res.string.start_training_option_empty_title),
             description = AppTokens.strings.res(Res.string.start_training_option_empty_description),
@@ -257,13 +259,15 @@ private fun ExerciseHeaderBanner(
     exercisesCount: Int,
 ) {
     val accent: Color
+    val background: Color
     val icon: ImageVector
     val title: String
     val description: String
 
     when (header) {
         ExerciseHeader.Preset -> {
-            accent = AppTokens.colors.semantic.notice
+            accent = AppTokens.colors.selection.accent
+            background = AppTokens.colors.selection.background
             icon = AppTokens.icons.Sparkle
             title = AppTokens.strings.res(Res.string.start_training_option_preset_title)
             description = AppTokens.strings.res(Res.string.start_training_option_preset_description)
@@ -271,6 +275,7 @@ private fun ExerciseHeaderBanner(
 
         is ExerciseHeader.Recent -> {
             accent = AppTokens.colors.semantic.info
+            background = AppTokens.colors.semantic.infoBackground
             icon = AppTokens.icons.Timer
             title = AppTokens.strings.res(Res.string.start_training_option_recent_title)
             description = rememberRecentDescription(header.createdAt)
@@ -280,6 +285,7 @@ private fun ExerciseHeaderBanner(
     StartTrainingInfoCard(
         modifier = modifier,
         accent = accent,
+        background = background,
         icon = icon,
         title = title,
         description = description,
@@ -294,6 +300,7 @@ private fun ExerciseHeaderBanner(
 private fun StartTrainingInfoCard(
     modifier: Modifier = Modifier,
     accent: Color,
+    background: Color,
     icon: ImageVector,
     title: String,
     description: String,
@@ -302,6 +309,7 @@ private fun StartTrainingInfoCard(
     FocusFrame(
         modifier = modifier,
         accent = accent,
+        background = background,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -389,7 +397,7 @@ private fun StartTrainingPageEmptyWithBothHintsPreview() {
             nextOption = StartTrainingOption.Recent(
                 trainingId = "stub",
                 createdAt = DateTimeFormatState.of(
-                    value = DateTimeUtils.now(),
+                    value = LocalDateTime(2026, 1, 15, 18, 30),
                     range = DateRangePresets.infinity(),
                     format = DateFormat.DateOnly.DateMmmDdYyyy,
                 ),
@@ -421,7 +429,7 @@ private fun StartTrainingPageEmptyWithRecentHintPreview() {
             nextOption = StartTrainingOption.Recent(
                 trainingId = "stub",
                 createdAt = DateTimeFormatState.of(
-                    value = DateTimeUtils.now(),
+                    value = LocalDateTime(2026, 1, 15, 18, 30),
                     range = DateRangePresets.infinity(),
                     format = DateFormat.DateOnly.DateMmmDdYyyy,
                 ),
@@ -451,7 +459,7 @@ private fun StartTrainingPageRecentPreview() {
             option = StartTrainingOption.Recent(
                 trainingId = "stub",
                 createdAt = DateTimeFormatState.of(
-                    value = DateTimeUtils.now(),
+                    value = LocalDateTime(2026, 1, 15, 18, 30),
                     range = DateRangePresets.infinity(),
                     format = DateFormat.DateOnly.DateMmmDdYyyy,
                 ),

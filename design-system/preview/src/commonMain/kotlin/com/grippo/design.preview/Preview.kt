@@ -24,14 +24,14 @@ private const val UI_MODE_NIGHT_NO = 0x10
 private const val UI_MODE_NIGHT_YES = 0x20
 
 @Preview(
-    name = "Phone • UK • Small • Light",
+    name = "Phone • UK • Standard • Light",
     group = "📱 Phone",
-    widthDp = 360, heightDp = 800,
+    widthDp = 412, heightDp = 915,
     locale = "uk",
     uiMode = UI_MODE_NIGHT_NO,
 )
 @Preview(
-    name = "Phone • EN • Big • Dark",
+    name = "Phone • EN • Standard • Dark",
     group = "📱 Phone",
     widthDp = 412, heightDp = 915,
     locale = "en",

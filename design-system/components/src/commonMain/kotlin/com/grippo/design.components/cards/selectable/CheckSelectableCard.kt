@@ -1,5 +1,6 @@
 package com.grippo.design.components.cards.selectable
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -10,7 +11,7 @@ import com.grippo.design.components.cards.selectable.internal.CheckSelectableCar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Spinner
+import com.grippo.design.resources.provider.icons.ExperienceBeginner
 
 @Immutable
 public sealed class CheckSelectableCardStyle(
@@ -72,17 +73,9 @@ private fun CheckSelectableCardLargePreview() {
     PreviewContainer {
         CheckSelectableCardVariants(
             CheckSelectableCardStyle.Large(
-                title = "Test Title",
-                description = "Test Description",
-                icon = AppTokens.icons.Spinner,
-            )
-        )
-
-        CheckSelectableCardVariants(
-            CheckSelectableCardStyle.Large(
-                title = "Test Title",
-                description = "Test Description",
-                icon = AppTokens.icons.Spinner,
+                title = "Початковий рівень",
+                description = "Почніть із базових вправ і поступово сформуйте звичку до регулярних тренувань.",
+                icon = AppTokens.icons.ExperienceBeginner,
             )
         )
     }
@@ -94,8 +87,8 @@ private fun CheckSelectableCardMediumPreview() {
     PreviewContainer {
         CheckSelectableCardVariants(
             CheckSelectableCardStyle.Medium(
-                title = "Test Title",
-                description = "Test Description"
+                title = "Збільшення м’язової маси",
+                description = "Зосередьтеся на силі та поступовому прогресі."
             )
         )
     }
@@ -107,7 +100,7 @@ private fun CheckSelectableCardSmallPreview() {
     PreviewContainer {
         CheckSelectableCardVariants(
             CheckSelectableCardStyle.Small(
-                title = "Test Title",
+                title = "Тренування всього тіла",
             )
         )
     }
@@ -115,12 +108,18 @@ private fun CheckSelectableCardSmallPreview() {
 
 @Composable
 internal fun CheckSelectableCardVariants(style: CheckSelectableCardStyle) {
+    val modifier = when (style) {
+        is CheckSelectableCardStyle.Small -> Modifier
+        else -> Modifier.fillMaxWidth()
+    }
     CheckSelectableCard(
+        modifier = modifier,
         style = style,
         isSelected = true,
         onSelect = {}
     )
     CheckSelectableCard(
+        modifier = modifier,
         style = style,
         isSelected = false,
         onSelect = {}

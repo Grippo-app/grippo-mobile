@@ -1,8 +1,12 @@
 package com.grippo.design.components.user
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,8 +28,15 @@ public fun UserCard(
 ) {
     val experienceColor = value.experience.color()
 
+    val shape = RoundedCornerShape(AppTokens.dp.userCard.card.radius)
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .background(AppTokens.colors.background.card, shape)
+            .border(AppTokens.dp.userCard.card.borderWidth, AppTokens.colors.border.default, shape)
+            .padding(
+                horizontal = AppTokens.dp.userCard.card.horizontalPadding,
+                vertical = AppTokens.dp.userCard.card.verticalPadding,
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         UserAvatar(

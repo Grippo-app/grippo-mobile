@@ -5,6 +5,11 @@ description: Implement and review Grippo screens, dialogs, UI state and Decompos
 
 Build Grippo UI features using the current source and the topic references below.
 
+Designing, redesigning or visually reviewing product UI MUST apply
+[brand-design](../brand-design/SKILL.md) for intent, composition and brand acceptance,
+with design-system for implementation. This skill retains feature/state/navigation
+ownership. Changes without visual impact do not trigger the brand workflow.
+
 ## When to use
 
 - Add a new sub-screen inside an existing `:ui-screen-features:<feature>` module.

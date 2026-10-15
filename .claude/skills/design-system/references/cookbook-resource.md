@@ -1,33 +1,25 @@
-# Adding a resource
+# Add a resource
 
-[resources.md](resources.md) owns asset/localization policy;
-[accessors.md](accessors.md) owns consumer APIs. This recipe does not duplicate them.
+[Resource policy](resources.md) owns localization/asset constraints;
+[accessors](accessors.md) own resolution APIs. Apply this recipe only to the demanded
+asset and its actual consumers.
 
-1. Inspect the actual provider build, composeResources locale directories, producer
-   signature and caller. MUST use real existing paths and identifiers; no assumed
-   `supportedLocales` variable or fictional product API.
-2. Add the demanded asset. Strings/plurals MUST include every existing locale and
-   matching explicit positional placeholders. Plural XML MUST have a resources root
-   and the locale's actual quantity categories.
-3. For a UI icon, inspect neighboring AppIcon extensions and source the real vector
-   paths. Keep its semantic PascalCase name and cached backing-field convention.
-   An abbreviated builder with empty paths is never a finished asset. Use the
-   supplied source viewport; do not assume that every export uses 24×24 units.
-4. For a font, match file names and register actual weights in the existing factory;
-   then add only demanded typography tokens. New typefaces follow authorized scope.
-5. Use AppTokens in composition, StringProvider outside it, and UiText.Res for
-   locale-dependent state. A composable plural requirement needs a real AppString
-   wrapper because one is not currently implemented.
-6. Review affected callers, locale/placeholder parity and actual asset data. Use a
-   relevant scoped resource/platform build when needed under the canonical
-   [verification policy](../../../../CLAUDE.md#verification-policy). Generated Res
-   accessors resolve after resource generation; MUST NOT report an unrun build or
-   assume a task/output exists without inspecting the current wiring.
+1. Inspect provider build, existing locale directories, producer signature and
+   intended caller. Confirm the real source artifact before conversion.
+2. Add the resource under its owning convention. Strings/plurals cover existing
+   locales and placeholder contracts; fonts map actual files to registered weights.
+3. For UI icons, inspect neighboring AppIcon extensions and preserve supplied vector
+   paths/viewport with the established cached backing-field convention. Export
+   metadata alone is not path data.
+4. Integrate through the appropriate AppTokens/StringProvider/UiText boundary.
+   Add a missing accessor only for a real consumer requirement; inspect the current
+   producer rather than assuming an overload exists.
+5. Review consumers, locale/placeholder parity, font registrations and actual asset
+   data. Run the relevant resource/platform build when needed under the
+   [verification policy](../../../../CLAUDE.md#verification-policy), inspecting
+   current task/output wiring before claiming generated identifiers resolve.
 
-MUST distinguish vector path data from an export manifest containing only
-size/type/fill metadata. Inspect the actual supplied artifact; a filename such as
-figma-export.json alone does not prove presence or absence of paths. Resolve an
-unavailable design source using the scope quiz before replacing design-critical art.
-Reuse a suitable existing icon or supplied vector source. When neither fits, MUST
-ask which replacement is acceptable; MUST NOT silently substitute a close-enough
-Material icon or draw a replacement for a supplied design.
+For a supplied design-critical icon or image, use its authoritative artifact or an
+approved equivalent. If neither is available and replacement affects fidelity,
+resolve that design choice through the [scope policy](../../../../CLAUDE.md#when-to-stop-and-ask)
+before substituting an unrelated icon or redrawing it.

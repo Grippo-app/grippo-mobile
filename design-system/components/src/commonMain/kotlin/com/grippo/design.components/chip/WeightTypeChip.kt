@@ -25,8 +25,8 @@ public fun WeightTypeChip(
         modifier = modifier,
         label = ChipLabel.Empty,
         value = value.title().text(),
-        trailing = ChipTrailing.Content(
-            lambda = {
+        leading = ChipLeading.Content(
+            content = {
                 Box(
                     Modifier
                         .fillMaxHeight()
@@ -41,7 +41,7 @@ public fun WeightTypeChip(
             }
         ),
         size = size,
-        stype = ChipStype.Default,
+        interaction = ChipInteraction.Static,
         textColor = AppTokens.colors.text.primary,
         iconColor = value.color(),
         brush = SolidColor(AppTokens.colors.background.card)
@@ -66,5 +66,15 @@ private fun WeightTypeChipPreview() {
             value = WeightTypeEnumState.BODY_WEIGHT,
             size = ChipSize.Medium
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WeightTypeChipSmallPreview() {
+    PreviewContainer {
+        WeightTypeEnumState.entries.forEach { value ->
+            WeightTypeChip(value = value, size = ChipSize.Small)
+        }
     }
 }

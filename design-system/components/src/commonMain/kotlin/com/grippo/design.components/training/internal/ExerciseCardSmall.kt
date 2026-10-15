@@ -1,6 +1,7 @@
 package com.grippo.design.components.training.internal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,12 +22,11 @@ internal fun ExerciseCardSmall(
     modifier: Modifier = Modifier,
     value: ExerciseState,
 ) {
+    val shape = RoundedCornerShape(AppTokens.dp.exerciseCard.small.radius)
     Column(
         modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.exerciseCard.small.radius)
-            )
+            .background(AppTokens.colors.background.card, shape)
+            .border(AppTokens.dp.exerciseCard.small.borderWidth, AppTokens.colors.border.default, shape)
             .padding(
                 horizontal = AppTokens.dp.exerciseCard.small.horizontalPadding,
                 vertical = AppTokens.dp.exerciseCard.small.verticalPadding

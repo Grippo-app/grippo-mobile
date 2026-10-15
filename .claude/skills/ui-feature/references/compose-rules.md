@@ -36,7 +36,7 @@ public fun Button(
 ```
 Conventions:
 - **`PascalCase`** function name; **`@Composable`** explicit.
-- **`modifier: Modifier = Modifier`** is the **first** parameter (mirrors design-system `Button`/`Toolbar`/`BannerCard`/`BottomSheetToolbar`). The exception is `Toggle`, where `modifier` trails `onCheckedChange` — a known outlier, not a pattern to copy.
+- **`modifier: Modifier = Modifier`** is the **first** parameter (mirrors design-system `Button`/`Toolbar`/`BannerCard`/`BottomSheetToolbar`).
 - **Required callbacks (`on<X>`)** come after the styling parameters, before any trailing defaults.
 - **Defaults at the end**.
 - **`public`** for design-system components, **`internal`** for feature screens/sub-screens.

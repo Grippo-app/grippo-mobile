@@ -8,17 +8,18 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.design.components.brand.BrandHeader
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -63,50 +64,44 @@ internal fun UserScreen(
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            BrandHeader(
+                modifier = Modifier.fillMaxWidth(),
+                title = AppTokens.strings.res(Res.string.registration_user_title),
+                description = AppTokens.strings.res(Res.string.registration_name_description),
+            )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_user_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+            InputName(
+                value = state.name,
+                onFocused = contract::onNameFocused,
+                onClear = contract::onNameCleared,
+                onDone = contract::onNameKeyboardDone,
+                onValueChange = contract::onNameChange
+            )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_name_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            InputWeight(
+                value = state.weight,
+                onClick = contract::onWeightPickerClick
+            )
 
-        InputName(
-            value = state.name,
-            onFocused = contract::onNameFocused,
-            onClear = contract::onNameCleared,
-            onDone = contract::onNameKeyboardDone,
-            onValueChange = contract::onNameChange
-        )
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            InputHeight(
+                value = state.height,
+                onClick = contract::onHeightPickerClick
+            )
 
-        InputWeight(
-            value = state.weight,
-            onClick = contract::onWeightPickerClick
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        InputHeight(
-            value = state.height,
-            onClick = contract::onHeightPickerClick
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        }
 
         val buttonState = remember(loaders, state.name, state.weight, state.height) {
             when {
@@ -145,6 +140,22 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = UserContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewFilled() {
+    PreviewContainer {
+        UserScreen(
+            state = UserState(
+                name = NameFormatState.of("Alex"),
+                weight = WeightFormatState.of(72.0f),
+                height = HeightFormatState.of(178),
+            ),
+            loaders = persistentSetOf(),
+            contract = UserContract.Empty,
         )
     }
 }

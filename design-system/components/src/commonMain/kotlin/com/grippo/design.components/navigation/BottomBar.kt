@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -56,11 +58,11 @@ public data class BottomBarItem(
 
 @Composable
 public fun <KEY> BottomBar(
+    modifier: Modifier = Modifier,
     items: ImmutableList<Pair<KEY, BottomBarItem>>,
     selected: KEY,
     onSelect: (KEY) -> Unit,
     action: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val dp = AppTokens.dp.bottomBar
     val split = (items.size + 1) / 2
@@ -97,10 +99,10 @@ public fun <KEY> BottomBar(
 
 @Composable
 private fun <KEY> BottomBarTabs(
+    modifier: Modifier,
     items: ImmutableList<Pair<KEY, BottomBarItem>>,
     selected: KEY,
     onSelect: (KEY) -> Unit,
-    modifier: Modifier,
 ) {
     val dp = AppTokens.dp.bottomBar
     Row(modifier) {
@@ -116,12 +118,23 @@ private fun <KEY> BottomBarTabs(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(dp.gap, Alignment.CenterVertically),
             ) {
-                Icon(
-                    modifier = Modifier.size(dp.iconSize),
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = color,
-                )
+                Box(
+                    modifier = Modifier
+                        .width(dp.indicatorWidth)
+                        .height(dp.indicatorHeight)
+                        .background(
+                            color = if (active) AppTokens.colors.selection.background else Color.Transparent,
+                            shape = RoundedCornerShape(dp.indicatorRadius),
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(dp.iconSize),
+                        imageVector = item.icon,
+                        contentDescription = null,
+                        tint = color,
+                    )
+                }
                 Text(
                     text = item.title.text(),
                     style = AppTokens.typography.b10Med(),

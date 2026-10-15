@@ -1,6 +1,7 @@
 package com.grippo.design.components.metrics.profile.goal.internal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,8 +36,8 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun GoalFitFindingsBlock(
-    findings: ImmutableList<GoalFitFindingState>,
     modifier: Modifier = Modifier,
+    findings: ImmutableList<GoalFitFindingState>,
 ) {
     if (findings.isEmpty()) return
 
@@ -44,7 +45,7 @@ internal fun GoalFitFindingsBlock(
         findings
             .groupBy { it.rule }
             .map { (rule, list) ->
-                val sorted = list.sortedBy { it.severity.sortKey }
+                val sorted = list.sortedBy { it.severity.sortKey }.toPersistentList()
                 FindingGroup(
                     rule = rule,
                     findings = sorted,
@@ -63,6 +64,7 @@ internal fun GoalFitFindingsBlock(
         modifier = modifier
             .clip(shape)
             .background(AppTokens.colors.background.card, shape)
+            .border(AppTokens.dp.metrics.panel.borderWidth, AppTokens.colors.border.default, shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.profile.goal.breakdown.horizontalPadding,
                 vertical = AppTokens.dp.metrics.profile.goal.breakdown.verticalPadding,
@@ -82,8 +84,8 @@ internal fun GoalFitFindingsBlock(
 
 @Composable
 private fun FindingRule(
-    group: FindingGroup,
     modifier: Modifier = Modifier,
+    group: FindingGroup,
 ) {
     val title = group.rule.title()
     val singleFinding = group.findings.singleOrNull()
@@ -119,9 +121,9 @@ private fun FindingRule(
 
 @Composable
 private fun FindingSingleRow(
+    modifier: Modifier = Modifier,
     title: String,
     finding: GoalFitFindingState,
-    modifier: Modifier = Modifier,
 ) {
     FindingValueRow(
         title = title,
@@ -134,9 +136,9 @@ private fun FindingSingleRow(
 
 @Composable
 private fun FindingInversionRow(
+    modifier: Modifier = Modifier,
     title: String,
     finding: GoalFitFindingState,
-    modifier: Modifier = Modifier,
 ) {
     val statusColor = if (finding.severity == GoalFitSeverityState.FAIL) {
         AppTokens.colors.semantic.error
@@ -172,8 +174,8 @@ private fun FindingInversionRow(
 
 @Composable
 private fun FindingSubRow(
-    finding: GoalFitFindingState,
     modifier: Modifier = Modifier,
+    finding: GoalFitFindingState,
 ) {
     FindingValueRow(
         title = finding.contextLabel(),
@@ -186,11 +188,11 @@ private fun FindingSubRow(
 
 @Composable
 private fun FindingValueRow(
+    modifier: Modifier = Modifier,
     title: String,
     finding: GoalFitFindingState,
     titleStyle: TextStyle,
     titleMaxLines: Int,
-    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
@@ -219,8 +221,8 @@ private fun FindingValueRow(
 
 @Composable
 private fun SeverityDot(
-    color: Color,
     modifier: Modifier = Modifier,
+    color: Color,
 ) {
     Box(
         modifier = modifier
@@ -233,7 +235,7 @@ private fun SeverityDot(
 @Immutable
 private data class FindingGroup(
     val rule: GoalFitRuleState,
-    val findings: List<GoalFitFindingState>,
+    val findings: ImmutableList<GoalFitFindingState>,
     val worstSeverity: GoalFitSeverityState,
 )
 

@@ -15,8 +15,9 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.authorization.onboarding.components.OnboardingAnalyticsConsent
-import com.grippo.authorization.onboarding.components.OnboardingBenefit
 import com.grippo.authorization.onboarding.components.OnboardingIntro
+import com.grippo.design.components.banner.BannerCard
+import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -59,20 +60,32 @@ internal fun OnboardingScreen(
     ) {
         OnboardingIntro(modifier = Modifier.fillMaxWidth())
         Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
-            OnboardingBenefit(
+            BannerCard(
                 modifier = Modifier.fillMaxWidth(),
+                style = BannerCardStyle.Custom(
+                    tint = AppTokens.colors.icon.secondary,
+                    surface = AppTokens.colors.bannerCard.mutedBackground,
+                ),
                 icon = AppTokens.icons.Dumbbell,
                 title = AppTokens.strings.res(Res.string.onboarding_workouts_title),
                 description = AppTokens.strings.res(Res.string.onboarding_workouts_description),
             )
-            OnboardingBenefit(
+            BannerCard(
                 modifier = Modifier.fillMaxWidth(),
+                style = BannerCardStyle.Custom(
+                    tint = AppTokens.colors.icon.secondary,
+                    surface = AppTokens.colors.bannerCard.mutedBackground,
+                ),
                 icon = AppTokens.icons.LineUp,
                 title = AppTokens.strings.res(Res.string.onboarding_progress_title),
                 description = AppTokens.strings.res(Res.string.onboarding_progress_description),
             )
-            OnboardingBenefit(
+            BannerCard(
                 modifier = Modifier.fillMaxWidth(),
+                style = BannerCardStyle.Custom(
+                    tint = AppTokens.colors.icon.secondary,
+                    surface = AppTokens.colors.bannerCard.mutedBackground,
+                ),
                 icon = AppTokens.icons.Tune,
                 title = AppTokens.strings.res(Res.string.onboarding_setup_title),
                 description = AppTokens.strings.res(Res.string.onboarding_setup_description),

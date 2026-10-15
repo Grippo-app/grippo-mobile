@@ -1,6 +1,7 @@
 package com.grippo.design.components.welcome
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,14 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.accessibility_completed
+import com.grippo.design.resources.provider.accessibility_not_completed
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.welcome_check_equipment
@@ -48,6 +52,11 @@ public fun WelcomeChecklist(
             .background(
                 color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
+            )
+            .border(
+                width = AppTokens.dp.welcome.card.borderWidth,
+                color = AppTokens.colors.border.default,
+                shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius),
             )
             .padding(
                 horizontal = AppTokens.dp.welcome.card.horizontalPadding,
@@ -79,6 +88,12 @@ private fun ChecklistRow(
         AppTokens.colors.semantic.notice
     }
 
+    val background = if (isCompleted) {
+        AppTokens.colors.welcomeChecklist.completedBackground
+    } else {
+        AppTokens.colors.welcomeChecklist.pendingBackground
+    }
+
     val textColor = if (isCompleted) {
         AppTokens.colors.text.secondary
     } else {
@@ -91,8 +106,14 @@ private fun ChecklistRow(
         AppTokens.icons.Cancel
     }
 
+    val completionLabel = AppTokens.strings.res(
+        if (isCompleted) Res.string.accessibility_completed else Res.string.accessibility_not_completed,
+    )
+
     Row(
-        modifier = modifier,
+        modifier = modifier.semantics(mergeDescendants = true) {
+            stateDescription = completionLabel
+        },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
@@ -100,7 +121,7 @@ private fun ChecklistRow(
             modifier = Modifier
                 .size(AppTokens.dp.welcome.checkmark.size)
                 .background(
-                    color = accent.copy(alpha = 0.18f),
+                    color = background,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center,
@@ -117,8 +138,6 @@ private fun ChecklistRow(
             text = text,
             style = AppTokens.typography.b14Med(),
             color = textColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }

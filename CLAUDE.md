@@ -58,7 +58,7 @@ Groups:
 - `:design-system:components` — atomic Composables (`Button`, `Toolbar`, `Input*`, `WeightHistoryChart`, ...).
 - `:design-system:resources:provider` — `Res.string.*` (Compose Multiplatform Resources), `StringProvider` and `AppColor` interfaces, plus `AppDp`/`AppTypography` data objects and `AppString`/`AppDrawable`/`AppIcon` objects.
 - `:design-system:resources:provider-impl` — `ResourcesProviderModule` + `StringProviderImpl`.
-- `:design-system:preview` — `@AppPreview` (multi-preview annotation: phone EN big + UK small), `PreviewContainer` (CompositionLocalProvider + Coil preview handler + `AppTheme(darkTheme = isSystemInDarkTheme())`).
+- `:design-system:preview` — `@AppPreview` (one standard phone viewport, UK light + EN dark), `PreviewContainer` (CompositionLocalProvider + Coil preview handler + `AppTheme(darkTheme = isSystemInDarkTheme())`). [Viewport scope](.claude/skills/design-system/references/visual-consistency.md#default-viewport-scope) owns the visual acceptance target.
 
 ### UI core
 
@@ -727,12 +727,17 @@ Read the owning project skill and only the references relevant to the change:
 | Business operation, endpoint, persistence | [data-layer](.claude/skills/data-layer/SKILL.md) |
 | DTO/Entity/Domain/State conversion | [mappers](.claude/skills/mappers/SKILL.md) |
 | Koin bindings and composition | [di-modules](.claude/skills/di-modules/SKILL.md) |
+| New UI, visual redesign or brand/composition review of screens, dialogs and components | [brand-design](.claude/skills/brand-design/SKILL.md) |
 | Tokens, widgets, resources | [design-system](.claude/skills/design-system/SKILL.md) |
 | Product illustrations and their visual style | [illustrations](.claude/skills/illustrations/SKILL.md) |
 | Platforms, modules, build configuration | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
 
 Feature work also applies analytics and preservation gates. Recipes do not grant
 new scope or require redundant confirmation of work already authorized.
+Product UI visual work MUST apply brand-design for intent and composition alongside the
+implementation owner; design-system retains tokens/components and illustrations
+retains artwork. Changes without visual impact do not trigger a brand workflow.
+Standalone artwork stays with illustrations unless UI composition is in scope.
 
 ---
 
@@ -827,6 +832,10 @@ coordinates implementation and independent review; [validation-gates](.claude/sk
 defines completion checks. Work directly with repository source and the user's
 request. No task-board runtime, generated machine reports or bootstrap scaffold
 is required.
+
+For applicable visual tasks, [brand-design](.claude/skills/brand-design/SKILL.md)
+supplies the visual brief and acceptance criteria to implementers and independent
+reviewers through that same workflow; it does not introduce a separate agent roster.
 
 MUST apply the canonical [execution and review loop](.claude/skills/task-orchestrator/SKILL.md#execution-loop)
 and [completion checks](.claude/skills/validation-gates/SKILL.md). The execution skill

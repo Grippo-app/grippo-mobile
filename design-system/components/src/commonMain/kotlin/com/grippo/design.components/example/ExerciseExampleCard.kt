@@ -1,19 +1,21 @@
 package com.grippo.design.components.example
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.design.components.example.internal.ExerciseExampleCardLarge
 import com.grippo.design.components.example.internal.ExerciseExampleCardMedium
 import com.grippo.design.components.example.internal.ExerciseExampleCardSmall
+import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.toolkit.date.utils.DateFormat
+import kotlinx.datetime.LocalDateTime
 
 @Immutable
 public sealed interface ExerciseExampleCardStyle {
@@ -59,15 +61,25 @@ public fun ExerciseExampleCard(
 @AppPreview
 @Composable
 private fun ExerciseExampleCardLargePreview() {
+    val example = exerciseExampleCardPreviewValue()
     PreviewContainer {
         ExerciseExampleCard(
-            modifier = Modifier.size(250.dp),
-            style = ExerciseExampleCardStyle.Large(stubExerciseExample()),
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(example),
         )
 
         ExerciseExampleCard(
-            modifier = Modifier.size(250.dp),
-            style = ExerciseExampleCardStyle.Large(stubExerciseExample()),
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    value = example.value.copy(
+                        id = "exercise-example-unused",
+                        name = "Жим гантелей лежачи на похилій лаві нейтральним хватом",
+                        usageCount = 0,
+                        lastUsed = DateTimeFormatState.Empty(DateFormat.DateOnly.DateDdMmm),
+                    ),
+                ),
+            ),
         )
     }
 }
@@ -75,10 +87,22 @@ private fun ExerciseExampleCardLargePreview() {
 @AppPreview
 @Composable
 private fun ExerciseExampleCardMediumPreview() {
+    val example = exerciseExampleCardPreviewValue()
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            style = ExerciseExampleCardStyle.Medium(stubExerciseExample()),
+            style = ExerciseExampleCardStyle.Medium(example),
+        )
+
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Medium(
+                example.copy(
+                    value = example.value.copy(
+                        name = "Тяга верхнього блока до грудей широким хватом",
+                    ),
+                ),
+            ),
         )
     }
 }
@@ -86,10 +110,34 @@ private fun ExerciseExampleCardMediumPreview() {
 @AppPreview
 @Composable
 private fun ExerciseExampleCardSmallPreview() {
+    val example = exerciseExampleCardPreviewValue().value
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            style = ExerciseExampleCardStyle.Small(stubExerciseExample().value),
+            style = ExerciseExampleCardStyle.Small(example),
         )
+
+        FocusFrame(modifier = Modifier.fillMaxWidth()) {
+            ExerciseExampleCard(
+                modifier = Modifier.fillMaxWidth(),
+                style = ExerciseExampleCardStyle.Small(
+                    example.copy(name = "Жим гантелей лежачи на похилій лаві нейтральним хватом"),
+                ),
+            )
+        }
     }
+}
+
+private fun exerciseExampleCardPreviewValue(): ExerciseExampleState {
+    val example = stubExerciseExample()
+    return example.copy(
+        value = example.value.copy(
+            id = "exercise-example-used",
+            lastUsed = DateTimeFormatState.Valid(
+                display = "14 Oct",
+                value = LocalDateTime(2026, 10, 14, 12, 0),
+                format = DateFormat.DateOnly.DateDdMmm,
+            ),
+        ),
+    )
 }

@@ -25,8 +25,8 @@ public fun CategoryChip(
         modifier = modifier,
         label = ChipLabel.Empty,
         value = value.title().text(),
-        trailing = ChipTrailing.Content(
-            lambda = {
+        leading = ChipLeading.Content(
+            content = {
                 Box(
                     Modifier
                         .fillMaxHeight()
@@ -41,7 +41,7 @@ public fun CategoryChip(
             }
         ),
         size = size,
-        stype = ChipStype.Default,
+        interaction = ChipInteraction.Static,
         textColor = AppTokens.colors.text.primary,
         iconColor = value.color(),
         brush = SolidColor(AppTokens.colors.background.card)
@@ -61,5 +61,15 @@ private fun CategoryChipPreview() {
             value = CategoryEnumState.ISOLATION,
             size = ChipSize.Medium
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun CategoryChipSmallPreview() {
+    PreviewContainer {
+        CategoryEnumState.entries.forEach { value ->
+            CategoryChip(value = value, size = ChipSize.Small)
+        }
     }
 }

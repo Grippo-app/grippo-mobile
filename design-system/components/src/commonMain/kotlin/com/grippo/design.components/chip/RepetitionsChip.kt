@@ -35,10 +35,11 @@ public fun RepetitionsChip(
         modifier = modifier,
         label = text,
         value = value.short(),
-        trailing = ChipTrailing.Icon(AppTokens.icons.Repeat),
+        leading = ChipLeading.Icon(AppTokens.icons.Repeat),
         size = size,
-        stype = ChipStype.Default,
+        interaction = ChipInteraction.Static,
         textColor = AppTokens.colors.text.primary,
+        labelColor = AppTokens.colors.text.secondary,
         iconColor = AppTokens.colors.context.repetitions,
         brush = SolidColor(AppTokens.colors.background.card)
     )

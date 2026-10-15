@@ -1,16 +1,18 @@
 package com.grippo.design.components.example.internal
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.draw.clip
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -32,7 +34,21 @@ internal fun ExerciseExampleCardLarge(
     modifier: Modifier,
     value: ExerciseExampleState,
 ) {
-    Column(modifier = modifier) {
+    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.radius)
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(AppTokens.colors.background.card)
+            .border(
+                width = AppTokens.dp.exerciseExampleCard.borderWidth,
+                color = AppTokens.colors.border.default,
+                shape = shape,
+            )
+            .padding(AppTokens.dp.exerciseExampleCard.contentPadding),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -43,27 +59,19 @@ internal fun ExerciseExampleCardLarge(
                 style = ExerciseExampleImageStyle.MEDIUM
             )
 
-            Column(
+            Text(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-            ) {
-                Text(
-                    text = value.value.name,
-                    style = AppTokens.typography.h5(),
-                    color = AppTokens.colors.text.primary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                ExampleTypeSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = value.value,
-                    size = ChipSize.Small
-                )
-            }
+                text = value.value.name,
+                style = AppTokens.typography.h5(),
+                color = AppTokens.colors.text.primary,
+            )
         }
 
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        ExampleTypeSection(
+            modifier = Modifier.fillMaxWidth(),
+            value = value.value,
+            size = ChipSize.Small,
+        )
 
         val lastUsed = value.value.lastUsed
         Text(

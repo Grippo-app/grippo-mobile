@@ -34,6 +34,7 @@ import com.grippo.design.resources.provider.statistics
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun StatisticsScreen(
@@ -144,6 +145,37 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsTrainingsLoadingPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(
+                mode = StatisticsMode.Trainings(
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 5, 0, 0),
+                        to = LocalDateTime(2026, 10, 11, 23, 59),
+                    ),
+                ),
+            ),
+            loaders = persistentSetOf(StatisticsLoader.Charts),
+            contract = StatisticsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsExercisesLoadingPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(mode = StatisticsMode.Exercises),
+            loaders = persistentSetOf(StatisticsLoader.Charts),
+            contract = StatisticsContract.Empty,
         )
     }
 }

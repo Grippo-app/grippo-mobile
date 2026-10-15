@@ -38,7 +38,7 @@ internal fun ExerciseExampleCardMedium(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Text(
                 text = value.value.name,

@@ -1,11 +1,7 @@
 package com.grippo.design.components.metrics.engagement.digest
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
@@ -15,7 +11,6 @@ import com.grippo.design.components.metrics.internal.MetricBreakdownItem
 import com.grippo.design.components.metrics.internal.MetricBreakdownRow
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
-import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -35,24 +30,13 @@ public fun DigestCard(
     modifier: Modifier = Modifier,
     value: DigestState,
 ) {
-    val accentColor = AppTokens.colors.brand.color6
-
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Large,
-        decorator = {
-            Box(
-                modifier = Modifier
-                    .spot(color = accentColor, alpha = 0.18f)
-                    .align(Alignment.TopEnd)
-                    .size(AppTokens.dp.metrics.trainingSummary.spot)
-                    .scale(1.4f),
-            )
-        }
     ) {
         DigestHeader(
             icon = AppTokens.icons.Trophy,
-            accentColor = accentColor,
+            iconColor = AppTokens.colors.context.volume,
             title = AppTokens.strings.res(Res.string.total),
             subtitle = value.range.display,
         )

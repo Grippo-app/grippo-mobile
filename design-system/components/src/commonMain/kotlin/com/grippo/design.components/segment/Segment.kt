@@ -16,6 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -70,7 +73,7 @@ public fun <KEY> Segment(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            AppTokens.colors.background.card,
+                            AppTokens.colors.selection.background,
                             RoundedCornerShape(AppTokens.dp.segment.fill.inRadius)
                         ),
                 )
@@ -86,7 +89,8 @@ public fun <KEY> Segment(
                         content = {
                             Text(
                                 modifier = Modifier
-                                    .scalableClick(onClick = clickProvider)
+                                    .semantics { this.selected = isSelected }
+                                    .scalableClick(role = Role.Tab, onClick = clickProvider)
                                     .padding(
                                         horizontal = AppTokens.dp.contentPadding.block,
                                         vertical = AppTokens.dp.contentPadding.subContent
@@ -132,7 +136,8 @@ public fun <KEY> Segment(
                         content = {
                             Text(
                                 modifier = Modifier
-                                    .scalableClick(onClick = clickProvider)
+                                    .semantics { this.selected = isSelected }
+                                    .scalableClick(role = Role.Tab, onClick = clickProvider)
                                     .heightIn(min = AppTokens.dp.segment.outline.height)
                                     .padding(
                                         horizontal = AppTokens.dp.segment.outline.horizontalPadding,
@@ -155,6 +160,24 @@ public fun <KEY> Segment(
                     )
                 }
             }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SegmentFillPreview() {
+    PreviewContainer {
+        Segment(
+            modifier = Modifier.fillMaxWidth(),
+            items = persistentListOf<Pair<String, UiText>>(
+                "Daily" to UiText.Str("Daily"),
+                "Monthly" to UiText.Str("Monthly"),
+            ),
+            selected = "Daily",
+            onSelect = {},
+            style = SegmentStyle.Fill,
+            segmentWidth = SegmentWidth.EqualFill,
         )
     }
 }

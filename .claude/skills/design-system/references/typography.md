@@ -17,7 +17,8 @@ for exact methods, sizes and the current `manrope()` factory. Consumers use
   Add only weights/typefaces required by authorized scope. A second typeface
   needs a real factory and its explicit token consumers, not a generic example.
 - Each changed style MUST be reviewed in affected whole-screen consumers in both
-  themes and enlarged-font states. Report states that could not be rendered.
+  themes at the [standard viewport](visual-consistency.md#default-viewport-scope).
+  Extra font scales require an explicit request. Report unrendered in-scope states.
 
 [resources.md](resources.md) owns asset conventions;
 [visual usage rules](../../../../design-system/CONSISTENCY.md) own role selection.

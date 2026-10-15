@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,19 +29,20 @@ import com.grippo.design.resources.provider.icons.Trash
 /** An icon action panel matching the height supplied by SwipeToReveal. */
 @Composable
 public fun SwipeRevealAction(
+    modifier: Modifier = Modifier,
     label: String,
     icon: ImageVector,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     color: Color = AppTokens.colors.semantic.error,
+    background: Color = AppTokens.colors.semantic.errorBackground,
 ) {
     Box(
         modifier = modifier
             .width(AppTokens.dp.swipe.actionWidth)
             .fillMaxHeight()
             .clip(RoundedCornerShape(AppTokens.dp.swipe.actionRadius))
-            .background(color.copy(alpha = 0.12f))
-            .clickable(role = Role.Button, onClick = onClick)
+            .background(background)
+            .scalableClick(role = Role.Button, onClick = onClick)
             .semantics(mergeDescendants = true) { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {

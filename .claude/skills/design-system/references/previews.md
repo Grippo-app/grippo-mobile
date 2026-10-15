@@ -1,32 +1,46 @@
-# AppPreview and PreviewContainer
+# Preview coverage
 
-Use the existing [preview helpers](../../../../design-system/preview/src/commonMain/kotlin/com/grippo/design.preview/Preview.kt),
-not copied annotation/theme/Coil implementations. AppPreview supplies the current
-phone/locale configurations; PreviewContainer owns preview tokens/theme and image
-handling. Inspect its real signature before choosing an additional theme/config.
+Use the existing [AppPreview and PreviewContainer](../../../../design-system/preview/src/commonMain/kotlin/com/grippo/design.preview/Preview.kt).
+Inspect their current configuration/signature; do not copy providers or create
+preview infrastructure without a concrete authorized need.
 
-- A new screen/widget or visual change MUST have representative private named
-  AppPreview coverage in its file, inside PreviewContainer. Update existing
-  previews when they already cover the change; do not add duplicate fixtures.
-  Other edits require a visual-impact assessment and review of relevant existing
-  previews/callers; callback-only or visibility-only changes do not mechanically
-  require new fixtures when they have no visual impact.
-  Explicit sample text/data MAY be literal preview
-  fixtures; production product text/styles still require resources/tokens.
-  Screens/dialogs use Contract.Empty; widgets use
-  lightweight parameters and existing stub data, never a live ViewModel/Koin.
-- Cover meaningful empty/loading/content/error/selection variants relevant to the
-  change. Start from existing ui-core state stubs and explicitly override the facts
-  that distinguish the variant; keep compared IDs/dates/set counts deterministic.
-- Do not add fictional AppPreviewLight/Tablet APIs, a source opt-in already covered
-  by conventions or a duplicate provider. New preview facilities need a real
-  requested use case, not a generic template suggestion.
-- Component previews alone do not establish whole-screen visual quality. Inspect
-  consumers, layout/insets, enlarged fonts and declared themes/locale states when
-  rendering is permitted; do not infer visual success from compilation.
-- Use actual supplied design content for fidelity comparisons. Record unrendered
-  states and unavailable platform/runtime inputs. Do not add capture automation,
-  test sources/dependencies or production verification hooks.
+## Coverage gate
 
-Follow [visual review](../../validation-gates/references/visual-review.md) and
-[visual consistency](visual-consistency.md) for affected whole-screen consumers.
+- New screens/widgets and visual changes MUST have representative private named
+  AppPreview coverage in their files, inside PreviewContainer. Update fitting
+  existing previews rather than duplicate them.
+- Default previews and visual acceptance follow the
+  [standard viewport scope](visual-consistency.md#default-viewport-scope).
+  Do not create a small-device or font-scale matrix unless the user requests it.
+- Nonvisual edits require an impact assessment and relevant caller/preview review.
+  Callback-only or Kotlin visibility changes need no new fixture when rendering
+  and interaction are unaffected. Changing whether UI content is shown is visual.
+- Derive coverage from the required
+  [usage/state inventory](../../brand-design/references/usage-and-states.md).
+  Account for every distinct role/host, visual variant, applicable state, meaningful
+  reachable combination and content boundary. Inspected equivalent cases may share
+  fixtures; impossible state combinations do not improve coverage.
+- Screens/dialogs use Contract.Empty. Widgets use lightweight parameters and
+  existing ui-core stubs; private screen fixtures reuse shared stubs and override
+  only distinguishing facts. No live VM/Koin is needed. Keep compared IDs, dates
+  and counts deterministic. Explicit sample data/text MAY be literal; this does
+  not authorize alternative production styling.
+
+## What a preview establishes
+
+Trace theme/locale through the [effective provider](theme.md) and the actual render;
+annotation names or a locale argument alone do not prove the rendered language.
+Current PreviewContainer adds preview padding and replaces Coil images with a
+placeholder. Its framing is not production host geometry, and that placeholder
+does not verify the real image's silhouette, proportions or loading outcome.
+
+Inspect whole-screen consumers and actual loaded/exported imagery when those
+outcomes matter. Static previews establish only the rendered state; focus,
+keyboard, scrolling, gestures and transition timing need relevant manual evidence.
+Use matching supplied design content for fidelity comparisons.
+
+Record fixture-to-context/state coverage and unrendered or unexercised groups.
+[Visual consistency](visual-consistency.md) owns whole-screen checks;
+[visual review](../../validation-gates/references/visual-review.md) owns evidence
+handling. Automated checks and verification facilities follow the
+[project policy](../../../../CLAUDE.md#verification-policy).

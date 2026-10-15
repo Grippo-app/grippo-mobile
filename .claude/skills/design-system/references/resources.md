@@ -11,8 +11,7 @@ architecture decision; feature size alone is not permission.
 
 The provider currently enables `androidResources.enable = true` inside
 `kotlin { android { ... } }`. MUST retain that opt-in: the shared convention does
-not enable Android resources globally. Inspect the pinned source DSL before
-editing; MUST NOT copy the former `androidLibrary` recipe as the current signature.
+not enable Android resources globally. Inspect the current source DSL before editing.
 The notification-manager's Android resources have their separate platform owner.
 A build verifies compilation; actual resource packaging/use requires its relevant
 inspection or manual scenario, not an inferred runtime success.

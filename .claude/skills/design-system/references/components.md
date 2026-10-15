@@ -1,71 +1,70 @@
 # Shared Compose components
 
-MUST inspect the component's actual declaration and all affected consumers before
-using or changing its contract. Source owns complete signatures, token paths and
-callback behavior; this reference does not duplicate component implementations.
+MUST inspect actual declarations and affected callers before changing a contract.
+Visual creation/changes first pass
+[usage/state analysis](../../brand-design/references/usage-and-states.md).
+Source owns complete signatures, token paths and callback behavior; this reference
+records component-specific constraints.
 
 ## Entry points and non-obvious behavior
 
 | Topic | Current source and invariant |
 |---|---|
+| Branded splash presentation | [BrandSplash.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/brand/BrandSplash.kt); owns logo entrance/glow and loader placement; no navigation callbacks or minimum display time |
+| Branded title and description | [BrandHeader.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/brand/BrandHeader.kt); compact warm header, optional existing Grippo logo; content and navigation belong to its caller |
 | Toolbar | [Toolbar.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/toolbar/Toolbar.kt); independent screens own their toolbar |
+| Highlighted content | [FocusFrame.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/frames/FocusFrame.kt); warm selection by default; custom semantic callers supply both accent and background from tokens |
 | Dialog title/actions | [BottomSheetToolbar.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/toolbar/BottomSheetToolbar.kt); the shared DialogScreen renders one, dialog bodies MUST NOT add a duplicate |
 | Bottom CTA/insets | [BottomOverlayContainer.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/frames/BottomOverlayContainer.kt); apply its resolved content Modifier and PaddingValues to the scrolling content |
 | Button | [Button.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/button/Button.kt); loading keeps label/icons/width, shimmers, blocks interaction and exposes indeterminate progress |
 | Input | [inputs/](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/inputs/); editable fields accept matching FormatState and raw text callbacks, picker-backed fields use typed selection and onClick |
-| BannerCard | [BannerCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/banner/BannerCard.kt); Custom tint still comes from token colors, disabled appearance has its own semantics |
+| Equipment selection | [EquipmentSelection.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/equipment/EquipmentSelection.kt); fixed group tabs and scrolling EquipmentRow list; selection and bottom actions belong to the caller |
+| BannerCard | [BannerCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/banner/BannerCard.kt); Custom tint and surface are supplied by token colors; semantic and disabled surfaces are owned by the themes |
 | Decorative illustration | [Illustration.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/Illustration.kt) and [IllustrationStyle.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/IllustrationStyle.kt); owns token sizes, centering, aspect ratio and Fit; meaningful information stays in localized consumer text |
 | IllustratedEmptyState | [IllustratedEmptyState.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/empty/IllustratedEmptyState.kt); uses Illustration, supports a message or title with supporting text; CTA/insets belong to the parent |
-| LineIndicator | [LineIndicator.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/indicators/LineIndicator.kt); inspect nested chart color type and dp.metrics.charts.indicator defaults, optional start/end label and marker slots |
-| Chip | [Chip.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/chip/Chip.kt); primitive receives colors/brush and sealed label/trailing/style/size inputs; product wrappers own token selection |
+| LineIndicator | [LineIndicator.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/indicators/LineIndicator.kt); caller-supplied labels/markers must fit their actual chart and layout contracts |
+| Chip | [Chip.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/chip/Chip.kt); primitive receives colors/brush and sealed label/leading/interaction/size inputs; product wrappers own token selection |
 
 - MUST reuse the appropriate existing input/formatter. Add a formatter only for
   different parsing/validation/display needs, never merely for another screen.
   Inspect onFocused/onClear/onNext/onDone callbacks where analytics coverage needs
-  them; MUST NOT infer complete inputs from an old shortened signature.
+  them.
 - Button state comes from actual loaders and validity; MUST NOT add business
   eligibility rules inside the widget. Feature owners keep logical selection.
+- [Illustration background](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/IllustrationBackground.kt)
+  is the single owner of the warm illustration-region gradient used by brand headers,
+  hero blocks, the profile identity header and the loader. Consumers pass their own
+  shape; MUST NOT rebuild the brush from `illustration.backgroundStart/End` inline.
 - [Shared shimmer](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/Shimmer.kt)
   adds highlight only, not skeleton shape/loading semantics. Apply
   it after clip/background; owning component supplies shape/semantics. Opacity
   belongs to shimmer tokens. MUST NOT migrate unrelated loaders incidentally.
-- Existing Check/CheckSelectableCard/ToggleSelectableCard/Toggle variants serve selection
-  roles. MUST inspect actual sizes/contracts rather than assume a generic Switch,
-  Checkbox, RadioGroup or a nonexistent product wrapper.
+- Existing Check/CheckSelectableCard/ToggleSelectableCard/Toggle variants serve
+  selection roles. Inspect their actual size and state contracts; role-to-token
+  choices stay in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md).
 - Toggle owns its Switch state/disabled semantics. Use its enabled input for
   unavailable controls and contentDescription for a label; do not rebuild a
   feature-specific Material Switch or duplicate state semantics in a consumer.
 - [Check](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/selectors/Check.kt)
-  follows Toggle's controlled-state, callback, token and animation ownership.
-  Selection semantics and interaction stay inside the component; consumers pass
-  checked state/callback and supply a label, without a duplicate parent click.
+  is the shared circular check for selection. Pass a callback and label for a
+  standalone checkbox with its own touch target/semantics. Omit the callback for
+  an indicator inside an already selectable surface; that parent owns its click,
+  label and selected state, and Check adds no second interactive/accessibility target.
+  Reuse this owner rather than adding card-specific check indicators. Toggle keeps
+  its separate switch role.
 - MuscleSelection's measured bottom slot reserves list space before adaptive hero
   sizing. Keep bounded layout, immutable inputs and caller-owned selection. Group
   changes may restart scrolling without clearing caller selection.
 
 ## Contract and placement gate
 
-Public widget entry points MUST use explicit visibility, modifier default and
-neutral callbacks. Helpers remain internal/private. Source-dependent signature,
-entity-model parameter and Toggle outlier rules belong in
-[compose-rules.md](../../ui-feature/references/compose-rules.md); MUST NOT keep a
-second signature policy here. Compose stability annotations MUST match their
-contracts. Project callback/composable-slot model types follow the existing @Stable
-convention when its contract holds; MUST NOT label them @Immutable to hide mutable
-observable data. Deeply immutable data uses @Immutable.
+Signatures, entity-model parameters, callback/slot stability and visibility follow
+[Compose rules](../../ui-feature/references/compose-rules.md). An annotation cannot
+conceal mutable observable data. Place widgets in the actual matching category and
+preserve existing package layout. [Preview rules](previews.md) own coverage.
 
-Place new widgets in the actual matching category/package (e.g. inputs, toolbar,
-indicators); preserve existing dotted directories. MUST NOT move files to invented
-input/navigation folders as incidental cleanup. New widgets and visual changes
-require representative private AppPreview coverage in PreviewContainer; other
-edits require a visual-impact assessment and review of relevant existing
-previews/callers. [previews.md](previews.md) owns coverage; do not mechanically
-add fixtures for changes without visual impact.
-
-AppTokens/product UI-state consumers belong to design-system. Product-independent
-widgets accept style/data parameters in compose-libs; MUST NOT classify ownership
-by a copied signature or line count alone. Use
+Reusable widgets with product token/UI-state semantics belong to design-system.
+Product-independent widgets accept style/data parameters in compose-libs. Use
 [module-structure.md](../../ui-feature/references/module-structure.md) for extraction.
 Review source gates and [whole-screen consistency](visual-consistency.md), including
-input/focus behavior when affected. Feature analytics and preservation remain
-owned by their canonical skills.
+compatibility with the usage/state inventory and affected input/focus behavior.

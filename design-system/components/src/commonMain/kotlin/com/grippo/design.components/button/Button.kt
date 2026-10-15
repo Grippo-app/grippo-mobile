@@ -5,13 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +42,17 @@ import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.cancel_btn
+import com.grippo.design.resources.provider.confirm_btn
+import com.grippo.design.resources.provider.continue_with_apple
+import com.grippo.design.resources.provider.continue_with_google
+import com.grippo.design.resources.provider.icons.Apple
+import com.grippo.design.resources.provider.icons.ArrowRight
+import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.icons.Google
+import com.grippo.design.resources.provider.icons.Play
+import com.grippo.design.resources.provider.save_btn
 
 @Immutable
 public sealed interface ButtonContent {
@@ -127,6 +140,10 @@ public fun Button(
         ButtonStyle.Error -> AppTokens.colors.shimmer.buttonError
     }
     val gap = if (transparent) metrics.spaceTransparent else metrics.space
+    val shape = when (content) {
+        is ButtonContent.Text -> RoundedCornerShape(AppTokens.dp.button.radius)
+        is ButtonContent.Icon -> CircleShape
+    }
     val baseModifier = modifier
         .semantics(mergeDescendants = true) {
             role = Role.Button
@@ -139,9 +156,9 @@ public fun Button(
             haptic = style == ButtonStyle.Primary || style == ButtonStyle.Secondary ||
                 style == ButtonStyle.Error,
         )
-        .clip(CircleShape)
+        .clip(shape)
         .background(Brush.horizontalGradient(listOf(colors.background1, colors.background2)))
-        .border(AppTokens.dp.button.border, colors.border, CircleShape)
+        .border(AppTokens.dp.button.border, colors.border, shape)
         .shimmer(enabled = loading, highlightColor = highlight)
 
     when (content) {
@@ -552,5 +569,120 @@ private fun ButtonErrorPreview() {
             size = ButtonSize.Small,
             onClick = {}
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonSmallTextPreview() {
+    PreviewContainer {
+        val styles = listOf(
+            ButtonStyle.Primary, ButtonStyle.Secondary, ButtonStyle.Tertiary,
+            ButtonStyle.Transparent, ButtonStyle.Error,
+        )
+        for (style in styles) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                for (state in ButtonState.entries) {
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        content = ButtonContent.Text(text = state.name),
+                        style = style,
+                        state = state,
+                        size = ButtonSize.Small,
+                        onClick = {},
+                    )
+                }
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonActionSurfacesPreview() {
+    PreviewContainer {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTokens.colors.background.dialog)
+                .padding(AppTokens.dp.contentPadding.content),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            Button(
+                modifier = Modifier.weight(1f),
+                content = ButtonContent.Text(AppTokens.strings.res(Res.string.cancel_btn)),
+                style = ButtonStyle.Secondary,
+                onClick = {},
+            )
+            Button(
+                modifier = Modifier.weight(1f),
+                content = ButtonContent.Text(AppTokens.strings.res(Res.string.confirm_btn)),
+                onClick = {},
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTokens.colors.background.card)
+                .padding(AppTokens.dp.contentPadding.content),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            Button(
+                content = ButtonContent.Text(AppTokens.strings.res(Res.string.save_btn)),
+                style = ButtonStyle.Secondary,
+                size = ButtonSize.Small,
+                onClick = {},
+            )
+            Button(
+                content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.Play)),
+                onClick = {},
+            )
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.confirm_btn),
+                startIcon = ButtonIcon.Icon(AppTokens.icons.Check),
+                endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight),
+            ),
+            onClick = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonProviderLabelsPreview() {
+    PreviewContainer {
+        for (state in ButtonState.entries) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.continue_with_google),
+                        startIcon = ButtonIcon.Image(AppTokens.icons.Google),
+                    ),
+                    style = ButtonStyle.Secondary,
+                    state = state,
+                    onClick = {},
+                )
+                Button(
+                    modifier = Modifier.weight(1f),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.continue_with_apple),
+                        startIcon = ButtonIcon.Icon(AppTokens.icons.Apple),
+                    ),
+                    style = ButtonStyle.Secondary,
+                    state = state,
+                    onClick = {},
+                )
+            }
+        }
     }
 }
