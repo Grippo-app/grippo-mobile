@@ -6,10 +6,11 @@ description: Verify Grippo backend contracts before wire behavior changes in DTO
 # Grippo backend contract
 
 The backend owns endpoint methods, paths, fields, types, dictionary keys and semantics.
-Before a wire change MUST identify an available authoritative backend OpenAPI/Swagger document or
-backend source and record its environment/revision. An unavailable contract blocks only dependent
-wire decisions; continue independent work. Task text and existing mobile DTOs alone do not prove
-server behavior. Resolve missing details with the user before implementing them.
+Before a wire change MUST identify an authoritative backend OpenAPI/Swagger document or backend
+source and record its environment/revision ([contract evidence](references/overview.md) says
+where it comes from). An unavailable contract blocks only dependent wire decisions; continue
+independent work. Task text and existing mobile DTOs alone do not prove server behavior. Resolve
+missing details with the user before implementing them.
 
 ## Evidence trigger (canonical)
 
@@ -18,6 +19,13 @@ types, dictionary values, payload meaning, required request values or null/omiss
 A Kotlin-nullability-only alignment MAY reuse previously verified wire keys only after source
 review proves serialization and supplied call-site values unchanged. Existing mobile source alone
 MUST NOT be treated as backend evidence; unknown serialization behavior blocks this exception.
+
+Accepted evidence classes, in order of preference: (1) an OpenAPI/Swagger document or the
+backend source at a named revision; (2) an **owner-attested contract** - the user, who owns the
+Grippo backend, states in chat the exact method, path, wire keys, types, null/omitted/empty
+semantics and error outcomes of the operation. An owner-attested contract is recorded verbatim
+in the task report with its date; facts it does not state are asked for in the quiz, never
+inferred; a later OpenAPI/source that contradicts it is reported, not silently adopted.
 DTO collection properties MUST be nullable with `= null`; element nullability/types MUST follow
 the verified backend contract, not a blanket nullable-element convention.
 
@@ -25,7 +33,7 @@ the verified backend contract, not a blanket nullable-element convention.
 
 1. Read the exact operation and referenced schemas. Compare method/path/query/body/response,
    null-versus-omitted/empty semantics, error outcomes and related consumers.
-2. MUST hand-author mobile changes only within authorized scope. Keep every response/request DTO
+2. Hand-author mobile changes inside the authorized scope (no codegen). Keep every response/request DTO
    field and collection nullable with default null and explicit exact SerialName. Server-required
    request values are validated before sending; do not relax wire validity.
 3. DTOs retain raw wire strings/numbers. Domain promotion and unknown-value handling follow
@@ -40,10 +48,11 @@ MUST review each actual wire-behavior delta against named authoritative evidence
 request construction and all affected mapper/domain consumers. For the bounded nullability-only
 exception, MUST record the unchanged-serialization/call-site proof and previously verified keys.
 MUST NOT use codegen, fabricated endpoints,
-empty-by-default assumptions or compatibility claims based on mobile source alone. Identify
-existing source deviations separately from the new standard; repair only within task scope.
-MUST apply `CLAUDE.md` Verification policy. MUST report missing evidence and unverified
-runtime/server behavior.
+empty-by-default assumptions or compatibility claims based on mobile source alone. A deviation the
+audit finds in current source is reported separately from the standard and repaired only inside
+the authorized scope. Run the permitted checks under the
+[verification policy](../../../CLAUDE.md#verification-policy) and report missing evidence and
+unverified runtime/server behavior.
 
 Read [contract evidence](references/overview.md) when selecting/contrasting sources and
 [drift review](references/drift.md) when auditing compatibility.

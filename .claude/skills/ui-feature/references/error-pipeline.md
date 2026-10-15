@@ -31,15 +31,21 @@ safeLaunch(loader = MyLoader.Fetch) {
 
 Inspect the current [ErrorProviderImpl](../../../../ui-core/error/error-provider-impl/src/commonMain/kotlin/com/grippo/core/error/provider/impl/ErrorProviderImpl.kt) for exact mapping and callback fields.
 
-`AppErrorState` is the UI mirror of `AppError`. It lives in `:ui-core:state` (package `core.state.error`) — **not** in `:ui-core:error:error-provider`, which is kept UI-free so `:data-services:*` and `:toolkit:http-client` can depend on `AppError` without dragging in UI. Constructor params are plain strings (`title: String`, `description: String?`); `UiText` wrapping is a per-product decision, not part of the bootstrap shape. `ErrorDisplay` is a `DialogConfig` subtype in `:ui-dialog-features:dialog-api`.
+`AppErrorState` is the UI mirror of `AppError`. It lives in `:ui-core:state` (package `core.state.error`) — **not** in `:ui-core:error:error-provider`, which is kept UI-free so `:data-services:*` and `:toolkit:http-client` can depend on `AppError` without dragging in UI. Inspect `AppErrorState.kt`; current shape: `Network.Expected(title, description?)`, `Network.NoInternet(description?)`, `Network.Timeout(description?)`, `Network.IncompleteResponse(description?)`, `Network.Unexpected(description?)`, a top-level `Expected(title, description?)` declared `: Network`, and `data object Unknown`. Fields are plain `String`s; `title()`/`description()` build the dialog's `UiText`. On the `AppError` side, `Network.IncompleteResponse` and `Unknown` are no-argument plain classes; the other subtypes are data classes. `ErrorDisplay` is a `DialogConfig` subtype in `:ui-dialog-features:dialog-api`.
 
 ## Inside `BaseViewModel` — `sendError`
 
 Inspect [BaseViewModel](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseViewModel.kt)
 and [OperationManagerImpl](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/internal/operation/OperationManagerImpl.kt).
-CancellationException is excluded before reporting. Original failures are logged
-and reported; only Exception receives pure mapError for the dialog. Fatal Error is
-not transformed. onError is a post-dismissal callback, not immediate recovery.
+Current shape: `OperationManagerImpl.launch` installs a `CoroutineExceptionHandler`
+that ignores `CancellationException` and re-launches `onError(t)` on the VM scope;
+that `onError` is `BaseViewModel.sendError` (`private suspend`), which runs
+`AppLogger.General.error(...)` → `crashReporting.reportException(exception)` →
+`displayError = if (exception is Exception) mapError(exception) else exception` →
+`errorProvider.provide(displayError, callback = onError)`. Original failures are
+logged and reported; only `Exception` receives the pure `mapError` for the dialog,
+and a fatal `Error` is not transformed. `onError` is a post-dismissal callback,
+not immediate recovery.
 
 Keep the error contract unified across block and Flow `safeLaunch`: both expose
 `onError: () -> Unit = {}` and `mapError: (Throwable) -> Throwable = { it }`, with
@@ -140,7 +146,7 @@ before dismissal or an analytics retry policy.
 - **Throwing a replacement `AppError` in a ViewModel** — use pure `safeLaunch.mapError` for necessary UI presentation while preserving the original error for analytics/logging/crash reporting.
 
 Data-layer classification and payload completeness follow the
-[canonical ownership rules](../../data-layer/references/error-pipeline.md).
+[canonical ownership rules](../../data-layer/references/operation-outcomes.md#operation-outcomes-and-cache-reconciliation-canonical).
 
 ## The error triad (`:ui-core:state` work)
 

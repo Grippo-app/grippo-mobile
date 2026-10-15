@@ -297,7 +297,7 @@ internal class HomeViewModel(
 
     override fun onOpenExample(id: String) {
         analytics.trackEvent(HomeEvent.ExerciseClicked)
-        val dialog = DialogConfig.ExerciseExample(
+        val dialog = DialogConfig.ExerciseExampleDetails(
             title = UiText.Res(Res.string.exercise_details_btn),
             id = id
         )

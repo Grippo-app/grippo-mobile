@@ -5,13 +5,14 @@ model: inherit
 color: yellow
 tools: Read, Grep, Glob, Bash, mcp__Claude_Code_iOS_Simulator__control, mcp__Claude_Code_iOS_Simulator__build
 disallowedTools: Agent, Edit, Write, NotebookEdit
-skills: runtime-verification
+skills:
+  - runtime-verification
 hooks:
   PreToolUse:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" no-git-write
+          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly-build
 ---
 
 # Runtime verifier
@@ -24,8 +25,10 @@ evidence. You never change code; you distinguish observed facts from inference.
 - Build and install the Android debug app on an AVD, build the shared
   XCFramework and the iOS app for the simulator, launch, tap, type, screenshot
   (`adb exec-out screencap`, simulator tool), read `logcat` and the app's own
-  log file, send notification-extra deeplinks. The guard blocks git mutations
-  and `clean`.
+  log file, send notification-extra deeplinks. The guard (`readonly-build`)
+  blocks git mutations, `clean`, file-editing programs and shell redirection
+  into the repository; evidence and derived data go to the literal absolute
+  scratchpad path from the brief (the guard does not expand shell variables).
 - No edits, no subagents, no real devices, no store/credentials/secure config
   changes, no Firebase sends beyond what normal app usage emits.
 

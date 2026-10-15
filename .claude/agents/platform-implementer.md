@@ -5,7 +5,9 @@ model: inherit
 color: orange
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
-skills: platform-build-toolkit, di-modules
+skills:
+  - platform-build-toolkit
+  - di-modules
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -38,7 +40,7 @@ building, and whether Android and/or iOS builds are authorized.
 
 ## Duties
 
-1. Read `.claude/skills/platform-build-toolkit/references/{gradle-build,convention-plugins,toolkit-utilities-core,toolkit-utilities-platform,ios-framework}.md`
+1. Read `.claude/skills/platform-build-toolkit/references/{gradle-build,convention-plugins,new-module,toolkit-utilities-core,toolkit-utilities-platform,ios-framework,secrets-and-config,release}.md`
    and `.claude/skills/di-modules/references/composition-root.md` (SKILL.md files
    are preloaded; references are not). Inspect the actual plugin sources under
    `build-logic/convention/src/main/kotlin/`; ignore any stale copies under

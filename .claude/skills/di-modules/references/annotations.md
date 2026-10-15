@@ -15,8 +15,8 @@ separate responsibilities. KSP wiring follows `build-logic/convention/.../KoinAn
   intended type. Multiple implementations need intentional qualifiers and matching consumer lookup.
 - Provider methods handle platform factory/builder adapters. Do not add ComponentScan merely
   because another module has it. Match the owning module's annotated pattern.
-- FeatureApiModule's existing module DSL registers plain UseCases. Extending it for an authorized
-  UseCase is permitted; a new DSL module is not.
-- KSP configuration checks and convention wiring MUST remain within authorized task scope.
-  Necessary feature wiring may change; unrelated build cleanup MUST NOT be added. Apply
-  [platform/build ownership](../../platform-build-toolkit/SKILL.md) for such changes.
+- `FeatureApiModule`'s module DSL registers the plain UseCases as `single { }` entries. Extending it
+  for a UseCase inside the authorized scope is allowed; a new DSL module is not.
+- KSP configuration (`KOIN_CONFIG_CHECK = false`) and convention wiring belong to
+  [conventions](../../platform-build-toolkit/references/convention-plugins.md); change them only
+  when the authorized scope covers a convention change, never as incidental cleanup.

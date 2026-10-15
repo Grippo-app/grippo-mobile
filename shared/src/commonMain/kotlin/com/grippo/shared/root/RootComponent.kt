@@ -89,10 +89,6 @@ public class RootComponent(
                 RootRouter.Home
             )
 
-            RootDirection.Profile -> navigation.push(
-                RootRouter.Profile(ProfileRouter.Body)
-            )
-
             RootDirection.Debug -> navigation.push(
                 RootRouter.Debug
             )
@@ -103,26 +99,6 @@ public class RootComponent(
 
             RootDirection.WeightHistory -> navigation.push(
                 RootRouter.Profile(ProfileRouter.Body)
-            )
-
-            RootDirection.MissingEquipment -> navigation.push(
-                RootRouter.Profile(ProfileRouter.Equipments)
-            )
-
-            RootDirection.ExcludedMuscles -> navigation.push(
-                RootRouter.Profile(ProfileRouter.Muscles)
-            )
-
-            RootDirection.Experience -> navigation.push(
-                RootRouter.Profile(ProfileRouter.Experience)
-            )
-
-            RootDirection.Settings -> navigation.push(
-                RootRouter.Profile(ProfileRouter.Settings)
-            )
-
-            RootDirection.Social -> navigation.push(
-                RootRouter.Profile(ProfileRouter.Social)
             )
 
             RootDirection.Goal -> navigation.push(
@@ -157,13 +133,6 @@ public class RootComponent(
                             componentContext = childContext,
                             initial = HomeRouter.Home,
                             toTrainings = viewModel::toTrainings,
-                            toBody = viewModel::toWeightHistory,
-                            toMissingEquipment = viewModel::toMissingEquipment,
-                            toExcludedMuscles = viewModel::toExcludedMuscles,
-                            toExperience = viewModel::toExperience,
-                            toDebug = viewModel::toDebug,
-                            toSettings = viewModel::toSettings,
-                            toSocial = viewModel::toSocial,
                             toGoal = viewModel::toGoal,
                             close = back,
                         )

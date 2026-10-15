@@ -41,15 +41,16 @@ ordinary UI icons and existing logos do not trigger artwork generation.
   locales/placeholders, real AppIcon vector data, correct raster formats/names and
   matching font files/weights. Consumers use the real
   [accessors](references/accessors.md), including StringProvider outside composition.
-- New UI and visual changes MUST pass the [preview coverage gate](references/previews.md).
-  Use the [standard viewport scope](references/visual-consistency.md#default-viewport-scope);
+- New UI and visual changes MUST pass the [preview coverage gate](references/previews.md)
+  at the [standard viewport scope](references/visual-consistency.md#default-viewport-scope);
   do not add small-device acceptance work. Nonvisual changes do not mechanically
   require new fixtures.
-- For a supplied design, inspect its actual node/artifact and compare matching
-  content/states. Whole-screen and rendered checks follow
-  [visual consistency](references/visual-consistency.md).
+- Whole-screen checks, supplied-design comparison and all visual evidence follow
+  [visual checks and evidence](references/visual-consistency.md#evidence).
 - Behavior changes apply [feature analytics](../feature-analytics/SKILL.md) and
-  [state preservation](../state-preservation/SKILL.md); visual-only work records impact.
+  [state preservation](../state-preservation/SKILL.md); a
+  [visual-only change](../../../CLAUDE.md#definitions) states its impact assessment
+  in the reply.
 
 ## Completion gate
 
@@ -57,9 +58,11 @@ MUST reconcile final consumers, variants and state branches against the usage/st
 inventory and pass each affected token, component, resource and preview source gate.
 Inspect enclosing compositions and downstream input/focus behavior where affected.
 Fix findings through the [execution loop](../task-orchestrator/SKILL.md#execution-loop)
-and record actual checks, unrendered groups and runtime/platform limits.
+and report evidence as [visual evidence](references/visual-consistency.md#evidence)
+defines: checks run, unrendered groups and runtime/platform limits.
 
 Scope-sensitive API/theme/module changes follow
-[authorized scope](../../../CLAUDE.md#scope-discipline). Verification follows
-[project policy](../../../CLAUDE.md#verification-policy); compilation proves no
-visual or runtime outcome.
+[authorized scope](../../../CLAUDE.md#scope-discipline). Builds follow the default
+build rule in the [verification policy](../../../CLAUDE.md#verification-policy);
+renders on a device go through [runtime-verification](../runtime-verification/SKILL.md).
+Compilation proves no visual or runtime outcome.

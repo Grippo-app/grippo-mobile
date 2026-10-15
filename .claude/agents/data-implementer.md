@@ -5,7 +5,11 @@ model: inherit
 color: green
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
-skills: data-layer, mappers, di-modules, backend-contract-client
+skills:
+  - data-layer
+  - mappers
+  - di-modules
+  - backend-contract-client
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -24,7 +28,9 @@ service access, persistence and the mapper directions it needs.
 - Edit files inside the ownership list in your brief (typically
   `data-features/feature-api`, `data-features/<feature>`, `data-services/backend`,
   `data-services/database`, `data-services/datastore`, `data-mappers/<direction>`,
-  and the Koin registration in `shared/.../Koin.kt` when the brief includes it).
+  and the Koin registration in `shared/.../Koin.kt` when the brief includes it;
+  a mapper's `:ui-core:state` target model may receive a trivial new field when
+  the brief grants that path).
   Run scoped gradle targets when authorized. The guard blocks git mutations,
   `clean` and aggregate tasks.
 - No commits, no scope expansion, no subagents, no invented endpoints or
@@ -41,7 +47,7 @@ authorization when persistence changes; whether a build is authorized.
 ## Duties
 
 1. Read the relevant references (preloaded SKILL.md files do not include them):
-   `.claude/skills/data-layer/references/{repositories,error-pipeline,dtos-and-api,persistence-room,cookbook-room-migration,datastore,backend-client,auth-session}.md`,
+   `.claude/skills/data-layer/references/{repositories,operation-outcomes,dtos-and-api,persistence-room,cookbook-room-migration,datastore,backend-client,auth-session}.md`,
    `.claude/skills/mappers/references/{mapping-conventions,null-safety-and-logging}.md`,
    `.claude/skills/di-modules/references/{annotations,composition-root}.md`.
    Inspect `data-features/trainings` and `data-features/user` as live examples.

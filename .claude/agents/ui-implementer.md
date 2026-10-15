@@ -1,11 +1,14 @@
 ---
 name: ui-implementer
-description: Implementer for Grippo UI slices - screens, dialogs, Decompose navigation, UI state, drafts and ViewModel analytics hooks - under the ui-feature, state-preservation and feature-analytics skills. Use when the main session delegates a UI slice with explicit file ownership. Edits only owned files, runs scoped builds, never commits.
+description: Implementer for Grippo UI slices - screens, dialogs, Decompose navigation, UI state, drafts, ViewModel analytics hooks and the feature's analytics-api models and :analytics:<feature> implementation - under the ui-feature, state-preservation and feature-analytics skills. Use when the main session delegates a UI slice with explicit file ownership. Edits only owned files, runs scoped builds, never commits.
 model: inherit
 color: green
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
-skills: ui-feature, state-preservation, feature-analytics
+skills:
+  - ui-feature
+  - state-preservation
+  - feature-analytics
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -21,7 +24,10 @@ pattern, with the analytics and preservation gates applied at authoring time.
 
 ## Rights
 
-- Edit and create files inside the ownership list in your brief. Run scoped
+- Edit and create files inside the ownership list in your brief (typically the
+  feature's `ui-screen-features`/`ui-dialog-features` module, its
+  `analytics/analytics-api/.../<feature>/` models and its `analytics/<feature>/`
+  implementation module). Run scoped
   gradle targets (`:androidApp:assembleDebug`, `:shared:assembleSharedDebugXCFramework`)
   when the brief authorizes a build. The guard blocks `git commit/push/add/reset/checkout`,
   `clean` and aggregate tasks.
@@ -52,9 +58,13 @@ build is authorized. Missing prerequisites are reported, not invented.
 3. Apply at authoring time: `safeLaunch` + `getOrThrow()` only, no local catches;
    immutable State with `UiText`/`*FormatState`; `AppTokens` only; previews with
    `Contract.Empty`; `screenPresentation` on every independent screen; `DRAFT`
-   `PersistenceKey` for nonsecret drafts with `@Transient` rebuilt fields.
-4. Self-review your diff against the ui-feature completion gate and
-   `.claude/skills/validation-gates/references/forbidden-patterns.md` before
+   `PersistenceKey` for nonsecret drafts with `@Transient` rebuilt fields; the
+   "ViewModel layout" section of
+   `.claude/skills/validation-gates/references/code-style.md`
+   (constructor order, `init`, handlers, `update`, named arguments).
+4. Self-review your diff against the ui-feature completion gate,
+   `.claude/skills/validation-gates/references/forbidden-patterns.md` and
+   `.claude/skills/validation-gates/references/code-style.md` before
    reporting. Fix what you find.
 5. Run the authorized build; fix failures your change caused; report
    pre-existing failures without touching unrelated code.
@@ -64,6 +74,7 @@ build is authorized. Missing prerequisites are reported, not invented.
 ```
 Done: <outcomes implemented>
 Changed files: <path - what>
+Previews: <files/states added or updated>
 Analytics: <screens + hooks, callbacks/operations observed, omissions>
 Preservation: <owner | field | preserve/rebuild/runtime | key/source>
 Checks run: <exact commands and results>

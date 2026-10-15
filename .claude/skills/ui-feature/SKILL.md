@@ -29,53 +29,31 @@ avoid mechanical cancellation checks and new recovery wrappers. Keep work in the
 existing `safeLaunch`/Flow pipeline and preserve cancellation propagation; explicit
 checks require a real cancellation gap under that canonical rule.
 
-Follow the [Kotlin block style](../../../CLAUDE.md#kotlin): keep `safeLaunch`,
-`trackOperation`, business/control bodies and multi-operation blocks multiline.
-Short single-expression `update` and simple Flow transformations stay compact;
-expand long expressions. No named local functions inside `init`, constructors,
-other functions or lambdas; declare methods/functions at class/file scope.
-Callbacks and DSL lambdas remain allowed. `init` normally starts requests and
-subscriptions directly through `safeLaunch`/Flow. A complete startup operation
-reused after error-dialog dismissal may be a private class-level method called
-from `init` and `onError`; do not duplicate its sequence or use a local function.
-Do not add `initialize`/`loadInitialData` helpers solely to hide orchestration.
+Kotlin block style, the ban on named local functions and the startup-operation
+pattern (one private class-level method called from `init` and `onError`) are
+owned by [code style](../validation-gates/references/code-style.md#kotlin-blocks);
+apply them as written there. Constructor order, `init`, handlers, `update` and
+named arguments are owned by
+[ViewModel layout](../validation-gates/references/code-style.md#viewmodel-layout);
+apply it as written there.
 
-Keep feature data in State/update. Private runtime flags, previous-source caches
-and shadow snapshots for initialization/restoration/edit synchronization are
-forbidden; do not relocate them into State, wrappers or mutable closures.
-Fresh forms populate once and restored drafts keep their values; apply the
-[canonical draft policy](../state-preservation/SKILL.md#data-backed-form-synchronization).
-
-Follow the [shared error pipeline](references/error-pipeline.md): unwrap failures
-with `getOrThrow()` inside `safeLaunch`. Do not hide, replace or present unhandled
-failures with local catches, `runCatching` or result failure handlers, including
-private helpers. Suspend helpers run in the caller's coroutine and propagate
-failures without extra launches, recovery wrappers or stage flags. Pure `safeLaunch.mapError`
-changes only dialog presentation; `onError` runs after dismissal. Results, recovery
-and navigation stay business-owned, never in analytics or the mapper.
-Keep both hooks consistent across block and Flow `safeLaunch`; pass callbacks
-only where needed, following the shared error contract in the reference.
+Drafts, restoration flags and data-backed form synchronization are owned by
+[state-preservation](../state-preservation/SKILL.md#data-backed-form-synchronization);
+the single error path (`getOrThrow()` inside `safeLaunch`, no local catches, pure
+`mapError`, `onError` after dismissal) is owned by the
+[error pipeline](references/error-pipeline.md). Apply both as written there.
 
 ## State preservation
 
-For new and changed features apply
-[state-preservation](../state-preservation/SKILL.md). Its mandatory gate inventories
-all new screens or affected state owners, preserves nonsecret editable drafts,
-rebuilds data-backed state and verifies actual archive restoration. Empty container
-state needs no supplier. The implementation pattern stays in
-[process-death.md](references/process-death.md).
+Every behavior change applies [state-preservation](../state-preservation/SKILL.md)
+and its mandatory preservation gate; the Component-side draft pattern is in
+[process-death.md](references/process-death.md#editable-form-drafts).
 
 ## Analytics impact
 
-For behavior changes apply [feature-analytics](../feature-analytics/SKILL.md) and
-update route/control/input/complete-operation coverage with actual omissions.
-Visual-only edits need an impact assessment. Business owns requests/results/
-validation/retry/navigation; analytics decorates complete operations.
-
-The canonical analytics skill owns API shape, typed fact mapping, error isolation,
-screen classification and foundation lifecycle binding. Components resolve the
-stateless service only during retained VM construction; screen hooks and coverage
-are mandatory, containers keep null. Do not duplicate those specifications here.
+Every behavior change applies [feature-analytics](../feature-analytics/SKILL.md),
+including its screen coverage gate; a visual-only change needs the one-sentence
+impact assessment defined in [CLAUDE.md](../../../CLAUDE.md#definitions).
 
 ## Required inputs
 
@@ -89,37 +67,40 @@ are mandatory, containers keep null. Do not duplicate those specifications here.
 - **Reusable UI models + `stub*()`** the Screen previews — reuse existing models in
   `:ui-core:state` or create the required model/stub through the workflow below. The owning screen's MVI State is
   created alongside its other six files, not in `:ui-core:state`.
-- **Implementation plan** (if present): its agreed file list and names constrain the change. Plan wins on names/paths; this skill wins on methodology.
+- **Accepted decisions from task-prep** constrain names and paths.
 
 ## Workflow
 
-1. **Read the routing table** below for the task kind, then read those files.
-   Verify each exists (`[ -f <path> ]`); if any is missing, emit
-   `BLOCKED: required reading missing — <list>` and stop.
+1. **Read the routed references** — look up the task kind in the
+   [routing table](references/index.md#task-kind--topic--read) and read those
+   files. If a referenced file is missing, report it in the reply and continue
+   with the source.
 2. **Within authorized module/navigation scope, scaffold if the feature module doesn't exist** — create the module,
    `settings.gradle.kts` include, `build.gradle.kts`, the `public` feature-root
    entry Component and the necessary RootRouter entry. For one screen the public
    Component owns its seven MVI files and screenPresentation directly; for multiple
    screens use a container root and child stack, following current naming.
-3. **For a screen/dialog: write the seven MVI files** (same package, siblings) —
-   `<Name>State` (`@Immutable`, meaningful constructor defaults or explicit required
-   initial data, no `companion Empty` on State),
-   `<Name>Direction` (`sealed interface : BaseDirection`, nav intents only),
-   `<Name>Loader` (`@Immutable sealed interface : BaseLoader`, empty ok),
-   `<Name>Contract` (`@Immutable interface` + `companion object Empty`),
-   `<Name>ViewModel` (`BaseViewModel<State,Direction,Loader>`, implements Contract;
-   `safeLaunch` / `Flow.safeLaunch` / `withLoader` / `update {}` / `navigateTo`
-   with errors in the shared pipeline — never `viewModelScope.launch`, `GlobalScope`
-   or local catches),
-   `<Name>Component` (`BaseComponent<Direction>`, `retainedInstance { <Name>ViewModel(...) }`
-   with dependencies resolved inside that factory,
-   `eventListener` maps every Direction subtype), `<Name>Screen`
-   (`@Composable internal fun(state, loaders, contract)` in `BaseComposeScreen`,
-   `AppTokens.*` only, `@AppPreview` per significant affected state for new or
-   visually changed UI with `Contract.Empty`). Nonvisual changes assess visual
-   impact and reuse existing previews without unrelated preview expansion.
-   Shared model stubs live in ui-core:state; private screen-State fixture builders
-   may live beside the feature preview.
+3. **For a screen/dialog: write the seven MVI files** (same package, siblings):
+   - `<Name>State` — `@Immutable`; meaningful constructor defaults or explicit
+     required initial data; no `companion Empty` on State.
+   - `<Name>Direction` — `sealed interface : BaseDirection`; nav intents only.
+   - `<Name>Loader` — `@Immutable sealed interface : BaseLoader`; empty is ok.
+   - `<Name>Contract` — `@Immutable interface` + `companion object Empty`.
+   - `<Name>ViewModel` — `BaseViewModel<State,Direction,Loader>`, implements
+     Contract; `safeLaunch` / `Flow.safeLaunch` / `withLoader` / `update {}` /
+     `navigateTo` with errors in the shared pipeline — never
+     `viewModelScope.launch`, `GlobalScope` or local catches.
+   - `<Name>Component` — `BaseComponent<Direction>`;
+     `retainedInstance { <Name>ViewModel(...) }` with dependencies resolved
+     inside that factory; `eventListener` maps every Direction subtype.
+   - `<Name>Screen` — `@Composable internal fun(state, loaders, contract)` in
+     `BaseComposeScreen`, `AppTokens.*` only; new or visually changed UI gets an
+     `@AppPreview` per significant state ([definitions](../../../CLAUDE.md#definitions))
+     with `Contract.Empty`.
+
+   Nonvisual changes assess visual impact and reuse existing previews without
+   unrelated preview expansion. Shared model stubs live in ui-core:state; private
+   screen-State fixture builders may live beside the feature preview.
    Screen-specific sub-composables go in a sibling `components/` folder, one per
    file, entity composables bound to their `*State` as one param.
 4. **For a dialog**: no toolbar, `ScreenBackground.Color(...background.dialog)`;
@@ -160,12 +141,13 @@ are mandatory, containers keep null. Do not duplicate those specifications here.
    business blocks in the existing error pipeline and observe typed callbacks.
    Keep the coverage matrix synchronized; do not scatter event construction
    through Screens, Components, ViewModels and use cases.
-9. **Verify within the user's scope** — `./gradlew :androidApp:assembleDebug` (and the iOS XCFramework
-   assemble when the iOS platform check is authorized and available). Apply the analytics skill's scoped checks,
-   DI/leaf-lifecycle checks and platform validation when analytics changes.
-   Honor explicit platform/build restrictions and record unrun checks.
+9. **Verify** — run the build checks the
+   [verification policy](../../../CLAUDE.md#verification-policy) requires for the
+   changed files. Apply the analytics skill's scoped checks when analytics changes.
+   Manual runtime checks follow [runtime-verification](../runtime-verification/SKILL.md).
    Fix build failures caused by the task's changes. Report unrelated or pre-existing
-   failures; do not expand scope or change unrelated infrastructure to make a build pass.
+   failures and every unrun check; do not expand scope or change unrelated
+   infrastructure to make a build pass.
 
 ## Screen results and dialog-to-screen changes
 
@@ -186,7 +168,6 @@ and present it as an existing project convention.
 
 ## Stop and ask
 
-- Required reading file missing → `BLOCKED: required reading missing — <list>`.
 - A referenced `<X>Feature` / `<X>UseCase` doesn't exist in `:data-features:feature-api`
   → apply data-layer first when authorized; ask only for unresolved contract or scope decisions.
 - A referenced `<X>State` / `stub<X>()` missing in `:ui-core:state`
@@ -217,7 +198,6 @@ Review the actual source/diff for the seven MVI files, correct visibility,
 State/update ownership, immutable collections, neutral UI, typed navigation/results,
 shared error handling and cancellation. Trace each acceptance criterion to its
 implementation. Apply the mandatory analytics and preservation gates before completion.
-Fix findings and review the resulting diff again. Run permitted static/manual checks
-and builds within the user's scope; report evidence and unverified runtime scenarios.
-MUST follow CLAUDE.md Verification policy: automated tests/infrastructure require
-an explicit user request; verification-only production hooks remain forbidden.
+Fix findings and review the resulting diff again. Run the checks the
+[verification policy](../../../CLAUDE.md#verification-policy) names; report
+evidence and unverified runtime scenarios.

@@ -83,8 +83,10 @@ A compact navigation item and a screen heading do not need the same font size.
   meaning; the menu's working sections stay neutral. Separate identity from menu
   content with contentPadding.block, keeping compact section gaps at content.
 - Standalone content cards and menu sections use the large 28 dp shape and a thin
-  neutral outline. Nested/compact metric panels and input fields use the 12 dp
-  shape; chips, set cells and thumbnails keep the shape appropriate to their role.
+  neutral outline. A standalone card is a card that is its own section; rows
+  repeated inside a list are compact, not standalone. Nested/compact metric
+  panels, repeated list rows and input fields use the 12 dp shape; chips, set
+  cells and thumbnails keep the shape appropriate to their role.
   Do not put a second card frame around an already framed shared composition.
 - MenuSection headings use `h4` and a 32 dp neutral icon container with a 12 dp
   shape and 22 dp glyph. Context icon colors retain their meaning. Default uses

@@ -69,16 +69,16 @@ values/units, keyboard and overlays at the
 [standard viewport](../../design-system/references/visual-consistency.md#default-viewport-scope).
 Do not add small-device or font-threshold layout branches for out-of-scope samples.
 
-[Preview coverage](../../design-system/references/previews.md) and
-[visual consistency](../../design-system/references/visual-consistency.md) own checks.
-Apply the current user's restrictions and canonical
-[verification policy](../../../../CLAUDE.md#verification-policy); unavailable
-observations remain unverified. Fix concrete issues through their existing owners.
+[Preview coverage](../../design-system/references/previews.md) owns fixtures;
+[visual evidence](../../design-system/references/visual-consistency.md#evidence)
+owns what renders establish and how unverified observations are reported. Fix
+concrete issues through their existing owners.
 
 ## Motion
 
 Motion explains an existing change or adds restrained brand presence. MUST NOT gate
-readiness, input, loading or navigation, or add business timers/requests/state.
+readiness, input, loading or navigation, or add timers, requests or state for
+decoration; a product timer (rest, countdown) is feature state owned by its ViewModel.
 
 | Use | Treatment |
 |---|---|
@@ -91,4 +91,5 @@ readiness, input, loading or navigation, or add business timers/requests/state.
 Inspect current specs before choosing timing/easing. Keep technical constants at
 the established presentation owner; shared motion tokens require real shared demand.
 Use existing Compose/lifecycle ownership and preserve platform motion preferences.
-Static previews do not verify smoothness, timing or live transitions.
+Motion needs runtime evidence, not static previews
+([visual evidence](../../design-system/references/visual-consistency.md#evidence)).

@@ -1,8 +1,7 @@
 # Decompose Navigation & Cross-Feature Nav
 
-> Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
-
-> Examples use `Note` / `Tag` / `User` as the generic `<Entity>`. Substitute your domain.
+Every route, Direction, Component and deeplink named below exists in the current
+source; inspect the file before relying on a detail, since code owns signatures.
 
 Navigation is built on Decompose (`com.arkivanov.decompose`). Each `Component`
 owns its own UI subtree and lifecycle; screen navigation is **type-safe** (routes are
@@ -14,8 +13,13 @@ in-memory configs and are not restored.
 ## Three layers of navigation
 
 1. **RootComponent** in shared owns the primary StackNavigation<RootRouter>.
-   Inspect the current RootRouter and child factory; the domain names in the
-   abbreviated examples below are illustrative, not a current route catalog.
+   Inspect `RootComponent.createChild`; it builds `AuthComponent`, `MainComponent`
+   (whose `createHome`/`createCalendar`/`createProfile` factories build
+   `HomeRootComponent`, `TrainingsRootComponent` and `ProfileComponent` for the
+   tabs), `TrainingsRootComponent`, `ProfileComponent`, `DebugComponent` and
+   `TrainingComponent`. `ExercisesRootComponent` is built from `TrainingComponent`;
+   `OnboardingComponent` is an internal child of `AuthComponent` (there is no
+   onboarding module).
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
 
@@ -31,30 +35,31 @@ from Koin or serialize it with a screen route.
 
 ## `*Router` sealed classes
 
-All routes are `@Serializable sealed class` in `:ui-screen-features:screen-api`:
+All routes are `@Serializable sealed class` in `:ui-screen-features:screen-api`.
+`RootRouter` as currently shipped:
 
 ```kotlin
 @Serializable
 public sealed class RootRouter : BaseRouter {
     @Serializable public data class Auth(val value: AuthRouter) : RootRouter()
+    @Serializable public data object Trainings : RootRouter()
     @Serializable public data object Home : RootRouter()
-    @Serializable public data object Notes : RootRouter()
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
-    @Serializable public data class NoteDetail(val mode: NoteMode) : RootRouter()
     @Serializable public data object Debug : RootRouter()
-}
-
-@Serializable
-public sealed class ProfileRouter : BaseRouter {
-    @Serializable public data object Overview : ProfileRouter()
-    @Serializable public data object Settings : ProfileRouter()
-    @Serializable public data class NoteArchive(val initialRange: DateRange) : ProfileRouter()
+    @Serializable public data class Training(val stage: StageState) : RootRouter()
 }
 ```
 
+Nested routers (inspect the files for annotations such as `@JsonIgnoreUnknownKeys`):
+`AuthRouter` = `Splash`, `Onboarding`, `AuthProcess(flowId: FlowId = FlowId.create())`
+(a data class — construct it as `AuthRouter.AuthProcess()`), `ProfileCreation`;
+`ProfileRouter` = `Menu`, `Equipments`, `Muscles`, `Body`, `Experience`, `Settings`,
+`Social`, `Goal`. `StageState` (`Add`, `Edit(id)`, `Draft`) lives in `:ui-core:state`,
+package `com.grippo.core.state.stage`.
+
 Rules:
 - **`@Serializable` on every route class.** Non-serializable routes fail at runtime when the stack serializes on process death.
-- **All payloads must also be `@Serializable`** (`DateRange`, `NoteMode`, any project enum).
+- **All payloads must also be `@Serializable`** (`DateRange`, `StageState`, `FlowId`, any project enum). One exception by design: a `ResultKey` field serializes through `ResultKeySerializer` as its address only, so the nested `Action` protocol it points to (`TrainingRouter.Exercise.Action`) is not `@Serializable`; see [results.md](results.md).
 - **No callbacks or non-serializable fields** in route parameters. Pass only data; pass behavior via constructor lambdas at component-creation time.
 - Sub-feature routers nest inside the parent: `RootRouter.Profile(value: ProfileRouter)`. Allows deeplinks like `RootRouter.Profile(ProfileRouter.Settings)`.
 
@@ -86,8 +91,8 @@ Feature-root stacks use `initialStack = { listOf(initial) }` instead of `initial
 ```kotlin
 public sealed class Child(public open val component: BaseComponent<*>) {
     public data class Authorization(override val component: AuthComponent) : Child(component)
-    public data class Home(override val component: HomeRootComponent) : Child(component)
-    // ... one entry per route
+    public data class Home(override val component: MainComponent) : Child(component)
+    // ... Trainings, Profile, Debug, Training — one entry per route
 }
 ```
 
@@ -95,9 +100,9 @@ A `sealed class Child(component: BaseComponent<*>)` lets `RootScreen` pattern-ma
 
 ## Naming convention (Component vs RootComponent)
 
-- The **default** feature-root name is the bare `<X>Component` (`AuthComponent`, `ProfileComponent`, `NoteDetailComponent`, `DebugComponent`).
-- The `<X>RootComponent` form (`HomeRootComponent`, `NotesRootComponent`) is reserved **only** for features whose first sub-screen reuses the feature name (`:home` has a `Home` sub-screen → `HomeRootComponent`; `:notes` has a `Notes` sub-screen → `NotesRootComponent`).
-- Owning a private `StackNavigation` is **orthogonal** to this naming: `AuthComponent`/`ProfileComponent`/`NoteDetailComponent` all own internal stacks despite the bare name. `DebugComponent` is the rare single-screen feature with no inner stack.
+- The **default** feature-root name is the bare `<X>Component`: `AuthComponent`, `MainComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`.
+- The `<X>RootComponent` form is reserved for features whose first sub-screen reuses the feature name: `:home` has `home/HomeComponent` → `HomeRootComponent`; `:trainings` has `trainings/TrainingsComponent` → `TrainingsRootComponent`. `ExercisesRootComponent` (sub-screen `library/ExerciseLibraryComponent`) is an existing exception, not a precedent for new features.
+- Owning a private `StackNavigation` is **orthogonal** to this naming: `AuthComponent`/`ProfileComponent`/`TrainingComponent` own internal stacks despite the bare name, and `MainComponent` owns the tab shell. `DebugComponent` is the single-screen feature with no inner stack.
 
 ## Returning data from a screen
 
@@ -116,91 +121,89 @@ Keep callbacks out of serialized routes and retain keys on restoration.
 
 `StackNavigation<T>` provides: `push(config)`, `pop()`, `popWhile(predicate)`, `popTo(index)`, `replaceCurrent(config)`, `replaceAll(configs)`, `bringToFront(config)`.
 
-`RootComponent` typically uses `replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))` on logout, `replaceAll(RootRouter.Home)` after login, `push(...)` for forward nav, `pop()` for back. (There is no `RootRouter.Login` — the auth flow nests under `RootRouter.Auth`.)
+`RootComponent` typically uses `replaceAll(RootRouter.Auth(AuthRouter.AuthProcess()))` on logout, `replaceAll(RootRouter.Home)` after login, `push(...)` for forward nav, `pop()` for back. (There is no `RootRouter.Login` — the auth flow nests under `RootRouter.Auth`.)
 
 ## Direction → navigation translation
 
 ViewModels **never** call `navigation.push(...)` directly. They emit `Direction`s; the Component translates them:
 
 ```kotlin
-// inside RootComponent
+// inside RootComponent (abbreviated; inspect RootComponent.kt for every branch)
 override suspend fun eventListener(direction: RootDirection) {
     when (direction) {
         RootDirection.Login -> if (childStack.value.active.instance !is Child.Authorization) {
-            navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
+            navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess()))
         }
         RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
-        RootDirection.Profile -> navigation.push(RootRouter.Profile(ProfileRouter.Overview))
-        RootDirection.Settings -> navigation.push(RootRouter.Profile(ProfileRouter.Settings))
-        is RootDirection.NoteDetail -> navigation.push(RootRouter.NoteDetail(direction.mode))
+        RootDirection.Goal -> navigation.push(RootRouter.Profile(ProfileRouter.Goal))
+        RootDirection.WeightHistory -> navigation.push(RootRouter.Profile(ProfileRouter.Body))
+        is RootDirection.Training -> navigation.push(RootRouter.Training(direction.stage))
         RootDirection.Back -> navigation.pop()
         RootDirection.Close -> close.invoke()
+        // ... Debug, Trainings
     }
 }
 ```
 
+`RootDirection` today: `Login`, `Close`, `Home`, `Debug`, `Trainings`,
+`Training(stage)`, `WeightHistory`, `Goal`, `Back` (verified 2026-10-15 after the
+dead Home/Profile directions were removed).
+
 Two patterns:
 - **Guarded `replaceAll`**: `RootDirection.Login` only replaces if the current top isn't already an `Authorization` child — the token observer emits `Login` on every token-null transition, including the initial one; without the guard the user is bounced back mid-splash.
-- **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination and the Component picks the concrete sub-route. `NoteDetail` carries a `NoteMode` payload because the same destination resumes different modes.
+- **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination and the Component picks the concrete sub-route. `Training` carries a `StageState` payload (`Add`, `Edit(id)`, `Draft`) because the same destination opens different stages.
 
 For sub-feature components, `eventListener` handles two kinds of directions:
 1. **Internal** (within the feature): translate to `navigation.push(<Feature>Router.X)` on this feature's own private nav.
-2. **External** (to another feature or back to root): call a constructor-injected lambda (`toProfile()`, `back()`) — the parent component handles the actual stack push.
+2. **External** (to another feature or back to root): call a constructor-injected lambda (`toGoal()`, `back()`) — the parent component handles the actual stack push.
 
 ## Cross-feature navigation
 
-Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol import between feature modules is **forbidden**. The mechanism (full recipe):
+Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol import between feature modules is **forbidden**. The mechanism, shown on the shipped Home → Profile/Goal jump (the "add goal" action on the Home dashboard):
 
-1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — e.g. `ProfileRouter.NoteArchive(initialRange)`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Notes`, `Debug`) are `data object`; payload-carrying ones are `data class`. When destination inputs change, inspect all callers and archived-route compatibility, including supported invalidation when archives become incompatible. Reuse the existing subtype for the same destination when a coherent migration is within scope; add a subtype only for a distinct destination or contract.
+1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — here `ProfileRouter.Goal`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Trainings`, `Debug`) are `data object`; payload-carrying ones (`Training(stage)`) are `data class`. When destination inputs change, inspect all callers and archived-route compatibility, including supported invalidation when archives become incompatible. Reuse the existing subtype for the same destination when a coherent migration is within scope; add a subtype only for a distinct destination or contract.
 
-2. **Add a `RootDirection` entry** (in `:shared`'s `RootDirection.kt`, a `public sealed interface`):
-   ```kotlin
-   public sealed interface RootDirection : BaseDirection {
-       public data object Login : RootDirection
-       public data object Home : RootDirection
-       public data object Profile : RootDirection
-       public data class OpenProfileNoteArchive(val initialRange: DateRange) : RootDirection
-   }
-   ```
-   (Grippo uses the explicit-direction style; `data object` for 1:1 destinations, `data class` for payloads. Reuse the existing explicit-direction convention; do not introduce a generic GoTo route wrapper.)
+2. **Add a `RootDirection` entry** (in `:shared`'s `RootDirection.kt`, a `public sealed interface`): `public data object Goal : RootDirection`. Grippo uses the explicit-direction style: `data object` for 1:1 destinations, `data class` for payloads (`Training(val stage: StageState)`). Do not introduce a generic GoTo route wrapper.
 
-3. **Expose the callback on `RootContract` / `RootViewModel`** (both `public` — they cross the iOS XCFramework boundary):
+3. **Expose the callback on `RootContract` / `RootViewModel`** (both `public` — they cross the iOS XCFramework boundary; abbreviated):
    ```kotlin
    @Immutable
    public interface RootContract {
-       public fun toProfileNoteArchive(range: DateRange)
+       public fun toGoal()
        @Immutable public companion object Empty : RootContract {
-           override fun toProfileNoteArchive(range: DateRange) = Unit
+           override fun toGoal() {}
        }
    }
    // RootViewModel (public):
-   override fun toProfileNoteArchive(range: DateRange) {
-       navigateTo(RootDirection.OpenProfileNoteArchive(range))
+   override fun toGoal() {
+       navigateTo(RootDirection.Goal)
    }
    ```
-   Feature-level ViewModels stay `internal`; only `:shared` root types are public.
+   Feature-level leaf ViewModels stay `internal`; `:shared` root types are public.
 
 4. **Translate the Direction in `RootComponent.eventListener`**:
    ```kotlin
-   is RootDirection.OpenProfileNoteArchive -> navigation.push(
-       RootRouter.Profile(ProfileRouter.NoteArchive(direction.initialRange))
+   RootDirection.Goal -> navigation.push(
+       RootRouter.Profile(ProfileRouter.Goal)
    )
    ```
 
-5. **Thread the callback through the originating feature** — `RootComponent.createChild` passes `toProfileNoteArchive = viewModel::toProfileNoteArchive` to `HomeRootComponent` (a `public class`); `HomeRootComponent.createChild` threads it to `HomeOverviewComponent(..., toProfileNoteArchive = toProfileNoteArchive)`. Each child component takes the lambda in its constructor.
+5. **Thread the callback through the originating feature** — `RootComponent.createChild` builds `MainComponent` and passes it a `createHome` factory that constructs `HomeRootComponent(..., toGoal = viewModel::toGoal, ...)` (a `public class`); `HomeRootComponent.createChild` threads it to `HomeComponent(..., toGoal = viewModel::toGoal, ...)` through `HomeRootViewModel.toGoal()` / `HomeRootDirection.Goal`. Each child component takes the lambda in its constructor.
 
-6. **Use the callback in the originating ViewModel** — `HomeOverviewViewModel.onChartClick(range)` emits `HomeOverviewDirection.OpenNoteArchive(range)`; `HomeOverviewComponent.eventListener` maps it to `toProfileNoteArchive(direction.range)`.
+6. **Use the callback in the originating ViewModel** — `HomeViewModel.onAddGoal()` emits `HomeDirection.Goal`; `HomeComponent.eventListener` maps it to `toGoal.invoke()`.
 
 Visual flow:
 ```
-HomeOverviewViewModel.onChartClick(range)
-  → navigateTo(HomeOverviewDirection.OpenNoteArchive(range))
-    → HomeOverviewComponent.eventListener → toProfileNoteArchive(range)
-      → RootViewModel.toProfileNoteArchive(range)
-        → navigateTo(RootDirection.OpenProfileNoteArchive(range))
-          → RootComponent.eventListener → navigation.push(RootRouter.Profile(ProfileRouter.NoteArchive(range)))
-            → ProfileComponent.createChild — opens the NoteArchive screen
+HomeViewModel.onAddGoal() → navigateTo(HomeDirection.Goal)
+  → HomeComponent.eventListener → toGoal()
+    → HomeRootViewModel.toGoal() → navigateTo(HomeRootDirection.Goal)
+      → HomeRootComponent.eventListener → toGoal()   // RootViewModel::toGoal, supplied by RootComponent's createHome factory
+        → RootViewModel.toGoal() → navigateTo(RootDirection.Goal)
+          → RootComponent.eventListener → navigation.push(RootRouter.Profile(ProfileRouter.Goal))
+            → ProfileComponent.createChild — opens the Goal screen
 ```
+
+A Direction with no emitting callback is dead code: when a screen loses the control that emitted it, remove the Direction and its callback through the whole chain in the same change rather than leaving a mapped but unreachable branch.
 
 Verbose but **explicit** — no shared global event bus, no service locator. The dependency graph between features is visible.
 
@@ -227,13 +230,20 @@ ChildStack(
 private fun RootComponent.Child.animator(): StackAnimator = when (this) {
     is RootComponent.Child.Authorization -> fade()
     is RootComponent.Child.Home -> fade()
-    else -> platformStackAnimator()
+    is RootComponent.Child.Debug -> platformStackAnimator()
+    is RootComponent.Child.Profile -> platformStackAnimator()
+    is RootComponent.Child.Training -> platformStackAnimator()
+    is RootComponent.Child.Trainings -> platformStackAnimator()
 }
 ```
 
-The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`:
+The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` reads `AppTheme.current`/`AppLocale.current`, installs locale-aware date formatting, then calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`:
 
 ```kotlin
+LaunchedEffect(systemLocaleTag) {
+    DateFormatting.install(systemLocaleTag)
+}
+
 AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
     RootScreen(this, state.value, loaders.value, viewModel)
     dialogComponent.Render()
@@ -246,8 +256,9 @@ AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
 
 ```kotlin
 public enum class Deeplink(public val key: String) {
-    NoteEditor(key = "note_editor"),
-    NoteArchive(key = "note_archive");
+    TrainingDraft(key = "training_draft"),
+    WeightHistory(key = "weight_history");
+
     public companion object {
         public fun fromKey(key: String): Deeplink? = entries.find { it.key == key }
     }
@@ -268,11 +279,17 @@ public fun handleDeeplink(deeplink: String) {
 }
 
 // RootViewModel
-internal fun enqueueDeeplink(deeplink: String) { update { it.copy(deeplink = deeplink) } }
-internal fun applyDeeplink(deeplink: String) { parseDeeplink(deeplink)?.let { navigateTo(it) } }
+internal fun enqueueDeeplink(deeplink: String) {
+    update { it.copy(deeplink = deeplink) }
+}
+
+internal fun applyDeeplink(deeplink: String) {
+    parseDeeplink(deeplink)?.let { navigateTo(it) }
+}
+
 private fun parseDeeplink(raw: String): RootDirection? = when (Deeplink.fromKey(raw)) {
-    Deeplink.NoteEditor -> RootDirection.NoteDetail(NoteMode.Draft)
-    Deeplink.NoteArchive -> RootDirection.OpenProfileNoteArchive(DateRangePresets.last30Days())
+    Deeplink.TrainingDraft -> RootDirection.Training(StageState.Draft)
+    Deeplink.WeightHistory -> RootDirection.WeightHistory
     null -> null
 }
 ```

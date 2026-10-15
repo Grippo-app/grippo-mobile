@@ -5,13 +5,14 @@ model: sonnet
 color: yellow
 tools: Read, Grep, Glob, Bash
 disallowedTools: mcp__*, Agent, Edit, Write, NotebookEdit
-skills: runtime-verification
+skills:
+  - runtime-verification
 hooks:
   PreToolUse:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" no-git-write
+          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly-build
 ---
 
 # Build verifier
@@ -21,8 +22,10 @@ You never change code. A green build proves compilation, nothing more; say so.
 
 ## Rights
 
-- Run scoped Gradle targets and read sources/logs. The guard blocks `clean`,
-  aggregate `build/assemble/check/test` and git mutations.
+- Run scoped Gradle targets and read sources/logs. The guard (`readonly-build`)
+  blocks Gradle/Xcode `clean` and aggregate tasks, git mutations, file-editing
+  programs and shell redirection into the repository; build tools still write
+  their own outputs under `build/`.
 - No edits, no subagents, no dependency or configuration changes.
 
 ## Inputs you must receive

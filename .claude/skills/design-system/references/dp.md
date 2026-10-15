@@ -1,10 +1,24 @@
 # Dimension tokens
 
-MUST inspect [AppDp](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/AppDp.kt)
-before choosing a slot. It is one static data object, not a per-theme interface.
-Private Padding/Size/Radius/Icon scales support public component-specific groups.
-There are no public `AppTokens.dp.padding`, `size`, `radius`, `icon`, `card` or `toolbar`
-scale groups. Toolbar dimensions are under `screen.toolbar` or `bottomSheet.toolbar`.
+Inspect [AppDp](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/AppDp.kt)
+before choosing a slot. Current shape, for orientation (source owns changes):
+`public data object AppDp` is one static object, not a per-theme interface.
+Private `padding`/`size`/`radius`/`icon` scales feed 45 top-level component
+groups (inspect the file for the leaves):
+
+- bottomBar, bottomSheet, contentPadding, screen, muscleSelection, dialog
+- input, button, loader, segment, menu, checkSelectableCard
+- toggleSelectableCard, wheelPicker, achievementCard, equipmentCard, timeline, exerciseCard
+- exerciseExampleCard, weightHistoryCard, deleteUserCard, exerciseExampleImage, iterationCard, iterationsCard
+- chip, toggle, check, calendar, metrics, brandHeader
+- brandSplash, userCard, welcome, illustration, badge, bannerCard
+- focusFrame, tooltip, training, accent, stepProgressIndicator, periodPicker
+- pagerIndicator, swipe, shadow
+There are no public `padding`, `size`, `radius`, `icon`, `card` or `toolbar` groups:
+toolbar dimensions live at `screen.toolbar` and `bottomSheet.toolbar`; `screen` also
+holds `onboardingHeroHeight`, `onboardingHeroRadius` and `verticalPadding`;
+`dialog.maxMessageHeight` bounds message text; `shadow.component/card/container`
+are the elevation steps.
 
 - Consumers MUST use semantic AppTokens.dp slots for product dimensions. MUST NOT
   add raw dp offsets to a token to create an undocumented consumer dimension.

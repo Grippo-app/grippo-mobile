@@ -5,10 +5,13 @@ description: Implement and review Grippo feature state preservation when creatin
 
 # Feature state preservation
 
-Apply when implementing or changing a feature. For a new feature, inspect all its
-screens and parent flows; for an existing feature, inspect every affected owner
-and field. Changes that cannot affect user-owned state need an impact assessment,
-not new snapshots. Stay within the requested feature and platform scope.
+Apply to every behavior change as defined in
+[CLAUDE.md](../../../CLAUDE.md#definitions). For a new feature, inspect all its
+screens and parent flows. For an existing feature, inspect every affected owner
+and field. A visual-only change (same definitions) needs an impact assessment
+instead of new drafts. The assessment is one sentence naming the owners inspected
+(Components, ViewModels, States) and the fields confirmed unaffected. Stay within
+the requested feature and platform scope.
 
 Read `CLAUDE.md`, the affected routes/Components/ViewModels/States and
 [process-death restoration](../ui-feature/references/process-death.md) for the
@@ -23,152 +26,221 @@ Before completing feature work:
    accepted picker results, selections, current filters and parent data needed by
    later steps. Inspect callbacks, initialization, Back/pop and re-entry after
    child destruction, not only serializers.
-2. Classify each meaningful field/group in the feature's existing task or coverage
-   record. User-owned nonsecret screen drafts MUST survive supported saved-state
-   restoration. Live dialog sessions and their unfinished input remain unsaved;
-   accepted results are preserved by the owning screen/parent. Preserve the latest value, including invalid or explicitly empty
-   input; a route seed cannot replace a saved draft. State with no editable data
-   needs no extra supplier.
+2. Classify each meaningful field/group in the feature's preservation inventory
+   in `analytics/<feature>/COVERAGE.md` ([records](../../../CLAUDE.md#records)).
+   Create the file when the changed feature has none. User-owned nonsecret screen
+   drafts MUST survive supported saved-state restoration. Live dialog sessions and
+   their unfinished input remain unsaved; the owning screen or parent preserves
+   the accepted results. Preserve the latest value, including invalid or
+   explicitly empty input. A route seed (the initial value a route passes in)
+   cannot replace a saved draft. State with no editable data needs no extra
+   supplier (no `saveState` lambda).
 3. Implement the required preservation at its existing owner using the pattern
    below. Keep data-backed state rebuilt from its existing source. Do not serialize
-   all state indiscriminately or move ordinary screen drafts to a global store.
-   Inspect ViewModel members, closures and State fields: reject restoration/edit
-   flags, previous-source caches and equivalent shadow data hidden behind helpers.
-4. Review real save → serialization roundtrip → destroy old lifecycle and
-   InstanceKeeper → fresh ComponentContext/InstanceKeeper → restore wiring.
-   When runtime verification is permitted, check this sequence manually. Check exact
-   unfinished input/selection, Back, parent-to-child values and final business
-   inputs. Where a child can be destroyed and entered again, verify accepted
-   parent values seed its fresh state without an archive. Retained instances or
-   a State-only copy are insufficient proof of wiring.
-   Review pause/resume without repeating form initialization, including the actual
-   disconnect grace of lifecycle-aware subscriptions. Source review alone does not
-   prove runtime resubscription.
-5. Reconcile the inventory with implementation and permitted checks. Reject missing required
-   fields, stale route-prefill restoration, secret leakage and duplicate ownership.
-   Record actual checks and shell limitations; honor platform/build restrictions.
+   all state indiscriminately, and do not move ordinary screen drafts to a global
+   store. Inspect ViewModel members, closures and State fields. Reject restoration
+   or edit flags, previous-source caches and equivalent shadow data (a private copy
+   of earlier data kept to compare against later) hidden behind helpers.
+4. Review the real wiring: save → serialization roundtrip → destroy the old
+   lifecycle and InstanceKeeper → fresh ComponentContext/InstanceKeeper → restore.
+   When runtime verification is permitted, check this sequence manually. Check the
+   exact unfinished input/selection, Back, parent-to-child values and final
+   business inputs. Where a child can be destroyed and entered again, verify that
+   accepted parent values seed its fresh state without an archive. Retained
+   instances or a State-only copy are insufficient proof of wiring. Review
+   pause/resume without repeating form initialization, including the actual
+   disconnect grace of lifecycle-aware subscriptions (the delay before a
+   `WhileActive` stream stops after the screen leaves RESUMED). Source review
+   alone does not prove runtime resubscription.
+5. Reconcile the inventory with the implementation and the permitted checks.
+   Reject missing required fields, stale route-prefill restoration, secret leakage
+   and duplicate ownership. Report actual checks and shell limitations in the
+   reply. Honor platform/build restrictions.
 
-Use this compact inventory in the existing feature record:
+The inventory table in `analytics/<feature>/COVERAGE.md` has these columns.
+Replace its rows to match the current code rather than appending dated entries:
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 
+Verified example rows for the trainings calendar (`TrainingsComponent`,
+`TrainingsViewModel`, `TrainingsState`; re-inspect before copying):
+
+| Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
+|---|---|---|---|---|
+| TrainingsComponent / TrainingsViewModel | `date` (selected range) and `period` (Daily/Monthly) | Preserve | `DRAFT = PersistenceKey("TrainingsDraft", TrainingsState.serializer())` | `initialState = restoreState(DRAFT)`; a null archive falls back to `TrainingsState(date = TrainingsTimelinePeriod.Monthly().defaultRange())`; check the restored month and mode on a fresh Component |
+| TrainingsViewModel | `limitations`, monthly `weeks`/`digest`, daily `items` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` and the `observeTrainings` flow | Recomputed from the restored range; never in the archive |
+| TrainingsViewModel | `TrainingsLoader.Trainings` and the refresh job | Runtime only | `loaders` flow and `safeLaunch` | Not saved; the refresh restarts from the restored range |
+
 ## Ownership and implementation
 
-- Screen routes carry navigation identity and initial inputs. Define one final invariant
-  foundation `PersistenceKey<T>` as `val DRAFT` in a private companion object at
-  the bottom of the owning Component, pairing the stable archive address with its
-  matching serializer. No separate metadata file or feature-wide matrix.
-  Reuse exact existing archive addresses when refactoring; never derive them from
-  class names, toString, route IDs or live-instance identity. The descriptor is
-  metadata and does not belong in State/Router payloads or DI.
-- The owning Component calls protected `restoreState(DRAFT)` inside the existing
-  retainedInstance factory, passes typed `initialState` to a fresh VM and
-  calls `saveState(DRAFT) { viewModel.state.value }` once during construction. This
-  registers a lazy local supplier; the shell's StateKeeper.save creates the snapshot.
-  Use these helpers rather than raw draft StateKeeper.consume/register calls.
-  No aliases, extensions or DI are needed for the descriptor.
-  Child ComponentContexts isolate identical descriptors for separate live owners.
-  A data-backed form may accept nullable initialState to distinguish an absent
-  archive from a saved snapshot, including an all-default snapshot. BaseViewModel
-  still receives a complete non-null state; evaluate dynamic fresh defaults once.
-- Restore accepted parent-flow data before constructing children that use it.
-  Pass already accepted parent values as ordinary business initial inputs to a
-  fresh child with no local archive. Priority is retained VM, then local saved
-  draft, then accepted parent/route inputs, then defaults. Parent state keeps
-  accepted business values; do not move unfinished drafts of destroyed children
-  into parent/global state for this mechanism.
-  Each owner saves its own draft; no extra callback synchronization, provider,
-  public extension, generic BaseViewModel persistence or per-edit route replacement.
-  Edits and saves must keep the current VM and screen presentation unchanged.
-- Use existing `@Serializable` state when it represents the draft cleanly. Mark
-  rebuilt/runtime fields `@Transient` with safe defaults. Reuse ImmutableListSerializer
-  and existing FormatState; enable the owning module's serialization plugin.
-  Saved fields need stable defaults: a date-dependent default can be omitted
-  during encoding and change on restoration. Apply dynamic initial values only
-  when no saved draft exists.
-  When removing saved fields, check the actual StateKeeper codec against an old
-  archive. If only obsolete metadata is removed, class-scoped JsonIgnoreUnknownKeys
-  can preserve recognized typed values without legacy fields or recovery fallbacks.
-  Known fields must still reject invalid types; global opt-ins belong to convention.
-- Rebuild catalogs, localized presentation and provider availability from current
-  sources. Preserve catalog selection intent across an initial empty emission;
-  saved known/selected or excluded IDs must distinguish deselected and new items.
-- Passwords, authentication tokens, provider credentials/codes and other secrets
-  MUST NOT enter StateKeeper archives or route payloads. Serializable type support
-  does not authorize persistence. Verify omitted fields in the serialized payload
-  and empty/default secret inputs after fresh restoration. Normal retained memory
-  does not need to be cleared by this mechanism.
-- Loaders, jobs, dialog/error sessions, callbacks, focus and telemetry provenance
-  are runtime state. Do not add them to business snapshots. Presentation-only widget
-  state has its own UI policy and is not a business draft.
-- Restoration initializes business state directly; it must not replay input/control
-  callbacks, emit synthetic analytics, auto-submit authentication or serialize jobs.
-  Restarting existing startup/completion operations remains business-owned; verify
-  cancellation and the current operation policy without inventing retry machinery.
-- StateKeeper restores supplied archives; it does not guarantee every cold start.
-  Android supplies saved state through retainedComponent. iOS restores one validated
-  background checkpoint before constructing the root, then keeps that root live
-  through foreground transitions. Abrupt active termination before a completed
-  checkpoint is not guaranteed. Feature keys and local ownership stay unchanged;
-  add no feature storage or lifecycle bridge. See the reference's
+- **Archive key.** Screen routes carry navigation identity and initial inputs.
+  Define one foundation `PersistenceKey<T>` as `val DRAFT` in a private companion
+  object at the bottom of the owning Component. The key is the descriptor: it
+  pairs the stable archive address with its matching serializer, and it is final
+  and invariant (the address does not change). No separate metadata file or
+  feature-wide matrix exists. Reuse the exact existing archive address when
+  refactoring. Never derive an address from class names, `toString`, route IDs or
+  live-instance identity. The descriptor is metadata; it does not belong in State
+  or Router payloads or in DI.
+- **Wiring.** The owning Component calls the protected `restoreState(DRAFT)`
+  inside the existing `retainedInstance` factory and passes the typed
+  `initialState` to a fresh VM. It calls `saveState(DRAFT) { viewModel.state.value }`
+  once during construction. That call registers a lazy local supplier (the lambda
+  the shell invokes when it saves); the shell's `StateKeeper.save` creates the
+  snapshot. Use these helpers rather than raw draft `StateKeeper.consume`/`register`
+  calls. The descriptor needs no aliases, extensions or DI. Child
+  `ComponentContext`s isolate identical descriptors for separate live owners. A
+  data-backed form may accept a nullable `initialState` to distinguish an absent
+  archive from a saved snapshot, including an all-default snapshot.
+  `BaseViewModel` still receives a complete non-null state. Evaluate dynamic
+  fresh defaults once.
+- **Parent and child.** Restore accepted parent-flow data before constructing the
+  children that use it. Pass already accepted parent values to a fresh child with
+  no local archive as ordinary business initial inputs. Restoration precedence:
+  the retained VM, then the local saved draft, then accepted parent/route inputs,
+  then defaults. Parent state keeps accepted business values. Do not move the
+  unfinished drafts of destroyed children into parent or global state for this
+  mechanism. Each owner saves its own draft; add no extra callback
+  synchronization, provider, public extension, generic `BaseViewModel`
+  persistence or per-edit route replacement. Edits and saves keep the current VM
+  and screen presentation unchanged.
+- **Serialization.** Use the existing `@Serializable` state when it represents
+  the draft cleanly. Mark rebuilt and runtime fields `@Transient` with safe
+  defaults. Reuse `ImmutableListSerializer` and the existing `FormatState` types.
+  Enable the owning module's serialization plugin.
+- **Defaults.** Saved fields need stable defaults. A date-dependent default can be
+  omitted during encoding and then change on restoration. Apply dynamic initial
+  values only when no saved draft exists.
+- **Removing saved fields.** Check the actual StateKeeper codec against an old
+  archive. If only obsolete metadata is removed, class-scoped
+  `@JsonIgnoreUnknownKeys` preserves the recognized typed values without legacy
+  fields or recovery fallbacks. Known fields still reject invalid types. Global
+  opt-ins belong to the convention plugins.
+- **Rebuilt data.** Rebuild catalogs, localized presentation and provider
+  availability from their current sources. Preserve catalog selection intent
+  across an initial empty emission. Saved known/selected or excluded IDs
+  distinguish deselected items from new items.
+- **Secrets.** Passwords, authentication tokens, provider credentials/codes and
+  other secrets MUST NOT enter StateKeeper archives or route payloads.
+  Serializable type support does not authorize persistence. Verify that the
+  serialized payload omits those fields and that secret inputs are empty or
+  default after fresh restoration. Normal retained memory does not need to be
+  cleared by this mechanism.
+- **Runtime state.** Loaders, jobs, dialog/error sessions, callbacks, focus and
+  telemetry provenance (the Initial/Restore reason and similar reporting history
+  held by `ScreenAnalytics`) are runtime state. Do not add them to business
+  snapshots. Presentation-only widget state has its own UI policy and is not a
+  business draft.
+- **Restoration side effects.** Restoration initializes business state directly.
+  It does not replay input/control callbacks, emit synthetic analytics,
+  auto-submit authentication or serialize jobs. Restarting existing startup or
+  completion operations remains business-owned. Verify cancellation and the
+  current operation policy without inventing retry machinery.
+- **Platform limits.** StateKeeper restores supplied archives; it does not
+  guarantee every cold start. Android supplies saved state through
+  `retainedComponent`. iOS restores one validated background checkpoint before
+  constructing the root, then keeps that root live through foreground
+  transitions. Abrupt active termination before a completed checkpoint is not
+  guaranteed. Feature keys and local ownership stay unchanged. Add no feature
+  storage or lifecycle bridge. See the reference's
   [iOS policy](../ui-feature/references/process-death.md#ios-specifics), including
   format/build invalidation when archive schemas change. Dialog sessions stay
-  unsaved; accepted results belong to the owning screen's draft.
+  unsaved. Accepted results belong to the owning screen's draft.
+
+Current shape, verified against the code (re-inspect before relying on it):
+
+- `PersistenceKey<T>` (`ui-core/foundation/.../models/PersistenceKey.kt`) holds an
+  `internal` key and serializer. Features construct keys and pass them only to
+  `BaseComponent.restoreState`/`saveState`.
+- 17 Components define `val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())`
+  in a private companion object. All 17 call `initialState = restoreState(DRAFT)`
+  and `saveState(DRAFT) { viewModel.state.value }`. Ten Components append
+  `?: <State>(...)` because their ViewModel takes a non-null initial state. The
+  other seven ViewModels accept a nullable `initialState` and resolve the default
+  themselves.
+- `@JsonIgnoreUnknownKeys` is used on six States (five profile forms and
+  `LoginState`) and two `AuthRouter` variants. `@Transient` marks rebuilt fields
+  in 15 serializable State files. `ImmutableListSerializer` lives in
+  `ui-core/state/.../ImmutableListSerializer.kt` and is used by 10 State files.
+  `StageState` lives in `:ui-core:state` (`com.grippo.core.state.stage`).
+- No ViewModel has a private `var`; conditions derive from State.
 
 ## Initialization from persistent settings
 
+A value that must outlive the screen or the session ("remember for next time")
+is a `LocalSettingsFeature` preference owned by the data layer. It is
+account-scoped unless the request says otherwise. StateKeeper drafts only bridge
+recreation and supported restoration. Time anchors such as start or end instants
+are business values; preserve them like any other draft field. The ticking text
+derived from them is rebuilt in the Screen.
+
 A selection already committed to an existing durable settings owner need not gain
 an additional StateKeeper copy solely for restoration. Record that source in the
-inventory; this does not replace local preservation of unfinished screen drafts.
+inventory. This does not replace local preservation of unfinished screen drafts.
 
 Keep an unfinished selection distinct from the committed source when both exist.
 For example, checking an analytics opt-in draft is not a stored permission to
-collect. Persist the unfinished input with the screen draft and rebuild the source;
-do not let a late source emission erase the input or an old draft overwrite a known
-decision. Choose the smallest state representation that preserves these meanings;
-this does not mandate two fields for every settings control.
+collect. Persist the unfinished input with the screen draft and rebuild the
+source. Do not let a late source emission erase the input, and do not let an old
+draft overwrite a known decision. Choose the smallest state representation that
+preserves these meanings. This does not mandate two fields for every settings
+control.
 
 When restored settings arrive asynchronously, review the interval before their
-first value as well as the loaded state. Dependent requests MUST NOT use a fallback
-as though it were the restored selection; apply the fallback once absence is known.
-Dependent controls must either wait for that value or preserve permitted early
-edits under the existing draft policy. Inspect actual render conditions and callback
-eligibility, not only the subscription. Reuse meaningful State and existing loading
-or eligibility mechanisms; do not add restoration flags or block unrelated controls.
+first value as well as the loaded state. Dependent requests MUST NOT use a
+fallback as though it were the restored selection. Apply the fallback once
+absence is known. Dependent controls either wait for that value or preserve
+permitted early edits under the existing draft policy. Inspect the actual render
+conditions and callback eligibility, not only the subscription. Reuse meaningful
+State and the existing loading or eligibility mechanisms. Do not add restoration
+flags or block unrelated controls.
 
 ## Data-backed form synchronization
 
 The current State owns the draft while the screen is open. Populate a fresh form
-once from its business source; a restored snapshot keeps its saved values,
-including Empty/null/default values. Use the existing initialState boundary to
-choose initialization, without storing another mode or source snapshot. Preserve
-nondefault values entered before the first source arrives. A choice equal to a
-fresh default carries no separate edit history and may receive initial source data.
+once from its business source. A restored snapshot keeps its saved values,
+including Empty, null and default values. Use the existing `initialState`
+boundary (the constructor argument: absent archive versus restored snapshot) to
+choose the initialization, without storing another mode or source snapshot.
+Preserve nondefault values entered before the first source arrives. A choice
+equal to a fresh default carries no separate edit history, so it may receive
+initial source data. A draft that starts on an explicit user action (for example
+an Edit tap) seeds from the current State at that action. It needs no
+first-emission seeding.
 
 ViewModels MUST NOT keep private runtime flags, previous-source caches or shadow
-snapshots for restoration, edit detection or synchronization. This includes
-restorePending, previousSource and previousSourceSelection, regardless of type.
-Do not move equivalent flags/copies into State, a wrapper, a provider or a mutable
-closure. Persist actual values without hasEdited/selectionEdited/dirty metadata.
-Use State/update for feature data and derive conditions from existing values.
+snapshots (a private copy of earlier data kept to compare against later) for
+restoration, edit detection or synchronization. This includes `restorePending`,
+`previousSource` and `previousSourceSelection`, regardless of type. Do not move
+equivalent flags or copies into State, a wrapper, a provider or a mutable closure.
+Persist actual values without `hasEdited`/`selectionEdited`/`dirty` metadata. Use
+State and `update` for feature data, and derive conditions from existing values.
 
-Later source observations rebuild actual display data and catalogs, without
+Which business source seeds a field (for example the profile record or the
+latest history entry) is a product decision recorded in the feature's coverage
+file; a fresh form seeds once from that source's first non-null emission.
+Later source observations rebuild the actual display data and catalogs without
 resynchronizing form inputs. Both fresh and restored drafts may therefore remain
-older than server values while open. Do not reconstruct field provenance or add
-automatic merge machinery. A one-shot initialization must not restart on ordinary
-pause/resume; use the existing VM-owned safeLaunch, or Processing.Infinity for a
-finite Flow, rather than a lifecycle-repeated subscription.
+older than server values while open. Do not reconstruct field provenance (a
+record of whether each field came from the user or from the source), and do not
+add automatic merge machinery. A one-shot initialization does not restart on
+ordinary pause/resume. Use the existing VM-owned `safeLaunch`, or
+`Processing.Infinity` for a finite Flow, rather than a lifecycle-repeated
+subscription.
 
-Catalog known/selected IDs are business identity, not edit flags: keep them where
-required to distinguish deselected known items from new items and preserve accepted
-parent exclusions. Preserve choices for known IDs, seed new IDs from the current
-business source and discard IDs absent from a nonempty current catalog. Empty
-catalog emissions must not erase the draft. Verify first-load edits, restored
-defaults, pause/resume, changed sources, empty catalogs and final requests.
+Catalog known/selected IDs are business identity, not edit flags. Keep them where
+they are required to distinguish deselected known items from new items and to
+preserve accepted parent exclusions. Preserve choices for known IDs. Seed new IDs
+from the current business source. Discard IDs absent from a nonempty current
+catalog. Empty catalog emissions do not erase the draft. Verify first-load edits,
+restored defaults, pause/resume, changed sources, empty catalogs and final
+requests.
 
 ## Self-review
 
 Review the actual source and inventory, fix findings, then inspect the resulting diff
-again. Report the fields preserved, sources rebuilt, secret exclusions, permitted
-checks and unverified restoration scenarios without claiming runtime proof from source.
+again. Leave the inventory rows in `analytics/<feature>/COVERAGE.md` matching the
+final code. Report the fields preserved, sources rebuilt, secret exclusions, permitted
+checks and unverified restoration scenarios in the reply, without claiming runtime
+proof from source.

@@ -4,7 +4,6 @@ import com.grippo.toolkit.analytics.context.AnalyticsContext
 import com.grippo.toolkit.analytics.context.OperationId
 import com.grippo.toolkit.analytics.core.internal.schema.AnalyticsContextField
 import com.grippo.toolkit.analytics.core.internal.schema.AnalyticsSchemaRules
-import com.grippo.toolkit.analytics.events.DialogViewed
 import com.grippo.toolkit.analytics.events.ScreenViewed
 import com.grippo.toolkit.analytics.identity.AnalyticsIdentity
 import com.grippo.toolkit.analytics.identity.AnalyticsUserPropertyKey
@@ -141,7 +140,7 @@ internal class AnalyticsCatalog(
     }
 
     companion object {
-        private val BUILT_IN_EVENTS = listOf(ScreenViewed.Schema, DialogViewed.Schema)
+        private val BUILT_IN_EVENTS = listOf(ScreenViewed.Schema)
 
         fun fromSchemas(groups: List<AnalyticsSchema>): AnalyticsCatalog {
             // Include built-in definitions before allocating flattened feature collections.

@@ -28,21 +28,23 @@ Read source and target declarations, existing area mapper and its callers. Conve
   semantics explicitly define it as empty.
 - DTOs/entities retain wire values. Promote enum/date/duration at the domain boundary and reverse
   exact dictionary keys for requests. Verify wire changes with [backend-contract-client](../backend-contract-client/SKILL.md).
+- Wrapping already-typed values into a single-field `*Body` is request construction and
+  belongs to the Repository; a mapper converts models, not one primitive into a body.
 - Representation-only formatting, stable presentation sorting and collection conversion are allowed.
   Business validation, outcomes, authorization, metric computation, UUID generation and `now()`
-  MUST remain in the owning business/state operation, outside mappers. Pass required identity/time
-  explicitly when authorized to change an affected signature.
-- Existing UUID/time-generating mappers are deviations, not permission to copy them. Repair affected
-  behavior within the task scope; do not silently change unrelated draft identities.
-- Resolve unknown source/target shape or a direction outside the seven before writing code.
-  MUST keep new module/dependency edges within authorized scope.
+  MUST remain in the owning business/state operation, outside mappers (no mapper in
+  `data-mappers/**` generates identity or time today). When a signature inside the authorized
+  scope needs identity or time, pass it explicitly from the owner.
+- Resolve an unknown source/target shape before writing code. A direction outside the seven or a
+  new module/dependency edge is scope expansion ([scope discipline](../../../CLAUDE.md#scope-discipline)).
 
 ## Completion gate
 
 MUST review required/optional null semantics, closed-set unknowns, parent IDs, timezone/unit
 conversion, round-trip identity and all affected callers. MUST keep dependencies directional;
 Domain↔State modules may depend on `:ui-core:state`, not feature UI or Compose components.
-MUST apply `CLAUDE.md` Verification policy and report unverified behavior.
+Run the permitted checks under the [verification policy](../../../CLAUDE.md#verification-policy)
+and report unverified behavior.
 
 Read [mapping conventions](references/mapping-conventions.md) for signatures and
 [null handling](references/null-safety-and-logging.md) for missing data/parent IDs.

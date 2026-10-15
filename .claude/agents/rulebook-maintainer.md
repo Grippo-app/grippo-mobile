@@ -5,7 +5,8 @@ model: inherit
 color: pink
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
-skills: rulebook-maintenance
+skills:
+  - rulebook-maintenance
 hooks:
   PreToolUse:
     - matcher: "Bash"

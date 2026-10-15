@@ -1,63 +1,80 @@
 ---
 name: task-prep
-description: Clarify a Grippo repository task, resolve inputs and order implementation by real dependencies before coding. Use for task preparation, an ambiguous feature request or a change spanning several owners; no task board is required.
+description: Clarify a Grippo task before coding - intended outcome, authorized scope, affected owners and platforms, open decisions as a short quiz, and implementation slices ordered by real dependencies with file ownership for delegation. Use for any non-trivial request, an ambiguous feature request or a change spanning several owners.
 ---
 
 # Task preparation
 
-Read [project conventions](../../../CLAUDE.md) and the actual affected source.
-Produce enough scope and acceptance criteria to implement the user's request.
-MUST NOT invent product behavior, backend contracts or absent infrastructure.
+Read [CLAUDE.md](../../../CLAUDE.md) (definitions, module map, policies) and the
+affected source before planning. Preparation produces the scope and acceptance
+criteria the implementation needs; it never invents product behavior, backend
+contracts or infrastructure that does not exist.
 
-## Required decisions
+## Output of preparation
 
-- Identify the intended behavior, affected modules/platforms and exclusions.
-- Distinguish confirmed requirements, source-supported defaults and open decisions.
-- Existing user authorization covers necessary router, DI and module changes within
-  that scope. MUST ask only for new scope, changed locked decisions or missing
-  information that affects correctness.
-- Ask in this chat with 2–3 plain alternatives and a grounded recommended choice.
-  If none is defensible, say what evidence is missing. Honor a user request for
-  extra quizzes; do not manufacture uncertainty or ask the same question twice.
-- Continue independent work while a question is pending; do not implement dependent
-  behavior until a required answer arrives. Time passing is not approval.
+Keep it in the reply (the task report), in the user's language like every reply
+(Russian by default), as short lists:
+
+- **Outcome** - what the user will be able to do or see, as acceptance criteria.
+- **Scope** - the authorized scope and its exclusions; what would count as scope
+  expansion (see [definitions](../../../CLAUDE.md#definitions)).
+- **Owners** - affected modules, the owning skills from the
+  [skills index](../../../CLAUDE.md#skills-index), and platforms.
+- **Facts** - confirmed requirements, source-supported defaults, open decisions.
+- **Slices** - ordered implementation slices, each with outcome, owned paths,
+  prerequisites and the agent or session that will implement it.
+- **Gates** - which gates the change triggers: behavior change -> feature-analytics
+  and state-preservation; visual change -> brand-design and design-system; wire
+  change -> backend evidence; new module -> platform checklist.
+- **Checks** - the default build rule from the
+  [verification policy](../../../CLAUDE.md#verification-policy) and the runtime
+  scenarios worth running if the user allows the app to run.
+
+## Questions
+
+Ask only for scope expansion, a locked-decision change or a behavior-affecting
+fact that neither the request nor the source provides
+([when to stop and ask](../validation-gates/references/when-to-stop-and-ask.md)).
+Batch the questions into one quiz: each with 2-3 alternatives, the recommended
+option first with its reason, in the user's language. Continue every independent
+slice while an answer is pending; never implement the dependent slice on an
+assumed answer. Silence is not acceptance; an answered question is not asked again.
 
 ## Dependency plan
 
-1. Inspect owning source, relevant build files and callers before choosing names.
-2. Route to the owning skills: [UI](../ui-feature/SKILL.md),
-   [data](../data-layer/SKILL.md), [mappers](../mappers/SKILL.md),
-   [DI](../di-modules/SKILL.md), [design](../design-system/SKILL.md),
-   [platform/build](../platform-build-toolkit/SKILL.md). Read only needed references.
-   Designing, redesigning or visually reviewing product UI MUST also apply
-   [brand-design](../brand-design/SKILL.md): establish the surface's purpose,
-   composition, existing shared owners and meaningful states before choosing
-   widgets. Keep its brief in the current task context, not a mandatory new file.
-   Requested product artwork MUST route to [illustrations](../illustrations/SKILL.md)
-   for style, reuse and asset acceptance; design-system retains resource/UI ownership.
-   Distinguish standalone delivery from screen integration before planning consumers.
-3. Order by actual producers and consumers: a screen needs its used contracts,
-   state and widgets; an endpoint needs its verified API shape; a mapper needs
-   its source/target types. Dialogs have the same real prerequisites as screens.
-   Do not impose a fixed builder roster or create unused modules/capabilities.
-4. Split broad work into small coherent slices with ownership and checkable outcomes.
-   Assign nonoverlapping files to agents only when delegation is authorized.
-   Coordinate shared files explicitly; no concurrent edits to the same owner.
-5. For feature changes, apply [analytics](../feature-analytics/SKILL.md) and
-   [preservation](../state-preservation/SKILL.md): enumerate actual screens,
-   callbacks/operations and user-owned fields/parent drafts before implementation.
-   Keep inventories in the task's existing record or report, with explicit omissions.
-6. Define permitted source/manual/build checks and what they can establish.
-   MUST follow the canonical [verification policy](../../../CLAUDE.md#verification-policy).
-   Builds needed within task scope do not require separate consent.
+1. Inspect the owning source, build files and callers before choosing names and
+   shapes. Delegate an inventory to the `scout` agent when it spans more than about
+   ten files or crosses module boundaries (every caller of a widget, all routes of
+   a feature, module edges) and plan from its facts.
+2. Route each part of the work to its owner: UI and navigation -> ui-feature;
+   domain, storage and network -> data-layer (+ backend-contract-client for wire
+   changes); conversions -> mappers; bindings -> di-modules; tokens, components,
+   resources -> design-system; visual intent -> brand-design; artwork ->
+   illustrations; build, modules, toolkit, shells -> platform-build-toolkit.
+   Read only the references the task kind needs.
+3. Order by producers and consumers: a domain contract before the screen that
+   consumes it; verified backend evidence before an endpoint; source and target
+   types before a mapper; tokens and components before the screens that use them;
+   a route in `screen-api` before the Component that navigates to it. Dialogs
+   have the same prerequisites as screens.
+4. Split into slices whose owned paths do not overlap. Files shared by several
+   slices (`screen-api` routers, `shared/.../Koin.kt`, `DialogConfig`,
+   `CONSISTENCY.md`, `strings.xml`) belong to exactly one slice or to the main
+   session; dependent slices run sequentially.
+5. Enumerate per slice the gate items that will have to pass: screens needing a
+   `screenPresentation`, fields needing a draft, callers needing migration,
+   locales needing strings.
+6. Decide which checks the task can run and what they establish; name the runtime
+   scenarios that would prove the behavior if the user allows running the app.
 
 ## Preparation gate
 
-A runnable slice has a clear outcome, real owners, available prerequisite types
-and resolved behavior-affecting inputs. Unavailable prerequisites are reported
-with the specific missing fact and the work that remains possible. A user's
-prompt can be the task record; no generated reports, IDs or files are mandatory.
+A slice is runnable when its outcome is checkable, its owner and owned paths are
+named, its prerequisite types/evidence exist or are produced by an earlier slice,
+and every behavior-affecting input is resolved. An unavailable prerequisite is
+reported with the exact missing fact and the work that remains possible.
 
-Hand off scope, ordered slices, accepted choices, required gates and limitations
-into [local execution](../task-orchestrator/SKILL.md). Preparation does not require
-approval of a plan when implementation was already requested and inputs are clear.
+Hand the scope, ordered slices, accepted decisions, gates and limits to
+[task-orchestrator](../task-orchestrator/SKILL.md). When the user already asked
+for the implementation and the inputs are clear, start executing; a plan does not
+need separate approval.

@@ -11,13 +11,14 @@ including when their subjects and screen roles differ.
 
 Read [CLAUDE.md](../../../CLAUDE.md). MUST apply this skill when creating, refining
 or reviewing product illustrations. Do not add artwork to an unrelated UI task.
-Explicit user choices override style defaults; record a requested departure rather
-than claiming it matches the approved family.
+Explicit user choices override style defaults; state a requested departure in the
+reply rather than claiming it matches the approved family.
 
 Before generating or reviewing style, MUST visually inspect the
 [approved illustration](../../../design-system/resources/provider/src/commonMain/composeResources/drawable/onboarding_hero.webp).
-Use that existing asset as a style reference in the image tool, not merely its
-filename or a remembered description. MUST NOT duplicate it in this skill's assets.
+Use that existing asset as the style-reference input of the image-generation tool
+when one is available, not merely its filename or a remembered description. MUST
+NOT duplicate it in this skill's assets.
 If moved, locate its actual repository owner and repair this reference. If the
 reference cannot be inspected, report style verification as unavailable; do not
 invent its appearance or substitute a private generated-image path.
@@ -61,13 +62,21 @@ fitness decoration attached to unrelated content.
 
 ## Generation
 
-Use the available image-generation tool for new raster artwork; apply its
-imagegen instructions when available. Include the approved local image through
-the tool's supported reference mechanism. Distinguish the style reference from
-the edit target. For a new subject, explicitly request that subject rather than
-preserving the reference's dumbbell. For a refinement or variant, preserve the
-target's subject and change only the requested properties. MUST inspect an edit
-target before editing it and use the tool's actual supported reference inputs.
+New raster artwork is produced with the image-generation tool available in the
+session, if any; in Claude Code this may be the Figma MCP `generate_image` or none.
+Generation runs in the main session (project agents have no MCP image tools); the
+`design-implementer` integrates the exported asset.
+When no tool is available, report generation as unavailable and deliver the
+guidance and prompt below instead; do not fall back silently to a different image
+service or model. Inspect the tool's actual reference and transparency inputs
+before relying on them.
+
+Supply the approved local image as the style reference through the tool's
+supported reference mechanism. Distinguish the style reference from the edit
+target. For a new subject, explicitly request that subject rather than preserving
+the reference's dumbbell. For a refinement or variant, preserve the target's
+subject and change only the requested properties. MUST inspect an edit target
+before editing it.
 
 Choose the screen role, subject, aspect ratio and intended display size before
 generation. Default to a transparent square cutout for a single object, as in
@@ -86,12 +95,12 @@ Suggested prompt core, adapted to the actual request:
 > Transparent background and a soft floating shadow. No text, numbers, logos or
 > watermark. Match the reference's materials and color balance, not its subject.
 
-For cutouts, MUST request real transparency using the tool's transparency option.
-For an explicitly requested full-background scene, adapt the prompt and option.
-A checkerboard, white backdrop or painted black background is not transparency. Preserve the
-generated alpha during export. Do not generate additional variants without a
-concrete quality problem or user request, and do not fall back silently to a
-different image service/model if the tool is unavailable.
+Cutouts MUST end up with real alpha: request transparency through whatever input
+the tool offers, preserve the alpha through export and verify it in the converted
+WebP. A checkerboard, white backdrop or painted black background is not
+transparency. For an explicitly requested full-background scene, adapt the prompt
+accordingly. Do not generate additional variants without a concrete quality
+problem or user request.
 
 ## Resource and UI integration
 
@@ -118,10 +127,10 @@ For UI integration, export the chosen asset to the shared Compose resource provi
 as WebP by default, preserving alpha for cutouts. Use descriptive snake_case names
 under the resource policy. PNG is suitable as a lossless generation master or
 when required by tooling, with the reason
-recorded; do not bundle duplicate PNG/WebP masters without a real consumer.
+stated; do not bundle duplicate PNG/WebP masters without a real consumer.
 Choose pixel dimensions and compression for the largest actual display size;
-the onboarding reference is 768×768 and about 104KB, an example rather than a
-universal budget. Inspect quality after conversion, not just the generator output.
+the onboarding reference is 768 × 768, 104,178 bytes, with alpha, an example rather
+than a universal budget. Inspect quality after conversion, not just the generator output.
 
 Keep decorative art separate from the container background. Compose owns soft
 theme-aware gradients and localized text; use existing AppTokens or add necessary
@@ -137,9 +146,12 @@ MUST inspect the exported image at the intended display size on light/dark backg
 alpha, silhouette, edge/glow artifacts, material/style match and subject clarity.
 For UI integration, review the whole-screen consumer for spacing and CTA access at
 the [standard viewport](../design-system/references/visual-consistency.md#default-viewport-scope)
-using the project's permitted Preview/manual workflow. Fix observed problems, rather
-than adding more ornament. Report unrendered variants honestly; an artwork preview
-or successful build is not a verified screenshot of the application.
+through its two AppPreview variants or, when the user allows running the app,
+[runtime-verification](../runtime-verification/SKILL.md). Fix observed problems
+rather than adding more ornament. Report evidence as
+[visual evidence](../design-system/references/visual-consistency.md#evidence)
+defines; an artwork preview or successful build is not a verified screenshot of
+the application.
 
 Completion MUST identify the selected asset, dimensions, format, alpha where
 required, actual inspection results and unresolved defects. Style mismatch,
@@ -149,11 +161,12 @@ remains explicitly unverified; generation itself does not guarantee style fideli
 For standalone assets, use theme-like backgrounds; do not claim application checks
 when no consumer was requested.
 
-Record visual-only analytics/state impact without adding events or persistence.
-If controls, navigation or behavior change, apply
-[analytics](../feature-analytics/SKILL.md) and
+A [visual-only change](../../../CLAUDE.md#definitions) states its analytics/state
+impact assessment without adding events or persistence. If controls, navigation or
+behavior change, apply [analytics](../feature-analytics/SKILL.md) and
 [state preservation](../state-preservation/SKILL.md) with their owning gates.
-Use scoped verification for actual resource/UI edits; skill-only documentation
-does not require an app build. Preserve unrelated assets; an explicitly requested
-edit authorizes changing its target, not other artwork. No deployment, new
-dependency or external publication is implied by this skill.
+Builds for resource/UI edits follow the default build rule in the
+[verification policy](../../../CLAUDE.md#verification-policy); skill-only
+documentation runs the rulebook checker instead. Preserve unrelated assets; an
+explicitly requested edit authorizes changing its target, not other artwork. No
+deployment, new dependency or external publication is implied by this skill.

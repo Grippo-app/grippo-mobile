@@ -1,6 +1,6 @@
 package com.grippo.exercise.example.exerciseexample
 
-public enum class ExerciseExampleTabState {
+public enum class ExerciseExampleDetailsTabState {
     Information,
     Achievements,
 }

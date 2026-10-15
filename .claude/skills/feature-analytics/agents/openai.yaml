@@ -1,6 +1,0 @@
-interface:
-  display_name: "Grippo Feature Analytics"
-  short_description: "Simple typed analytics for KMP feature changes"
-  default_prompt: "Use $feature-analytics to integrate typed events and complete operations in ViewModels through one stateless feature API and the common foundation screen hook, preserving business contracts and explicit coverage."
-policy:
-  allow_implicit_invocation: true

@@ -1,11 +1,12 @@
 ---
 name: code-reviewer
-description: Independent read-only reviewer for Grippo changes. Use proactively after any implementation slice that changes behavior, architecture or several owners, before claiming completion. Reviews the actual diff against the request, CLAUDE.md, the owning skill gates and forbidden patterns; reports defects with file:line and severity, never fixes.
+description: Independent read-only reviewer for Grippo changes. Use proactively after any implementation slice that is more than a small editorial change - behavior, architecture, visual or multi-owner - before claiming completion. Reviews the actual diff against the request, CLAUDE.md, the owning skill gates and forbidden patterns; reports defects with file:line and severity, never fixes.
 model: inherit
 color: blue
 tools: Read, Grep, Glob, Bash
 disallowedTools: mcp__*, Agent, Edit, Write, NotebookEdit
-skills: validation-gates
+skills:
+  - validation-gates
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -36,7 +37,8 @@ report, and review anyway; do not stop to ask.
 
 ## Duties
 
-1. Read `.claude/skills/validation-gates/references/forbidden-patterns.md` and the
+1. Read `.claude/skills/validation-gates/references/forbidden-patterns.md`,
+   `.claude/skills/validation-gates/references/code-style.md` and the
    `SKILL.md` of every owning skill named in the brief (for example
    `.claude/skills/ui-feature/SKILL.md`), including their completion gates. The
    validation-gates skill is preloaded; the owning skill is not.

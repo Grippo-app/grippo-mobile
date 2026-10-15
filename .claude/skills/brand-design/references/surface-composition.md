@@ -94,6 +94,10 @@ and shape, avoiding a duplicate toolbar or full-screen decorative hero.
   acknowledgement/retry timing and result delivery.
 - Use the correct button severity. Visual emphasis cannot make an ordinary
   confirmation destructive.
+- An inline edit block inside a sheet (a field with Save/Cancel) keeps its own
+  actions next to the field, above any pinned bottom action of the sheet; the
+  pinned action keeps its meaning and is disabled or hidden only when the edit
+  makes it invalid.
 - Use actual content and the existing scroll/inset owners to keep fields, final items
   and actions reachable with keyboard/overlays at the standard viewport. Add scrolling for a demonstrated
   content constraint rather than a speculative second layout system.

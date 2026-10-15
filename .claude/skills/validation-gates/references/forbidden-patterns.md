@@ -1,8 +1,9 @@
 # Forbidden patterns (anti-patterns reference)
 
-Apply these cross-cut constraints to actual source/diff. Owning skills define the
-implementation and semantic gates; [CLAUDE.md](../../../../CLAUDE.md) owns project
-scope and locked decisions. Existing deviations do not authorize copying them.
+Apply these cross-cut prohibitions to the actual source/diff. Owning skills define
+implementation and semantic gates; [code style](code-style.md) owns the positive
+style rules; [CLAUDE.md](../../../../CLAUDE.md) owns scope and locked decisions.
+An existing deviation in the code never authorizes copying it.
 
 ## Kotlin structure
 
@@ -10,15 +11,24 @@ scope and locked decisions. Existing deviations do not authorize copying them.
   or a lambda. Declare methods at class scope or functions at file scope. Ordinary
   callbacks, lambdas and DSLs remain allowed; do not confuse them with declarations.
 - **Compressed business/control blocks**, including one-line `safeLaunch` or
-  `trackOperation` bodies. Keep them multiline. Short single-expression `update`
-  and simple Flow transformations stay compact; expand long/multi-operation blocks.
-  Follow [the project Kotlin style](../../../../CLAUDE.md#kotlin).
-- **Duplicating startup requests solely to keep them literally in `init`** when
-  the same complete operation must run after error-dialog dismissal. Use one
-  private class-level operation called from `init` and `onError`, in the existing
-  VM scope. Do not introduce a local function, new scope or retry loop.
+  `trackOperation` bodies. Keep them multiline; short single-expression `update`
+  and simple Flow operators stay compact. See [Kotlin blocks](code-style.md#kotlin-blocks).
+- **ViewModel layout drift** - constructor groups out of order, a statement in
+  `init` outside the permitted list, a mapper/use-case/feature call inside an
+  `update` lambda, an `update` lambda that computes values instead of copying
+  precomputed locals (unless the result depends on the current state), or a
+  `provide*` handler with more than one `update`.
+  See [ViewModel layout](code-style.md#viewmodel-layout).
+- **Duplicating a startup request to keep it literally in `init`** when the same
+  operation must also run after error-dialog dismissal. Use one private
+  class-level method called from `init` and `onError`; no local function, new
+  scope or retry loop.
 
 ## Coroutines
+
+- **`delay`/sleep to pace a business operation** (for example a fixed pause inside
+  a tracked save). Business blocks complete as fast as their work allows; UX
+  timing belongs to presentation.
 
 - **Mechanical cancellation checks around already cooperative suspend calls.**
   Use owned scopes and cancellable APIs; preserve `CancellationException`.
@@ -67,7 +77,7 @@ scope and locked decisions. Existing deviations do not authorize copying them.
 - **Returning DTOs from a Repository.** Map to domain.
 - **Inline mappers in Repository / ViewModel.** Use `:data-mappers:*`.
 - **`!!` on a DTO field.** Forbidden; use `?: return null` (via `AppLogger.Mapping.log`).
-- **Non-null DTO fields or non-null collection defaults**, in responses AND request bodies. Every DTO field is nullable with `= null`; request construction still supplies API-required values. See the data-layer DTO reference.
+- **Non-null DTO fields or non-null collection defaults**, in responses AND request bodies. Every DTO field is nullable with `= null`; request construction still supplies API-required values, and a body field that must be sent as explicit `null` carries `@EncodeDefault(EncodeDefault.Mode.ALWAYS)`. See [DTO/API contracts](../../data-layer/references/dtos-and-api.md).
 - **Required entity fields nullable.** Guard required values during mapping;
   semantically optional Entity/Domain fields remain nullable. Apply
   [target null semantics](../../mappers/references/null-safety-and-logging.md).
@@ -88,7 +98,16 @@ scope and locked decisions. Existing deviations do not authorize copying them.
 - **`getKoin().get()` in a Composable.** Wrong layer.
 - **A second hand-written DI module.** Existing FeatureApiModule UseCase registration is the sole carve-out; authorized UseCase additions may extend it.
 - **Unjustified DI lifetime.** Select @Single/@Factory from actual ownership; stateless shared analytics is @Single, per-operation managers retain their existing @Factory lifetime.
-- **A Koin-injectable type as a `*Component` constructor parameter.** Feature interfaces, UseCases, `DialogController`, repositories, managers, auth/link providers and analytics services resolve via `getKoin().get()` inside `componentContext.retainedInstance { <X>ViewModel(...) }`, not through Component constructors. Components receive context, navigation callbacks and ordinary initial business inputs from a route or accepted parent flow. Analytics stays in VM, with lifecycle binding only in foundation; no feature provider/route matrix or manual bind. See [feature analytics](../../feature-analytics/SKILL.md) and the ui-feature base-classes reference.
+- **A Koin-injectable type as a `*Component` constructor parameter.** Feature
+  interfaces, UseCases, `DialogController`, repositories, managers, auth/link
+  providers and analytics services resolve with `getKoin().get()` inside
+  `componentContext.retainedInstance { <X>ViewModel(...) }`. A Component
+  constructor takes only the context, navigation callbacks and ordinary initial
+  business inputs from a route or accepted parent flow.
+- **Feature-owned analytics lifecycle wiring** - a provider/route matrix, a manual
+  `bind` or a lifecycle service resolved in the feature. Analytics stays in the
+  ViewModel; foundation binds the screen hook. See
+  [feature analytics](../../feature-analytics/SKILL.md).
 
 ## Navigation
 
@@ -145,10 +164,12 @@ Screen-result rules are defined in the ui-feature skill,
   inputs for one-time population; see
   [the draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 - **`String` for localizable values.** Use `UiText`.
-- **Raw `String` where an existing suitable `*FormatState` supports the input**
-  (email, password, name, text, amount or date). MUST reuse its validation/display
-  contract. A plain query may remain String only when no existing formatter fits
-  its behavior. A new formatter requires a real unmet need, not a new class per field.
+- **Raw `String` where an existing `*FormatState` fits the input** (the 15 types
+  in `ui-core/state/.../formatters/`: Email, Password, Name, Date, DateTime,
+  DateRange, Duration, Weight, Height, Volume, Repetitions, Intensity, Density,
+  Multiplier, Percentage). Reuse its validation/display contract. A plain query
+  may stay `String` only when no formatter fits; a new formatter needs a real
+  unmet need, not a class per field.
 - **`var` in state classes.** All `val`.
 - **Mutable collections in state.** Immutable only.
 - **State that duplicates a sub-state**'s field. Derive locally.
@@ -159,7 +180,7 @@ Screen-result rules are defined in the ui-feature skill,
 - **Inline version strings** (`"2.3.21"`). Use the catalog.
 - **`apply(plugin = "...")`** instead of `plugins { id("...") }`.
 - **`repositories { ... }` in module scripts.** Forbidden by `FAIL_ON_PROJECT_REPOS`.
-- **`compileSdk = 36` in a module**. Already in the convention.
+- **`compileSdk`, `minSdk`, `targetSdk`, JVM toolchain or namespace in a module script**. The conventions own them (compileSdk 37, minSdk 26, targetSdk 36, JVM 19); only `:androidApp` adds its `applicationId`.
 - **`@OptIn(...)` for globally-opted-in experimentals**. Already in `KotlinMultiplatformConventionPlugin`.
 - **`api(...)` everywhere.** Default is `implementation`.
 - **`mavenLocal()`** in production builds.
@@ -175,9 +196,9 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Verification infrastructure
 
-- **Verification that violates the canonical
-  [project verification policy](../../../../CLAUDE.md#verification-policy)**, including
-  test sources/infrastructure introduced without an explicit user request.
+- **Test sources, linters, screenshot tooling or other verification infrastructure
+  introduced without an explicit user request** (see the
+  [verification policy](../../../../CLAUDE.md#verification-policy)).
 - **Verification-only production hooks or global fake modes.** Keep constructor
   injection and module boundaries clean; do not add flags, singleton resets or
   reflection scaffolding for checks.
@@ -211,31 +232,26 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Comments
 
-Do not narrate obvious code, embed transient quiz/task IDs or claim incomplete
-TODO/NotImplementedError production paths as finished work. Keep only comments
-that explain a real invariant or non-obvious decision. Record verification and
-tradeoffs in the task report. Completion replies follow the canonical
-[response format](../SKILL.md#final-response-format); no artificial line cap applies.
+Comments that narrate obvious code, embed task identifiers, or present an
+unfinished `TODO`/`NotImplementedError` path as done. The positive rule is in
+[code style](code-style.md#comments).
 
 ## Architecture-shape
 
-- **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`. Narrow exceptions tolerated for SDK-style services that have no `:data-features:*` wrapper: `:data-services:google-auth` and `:data-services:apple-auth` (consumed directly by `:ui-screen-features:authorization` to fetch ID tokens). Anything domain-shaped still goes through `:data-features:feature-api`.
-- **Feature UI/domain calls Firebase or constructs toolkit wire events directly.**
-  Apply [feature-analytics](../../feature-analytics/SKILL.md): UI main depends on
-  analytics-api and constructs typed feature facts for trackEvent; only the
-  implementation constructs toolkit AnalyticsEvent payloads and owns matrices.
-  Reject UI/domain/services/SDK imports in analytics implementation, public
-  implementation types, manual production DI, analytics state/retention wrappers, duplicate
-  leaf/container tracking and extra jobs/retries solely for instrumentation.
-  Review actual eligible VM callbacks and every independent screen's required hook
-  against actual routes/rendered surfaces and coverage; containers must keep null.
-  Reject missing/wrong hooks, ownerless screen enum entries and screen-hook omissions
-  under the canonical mandatory screen coverage gate. Preserve the
-  whole business return/error contract. Result-returning calls unwrap inside the
-  decorated block; direct-value throwing calls stay direct. Reject reporting errors
-  replacing business results and shared host/config plumbing inferring dialog outcomes.
+- **UI module imports `:data-services:*` directly.** Use `:data-features:feature-api`. Sole tolerated exception: `:data-services:google-auth` and `:data-services:apple-auth`, consumed by `:ui-screen-features:authorization` to obtain provider credentials before a domain user exists. Anything domain-shaped goes through `:data-features:feature-api`.
+- **Feature UI or domain code calling Firebase or building toolkit wire events.**
+  UI depends on `:analytics:analytics-api` and emits typed feature facts from the
+  ViewModel; only `:analytics:<feature>` implementations build toolkit payloads.
+- **Analytics implementation importing UI, domain, services, SDKs or toolkit core**, exposing public implementation types, or using manual production DI.
+- **Analytics-only state**: retention wrappers, extra jobs or retries, duplicate
+  leaf/container tracking, a screen enum entry without an owning ViewModel, a
+  missing or wrong `screenPresentation` on an independent screen.
+- **Telemetry altering business outcomes**: a reporting error replacing a business
+  result, `getOrThrow()` moved outside the decorated block, a throwing use case
+  reshaped to fit the decorator, or host/config plumbing inferring dialog outcomes.
+  The owning rules are in [feature analytics](../../feature-analytics/SKILL.md).
 - **`:data-features:feature-api` imports `:data-services:*`.** Pure contracts.
-- **`:toolkit:*` imports `:design-system:*`.** Toolkit is below. Sole exception: `:toolkit:date-utils` reads locale-aware format tokens from `:design-system:resources:provider` and `:design-system:core` — inspect actual [toolkit ownership](../../platform-build-toolkit/references/toolkit-utilities-core.md), build files and [project dependency rules](../../../../CLAUDE.md#module-dependency-rules).
+- **`:toolkit:*` imports `:design-system:*` or `:ui-core:*`.** Toolkit is below both. The two documented exceptions, not to be extended by analogy: `:toolkit:date-utils` -> `:design-system:core` + `:design-system:resources:provider` (locale-aware format tokens) and `:toolkit:http-client` -> `:ui-core:error:error-provider` (`AppError`). See [toolkit ownership](../../platform-build-toolkit/references/toolkit-utilities-core.md) and [dependency rules](../../../../CLAUDE.md#module-dependency-rules).
 - **`:design-system:*` imports `:data-features:*`.** Design is pure UI.
 - **`:data-mappers:*` import each other.** Each direction is isolated.
 - **New unrelated features mixed into one module** without an authorized architecture decision. Extend an existing feature in its owning module.

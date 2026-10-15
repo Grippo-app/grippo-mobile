@@ -2,6 +2,7 @@ package com.grippo.design.resources.provider.impl.internal
 
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.colors.DarkColor
+import com.grippo.design.resources.provider.colors.LightColor
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.toolkit.theme.AppTheme
 import org.koin.core.annotation.Single
@@ -12,7 +13,7 @@ internal class ColorProviderImpl() : ColorProvider {
         return if (AppTheme.current()) {
             DarkColor
         } else {
-            DarkColor
+            LightColor
         }
     }
 }

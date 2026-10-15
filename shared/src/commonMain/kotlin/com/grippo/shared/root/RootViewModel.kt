@@ -48,10 +48,6 @@ public class RootViewModel(
         null -> null
     }
 
-    override fun toProfile() {
-        navigateTo(RootDirection.Profile)
-    }
-
     override fun toDebug() {
         navigateTo(RootDirection.Debug)
     }
@@ -62,30 +58,6 @@ public class RootViewModel(
 
     override fun toTraining(stage: StageState) {
         navigateTo(RootDirection.Training(stage))
-    }
-
-    override fun toWeightHistory() {
-        navigateTo(RootDirection.WeightHistory)
-    }
-
-    override fun toMissingEquipment() {
-        navigateTo(RootDirection.MissingEquipment)
-    }
-
-    override fun toExcludedMuscles() {
-        navigateTo(RootDirection.ExcludedMuscles)
-    }
-
-    override fun toExperience() {
-        navigateTo(RootDirection.Experience)
-    }
-
-    override fun toSettings() {
-        navigateTo(RootDirection.Settings)
-    }
-
-    override fun toSocial() {
-        navigateTo(RootDirection.Social)
     }
 
     override fun toGoal() {

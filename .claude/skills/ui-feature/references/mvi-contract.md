@@ -55,7 +55,7 @@ ViewModel.withLoader(MyLoader.LoadingData) { feature.fetch() }
 @Immutable
 internal data class NoteEditorState(
     val tag: TagState? = null,
-    val amount: AmountFormatState = AmountFormatState.Empty(),
+    val weight: WeightFormatState = WeightFormatState.Empty(),
     val history: ImmutableList<NoteState> = persistentListOf(),
 )
 ```
@@ -74,7 +74,7 @@ Rules:
 - Collections: `ImmutableList`/`ImmutableSet`/`PersistentList` (kotlinx-collections-immutable).
 - Strings: `UiText` if the value depends on resources/locale; `String` if it's a verbatim user input or a non-localizable identifier.
 - Form fields reuse a suitable existing formatter where parsing/validation/display requires it; plain nonsecret free text without those needs may remain String. Follow [formatter rules](state.md#formatstate-rules-must--anti-patterns); do not create a type per field.
-- Use meaningful constructor defaults where an initial empty/loading value exists; pass required data explicitly through initialState. A no-argument `<X>State()` is not mandatory. Shared models follow the same [initialization rule](state.md#state-conventions); previews use explicit representative fixtures, not fabricated production defaults.
+- Use meaningful constructor defaults where an initial empty/loading value exists; pass required data explicitly through initialState. A no-argument `<X>State()` is not mandatory. Shared models follow the same [initialization rule](state.md#state-conventions); previews use explicit fixtures, not fabricated production defaults.
 - **No** direct domain model storage if a transformation is required — map via `:data-mappers:domain-to-state` to a UI-friendly shape.
 - **No flat scalar piles.** Cluster related primitives into sub-states, fixed value sets into enums, a lifecycle of booleans into a sealed interface (see `references/state.md`).
 
@@ -89,7 +89,7 @@ internal sealed interface NoteEditorDirection : BaseDirection {
 ```
 
 Rules:
-- `sealed interface`, `internal`.
+- `sealed interface`, `internal` for a leaf; `public` when the owning Component is public (its `navigator` exposes the type).
 - Subtypes: `data object` for parameterless, `data class` for parameterized.
 - Each subtype is a single **navigation intent** (Back, OpenX, ShowDialog). NOT a state mutation — those happen in `update {}`.
 - Subtypes can carry parameters needed by the parent to compose the actual navigation (`initialRange`).
@@ -100,12 +100,12 @@ Rules:
 @Immutable
 internal sealed interface NoteEditorLoader : BaseLoader {
     @Immutable data object LoadingHistory : NoteEditorLoader
-    @Immutable data object SavingAmount : NoteEditorLoader
+    @Immutable data object SavingWeight : NoteEditorLoader
 }
 ```
 
 Rules:
-- `@Immutable sealed interface`, `internal`.
+- `@Immutable sealed interface`, `internal` for a leaf; `public` when the owning Component is public (its `loaders` exposes the type).
 - Subtypes: `@Immutable data object`. Distinct concurrent ops get distinct subtypes (so the UI can show separate spinners).
 - Empty loader is allowed: `@Immutable internal sealed interface FooLoader : BaseLoader` with no subtypes. Used when no async ops exist.
 
@@ -115,13 +115,13 @@ Rules:
 @Immutable
 internal interface NoteEditorContract {
     fun onBack()
-    fun onAmountPickerClick()
+    fun onWeightPickerClick()
     fun onSettingsClick()
     fun onApplyClick()
 
     companion object Empty : NoteEditorContract {
         override fun onBack() = Unit
-        override fun onAmountPickerClick() = Unit
+        override fun onWeightPickerClick() = Unit
         override fun onSettingsClick() = Unit
         override fun onApplyClick() = Unit
     }
@@ -141,26 +141,21 @@ Rules:
 Opening a new picker follows [dialogs.md](dialogs.md): its config has caller-owned title, typed content/result callbacks and exhaustive content comparison.
 
 Rules:
-- `internal class`, extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
-- Constructor receives `Feature` / `UseCase` / `Controller` dependencies, typed
-  feature analytics and necessary route inputs or restored `initialState`.
-  No direct API/DAO/repository dependencies. Authorization's documented
+- `internal class` for a leaf; `public class` when the owning Component is public (dialogs and feature roots expose `viewModel`, inspect `WeightPickerViewModel`/`ProfileViewModel`). Extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
+- Constructor receives caller route inputs, typed feature analytics,
+  `Feature` / `UseCase` / `Controller` dependencies and a restored `initialState`.
+  No direct API/DAO/repository dependencies (observe Flows, call Result/throwing
+  commands - see [data boundary](results.md#data-boundary-for-result-producers-and-receivers)).
+  Authorization's documented
   Google/Apple credential-provider exception stays local to that feature.
-- Constructor parameters MUST follow this order: caller-supplied screen/route
-  arguments first, then `analytics`, then all other permitted injected dependencies,
-  then initial State (`initialState`) last. With no caller arguments, analytics is
-  first. Omit absent groups; this ordering does not require an unused analytics
-  dependency or a new State parameter. Apply the order when creating or changing
-  a ViewModel constructor and update its callers within scope.
+- Constructor parameter order, the `init` layout, `provide*` handlers, the
+  `update` shape and named arguments are owned by
+  [ViewModel layout](../../validation-gates/references/code-style.md#viewmodel-layout);
+  block style, the named-local-function ban and the startup-operation pattern
+  (one private class-level method called from `init` and `onError`) by
+  [Kotlin blocks](../../validation-gates/references/code-style.md#kotlin-blocks).
+  Apply both as written there.
 - Initial state in the `BaseViewModel` constructor.
-- `init { }` starts Flow subscriptions and startup loads through `safeLaunch`. A
-  complete startup operation reused after error-dialog dismissal may be a private
-  class-level method called from `init` and `onError`; do not duplicate the sequence.
-  No named local functions inside `init`, constructors, functions or lambdas.
-  Ordinary callback/DSL lambdas remain allowed.
-- Keep business/control blocks, `safeLaunch` and `trackOperation` multiline. Short
-  single-expression `update`/simple Flow transformations stay compact; expand long
-  expressions and multi-operation blocks. Follow [Kotlin style](../../../../CLAUDE.md#kotlin).
 - Mutate state via `update { it.copy(...) }`. Never assign to a `var`.
 - Emit navigation via `navigateTo(Direction.Foo)`.
 - Run async work via `safeLaunch { ... }` or `Flow.safeLaunch()`. **Never** `viewModelScope.launch`, `GlobalScope`, or raw `CoroutineScope`.
@@ -191,7 +186,7 @@ Rules:
 - Wraps content in `BaseComposeScreen(background = ...)`.
 - Reads all strings/colors/dp via `AppTokens.*`.
 - Follow [recomposition discipline](compose-rules.md#recomposition-discipline-should) for derived rendering values; simple checks stay inline.
-- New or visually changed screens MUST have private `@AppPreview`s for significant affected states, wrapped in `PreviewContainer { ... }` with representative data and `Contract.Empty`. Nonvisual changes assess visual impact and reuse existing previews; they need no unrelated preview expansion. Shared model stubs stay in ui-core:state; private screen-State fixture builders may live with the preview.
+- New or visually changed screens MUST have private `@AppPreview`s for the significant states ([definitions](../../../../CLAUDE.md#definitions)), wrapped in `PreviewContainer { ... }` with explicit fixture data and `Contract.Empty`. Nonvisual changes assess visual impact and reuse existing previews; they need no unrelated preview expansion. Shared model stubs stay in ui-core:state; private screen-State fixture builders may live with the preview.
 - **No** `LaunchedEffect(Unit)` for navigation. Navigation goes via `Direction` only.
 - **No** business logic. Only rendering and event forwarding via `contract.onXxx*()`.
 
@@ -231,4 +226,4 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
   helpers; no local catches, extra launches or recovery wrappers. Presentation mapping
   cannot change business results, cancellation or original analytics/log/crash
   failures. Read [error-pipeline.md](error-pipeline.md).
-- **Process-death restoration** — Decompose `StateKeeper` serializes screen router stacks; every `*Router` sealed class **and** every payload inside it must be `@Serializable`. Restoration requires saved state from the platform shell; live dialog sessions are excluded. See [process-death.md](process-death.md) for the implemented platform behavior.
+- **Process-death restoration** — Decompose `StateKeeper` serializes screen router stacks; every `*Router` sealed class **and** every payload inside it must be `@Serializable` (a `ResultKey` serializes as its address; the `Action` protocol it names is not serialized — see [results.md](results.md)). Restoration requires saved state from the platform shell; live dialog sessions are excluded. See [process-death.md](process-death.md) for the implemented platform behavior.

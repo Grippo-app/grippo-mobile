@@ -10,36 +10,8 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
         navigateTo(HomeRootDirection.Back)
     }
 
-    override fun toExcludedMuscles() {
-        navigateTo(HomeRootDirection.ExcludedMuscles)
-    }
-
-    override fun toMissingEquipment() {
-        navigateTo(HomeRootDirection.MissingEquipment)
-    }
-
-    override fun toExperience() {
-        navigateTo(HomeRootDirection.Experience)
-    }
-
-    override fun toDebug() {
-        navigateTo(HomeRootDirection.Debug)
-    }
-
     override fun toTrainings() {
         navigateTo(HomeRootDirection.Trainings)
-    }
-
-    override fun toBody() {
-        navigateTo(HomeRootDirection.Body)
-    }
-
-    override fun toSettings() {
-        navigateTo(HomeRootDirection.Settings)
-    }
-
-    override fun toSocial() {
-        navigateTo(HomeRootDirection.Social)
     }
 
     override fun toGoal() {

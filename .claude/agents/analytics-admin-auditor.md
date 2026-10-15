@@ -5,7 +5,8 @@ model: inherit
 color: purple
 tools: Read, Grep, Glob, Bash, mcp__claude-in-chrome__*
 disallowedTools: Agent, Edit, Write, NotebookEdit
-skills: feature-analytics
+skills:
+  - feature-analytics
 hooks:
   PreToolUse:
     - matcher: "Bash"

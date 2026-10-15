@@ -18,10 +18,12 @@ there rather than duplicated in each recipe.
 | Cross-component results (`ResultManager`, receiver-owned keys, SharedFlow semantics) | `results.md` |
 | Process-death / restoration (7 hard rules) | `process-death.md` |
 | Error pipeline (sendError, ErrorProvider, dialog mapping, error triad) | `error-pipeline.md` |
+| Data-side operation outcomes, cancellation, cache reconciliation | [operation-outcomes](../../data-layer/references/operation-outcomes.md) (data-layer owns it) |
+| Kotlin/Compose style, naming, packages, ViewModel layout | [code-style](../../validation-gates/references/code-style.md) (validation-gates owns it) |
 | `:ui-core:state` models / `UiText` / `*FormatState` / state conventions / `stub*` | `state.md` → `module-structure.md` (§ ui-core), `error-pipeline.md` (§ error triad) |
 | Compose / stability / previews / lists / modifiers | `compose-rules.md` → `base-classes.md` (§ BaseComposeScreen) |
 | Base classes (`BaseViewModel`/`BaseComponent`/`BaseComposeScreen`/models/`OperationManager`/platform helpers) | `base-classes.md` |
-| ViewModel data flow (observe vs get, `safeLaunch`) | `results.md` (§ Data boundary for result producers and receivers) |
+| ViewModel data flow (observe vs get, `safeLaunch`) | `mvi-contract.md` (§ ViewModel rules) → `results.md` (§ Data boundary for result producers and receivers) |
 | Analytics impact, typed VM events/operations, mandatory independent-screen hook and coverage | [feature-analytics](../../feature-analytics/SKILL.md) → [ViewModel integration](../../feature-analytics/references/viewmodel.md) |
 | Widgets shared across features | `module-structure.md` (§ `:compose-libs:*`) — choose design-system for product coupling, compose-libs for product-independent reuse |
 

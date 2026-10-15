@@ -10,14 +10,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 internal class HomeComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
-    private val toExcludedMuscles: () -> Unit,
-    private val toMissingEquipment: () -> Unit,
-    private val toExperience: () -> Unit,
-    private val toDebug: () -> Unit,
     private val toTrainings: () -> Unit,
-    private val toSettings: () -> Unit,
-    private val toSocial: () -> Unit,
-    private val toBody: () -> Unit,
     private val toGoal: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
@@ -52,14 +45,7 @@ internal class HomeComponent(
     override suspend fun eventListener(direction: HomeDirection) {
         when (direction) {
             HomeDirection.Back -> back.invoke()
-            HomeDirection.Debug -> toDebug.invoke()
-            HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
-            HomeDirection.MissingEquipment -> toMissingEquipment.invoke()
-            HomeDirection.Experience -> toExperience.invoke()
             HomeDirection.Trainings -> toTrainings.invoke()
-            HomeDirection.Settings -> toSettings.invoke()
-            HomeDirection.Social -> toSocial.invoke()
-            HomeDirection.Body -> toBody.invoke()
             HomeDirection.Goal -> toGoal.invoke()
         }
     }

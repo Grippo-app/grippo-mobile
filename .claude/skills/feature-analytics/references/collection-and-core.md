@@ -19,6 +19,31 @@ Inspect current source rather than copying signatures or catalog counts:
 - `androidApp`, `data-services/firebase` and `iosApp`: platform initialization,
   disabled SDK defaults and adapter attachment.
 
+Current shape (verified against these files; re-inspect before relying on it):
+
+- `LocalSettingsRepositoryImpl` (`data-features/local-settings/.../data/`) stores
+  consent under `booleanPreferencesKey("analytics_consent")`;
+  `observeAnalyticsConsent()` maps null and false to `AnalyticsConsent.Denied`,
+  true to `Granted`; `setDefaultAnalyticsConsent(granted)` writes only when the
+  key is absent; `clearUserSettings()` re-applies the saved consent and
+  `onboarding_shown` values after `preferences.clear()`.
+- Onboarding lives in `:ui-screen-features:authorization`, package
+  `com.grippo.authorization.onboarding` (no separate module).
+  `OnboardingViewModel.prepare()` initializes consent to granted only when
+  onboarding was never shown, then sets the shown flag, then observes the durable
+  value. Its control is the shared `Check` (`components/OnboardingAnalyticsConsent.kt`);
+  Profile Settings uses `Toggle`.
+- `ApplicationBootstrap` (`shared/.../bootstrap/ApplicationBootstrap.kt`, a class
+  constructed by `Koin.init`) collects `observeAnalyticsConsent().distinctUntilChanged()`
+  on an application-lifetime scope with `retryWhen` backoff (Denied while a read
+  fails) and calls `Analytics.updateCollection`.
+- Core `DefaultAnalytics` (`toolkit/analytics/core/.../internal/`): `queueCapacity = 128`;
+  under `Unknown`/`Denied` an event is discarded with `CollectionDisabled`; a
+  collection or identity change discards the queue (`DiscardedOnPolicyChange`,
+  `DiscardedOnIdentityChange`). `AnalyticsModule` sets
+  `AnalyticsValidationMode.Throw` in debug, so an invalid event throws there, and
+  `Reject` otherwise.
+
 Do not move SDK policy into feature analytics implementations. Core validation
 and transport diagnostics must not expose raw payloads, user inputs or secrets.
 
@@ -79,7 +104,8 @@ For an affected policy/core change, trace: disabled startup → source decision 
 core update → SDK configuration → eligible enqueue/send. Review source-read/write
 failure, revocation, identity change, stale presentation close and worker revision
 checks where affected. Preserve business results, exceptions and cancellation.
-Use permitted checks under CLAUDE.md; do not add test infrastructure by implication.
+Use the permitted checks of the [verification policy](../../../../CLAUDE.md#verification-policy);
+do not add test infrastructure by implication.
 
 Distinguish observation, enqueue, adapter acceptance and remote delivery. Source
 review and compilation establish none of the runtime delivery guarantees. Record

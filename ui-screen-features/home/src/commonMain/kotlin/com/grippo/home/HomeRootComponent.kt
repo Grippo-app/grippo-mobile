@@ -16,14 +16,7 @@ import com.grippo.screen.api.HomeRouter
 public class HomeRootComponent(
     initial: HomeRouter,
     componentContext: ComponentContext,
-    private val toExcludedMuscles: () -> Unit,
-    private val toMissingEquipment: () -> Unit,
-    private val toBody: () -> Unit,
-    private val toExperience: () -> Unit,
-    private val toDebug: () -> Unit,
     private val toTrainings: () -> Unit,
-    private val toSettings: () -> Unit,
-    private val toSocial: () -> Unit,
     private val toGoal: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<HomeRootDirection>(componentContext) {
@@ -41,14 +34,7 @@ public class HomeRootComponent(
     override suspend fun eventListener(direction: HomeRootDirection) {
         when (direction) {
             HomeRootDirection.Back -> close.invoke()
-            HomeRootDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
-            HomeRootDirection.MissingEquipment -> toMissingEquipment.invoke()
-            HomeRootDirection.Body -> toBody.invoke()
-            HomeRootDirection.Experience -> toExperience.invoke()
-            HomeRootDirection.Debug -> toDebug.invoke()
             HomeRootDirection.Trainings -> toTrainings.invoke()
-            HomeRootDirection.Settings -> toSettings.invoke()
-            HomeRootDirection.Social -> toSocial.invoke()
             HomeRootDirection.Goal -> toGoal.invoke()
         }
     }
@@ -73,14 +59,7 @@ public class HomeRootComponent(
             is HomeRouter.Home -> Child.Home(
                 HomeComponent(
                     componentContext = context,
-                    toExcludedMuscles = viewModel::toExcludedMuscles,
-                    toMissingEquipment = viewModel::toMissingEquipment,
-                    toBody = viewModel::toBody,
-                    toExperience = viewModel::toExperience,
-                    toDebug = viewModel::toDebug,
                     toTrainings = viewModel::toTrainings,
-                    toSettings = viewModel::toSettings,
-                    toSocial = viewModel::toSocial,
                     toGoal = viewModel::toGoal,
                     back = viewModel::onBack
                 ),

@@ -183,10 +183,10 @@ internal class TrainingExerciseViewModel(
         analytics.trackEvent(TrainingEvent.Exercise.ExampleOpened)
         val exampleId = state.value.exercise.exerciseExample.id
         val title = UiText.Res(Res.string.change_btn)
-        val dialog = DialogConfig.ExerciseExample(
+        val dialog = DialogConfig.ExerciseExampleDetails(
             title = UiText.Res(Res.string.exercise_details_btn),
             id = exampleId,
-            mode = DialogConfig.ExerciseExample.Mode.Action(
+            mode = DialogConfig.ExerciseExampleDetails.Mode.Action(
                 title = title,
                 onClick = { navigation -> showExerciseLibrary(navigation, exampleId) },
             ),

@@ -60,13 +60,6 @@ private fun SystemBarsIcons() {
     val view = LocalView.current
     val darkTheme = isSystemInDarkTheme()
 
-    // Local helper inlined inside the composable (no top-level function)
-    tailrec fun Context.findActivity(): Activity? = when (this) {
-        is Activity -> this
-        is ContextWrapper -> baseContext.findActivity()
-        else -> null
-    }
-
     val activity = view.context.findActivity() ?: return
     val window = activity.window
     val controller = WindowCompat.getInsetsController(window, view)
@@ -84,4 +77,10 @@ private fun SystemBarsIcons() {
             controller.isAppearanceLightNavigationBars = prevNav
         }
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

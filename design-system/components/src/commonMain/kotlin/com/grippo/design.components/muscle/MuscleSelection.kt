@@ -23,6 +23,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.muscles.stubMuscleGroup
@@ -36,6 +37,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 /** Fixed group illustration and tabs above an independently scrolling muscle list. */
@@ -63,16 +65,18 @@ public fun MuscleSelection(
         bottom = bottom,
         content = { containerModifier, resolvedPadding ->
             BoxWithConstraints(
-                modifier = containerModifier.fillMaxSize().padding(resolvedPadding)
+                modifier = containerModifier.fillMaxSize()
             ) {
+                val availableHeight = (maxHeight - resolvedPadding.calculateBottomPadding())
+                    .coerceAtLeast(0.dp)
                 val availableHeroHeight = (
-                    maxHeight - AppTokens.dp.segment.outline.height -
+                    availableHeight - AppTokens.dp.segment.outline.height -
                         AppTokens.dp.contentPadding.content * 3 -
                         DividerDefaults.Thickness - AppTokens.dp.muscleSelection.listMinHeight
                     ).coerceAtLeast(AppTokens.dp.muscleSelection.heroMinHeight)
                 val heroSize = minOf(
                     maxWidth,
-                    maxHeight * AppTokens.dp.muscleSelection.heroHeightFraction,
+                    availableHeight * AppTokens.dp.muscleSelection.heroHeightFraction,
                     AppTokens.dp.muscleSelection.heroMaxHeight,
                     availableHeroHeight
                 )
@@ -108,7 +112,8 @@ public fun MuscleSelection(
                             contentPadding = PaddingValues(
                                 start = AppTokens.dp.screen.horizontalPadding,
                                 end = AppTokens.dp.screen.horizontalPadding,
-                                top = AppTokens.dp.contentPadding.content
+                                top = AppTokens.dp.contentPadding.content,
+                                bottom = resolvedPadding.calculateBottomPadding()
                             )
                         ) {
                             items(
@@ -141,6 +146,22 @@ private fun MuscleSelectionPreview() {
             groups = groups,
             selectedGroupId = groups.first().id,
             selectedMuscleIds = groups.first().muscles.map { it.value.id }.toPersistentList(),
+            onGroupSelect = {},
+            onMuscleSelect = {},
+            bottom = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleSelectionEmptyPreview() {
+    PreviewContainer {
+        MuscleSelection(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            groups = persistentListOf(),
+            selectedGroupId = null,
+            selectedMuscleIds = persistentListOf(),
             onGroupSelect = {},
             onMuscleSelect = {},
             bottom = {}

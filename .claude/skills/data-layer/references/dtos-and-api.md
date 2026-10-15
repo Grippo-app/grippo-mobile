@@ -1,23 +1,51 @@
 # Grippo API and DTO rules
 
 Source: `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/GrippoApi.kt`
-and its sibling `dto/`. The flat GrippoApi owns one public method per existing backend operation.
-Use its existing private request helper; do not split the API into subgroup services.
+and its sibling `dto/`. The flat `GrippoApi` owns one public method per existing backend operation:
+32 `public suspend fun ...: Result<T>` today, grouped by three-line `/* * Auth service * */`-style
+section comments (Auth, Push token, User, Muscle, Equipment, Weight history, Goal, Trainings,
+Exercise examples, Utilities). Use its private `request` helper; do not split the API into
+subgroup services. Transport is described in [backend transport](backend-client.md).
 
-All DTO fields — response, request body and collections — use nullable types, default `= null`
-and explicit `@SerialName` matching the exact wire key. Kotlin property names may differ:
-`@SerialName("created_at") val createdAt: String? = null` preserves the contract.
+`request(method, path, body, queryParams)` calls `BackendClient.invoke` and `response.body<T>()`
+inside one `try`: it rethrows `CancellationException`, maps every other `Exception` (including the
+`AppError` thrown by the shared validator) to `Result.failure`, and lets `Error` propagate. A
+repository therefore receives validated HTTP failures as `Result.failure(AppError.Network...)`.
 
-Collection property nullability does not prescribe element nullability. MUST use element types
-from the verified backend contract. MUST validate/compose server-required values in the owning
-domain operation before sending. Nullable Kotlin types do not permit missing required values.
-MUST distinguish omitted, explicit null and empty according to the contract and current Json
-configuration; serializer behavior MUST NOT change silently.
+All DTO fields - response, request body and collections - use nullable types, default `= null`
+and explicit `@SerialName` matching the exact wire key (202 of 202 properties today). Kotlin
+property names may differ: `@SerialName("created_at") val createdAt: String? = null` preserves the contract.
+
+## Omitted versus explicit null
+
+The shared `Json` (`toolkit/serialization/.../SerializationModule.kt`, injected into
+`BackendClient`) sets `useAlternativeNames = false`, `ignoreUnknownKeys = true`, `isLenient = true`
+and `prettyPrint = true`, and keeps the library defaults `encodeDefaults = false` and
+`explicitNulls = true`. Consequences:
+
+- A nullable request property left at its `null` default is omitted from the request body.
+- A property annotated `@EncodeDefault(EncodeDefault.Mode.ALWAYS)` is written as explicit `null`.
+  That is the convention for fields the backend must receive even when empty: 34 properties in 11
+  `*Body` files carry it (`dto/training/TrainingBody.kt` annotates every field; `SetGoalBody`
+  annotates only `primaryGoal`). Decide per field from the verified contract, never per file:
+  a `null` that carries meaning for the server (clear/reset a value) is encoded `ALWAYS`; a
+  `null` that means "unchanged" or "not provided" is left to be omitted.
+- Reading ignores unknown keys and accepts lenient JSON.
+
+Changing the serializer configuration changes every endpoint and is scope expansion.
+
+Collection property nullability does not prescribe element nullability: use element types from the
+verified backend contract. Validate/compose server-required values in the owning domain operation
+before sending; nullable Kotlin types do not permit missing required values.
 
 DTOs contain no business logic. Wire dictionaries remain raw strings, dates raw strings and
 durations numeric; the mapper promotes them to domain types. Use an existing area file pattern
-and avoid duplicating types. Existing non-null bodies/collections are deviations to address only
-when authorized, not examples overriding the standard.
+and avoid duplicating types.
+
+Quirks to keep until a wire task covers them: `updateWeightHistory(value)` posts a
+`WeightHistoryResponse(weight = value)` as its body; `updateTraining(id, body)` is `PUT /trainings`
+with `id` as a query parameter; `getRecentExercisesByExampleId`/`getAchievementsByExampleId` use
+`exercise-metrics/exercise-example/{id}/...` paths without the leading `/` the other paths have.
 
 For DTO/API changes MUST apply the canonical
 [backend evidence trigger](../../backend-contract-client/SKILL.md#evidence-trigger-canonical).

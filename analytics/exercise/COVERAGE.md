@@ -14,7 +14,7 @@ Scope: `:ui-dialog-features:exercise`, reviewed 2026-10-13.
 | Route / rendered surface | Component → VM | Presentation classification |
 |---|---|---|
 | DialogConfig.Exercise → dialog content child → ExerciseScreen | ExerciseComponent → ExerciseViewModel | Read-only runtime overlay; default null screenPresentation. No independent screen or separate dialog presentation contract. |
-| ShowExampleDetails → host pushes DialogConfig.ExerciseExample | Existing ExerciseExampleComponent / VM | Nested runtime overlay outside this instrumentation scope; no new presentation contract. |
+| ShowExampleDetails → host pushes DialogConfig.ExerciseExampleDetails | Existing ExerciseExampleDetailsComponent / VM | Nested runtime overlay outside this instrumentation scope; no new presentation contract. |
 
 Both ordinary and nested exercise entries use the same host factory. The existing
 Component resolves ExerciseAnalytics in its retainedInstance factory. Shared

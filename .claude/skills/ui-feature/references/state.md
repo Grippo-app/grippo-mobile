@@ -37,7 +37,7 @@ Usage in state: `val title: UiText = UiText.Res(Res.string.foo)`; with args `UiT
 
 ## `*FormatState` — form-field state
 
-Form fields (email, password, amount, date) are **sealed `*FormatState`** classes with `Empty`/`Invalid`/`Valid` subtypes. Concrete `*FormatState` types are `@Immutable @Serializable`; permitted nonsecret fields can cross serialized route or business-draft boundaries. Using one in a live dialog does not restore the dialog session.
+Form fields (email, password, weight, date) are **sealed `*FormatState`** classes with `Empty`/`Invalid`/`Valid` subtypes. Concrete `*FormatState` types are `@Immutable @Serializable`; permitted nonsecret fields can cross serialized route or business-draft boundaries. Using one in a live dialog does not restore the dialog session.
 
 Serialization support is not permission to persist secrets. PasswordFormatState
 may remain in runtime VM state, but password fields are `@Transient` with Empty
@@ -61,7 +61,7 @@ Each concrete type has three subtypes (`Valid`/`Invalid`/`Empty`), `@Immutable @
 - **`Invalid`** — malformed (not a number) **or** out of range.
 - **`Empty`** — blank input, distinct from `Invalid("")`. Numeric formatters also collapse literal `0` to `Empty`.
 
-Example (`AmountFormatState : FormatState<Double>`) has `abstract val unit: String?` and a companion with `AmountLimitation: ClosedFloatingPointRange<Double>`, `of(display, unit)`, `of(value, unit)`.
+Example: `WeightFormatState : FormatState<Float>` has a companion with `WeightLimitation: ClosedFloatingPointRange<Float>` (`30.0f..150.0f`), `of(display: String)` and `of(value: Float?)`; both normalize to one decimal and collapse `0` to `Empty()`.
 
 ### Factories
 
@@ -72,20 +72,35 @@ Factories vary per type (not every formatter exposes both). Date types take a `r
 
 ### Standard types
 
+Fifteen concrete `*FormatState` sealed classes exist in `:ui-core:state`
+(`core/state/formatters/`), all `@Immutable @Serializable`; inspect the file for
+the exact factories:
+
 - **`EmailFormatState : FormatState<String>`** — `of(value: String?)`; regex-validated.
 - **`PasswordFormatState : FormatState<String>`** — `of(display: String)`; `@Composable fun hint(): String` (localized hint matching the active rule).
+- **`NameFormatState : FormatState<String>`** — `NameLimitation: IntRange = 1..60`; `of(display: String)`.
+- **`WeightFormatState : FormatState<Float>`** — `WeightLimitation` 30..150, one decimal; `of(display)`, `of(value: Float?)`.
+- **`HeightFormatState : FormatState<Int>`** — `HeightLimitation: IntRange = 100..250`; `of(display)`, `of(value: Int)`.
+- **`VolumeFormatState : FormatState<Float>`** — one decimal; `of(display)`, `of(value: Float?)`.
+- **`DurationFormatState : FormatState<Duration>`** — `DurationLimitation: ClosedRange<Duration>`; `of(display)`, `of(value: Duration?)`.
+- **`RepetitionsFormatState : FormatState<Int>`** — `of(display)`, `of(value: Int)`; `@Composable fun hint(): String`.
+- **`PercentageFormatState : FormatState<Int>`** — `of(display)`, `of(value: Int)`.
+- **`IntensityFormatState : FormatState<Float>`** — `of(value: Float)`.
+- **`MultiplierFormatState : FormatState<Float>`** — `of(value: Float?)`.
+- **`DensityFormatState : FormatState<Float>`** — `of(value: Float?)`.
 - **`DateFormatState : FormatState<LocalDate>`** — `abstract val format: DateFormat.DateOnly`; `of(value: LocalDate?, range: DateRange, format: DateFormat.DateOnly)`.
+- **`DateTimeFormatState : FormatState<LocalDateTime>`** — `abstract val format: DateFormat`; `of(value: LocalDateTime?, range: DateRange, format: DateFormat)`.
 - **`DateRangeFormatState : FormatState<DateRange>`** — `abstract val kind: DateRangeKind`; `fun label(): UiText?` ("Last 30 days"); `of(range)`, `of(kind)`, `of(from, to)`.
-- **`DateTimeFormatState : FormatState<LocalDateTime>`** — `abstract val format: DateFormat`; `of(value, range, format)`.
-- **`NameFormatState : FormatState<String>`** — `NameLimitation: IntRange  // 1..60`; `of(display: String)`.
+
+A generic "amount" field reuses the unit-specific formatter above that matches it.
 
 ### Usage
 
-State: `val amount: AmountFormatState = AmountFormatState.Empty()`, `val due: DateFormatState = DateFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy)`.
+State: `val weight: WeightFormatState = WeightFormatState.Empty()`, `val due: DateFormatState = DateFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy)`.
 
-ViewModel: `update { it.copy(amount = AmountFormatState.of(raw)) }`; read the parsed value via `(state.value.amount as? AmountFormatState.Valid)?.value ?: return` (the `as? Valid` cast is canonical; no-op if not valid).
+ViewModel: `update { it.copy(weight = WeightFormatState.of(raw)) }`; read the parsed value via `(state.value.weight as? WeightFormatState.Valid)?.value ?: return` (the `as? Valid` cast is canonical; no-op if not valid).
 
-Compose: feed `value = state.amount` to the input; compute button enablement from `state.amount is AmountFormatState.Valid`.
+Compose: feed `value = state.weight` to the input; compute button enablement from `state.weight is WeightFormatState.Valid`.
 
 `display` + `value` preserve the current formatter state, including invalid or
 empty input, rather than reconstructing it from only a valid value. Display policy
@@ -102,7 +117,7 @@ Rules: reuse a suitable existing `*FormatState`. Add a formatter only when the f
 needs genuinely different parsing, validation or display semantics, not merely
 because it belongs to another screen; absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path for supplied values (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
 
-Anti-patterns: `String` for an email/password/amount field; `Double?` for an amount (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
+Anti-patterns: `String` for an email/password/weight field; `Float?` for a weight (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
 
 ## State conventions
 
@@ -116,7 +131,7 @@ internal data class FooState(
 
 Rules (MUST):
 1. **`@Immutable`** on the class.
-2. **`internal data class`** by default (`public` only for cross-module state in `:ui-core:state`).
+2. **`internal data class`** by default. `public` for cross-module state in `:ui-core:state` and for the State of a public entry Component (feature roots and dialogs expose `viewModel`, whose `state`/`loaders`/`navigator` make State, Loader and Direction public; the Contract stays `internal`).
 3. **`val` only** — no `var`.
 4. **Meaningful initial state** — constructor defaults MAY represent valid empty/loading/input values. Pass required data explicitly through the existing initialState/route boundary; MUST NOT invent empty IDs or placeholder business data just to enable `FooState()`. Shared models do not require a no-argument constructor. No `companion object Empty` snapshot (the companion stays for thresholds/derived helpers/shared constants only).
 5. **Field order**: required first, optional last; primitives last (or grouped by domain).
@@ -144,7 +159,9 @@ the ViewModel. Store actual draft values and needed display data; follow the
 ### Nullability
 
 `UiText?` for optional description; reuse suitable `*FormatState` subtypes for validated/formatted fields; plain
-nonsecret free text without formatting/validation may remain String; nullable domain refs when optional (`val user: User? = null`).
+nonsecret free text without formatting/validation may remain String (a server length limit becomes a formatter only once the contract states it); nullable domain refs when optional (`val user: User? = null`).
+
+A formatter *fits* an input when its unit, range and precision match the field. When the nearest formatter does not fit (for example a seconds-precision duration against the minute-precision `DurationFormatState`), hold the typed value in State and add a sibling formatter only for a real validation/display need; do not widen a shared formatter's contract for one screen.
 
 ### Sealed-interface states
 

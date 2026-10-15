@@ -81,6 +81,9 @@ Desktop.ini
 **/androidMain/generated/
 **/jsMain/generated/
 **/schemas/
+# Room exported schemas are tracked: migrations are written against the previous version
+!data-services/database/schemas/
+!data-services/database/schemas/**
 
 # Android release
 androidApp/release/
@@ -97,3 +100,7 @@ androidApp/release/
 .*.swo
 
 /build-logic/convention/bin/
+
+# Claude Code personal settings and agent local memory
+.claude/settings.local.json
+.claude/agent-memory-local/

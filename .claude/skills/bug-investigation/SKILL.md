@@ -1,0 +1,82 @@
+---
+name: bug-investigation
+description: Investigate and fix a reported Grippo defect - capture the report, reproduce on emulator/simulator, trace through the MVI/data/network/persistence layers with the app's logs, state the root cause with evidence, fix at the owning layer under its skill, and re-run the reproduction. Use for any bug report, crash, wrong data, broken navigation, lost draft or failed request.
+---
+
+# Bug investigation
+
+A fix without a reproduced root cause is a guess. This skill turns a report into
+evidence, evidence into an owner, and the fix into a verified change.
+
+## 1. Capture the report
+
+Record, in the reply as you go: symptom, exact steps, platform and OS version,
+build/revision, account state (logged in, fresh install, restored), logs,
+screenshots or Crashlytics stack if the user supplied them. Ask only for a fact
+that blocks reproduction; otherwise proceed with the most likely reading and
+say which.
+
+## 2. Reproduce
+
+Use [runtime-verification](../runtime-verification/SKILL.md) on the platform
+named in the report (both when unknown). Capture the failing state with a
+screenshot and the log window. Running the app needs the user's permission
+(verification policy); without it, trace the source path instead and label the
+root cause as source-inferred.
+
+## 3. Locate the owner
+
+Trace the surface to its code, layer by layer, and check the usual suspects:
+
+| Layer | Inspect | Usual suspects |
+|---|---|---|
+| Screen / Contract | `*Screen.kt`, `components/` | wrong state branch rendered, callback not wired, loader never shown |
+| ViewModel | `*ViewModel.kt` | `update` lost by capturing `state.value` before a suspend; `Flow.safeLaunch` paused off-screen (1 s grace); result not unwrapped with `getOrThrow()`; navigation collapsed by the conflated channel |
+| Component / navigation | `*Component.kt`, `screen-api` routers, `RootComponent` | Direction branch missing; callback not threaded through `createChild`; result key mismatch; non-serializable route payload |
+| Dialogs | `DialogConfig`, `DialogContentComponent`, `DialogViewModel` | `hasSameContentAs` rejecting a legitimate re-open; `onResult` on a stale step; session closed by a second `open` |
+| Drafts / restoration | `DRAFT` `PersistenceKey`, `@Transient` fields, `ApplicationStateStore.swift` | field not serialized, default recomputed on restore, archive format mismatch, data-backed observer overwriting the draft |
+| Error pipeline | `BaseViewModel.sendError`, `ErrorProviderImpl`, `AppError` | wrong `AppError` mapping, `mapError` hiding the original, `onError` expected to run immediately |
+| Domain / repository | `*FeatureImpl`, `*RepositoryImpl`, `operation-outcomes` rules | cache written before server success, range reconciliation deleting rows, partial hydration treated as success |
+| Network | `BackendClient`, `TokenProvider`, `ResponseValidator` | 4xx mapped to `Expected`, refresh retry/timeout path (timeout is a cancellation, tokens kept), missing `@EncodeDefault` so a field is omitted, wrong `@SerialName` |
+| Mapping | `data-mappers/*` | `[MAPPING] ... is null` lines in the log: a required field dropped the row |
+| Persistence | Room entities, DAOs, `DatabaseMigrations.all` | migration missing for a schema delta (destructive fallback wiped data), UTC conversion, foreign-key cascade |
+| Platform | `expect`/`actual`, shells, permissions, notifications | Android-only or iOS-only actual, manifest permission missing, launch mode for deeplink delivery |
+
+Logs: `AppLogger` categories `General` (errors), `Navigation`, `Network`,
+`Mapping` in logcat / simulator log stream and in the app log file; the in-app
+Debug screen shows the same file by category.
+
+Known trade-offs that are not bugs: conflated navigation may drop rapid-fire
+Directions; dialog sessions are never restored after process death; the
+destructive migration fallback is intentional, so a missing migration drops
+local data by design; `AppLogger` dispatches in release builds.
+
+## 4. State the root cause
+
+One paragraph: the trigger, the code path (`path:line`), why the behavior
+follows from it, and the evidence (log line, screenshot, failing step). If two
+causes are plausible, say which evidence separates them and gather it before
+fixing.
+
+## 5. Fix at the owner
+
+Apply the owning skill for the layer (ui-feature, data-layer, mappers,
+di-modules, design-system, platform-build-toolkit). Fix the cause, not the
+symptom: no local `try/catch`, no retry loops, no restoration flags, no extra
+launches, no guard booleans. A behavior change triggers the analytics and
+preservation gates like any other change. Keep the fix inside authorized scope;
+a defect in a locked decision or a backend contract is a question, not a patch.
+
+## 6. Regression gate
+
+1. Re-run the exact reproduction and show the fixed state with evidence.
+2. Run the default build check and the gates the change triggers.
+3. Request independent review for behavior fixes.
+4. Report the root cause, the fix, what was verified and what remains unverified
+   in the final response format.
+
+## Found in passing
+
+Unrelated defects discovered during the investigation are reported under
+"Найдено попутно" with `path:line` and the trigger; they are not fixed in the
+same task without the user's go-ahead.

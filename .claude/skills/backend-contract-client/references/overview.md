@@ -1,8 +1,17 @@
 # Authoritative contract evidence
 
-Use the available Grippo backend OpenAPI/Swagger or backend route/schema source. Identify revision,
-environment and the exact operation/schema inspected. Do not guess a repository path or credentials;
-locate accessible source or resolve missing evidence with the user.
+No OpenAPI location is configured in this repository: no file, Gradle property or rule names one.
+The evidence source is the OpenAPI/Swagger URL or backend source path the user supplies for the
+task; do not invent one (there is no documented docs path under the production host). The
+read-only `backend-contract-auditor` agent (`.claude/agents/backend-contract-auditor.md`) gathers
+it and reports drift; without a supplied source it reports "evidence unavailable" with the exact
+fact the user must provide. Identify revision, environment and the exact operation/schema
+inspected. Do not guess a repository path or credentials.
+
+The user owns the backend. An explicit chat statement of an operation's method, path, wire keys,
+types, null/omitted/empty semantics and error outcomes is an owner-attested contract: valid
+evidence for the facts it states, recorded verbatim with its date in the report
+([evidence trigger](../SKILL.md#evidence-trigger-canonical)). It never fills gaps by inference.
 
 - OpenAPI establishes declared structure. Backend source establishes the implementation at its
   inspected revision. If they conflict, name the contradiction; do not silently pick whichever fits mobile.

@@ -5,27 +5,13 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal interface HomeRootContract {
     fun onBack()
-    fun toExcludedMuscles()
-    fun toMissingEquipment()
-    fun toExperience()
-    fun toDebug()
     fun toTrainings()
-    fun toSettings()
-    fun toSocial()
-    fun toBody()
     fun toGoal()
 
     @Immutable
     companion object Empty : HomeRootContract {
         override fun onBack() {}
-        override fun toExcludedMuscles() {}
-        override fun toMissingEquipment() {}
-        override fun toExperience() {}
-        override fun toDebug() {}
         override fun toTrainings() {}
-        override fun toSettings() {}
-        override fun toSocial() {}
-        override fun toBody() {}
         override fun toGoal() {}
     }
 }

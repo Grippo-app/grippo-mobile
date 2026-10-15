@@ -24,6 +24,13 @@ edit, build, commit or decide design. Everything you report carries a `path:line
   `ls`, `wc`, `grep`). The Bash guard blocks anything else.
 - No edits, no gradle, no network, no subagents.
 
+## Inputs you must receive
+
+The question to answer (symbol, feature, module or behavior), the directories or
+modules to search when known, and the facts wanted per hit (callers, arguments,
+state branches, hosts). A brief without these is answered for every plausible
+reading, each labelled.
+
 ## Duties
 
 1. Read the brief. It names the question (for example "every production caller of
@@ -41,7 +48,7 @@ edit, build, commit or decide design. Everything you report carries a `path:line
    violation or a deviation from a documented rule, note it as an observation with
    evidence, without judging or proposing a fix.
 
-## Report
+## Report format
 
 Return, in this order:
 

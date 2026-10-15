@@ -16,7 +16,7 @@ Scope: `ui-dialog-features:exercise-example`, reviewed 2026-10-13.
 
 | Route / surface | Component → VM | Presentation classification |
 |---|---|---|
-| `DialogConfig.ExerciseExample`, Default or Action mode; Information and Achievements tabs | ExerciseExampleComponent → ExerciseExampleViewModel | Live overlay; default null screenPresentation, no dedicated dialog presentation contract |
+| `DialogConfig.ExerciseExampleDetails`, Default or Action mode; Information and Achievements tabs | ExerciseExampleDetailsComponent → ExerciseExampleDetailsViewModel | Live overlay; default null screenPresentation, no dedicated dialog presentation contract |
 
 Both modes and tabs render one dialog, including loading and empty states. The
 shared DialogContentComponent also creates it for nested Exercise detail actions.
@@ -53,11 +53,11 @@ achievements, request/response payloads or exception text are encoded.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | Shared dialog host | Session, id, mode/title, action/back callbacks and nested step | Runtime only | Existing retained host; slot/step serializer = null | Ordinary recreation can retain the session; process death closes it |
-| ExerciseExampleViewModel | mode | Runtime only | Existing DialogConfig input | Fresh opening uses supplied mode; no editable draft |
-| ExerciseExampleViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; MuscleLoadingSummaryUseCase | Fresh opening observes current data and recomputes summary |
-| ExerciseExampleViewModel | recent, exerciseVolume, estimatedOneRepMax | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase | Existing startup fetch and mapping |
-| ExerciseExampleViewModel | achievements | Rebuild | ExerciseMetricsFeature | Existing startup fetch and mapping |
-| ExerciseExampleScreen | selected tab and scroll | Runtime only, presentation widget state | Existing rememberSaveable(example id) and rememberScrollState | No business draft; new dialog defaults to Information; existing saveable UI behavior unchanged |
+| ExerciseExampleDetailsViewModel | mode | Runtime only | Existing DialogConfig input | Fresh opening uses supplied mode; no editable draft |
+| ExerciseExampleDetailsViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; MuscleLoadingSummaryUseCase | Fresh opening observes current data and recomputes summary |
+| ExerciseExampleDetailsViewModel | recent, exerciseVolume, estimatedOneRepMax | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase | Existing startup fetch and mapping |
+| ExerciseExampleDetailsViewModel | achievements | Rebuild | ExerciseMetricsFeature | Existing startup fetch and mapping |
+| ExerciseExampleDetailsScreen | selected tab and scroll | Runtime only, presentation widget state | Existing rememberSaveable(example id) and rememberScrollState | No business draft; new dialog defaults to Information; existing saveable UI behavior unchanged |
 | VM/foundation | Loaders, jobs, directions, errors, telemetry provenance | Runtime only | Existing foundation ownership | No StateKeeper supplier, secret archive, restoration flag or shadow snapshot added |
 | Calling screen | Any business result of the supplied Action callback | Existing caller owner outside scope | Existing callback | This dialog returns no edited input; caller remains responsible for its own draft |
 

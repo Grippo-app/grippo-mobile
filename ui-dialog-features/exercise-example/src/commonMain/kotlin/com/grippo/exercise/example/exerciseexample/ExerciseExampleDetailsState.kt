@@ -13,29 +13,27 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-public data class ExerciseExampleState(
-    val mode: ExerciseExampleModeState = ExerciseExampleModeState.Default,
+public data class ExerciseExampleDetailsState(
+    val mode: ExerciseExampleDetailsModeState = ExerciseExampleDetailsModeState.Default,
     val example: ExerciseExampleState? = null,
     val muscleLoad: MuscleLoadSummaryState? = null,
     val recent: ImmutableList<ExerciseState> = persistentListOf(),
     val achievements: ImmutableList<AchievementState> = persistentListOf(),
     val estimatedOneRepMax: EstimatedOneRepMaxState? = null,
-
-    // === Exercise volume (bar) ===
     val exerciseVolume: VolumeSeriesState? = null,
 )
 
 @Immutable
-public sealed interface ExerciseExampleModeState {
+public sealed interface ExerciseExampleDetailsModeState {
 
     @Immutable
-    public data object Default : ExerciseExampleModeState
+    public data object Default : ExerciseExampleDetailsModeState
 
     @Immutable
-    public data class Action(val title: UiText) : ExerciseExampleModeState
+    public data class Action(val title: UiText) : ExerciseExampleDetailsModeState
 }
 
-internal fun DialogConfig.ExerciseExample.Mode.toState(): ExerciseExampleModeState = when (this) {
-    DialogConfig.ExerciseExample.Mode.Default -> ExerciseExampleModeState.Default
-    is DialogConfig.ExerciseExample.Mode.Action -> ExerciseExampleModeState.Action(title = title)
+internal fun DialogConfig.ExerciseExampleDetails.Mode.toState(): ExerciseExampleDetailsModeState = when (this) {
+    DialogConfig.ExerciseExampleDetails.Mode.Default -> ExerciseExampleDetailsModeState.Default
+    is DialogConfig.ExerciseExampleDetails.Mode.Action -> ExerciseExampleDetailsModeState.Action(title = title)
 }

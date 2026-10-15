@@ -65,7 +65,7 @@ This project demonstrates:
 - **Shared core**: `shared` (bootstraps DI, wires features)
 - **UI**: `ui-screen-features/*`, `ui-dialog-features/*`, `ui-core/*`, `design-system/*`,
   `compose-libs/*`
-- **Data**: `data-features/*`, `data-services/*` (backend, database, ai-agent, firebase, google-auth), `data-mappers/*`
+- **Data**: `data-features/*`, `data-services/*` (backend, database, datastore, firebase, google-auth, apple-auth), `data-mappers/*`
 - **Toolkit**: `toolkit/*` (http-client, serialization, logger, connectivity, date-utils, theme,
   localization)
 - **Build logic**: `build-logic/*`

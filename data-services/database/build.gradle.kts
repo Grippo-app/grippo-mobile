@@ -14,7 +14,6 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.toolkit.context)
             implementation(projects.toolkit.logger)
-            implementation(projects.uiCore.error.errorProvider)
         }
     }
 }

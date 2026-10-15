@@ -44,7 +44,7 @@ Forgetting `@Serializable` on a subtype crashes at runtime when `kotlinx-seriali
 
 ### 2. All payloads in routes MUST be `@Serializable`
 
-`DateRange`, `StageState`, all `*FormatState`, `DateFormat`, `DateRangeKind` — all **are** `@Serializable` in this project. `UiText` is **not** (`@Stable` only — it wraps a non-serializable `StringResource` plus `ImmutableList<Any>` args), so don't put a `UiText` in a route payload. Carry a serializable identifier and rebuild localized UiText after restoration; a plain String is only for verbatim, nonlocalized text. Keep rebuilt UiText fields transient with defaults in a serialized draft.
+`DateRange`, `StageState` (in `:ui-core:state`, package `com.grippo.core.state.stage`: `Add`, `Edit(id)`, `Draft`), all `*FormatState`, `DateFormat`, `DateRangeKind` — all **are** `@Serializable` in this project. A `ResultKey` field serializes as its address only (`ResultKeySerializer`), so the `Action` protocol it names (`TrainingRouter.Exercise.Action`) is deliberately not `@Serializable`; see [results.md](results.md). `UiText` is **not** (`@Stable` only — it wraps a non-serializable `StringResource` plus `ImmutableList<Any>` args), so don't put a `UiText` in a route payload. Carry a serializable identifier and rebuild localized UiText after restoration; a plain String is only for verbatim, nonlocalized text. Keep rebuilt UiText fields transient with defaults in a serialized draft.
 
 ### 3. No lambdas in route configs
 
@@ -82,18 +82,23 @@ session navigation and result delivery.
 
 ### 5. ViewModel state is NOT restored automatically
 
-`BaseViewModel` does **not** use `SavedStateHandle`. State is rebuilt in `init { }` via re-subscription to data-layer `Flow`s:
+`BaseViewModel` does **not** use `SavedStateHandle`. State is rebuilt in `init { }` via re-subscription to data-layer `Flow`s. The excerpt omits the `analytics.trackOperation` wrapper a real startup load carries:
 
 ```kotlin
 init {
-    notesFeature.observeNotes(state.value.range.from, state.value.range.to)
-        .map { it.toState() }
-        .onEach { items -> update { it.copy(items = items) } }
+    notesFeature.observeNotes(start = state.value.range.from, end = state.value.range.to)
+        .onEach(::provideNotes)
         .safeLaunch()
 
     safeLaunch(loader = NotesListLoader.LoadingNotes) {
-        notesFeature.getNotes(state.value.range.from, state.value.range.to).getOrThrow()
+        notesFeature.getNotes(start = state.value.range.from, end = state.value.range.to).getOrThrow()
     }
+}
+
+private fun provideNotes(value: List<Note>) {
+    val items = value.toState()
+
+    update { it.copy(items = items) }
 }
 ```
 
@@ -110,6 +115,16 @@ when constructing a fresh retained ViewModel, pass it as `initialState`, and
 register the current VM state through saveState. Restore the parent flow's accepted
 data and register its lazy supplier before constructing children that use it. Child ComponentContexts
 have separate StateKeepers, so each screen owns its draft locally.
+
+Orientation (inspect the Components): 17 Components define
+`val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())` in a private
+companion and call `restoreState(DRAFT)` plus `saveState(DRAFT) { viewModel.state.value }`.
+Seven ViewModels take a nullable `initialState` and receive `restoreState(DRAFT)`
+directly; the other ten take a non-null `initialState`, so their Components pass
+`restoreState(DRAFT) ?: <State>(...)`. `PersistenceKey<T : Any>(key, serializer)` is
+a final class with `internal` properties: a feature constructs it and passes it only
+to `restoreState`/`saveState`. Six draft States and `AuthRouter.Onboarding`/`AuthProcess`
+carry `@JsonIgnoreUnknownKeys` because older archives may contain removed fields.
 
 A popped child can be destroyed, discarding its local draft. On re-entry, pass the
 parent flow's already accepted values as ordinary initial business inputs and
@@ -204,7 +219,8 @@ selection even before Next. Do not serialize DialogConfig, callbacks or sessions
 ## iOS specifics
 
 The current app uses one scene (`UIApplicationSupportsMultipleScenes = false`) and
-one lazy root owned by `iosApp/iosApp/AppDeletage.swift`. Keep the existing
+one lazy root owned by `iosApp/iosApp/AppDeletage.swift` (file name carries a typo;
+the class is `AppDelegate`). Keep the existing
 ApplicationLifecycle owner; SwiftUI checkpoint handling does not drive another
 lifecycle or recreate the root on foregrounding.
 
@@ -252,7 +268,8 @@ Verification must distinguish source/codec inspection from actual native shell
 execution. Source review does not prove scene delivery, file protection, generated
 Swift exports or a process restart. Essenty's JVM and iOS state formats differ;
 inspect the actual platform codec rather than assuming the formats are equivalent.
-Use permitted manual save/restart/restoration scenarios and record unrun platform
+Manual save/restart/restoration scenarios follow
+[runtime-verification](../../runtime-verification/SKILL.md); report unrun platform
 checks when builds/runtime are outside the user's scope.
 
 ## What "Don't Keep Activities" checks

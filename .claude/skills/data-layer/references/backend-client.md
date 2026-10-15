@@ -1,14 +1,52 @@
 # Backend transport
 
-Inspect `data-services/backend/.../client/BackendClient.kt`, `ClientLogger.kt`, `TokenProvider.kt`
-and `toolkit/http-client/`. Transport changes require authorization covering network core.
+Source of truth: `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/client/`
+(`BackendClient.kt`, `ClientLogger.kt`, `TokenProvider.kt`), `GrippoApi.kt` beside it and
+`toolkit/http-client/`. Transport changes need the authorized scope to cover network core
+([scope discipline](../../../../CLAUDE.md#scope-discipline)). Inspect the files before relying
+on a detail below.
 
-Keep current HTTP engine, validator, serialization, locale header, timeout and request behavior.
-Do not invent hosts or replace authenticated transport for a feature. Shared HTTP errors are
-translated by the existing validator/parser; business layers retain their declared result contracts.
+## Current shape (verified)
 
-BackendClient uses INFO logging through ClientLogger and AppLogger, including auth requests.
-There is no auth-specific response sanitation or request marker.
-Review actual logging configuration and request paths, not only logger message formatting.
+- `toolkit/http-client` `HttpModule` (`includes = [ContextModule, SerializationModule]`) provides
+  the base `HttpClient`: `NativeContext.driver()` is `HttpClient(OkHttp)` on Android
+  (`PlatformDriver.android.kt`) and `HttpClient(Darwin)` with `setAllowsCellularAccess(true)` on
+  iOS (`PlatformDriver.ios.kt`), configured with the shared `responseValidator(apiErrorParser)`.
+- `BackendClient` (`@Single internal`) derives its client with `httpClient.config { }`:
+  `HttpTimeout` with request, connect and socket timeouts of 10 s; `Logging` at `LogLevel.INFO`
+  through `ClientLogger`; `Auth` with `TokenProvider`; `ContentNegotiation` with the injected
+  shared `Json`; `defaultRequest` with host `grippo-app.com`, `URLProtocol.HTTPS`, JSON content
+  type and `Accept-Language = AppLocale.current()` on every request.
+  `invoke(method, path, body, queryParams): HttpResponse` runs inside `withContext(Dispatchers.IO)`.
+- `ClientLogger` forwards every Ktor log line to `AppLogger.Network`, auth requests included; there
+  is no sanitation and no request marker. Do not widen logging or add bodies
+  ([secrets and configuration](../../platform-build-toolkit/references/secrets-and-config.md)).
+- `GrippoApi` is `@Single public class GrippoApi internal constructor(client: BackendClient)` with
+  32 public `suspend fun ...: Result<T>` endpoints and one private `request` helper; its sections,
+  helper semantics and quirks are described in [DTO/API](dtos-and-api.md).
+- `BackendModule` is `@Module(includes = [HttpModule, DatabaseModule, SerializationModule]) @ComponentScan`
+  (`TokenProvider` reads the token DAOs).
 
-Do not change refresh retry/mutex/circuit-breaker behavior without the user's authorized scope.
+## Shared validator (`toolkit/http-client/.../internal/ResponseValidator.kt`)
+
+- `validateResponse`: 2xx passes; 4xx throws `AppError.Network.Expected(keys, title, description)`
+  parsed from the body by `ApiErrorParser`; 5xx throws `AppError.Network.Unexpected` with the
+  default server message; any other status throws `AppError.Network.Unexpected("Unexpected HTTP code: N")`.
+- `handleResponseExceptionWithRequest`: rethrows non-`Exception` throwables and cancellation;
+  passes an `AppError` through; maps `HttpRequestTimeoutException` to `AppError.Network.Timeout`,
+  `JsonConvertException` to `AppError.Network.Unexpected("Invalid server response format.")`
+  (after rethrowing a cancellation or `Error` cause), `IOException` to `AppError.Network.NoInternet`
+  and anything else to `AppError.Network.Unexpected`.
+- The validator runs in Ktor's send hook and is registered before the Auth plugin, so a validated
+  failure surfaces from the request call itself, after any refresh/retry the Auth plugin performed;
+  `GrippoApi.request` stores it as `Result.failure`. `AppError.Network.IncompleteResponse` is
+  raised by repositories, not by transport ([operation outcomes](operation-outcomes.md)).
+
+## Rules
+
+- Keep the engines, validator, serializer, locale header, timeouts and request shape. Do not invent
+  hosts or a second authenticated client for a feature.
+- Business layers receive transport failures unchanged and keep their declared Result or throwing
+  contract; translation to UI belongs to `ErrorProvider`
+  ([UI error pipeline](../../ui-feature/references/error-pipeline.md)).
+- Refresh synchronization, retry and circuit-breaker behavior is owned by [auth session](auth-session.md).

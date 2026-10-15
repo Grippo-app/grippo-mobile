@@ -28,11 +28,13 @@ Very small-device appearance is outside the default design/review scope.
 | [CONSISTENCY.md](../../../design-system/CONSISTENCY.md) | Concrete product role-to-token choices |
 | [illustrations](../illustrations/SKILL.md) | Artwork reference, generation, exports and asset acceptance |
 | [ui-feature](../ui-feature/SKILL.md) | Screen/dialog behavior, navigation and state ownership |
-| [task-orchestrator](../task-orchestrator/SKILL.md#execution-loop), [validation-gates](../validation-gates/SKILL.md) | Execution, independent review and verification policy |
+| [visual evidence](../design-system/references/visual-consistency.md#evidence) | What a render establishes and how visual evidence is reported |
+| [task-orchestrator](../task-orchestrator/SKILL.md#execution-loop), [validation-gates](../validation-gates/SKILL.md) | Execution loop, independent review and completion checks |
 
 The user's request and accepted decisions define scope and override visual
-defaults. Record deliberate departures that affect consistency. Existing source
-establishes behavior and APIs; it does not make every legacy visual choice a rule.
+defaults. State deliberate departures that affect consistency in the brief.
+Existing source establishes behavior and APIs; it does not make every legacy
+visual choice a rule.
 Resolve conflicts at the owning document rather than adding a competing policy.
 
 ## Required workflow
@@ -42,9 +44,13 @@ Resolve conflicts at the owning document rather than adding a competing policy.
    component, token or artwork change.
 2. Complete the usage/state analysis. Use its findings to choose the composition
    and the correct shared or local owner.
-3. Keep a compact brief in the current task record: purpose and next action,
-   usage/state constraints, intended visual treatment, affected owners, accepted
-   departures and planned evidence. No separate report or plan approval is required.
+3. Keep a compact visual brief in the reply, the task report
+   ([records](../../../CLAUDE.md#records)): purpose and next action, usage/state
+   constraints, intended visual treatment, affected owners, accepted departures and
+   planned evidence. A changed role-to-token choice goes to
+   [CONSISTENCY.md](../../../design-system/CONSISTENCY.md); a dated visual-pass
+   record under `docs/records/` only when the user asks. No separate report or plan
+   approval is required.
 4. Read the relevant visual references below and implement through design-system.
    Shared changes include necessary caller migrations; private one-off composition
    stays private. Add a component/style/token only for a demonstrated unmet role.
@@ -78,12 +84,17 @@ or composition is also in scope; a layout edit does not require new artwork.
   existing presentation owners, without business timers or extra requests.
 - Visual work preserves feature behavior unless a behavior change is authorized.
   Assess [analytics](../feature-analytics/SKILL.md) and
-  [state preservation](../state-preservation/SKILL.md) at their owning gates;
-  visual-only changes record impact without inventing events or persisted state.
+  [state preservation](../state-preservation/SKILL.md) at their owning gates; a
+  [visual-only change](../../../CLAUDE.md#definitions) states its impact assessment
+  without inventing events or persisted state.
 
 ## Completion
 
-MUST pass the design acceptance source gate and record which contexts/states were
-rendered or exercised. Compilation and token compliance do not establish visual
-fidelity. Unavailable rendering remains an evidence limit under the canonical
-[verification policy](../../../CLAUDE.md#verification-policy).
+MUST pass [design acceptance](references/workflow-and-review.md#design-acceptance)
+and report which contexts/states were rendered or exercised as
+[visual evidence](../design-system/references/visual-consistency.md#evidence)
+defines. Compilation and token compliance do not establish visual fidelity. Builds
+follow the default build rule in the
+[verification policy](../../../CLAUDE.md#verification-policy); renders on a device
+go through [runtime-verification](../runtime-verification/SKILL.md) when the user
+allows running the app; an unavailable render is reported as an evidence limit.

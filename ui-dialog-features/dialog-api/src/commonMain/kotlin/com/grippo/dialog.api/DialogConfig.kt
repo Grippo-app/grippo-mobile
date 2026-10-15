@@ -29,7 +29,7 @@ public sealed class DialogConfig(
         if (title != other.title) return false
         return when (this) {
             is ErrorDisplay -> other is ErrorDisplay && error == other.error
-            is ExerciseExample -> other is ExerciseExample && id == other.id && mode.hasSameContentAs(other.mode)
+            is ExerciseExampleDetails -> other is ExerciseExampleDetails && id == other.id && mode.hasSameContentAs(other.mode)
             is Exercise -> other is Exercise && id == other.id
             is MuscleLoadingDetails -> other is MuscleLoadingDetails && range == other.range
             is TrainingStreakDetails -> other is TrainingStreakDetails && range == other.range
@@ -60,9 +60,9 @@ public sealed class DialogConfig(
         }
     }
 
-    private fun ExerciseExample.Mode.hasSameContentAs(other: ExerciseExample.Mode): Boolean = when (this) {
-        ExerciseExample.Mode.Default -> other == ExerciseExample.Mode.Default
-        is ExerciseExample.Mode.Action -> other is ExerciseExample.Mode.Action && title == other.title
+    private fun ExerciseExampleDetails.Mode.hasSameContentAs(other: ExerciseExampleDetails.Mode): Boolean = when (this) {
+        ExerciseExampleDetails.Mode.Default -> other == ExerciseExampleDetails.Mode.Default
+        is ExerciseExampleDetails.Mode.Action -> other is ExerciseExampleDetails.Mode.Action && title == other.title
     }
 
     public data class ErrorDisplay(
@@ -71,7 +71,7 @@ public sealed class DialogConfig(
         val onClose: () -> Unit = {},
     ) : DialogConfig(onDismiss = onClose)
 
-    public data class ExerciseExample(
+    public data class ExerciseExampleDetails(
         public override val title: UiText,
         val id: String,
         val mode: Mode = Mode.Default,

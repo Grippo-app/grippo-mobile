@@ -5,9 +5,8 @@ ViewModels and `ui-core/foundation` BaseComponent/BaseViewModel/ScreenAnalytics.
 
 ## Conventional injection
 
-ViewModel constructor parameters MUST follow the canonical
-[UI constructor order](../../ui-feature/references/mvi-contract.md#nameviewmodelkt):
-caller arguments, analytics, other dependencies, initial State last.
+ViewModel constructor parameters follow the canonical
+[ViewModel layout](../../validation-gates/references/code-style.md#viewmodel-layout).
 
 The Component only constructs its retained ViewModel and resolves dependencies:
 
@@ -34,15 +33,29 @@ internal class LoginViewModel(
 }
 ```
 
-Every independent screen must declare this hook in its owning ViewModel.
-BaseViewModel offers a nullable protected hook with default null for containers. BaseComponent
-calls internal bindScreen(lifecycle) during its existing doOnCreate after the
-retained VM exists, before activation/navigation bridging. This avoids delivering
-an init navigation before its lifecycle is bound. Foundation ScreenAnalytics owns
-the per-binding Initial/Restore flag and presentation close on pause/destroy.
-First activation is Initial, subsequent activations Restore; fresh bindings do
-not restore flow/referrer attribution. Foundation remains API + internal @Single
-implementation discovered by CoreModule.
+Every independent screen must declare this hook in its owning ViewModel. Current
+foundation shape (inspect `ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/`
+before relying on it):
+
+- `BaseViewModel.screenPresentation` is `protected open`, typed
+  `((NavigationReason) -> ScreenPresentation)?`, default null for containers.
+- `BaseViewModel.bindScreen(lifecycle)` is `internal`. `BaseComponent` calls it in
+  `doOnCreate` after the retained VM exists, before `attachActivation` and before
+  it subscribes to `navigator`, so an init navigation is never delivered before
+  the lifecycle is bound.
+- `analytics/ScreenAnalytics` is the public interface; `internal/analytics/ScreenAnalyticsImpl`
+  is `@Single(binds = [ScreenAnalytics::class]) internal`, discovered by `CoreModule`.
+  `bind` fails with `check(lifecycle.state != DESTROYED)`, then subscribes one
+  callback per binding: `onResume` presents with `Initial` the first time and
+  `Restore` afterwards (`hasPresented` lives in that binding, so a fresh binding
+  has no saved provenance and restores no flow/referrer attribution); `onPause`
+  closes the presentation; `onDestroy` runs `onPause()` and unsubscribes.
+  Exceptions thrown by `present`/`close` are swallowed; telemetry never
+  interrupts lifecycle delivery.
+- Adoption today: 59 ViewModels extend `BaseViewModel`; 24 leaf screen VMs
+  override the hook; 12 containers/hosts keep null (Root, Dialog, DialogContent,
+  Auth, AuthProcess, ProfileCreation, HomeRoot, Main, Profile, ExercisesRoot,
+  Training, TrainingsRoot); the 23 dialog VMs keep null under the dialog policy.
 
 Graph/container VMs use null: no binding and no ScreenAnalytics resolution. Do not
 override a graph as a screen just because it owns a router. VM knows neither
@@ -63,7 +76,8 @@ callbacks; they do not justify a container screen_view.
 
 Inventory the actual affected routes and rendered content; do not rely on historical
 counts or missing reports. Record current owners, typed hooks and container reasons
-in the current task/feature record.
+in the feature's `analytics/<feature>/COVERAGE.md`
+([records](../../../../CLAUDE.md#records)), replacing stale rows.
 Dialogs, pickers and overlays do not automatically become screens; their dedicated
 presentation telemetry needs the separate contract described below.
 
@@ -87,9 +101,9 @@ val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
 }
 
 analytics.trackEvent(
-    AuthEvent.Login.InputChanged(CredentialField.Email, InputStatus.Valid)
+    AuthEvent.Login.InputChanged(field = CredentialField.Email, status = InputStatus.Valid)
 )
-analytics.trackEvent(AuthEvent.User.PickerConfirmed(ProfilePicker.Height, status))
+analytics.trackEvent(AuthEvent.User.PickerConfirmed(field = ProfilePicker.Height, status = status))
 ```
 
 The current [LoginUseCase](../../../../data-features/feature-api/src/commonMain/kotlin/com/grippo/data.features.api/authorization/LoginUseCase.kt)

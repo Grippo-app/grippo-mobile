@@ -60,21 +60,23 @@ mark other axes inapplicable only when the affected source supports that conclus
 
 MUST correct source-proven ownership, semantic or behavior defects even when renders
 are unavailable. Missing rendering alone does not establish a cosmetic defect or
-prove its absence; apply the canonical verification policy for completion limits.
+prove its absence; [visual evidence](../../design-system/references/visual-consistency.md#evidence)
+owns how that limit is reported.
 
 ## Review handoff and evidence
 
-Provide the request, brief, changed files, usage/state inventory, accepted departures
-and actual checks, including unrendered groups. Findings identify the role/state,
-trigger, consequence, file/line and smallest correct owner. Distinguish source-proven
-defects, observed render issues and proposals needing visual confirmation; taste
-alone is not a defect. Correct findings and recheck affected groups through the
-canonical execution loop.
+Provide the request, the compact visual brief, changed files, usage/state inventory,
+accepted departures and the evidence list, including unrendered groups. Findings
+identify the role/state, trigger, consequence, file/line and smallest correct owner.
+Distinguish source-proven defects, observed render issues and proposals needing
+visual confirmation; taste alone is not a defect. Correct findings and recheck
+affected groups through the canonical execution loop.
 
-Use [visual review](../../validation-gates/references/visual-review.md) for evidence
-handling and [CLAUDE.md](../../../../CLAUDE.md#verification-policy) for permitted
-checks. Report the visual outcome, affected consumers and useful remaining limits.
-Static renders do not verify live focus, scrolling, gestures or motion.
+What counts as evidence, how it is distinguished and where it is reported is owned
+by [visual evidence](../../design-system/references/visual-consistency.md#evidence).
+Report the visual outcome, affected consumers and remaining limits.
 
-For skill-only edits, review metadata, links, ownership, routing and realistic use
-cases. No application build or app-side fixture is required for documentation.
+Skill-only edits are documentation-only work under the
+[verification policy](../../../../CLAUDE.md#verification-policy): review metadata,
+links, ownership and routing and run the rulebook checker; no application build or
+app-side fixture is required.

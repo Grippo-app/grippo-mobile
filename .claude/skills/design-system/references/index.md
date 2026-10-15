@@ -19,7 +19,7 @@ own implementation constraints. Apply the completion gate in [SKILL.md](../SKILL
 | Image loading and placeholders | [Images](image-loader.md) |
 | Module responsibilities and dependency boundaries | [Modules](design-system-modules.md) |
 | Preview helpers, fixtures and coverage | [Previews](previews.md) |
-| Whole-screen checks and capture handling | [Visual consistency](visual-consistency.md) |
+| Default viewport scope, whole-screen checks and visual evidence | [Visual checks and evidence](visual-consistency.md) |
 
 ## Canonical rules outside this skill
 
@@ -27,7 +27,7 @@ own implementation constraints. Apply the completion gate in [SKILL.md](../SKILL
 |---|---|
 | Visual intent/composition and mandatory usage/state analysis | [brand-design](../../brand-design/SKILL.md) |
 | Product artwork style, generation and asset acceptance | [illustrations](../../illustrations/SKILL.md) |
-| Kotlin style, naming, visibility and existing package conventions | [CLAUDE.md](../../../../CLAUDE.md#code-style-and-naming) |
+| Kotlin style, naming, visibility and existing package conventions | [Code style](../../validation-gates/references/code-style.md) |
 | Compose signatures, stability, state models and side effects | [Compose rules](../../ui-feature/references/compose-rules.md) |
 | Feature extraction and design-system versus compose-libs | [Module ownership](../../ui-feature/references/module-structure.md) |
 | Cross-cut forbidden patterns | [Validation rules](../../validation-gates/references/forbidden-patterns.md) |

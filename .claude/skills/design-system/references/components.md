@@ -6,6 +6,14 @@ Visual creation/changes first pass
 Source owns complete signatures, token paths and callback behavior; this reference
 records component-specific constraints.
 
+Current shape, for orientation: 35 top-level packages under
+`design-system/components/src/commonMain/kotlin/com/grippo/design.components/`:
+achievement, badge, banner, brand, button, cards, chart, chip, datetime, dragdrop,
+empty, equipment, example, frames, illustration, indicators, inputs, konfetti,
+loading, menu, metrics, modifiers, muscle, navigation, segment, selectors, spliter,
+swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
+`EmptyState` composable; the empty-list owner is `IllustratedEmptyState`.
+
 ## Entry points and non-obvious behavior
 
 | Topic | Current source and invariant |
@@ -17,7 +25,7 @@ records component-specific constraints.
 | Dialog title/actions | [BottomSheetToolbar.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/toolbar/BottomSheetToolbar.kt); the shared DialogScreen renders one, dialog bodies MUST NOT add a duplicate |
 | Bottom CTA/insets | [BottomOverlayContainer.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/frames/BottomOverlayContainer.kt); apply its resolved content Modifier and PaddingValues to the scrolling content |
 | Button | [Button.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/button/Button.kt); loading keeps label/icons/width, shimmers, blocks interaction and exposes indeterminate progress |
-| Input | [inputs/](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/inputs/); editable fields accept matching FormatState and raw text callbacks, picker-backed fields use typed selection and onClick |
+| Input | [inputs/](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/inputs/); editable fields accept matching FormatState and raw text callbacks, picker-backed fields use typed selection and onClick; the core `Input` is internal, so a new field kind gets a public `Input*` wrapper here even for a single consumer |
 | Equipment selection | [EquipmentSelection.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/equipment/EquipmentSelection.kt); fixed group tabs and scrolling EquipmentRow list; selection and bottom actions belong to the caller |
 | BannerCard | [BannerCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/banner/BannerCard.kt); Custom tint and surface are supplied by token colors; semantic and disabled surfaces are owned by the themes |
 | Decorative illustration | [Illustration.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/Illustration.kt) and [IllustrationStyle.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/IllustrationStyle.kt); owns token sizes, centering, aspect ratio and Fit; meaningful information stays in localized consumer text |
@@ -34,7 +42,9 @@ records component-specific constraints.
 - [Illustration background](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/IllustrationBackground.kt)
   is the single owner of the warm illustration-region gradient used by brand headers,
   hero blocks, the profile identity header and the loader. Consumers pass their own
-  shape; MUST NOT rebuild the brush from `illustration.backgroundStart/End` inline.
+  shape; MUST NOT rebuild the region fill from `illustration.backgroundStart/End`
+  inline. Accepted exception: `BrandSplash` draws its animated radial glow from the
+  same two colors plus transparent, because it is a glow, not a region fill.
 - [Shared shimmer](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/Shimmer.kt)
   adds highlight only, not skeleton shape/loading semantics. Apply
   it after clip/background; owning component supplies shape/semantics. Opacity

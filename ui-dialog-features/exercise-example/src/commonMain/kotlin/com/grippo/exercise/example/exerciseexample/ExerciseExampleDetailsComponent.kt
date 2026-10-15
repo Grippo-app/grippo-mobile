@@ -8,16 +8,16 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.dialog.api.DialogConfig
 
-public class ExerciseExampleComponent(
+public class ExerciseExampleDetailsComponent(
     componentContext: ComponentContext,
     id: String,
-    mode: DialogConfig.ExerciseExample.Mode,
+    mode: DialogConfig.ExerciseExampleDetails.Mode,
     private val onAction: () -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<ExerciseExampleDirection>(componentContext) {
+) : BaseComponent<ExerciseExampleDetailsDirection>(componentContext) {
 
-    override val viewModel: ExerciseExampleViewModel = componentContext.retainedInstance {
-        ExerciseExampleViewModel(
+    override val viewModel: ExerciseExampleDetailsViewModel = componentContext.retainedInstance {
+        ExerciseExampleDetailsViewModel(
             analytics = getKoin().get(),
             id = id,
             mode = mode.toState(),
@@ -35,10 +35,10 @@ public class ExerciseExampleComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: ExerciseExampleDirection) {
+    override suspend fun eventListener(direction: ExerciseExampleDetailsDirection) {
         when (direction) {
-            ExerciseExampleDirection.Back -> back.invoke()
-            ExerciseExampleDirection.Action -> onAction.invoke()
+            ExerciseExampleDetailsDirection.Back -> back.invoke()
+            ExerciseExampleDetailsDirection.Action -> onAction.invoke()
         }
     }
 
@@ -46,6 +46,6 @@ public class ExerciseExampleComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ExerciseExampleScreen(state.value, loaders.value, viewModel)
+        ExerciseExampleDetailsScreen(state.value, loaders.value, viewModel)
     }
 }

@@ -2,8 +2,9 @@
 
 MUST complete this analysis before creating, visually changing or visually
 reviewing a screen, dialog or component. It also applies to shared visual defaults
-and tokens with unchanged public signatures. Keep the result in the current task
-record; no separate registry, report file or design model is required.
+and tokens with unchanged public signatures. Keep the inventory in the reply, the
+task report ([records](../../../../CLAUDE.md#records)); no separate registry,
+report file or design model is required.
 
 ## 1. Trace all affected uses
 
@@ -24,11 +25,11 @@ record; no separate registry, report file or design model is required.
   scrolling, toolbar/bottom-bar ownership, pinned actions, keyboard and insets
   where relevant.
 
-Equivalent occurrences MAY be grouped only after their actual arguments, role,
-state and host constraints have been inspected. Keep covered source paths
-identifiable. Inspect every unique context; an attractive representative does not
-establish equivalence. Unrelated uses of an unchanged owner remain outside a local
-edit's footprint. Neighboring screens provide context, not automatic redesign scope.
+Inspect every call site once: its arguments, role, state branches and host.
+Afterwards, call sites with identical arguments, role and host may share one
+render; list every grouped path in the inventory so the covered source stays
+identifiable. Unrelated uses of an unchanged owner remain outside a local edit's
+footprint. Neighboring screens provide context, not automatic redesign scope.
 
 ## 2. Derive all applicable states
 
@@ -43,7 +44,7 @@ where source supports them:
 | Content/availability | Initial/loading/refreshing, empty versus filtered/no results, partial/populated, failure/retry, blocked prerequisites, completion; actual inline/dialog feedback ownership |
 | Interaction | Idle/pressed/focused, selected/unselected, enabled/disabled, editable/read-only, valid/invalid, expanded/collapsed, operation loading |
 | Content shape | Long/short localized copy, optional text/icons/actions, missing images/values, zero/large values, counts/units and image proportions |
-| Environment/host | Existing themes and locales at the [standard viewport](../../design-system/references/visual-consistency.md#default-viewport-scope), screen/sheet/nested surface, keyboard, insets, scrolling and platform layout differences; extra device/font scales only when requested |
+| Environment/host | The two AppPreview variants at the [standard viewport](../../design-system/references/visual-consistency.md#default-viewport-scope), screen/sheet/nested surface, keyboard, insets, scrolling and platform layout differences; extra locales, device sizes or font scales only when requested |
 | Transition | First frame, state/content changes, focus/keyboard, loading-to-result/error, retry and return/restoration where supported |
 
 MUST inspect reachable combinations and visual precedence: for example, focused +
@@ -55,7 +56,7 @@ Styling does not add validation, state flags, loading phases or restoration beha
 
 ## 3. Use the findings to choose and verify the design
 
-For each distinct usage/state group, record source paths/host, role and constraints,
+For each distinct usage/state group, list source paths/host, role and constraints,
 applicable states/combinations, the resulting design choice and planned/actual
 source, preview or manual evidence. A few lines suffice for a small edit.
 
@@ -66,17 +67,18 @@ existing explicit style or local composition for a contextual difference. A new
 variant needs a demonstrated unmet role and concrete consumers. Per-screen
 overrides must not conceal a shared default that breaks other callers.
 
-MUST review source for every inventoried use/state and plan permitted visual checks
-for every materially different context, visual state or reachable combination.
-Equivalent cases may share fixtures; a screenshot of every occurrence is not
-required. [Preview rules](../../design-system/references/previews.md) own fixtures;
-[visual consistency](../../design-system/references/visual-consistency.md) owns
-whole-screen, theme and text-layout checks.
+MUST review source for every inventoried use and state; plan renders for the
+[significant states](../../../../CLAUDE.md#definitions) of each group. Grouped
+call sites share fixtures; a screenshot of every occurrence is not required.
+[Preview rules](../../design-system/references/previews.md) own fixtures;
+[visual checks and evidence](../../design-system/references/visual-consistency.md)
+owns whole-screen, theme and text-layout checks and what a render establishes.
 
 ## Source gate
 
 Reconcile final consumers and state branches against the inventory. An uninspected
 discovered consumer, unique context or applicable state leaves this gate incomplete.
-After corrections, recheck affected groups. Unavailable renders are recorded evidence
-limits under the [verification policy](../../../../CLAUDE.md#verification-policy),
-not omitted states or proof of visual success.
+After corrections, recheck affected groups. Unavailable renders are reported as
+evidence limits under
+[visual evidence](../../design-system/references/visual-consistency.md#evidence),
+not as omitted states or proof of visual success.

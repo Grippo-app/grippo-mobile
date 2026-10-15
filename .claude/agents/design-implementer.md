@@ -5,7 +5,10 @@ model: inherit
 color: orange
 tools: Read, Grep, Glob, Edit, Write, Bash
 disallowedTools: mcp__*, Agent, NotebookEdit
-skills: design-system, brand-design, illustrations
+skills:
+  - design-system
+  - brand-design
+  - illustrations
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -23,8 +26,9 @@ the usage/state inventory as your acceptance criteria.
 ## Rights
 
 - Edit files inside the ownership list (typically `design-system/**`, a feature's
-  `*Screen.kt` and `components/` when the brief includes them,
-  `design-system/CONSISTENCY.md` for a changed role-to-token choice). Run scoped
+  `*Screen.kt` and `components/` when the brief includes them;
+  `design-system/CONSISTENCY.md` only when the brief grants it - by default the
+  main session records a changed role-to-token choice). Run scoped
   gradle targets when authorized. The guard blocks git mutations, `clean` and
   aggregate tasks.
 - No commits, no scope expansion, no subagents. Generation of new artwork is

@@ -1,133 +1,123 @@
 ---
 name: validation-gates
-description: Review a Grippo change against requirements, architecture, privacy, lifecycle, analytics coverage and state preservation before completion. Use for a diff review or implementation completion; source/manual checks and authorized builds replace no semantic gate.
+description: Review a Grippo change against the request, architecture, forbidden patterns, code style, privacy, lifecycle and the owning skills' gates, decide completion and write the final reply in the project format. Use for every diff review and every completion; owns forbidden patterns, code style, scope questions and the final response format.
 ---
 
 # Validation and review
 
-Read [project conventions](../../../CLAUDE.md), the user's accepted scope and the
-actual change set. A review needs an identifiable outcome and footprint; recover
-these from the request/source before asking for missing information.
+Read [CLAUDE.md](../../../CLAUDE.md), the user's accepted scope and the actual
+change set (`git diff`, `git status`). A review needs an identifiable outcome and
+footprint; recover them from the request and the source before asking.
 
 ## Mandatory review
 
-1. MUST trace each requested outcome to actual code and callers. Review happy paths,
-   rejected inputs, empty/nullable data, failure, cancellation and lifecycle edges
-   relevant to the change. Do not infer runtime success from a keyword scan.
-2. Apply [forbidden patterns](references/forbidden-patterns.md) and the owning
-   skill's semantic completion gate. Review correctness, simplicity, dependencies,
-   privacy and work done in frequently called paths.
-3. Feature behavior changes require [analytics](../feature-analytics/SKILL.md):
-   actual route/surface → Component → VM → screen identity → hook coverage, eligible
-   callbacks, complete-operation results/errors and explicit event omissions.
-   Independent screens MUST have exactly one screenPresentation; containers MUST keep null.
-   Missing/wrong hooks and duplicate views block completion; an omission cannot waive them.
-   Operational analytics work also MUST pass the owning
-   [live admin synchronization gate](../feature-analytics/references/admin-sync.md).
-   Verify the browser access attempt or concrete user request, correct property and
-   affected streams, code/release-to-admin mapping, dependency-safe cleanup and
-   re-opened saved settings or authorized live API/read-back evidence, under the
-   owning gate's access alternatives. Configuration, actual delivery and legacy history are
-   separate verification results. Apply its editorial/review-only scope exceptions.
-4. Feature changes require [preservation](../state-preservation/SKILL.md): actual
-   input/selection/filter/parent owners, saved drafts, rebuilt sources, secret/runtime
-   exclusions, fresh restoration wiring and no shadow flags/caches. Dialog sessions
-   remain unsaved; accepted results belong to the screen's draft. No-state changes
-   need an impact assessment only.
-5. UI/design work compares real consumers and declared design states through
-   [visual review](references/visual-review.md). Source compliance does not prove
-   rendered fidelity; note states/platforms that could not be inspected.
-   New or visually changed product UI and visual UI reviews MUST also pass
-   [brand-design acceptance](../brand-design/SKILL.md#completion) for composition,
-   role-based emphasis and consistency, alongside design-system implementation gates.
-   Product artwork MUST also pass the owning
-   [illustration completion gate](../illustrations/SKILL.md#completion): review the
-   exported asset against the canonical style reference, not only generator output.
-   Apply whole-screen checks only when a consumer is within scope.
-6. Review real source/diff and run checks within the user's authorization. Builds
-   prove compilation; static checks do not prove native lifecycle, SDK delivery,
-   generated DI runtime or restoration. MUST follow the canonical
-   [verification policy](../../../CLAUDE.md#verification-policy). Builds needed within
-   task scope do not require separate consent.
+1. Trace each requested outcome to code and callers. Review the happy path,
+   rejected input, empty/nullable data, failure, cancellation and lifecycle edges
+   relevant to the change. A keyword scan is not a review.
+2. Apply [forbidden patterns](references/forbidden-patterns.md) and
+   [code style](references/code-style.md), then the owning skill's completion gate
+   ([skills index](../../../CLAUDE.md#skills-index)). Review correctness,
+   simplicity, dependency direction, privacy and work done in frequently called paths.
+3. A behavior change passes the [analytics screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate)
+   (every independent screen has exactly one `screenPresentation`; containers keep
+   `null`; typed facts only) and the [preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
+   The [admin synchronization gate](../feature-analytics/references/admin-sync.md)
+   applies under the trigger it owns; missing admin access leaves that task
+   unfinished, not merely unverified.
+4. A visual change passes [brand-design acceptance](../brand-design/references/workflow-and-review.md#design-acceptance)
+   and the design-system gates; artwork passes the
+   [illustration completion gate](../illustrations/SKILL.md#completion). Evidence
+   handling is owned by [visual consistency](../design-system/references/visual-consistency.md).
+5. Checks follow the [verification policy](../../../CLAUDE.md#verification-policy):
+   an available, authorized check must have run; compilation proves no runtime,
+   visual or restoration behavior.
 
-## Findings and review loop
+## Findings
 
-Report file/line, concrete trigger, consequence and required correction. Severity:
-blocking (incorrect behavior, broken contract, privacy leak or mandatory gate),
-nonblocking suggestion, or cosmetic nit. Preserve useful evidence from multiple
-reviewers; route a shared defect once, at its highest justified severity.
+Report `path:line`, the concrete trigger, the consequence and the required
+correction at its real owner. Severity:
 
-MUST apply the canonical [execution/review loop](../task-orchestrator/SKILL.md#execution-loop)
-for self-review, required independent review, authorized delegation and recurring
-findings. An explicit user decision to retain a known behavior closes that finding
-as an accepted risk, not a fix or PASS. Record its trigger and consequence; silence
-is not acceptance and cannot waive unrelated mandatory coverage gates.
+- **blocking** - incorrect behavior, broken contract, privacy leak, forbidden
+  pattern, or a mandatory gate not met;
+- **suggestion** - a real improvement that does not block completion;
+- **nit** - cosmetic.
 
-## Completion record
+A deviation from [code style](references/code-style.md) in changed lines is at
+least a suggestion; it is blocking when [forbidden patterns](references/forbidden-patterns.md)
+names it.
 
-Record reviewed scope, unresolved findings, actual checks/results and unverified
-runtime/platform behavior. No missing input or unrun check is a PASS. An unavailable
-runtime/build check alone does not block completion after the required source gate,
-provided its limitation is explicit and no unaccepted source defect remains.
-For scope decisions use [when to ask](references/when-to-stop-and-ask.md).
+A defect reported twice is routed once at its highest justified severity. A
+behavior the user explicitly kept is an accepted risk with its trigger and
+consequence recorded; it is neither a fix nor a pass. Silence is not acceptance
+and cannot waive a mandatory gate. The fix-and-re-review loop and the recurring
+findings policy are owned by [task-orchestrator](../task-orchestrator/SKILL.md).
+
+## Completion
+
+The [definition of done](../../../CLAUDE.md#definition-of-done) decides.
+Record the reviewed scope, unresolved findings, actual checks with results and
+the unverified runtime/platform behavior. An unrun check is never a pass. For
+scope decisions use [when to stop and ask](references/when-to-stop-and-ask.md).
 
 ## Final response format
 
-Unless the user requests another format, task completion replies MUST be concise
-but informative, in plain Russian, structured as lists under bold section labels.
-No tables. Give each meaningful result enough detail to understand what changed
-and why: usually 1–2 short sentences per item. Include concrete scope/counts or a
-before/after example when useful. Avoid vague claims such as "fixed everything".
-Use only status emojis: ✅ completed/verified, ⚠️ partial completion, deviation or
-unverified check, ❌ blocker or requested work left undone. Use them on the overall status line and status list
-items, not section headings or layer names; location lists and question options
-need no emoji.
+This format applies to the main session's reply to the user. Subagents report in
+the format their definition prescribes; tables belong in record files, not in the
+reply. A verifier's evidence table (scenario / expected / observed / screenshot)
+is summarized as a list in "Проверено", with the screenshot paths named; the
+table itself stays in the agent's report in the session transcript.
 
-MUST start with one overall status line: ✅ **Задача завершена**,
+Unless the user asks for another format, a completion reply is concise but
+informative, in plain Russian, structured as lists under bold section labels.
+No tables. Each meaningful item gets enough detail to understand what changed and
+why: usually one or two short sentences, with concrete counts or a before/after
+example when useful. No vague claims such as "fixed everything". Status emojis
+only: ✅ completed/verified, ⚠️ partial, deviation or unverified check, ❌ blocker
+or requested work left undone - on the overall status line and status items, not
+on section headings; location lists and question options carry no emoji.
+
+Start with one overall status line: ✅ **Задача завершена**,
 ⚠️ **Завершена частично — <missing requested outcome>**, or
-❌ **Задача заблокирована — <specific blocker>**. Choose by requested outcomes,
-not effort or number of checks. An unrun runtime check alone does not mean partial
-completion; describe it under Не проверено. Immediately below the status, state
-any limitation that materially affects use of the result or a required decision.
-Keep ordinary verification limits in their section; do not repeat the same warning.
-If all useful remaining work depends on an unresolved external condition or user
-decision, use blocked even when a portion is ready. Partial means some requested
-outcomes are ready and useful work can still proceed (e.g. a requested checkpoint).
-This format does not authorize stopping an actionable task early. A scope reduction
-requires user agreement before calling the reduced task complete.
+❌ **Задача заблокирована — <specific blocker>**. Choose it by requested outcomes,
+not by effort. Blocked means every useful remaining step depends on an external
+condition or a user decision, even if part of the work is ready. Partial means
+some requested outcomes are ready and useful work can still proceed. An unrun
+runtime check alone never makes a task partial; it goes under "Не проверено".
+Directly below the status, state any limitation that materially affects using the
+result or a decision the user must make; do not repeat it in the sections. This
+format never authorizes stopping an actionable task early, and a scope reduction
+needs the user's agreement before the reduced task is called complete.
 
-Use the following order, omitting every empty or unhelpful section:
-- **Сделано** — user-visible results and their purpose, not actions or a file-edit
-  inventory. For internal/code/rules tasks, describe the resulting guarantee or
-  convention. Implementation locations belong under Где изменил.
-- **Где изменил** — affected layers in text (UI, navigation, data, analytics,
-  project rules, etc.) and what changed there. Link key files when useful; group
-  repetitive edits. For large tasks, MUST show affected layers. Use a short key-file
-  tree for new/changed structure or an explicit request; otherwise group repetitive
-  edits without a tree. Annotate relevant paths with their purpose/change, distinguish
-  changed from planned files and link real key files outside the code block.
-  Do not repeat results or list unchanged files/exhaustive inventories.
-- **Что мешает продолжить** — for blocked work, identify the missing fact/access
-  or dependency, which remaining outcome it prevents and what would unblock it.
-  Add concrete detail beyond the brief opening limitation; do not repeat it verbatim.
-- **Проверено** — actual checks, their scope and outcomes; compilation is not runtime proof.
-- **Отклонения от правил проекта** — actual deviations, reason and whether agreed.
-- **Не сделано** — requested outcomes still missing. Give the reason here only
-  if it is not already explained in the opening limitation or blocker section.
-- **Не проверено** — relevant unrun checks and what remains uncertain, separate
-  from undone work. Give the reason when known and useful; do not invent it to
-  fill the template. Mention only limitations material to the task.
-- **Что проверить вручную** — actionable scenarios only when they help the user.
-- **Вопросы** — unresolved questions numbered separately, each with 2–3 options
-  labelled (А), (Б), (В) as needed. Mark and briefly justify the recommended option.
-  If no recommendation has enough evidence, say which fact is missing instead
-  of inventing a preferred answer. Ask during work when needed, not only at the end;
-  the final section contains only still-unresolved questions.
+Sections, in this order, omitting empty ones:
 
-MUST NOT invent questions, repeat answered decisions, include empty success claims
-or end with a paragraph repeating the lists. Scale detail to the task; a small fix
-may need only Сделано and Проверено. Preserve material limitations even in a short reply.
+- **Сделано** - user-visible results and their purpose, not a file-edit inventory.
+  For internal/rule tasks, the resulting guarantee or convention.
+- **Где изменил** - affected layers (UI, navigation, data, analytics, project
+  rules, ...) and what changed there; link key files; group repetitive edits. A
+  short key-file tree only for new or changed structure or on request.
+- **Что мешает продолжить** - for blocked work: the missing fact, access or
+  dependency, the outcome it prevents and what would unblock it.
+- **Проверено** - actual checks, their scope and outcomes; compilation is not
+  runtime proof.
+- **Отклонения от правил проекта** - actual deviations, the reason, and whether
+  the user agreed.
+- **Не сделано** - requested outcomes still missing, with the reason if not
+  already stated above.
+- **Не проверено** - relevant unrun checks and what remains uncertain, separate
+  from undone work; only material limitations.
+- **Что проверить вручную** - actionable scenarios only when they help the user.
+- **Вопросы** - still-unresolved questions, numbered, each with 2-3 options
+  labelled (А), (Б), (В); the recommended option first with a brief reason. Ask
+  during the work when the answer is needed; this section holds only what is
+  still open.
+- **Найдено попутно** - unrelated defects discovered during the task, with
+  `path:line` and the trigger, left unfixed.
 
-See [response examples](references/response-examples.md) for completed, partial and
-blocked tasks. Read the relevant example only; examples guide detail, never supply
-claims or require every section.
+Do not invent questions, repeat answered decisions, include empty success claims
+or end with a paragraph repeating the lists. Scale detail to the task: a small fix
+may need only "Сделано" and "Проверено"; material limitations survive even in a
+short reply. Delivery ends the reply with the proposed commit message from
+[delivery](../delivery/SKILL.md) when files changed and no commit was requested.
+
+See [response examples](references/response-examples.md) for completed, partial
+and blocked tasks; they guide tone and detail, never supply claims.

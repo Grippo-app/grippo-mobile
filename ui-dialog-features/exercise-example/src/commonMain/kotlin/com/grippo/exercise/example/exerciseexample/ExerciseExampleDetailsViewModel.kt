@@ -22,18 +22,18 @@ import com.grippo.exercise.example.exerciseexample.analytics.toAnalytics
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
-public class ExerciseExampleViewModel(
+public class ExerciseExampleDetailsViewModel(
     private val analytics: ExerciseExampleAnalytics,
     id: String,
-    mode: ExerciseExampleModeState,
+    mode: ExerciseExampleDetailsModeState,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase
-) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
-    ExerciseExampleState(mode = mode)
-), ExerciseExampleContract {
+) : BaseViewModel<ExerciseExampleDetailsState, ExerciseExampleDetailsDirection, ExerciseExampleDetailsLoader>(
+    ExerciseExampleDetailsState(mode = mode)
+), ExerciseExampleDetailsContract {
 
     init {
         exerciseExampleFeature.observeExerciseExample(id)
@@ -46,14 +46,14 @@ public class ExerciseExampleViewModel(
             }
         }
 
-        safeLaunch(loader = ExerciseExampleLoader.RecentExercises) {
+        safeLaunch(loader = ExerciseExampleDetailsLoader.RecentExercises) {
             analytics.trackOperation(ExerciseExampleOperation.LoadRecentExercises) {
                 val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
                 provideRecentExercises(exercises)
             }
         }
 
-        safeLaunch(loader = ExerciseExampleLoader.Achievements) {
+        safeLaunch(loader = ExerciseExampleDetailsLoader.Achievements) {
             analytics.trackOperation(ExerciseExampleOperation.LoadAchievements) {
                 val exercises = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
                 provideAchievements(exercises)
@@ -97,17 +97,17 @@ public class ExerciseExampleViewModel(
         update { current -> current.copy(example = exampleState, muscleLoad = muscleLoad) }
     }
 
-    override fun onTabSelected(value: ExerciseExampleTabState) {
+    override fun onTabSelected(value: ExerciseExampleDetailsTabState) {
         analytics.trackEvent(ExerciseExampleEvent.TabSelected(value.toAnalytics()))
     }
 
     override fun onDismiss() {
         analytics.trackEvent(ExerciseExampleEvent.DismissRequested)
-        navigateTo(ExerciseExampleDirection.Back)
+        navigateTo(ExerciseExampleDetailsDirection.Back)
     }
 
     override fun onAction() {
         analytics.trackEvent(ExerciseExampleEvent.ActionClicked)
-        navigateTo(ExerciseExampleDirection.Action)
+        navigateTo(ExerciseExampleDetailsDirection.Action)
     }
 }

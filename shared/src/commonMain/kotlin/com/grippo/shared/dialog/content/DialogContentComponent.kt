@@ -27,7 +27,7 @@ import com.grippo.draft.training.DraftTrainingComponent
 import com.grippo.duration.picker.DurationPickerComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
-import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
+import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsComponent
 import com.grippo.goal.setup.suggestion.GoalSetupSuggestionComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
@@ -127,13 +127,13 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.ExerciseExample -> Child.ExerciseExample(
-                ExerciseExampleComponent(
+            is DialogConfig.ExerciseExampleDetails -> Child.ExerciseExampleDetails(
+                ExerciseExampleDetailsComponent(
                     componentContext = context,
                     id = router.id,
                     mode = router.mode,
                     onAction = {
-                        val action = router.mode as? DialogConfig.ExerciseExample.Mode.Action
+                        val action = router.mode as? DialogConfig.ExerciseExampleDetails.Mode.Action
                         if (action != null) {
                             action.onClick.invoke(dialogNavigation)
                         } else {
@@ -148,7 +148,7 @@ internal class DialogContentComponent(
                 ExerciseComponent(
                     onShowExampleDetails = { id ->
                         dialogNavigation.push(
-                            DialogConfig.ExerciseExample(
+                            DialogConfig.ExerciseExampleDetails(
                                 title = UiText.Res(Res.string.exercise_details_btn),
                                 id = id,
                             )
@@ -372,7 +372,7 @@ internal class DialogContentComponent(
         data class ErrorDisplay(override val component: ErrorDisplayComponent) :
             Child(component)
 
-        data class ExerciseExample(override val component: ExerciseExampleComponent) :
+        data class ExerciseExampleDetails(override val component: ExerciseExampleDetailsComponent) :
             Child(component)
 
         data class Exercise(override val component: ExerciseComponent) :

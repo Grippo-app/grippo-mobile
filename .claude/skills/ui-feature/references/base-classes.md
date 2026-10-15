@@ -23,7 +23,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 ) : InstanceKeeper.Instance, KoinComponent
 ```
 
-Implements `InstanceKeeper.Instance` so Decompose retains the instance across config changes; `onDestroy()` runs when its owning InstanceKeeper destroys it; ordinary retained-component recreation is not fresh-VM restoration. Implements `KoinComponent` for internal `by inject<...>()` (used for `OperationManager` and `ErrorProvider`). Project default is constructor injection. `CrashReporting` is injected from toolkit API inside the error pipeline; no SDK transport dependency is allowed. `ResultManager` is injected by `BaseComponent`, not here.
+Implements `InstanceKeeper.Instance` so Decompose retains the instance across config changes; `onDestroy()` (the public `InstanceKeeper.Instance` override) runs when its owning InstanceKeeper destroys it; ordinary retained-component recreation is not fresh-VM restoration. Implements `KoinComponent` for its own wiring only: `OperationManager` (with `parametersOf(coroutineScope)`), `ErrorProvider` and the toolkit `CrashReporting` API resolve through `inject`; `ScreenAnalytics` is resolved with `get<ScreenAnalytics>()` inside `bindScreen`. Feature dependencies stay constructor-injected from the Component's `retainedInstance` block. No SDK transport dependency is allowed. `ResultManager` is injected by `BaseComponent`, not here.
 
 ### Public / protected API
 
@@ -60,13 +60,16 @@ protected fun <T> Flow<T>.safeLaunch(
 override fun onDestroy()
 ```
 
+### Foundation-internal lifecycle wiring
+
+Inspect `BaseViewModel.kt`; current shape: `attachActivation(Flow<Boolean>)`,
+`detachActivation()` and `bindScreen(Lifecycle)` are `internal`. `BaseComponent`
+calls them from `doOnCreate`/`doOnDestroy`; feature code never calls or overrides
+them. `onDestroy()` is the public `InstanceKeeper.Instance` override.
+
 ### Rules
 
-- Follow [Kotlin block style](../../../../CLAUDE.md#kotlin): business/control bodies
-  and `safeLaunch`/`trackOperation` stay multiline; short single-expression `update`
-  and simple Flow transformations remain compact. No named local functions inside
-  `init`, constructors, other functions or lambdas; methods/functions belong at
-  class/file scope. Ordinary callbacks and DSL lambdas remain allowed.
+- Kotlin block style and the named-local-function ban: see [code style](../../validation-gates/references/code-style.md#kotlin-blocks); constructor order, `init`, handlers, `update` and named arguments: see [ViewModel layout](../../validation-gates/references/code-style.md#viewmodel-layout).
 - `init` normally starts startup requests/subscriptions directly through
   `safeLaunch`/Flow. A complete operation reused for initial loading and a retry
   after dialog dismissal belongs in a private class-level method called by `init`
@@ -76,7 +79,7 @@ override fun onDestroy()
 - **`state`** is read-only outside the VM. `update { it.copy(...) }` is the **only** mutator (atomic compare-and-swap; thread-safe). **Never** capture `state.value` before a slow op then `update { it.copy(... = capturedValue + ...) }` — a concurrent update is lost; the lambda receives the **current** value.
 - **`loaders`** is an `ImmutableSet` (multiple concurrent). `withLoader(MyLoader.X) { block() }` adds X, runs `block`, removes X on completion (success **or** failure via `try/finally`); `loader == null` runs without modifying the set. Useful inside `mapLatest`/`flatMapLatest` chains.
 - **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. Do not route navigation commands through ResultManager; it carries business result payloads. Verify the normal Direction chain when ordering matters.
-- **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `invokeOnCompletion`. Unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
+- **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `job.invokeOnCompletion`. `OperationManagerImpl`'s `CoroutineExceptionHandler` ignores `CancellationException` and re-launches `sendError` on the VM scope, so unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
 - **Suspend helpers**: run in the caller's coroutine and propagate failures to its `safeLaunch`. No local catches, additional jobs, stage flags or recovery wrappers. Analytics decorates the business operation and preserves its original error. See [error rules](error-pipeline.md).
 - **`screenPresentation`** defaults to null for containers. Every independent screen must override the reason-aware presenter; BaseComponent/foundation owns its lifecycle binding. Graph/null resolves no ScreenAnalytics. VM stores no Lifecycle/ComponentContext and adds no activationFlow visibility observer or scope. Verify every new/affected screen through the [mandatory screen coverage gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.
@@ -126,9 +129,14 @@ internal class FooViewModel(private val barFeature: BarFeature) :
     BaseViewModel<FooState, FooDirection, FooLoader>(FooState()), FooContract {
     init {
         barFeature.observeBars()
-            .map { it.toState() }
-            .onEach { items -> update { it.copy(items = items) } }
+            .onEach(::provideBars)
             .safeLaunch()
+    }
+
+    private fun provideBars(value: List<Bar>) {
+        val items = value.toState()
+
+        update { it.copy(items = items) }
     }
 
     override fun onRefreshClick() {
@@ -210,7 +218,7 @@ See [state-preservation](../../state-preservation/SKILL.md) for the mandatory ga
 
 ### Result observation
 
-`protected fun <T : BaseResult> observeResult(key, onResult)` / `sendResult(key, data)`. See `references/results.md`.
+Inspect `BaseComponent.kt`; current shape: `protected fun <T : BaseResult> observeResult(key: ResultKey<T>, onResult: suspend (T) -> Unit)` and `protected fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T)`. The emitter wraps `data` in `Result(data)` (`ResultEmitter.kt`); callers never construct `Result` themselves. See `references/results.md`.
 
 ### Back handling
 
@@ -234,7 +242,7 @@ Pop/back is wired through `BackCallback(onBack = viewModel::onBack)` + `backHand
 
 A thin Composable wrapper at the root of every screen: sets background, lays out in a `Column`, registers a tap-anywhere gesture that clears focus (dismisses the keyboard).
 
-Inspect [BaseScreen.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseScreen.kt) for the exact implementation; do not copy a replacement from this reference.
+Inspect [BaseScreen.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseScreen.kt) for the exact implementation; do not copy a replacement from this reference. Current shape: `BaseComposeScreen(background: ScreenBackground.Color, content: @Composable ColumnScope.() -> Unit)`; `ScreenBackground` is a `@Stable sealed interface` with exactly one subtype, `@Immutable data class Color(val value: Color)`.
 
 Notes: `Column` (not `Box`/`LazyColumn`); **no** `fillMaxSize()` (content drives height); `clickable` with `indication = null` (no ripple); the `content` lambda receives `ColumnScope`.
 
@@ -257,7 +265,7 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 - **`BaseRouter`** — `public interface BaseRouter`. Nav route marker in `:ui-screen-features:screen-api`. `@Serializable` on the sealed class and every subtype; subtypes carry only serializable payloads.
 - **`BaseResult`** + `Result<T>` — `Result<T : Any>(val data: T) : BaseResult` wraps every payload carried through `ResultManager`. Action protocols are plain sealed interfaces nested inside the producer's `*Router.<Screen>` (no `BaseResult` extension); `sendResult` wraps them in `Result<T>`.
 - **`ResultKey<T : BaseResult>(val key: String)`** + `ResultKeys.create(key)` — typed channel identifiers; equal by string. **One `ResultKey` per protocol, not per subtype.** The receiver defines the key in its companion object and passes an explicit `resultKey: ResultKey<Result<Payload>>` on the producer route; scope by receiver identity when multiple instances can coexist (see `references/results.md`).
-- **`PersistenceKey<T : Any>`** — final invariant draft descriptor: stable local archive address and matching serializer. The owning Component defines `val DRAFT` in its bottom private companion object and calls protected `restoreState(DRAFT)` / `saveState(DRAFT, supplier)`. It does not identify a live instance or result channel; child ComponentContexts isolate equal keys. No separate metadata file or matrix.
+- **`PersistenceKey<T : Any>(key: String, serializer: KSerializer<T>)`** — a final class whose two properties are `internal`: a stable local archive address and its serializer. A feature constructs it and passes it only to the protected `restoreState(DRAFT)` / `saveState(DRAFT, supplier)`; the owning Component defines `val DRAFT` in its bottom private companion object. It does not identify a live instance or result channel; child ComponentContexts isolate equal keys. No separate metadata file or matrix.
 
 ### Rules (MUST)
 
@@ -271,13 +279,19 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 
 ## `OperationManager` (internal — VM authors use `safeLaunch`)
 
-`@Factory(binds = [OperationManager::class])`, `@InjectedParam coroutineScope`. `BaseViewModel` gets its own instance bound to its own scope (cancelled in `onDestroy()`):
+`internal interface OperationManager` (`internal/operation/`); `OperationManagerImpl` is `@Factory(binds = [OperationManager::class])` with `@InjectedParam coroutineScope`. `BaseViewModel` gets its own instance bound to its own scope (cancelled in `onDestroy()`):
 
-- **`launch(dispatcher, onError, block)`** — runs `block` on `coroutineScope` with the dispatcher + a `CoroutineExceptionHandler` calling `onError(t)` for any non-`CancellationException` in the VM-owned supervised scope, wrapped in `supervisorScope { block() }`.
+- **`launch(dispatcher, onError: suspend (Throwable) -> Unit, block)`** — runs `block` on `coroutineScope` with the dispatcher + a `CoroutineExceptionHandler` that, for any non-`CancellationException`, re-launches `onError(t)` on that same scope; `block` runs inside `supervisorScope { block() }`.
 - **`whileActive(upstream, activation)`** — the 1-second debounced unsubscription for `Processing.WhileActive`:
   `activation` is RESUMED-true / else-false, provided by `BaseComponent` via `attachActivation(lifecycle.asActiveFlow())`. Returning to RESUMED within 1s cancels the delay (flatMapLatest) and keeps upstream subscribed.
 
-`CancellationException` is **never** treated as an error. `OperationManager` does **not** throttle/debounce/rate-limit, does **not** retry, does **not** log success. `CoreModule` (`@Module @ComponentScan`) discovers `OperationManagerImpl` and is included in `:shared/Koin.kt`.
+`CancellationException` is **never** treated as an error. `OperationManager` does **not** throttle/debounce/rate-limit, does **not** retry, does **not** log success. `CoreModule` (`@Module @ComponentScan` in `com.grippo.core.foundation`) discovers `OperationManagerImpl`, `ScreenAnalyticsImpl`, `ResultEmitter` and `ResultManager` and is included in `:shared/Koin.kt`.
+
+---
+
+## `ScreenAnalytics` (foundation binding)
+
+`ScreenAnalytics` is a public interface in `foundation/analytics/`; `ScreenAnalyticsImpl` (`internal/analytics/`) is `@Single(binds = [ScreenAnalytics::class]) internal`. `bind` runs `check(lifecycle.state != Lifecycle.State.DESTROYED)`, presents on resume (`Initial` first, `Restore` afterwards) and closes on pause/destroy; exceptions thrown by `present()`/`close()` are swallowed so telemetry never interrupts lifecycle delivery. `BaseViewModel.bindScreen` resolves it with `get<ScreenAnalytics>()` only when `screenPresentation` is non-null. Rules: [feature-analytics](../../feature-analytics/SKILL.md).
 
 ---
 

@@ -19,10 +19,10 @@ argument, allowing it to choose push, replacement, back, or close:
 
 ```kotlin
 dialogs.open(
-    DialogConfig.ExerciseExample(
+    DialogConfig.ExerciseExampleDetails(
         title = UiText.Res(Res.string.exercise_details_btn),
         id = exampleId,
-        mode = DialogConfig.ExerciseExample.Mode.Action(
+        mode = DialogConfig.ExerciseExampleDetails.Mode.Action(
             title = UiText.Res(Res.string.change_btn),
             onClick = { navigation ->
                 navigation.close()

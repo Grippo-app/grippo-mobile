@@ -22,7 +22,8 @@ and session `finish(result)`; do not convert them to screen results.
 - The producer sends to the supplied key; it must not know the caller identities,
   introduce an `Origin` enum or infer the caller from the active/previous stack entry.
 - All variants of one result protocol use that key. Protocol Actions stay nested
-  under the producer's route; `Result<T>` wraps the payload automatically.
+  under the producer's route and are deliberately not `@Serializable`
+  (`TrainingRouter.Exercise.Action`); `sendResult` wraps the payload in `Result<T>` automatically.
 - Keys are global across live components. Scope keys by stable receiver identity
   when several instances can coexist; a fixed constant is suitable only for a
   receiver that is unique in that flow. The same key must always mean the same type.
@@ -90,7 +91,8 @@ or a raw String contract. `ResultKeys.create<Result<Payload>>(address)` creates 
 The type parameter connects sender, route and observer at compile time.
 `ResultKeySerializer` encodes only the address as a String; it does not serialize
 `Result` or its payload. This preserves the previous String route representation
-and allows non-serializable Action protocols. Runtime matching still uses the
+and is why `TrainingRouter.Exercise.Action` carries no `@Serializable`: only the
+key is restored, never a payload. Runtime matching still uses the
 address, so the type parameter does not protect against manually reusing one
 address with incompatible payload types.
 
@@ -98,10 +100,15 @@ address with incompatible payload types.
 
 `ResultManager` is internal to foundation; feature code never injects it or
 creates a second result bus. The Component owns result observation and emission,
-not the ViewModel or Composable.
+not the ViewModel or Composable. Inspect `BaseComponent.kt`; current shape:
+`protected fun <T : BaseResult> observeResult(key: ResultKey<T>, onResult: suspend (T) -> Unit)`
+and `protected fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T)`.
 
-- `ResultEmitter` is a singleton `MutableSharedFlow<Pair<String, BaseResult>>`
-  with no replay and `extraBufferCapacity = 64`, exposed as `Flow`.
+- `ResultEmitter` is `@Single internal`, a `MutableSharedFlow<Pair<String, BaseResult>>`
+  with no replay and `extraBufferCapacity = 64`, exposed as `Flow`; its
+  `sendResult` wraps `data` in `Result(data)` before emitting.
+- `ResultManager` is `@Factory internal` with an `@InjectedParam coroutineScope`
+  (the Component's scope); `clear()` cancels the observer jobs it tracks.
 - Emission uses suspending `emit`, not dropping `trySend`. A full buffer can suspend
   pending sends; a slow subscriber can create backpressure across keys.
 - All subscribed collectors see emissions and filter by key. Different-key
@@ -110,8 +117,8 @@ not the ViewModel or Composable.
 - `ResultManager.observeResult` starts with `CoroutineStart.UNDISPATCHED` to
   subscribe before returning. Register once per key in Component `init` on Main,
   not from Render, repeated click handlers or repeated lifecycle callbacks.
-- `sendResult` launches with `UNDISPATCHED` and prevents emission from an already
-  cancelled sender. It may suspend; do not treat UNDISPATCHED as synchronous completion.
+- `sendResult` launches with `UNDISPATCHED` and calls `ensureActive()` before emitting,
+  so an already cancelled sender emits nothing. It may suspend; do not treat UNDISPATCHED as synchronous completion.
 - `BaseComponent` uses `Main.immediate`; observers remain subscribed while the
   component is hidden. On destruction, subscriptions and pending sends are canceled.
   Cancellation does not retract a result already committed to the shared buffer.

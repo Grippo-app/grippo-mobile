@@ -60,9 +60,9 @@ Update all required callers and actual module/DI registrations within scope.
 Use BaseComposeScreen with screen background and the existing screen Toolbar.
 Render entity UI through its State model; real reusable model stubs belong in
 ui-core:state. Use AppTokens for product styling and localized resources.
-Add private AppPreview inside PreviewContainer with Contract.Empty and meaningful
-states. For supplied designs use their actual content and declared states;
-[visual review](../../validation-gates/references/visual-review.md) owns permitted comparison.
+Add private AppPreview inside PreviewContainer with Contract.Empty for the
+significant states ([definitions](../../../../CLAUDE.md#definitions)). For supplied designs use their actual content and declared states;
+[visual evidence](../../design-system/references/visual-consistency.md#evidence) owns permitted comparison.
 
 ## 6. Verify
 

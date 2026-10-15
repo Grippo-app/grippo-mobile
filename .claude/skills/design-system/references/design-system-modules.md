@@ -6,9 +6,14 @@ Use settings.gradle.kts and actual build files as authority.
 |---|---|
 | core | AppTheme, AppTokens and internal CompositionLocals/ProvideResources |
 | components | Shared widgets, related style/content types and previews |
-| resources:provider | Compose resources, token producers and StringProvider contract |
-| resources:provider-impl | StringProvider implementation and annotated DI module |
+| resources:provider | Compose resources, token producers, `StringProvider` and `ColorProvider` contracts (`providers/`) |
+| resources:provider-impl | `StringProviderImpl`, `ColorProviderImpl` (`internal/`) and the annotated `ResourcesProviderModule` |
 | preview | AppPreview and PreviewContainer |
+
+Existing defect, not a pattern to copy: `ColorProviderImpl.get()` returns `DarkColor`
+in both branches of its `AppTheme.current()` check, and `ColorProvider` has no consumer
+outside the provider modules; do not route a new non-composable color lookup through
+it until it is fixed within an authorized scope.
 
 Components may depend on existing pure UI contracts/state where their build files
 allow it. They MUST NOT import feature implementations or data/service business

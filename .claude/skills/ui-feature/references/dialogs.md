@@ -25,6 +25,11 @@ Both render as siblings inside `RootComponent.Render()` (not nested inside `Root
 ```kotlin
 @Composable
 override fun Render() {
+    // state/loaders collected above; systemIsDark = AppTheme.current, systemLocaleTag = AppLocale.current
+    LaunchedEffect(systemLocaleTag) {
+        DateFormatting.install(systemLocaleTag)
+    }
+
     AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
         RootScreen(this, state.value, loaders.value, viewModel)
         dialogComponent.Render()       // overlays on top of the screen stack
@@ -108,9 +113,9 @@ the previous step or closes at the root, and `close` closes the entire session.
 
 ## `DialogComponent` / `DialogContentComponent` shape
 
-Two components, both in `:shared/dialog/...`:
-1. **`DialogComponent`** owns the **outer** slot (`SlotNavigation<DialogSession>`), holding at most one child (a `DialogContentComponent`). Its retained `DialogViewModel` consumes `DialogProvider.openings` and owns `session`, `stack`, `phase` and `pending`; a reconciliation loop projects this state into the slot and inner stack.
-2. **`DialogContentComponent`** renders the **inner** stack (`StackNavigation<DialogStep>`). Each step has a host-owned runtime ID and config; `navigationFor(step)` supplies the session-bound bridge. Both navigators use `serializer = null`.
+Two components, both in `:shared/dialog/...` (inspect `DialogComponent.kt`, `content/DialogContentComponent.kt` and `DialogViewModel.kt`):
+1. **`DialogComponent`** owns the **outer** slot: `childSlot(serializer = null, key = "DialogComponent.v3", handleBackButton = false)` over `SlotNavigation<DialogSession>`, holding at most one child (a `DialogContentComponent`). Its retained `DialogViewModel` consumes `DialogProvider.openings` and owns `session`, `stack`, `phase` and `pending`. Reconciliation is state-driven: a collector of `viewModel.state` activates/dismisses the slot and replaces the inner stack; `DialogComponent.eventListener` is a no-op because the host emits no Directions.
+2. **`DialogContentComponent`** renders the **inner** stack: `childStack(serializer = null, key = "DialogContentComponent.v3", handleBackButton = false)` over `StackNavigation<DialogStep>`. Each step has a host-owned runtime ID and config; `navigationFor(step)` supplies the session-bound bridge, and the component's own `BackCallback` calls that bridge's `back()`.
 
 The bridge's internal `finish(pendingResult)` passes a result closure to the owning
 `DialogViewModel`. At the root it hides/releases the sheet before running callbacks;
@@ -152,7 +157,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 
 ## Dismissal behavior
 
-- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session, promotes any pending global opening, calls remaining configs' `onDismiss` from top to bottom, then invokes the top step's pending result. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
+- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` runs in this order: reset the state (`update { DialogState() }`, which invalidates the old session), open a pending next session if one was queued, run the old stack's `onDismiss` callbacks top-to-bottom, then run the top step's pending result. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
 - **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order; the sheet stays open. `replaceCurrent` dismisses the replaced config after updating the stack and does not create a result.
 - **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
 - **`dismissBySwipe`:** governs swipe/scrim hiding for the active config. Hardware/toolbar Back still follows the stack; toolbar Close closes the session. It does not turn a generic dismissal into a typed outcome.
@@ -190,8 +195,13 @@ plugins {
     id("koin.annotation.convention")
 }
 kotlin {
+    android {
+        namespace = "com.grippo.ui.dialog.features.tag.picker"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
+        implementation(projects.analytics.analyticsApi)
         implementation(projects.uiCore.state)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
@@ -203,44 +213,61 @@ kotlin {
     }
 }
 ```
+Mirror a neighbor such as `ui-dialog-features/weight-picker/build.gradle.kts`; every
+dialog module depends on `:analytics:analytics-api`.
 
 ### 3. Create the seven MVI files (package `com.grippo.tag.picker`)
 
-`TagPickerState.kt` — `@Immutable internal data class TagPickerState(val current: String = "")`. Defaults in ctor; **no `companion object Empty` on State** (Empty belongs on Contract).
+Visibility: the dialog Component is `public` and exposes `viewModel`, whose
+`state`/`loaders`/`navigator` are public properties, so `State`, `Direction`,
+`Loader` and `ViewModel` are `public`; `Contract` stays `internal` (inspect
+`ui-dialog-features/weight-picker/`).
+
+`TagPickerState.kt` — `@Immutable public data class TagPickerState(val current: String = "")`. Defaults in ctor; **no `companion object Empty` on State** (Empty belongs on Contract).
 
 `TagPickerDirection.kt`:
 ```kotlin
-internal sealed interface TagPickerDirection : BaseDirection {
-    data class BackWithResult(val value: String) : TagPickerDirection
-    data object Back : TagPickerDirection
+public sealed interface TagPickerDirection : BaseDirection {
+    public data class BackWithResult(val value: String) : TagPickerDirection
+    public data object Back : TagPickerDirection
 }
 ```
 
-`TagPickerLoader.kt` — `@Immutable internal sealed interface TagPickerLoader : BaseLoader` (usually empty).
+`TagPickerLoader.kt` — `@Immutable public sealed interface TagPickerLoader : BaseLoader` (usually empty).
 
-`TagPickerContract.kt` — `@Immutable interface` with `onValueChange`/`onApplyClick`/`onCloseClick` + `companion object Empty` of no-ops.
+`TagPickerContract.kt` — `@Immutable internal interface` with `onValueChange`/`onApplyClick`/`onCloseClick` + `companion object Empty` of no-ops.
 
-`TagPickerViewModel.kt`:
+`TagPickerViewModel.kt` — observes its own callbacks through the dialog's
+`TagPickerAnalytics` from `:analytics:analytics-api`, the way `WeightPickerViewModel`
+emits `SelectionChanged` / `SubmitClicked` / `DismissRequested`; dialogs declare no
+`screenPresentation`:
 ```kotlin
-internal class TagPickerViewModel(initial: String) :
-    BaseViewModel<TagPickerState, TagPickerDirection, TagPickerLoader>(
-        TagPickerState(current = initial),
-    ), TagPickerContract {
+public class TagPickerViewModel(
+    initial: String,
+    private val analytics: TagPickerAnalytics,
+) : BaseViewModel<TagPickerState, TagPickerDirection, TagPickerLoader>(
+    TagPickerState(current = initial),
+), TagPickerContract {
     override fun onValueChange(value: String) {
+        if (value != state.value.current) {
+            analytics.trackEvent(TagPickerEvent.SelectionChanged)
+        }
         update { it.copy(current = value) }
     }
 
     override fun onApplyClick() {
+        analytics.trackEvent(TagPickerEvent.SubmitClicked)
         navigateTo(TagPickerDirection.BackWithResult(state.value.current))
     }
 
     override fun onCloseClick() {
+        analytics.trackEvent(TagPickerEvent.DismissRequested)
         navigateTo(TagPickerDirection.Back)
     }
 }
 ```
 
-`TagPickerComponent.kt` — **`public class`** (dialog Components cross the module boundary; the shared `DialogContentComponent` builds them). Declares `back: () -> Unit` and `onResult: (T) -> Unit`; `Direction` carries the result via `BackWithResult(value)`, plain `Back` covers dismissals:
+`TagPickerComponent.kt` is a **`public class`**: dialog Components cross the module boundary because the shared `DialogContentComponent` builds them. Its constructor takes `back: () -> Unit` and `onResult: (T) -> Unit`. The `Direction` carries the result as `BackWithResult(value)`; plain `Back` covers dismissals:
 ```kotlin
 public class TagPickerComponent(
     componentContext: ComponentContext,
@@ -249,7 +276,7 @@ public class TagPickerComponent(
     private val back: () -> Unit,
 ) : BaseComponent<TagPickerDirection>(componentContext) {
     override val viewModel: TagPickerViewModel = componentContext.retainedInstance {
-        TagPickerViewModel(initial = initial)
+        TagPickerViewModel(initial = initial, analytics = getKoin().get())
     }
     private val backCallback = BackCallback(onBack = viewModel::onCloseClick)
     init {
@@ -310,12 +337,22 @@ is DialogConfig.TagPicker -> Child.TagPicker(
 // + a matching `data class TagPicker(override val component: TagPickerComponent) : Child(component)`
 ```
 
-### 6. Add `:ui-dialog-features:tag-picker` to `:shared/build.gradle.kts`
+### 6. Create `:analytics:tag-picker` and register it in `Koin.kt`
+
+Every dialog module has its own `:analytics:<dialog>` implementation module
+(23 of 23 today), registered in `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt`;
+the `TagPickerAnalytics` contract and its `TagPickerEvent` family live in
+`:analytics:analytics-api`. Follow the
+[new module checklist](../../platform-build-toolkit/references/new-module.md#dialog-feature-ui-dialog-featuresdialog)
+for the wiring and [feature-analytics](../../feature-analytics/SKILL.md) for the
+events and the coverage matrix; `analytics/weight-picker/` is the neighbor to mirror.
+
+### 7. Add `:ui-dialog-features:tag-picker` to `:shared/build.gradle.kts`
 ```kotlin
 implementation(projects.uiDialogFeatures.tagPicker)
 ```
 
-### 7. Open a new session from a caller ViewModel
+### 8. Open a new session from a caller ViewModel
 ```kotlin
 override fun onPickTagClick() {
     dialogController.open(
@@ -329,22 +366,18 @@ override fun onPickTagClick() {
 ```
 
 ### Verify
-Update affected callback/operation coverage and declared presentation omissions;
-run allowed analytics checks and record platform/build restrictions.
-```bash
-./gradlew :shared:assembleSharedDebugXCFramework
-./gradlew :androidApp:assembleDebug
-```
-When permitted, run, trigger the dialog and confirm the result callback fires.
+Update the dialog's coverage matrix (`analytics/<dialog>/COVERAGE.md`) and run the
+analytics skill's checks. Run the build checks the
+[verification policy](../../../../CLAUDE.md#verification-policy) requires for
+the changed files. Manual checks — open the dialog, confirm the result callback fires,
+check Back and swipe dismissal — follow
+[runtime-verification](../../runtime-verification/SKILL.md).
 
 ### What you did NOT have to do
-- No new Koin module (dialog features don't usually declare DI).
-- No `:shared/Koin.kt` edit.
+- No Koin module inside the dialog UI module itself: only `:ui-dialog-features:dialog-api`
+  (`DialogModule`) and the `:analytics:tag-picker` module from step 6 declare DI.
 - No `RootRouter` change (dialogs live in the shared `SlotNavigation<DialogSession>`).
-
-These statements assume existing dependencies. A new feature analytics
-implementation follows its normal module/shared registration; a UI provider or
-integration module is not part of the dialog recipe.
+- No UI provider or integration module.
 
 ### Common mistakes (MUST avoid)
 - **Serializing live dialog callbacks/configs.** Both host navigators use `serializer = null`; preserve ordinary retained ownership without process-death restoration.

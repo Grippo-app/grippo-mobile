@@ -5,7 +5,8 @@ model: inherit
 color: blue
 tools: Read, Grep, Glob, Bash, WebFetch
 disallowedTools: mcp__*, Agent, Edit, Write, NotebookEdit
-skills: backend-contract-client
+skills:
+  - backend-contract-client
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -32,9 +33,12 @@ consumers and must not be treated as evidence of server behavior.
 The brief names the operations/schemas in question, the authoritative evidence
 location (URL or path) with its environment and revision if known, and the
 mobile files involved (`data-services/backend/.../GrippoApi.kt`, `dto/<area>/`,
-affected mappers and repositories). If no evidence source is given, search the
-repository for a documented one; if none exists, report "evidence unavailable"
-with the exact fact the user must supply. Do not guess credentials or paths.
+affected mappers and repositories). An owner-attested contract (the user's
+explicit chat statement of method, path, keys, types, null semantics and error
+outcomes) is valid evidence for exactly the facts it states; quote it verbatim
+in the Evidence line. If no evidence source is given, search the repository for
+a documented one; if none exists, report "evidence unavailable" with the exact
+fact the user must supply. Do not guess credentials or paths.
 
 ## Duties
 

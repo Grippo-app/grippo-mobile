@@ -1,41 +1,21 @@
 # Grippo project instructions
 
-MUST read [CLAUDE.md](CLAUDE.md) for architecture, scope and verification policy.
-Project skills have one canonical source in `.claude/skills/`; MUST NOT create
-parallel copies or treat historical reports as current rules.
+This file is a pointer for tools other than Claude Code. Everything it points to
+is canonical; it adds no rules of its own.
 
-New UI, visual redesigns and visual reviews of screens, dialogs and shared
-components MUST apply [brand design](.claude/skills/brand-design/SKILL.md).
-It owns visual intent and composition; design-system owns implementation and
-illustrations owns artwork. Changes without visual impact need no brand workflow.
-
-Feature behavior changes (screens, dialogs, navigation, entry points, operations,
-validation or outcomes) MUST apply [feature analytics](.claude/skills/feature-analytics/SKILL.md)
-even without an explicit tracking request. MUST update affected coverage and pass
-its screen coverage gate for every new feature screen or affected existing screen.
-Independent screens require their VM's `screenPresentation`; containers keep null.
-Visual-only changes require an impact assessment, not new events.
-
-Operational analytics tasks MUST apply the feature skill's
-[live admin synchronization gate](.claude/skills/feature-analytics/references/admin-sync.md).
-Apply its trigger and editorial/no-impact exceptions.
-MUST attempt to inspect the analytics browser tab early; if unavailable, ask the
-user to open the correct property's analytics admin tab. Reconcile affected code
-events and admin definitions, key events and reports, verify saved changes, and
-record release/legacy compatibility. Authorized live API/read-back evidence may
-complete reconciliation when browser inspection is unavailable, as the gate defines.
-Missing admin access MUST remain an explicit
-unfinished synchronization outcome; source/build checks cannot waive it.
-Removal requires usage/dependency evidence and the owning gate's deletion safeguards.
-
-New or changed features MUST apply [state preservation](.claude/skills/state-preservation/SKILL.md).
-MUST inventory every new screen or affected state owner, preserve required nonsecret
-user inputs/selections/filters/parent drafts with local StateKeeper, rebuild
-data-backed presentation and exclude secrets/runtime state. MUST pass its source
-gate and report permitted manual restoration checks. No-state-impact changes need
-an assessment only.
-
-MUST NOT introduce automated test sources, folders, dependencies or infrastructure
-unless the user explicitly requests them. MUST follow the canonical
-[verification policy](CLAUDE.md#verification-policy): source/diff review, relevant
-permitted static/manual checks, scoped builds and honest runtime limitations.
+- Read [CLAUDE.md](CLAUDE.md) first: project map, definitions (authorized scope,
+  behavior change, visual change, independent review, permitted check, record),
+  dependency rules, locked decisions, verification policy, definition of done,
+  records and delivery policy, agent roster and the skills index.
+- Rules live in `.claude/skills/<skill>/SKILL.md` and their `references/`; agent
+  definitions in `.claude/agents/`; the Bash guard and the rulebook checker in
+  `.claude/hooks/`. Do not create parallel copies of any of them.
+- Every behavior change applies
+  [feature-analytics](.claude/skills/feature-analytics/SKILL.md) and
+  [state-preservation](.claude/skills/state-preservation/SKILL.md); every visual
+  change applies [brand-design](.claude/skills/brand-design/SKILL.md) and
+  [design-system](.claude/skills/design-system/SKILL.md); every completion applies
+  [validation-gates](.claude/skills/validation-gates/SKILL.md).
+- No automated tests, linters or screenshot tooling are added without an explicit
+  user request. Nobody commits on the user's behalf without an explicit request
+  ([delivery](.claude/skills/delivery/SKILL.md)).

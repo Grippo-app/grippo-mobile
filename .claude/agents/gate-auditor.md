@@ -5,7 +5,9 @@ model: inherit
 color: blue
 tools: Read, Grep, Glob, Bash
 disallowedTools: mcp__*, Agent, Edit, Write, NotebookEdit
-skills: feature-analytics, state-preservation
+skills:
+  - feature-analytics
+  - state-preservation
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -29,9 +31,10 @@ inventories the author must reconcile and you say which items fail.
 
 The brief names the affected feature(s) or screens, the changed files, and
 whether the change is a new feature (inventory all its screens) or a change to
-an existing one (inventory the affected scope). It also says whether the author
-claims "visual-only / no analytics impact" or "no state impact"; you verify that
-claim rather than accept it.
+an existing one (inventory the affected scope). It also lists the author's
+claims per slice ("visual-only / no analytics impact", "no state impact"); a
+task may mix a behavior slice and a visual-only slice. You verify each claim
+against the diff rather than accept it.
 
 ## Duties - analytics gate
 
@@ -47,13 +50,16 @@ claim rather than accept it.
 4. Check eligible Contract -> ViewModel callbacks, inputs and complete operations:
    typed facts only, emitted after eligibility guards, `getOrThrow()` inside the
    decorated block, no telemetry-only business fields, no raw text/IDs/secrets.
-5. Compare with `analytics/COVERAGE.md`: rows missing, stale, or contradicting
-   the code.
+5. Compare with the feature's `analytics/<feature>/COVERAGE.md` (and the root
+   `analytics/COVERAGE.md` for cross-feature sections): rows missing, stale, or
+   contradicting the code; a missing per-feature file is itself a finding.
 
 ## Duties - preservation gate
 
-1. Inventory editable fields, accepted picker results, selections, filters,
-   route inputs and parent data needed by later steps for every affected owner.
+1. Read `.claude/skills/ui-feature/references/process-death.md` (the draft
+   pattern) in addition to the preloaded SKILL.md. Inventory editable fields,
+   accepted picker results, selections, filters, route inputs and parent data
+   needed by later steps for every affected owner.
 2. Classify each as Preserve / Rebuild / Runtime only; verify the owning
    Component's `DRAFT` `PersistenceKey`, `restoreState`/`saveState` wiring,
    `@Transient` rebuilt fields, secret exclusion and absence of restoration

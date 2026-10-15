@@ -129,5 +129,5 @@ feature design system or bypass an existing appropriate product component.
 - `@OptIn` per function when the global `optIn(...)` already covers it.
 - Material3 colors in a feature module — use `AppTokens.colors.*`.
 - Mutable collections (`mutableListOf`) in state — use immutable.
-- Product colors/dimensions/typography literals in consumers — use `AppTokens.*`. Neutral technical constants such as `0.dp` and `Color.Transparent`, and explicit representative preview fixtures, are permitted; they must not become alternative product styling.
+- Product colors/dimensions/typography literals in consumers — use `AppTokens.*`. Neutral technical constants such as `0.dp` and `Color.Transparent`, and explicitly marked preview fixtures, are permitted; they must not become alternative product styling.
 - Flat-scalar explosion of a domain entity in a composable signature — pass the entity's `*State` model. Primitives (`Button`, `Chip`) are exempt.
