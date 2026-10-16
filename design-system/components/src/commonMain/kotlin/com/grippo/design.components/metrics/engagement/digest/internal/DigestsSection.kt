@@ -3,7 +3,6 @@ package com.grippo.design.components.metrics.engagement.digest.internal
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -73,19 +72,21 @@ internal fun DigestHeader(
 }
 
 @Composable
-internal fun DigestHero(
+internal fun DigestVolume(
     modifier: Modifier = Modifier,
     value: String,
     label: String,
     dimmed: Boolean = false,
 ) {
-    Column(
+    Row(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
+            modifier = Modifier.weight(1f),
             text = value,
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h4(),
             color = if (dimmed) {
                 AppTokens.colors.text.tertiary
             } else {
@@ -97,6 +98,7 @@ internal fun DigestHero(
             text = label,
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.tertiary,
+            textAlign = TextAlign.End,
         )
     }
 }
@@ -112,7 +114,7 @@ private fun DigestsSectionPreview() {
             subtitle = "Apr 2026",
         )
 
-        DigestHero(
+        DigestVolume(
             value = "3 250 kg",
             label = "Volume",
         )

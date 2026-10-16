@@ -19,13 +19,13 @@ public sealed class ToggleSelectableCardStyle(
 ) {
     @Immutable
     public data class Small(
-        override val title: String
+        public override val title: String
     ) : ToggleSelectableCardStyle(title)
 
     @Immutable
     public data class Medium(
-        override val title: String,
-        val icon: ImageVector,
+        public override val title: String,
+        public val icon: ImageVector,
     ) : ToggleSelectableCardStyle(title)
 }
 

@@ -39,6 +39,7 @@ import com.grippo.design.resources.provider.icons.QuestionCircle
 @Immutable
 public enum class ExerciseExampleImageStyle {
     SMALL,
+    COMPACT,
     MEDIUM,
     LARGE,
 }
@@ -52,16 +53,19 @@ public fun ExerciseExampleImage(
     val dimensions = AppTokens.dp.exerciseExampleImage
     val size = when (style) {
         ExerciseExampleImageStyle.SMALL -> dimensions.small.size
+        ExerciseExampleImageStyle.COMPACT -> dimensions.compact.size
         ExerciseExampleImageStyle.MEDIUM -> dimensions.medium.size
         ExerciseExampleImageStyle.LARGE -> dimensions.large.size
     }
     val radius = when (style) {
         ExerciseExampleImageStyle.SMALL -> dimensions.small.radius
+        ExerciseExampleImageStyle.COMPACT -> dimensions.compact.radius
         ExerciseExampleImageStyle.MEDIUM -> dimensions.medium.radius
         ExerciseExampleImageStyle.LARGE -> dimensions.large.radius
     }
     val placeholderPadding = when (style) {
         ExerciseExampleImageStyle.SMALL -> dimensions.small.placeholderPadding
+        ExerciseExampleImageStyle.COMPACT -> dimensions.compact.placeholderPadding
         ExerciseExampleImageStyle.MEDIUM -> dimensions.medium.placeholderPadding
         ExerciseExampleImageStyle.LARGE -> dimensions.large.placeholderPadding
     }
@@ -125,7 +129,9 @@ private class InsetPainter(
         val contentWidth = (size.width - 2f * inset).coerceAtLeast(0f)
         val contentHeight = (size.height - 2f * inset).coerceAtLeast(0f)
 
-        if (contentWidth <= 0f || contentHeight <= 0f) return
+        if (contentWidth <= 0f || contentHeight <= 0f) {
+            return
+        }
 
         withTransform({ translate(left = inset, top = inset) }) {
             with(base) {

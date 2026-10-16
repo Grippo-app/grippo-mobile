@@ -24,10 +24,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom
 import com.grippo.design.resources.provider.period_picker_title
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangeKind
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -54,11 +54,28 @@ internal fun PeriodPickerScreen(
         ),
     ) {
         items(state.suggestions, key = { it.kind.name }) { item ->
+            val range = item.value
+            val description = if (range != null) {
+                val from = DateCompose.rememberFormat(
+                    value = range.from.date,
+                    format = DateFormat.DateOnly.DateDdMmm,
+                    contextual = false,
+                )
+                val to = DateCompose.rememberFormat(
+                    value = range.to.date,
+                    format = DateFormat.DateOnly.DateDdMmm,
+                    contextual = false,
+                )
+                "$from - $to"
+            } else {
+                item.display
+            }
+
             CheckSelectableCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = CheckSelectableCardStyle.Medium(
                     title = item.label()?.text() ?: AppTokens.strings.res(Res.string.custom),
-                    description = item.display,
+                    description = description,
                 ),
                 isSelected = state.value.kind == item.kind,
                 onSelect = { contract.onSelectRange(item.kind) }
@@ -113,17 +130,13 @@ private fun PeriodPickerSheetPreview(state: PeriodPickerState) {
 private fun periodPickerPreviewState(selected: DateRangeKind): PeriodPickerState {
     val to = LocalDateTime(2026, 1, 5, 23, 59, 59)
     val suggestions = persistentListOf(
-        DateRangeKind.Last7Days to LocalDateTime(2025, 12, 30, 0, 0),
-        DateRangeKind.Last14Days to LocalDateTime(2025, 12, 23, 0, 0),
-        DateRangeKind.Last30Days to LocalDateTime(2025, 12, 7, 0, 0),
-        DateRangeKind.Last60Days to LocalDateTime(2025, 11, 7, 0, 0),
-    ).map { (kind, from) ->
-        val fromLabel = DateTimeUtils.format(from, DateFormat.DateOnly.DateDdMmm)
-        val toLabel = DateTimeUtils.format(to, DateFormat.DateOnly.DateDdMmm)
-        DateRangeFormatState.Valid(
-            display = "$fromLabel - $toLabel",
-            value = DateRange(from, to),
-            kind = kind,
+        LocalDateTime(2025, 12, 30, 0, 0),
+        LocalDateTime(2025, 12, 23, 0, 0),
+        LocalDateTime(2025, 12, 7, 0, 0),
+        LocalDateTime(2025, 11, 7, 0, 0),
+    ).map { from ->
+        DateRangeFormatState.of(
+            range = DateRange(from = from, to = to),
         )
     }.toImmutableList()
     return PeriodPickerState(

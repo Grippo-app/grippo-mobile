@@ -30,18 +30,20 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun TrainingsScreen(
     state: TrainingsState,
     loaders: ImmutableSet<TrainingsLoader>,
-    contract: TrainingsContract
+    contract: TrainingsContract,
 ) = BaseComposeScreen(
     ScreenBackground.Color(
-        value = AppTokens.colors.background.screen
-    )
+        value = AppTokens.colors.background.screen,
+    ),
 ) {
     val periodSegmentItems = remember {
         TrainingsTimelinePeriod.Variants
@@ -62,7 +64,7 @@ internal fun TrainingsScreen(
                 selected = state.period.id,
                 onSelect = contract::onSelectPeriod,
                 segmentWidth = SegmentWidth.EqualFill,
-                style = SegmentStyle.Fill
+                style = SegmentStyle.Fill,
             )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
@@ -74,22 +76,23 @@ internal fun TrainingsScreen(
                 value = state.date.from,
                 format = when (state.period) {
                     is TrainingsTimelinePeriod.Daily -> DateFormat.DateOnly.DateDdMmm
-                    is TrainingsTimelinePeriod.Monthly -> DateFormat.DateOnly.Mmmm
+                    is TrainingsTimelinePeriod.Monthly -> DateFormat.DateOnly.MonthFullStandalone
                 },
+                contextual = state.period is TrainingsTimelinePeriod.Daily,
                 onSelect = contract::onOpenDateSelector,
                 onNext = contract::onSelectNextDate,
-                onPrevious = contract::onSelectPreviousDate
+                onPrevious = contract::onSelectPreviousDate,
             )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
-            HorizontalDivider(color = AppTokens.colors.divider.default)
+            HorizontalDivider(color = AppTokens.colors.divider.subtle)
         }
     )
 
     val contentPadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
-        vertical = AppTokens.dp.contentPadding.content
+        vertical = AppTokens.dp.contentPadding.content,
     )
 
     when (val period = state.period) {
@@ -122,17 +125,10 @@ internal fun TrainingsScreen(
 @Composable
 private fun DailyScreenPreview() {
     PreviewContainer {
-        val dailyItems = stubDailyTrainingTimeline()
-            .filterIsInstance<TimelineState.Daily.Item>()
-            .toPersistentList()
-        val daily = TrainingsTimelinePeriod.Daily(items = dailyItems)
         TrainingsScreen(
-            state = TrainingsState(
-                period = daily,
-                date = daily.defaultRange(),
-            ),
+            state = dailyTrainingsPreviewState(),
             loaders = persistentSetOf(),
-            contract = TrainingsContract.Empty
+            contract = TrainingsContract.Empty,
         )
     }
 }
@@ -141,18 +137,74 @@ private fun DailyScreenPreview() {
 @Composable
 private fun MonthlyScreenPreview() {
     PreviewContainer {
-        val monthlyRange = TrainingsTimelinePeriod.Monthly().defaultRange()
-        val monthly = TrainingsTimelinePeriod.Monthly.from(
-            range = monthlyRange,
-            timeline = stubMonthlyTrainingTimeline(),
-        )
         TrainingsScreen(
-            state = TrainingsState(
-                period = monthly,
-                date = monthlyRange,
-            ),
+            state = monthlyTrainingsPreviewState(),
             loaders = persistentSetOf(),
-            contract = TrainingsContract.Empty
+            contract = TrainingsContract.Empty,
         )
     }
+}
+
+@AppPreview
+@Composable
+private fun DailyEmptyScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = dailyTrainingsPreviewState(empty = true),
+            loaders = persistentSetOf(),
+            contract = TrainingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DailyLoadingScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = dailyTrainingsPreviewState(empty = true),
+            loaders = persistentSetOf(TrainingsLoader.Trainings),
+            contract = TrainingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MonthlyEmptyScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = monthlyTrainingsPreviewState(empty = true),
+            loaders = persistentSetOf(),
+            contract = TrainingsContract.Empty,
+        )
+    }
+}
+
+private fun dailyTrainingsPreviewState(empty: Boolean = false): TrainingsState {
+    val items = if (empty) {
+        persistentListOf()
+    } else {
+        stubDailyTrainingTimeline().filterIsInstance<TimelineState.Daily.Item>().toPersistentList()
+    }
+    val period = TrainingsTimelinePeriod.Daily(items = items)
+    val range = period.rangeFor(LocalDateTime(2026, 10, 16, 12, 0))
+
+    return TrainingsState(period = period, date = range)
+}
+
+private fun monthlyTrainingsPreviewState(empty: Boolean = false): TrainingsState {
+    val date = LocalDateTime(2026, 10, 16, 12, 0)
+    val range = TrainingsTimelinePeriod.Monthly().rangeFor(date)
+    val timeline = if (empty) {
+        persistentListOf()
+    } else {
+        stubMonthlyTrainingTimeline()
+    }
+    val period = TrainingsTimelinePeriod.Monthly.from(range = range, timeline = timeline)
+    val weeks = period.weeks.map { week ->
+        week.map { day -> day.copy(isToday = day.date.value == date.date) }.toPersistentList()
+    }.toPersistentList()
+
+    return TrainingsState(period = period.copy(weeks = weeks), date = range)
 }

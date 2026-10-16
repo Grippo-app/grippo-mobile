@@ -36,7 +36,9 @@ public fun Modifier.scalableClick(
     role: Role? = Role.Button,
     onClick: () -> Unit
 ): Modifier = composed {
-    if (!enabled) return@composed this
+    if (!enabled) {
+        return@composed this
+    }
 
     val scaleDown = 0.97f
     val minPressDuration = 100.milliseconds

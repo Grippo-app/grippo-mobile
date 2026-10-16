@@ -47,6 +47,7 @@ import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.metric_overview_goal_score
 import com.grippo.design.resources.provider.metric_overview_goal_target
 import com.grippo.design.resources.provider.percent
+import com.grippo.toolkit.date.utils.DateCompose
 
 @Composable
 internal fun GoalCardContent(
@@ -96,6 +97,21 @@ internal fun GoalCardContent(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
         if (presentation == MetricCardPresentation.Detailed) {
+            val createdAt = value.goal.createdAt
+            val createdAtValue = createdAt.value
+            val createdAtText = if (createdAtValue != null) {
+                DateCompose.rememberFormat(value = createdAtValue, format = createdAt.format)
+            } else {
+                createdAt.display
+            }
+            val target = value.goal.target
+            val targetValue = target.value
+            val targetText = if (targetValue != null) {
+                DateCompose.rememberFormat(value = targetValue, format = target.format)
+            } else {
+                target.display
+            }
+
             LineIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -105,7 +121,7 @@ internal fun GoalCardContent(
                 labelSpacing = AppTokens.dp.contentPadding.text,
                 startLabel = {
                     Text(
-                        text = value.goal.createdAt.display,
+                        text = createdAtText,
                         style = AppTokens.typography.b11Med(),
                         color = AppTokens.colors.text.secondary,
                         maxLines = 2,
@@ -113,7 +129,7 @@ internal fun GoalCardContent(
                 },
                 endLabel = {
                     Text(
-                        text = value.goal.target.display,
+                        text = targetText,
                         style = AppTokens.typography.b11Med(),
                         color = AppTokens.colors.text.secondary,
                         maxLines = 2,
@@ -176,6 +192,14 @@ private fun GoalOverviewSummary(
     score: Int,
     ringColors: AppColor.Charts.RingColor.RingPalette,
 ) {
+    val target = value.goal.target
+    val targetValue = target.value
+    val targetText = if (targetValue != null) {
+        DateCompose.rememberFormat(value = targetValue, format = target.format)
+    } else {
+        target.display
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -211,7 +235,7 @@ private fun GoalOverviewSummary(
                 Text(
                     text = AppTokens.strings.res(
                         Res.string.metric_overview_goal_target,
-                        value.goal.target.display,
+                        targetText,
                     ),
                     style = AppTokens.typography.b12Med(),
                     color = AppTokens.colors.text.secondary,

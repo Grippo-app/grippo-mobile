@@ -55,8 +55,8 @@ public object DarkColor : AppColor {
         override val disabledThumb = AppPalette.NeutralDark.N550
         override val disabledTrack = AppPalette.NeutralDark.N300
         override val checkedThumb = AppPalette.NeutralDark.N100
-        override val checkedTrack1 = AppPalette.DarkAccent.Orange
-        override val checkedTrack2 = AppPalette.DarkAccent.Orange
+        public override val checkedTrack1 = AppPalette.NeutralDark.N800
+        public override val checkedTrack2 = AppPalette.NeutralDark.N800
         override val uncheckedThumb = AppPalette.Common.White
         override val uncheckedTrack1 = AppPalette.NeutralDark.N200
         override val uncheckedTrack2 = AppPalette.NeutralDark.N300
@@ -190,6 +190,11 @@ public object DarkColor : AppColor {
             override val accent = AppPalette.DarkAccent.Orange
             override val background = lerp(DarkColor.background.card, accent, 0.10f)
             override val onAccent = AppPalette.NeutralDark.N100
+            public override val selectedCardBackground = AppPalette.NeutralDark.N300
+            public override val selectedCardBorder = AppPalette.NeutralDark.N650
+            public override val checkedIndicator = AppPalette.NeutralDark.N800
+            public override val onCheckedIndicator = AppPalette.NeutralDark.N100
+            public override val onDisabledIndicator = AppPalette.NeutralDark.N650
         }
 
     override val context: AppColor.ContextColors = object : AppColor.ContextColors {

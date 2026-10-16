@@ -39,11 +39,19 @@ internal fun CheckSelectableCardLarge(
 
     val colors = AppTokens.colors.selection
     val backgroundColor by animateColorAsState(
-        if (isSelected) colors.background else AppTokens.colors.background.card,
+        if (isSelected) {
+            colors.selectedCardBackground
+        } else {
+            AppTokens.colors.background.card
+        },
         label = "backgroundColor"
     )
     val borderColor by animateColorAsState(
-        if (isSelected) colors.accent else AppTokens.colors.border.default,
+        if (isSelected) {
+            colors.selectedCardBorder
+        } else {
+            AppTokens.colors.border.default
+        },
         label = "borderColor"
     )
 

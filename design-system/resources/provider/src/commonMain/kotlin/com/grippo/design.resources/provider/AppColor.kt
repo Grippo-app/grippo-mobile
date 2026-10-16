@@ -270,6 +270,11 @@ public interface AppColor {
         public val accent: Color
         public val background: Color
         public val onAccent: Color
+        public val selectedCardBackground: Color
+        public val selectedCardBorder: Color
+        public val checkedIndicator: Color
+        public val onCheckedIndicator: Color
+        public val onDisabledIndicator: Color
     }
 
     public interface StepProgressIndicatorColors {

@@ -38,7 +38,11 @@ public fun Toggle(
     val toggle = AppTokens.colors.toggle
     val dp = AppTokens.dp.toggle
     val thumbPosition by animateFloatAsState(
-        targetValue = if (checked) 1f else 0f,
+        targetValue = if (checked) {
+            1f
+        } else {
+            0f
+        },
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "ToggleThumb"
     )
@@ -64,9 +68,17 @@ public fun Toggle(
         Modifier
             .semantics {
                 role = Role.Switch
-                toggleableState = if (checked) ToggleableState.On else ToggleableState.Off
-                if (contentDescription != null) this.contentDescription = contentDescription
-                if (!enabled) disabled()
+                toggleableState = if (checked) {
+                    ToggleableState.On
+                } else {
+                    ToggleableState.Off
+                }
+                if (contentDescription != null) {
+                    this.contentDescription = contentDescription
+                }
+                if (!enabled) {
+                    disabled()
+                }
             }
             .scalableClick(
                 enabled = enabled,

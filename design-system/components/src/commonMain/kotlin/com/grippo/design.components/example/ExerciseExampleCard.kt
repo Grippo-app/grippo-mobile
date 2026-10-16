@@ -15,23 +15,24 @@ import com.grippo.design.components.frames.FocusFrame
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.datetime.LocalDateTime
 
 @Immutable
 public sealed interface ExerciseExampleCardStyle {
     @Immutable
     public data class Small(
-        val value: ExerciseExampleValueState,
+        public val value: ExerciseExampleValueState,
     ) : ExerciseExampleCardStyle
 
     @Immutable
     public data class Medium(
-        val value: ExerciseExampleState,
+        public val value: ExerciseExampleState,
     ) : ExerciseExampleCardStyle
 
     @Immutable
     public data class Large(
-        val value: ExerciseExampleState,
+        public val value: ExerciseExampleState,
     ) : ExerciseExampleCardStyle
 }
 
@@ -133,9 +134,9 @@ private fun exerciseExampleCardPreviewValue(): ExerciseExampleState {
     return example.copy(
         value = example.value.copy(
             id = "exercise-example-used",
-            lastUsed = DateTimeFormatState.Valid(
-                display = "14 Oct",
+            lastUsed = DateTimeFormatState.of(
                 value = LocalDateTime(2026, 10, 14, 12, 0),
+                range = DateRangePresets.infinity(),
                 format = DateFormat.DateOnly.DateDdMmm,
             ),
         ),

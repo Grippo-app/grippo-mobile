@@ -71,17 +71,17 @@ internal fun DailyTrainingsPage(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = listState,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
     ) {
         items(
             items = items,
             key = { it.key },
-            contentType = { it::class }
+            contentType = { it::class },
         ) { value ->
             DailyTimelineItem(
                 value = value,
                 onTrainingMenuClick = onTrainingMenuClick,
-                onExerciseClick = onExerciseClick
+                onExerciseClick = onExerciseClick,
             )
         }
     }
@@ -99,7 +99,7 @@ private fun DailyTimelineItem(
 
     TimelineIndicator(
         modifier = modifier.fillMaxWidth(),
-        style = style
+        style = style,
     ) {
         if (value is TimelineState.DateTime) {
             val menuLabel = AppTokens.strings.res(Res.string.menu)
@@ -112,16 +112,16 @@ private fun DailyTimelineItem(
 
                 Text(
                     text = "${value.startAt.display} - ${value.createAt.display}",
-                    style = AppTokens.typography.h6(),
-                    color = AppTokens.colors.text.primary
+                    style = AppTokens.typography.b14Semi(),
+                    color = AppTokens.colors.text.primary,
                 )
 
                 Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
 
                 Text(
                     text = value.duration.short(),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -133,7 +133,7 @@ private fun DailyTimelineItem(
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,
-                    onClick = { onTrainingMenuClick(value.trainingId) }
+                    onClick = { onTrainingMenuClick(value.trainingId) },
                 )
             }
         }
@@ -141,10 +141,10 @@ private fun DailyTimelineItem(
         if (exercise != null) {
             ExerciseCard(
                 modifier = Modifier
-                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                    .padding(vertical = AppTokens.dp.contentPadding.text)
                     .fillMaxWidth(),
                 value = exercise,
-                style = ExerciseCardStyle.Medium(onClick = { onExerciseClick(exercise.id) })
+                style = ExerciseCardStyle.Medium(onClick = { onExerciseClick(exercise.id) }),
             )
         }
     }
@@ -160,6 +160,20 @@ private fun DailyTrainingsPagePreview() {
                 .toPersistentList(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             loaders = persistentSetOf(),
+            onTrainingMenuClick = {},
+            onExerciseClick = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DailyTrainingsLoadingPagePreview() {
+    PreviewContainer {
+        DailyTrainingsPage(
+            items = persistentListOf(),
+            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            loaders = persistentSetOf(TrainingsLoader.Trainings),
             onTrainingMenuClick = {},
             onExerciseClick = {},
         )

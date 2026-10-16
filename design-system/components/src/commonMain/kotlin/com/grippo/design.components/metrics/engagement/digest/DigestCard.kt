@@ -6,8 +6,9 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
+import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHeader
-import com.grippo.design.components.metrics.engagement.digest.internal.DigestHero
+import com.grippo.design.components.metrics.engagement.digest.internal.DigestVolume
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
 import com.grippo.design.components.metrics.internal.MetricBreakdownRow
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -23,6 +24,7 @@ import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.total
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.hours
@@ -35,7 +37,7 @@ public fun DigestCard(
 ) {
     MetricSectionPanel(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
+        style = MetricSectionPanelStyle.Small,
     ) {
         DigestHeader(
             icon = AppTokens.icons.Trophy,
@@ -55,7 +57,7 @@ public fun DigestCard(
 private fun EmptyDigestBody() {
     val kgSuffix = AppTokens.strings.res(Res.string.kg)
 
-    DigestHero(
+    DigestVolume(
         value = "0$kgSuffix",
         label = AppTokens.strings.res(Res.string.volume),
         dimmed = true,
@@ -88,7 +90,7 @@ private fun ContentDigestBody(
 ) {
     val duration = value.duration.short()
 
-    DigestHero(
+    DigestVolume(
         value = value.total.short(),
         label = AppTokens.strings.res(Res.string.volume),
     )
@@ -136,6 +138,16 @@ private fun DigestCardEmptyPreview() {
 
 @AppPreview
 @Composable
+private fun DigestCardMissingDurationPreview() {
+    PreviewContainer {
+        DigestCard(
+            value = digestPreviewValue().copy(duration = DurationFormatState.Empty()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
 private fun DigestCardLongValuesPreview() {
     PreviewContainer {
         DigestCard(
@@ -149,15 +161,14 @@ private fun DigestCardLongValuesPreview() {
     }
 }
 
-private fun digestPreviewValue(): DigestState.Content = DigestState.Content(
-    range = DateRangeFormatState.of(
+private fun digestPreviewValue(): DigestState.Content {
+    val digest = stubDigest()
+    check(digest is DigestState.Content)
+
+    val range = DateRange(
         from = LocalDateTime(2026, 10, 1, 0, 0),
-        to = LocalDateTime(2026, 10, 31, 23, 59),
-    ),
-    trainingsCount = 5,
-    duration = DurationFormatState.of(7.hours),
-    total = VolumeFormatState.of(540f),
-    avgVolume = VolumeFormatState.of(108f),
-    totalSets = 32,
-    activeDays = 4,
-)
+        to = LocalDateTime(2026, 10, 31, 23, 59, 59),
+    )
+
+    return digest.copy(range = DateRangeFormatState.of(range = range))
+}

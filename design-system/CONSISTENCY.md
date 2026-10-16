@@ -21,10 +21,11 @@ A compact navigation item and a screen heading do not need the same font size.
 
 ## Color and state
 
-- Generic selection uses the shared selection.accent/background pair: check cards,
-  toggle cards, check marks, filled segments and highlighted navigation. Checked
-  switches use the same warm palette. Success/error/info and chart series keep
-  their semantic colors; selection does not imply a completed workout.
+- Filled segments, highlighted navigation and iteration-picker suggestion chips use the warm
+  selection.accent/background pair. Choice cards and checked controls use neutral
+  selection roles, keeping repeated choices quiet beside the primary action.
+  Success/error/info and chart series keep their semantic colors; selection does
+  not imply a completed workout.
 - Severity backgrounds come from semantic.*Background in both concrete themes.
   Informational bubbles and badges keep neutral text where the status icon already
   supplies the accent. Custom framed content supplies its tint and background
@@ -60,33 +61,39 @@ A compact navigation item and a screen heading do not need the same font size.
 - Chips use a quiet card fill, thin neutral outline and their compact 8/12 dp
   shapes. Metric labels use secondary medium-weight text and values use primary
   semibold text; context icons and category markers retain their meaning. Selected
-  suggestion chips use selection.background and selection.accent for fill/outline
-  with neutral text. Keep selection and click handling at the existing caller.
+  iteration-picker suggestion chips use selection.background and selection.accent
+  for fill/outline with neutral text. Library filters and goal personalization
+  use the neutral CheckSelectableCard Small treatment. Keep selection and click
+  handling at the existing caller.
 - Completed exercise progress uses `semantic.success`: `3/3 sets`. Pending or
   partial progress stays `text.secondary`. Do not add a redundant completion badge.
 - Do not display a maximum weight until at least one set has been recorded.
 - Keep state accents concentrated in the status, marker or stripe. Avoid repeating
   the accent across every text line in an insight card.
-- CheckSelectableCard uses a warm selected surface and outline across all sizes.
+- CheckSelectableCard uses selection.selectedCardBackground and
+  selection.selectedCardBorder for its neutral selected surface and outline.
   Large and Medium show a trailing circular marker in a reserved slot, filled
-  with selection.accent and a selection.onAccent check when selected. Large places
-  its description below the icon/title row to retain reading width. Labels stay
-  neutral across all sizes. Selection animates colors without moving content. Logical
+  with selection.checkedIndicator and a selection.onCheckedIndicator check when
+  selected. Large places its description below the icon/title row to retain reading
+  width. Labels stay neutral across all sizes. Selection animates colors without moving content. Logical
   selection stays with the caller, including single-choice filters and multi-choice chips.
 - Check is the shared circular selection mark. Standalone checkboxes own their
   touch target and accessibility; cards use Check without a callback and retain
   their own interaction. Enabled unchecked marks use icon.secondary for a readable
   neutral outline; disabled marks use icon.disabled. Toggle remains the switch control.
-- ToggleSelectableCard keeps neutral labels, a warm selected surface/outline and
-  a permanently reserved switch slot. Unselected equipment uses icon.secondary
+- ToggleSelectableCard keeps background.card, border.default and neutral labels
+  in both states, with the permanently reserved switch slot conveying availability.
+  Checked tracks are graphite in light theme and light neutral in dark theme;
+  the contrasting thumb and its position distinguish on from off.
+  Unselected equipment uses icon.secondary
   rather than disabled styling. Labels wrap in full; Small uses 16 dp horizontal
   and 12 dp vertical padding, while Medium retains its 64 dp image and 12 dp padding.
 - Use `ButtonStyle.Primary` for starting or resuming a workout. Reserve
   `ButtonStyle.Error` for destructive actions and explicit error acknowledgement.
 - Primary buttons use a restrained orange-to-copper fill from the theme's own
   accent, with light content in the light theme and graphite content in the dark
-  theme, the same pairing as checked controls. Selection, focus, navigation and
-  step progress share that accent, so each theme has one warm orange.
+  theme. Focus, navigation and step progress share that accent, while repeated
+  choice cards and checked controls use their neutral roles.
 - Secondary buttons use a neutral filled surface and thin outline;
   Tertiary and Transparent retain their quieter surface and inline roles.
 - Text buttons use the 12 dp control shape; icon-only buttons remain circular.
@@ -134,14 +141,20 @@ A compact navigation item and a screen heading do not need the same font size.
   Warnings use `semantic.warning` only for the affected value and icon;
   actionable explanatory text stays neutral without a filled warning panel.
   Save keeps the primary button; Add Set keeps the secondary button.
-- Training completion groups tonnage, set/repetition/duration totals and the complete
-  PerGroup muscle breakdown in one neutral Large MetricSectionPanel: the existing
-  28 dp shape, card surface and thin outline define its whole-summary detail action.
-  Tonnage uses a secondary `b13Med` label above a primary `h4` value; the decorative
-  detail chevron uses `icon.secondary`. Values remain complete and may wrap.
+- Training completion starts with a logo-free Compact BrandHeader confirming a
+  saved workout or an update; its owned warm surface carries the emotional accent.
+  One neutral Large MetricSectionPanel groups the session's detail action using
+  the existing 28 dp shape, card surface and thin outline. Duration/sets and
+  tonnage/repetitions form two equal rows: primary `h5` values and secondary
+  `b11Med` labels, with complete wrapping values and `divider.subtle` separators.
+  Its `h5` section title has a decorative `icon.secondary` detail chevron.
+  A secondary `b12Med` caption identifies the optional PerGroup breakdown as
+  estimated muscle-load shares; missing muscle data leaves the totals visible.
   Exercises stay open Medium rows on the screen surface, with only their owner's
-  vertical padding; `contentPadding.block` separates the summary from the list.
-  The pinned dashboard action retains ButtonStyle.Primary and resolved overlay insets.
+  vertical padding; `contentPadding.block` separates the header, summary and list.
+  Done retains ButtonStyle.Primary and resolved overlay insets in every terminal
+  state. Missing saved details use secondary `b14Med` copy; an unconfirmed result
+  uses the same quiet copy without a success header.
 - MenuSection headings use `h4` and a 22 dp glyph centered in a 32 dp tile with
   12 dp corners. The tile lightly tints the supplied icon hue through the
   theme-owned `icon.tintedBackgroundAlpha` coefficient, preserving caller alpha;
@@ -151,6 +164,16 @@ A compact navigation item and a screen heading do not need the same font size.
 - DigestHeader retains its neutral 32 dp icon tile with 12 dp corners and the
   `context.volume` glyph; working metric panels carry no decorative illustration
   spot. Home's welcome and last-workout recap own the warm illustration regions.
+- Training history uses compact Medium exercise rows: a 48 dp Compact image,
+  `b14Semi` full wrapping title and `subContent` gaps. Completed/total sets and
+  recorded maximum keep their existing summary semantics. Large recording rows
+  retain their 64 dp image, `h5` title and `content` gaps. The daily timeline adds
+  only `text` vertical spacing outside the row; its time uses `b14Semi` and
+  duration uses secondary `b12Med` text.
+- The monthly training digest uses the Small MetricSectionPanel with an inline
+  `h4` volume and tertiary `b12Med` label. Its date, total heading and three
+  breakdown metrics stay visible; empty values retain their dimmed treatment.
+  The history toolbar uses `divider.subtle` to separate controls from records.
 - Home uses `MetricCardPresentation.Overview` for goal, muscle, streak and
   performance summaries; goal, streak and performance dialogs retain `Detailed`,
   while muscle details keep the full distribution and PerGroup/PerMuscle selector.
@@ -217,6 +240,9 @@ A compact navigation item and a screen heading do not need the same font size.
   colors retain their meaning. Dividers align with the text after the tile.
 - Equipment rows retain a 64 dp image slot with 12 dp surface padding on all sides.
   Highlighted controls reserve their indicator space so selection does not shift text.
+- Repeated ToggleSelectableCard rows and Medium/Small CheckSelectableCard controls
+  use the compact 12 dp shape. Large experience choices retain the softer 28 dp
+  shape and their full-width description below the title row.
 - Inputs already own their neutral surface and shape. Keep related fields in a
   spacing group without a second form-card frame; align their outer edges with
   the screen header and primary action. A branded hero and a standalone input
@@ -229,8 +255,11 @@ A compact navigation item and a screen heading do not need the same font size.
 - Input focus reuses `border.focus`; invalid fields expose their existing error
   state to accessibility without changing validation or its blur timing.
   Labels may wrap independently of the editable value's single-line limit.
-- Checked controls use the matching foreground for their fill. The dark switch
-  uses a graphite thumb on the bright orange track; check marks use `selection.onAccent`.
+- Checked controls use the matching foreground for their fill: a light mark/thumb
+  on graphite in light theme, and graphite on a light neutral fill in dark theme.
+  Check marks use selection.onCheckedIndicator; disabled checks use
+  selection.onDisabledIndicator over icon.disabled. Disabled switches keep their
+  existing disabled roles and remain distinct from unchecked choices.
 - Tabs announce selection, equipment/muscle switches announce their labels and
   checklist rows announce completion independently of decorative icons/colors.
 - Toggle selection cards expose one Switch action and state at the enclosing
@@ -242,7 +271,8 @@ A compact navigation item and a screen heading do not need the same font size.
   comparison text and statuses wrap naturally. Its paired metric cards share an
   intrinsic-height row, so localized headings can grow without uneven card bottoms.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
-  Compact inline exercise references may use the existing small variant.
+  Medium history/read-only exercise rows use `COMPACT` (48 dp); small inline
+  exercise references may use `SMALL` (32 dp).
 - Exercise image slots use `background.card`, a thin `border.default` boundary
   and their existing compact radii. Loading/missing/error placeholders use
   `icon.secondary` with size-specific padding, keeping the 32 dp slot readable

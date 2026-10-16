@@ -40,30 +40,50 @@ public fun Check(
 ) {
     val dp = AppTokens.dp.check
     val colors = AppTokens.colors.selection
-    val accent = if (enabled) colors.accent else AppTokens.colors.icon.disabled
+    val indicatorColor = if (enabled) {
+        colors.checkedIndicator
+    } else {
+        AppTokens.colors.icon.disabled
+    }
     val backgroundColor by animateColorAsState(
-        targetValue = if (checked) accent else Color.Transparent,
+        targetValue = if (checked) {
+            indicatorColor
+        } else {
+            Color.Transparent
+        },
         label = "CheckBackground",
     )
     val borderColor by animateColorAsState(
         targetValue = when {
             !enabled -> AppTokens.colors.icon.disabled
-            checked -> accent
+            checked -> indicatorColor
             else -> AppTokens.colors.icon.secondary
         },
         label = "CheckBorder",
     )
     val markColor by animateColorAsState(
-        targetValue = if (checked) colors.onAccent else Color.Transparent,
+        targetValue = when {
+            !checked -> Color.Transparent
+            !enabled -> colors.onDisabledIndicator
+            else -> colors.onCheckedIndicator
+        },
         label = "CheckMark",
     )
     val interactionModifier = if (onCheckedChange != null) {
         Modifier
             .semantics {
                 role = Role.Checkbox
-                if (contentDescription != null) this.contentDescription = contentDescription
-                toggleableState = if (checked) ToggleableState.On else ToggleableState.Off
-                if (!enabled) disabled()
+                if (contentDescription != null) {
+                    this.contentDescription = contentDescription
+                }
+                toggleableState = if (checked) {
+                    ToggleableState.On
+                } else {
+                    ToggleableState.Off
+                }
+                if (!enabled) {
+                    disabled()
+                }
             }
             .scalableClick(
                 enabled = enabled,

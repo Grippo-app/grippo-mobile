@@ -123,7 +123,15 @@
     <string name="save_btn">Save</string>
     <string name="update_btn">Update</string>
     <string name="workout_summary">Workout summary</string>
-    <string name="go_to_dashboard">Go to dashboard</string>
+    <string name="training_completed_title">Nice work</string>
+    <string name="training_completed_description">Workout saved. Take a moment to see what you did.</string>
+    <string name="training_completed_updated_title">Workout updated</string>
+    <string name="training_completed_updated_description">Your changes are saved in your workout history.</string>
+    <string name="training_completed_session_title">This session</string>
+    <string name="training_completed_muscle_load_caption">Share of estimated muscle load</string>
+    <string name="training_completed_details_unavailable">Workout saved. You can find it in your history.</string>
+    <string name="training_completed_result_unavailable">The workout result could not be confirmed. Check your history before trying again.</string>
+    <string name="training_completed_done">Done</string>
     <string name="total">Total</string>
     <string name="per_group">Per group</string>
     <string name="per_muscle">Per muscle</string>

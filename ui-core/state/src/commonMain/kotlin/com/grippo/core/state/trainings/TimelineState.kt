@@ -2,11 +2,14 @@ package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
-import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -14,7 +17,9 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.plus
+import kotlin.time.Duration.Companion.minutes
 
 @Immutable
 public sealed interface TimelineState {
@@ -158,8 +163,10 @@ public sealed interface TimelineState {
 }
 
 public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
-    val trainings = listOf(stubTraining(), stubTraining())
-    if (trainings.isEmpty()) return persistentListOf()
+    val trainings = listOf(
+        timelinePreviewTraining(id = "morning", createdAt = LocalDateTime(2026, 10, 16, 9, 45)),
+        timelinePreviewTraining(id = "evening", createdAt = LocalDateTime(2026, 10, 16, 18, 45)),
+    )
 
     val values = mutableListOf<TimelineState>()
     trainings.forEachIndexed { index, training ->
@@ -201,14 +208,25 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 }
 
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
-    val monthRange = DateRangePresets.monthly()
+    val monthRange = DateRange(
+        from = LocalDateTime(2026, 10, 1, 0, 0),
+        to = LocalDateTime(2026, 10, 31, 23, 59, 59),
+    )
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
     val monthReferenceFormatted = DateFormatState.of(
         value = monthReference,
         range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.MmmYyyy,
     )
-    val digest = stubDigest()
+    val digest = DigestState.Content(
+        range = DateRangeFormatState.of(monthRange),
+        trainingsCount = 5,
+        duration = DurationFormatState.of(225.minutes),
+        total = VolumeFormatState.of(9_600f),
+        avgVolume = VolumeFormatState.of(1_920f),
+        totalSets = 20,
+        activeDays = 4,
+    )
     val values = mutableListOf<TimelineState>()
 
     values += TimelineState.MonthlyDigest(
@@ -217,10 +235,20 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
         key = "stub-monthly-digest",
     )
 
-    val dayOffsets = listOf(0, 3, 10, 18)
+    val dayOffsets = listOf(0, 3, 10, 15)
     val days = dayOffsets.mapIndexed { index, offset ->
         val date = monthReference.plus(DatePeriod(days = offset))
-        val trainings = List(index % 2 + 1) { stubTraining() }.toPersistentList()
+        val trainingCount = if (index == dayOffsets.lastIndex) {
+            2
+        } else {
+            1
+        }
+        val trainings = List(trainingCount) { trainingIndex ->
+            timelinePreviewTraining(
+                id = "training-$index-$trainingIndex",
+                createdAt = LocalDateTime(date = date, time = monthRange.from.time),
+            )
+        }.toPersistentList()
         val position = when {
             dayOffsets.size == 1 -> TrainingPosition.SINGLE
             index == 0 -> TrainingPosition.FIRST
@@ -245,10 +273,48 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
     return values.toPersistentList()
 }
 
+private fun timelinePreviewTraining(id: String, createdAt: LocalDateTime): TrainingState {
+    val training = stubTraining()
+    val baseExercise = stubExercise()
+    val completed = stubPendingIteration().copy(
+        id = "$id-set-1",
+        externalWeight = VolumeFormatState.of(60f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    val exercise = baseExercise.copy(
+        id = "$id-exercise-1",
+        exerciseExample = baseExercise.exerciseExample.copy(id = "$id-example-1"),
+        iterations = persistentListOf(completed, completed.copy(id = "$id-set-2")),
+    )
+
+    return training.copy(
+        id = id,
+        createdAt = DateTimeFormatState.of(
+            value = createdAt,
+            range = DateRangePresets.infinity(),
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
+        ),
+        duration = DurationFormatState.of(45.minutes),
+        exercises = persistentListOf(
+            exercise,
+            exercise.copy(
+                id = "$id-exercise-2",
+                exerciseExample = exercise.exerciseExample.copy(
+                    id = "$id-example-2",
+                    name = "Жим гантелей лёжа на наклонной скамье нейтральным хватом",
+                ),
+            ),
+        ),
+    )
+}
+
 private fun TrainingState.toPreviewTrainingListValues(
     position: TrainingPosition,
 ): ImmutableList<TimelineState> {
-    if (exercises.isEmpty()) return persistentListOf()
+    if (exercises.isEmpty()) {
+        return persistentListOf()
+    }
+
     val result = mutableListOf<TimelineState>()
     when (exercises.size) {
         1 -> {

@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.frames.FocusFrame
@@ -28,11 +29,13 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.trainings.trainings.MonthlyCalendarDayState
 import com.grippo.trainings.trainings.TrainingsTimelinePeriod
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun MonthlyTrainingsPage(
@@ -58,7 +61,7 @@ internal fun MonthlyTrainingsPage(
         DigestCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .scalableClick(onClick = onDigestClick),
+                .scalableClick(role = Role.Button, onClick = onDigestClick),
             value = period.digest,
         )
 
@@ -152,7 +155,9 @@ private fun MonthCalendarDayCell(
         else -> AppTokens.colors.text.secondary
     }
     val clickableModifier = if (day.isClickable) {
-        Modifier.scalableClick { day.date.value?.let(onDayClick) }
+        Modifier.scalableClick(role = Role.Button) {
+            day.date.value?.let(onDayClick)
+        }
     } else {
         Modifier
     }
@@ -209,10 +214,7 @@ private fun MonthCalendarDayCellContent(
 private fun MonthlyTrainingsPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            period = TrainingsTimelinePeriod.Monthly.from(
-                range = DateRangePresets.monthly(),
-                timeline = stubMonthlyTrainingTimeline(),
-            ),
+            period = monthlyTrainingsPreviewPeriod(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onDigestClick = {},
             onOpenDaily = { _ -> },
@@ -225,10 +227,27 @@ private fun MonthlyTrainingsPagePreview() {
 private fun MonthlyTrainingsEmptyPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            period = TrainingsTimelinePeriod.Monthly(),
+            period = monthlyTrainingsPreviewPeriod(empty = true),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )
     }
+}
+
+private fun monthlyTrainingsPreviewPeriod(empty: Boolean = false): TrainingsTimelinePeriod.Monthly {
+    val date = LocalDateTime(2026, 10, 16, 12, 0)
+    val range = TrainingsTimelinePeriod.Monthly().rangeFor(date)
+    val timeline = if (empty) {
+        persistentListOf()
+    } else {
+        stubMonthlyTrainingTimeline()
+    }
+    val period = TrainingsTimelinePeriod.Monthly.from(range = range, timeline = timeline)
+
+    return period.copy(
+        weeks = period.weeks.map { week ->
+            week.map { day -> day.copy(isToday = day.date.value == date.date) }.toPersistentList()
+        }.toPersistentList(),
+    )
 }

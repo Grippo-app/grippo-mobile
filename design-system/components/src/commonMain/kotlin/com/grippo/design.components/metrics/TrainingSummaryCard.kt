@@ -2,14 +2,11 @@ package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -17,11 +14,13 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TrainingState
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
 import com.grippo.design.components.metrics.internal.MetricBreakdownRow
+import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.modifiers.scalableClick
@@ -30,10 +29,11 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
-import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.tonnage
+import com.grippo.design.resources.provider.training_completed_muscle_load_caption
+import com.grippo.design.resources.provider.training_completed_session_title
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Duration.Companion.hours
@@ -43,62 +43,44 @@ import kotlin.time.Duration.Companion.minutes
 public fun TrainingSummaryCard(
     modifier: Modifier = Modifier,
     training: TrainingState,
-    muscleLoad: MuscleLoadSummaryState,
+    muscleLoad: MuscleLoadSummaryState?,
     onClick: () -> Unit,
 ) {
     MetricSectionPanel(
         modifier = modifier.scalableClick(onClick = onClick),
         style = MetricSectionPanelStyle.Large,
     ) {
-        SummaryHero(
+        MetricOverviewHeader(
             modifier = Modifier.fillMaxWidth(),
-            training = training,
+            title = AppTokens.strings.res(Res.string.training_completed_session_title),
         )
         SummaryBreakdown(
             modifier = Modifier.fillMaxWidth(),
             training = training,
         )
-        MuscleLoading(
-            modifier = Modifier.fillMaxWidth(),
-            summary = muscleLoad,
-            mode = MuscleLoadingMode.PerGroup,
-        )
-    }
-}
-
-@Composable
-private fun SummaryHero(
-    modifier: Modifier = Modifier,
-    training: TrainingState,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-        ) {
-            Text(
-                text = AppTokens.strings.res(Res.string.tonnage),
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
+        if (muscleLoad != null && muscleLoad.perGroup.entries.isNotEmpty()) {
+            HorizontalDivider(
+                thickness = AppTokens.dp.metrics.trainingSummary.dividerWidth,
+                color = AppTokens.colors.divider.subtle,
             )
 
-            Text(
-                text = training.total.volume.short(),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                Text(
+                    text = AppTokens.strings.res(Res.string.training_completed_muscle_load_caption),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+
+                MuscleLoading(
+                    modifier = Modifier.fillMaxWidth(),
+                    summary = muscleLoad,
+                    mode = MuscleLoadingMode.PerGroup,
+                )
+            }
         }
-
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
-            imageVector = AppTokens.icons.ArrowRight,
-            tint = AppTokens.colors.icon.secondary,
-            contentDescription = null,
-        )
     }
 }
 
@@ -109,6 +91,7 @@ private fun SummaryBreakdown(
 ) {
     val durationLabel = AppTokens.strings.res(Res.string.duration)
     val setsLabel = AppTokens.strings.res(Res.string.sets)
+    val tonnageLabel = AppTokens.strings.res(Res.string.tonnage)
     val repsLabel = AppTokens.strings.res(Res.string.reps)
     val duration = training.duration.short()
 
@@ -118,36 +101,55 @@ private fun SummaryBreakdown(
 
     val repsCount = training.total.repetitions.value ?: 0
 
-    MetricBreakdownRow(
+    Column(
         modifier = modifier,
-        items = persistentListOf(
-            MetricBreakdownItem(
-                label = setsLabel,
-                value = setsCount.toString(),
-                dimmed = setsCount == 0,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        MetricBreakdownRow(
+            items = persistentListOf(
+                MetricBreakdownItem(
+                    label = durationLabel,
+                    value = duration.ifBlank { "—" },
+                    dimmed = duration.isBlank(),
+                ),
+                MetricBreakdownItem(
+                    label = setsLabel,
+                    value = setsCount.toString(),
+                    dimmed = setsCount == 0,
+                ),
             ),
-            MetricBreakdownItem(
-                label = repsLabel,
-                value = repsCount.toString(),
-                dimmed = repsCount == 0,
+        )
+
+        MetricBreakdownRow(
+            items = persistentListOf(
+                MetricBreakdownItem(
+                    label = tonnageLabel,
+                    value = training.total.volume.short(),
+                    dimmed = training.total.volume.value == null,
+                ),
+                MetricBreakdownItem(
+                    label = repsLabel,
+                    value = repsCount.toString(),
+                    dimmed = repsCount == 0,
+                ),
             ),
-            MetricBreakdownItem(
-                label = durationLabel,
-                value = duration.ifBlank { "0" },
-                dimmed = duration.isBlank(),
-            ),
-        ),
-    )
+        )
+    }
 }
 
 private fun trainingSummaryPreviewTraining(): TrainingState {
     val training = stubTraining()
-    val exercises = training.exercises.mapIndexed { index, exercise ->
+    val iteration = stubPendingIteration().copy(
+        id = "summary-set",
+        repetitions = RepetitionsFormatState.of(10),
+        externalWeight = VolumeFormatState.of(40f),
+    )
+    val exercises = training.exercises.take(3).mapIndexed { index, exercise ->
         exercise.copy(
             id = "summary-exercise-$index",
-            iterations = persistentListOf(
-                exercise.iterations.first().copy(id = "summary-set-$index"),
-            ),
+            iterations = List(3) { setIndex ->
+                iteration.copy(id = "summary-set-$index-$setIndex")
+            }.toPersistentList(),
         )
     }.toPersistentList()
 
@@ -156,8 +158,8 @@ private fun trainingSummaryPreviewTraining(): TrainingState {
         duration = DurationFormatState.of(75.minutes),
         exercises = exercises,
         total = training.total.copy(
-            volume = VolumeFormatState.of(8_640f),
-            repetitions = RepetitionsFormatState.of(96),
+            volume = VolumeFormatState.of(3_600f),
+            repetitions = RepetitionsFormatState.of(90),
         ),
     )
 }
@@ -211,6 +213,18 @@ private fun TrainingSummaryCardSingleGroupPreview() {
                     entries = persistentListOf(muscleLoad.perGroup.entries.first().copy(value = 100f)),
                 ),
             ),
+            onClick = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingSummaryCardWithoutMuscleLoadPreview() {
+    PreviewContainer {
+        TrainingSummaryCard(
+            training = trainingSummaryPreviewTraining(),
+            muscleLoad = null,
             onClick = {},
         )
     }

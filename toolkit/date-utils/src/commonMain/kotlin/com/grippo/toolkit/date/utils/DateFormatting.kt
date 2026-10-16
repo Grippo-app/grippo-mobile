@@ -13,10 +13,13 @@ public object DateFormatting {
     @Volatile
     private var lastTag: String? = null
 
-    // To handle locale change from device or manually
     public fun install(tag: String?) {
-        if (lastTag == tag) return
-        lastTag = tag
-        current = FixedLocaleDateFormatter(SystemDateFormatter(), tag)
+        val normalizedTag = tag?.split(',')?.firstOrNull { it.isNotBlank() }?.trim()
+        if (lastTag == normalizedTag) {
+            return
+        }
+
+        lastTag = normalizedTag
+        current = FixedLocaleDateFormatter(base = SystemDateFormatter(), fixedTag = normalizedTag)
     }
 }

@@ -38,14 +38,23 @@ public fun DatePicker(
     value: LocalDateTime,
     format: DateFormat.DateOnly,
     enabled: Boolean = true,
+    contextual: Boolean = true,
     onSelect: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
 ) {
-    val text = DateCompose.rememberFormat(value.date, format)
+    val text = DateCompose.rememberFormat(
+        value = value.date,
+        format = format,
+        contextual = contextual,
+    )
     val previousLabel = AppTokens.strings.res(Res.string.accessibility_previous_period)
     val nextLabel = AppTokens.strings.res(Res.string.accessibility_next_period)
-    val buttonState = if (enabled) ButtonState.Enabled else ButtonState.Disabled
+    val buttonState = if (enabled) {
+        ButtonState.Enabled
+    } else {
+        ButtonState.Disabled
+    }
 
     val titleColor = when (enabled) {
         true -> AppTokens.colors.text.primary
@@ -119,6 +128,21 @@ private fun DatePickerPreview() {
             onSelect = {},
             onNext = {},
             onPrevious = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DatePickerStandaloneMonthPreview() {
+    PreviewContainer {
+        DatePicker(
+            value = LocalDateTime(2026, 10, 1, 12, 0),
+            format = DateFormat.DateOnly.MonthFullStandalone,
+            contextual = false,
+            onSelect = {},
+            onNext = {},
+            onPrevious = {},
         )
     }
 }

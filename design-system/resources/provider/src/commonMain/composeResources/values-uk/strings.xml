@@ -123,7 +123,15 @@
     <string name="save_btn">Зберегти</string>
     <string name="update_btn">Оновити</string>
     <string name="workout_summary">Підсумок тренування</string>
-    <string name="go_to_dashboard">Перейти до панелі</string>
+    <string name="training_completed_title">Гарна робота</string>
+    <string name="training_completed_description">Тренування збережено. Поглянь, що вдалося зробити.</string>
+    <string name="training_completed_updated_title">Тренування оновлено</string>
+    <string name="training_completed_updated_description">Зміни збережено в історії тренувань.</string>
+    <string name="training_completed_session_title">За це тренування</string>
+    <string name="training_completed_muscle_load_caption">Частка розрахункового навантаження</string>
+    <string name="training_completed_details_unavailable">Тренування збережено. Переглянути його можна в історії.</string>
+    <string name="training_completed_result_unavailable">Не вдалося підтвердити результат тренування. Перевір історію перед повторною спробою.</string>
+    <string name="training_completed_done">Готово</string>
     <string name="total">Всього</string>
     <string name="per_group">По групам</string>
     <string name="per_muscle">По м’язах</string>

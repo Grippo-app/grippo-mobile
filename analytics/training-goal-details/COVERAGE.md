@@ -41,7 +41,7 @@ These are new v1 events; existing Home event meanings/populations remain unchang
 |---|---|---|---|---|
 | TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only for live dialog | Caller range, retainedInstance | Ordinary retained recreation uses the same VM; reopening receives current caller range |
 | TrainingGoalDetailsViewModel | progress and insights | Rebuild | TrainingFeature.observeTrainings, GoalFollowingUseCase, current time and existing mapping/calculation | Fresh VM starts with null progress/empty insights, then rebuilds; null adherence produces NoData |
-| Rendered content | Localized range, reasons, tips and goal presentation | Rebuild | Existing formatters/resources and rebuilt progress | No saved presentation cache |
+| Rendered content | Localized range, reasons, tips and goal presentation | Rebuild | Existing resources and rebuilt progress; GoalCard dates use `DateCompose` with the typed values and stored formats | Goal date labels resolve the current composition locale; absent typed values keep their existing display. No business snapshot or additional presentation cache |
 | Dialog host | Session, callbacks, pending directions | Runtime only | DialogComponent slot and DialogContentComponent stack use serializer = null | Actual process death closes the dialog; callbacks are never archived |
 | Foundation / widgets | Jobs, loaders, scroll state and telemetry provenance | Runtime only | Existing foundation/widget ownership | No business snapshot or synthetic interaction replay |
 

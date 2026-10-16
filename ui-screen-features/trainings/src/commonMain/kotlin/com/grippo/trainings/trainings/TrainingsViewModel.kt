@@ -108,24 +108,22 @@ internal class TrainingsViewModel(
 
         val timeline = trainingTimeline.toState()
 
-        update { current ->
-            val nextPeriod = when (current.period) {
-                is TrainingsTimelinePeriod.Daily -> {
-                    val items = timeline
-                        .filterIsInstance<TimelineState.Daily.Item>()
-                        .toPersistentList()
+        val period = when (state.value.period) {
+            is TrainingsTimelinePeriod.Daily -> {
+                val items = timeline
+                    .filterIsInstance<TimelineState.Daily.Item>()
+                    .toPersistentList()
 
-                    TrainingsTimelinePeriod.Daily(items = items)
-                }
-
-                is TrainingsTimelinePeriod.Monthly -> TrainingsTimelinePeriod.Monthly.from(
-                    range = range,
-                    timeline = timeline,
-                )
+                TrainingsTimelinePeriod.Daily(items = items)
             }
 
-            current.copy(period = nextPeriod)
+            is TrainingsTimelinePeriod.Monthly -> TrainingsTimelinePeriod.Monthly.from(
+                range = range,
+                timeline = timeline,
+            )
         }
+
+        update { it.copy(period = period) }
     }
 
     private fun applyAnchor(date: LocalDateTime) {

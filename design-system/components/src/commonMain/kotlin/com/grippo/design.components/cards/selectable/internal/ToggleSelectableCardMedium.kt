@@ -1,6 +1,5 @@
 package com.grippo.design.components.cards.selectable.internal
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -27,7 +25,7 @@ import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Spinner
+import com.grippo.design.resources.provider.equipment.Dumbbell
 
 @Composable
 internal fun ToggleSelectableCardMedium(
@@ -37,24 +35,23 @@ internal fun ToggleSelectableCardMedium(
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.toggleSelectableCard.medium.radius)
-    val colors = AppTokens.colors.selection
-    val backgroundColor by animateColorAsState(
-        if (isSelected) colors.background else AppTokens.colors.background.card,
-        label = "backgroundColor"
-    )
-    val borderColor by animateColorAsState(
-        if (isSelected) colors.accent else AppTokens.colors.border.default,
-        label = "borderColor"
-    )
 
     Row(
         modifier = modifier
             .semantics(mergeDescendants = true) {
-                toggleableState = if (isSelected) ToggleableState.On else ToggleableState.Off
+                toggleableState = if (isSelected) {
+                    ToggleableState.On
+                } else {
+                    ToggleableState.Off
+                }
             }
             .scalableClick(role = Role.Switch, haptic = true, onClick = onClick)
-            .background(backgroundColor, shape)
-            .border(AppTokens.dp.toggleSelectableCard.borderWidth, borderColor, shape)
+            .background(AppTokens.colors.background.card, shape)
+            .border(
+                AppTokens.dp.toggleSelectableCard.borderWidth,
+                AppTokens.colors.border.default,
+                shape,
+            )
             .heightIn(min = AppTokens.dp.toggleSelectableCard.medium.height)
             .padding(
                 horizontal = AppTokens.dp.toggleSelectableCard.medium.horizontalPadding,
@@ -90,8 +87,8 @@ private fun ToggleSelectableCardMediumPreview() {
     PreviewContainer {
         ToggleSelectableCardVariants(
             ToggleSelectableCardStyle.Medium(
-                title = "Test Title",
-                icon = AppTokens.icons.Spinner
+                title = "Dumbbells",
+                icon = Dumbbell
             )
         )
     }

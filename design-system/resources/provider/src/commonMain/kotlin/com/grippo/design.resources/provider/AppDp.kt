@@ -502,7 +502,6 @@ public data object AppDp {
     }
 
     public data object Training {
-        val completionEntranceOffset: Dp = 40.dp
         val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small
@@ -655,6 +654,7 @@ public data object AppDp {
     public data object ExerciseExampleImage {
         val borderWidth: Dp = 1.dp
         val small: Small = Small
+        public val compact: Compact = Compact
         val large: Large = Large
         val medium: Medium = Medium
 
@@ -662,6 +662,12 @@ public data object AppDp {
             val size: Dp = icon.xLarge
             val radius: Dp = AppDp.radius.small
             val placeholderPadding: Dp = padding.small
+        }
+
+        public data object Compact {
+            public val size: Dp = 48.dp
+            public val radius: Dp = AppDp.radius.medium
+            public val placeholderPadding: Dp = padding.medium
         }
 
         public data object Medium {
@@ -709,7 +715,7 @@ public data object AppDp {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.large
+            public val radius: Dp = AppDp.radius.medium
             val icon: Dp = size.large
         }
 
@@ -717,7 +723,7 @@ public data object AppDp {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.large
+            public val radius: Dp = AppDp.radius.medium
         }
     }
 
@@ -737,13 +743,13 @@ public data object AppDp {
         public data object Medium {
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.large
+            public val radius: Dp = AppDp.radius.medium
         }
 
         public data object Small {
             val verticalPadding: Dp = padding.small
             val horizontalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.large
+            public val radius: Dp = AppDp.radius.medium
         }
     }
 

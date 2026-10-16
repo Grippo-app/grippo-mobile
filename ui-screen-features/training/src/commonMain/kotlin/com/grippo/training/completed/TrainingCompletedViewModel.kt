@@ -20,6 +20,10 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.training_completed_description
+import com.grippo.design.resources.provider.training_completed_title
+import com.grippo.design.resources.provider.training_completed_updated_description
+import com.grippo.design.resources.provider.training_completed_updated_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.distribution.toState
@@ -46,7 +50,20 @@ internal class TrainingCompletedViewModel(
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     initialState: TrainingCompletedState,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
-    state = initialState,
+    state = initialState.copy(
+        title = UiText.Res(
+            value = when (stage) {
+                is StageState.Edit -> Res.string.training_completed_updated_title
+                StageState.Add, StageState.Draft -> Res.string.training_completed_title
+            },
+        ),
+        description = UiText.Res(
+            value = when (stage) {
+                is StageState.Edit -> Res.string.training_completed_updated_description
+                StageState.Add, StageState.Draft -> Res.string.training_completed_description
+            },
+        ),
+    ),
 ), TrainingCompletedContract {
 
     override val screenPresentation = { reason: NavigationReason ->

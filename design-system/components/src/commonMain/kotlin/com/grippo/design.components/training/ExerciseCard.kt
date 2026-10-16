@@ -4,26 +4,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
-import com.grippo.core.state.trainings.stubIteration
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.training.internal.ExerciseCardRow
 import com.grippo.design.components.training.internal.ExerciseCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDateTime
 
 @Stable
 public sealed interface ExerciseCardStyle {
     @Stable
     public data class Large(
-        val onClick: () -> Unit
+        public val onClick: () -> Unit
     ) : ExerciseCardStyle
 
     @Stable
     public data class Medium(
-        val onClick: (() -> Unit)? = null,
+        public val onClick: (() -> Unit)? = null,
     ) : ExerciseCardStyle
 
     @Immutable
@@ -45,12 +50,14 @@ public fun ExerciseCard(
         is ExerciseCardStyle.Medium -> ExerciseCardRow(
             modifier = modifier,
             value = value,
+            isCompact = true,
             onClick = style.onClick
         )
 
         is ExerciseCardStyle.Large -> ExerciseCardRow(
             modifier = modifier,
             value = value,
+            isCompact = false,
             onClick = style.onClick
         )
     }
@@ -60,8 +67,22 @@ public fun ExerciseCard(
 @Composable
 private fun ExerciseCardReadOnlyPreview() {
     PreviewContainer {
+        val exercise = exercisePreviewValue()
+
         ExerciseCard(
-            value = stubExercise(),
+            value = exercise.copy(iterations = persistentListOf(exercisePreviewPendingIteration())),
+            style = ExerciseCardStyle.Medium(),
+        )
+        ExerciseCard(
+            value = exercise,
+            style = ExerciseCardStyle.Medium(),
+        )
+        ExerciseCard(
+            value = exercise.copy(
+                exerciseExample = exercise.exerciseExample.copy(
+                    name = "Жим гантелей лёжа на наклонной скамье нейтральным хватом",
+                ),
+            ),
             style = ExerciseCardStyle.Medium(),
         )
     }
@@ -71,18 +92,20 @@ private fun ExerciseCardReadOnlyPreview() {
 @Composable
 private fun ExerciseCardPreview() {
     PreviewContainer {
+        val exercise = exercisePreviewValue()
+
         ExerciseCard(
-            value = stubExercise(),
+            value = exercise,
             style = ExerciseCardStyle.Small
         )
         ExerciseCard(
-            value = stubExercise(),
+            value = exercise,
             style = ExerciseCardStyle.Medium(
                 onClick = {}
             ),
         )
         ExerciseCard(
-            value = stubExercise(),
+            value = exercise,
             style = ExerciseCardStyle.Large(
                 onClick = {}
             ),
@@ -94,9 +117,13 @@ private fun ExerciseCardPreview() {
 @Composable
 private fun ExerciseCardStatesPreview() {
     PreviewContainer {
-        val base = stubExercise()
-        val pending = stubPendingIteration()
-        val completed = stubIteration()
+        val base = exercisePreviewValue()
+        val pending = exercisePreviewPendingIteration()
+        val completed = pending.copy(
+            id = "completed-set",
+            externalWeight = VolumeFormatState.of(80f),
+        )
+
         listOf(
             base.copy(iterations = persistentListOf(pending)),
             base.copy(iterations = persistentListOf(completed, pending)),
@@ -110,7 +137,36 @@ private fun ExerciseCardStatesPreview() {
             ),
         ).forEach { exercise ->
             ExerciseCard(value = exercise, style = ExerciseCardStyle.Medium(onClick = {}))
-            ExerciseCard(value = exercise, style = ExerciseCardStyle.Small)
         }
     }
 }
+
+private fun exercisePreviewValue(): ExerciseState {
+    val base = stubExercise()
+
+    return base.copy(
+        id = "bench-press",
+        exerciseExample = base.exerciseExample.copy(
+            id = "bench-press-example",
+            name = "Dumbbell bench press",
+            imageUrl = null,
+        ),
+        iterations = persistentListOf(
+            exercisePreviewPendingIteration().copy(
+                id = "completed-set",
+                externalWeight = VolumeFormatState.of(80f),
+            ),
+            exercisePreviewPendingIteration(),
+        ),
+        createdAt = DateTimeFormatState.of(
+            value = LocalDateTime(2026, 10, 16, 10, 0),
+            range = DateRangePresets.infinity(),
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
+        ),
+    )
+}
+
+private fun exercisePreviewPendingIteration() = stubPendingIteration().copy(
+    id = "pending-set",
+    repetitions = RepetitionsFormatState.of(8),
+)

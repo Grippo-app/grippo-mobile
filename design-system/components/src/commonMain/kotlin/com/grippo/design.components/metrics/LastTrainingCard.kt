@@ -33,6 +33,7 @@ import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.home_last_workout_in_period
 import com.grippo.design.resources.provider.metric_overview_duration
 import com.grippo.design.resources.provider.metric_overview_volume
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.toPersistentList
@@ -47,6 +48,14 @@ public fun LastTrainingCard(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.large.radius)
+    val createdAt = value.createdAt
+    val createdAtValue = createdAt.value
+    val createdAtText = if (createdAtValue != null) {
+        DateCompose.rememberFormat(value = createdAtValue, format = createdAt.format)
+    } else {
+        createdAt.display
+    }
+
     Column(
         modifier = modifier
             .illustrationBackground(shape)
@@ -74,7 +83,7 @@ public fun LastTrainingCard(
                         color = AppTokens.colors.text.primary,
                     )
                     Text(
-                        text = value.createdAt.display,
+                        text = createdAtText,
                         style = AppTokens.typography.b13Med(),
                         color = AppTokens.colors.text.secondary,
                     )

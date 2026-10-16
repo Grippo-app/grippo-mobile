@@ -19,20 +19,20 @@ public sealed class CheckSelectableCardStyle(
 ) {
     @Immutable
     public data class Small(
-        override val title: String,
+        public override val title: String,
     ) : CheckSelectableCardStyle(title)
 
     @Immutable
     public data class Medium(
-        override val title: String,
-        val description: String?,
+        public override val title: String,
+        public val description: String?,
     ) : CheckSelectableCardStyle(title)
 
     @Immutable
     public data class Large(
-        override val title: String,
-        val description: String,
-        val icon: ImageVector,
+        public override val title: String,
+        public val description: String,
+        public val icon: ImageVector,
     ) : CheckSelectableCardStyle(title)
 }
 

@@ -40,7 +40,7 @@ version 1.
 |---|---|---|
 | Recording, Add/Edit/Draft including the draft deeplink; one screen for all modes | TrainingRecordingComponent → TrainingRecordingViewModel | `TrainingScreen.Recording` / `training_recording`; typed hook |
 | Exercise editor, new/edit/replacement-library return | TrainingExerciseComponent → TrainingExerciseViewModel | `TrainingScreen.Exercise` / `training_exercise`; typed hook; original navigation/result owner |
-| Completed, saving loader then summary | TrainingCompletedComponent → TrainingCompletedViewModel | `TrainingScreen.Completed` / `training_completed`; typed hook |
+| Completed, saving loader then create/update confirmation and summary; saved-without-details or unconfirmed-result fallback | TrainingCompletedComponent → TrainingCompletedViewModel | `TrainingScreen.Completed` / `training_completed`; typed hook |
 | `DialogConfig.ConfirmTrainingCompletion(title, initial, onResult)`, opened only by the recording screen; duration input, Confirm, Cancel | ConfirmTrainingCompletionComponent → ConfirmTrainingCompletionViewModel | Live bottom sheet; default null screenPresentation under the dialog policy; no `TrainingScreen` entry; `hasSameContentAs` compares `initial` |
 | Exercises / Library | ExercisesRootComponent → ExerciseLibraryComponent → ExerciseLibraryViewModel | Delegated `ExercisesScreen.Library` / `exercise_library`; owned by the exercises feature; ExercisesRoot is a container |
 | Training stack host (`RootRouter.Training`) | TrainingComponent → TrainingViewModel | Default null; renders only the child stack; forwards navigation; resolves no analytics |
@@ -63,7 +63,7 @@ or route attribution exists.
 | Exercise add / edit iteration | AddIteration after the current example exists; EditVolume/EditRepetitions after the example and index guards; IterationOpened when the iteration dialog is constructed and IterationConfirmed on the accepted result |
 | Exercise delete / reorder / end / save / back | DeleteIteration without a guard; ReorderIterations per accepted move after the same-ID and index guards (the drag-drop list calls `onMove` per midpoint crossing); ReorderFinished at drag end with no VM guard, then Sync to the parent; Save, then Sync and Back; DismissRequested from the toolbar or system Back |
 | Exercise details / replacement library | ExampleOpened unconditionally; ReplaceExample on the detail dialog action, then ToLibrary SimilarTo; ExampleSelected after the different-ID guard (the swap copies name/example and keeps the exercise ID) |
-| Completed summary / exercise / back | SummaryOpened after the saved-training-ID guard (Statistics dialog); ExerciseOpened without a guard; DismissRequested from "Go to dashboard" or system Back, then close. Error-dismissal navigation after a failed save bypasses the user Back event |
+| Completed summary / exercise / back | SummaryOpened after the loaded-training guard (`state.training.id`, Statistics dialog); ExerciseOpened without a guard; DismissRequested from "Done" or system Back, then close to the entry host. Result fallbacks retain Done without a retry or second save. Error-dismissal navigation after a failed save bypasses the user Back event |
 | ConfirmTrainingCompletion duration / confirm / cancel | DurationOpened before the PickDuration direction (the host pushes DurationPicker as a nested step); DurationSelected on the accepted nested result; ConfirmClicked before the Confirm direction (the host delivers the result only for a valid duration, and the UI disables Confirm for Invalid/Empty); DismissRequested from Cancel or system Back, then `finish(null)` |
 
 Seven typed operations decorate complete existing Feature/UseCase calls with
@@ -80,7 +80,7 @@ Seven typed operations decorate complete existing Feature/UseCase calls with
   SaveTraining loader skips the write when a saved ID is already present, calls
   `setTrainingUseCase` when the stage has no ID or `updateTrainingUseCase`
   otherwise, and stops uncommitted (no DeleteDraft/LoadTraining/RefreshExamples,
-  empty summary) when the returned ID is null; a nonnull ID is committed to State
+  unconfirmed-result fallback) when the returned ID is null; a nonnull ID is committed to State
   immediately. The written duration is computed at save time from the route
   `startAt`.
 - RefreshExamples: `getExerciseExamples()` after the Completed save chain.
@@ -169,8 +169,8 @@ fixed finding or a preservation pass.
 | Exercise | `exerciseExample`, `previousIterations`, volume/repetition artifact IDs | Rebuild | `@Transient`; example observation by current ID; validation flow | Recomputed from the restored exercise without replaying callbacks |
 | Exercise | Iteration dialog session; body-weight lookup | Runtime only | DialogConfig.Iteration; WeightHistoryFeature | The accepted iteration enters the exercise and reaches the parent through Sync/Remove |
 | Completed | `savedTrainingId` | Preserve | `DRAFT = PersistenceKey("TrainingCompletedDraft", TrainingCompletedState.serializer())`; `restoreState(DRAFT) ?: TrainingCompletedState()` (non-null); default null | Committed immediately after a nonnull save; a restored ID skips Create/Update and resumes DeleteDraft/LoadTraining/RefreshExamples and presentation; a null returned ID stops the chain uncommitted |
-| Completed | `timeline`, `training`, `muscleLoad` | Rebuild | `@Transient`; `observeTraining(id).firstOrNull()` plus timeline/distribution use cases | Rebuilt by ID; no localized snapshot is archived |
-| Completed | Route inputs `stage`, `exercises`, `startAt` | Rebuild from route | `TrainingRouter.Completed` constructor inputs | Used only in the save branch; the duration is computed at write time |
+| Completed | `title`, `description`, `timeline`, `training`, `muscleLoad` | Rebuild | `@Transient`; localized UiText resources selected from route stage; `observeTraining(id).firstOrNull()` plus timeline/distribution use cases | Copy rebuilds before startup: Edit confirms an update, Add/Draft a completed workout; details rebuild by ID. No localized snapshot is archived |
+| Completed | Route inputs `stage`, `exercises`, `startAt` | Rebuild from route | `TrainingRouter.Completed` constructor inputs | Stage seeds rebuilt confirmation copy; all three inputs also serve the save branch, whose duration is computed at write time |
 | Completed | SaveTraining loader; Statistics/Exercise dialogs | Runtime only | VM loader and DialogConfig | Not archived |
 | Training container | Child stack: Recording / Exercise(seed, result key) / Exercises(Library) / Completed(stage, exercises, startAt) | Preserve (navigation) | `TrainingRouter.serializer()`, key `TrainingComponent`; `RootRouter.Training(stage)` preserved by the root stack | The parent re-registers its result observers in init; route inputs remain ordinary business inputs; no duplicate container draft |
 | Training container | `TrainingState.exercises` | Runtime only (never written) | Container state without `update` calls | No DRAFT; the container holds no business draft |
@@ -178,8 +178,8 @@ fixed finding or a preservation pass.
 | ConfirmTrainingCompletion → Recording → Completed | Confirmed duration | Preserve at parent, then route | Recording sets `startAt = now - result` and replaces the stack with `Completed(stage, exercises, startAt)` | Recording's archive is dropped by `replaceAll`; accepted values live in the Completed route |
 
 The exact `@Transient` sets are Recording (examples, muscles), Exercise (example,
-previous iterations, two artifact lists) and Completed (timeline, training,
-muscleLoad). No training ViewModel holds a `var` or `lateinit` member; eligibility
+previous iterations, two artifact lists) and Completed (title, description, timeline,
+training, muscleLoad). No training ViewModel holds a `var` or `lateinit` member; eligibility
 derives from State (`exercises == null`, the current example, `savedTrainingId`,
 the training ID). No credentials or tokens enter any archived State;
 `@JsonIgnoreUnknownKeys` is not used by these States. Components restore inside
@@ -238,8 +238,13 @@ revisions (2026-10-13):
   snapshots validate completely before writing. These data-boundary changes add
   no screen draft or event/operation payload.
 
+Android Completed saved-result restoration was verified after Home, a confirmed
+cached-process kill via `am kill`, and relaunch with a new PID: the saved summary
+and values were restored. No duplicate training was observed.
+
 Not verified: StateKeeper save → platform serialization → destroy → fresh-context
-restore on Android and iOS (including the Essenty codec for LocalDateTime and
+restore for Recording and Exercise on Android, and all Training owners on iOS
+(including the Essenty codec for LocalDateTime and
 nested immutable lists); result-bus ordering between the library pop and the
 Recording push; foundation Initial/Restore delivery; Firebase transport; generated
 Koin content at runtime; the real `onMove` frequency during a drag; a null
@@ -247,6 +252,6 @@ Koin content at runtime; the real `onMove` frequency during a drag; a null
 race against an early Add tap; reporting-failure and cancellation injection.
 Manual checks not run: Add/Edit/Draft exact and empty exercise lists, pending
 iteration formats/order and accepted dialog values; editor replacement-library,
-Back, pop and re-entry; pause/resume beyond the subscription grace; Completed
-restore after a saved ID with no second write; restore during an in-flight write;
+Back, pop and re-entry; pause/resume beyond the subscription grace;
+restore during an in-flight write;
 SDK delivery. Compilation does not prove these scenarios.

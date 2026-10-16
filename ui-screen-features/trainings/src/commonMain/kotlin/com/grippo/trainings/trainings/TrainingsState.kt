@@ -128,8 +128,11 @@ internal sealed interface TrainingsTimelinePeriod {
                 val trainingDays = mutableListOf<TimelineState.MonthlyTrainingsDay>()
                 for (value in timeline) {
                     when (value) {
-                        is TimelineState.MonthlyDigest ->
-                            if (digestEntry == null) digestEntry = value
+                        is TimelineState.MonthlyDigest -> {
+                            if (digestEntry == null) {
+                                digestEntry = value
+                            }
+                        }
 
                         is TimelineState.MonthlyTrainingsDay -> trainingDays += value
                         else -> Unit
@@ -143,9 +146,7 @@ internal sealed interface TrainingsTimelinePeriod {
                 val daysInMonth = DateTimeUtils
                     .getDaysInMonth(monthAnchor.year, monthAnchor.month)
 
-                val startOffset =
-                    (monthAnchor.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber)
-                        .let { if (it < 0) it + 7 else it }
+                val startOffset = monthAnchor.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber
 
                 val totalCells = ((startOffset + daysInMonth + 6) / 7) * 7
 

@@ -28,6 +28,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.not_used_before
+import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRangePresets
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun ExerciseExampleCardLarge(
@@ -74,11 +78,22 @@ internal fun ExerciseExampleCardLarge(
         )
 
         val lastUsed = value.value.lastUsed
+        val lastUsedText = when (lastUsed) {
+            is DateTimeFormatState.Empty -> AppTokens.strings.res(Res.string.not_used_before)
+            else -> {
+                val lastUsedValue = lastUsed.value
+                val lastUsedDate = if (lastUsedValue != null) {
+                    DateCompose.rememberFormat(value = lastUsedValue, format = lastUsed.format)
+                } else {
+                    lastUsed.display
+                }
+
+                "${AppTokens.strings.res(Res.string.last_used_label)} $lastUsedDate"
+            }
+        }
+
         Text(
-            text = when (lastUsed) {
-                is DateTimeFormatState.Empty -> AppTokens.strings.res(Res.string.not_used_before)
-                else -> "${AppTokens.strings.res(Res.string.last_used_label)} ${lastUsed.display}"
-            },
+            text = lastUsedText,
             style = AppTokens.typography.b12Med(),
             color = if (lastUsed is DateTimeFormatState.Empty) {
                 AppTokens.colors.text.tertiary
@@ -92,12 +107,18 @@ internal fun ExerciseExampleCardLarge(
 @AppPreview
 @Composable
 private fun ExerciseExampleCardLargePreview() {
+    val example = stubExerciseExample()
+    val lastUsed = DateTimeFormatState.of(
+        value = LocalDateTime(year = 2026, month = 10, day = 14, hour = 12, minute = 0),
+        range = DateRangePresets.infinity(),
+        format = DateFormat.DateOnly.DateDdMmm,
+    )
+    val usedExample = example.copy(value = example.value.copy(lastUsed = lastUsed))
+
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            style = ExerciseExampleCardStyle.Large(
-                stubExerciseExample(),
-            ),
+            style = ExerciseExampleCardStyle.Large(value = usedExample),
         )
     }
 }
