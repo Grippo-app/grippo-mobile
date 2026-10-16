@@ -121,11 +121,7 @@ private fun <KEY> BottomBarTabs(
                 Box(
                     modifier = Modifier
                         .width(dp.indicatorWidth)
-                        .height(dp.indicatorHeight)
-                        .background(
-                            color = if (active) AppTokens.colors.selection.background else Color.Transparent,
-                            shape = RoundedCornerShape(dp.indicatorRadius),
-                        ),
+                        .height(dp.indicatorHeight),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
