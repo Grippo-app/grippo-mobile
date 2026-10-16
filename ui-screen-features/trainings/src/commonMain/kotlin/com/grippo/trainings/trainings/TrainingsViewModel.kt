@@ -45,14 +45,16 @@ import kotlinx.datetime.plus
 
 internal class TrainingsViewModel(
     private val analytics: TrainingsAnalytics,
-    private val trainingFeature: TrainingFeature,
+    trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val trainingDigestUseCase: TrainingDigestUseCase,
     private val deleteTrainingUseCase: DeleteTrainingUseCase,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
     initialState: TrainingsState?,
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
-    (initialState ?: TrainingsState(date = TrainingsTimelinePeriod.Monthly().defaultRange())).let { draft ->
+    state = (initialState ?: TrainingsState(
+        date = TrainingsTimelinePeriod.Monthly().defaultRange(),
+    )).let { draft ->
         draft.selectRange(draft.date)
     }
 ), TrainingsContract {
@@ -63,16 +65,21 @@ internal class TrainingsViewModel(
 
     init {
         val rangeFlow = state
-            .map { it.period.effectiveRange(it.date.from, it.limitations) }
+            .map { current ->
+                current.period.effectiveRange(
+                    anchor = current.date.from,
+                    limitations = current.limitations,
+                )
+            }
             .distinctUntilChanged()
 
         rangeFlow
             .mapLatest { range ->
-                withLoader(TrainingsLoader.Trainings) {
-                    analytics.trackOperation(TrainingsOperation.RefreshTrainings) {
+                withLoader(loader = TrainingsLoader.Trainings) {
+                    analytics.trackOperation(operation = TrainingsOperation.RefreshTrainings) {
                         trainingFeature.getTrainings(
                             start = range.from,
-                            end = range.to
+                            end = range.to,
                         ).getOrThrow()
                     }
                 }
@@ -81,161 +88,61 @@ internal class TrainingsViewModel(
 
         rangeFlow
             .flatMapLatest { range ->
-                trainingFeature
-                    .observeTrainings(start = range.from, end = range.to)
+                trainingFeature.observeTrainings(start = range.from, end = range.to)
                     .map { trainings -> range to trainings }
             }
-            .onEach { (range, trainings) -> provideTrainings(range, trainings) }
+            .onEach(::provideTrainings)
             .safeLaunch()
     }
 
-    private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val digest = trainingDigestUseCase.digest(list, range)
+    private fun provideTrainings(value: Pair<DateRange, List<Training>>) {
+        val (range, trainings) = value
 
-        val timeline = trainingTimelineUseCase.trainingTimeline(
-            trainings = list,
+        val digest = trainingDigestUseCase.digest(trainings = trainings, range = range)
+
+        val trainingTimeline = trainingTimelineUseCase.trainingTimeline(
+            trainings = trainings,
             range = range,
             digest = digest,
-        ).toState()
+        )
+
+        val timeline = trainingTimeline.toState()
 
         update { current ->
             val nextPeriod = when (current.period) {
-                is TrainingsTimelinePeriod.Daily -> TrainingsTimelinePeriod.Daily(
-                    items = timeline
+                is TrainingsTimelinePeriod.Daily -> {
+                    val items = timeline
                         .filterIsInstance<TimelineState.Daily.Item>()
-                        .toPersistentList(),
-                )
+                        .toPersistentList()
+
+                    TrainingsTimelinePeriod.Daily(items = items)
+                }
 
                 is TrainingsTimelinePeriod.Monthly -> TrainingsTimelinePeriod.Monthly.from(
                     range = range,
                     timeline = timeline,
                 )
             }
+
             current.copy(period = nextPeriod)
         }
     }
 
-    override fun onTrainingMenuClick(id: String) {
-        analytics.trackEvent(TrainingsEvent.TrainingMenuClicked)
-        val dialog = DialogConfig.TrainingMenuPicker(
-            title = UiText.Res(Res.string.menu),
-            onResult = { item ->
-                when (item) {
-                    TrainingMenu.Delete -> {
-                        analytics.trackEvent(TrainingsEvent.DeleteSelected)
-                        deleteTraining(id)
-                    }
-                    TrainingMenu.Edit -> {
-                        analytics.trackEvent(TrainingsEvent.EditSelected)
-                        openTrainingEdit(id)
-                    }
-                    TrainingMenu.Details -> {
-                        analytics.trackEvent(TrainingsEvent.DetailsSelected)
-                        openTrainingOverview(id)
-                    }
-                }
-            }
-        )
-
-        dialogController.open(dialog)
-    }
-
-    override fun onExerciseClick(id: String) {
-        analytics.trackEvent(TrainingsEvent.ExerciseClicked)
-        val dialog = DialogConfig.Exercise(
-            title = UiText.Res(Res.string.exercise_record),
-            id = id,
-        )
-
-        dialogController.open(dialog)
-    }
-
-    override fun onDailyDigestViewStats() {
-        analytics.trackEvent(TrainingsEvent.DigestClicked)
-        val range = state.value.date
-        val rangeLabel = DateRangeFormatState.of(range).label()
-        val title = rangeLabel?.let {
-            UiText.Res(Res.string.value_statistics, persistentListOf(it))
-        } ?: UiText.Res(Res.string.statistics)
-        val config = DialogConfig.Statistics.Trainings(
-            title = title,
-            range = range
-        )
-
-        dialogController.open(config)
-    }
-
-    override fun onSelectPeriod(id: String) {
-        val current = state.value
-        if (current.period.id == id) return
-        val target = TrainingsTimelinePeriod.variantById(id) ?: return
-        analytics.trackEvent(
-            when (target) {
-                is TrainingsTimelinePeriod.Daily -> TrainingsEvent.DailyPeriodSelected
-                is TrainingsTimelinePeriod.Monthly -> TrainingsEvent.MonthlyPeriodSelected
-            }
-        )
-        val alignedRange = target.defaultRange().coerceWithin(current.limitations)
-        update { it.copy(period = target).selectRange(alignedRange) }
-    }
-
-    override fun onOpenDateSelector() {
-        val current = state.value
-        analytics.trackEvent(
-            when (current.period) {
-                is TrainingsTimelinePeriod.Daily -> TrainingsEvent.DatePickerClicked
-                is TrainingsTimelinePeriod.Monthly -> TrainingsEvent.MonthPickerClicked
-            }
-        )
-        val dialog = when (current.period) {
-            is TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
-                title = UiText.Res(Res.string.select_date),
-                initial = current.date.from,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-                limitations = current.limitations,
-                onResult = { date ->
-                    analytics.trackEvent(TrainingsEvent.DateConfirmed)
-                    applyAnchor(date)
-                },
-            )
-
-            is TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
-                title = UiText.Res(Res.string.select_month),
-                initial = current.date.from,
-                format = DateFormat.DateOnly.MmmYyyy,
-                limitations = current.limitations,
-                onResult = { date ->
-                    analytics.trackEvent(TrainingsEvent.MonthConfirmed)
-                    applyAnchor(date)
-                },
-            )
-        }
-        dialogController.open(dialog)
-    }
-
     private fun applyAnchor(date: LocalDateTime) {
-        update {
-            val range = it.period.rangeFor(date).coerceWithin(it.limitations)
-            if (it.date == range) it else it.selectRange(range)
+        update { current ->
+            val range = current.period.rangeFor(date).coerceWithin(current.limitations)
+            if (current.date == range) {
+                return@update current
+            }
+
+            current.selectRange(range)
         }
-    }
-
-    override fun onSelectNextDate() = shiftDate(1)
-
-    override fun onSelectPreviousDate() = shiftDate(-1)
-
-    override fun onOpenDaily(date: LocalDate) {
-        analytics.trackEvent(TrainingsEvent.DailySelected)
-        val range = TrainingsTimelinePeriod.Daily()
-            .rangeFor(DateTimeUtils.startOfDay(date))
-            .coerceWithin(state.value.limitations)
-        update { it.copy(period = TrainingsTimelinePeriod.Daily(), date = range) }
     }
 
     private fun openTrainingOverview(id: String) {
         val config = DialogConfig.Statistics.Training(
-            title = UiText.Res(Res.string.statistics),
-            id = id
+            title = UiText.Res(value = Res.string.statistics),
+            id = id,
         )
 
         dialogController.open(config)
@@ -243,23 +150,20 @@ internal class TrainingsViewModel(
 
     private fun deleteTraining(id: String) {
         safeLaunch {
-            analytics.trackOperation(TrainingsOperation.DeleteTraining) {
+            analytics.trackOperation(operation = TrainingsOperation.DeleteTraining) {
                 deleteTrainingUseCase.execute(id).getOrThrow()
             }
         }
     }
 
-    override fun onBack() {
-        analytics.trackEvent(TrainingsEvent.DismissRequested)
-        navigateTo(Back)
-    }
-
     private fun shiftDate(direction: Int) {
-        if (direction == 0) return
+        if (direction == 0) {
+            return
+        }
 
         val current = state.value
 
-        val shifted = when (current.period) {
+        val shiftedRange = when (current.period) {
             is TrainingsTimelinePeriod.Monthly -> {
                 val anchorDate = current.date.from.date.plus(DatePeriod(months = direction))
                 val anchor = DateTimeUtils.startOfDay(anchorDate)
@@ -267,24 +171,182 @@ internal class TrainingsViewModel(
             }
 
             is TrainingsTimelinePeriod.Daily -> {
-                val span = current.date.run {
-                    val days = from.date.daysUntil(to.date) + 1
-                    if (days <= 0) 1 else days
+                val days = current.date.from.date.daysUntil(current.date.to.date) + 1
+                val span = if (days <= 0) {
+                    1
+                } else {
+                    days
                 }
                 val shiftPeriod = DatePeriod(days = span * direction)
-                DateTimeUtils.shift(current.date, shiftPeriod)
+                DateTimeUtils.shift(range = current.date, period = shiftPeriod)
             }
-        }.coerceWithin(current.limitations)
+        }
 
-        if (shifted == current.date) return
+        val range = shiftedRange.coerceWithin(current.limitations)
+        if (range == current.date) {
+            return
+        }
 
-        analytics.trackEvent(
-            if (direction > 0) TrainingsEvent.NextDateSelected else TrainingsEvent.PreviousDateSelected
-        )
-        update { it.selectRange(shifted) }
+        val event = if (direction > 0) {
+            TrainingsEvent.NextDateSelected
+        } else {
+            TrainingsEvent.PreviousDateSelected
+        }
+        analytics.trackEvent(event = event)
+
+        update { current ->
+            current.selectRange(range)
+        }
     }
 
     private fun openTrainingEdit(id: String) {
-        navigateTo(EditTraining(id))
+        val direction = EditTraining(id = id)
+        navigateTo(direction)
+    }
+
+    override fun onTrainingMenuClick(id: String) {
+        analytics.trackEvent(event = TrainingsEvent.TrainingMenuClicked)
+
+        val dialog = DialogConfig.TrainingMenuPicker(
+            title = UiText.Res(value = Res.string.menu),
+            onResult = { item ->
+                when (item) {
+                    TrainingMenu.Delete -> {
+                        analytics.trackEvent(event = TrainingsEvent.DeleteSelected)
+                        deleteTraining(id)
+                    }
+
+                    TrainingMenu.Edit -> {
+                        analytics.trackEvent(event = TrainingsEvent.EditSelected)
+                        openTrainingEdit(id)
+                    }
+
+                    TrainingMenu.Details -> {
+                        analytics.trackEvent(event = TrainingsEvent.DetailsSelected)
+                        openTrainingOverview(id)
+                    }
+                }
+            },
+        )
+
+        dialogController.open(dialog)
+    }
+
+    override fun onExerciseClick(id: String) {
+        analytics.trackEvent(event = TrainingsEvent.ExerciseClicked)
+
+        val dialog = DialogConfig.Exercise(
+            title = UiText.Res(value = Res.string.exercise_record),
+            id = id,
+        )
+
+        dialogController.open(dialog)
+    }
+
+    override fun onDailyDigestViewStats() {
+        analytics.trackEvent(event = TrainingsEvent.DigestClicked)
+
+        val range = state.value.date
+
+        val formattedRange = DateRangeFormatState.of(range)
+
+        val rangeLabel = formattedRange.label()
+
+        val title = rangeLabel?.let { label ->
+            val formatArgs = persistentListOf(label)
+            UiText.Res(value = Res.string.value_statistics, formatArgs = formatArgs)
+        } ?: UiText.Res(value = Res.string.statistics)
+
+        val config = DialogConfig.Statistics.Trainings(
+            title = title,
+            range = range,
+        )
+
+        dialogController.open(config)
+    }
+
+    override fun onSelectPeriod(id: String) {
+        val current = state.value
+        if (current.period.id == id) {
+            return
+        }
+
+        val target = TrainingsTimelinePeriod.variantById(id) ?: return
+
+        val event = when (target) {
+            is TrainingsTimelinePeriod.Daily -> TrainingsEvent.DailyPeriodSelected
+            is TrainingsTimelinePeriod.Monthly -> TrainingsEvent.MonthlyPeriodSelected
+        }
+        analytics.trackEvent(event = event)
+
+        val alignedRange = target.defaultRange().coerceWithin(current.limitations)
+
+        update { current ->
+            val selectedState = current.copy(period = target)
+
+            selectedState.selectRange(alignedRange)
+        }
+    }
+
+    override fun onOpenDateSelector() {
+        val current = state.value
+
+        val event = when (current.period) {
+            is TrainingsTimelinePeriod.Daily -> TrainingsEvent.DatePickerClicked
+            is TrainingsTimelinePeriod.Monthly -> TrainingsEvent.MonthPickerClicked
+        }
+        analytics.trackEvent(event = event)
+
+        val dialog = when (current.period) {
+            is TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
+                title = UiText.Res(value = Res.string.select_date),
+                initial = current.date.from,
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                limitations = current.limitations,
+                onResult = { date ->
+                    analytics.trackEvent(event = TrainingsEvent.DateConfirmed)
+                    applyAnchor(date)
+                },
+            )
+
+            is TrainingsTimelinePeriod.Monthly -> DialogConfig.MonthPicker(
+                title = UiText.Res(value = Res.string.select_month),
+                initial = current.date.from,
+                format = DateFormat.DateOnly.MmmYyyy,
+                limitations = current.limitations,
+                onResult = { date ->
+                    analytics.trackEvent(event = TrainingsEvent.MonthConfirmed)
+                    applyAnchor(date)
+                },
+            )
+        }
+
+        dialogController.open(dialog)
+    }
+
+    override fun onSelectNextDate() {
+        shiftDate(1)
+    }
+
+    override fun onSelectPreviousDate() {
+        shiftDate(-1)
+    }
+
+    override fun onOpenDaily(date: LocalDate) {
+        analytics.trackEvent(event = TrainingsEvent.DailySelected)
+
+        val period = TrainingsTimelinePeriod.Daily()
+
+        val anchor = DateTimeUtils.startOfDay(date)
+
+        val range = period.rangeFor(anchor)
+            .coerceWithin(state.value.limitations)
+
+        update { it.copy(period = period, date = range) }
+    }
+
+    override fun onBack() {
+        analytics.trackEvent(event = TrainingsEvent.DismissRequested)
+        navigateTo(Back)
     }
 }

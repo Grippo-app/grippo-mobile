@@ -7,16 +7,17 @@ import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
+import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.goal.GoalFeature
+import com.grippo.data.features.api.goal.models.Goal
+import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
 import com.grippo.profile.analytics.ProfileInputMapping
 import com.grippo.toolkit.analytics.context.NavigationReason
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileMenuViewModel(
@@ -44,21 +45,15 @@ internal class ProfileMenuViewModel(
             .safeLaunch()
 
         goalFeature.observeGoal()
-            .map { it?.toState() }
-            .distinctUntilChanged()
-            .onEach { goal -> update { it.copy(goal = goal) } }
+            .onEach(::provideGoal)
             .safeLaunch()
 
         excludedMusclesFeature.observeExcludedMuscles()
-            .map { it.size }
-            .distinctUntilChanged()
-            .onEach { count -> update { it.copy(excludedMusclesCount = count) } }
+            .onEach(::provideExcludedMuscles)
             .safeLaunch()
 
         excludedEquipmentsFeature.observeExcludedEquipments()
-            .map { it.size }
-            .distinctUntilChanged()
-            .onEach { count -> update { it.copy(excludedEquipmentsCount = count) } }
+            .onEach(::provideExcludedEquipments)
             .safeLaunch()
 
         safeLaunch(loader = ProfileMenuLoader.Goal) {
@@ -80,17 +75,47 @@ internal class ProfileMenuViewModel(
         }
     }
 
-    private fun provideUser(user: User?) {
-        update { it.copy(user = user?.toState()) }
+    private fun provideUser(value: User?) {
+        val user = value?.toState()
+
+        update { it.copy(user = user) }
+    }
+
+    private fun provideGoal(value: Goal?) {
+        val goal = value?.toState()
+
+        update { it.copy(goal = goal) }
+    }
+
+    private fun provideExcludedMuscles(value: List<Muscle>) {
+        val count = value.size
+
+        update { it.copy(excludedMusclesCount = count) }
+    }
+
+    private fun provideExcludedEquipments(value: List<Equipment>) {
+        val count = value.size
+
+        update { it.copy(excludedEquipmentsCount = count) }
     }
 
     override fun onProfileMenuClick(menu: ProfileMenu) {
-        analytics.trackEvent(ProfileEvent.MenuSelected(ProfileInputMapping.target(menu)))
-        navigateTo(ProfileMenuDirection.ProfileMenuSelected(menu))
+        val target = ProfileInputMapping.target(menu)
+
+        val event = ProfileEvent.MenuSelected(target = target)
+        analytics.trackEvent(event)
+
+        val direction = ProfileMenuDirection.ProfileMenuSelected(item = menu)
+        navigateTo(direction)
     }
 
     override fun onSettingsMenuClick(menu: SettingsMenu) {
-        analytics.trackEvent(ProfileEvent.MenuSelected(ProfileInputMapping.target(menu)))
-        navigateTo(ProfileMenuDirection.SettingsMenuSelected(menu))
+        val target = ProfileInputMapping.target(menu)
+
+        val event = ProfileEvent.MenuSelected(target = target)
+        analytics.trackEvent(event)
+
+        val direction = ProfileMenuDirection.SettingsMenuSelected(item = menu)
+        navigateTo(direction)
     }
 }

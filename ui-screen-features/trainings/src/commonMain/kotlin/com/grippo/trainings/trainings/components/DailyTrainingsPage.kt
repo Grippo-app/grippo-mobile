@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -90,13 +89,13 @@ internal fun DailyTrainingsPage(
 
 @Composable
 private fun DailyTimelineItem(
+    modifier: Modifier = Modifier,
     value: TimelineState.Daily.Item,
     onTrainingMenuClick: (String) -> Unit,
     onExerciseClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    val style = remember(value) { value.timelineStyle() }
-    val exercise = remember(value) { value.exercise() }
+    val style = value.timelineStyle()
+    val exercise = value.exercise()
 
     TimelineIndicator(
         modifier = modifier.fillMaxWidth(),
@@ -104,15 +103,12 @@ private fun DailyTimelineItem(
     ) {
         if (value is TimelineState.DateTime) {
             val menuLabel = AppTokens.strings.res(Res.string.menu)
-            val clickProvider = remember(value.trainingId) {
-                { onTrainingMenuClick(value.trainingId) }
-            }
 
             Row(
                 modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+                Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.subContent))
 
                 Text(
                     text = "${value.startAt.display} - ${value.createAt.display}",
@@ -120,7 +116,7 @@ private fun DailyTimelineItem(
                     color = AppTokens.colors.text.primary
                 )
 
-                Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
 
                 Text(
                     text = value.duration.display,
@@ -128,7 +124,7 @@ private fun DailyTimelineItem(
                     color = AppTokens.colors.text.tertiary
                 )
 
-                Spacer(Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Button(
                     modifier = Modifier.semantics { contentDescription = menuLabel },
@@ -137,22 +133,18 @@ private fun DailyTimelineItem(
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,
-                    onClick = clickProvider
+                    onClick = { onTrainingMenuClick(value.trainingId) }
                 )
             }
         }
 
         if (exercise != null) {
-            val clickProvider = remember(exercise.id) {
-                { onExerciseClick(exercise.id) }
-            }
-
             ExerciseCard(
                 modifier = Modifier
                     .padding(vertical = AppTokens.dp.contentPadding.subContent)
                     .fillMaxWidth(),
                 value = exercise,
-                style = ExerciseCardStyle.Medium(clickProvider)
+                style = ExerciseCardStyle.Medium(onClick = { onExerciseClick(exercise.id) })
             )
         }
     }

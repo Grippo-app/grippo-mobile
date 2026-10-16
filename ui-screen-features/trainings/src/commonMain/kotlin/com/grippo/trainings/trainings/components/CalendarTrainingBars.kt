@@ -28,7 +28,9 @@ internal fun CalendarTrainingBars(
     barColor: Color,
     maxVisibleBars: Int = DefaultCalendarTrainingBars,
 ) {
-    if (count <= 0) return
+    if (count <= 0) {
+        return
+    }
 
     val barsToShow = min(count, maxVisibleBars)
 

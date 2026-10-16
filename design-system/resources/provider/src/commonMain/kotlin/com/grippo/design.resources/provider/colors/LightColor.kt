@@ -48,6 +48,7 @@ public object LightColor : AppColor {
         override val secondary = AppPalette.NeutralLight.N550
         override val tertiary = AppPalette.NeutralLight.N500
         override val disabled = AppPalette.NeutralLight.N400
+        override val backgroundAlpha = 0.08f
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {

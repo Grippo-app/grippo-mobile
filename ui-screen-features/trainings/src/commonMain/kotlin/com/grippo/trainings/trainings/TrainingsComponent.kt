@@ -12,9 +12,9 @@ internal class TrainingsComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
     private val toEditTraining: (id: String) -> Unit,
-) : BaseComponent<TrainingsDirection>(componentContext) {
+) : BaseComponent<TrainingsDirection>(componentContext = componentContext) {
 
-    override val viewModel = componentContext.retainedInstance {
+    override val viewModel: TrainingsViewModel = componentContext.retainedInstance {
         TrainingsViewModel(
             analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
@@ -26,7 +26,7 @@ internal class TrainingsComponent(
         )
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback: BackCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
         saveState(DRAFT) { viewModel.state.value }
@@ -44,10 +44,17 @@ internal class TrainingsComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingsScreen(state.value, loaders.value, viewModel)
+        TrainingsScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("TrainingsDraft", TrainingsState.serializer())
+        val DRAFT: PersistenceKey<TrainingsState> = PersistenceKey(
+            key = "TrainingsDraft",
+            serializer = TrainingsState.serializer(),
+        )
     }
 }

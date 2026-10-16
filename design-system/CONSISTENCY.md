@@ -109,17 +109,21 @@ A compact navigation item and a screen heading do not need the same font size.
   h3 name and neutral supporting email. Experience avatar colors retain their
   meaning; the menu's working sections stay neutral. Separate identity from menu
   content with contentPadding.block, keeping compact section gaps at content.
+  Loading name/email slots derive their heights from the same h3/b13Med line
+  heights; HeaderLoading tokens retain their width fractions and corner radius.
 - Standalone content cards and menu sections use the large 28 dp shape and a thin
   neutral outline. A standalone card is a card that is its own section; rows
   repeated inside a list are compact, not standalone. Nested/compact metric
   panels, repeated list rows and input fields use the 12 dp shape; chips, set
   cells and thumbnails keep the shape appropriate to their role.
   Do not put a second card frame around an already framed shared composition.
-- MenuSection headings use `h4` and a 32 dp neutral icon container with a 12 dp
-  shape and 22 dp glyph. Context icon colors retain their meaning. Default uses
-  the screen tone inside its card; Subtle stays unframed with a card-tone icon
-  container and secondary heading. Header gaps use `content`; values stay neutral.
-- DigestHeader uses the same neutral 32 dp icon tile with the
+- MenuSection headings use `h4` and a 22 dp glyph centered in a 32 dp tile with
+  12 dp corners. The tile lightly tints the supplied icon hue through the
+  theme-owned `icon.tintedBackgroundAlpha` coefficient, preserving caller alpha;
+  the glyph retains its supplied tint. Context icon colors keep their meaning.
+  The enclosing section owns the grouping surface; Subtle stays unframed with a
+  secondary heading. Header gaps use `content`; values stay neutral.
+- DigestHeader retains its neutral 32 dp icon tile with 12 dp corners and the
   `context.volume` glyph; working metric panels carry no decorative illustration
   spot. Home's welcome and last-workout recap own the warm illustration regions.
 - Home uses `MetricCardPresentation.Overview` for goal, muscle, streak and

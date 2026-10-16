@@ -80,10 +80,8 @@ private fun MonthCalendar(
 ) {
     BoxWithConstraints(modifier = modifier) {
         val horizontalSpacing = AppTokens.dp.contentPadding.subContent
-        val dayCellWidth = run {
-            val spacing = horizontalSpacing * (weekDayLabels.size - 1)
-            (maxWidth - spacing) / weekDayLabels.size
-        }
+        val totalHorizontalSpacing = horizontalSpacing * (weekDayLabels.size - 1)
+        val dayCellWidth = (maxWidth - totalHorizontalSpacing) / weekDayLabels.size
         val dayCellHeight = AppTokens.dp.calendar.monthly.cellHeight
         val weekRowCount = weeks.size.takeIf { it > 0 } ?: 1
         val gridSpacing = AppTokens.dp.contentPadding.subContent * (weekRowCount - 1)
@@ -168,10 +166,17 @@ private fun MonthCalendarDayCell(
             hasTrainings -> AppTokens.colors.border.default
             else -> AppTokens.colors.background.card
         },
-        background = if (isHighlighted) AppTokens.colors.selection.background
-        else AppTokens.colors.background.card,
+        background = if (isHighlighted) {
+            AppTokens.colors.selection.background
+        } else {
+            AppTokens.colors.background.card
+        },
     ) {
-        MonthCalendarDayCellContent(day, textColor, hasTrainings)
+        MonthCalendarDayCellContent(
+            day = day,
+            textColor = textColor,
+            hasTrainings = hasTrainings,
+        )
     }
 }
 

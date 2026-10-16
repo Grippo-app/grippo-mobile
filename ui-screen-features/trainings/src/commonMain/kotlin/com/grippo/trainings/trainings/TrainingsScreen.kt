@@ -65,7 +65,7 @@ internal fun TrainingsScreen(
                 style = SegmentStyle.Fill
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             DatePicker(
                 modifier = Modifier
@@ -81,13 +81,13 @@ internal fun TrainingsScreen(
                 onPrevious = contract::onSelectPreviousDate
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             HorizontalDivider(color = AppTokens.colors.divider.default)
         }
     )
 
-    val basePadding = PaddingValues(
+    val contentPadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
         vertical = AppTokens.dp.contentPadding.content
     )
@@ -100,7 +100,7 @@ internal fun TrainingsScreen(
                 .navigationBarsPadding(),
             items = period.items,
             loaders = loaders,
-            contentPadding = basePadding,
+            contentPadding = contentPadding,
             onTrainingMenuClick = contract::onTrainingMenuClick,
             onExerciseClick = contract::onExerciseClick,
         )
@@ -111,7 +111,7 @@ internal fun TrainingsScreen(
                 .weight(1f)
                 .navigationBarsPadding(),
             period = period,
-            contentPadding = basePadding,
+            contentPadding = contentPadding,
             onDigestClick = contract::onDailyDigestViewStats,
             onOpenDaily = contract::onOpenDaily,
         )

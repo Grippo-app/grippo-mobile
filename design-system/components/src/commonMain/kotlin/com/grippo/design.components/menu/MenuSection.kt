@@ -37,28 +37,32 @@ public enum class MenuSectionStyle {
 public fun MenuSection(
     modifier: Modifier = Modifier,
     title: String,
-    style: MenuSectionStyle = MenuSectionStyle.Default,
     icon: ImageVector? = null,
+    style: MenuSectionStyle = MenuSectionStyle.Default,
     iconColor: Color = AppTokens.colors.icon.secondary,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
+    val backgroundColor = when (style) {
+        MenuSectionStyle.Default -> AppTokens.colors.background.card
+        MenuSectionStyle.Subtle -> Color.Transparent
+    }
+    val borderColor = when (style) {
+        MenuSectionStyle.Default -> AppTokens.colors.border.default
+        MenuSectionStyle.Subtle -> Color.Transparent
+    }
+    val titleColor = when (style) {
+        MenuSectionStyle.Default -> AppTokens.colors.text.primary
+        MenuSectionStyle.Subtle -> AppTokens.colors.text.secondary
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                color = when (style) {
-                    MenuSectionStyle.Default -> AppTokens.colors.background.card
-                    MenuSectionStyle.Subtle -> Color.Transparent
-                },
-                shape = shape,
-            )
+            .background(color = backgroundColor, shape = shape)
             .border(
                 width = AppTokens.dp.menu.borderWidth,
-                color = when (style) {
-                    MenuSectionStyle.Default -> AppTokens.colors.border.default
-                    MenuSectionStyle.Subtle -> Color.Transparent
-                },
+                color = borderColor,
                 shape = shape,
             )
             .padding(AppTokens.dp.menu.contentPadding),
@@ -68,22 +72,23 @@ public fun MenuSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
-            icon?.let {
+            if (icon != null) {
+                val iconBackgroundColor = iconColor.copy(
+                    alpha = iconColor.alpha * AppTokens.colors.icon.backgroundAlpha,
+                )
+
                 Box(
                     modifier = Modifier
                         .size(AppTokens.dp.menu.headerIconContainer)
                         .background(
-                            color = when (style) {
-                                MenuSectionStyle.Default -> AppTokens.colors.background.screen
-                                MenuSectionStyle.Subtle -> AppTokens.colors.background.card
-                            },
+                            color = iconBackgroundColor,
                             shape = RoundedCornerShape(AppTokens.dp.menu.headerIconRadius),
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         modifier = Modifier.size(AppTokens.dp.menu.headerIcon),
-                        imageVector = it,
+                        imageVector = icon,
                         tint = iconColor,
                         contentDescription = null,
                     )
@@ -93,13 +98,10 @@ public fun MenuSection(
                 modifier = Modifier.weight(1f),
                 text = title,
                 style = AppTokens.typography.h4(),
-                color = when (style) {
-                    MenuSectionStyle.Default -> AppTokens.colors.text.primary
-                    MenuSectionStyle.Subtle -> AppTokens.colors.text.secondary
-                },
+                color = titleColor,
             )
         }
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
         content()
     }
 }
@@ -108,7 +110,11 @@ public fun MenuSection(
 @Composable
 private fun MenuSectionPreview() {
     PreviewContainer {
-        MenuSection(title = "Body", icon = AppTokens.icons.Body, iconColor = AppTokens.colors.context.body) {
+        MenuSection(
+            title = "Body",
+            icon = AppTokens.icons.Body,
+            iconColor = AppTokens.colors.context.body,
+        ) {
             MenuValueRow(title = "Weight", value = "82 kg", onClick = {})
             MenuValueRow(title = "Height", value = "178 cm", onClick = {}, showDivider = false)
         }
@@ -119,7 +125,11 @@ private fun MenuSectionPreview() {
 @Composable
 private fun MenuSectionSubtlePreview() {
     PreviewContainer {
-        MenuSection(title = "Settings", style = MenuSectionStyle.Subtle, icon = AppTokens.icons.Tune) {
+        MenuSection(
+            title = "Settings",
+            icon = AppTokens.icons.Tune,
+            style = MenuSectionStyle.Subtle,
+        ) {
             MenuValueRow(
                 title = "Account",
                 titleColor = AppTokens.colors.text.secondary,
@@ -139,7 +149,11 @@ private fun MenuSectionSubtlePreview() {
 @Composable
 private fun MenuSectionLoadingPreview() {
     PreviewContainer {
-        MenuSection(title = "Body", icon = AppTokens.icons.Body, iconColor = AppTokens.colors.context.body) {
+        MenuSection(
+            title = "Body",
+            icon = AppTokens.icons.Body,
+            iconColor = AppTokens.colors.context.body,
+        ) {
             MenuValueRow(title = "Weight", loading = true, onClick = {})
             MenuValueRow(title = "Height", value = "Not set", onClick = {}, showDivider = false)
         }

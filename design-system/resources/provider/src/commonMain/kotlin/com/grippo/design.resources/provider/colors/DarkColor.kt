@@ -48,6 +48,7 @@ public object DarkColor : AppColor {
         override val secondary = AppPalette.NeutralDark.N600
         override val tertiary = AppPalette.NeutralDark.N650
         override val disabled = AppPalette.NeutralDark.N300
+        override val backgroundAlpha = 0.12f
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {

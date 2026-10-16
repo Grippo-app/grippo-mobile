@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -34,25 +33,21 @@ internal fun ProfileMenuScreen(
     loaders: ImmutableSet<ProfileMenuLoader>,
     contract: ProfileMenuContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
+    val userLoading = state.user == null && ProfileMenuLoader.User in loaders
+    val goalLoading = state.goal == null && ProfileMenuLoader.Goal in loaders
+    val musclesLoading = state.excludedMusclesCount == null && ProfileMenuLoader.Muscles in loaders
+    val equipmentsLoading = state.excludedEquipmentsCount == null && ProfileMenuLoader.Equipments in loaders
+
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.profile),
         style = ToolbarStyle.Transparent,
     )
-    val userLoading = remember(state.user, loaders) {
-        state.user == null && ProfileMenuLoader.User in loaders
-    }
-    val goalLoading = remember(state.goal, loaders) {
-        state.goal == null && ProfileMenuLoader.Goal in loaders
-    }
-    val musclesLoading = remember(state.excludedMusclesCount, loaders) {
-        state.excludedMusclesCount == null && ProfileMenuLoader.Muscles in loaders
-    }
-    val equipmentsLoading = remember(state.excludedEquipmentsCount, loaders) {
-        state.excludedEquipmentsCount == null && ProfileMenuLoader.Equipments in loaders
-    }
+
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().weight(1f),
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
         contentPadding = PaddingValues(
             start = AppTokens.dp.screen.horizontalPadding,
@@ -83,6 +78,20 @@ internal fun ProfileMenuScreen(
         }
     }
 }
+
+private fun profileMenuPreviewState(): ProfileMenuState = ProfileMenuState(
+    user = stubUser().copy(
+        name = "Alex",
+        email = "alex@grippo.app",
+        height = HeightFormatState.of(178),
+        weight = WeightFormatState.of(82f),
+        experience = ExperienceEnumState.INTERMEDIATE,
+        role = RoleEnumState.DEFAULT,
+    ),
+    goal = stubGoal().copy(primaryGoal = GoalPrimaryGoalEnumState.GET_STRONGER),
+    excludedMusclesCount = 2,
+    excludedEquipmentsCount = 3,
+)
 
 @AppPreview
 @Composable
@@ -158,9 +167,11 @@ private fun ProfileMenuScreenRefreshingPreview() {
 @Composable
 private fun ProfileMenuScreenLongIdentityPreview() {
     PreviewContainer {
+        val state = profileMenuPreviewState()
+
         ProfileMenuScreen(
-            state = profileMenuPreviewState().copy(
-                user = profileMenuPreviewState().user?.copy(
+            state = state.copy(
+                user = state.user?.copy(
                     name = "Олександр Костянтинович",
                     email = "oleksandr.kostiantynovych@grippo.app",
                 ),
@@ -175,9 +186,11 @@ private fun ProfileMenuScreenLongIdentityPreview() {
 @Composable
 private fun ProfileMenuScreenAdminPreview() {
     PreviewContainer {
+        val state = profileMenuPreviewState()
+
         ProfileMenuScreen(
-            state = profileMenuPreviewState().copy(
-                user = profileMenuPreviewState().user?.copy(role = RoleEnumState.ADMIN),
+            state = state.copy(
+                user = state.user?.copy(role = RoleEnumState.ADMIN),
                 excludedMusclesCount = 0,
                 excludedEquipmentsCount = 0,
             ),
@@ -186,17 +199,3 @@ private fun ProfileMenuScreenAdminPreview() {
         )
     }
 }
-
-private fun profileMenuPreviewState(): ProfileMenuState = ProfileMenuState(
-    user = stubUser().copy(
-        name = "Alex",
-        email = "alex@grippo.app",
-        height = HeightFormatState.of(178),
-        weight = WeightFormatState.of(82f),
-        experience = ExperienceEnumState.INTERMEDIATE,
-        role = RoleEnumState.DEFAULT,
-    ),
-    goal = stubGoal().copy(primaryGoal = GoalPrimaryGoalEnumState.GET_STRONGER),
-    excludedMusclesCount = 2,
-    excludedEquipmentsCount = 3,
-)

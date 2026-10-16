@@ -45,17 +45,18 @@ import com.grippo.design.resources.provider.icons.Trash
 public fun MenuValueRow(
     modifier: Modifier = Modifier,
     title: String,
-    onClick: () -> Unit,
     value: String? = null,
+    icon: ImageVector? = null,
     loading: Boolean = false,
     showDivider: Boolean = true,
+    onClick: () -> Unit,
     titleColor: Color = AppTokens.colors.text.primary,
-    icon: ImageVector? = null,
     iconColor: Color = AppTokens.colors.icon.primary,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
             val valueMaxWidth = maxWidth * AppTokens.dp.menu.item.valueMaxWidthFraction
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,7 +66,7 @@ public fun MenuValueRow(
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.menu.item.space),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                icon?.let {
+                if (icon != null) {
                     Box(
                         modifier = Modifier
                             .size(AppTokens.dp.menu.item.iconContainer)
@@ -77,7 +78,7 @@ public fun MenuValueRow(
                     ) {
                         Icon(
                             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
-                            imageVector = it,
+                            imageVector = icon,
                             tint = iconColor,
                             contentDescription = null,
                         )
@@ -93,9 +94,7 @@ public fun MenuValueRow(
                     modifier = Modifier.widthIn(max = valueMaxWidth),
                     value = value,
                     loading = loading,
-                    textAlign = TextAlign.End,
                 )
-
                 Icon(
                     modifier = Modifier.size(AppTokens.dp.menu.item.icon),
                     imageVector = AppTokens.icons.ArrowRight,
@@ -106,9 +105,13 @@ public fun MenuValueRow(
         }
         if (showDivider) {
             HorizontalDivider(
-                modifier = if (icon == null) Modifier else Modifier.padding(
-                    start = AppTokens.dp.menu.item.iconContainer + AppTokens.dp.menu.item.space,
-                ),
+                modifier = if (icon == null) {
+                    Modifier
+                } else {
+                    Modifier.padding(
+                        start = AppTokens.dp.menu.item.iconContainer + AppTokens.dp.menu.item.space,
+                    )
+                },
                 color = AppTokens.colors.divider.default,
             )
         }
@@ -120,25 +123,31 @@ private fun MenuRowValue(
     modifier: Modifier = Modifier,
     value: String?,
     loading: Boolean,
-    textAlign: TextAlign = TextAlign.Start,
 ) {
     when {
-        loading -> Box(
-            modifier = modifier
-                .width(AppTokens.dp.menu.item.loadingWidth)
-                .height(AppTokens.dp.menu.item.loadingHeight)
-                .clip(RoundedCornerShape(AppTokens.dp.menu.item.loadingRadius))
-                .background(AppTokens.colors.divider.default)
-                .shimmer()
-                .semantics { progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate },
-        )
-        value != null -> Text(
-            modifier = modifier,
-            text = value,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = textAlign,
-        )
+        loading -> {
+            Box(
+                modifier = modifier
+                    .width(AppTokens.dp.menu.item.loadingWidth)
+                    .height(AppTokens.dp.menu.item.loadingHeight)
+                    .clip(RoundedCornerShape(AppTokens.dp.menu.item.loadingRadius))
+                    .background(AppTokens.colors.divider.default)
+                    .shimmer()
+                    .semantics {
+                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                    },
+            )
+        }
+
+        value != null -> {
+            Text(
+                modifier = modifier,
+                text = value,
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+                textAlign = TextAlign.End,
+            )
+        }
     }
 }
 
@@ -146,7 +155,11 @@ private fun MenuRowValue(
 @Composable
 private fun MenuValueRowPreview() {
     PreviewContainer {
-        MenuSection(title = "Body", icon = AppTokens.icons.Body, iconColor = AppTokens.colors.context.body) {
+        MenuSection(
+            title = "Body",
+            icon = AppTokens.icons.Body,
+            iconColor = AppTokens.colors.context.body,
+        ) {
             MenuValueRow(title = "Weight", value = "82 kg", onClick = {})
             MenuValueRow(title = "Height", value = "178 cm", loading = true, onClick = {})
             MenuValueRow(title = "Experience", value = "—", onClick = {}, showDivider = false)
@@ -231,9 +244,18 @@ private fun MenuValueRowDialogPreview() {
 private fun MenuValueRowLongContentPreview() {
     PreviewContainer {
         MenuSection(title = "Тренувальні налаштування") {
-            MenuValueRow(title = "Основна ціль тренувань", value = "Нарощування м’язової маси", onClick = {})
+            MenuValueRow(
+                title = "Основна ціль тренувань",
+                value = "Нарощування м’язової маси",
+                onClick = {},
+            )
             MenuValueRow(title = "Виключене обладнання", value = "0", onClick = {})
-            MenuValueRow(title = "Досвід тренувань", value = "Не вказано", onClick = {}, showDivider = false)
+            MenuValueRow(
+                title = "Досвід тренувань",
+                value = "Не вказано",
+                onClick = {},
+                showDivider = false,
+            )
         }
     }
 }

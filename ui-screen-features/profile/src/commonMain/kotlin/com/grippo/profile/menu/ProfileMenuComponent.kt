@@ -35,6 +35,11 @@ internal class ProfileMenuComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileMenuScreen(state.value, loaders.value, viewModel)
+
+        ProfileMenuScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 }

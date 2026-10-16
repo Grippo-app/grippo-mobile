@@ -425,8 +425,6 @@ public data object AppDp {
         public data object HeaderLoading {
             val nameWidthFraction: Float = 0.4f
             val emailWidthFraction: Float = 0.6f
-            val nameHeight: Dp = 18.dp
-            val emailHeight: Dp = 12.dp
             val radius: Dp = 4.dp
         }
 

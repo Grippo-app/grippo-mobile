@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
@@ -36,10 +37,13 @@ public fun UserProfileHeader(
     value: UserState?,
     loading: Boolean = false,
 ) {
+    val nameStyle = AppTokens.typography.h3()
+    val emailStyle = AppTokens.typography.b13Med()
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .illustrationBackground(RoundedCornerShape(AppTokens.dp.userCard.card.radius))
+            .illustrationBackground(shape = RoundedCornerShape(AppTokens.dp.userCard.card.radius))
             .padding(
                 horizontal = AppTokens.dp.userCard.card.horizontalPadding,
                 vertical = AppTokens.dp.userCard.card.verticalPadding,
@@ -49,7 +53,7 @@ public fun UserProfileHeader(
     ) {
         if (loading) {
             Box(
-                Modifier
+                modifier = Modifier
                     .size(AppTokens.dp.userCard.avatar.small)
                     .clip(CircleShape)
                     .background(AppTokens.colors.divider.default)
@@ -68,34 +72,45 @@ public fun UserProfileHeader(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         ) {
             if (loading) {
+                val nameHeight = with(LocalDensity.current) { nameStyle.lineHeight.toDp() }
+                val emailHeight = with(LocalDensity.current) { emailStyle.lineHeight.toDp() }
+
                 Box(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth(AppTokens.dp.userCard.headerLoading.nameWidthFraction)
-                        .height(AppTokens.dp.userCard.headerLoading.nameHeight)
+                        .height(nameHeight)
                         .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
                         .background(AppTokens.colors.divider.default)
                         .shimmer()
-                        .semantics { progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate },
+                        .semantics {
+                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                        },
                 )
                 Box(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth(AppTokens.dp.userCard.headerLoading.emailWidthFraction)
-                        .height(AppTokens.dp.userCard.headerLoading.emailHeight)
+                        .height(emailHeight)
                         .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
                         .background(AppTokens.colors.divider.default)
                         .shimmer(),
                 )
             } else {
                 val name = value?.name?.takeIf { it.isNotBlank() }
+                val email = value?.email?.takeIf { it.isNotBlank() }
+
                 Text(
                     text = name ?: AppTokens.strings.res(Res.string.profile_name_not_set),
-                    style = AppTokens.typography.h3(),
-                    color = if (name == null) AppTokens.colors.text.tertiary else AppTokens.colors.text.primary,
+                    style = nameStyle,
+                    color = if (name == null) {
+                        AppTokens.colors.text.tertiary
+                    } else {
+                        AppTokens.colors.text.primary
+                    },
                 )
-                value?.email?.takeIf { it.isNotBlank() }?.let { email ->
+                if (email != null) {
                     Text(
                         text = email,
-                        style = AppTokens.typography.b13Med(),
+                        style = emailStyle,
                         color = AppTokens.colors.text.secondary,
                     )
                 }
@@ -108,7 +123,9 @@ public fun UserProfileHeader(
 @Composable
 private fun UserProfileHeaderPreview() {
     PreviewContainer {
-        UserProfileHeader(value = stubUser().copy(name = "Alex", email = "alex@grippo.app"))
+        UserProfileHeader(
+            value = stubUser().copy(name = "Alex", email = "alex@grippo.app"),
+        )
     }
 }
 

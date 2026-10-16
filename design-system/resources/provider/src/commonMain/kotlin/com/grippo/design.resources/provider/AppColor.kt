@@ -186,6 +186,7 @@ public interface AppColor {
         public val secondary: Color
         public val tertiary: Color
         public val disabled: Color
+        public val backgroundAlpha: Float
     }
 
     public interface ContextColors {

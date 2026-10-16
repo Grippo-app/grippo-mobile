@@ -37,17 +37,17 @@ import com.grippo.design.resources.provider.weight
 
 @Composable
 internal fun ProfileMenuContent(
+    modifier: Modifier = Modifier,
     user: UserState?,
     goal: GoalState?,
     excludedMusclesCount: Int?,
     excludedEquipmentsCount: Int?,
-    onProfileMenuClick: (ProfileMenu) -> Unit,
-    onSettingsMenuClick: (SettingsMenu) -> Unit,
-    modifier: Modifier = Modifier,
     userLoading: Boolean = false,
     goalLoading: Boolean = false,
     musclesLoading: Boolean = false,
     equipmentsLoading: Boolean = false,
+    onProfileMenuClick: (ProfileMenu) -> Unit,
+    onSettingsMenuClick: (SettingsMenu) -> Unit,
 ) {
     val notSet = AppTokens.strings.res(Res.string.profile_value_not_set)
     val weight = (user?.weight as? WeightFormatState.Valid)?.let {
@@ -70,20 +70,26 @@ internal fun ProfileMenuContent(
                 title = AppTokens.strings.res(Res.string.weight),
                 value = weight,
                 loading = userLoading,
-                onClick = { onProfileMenuClick(ProfileMenu.Body) },
+                onClick = {
+                    onProfileMenuClick(ProfileMenu.Body)
+                },
             )
             MenuValueRow(
                 title = AppTokens.strings.res(Res.string.profile_height),
                 value = height,
                 loading = userLoading,
-                onClick = { onProfileMenuClick(ProfileMenu.Body) },
+                onClick = {
+                    onProfileMenuClick(ProfileMenu.Body)
+                },
             )
             MenuValueRow(
                 title = ProfileMenu.Experience.text().text(),
                 value = user?.experience?.title()?.text() ?: notSet,
                 loading = userLoading,
                 showDivider = false,
-                onClick = { onProfileMenuClick(ProfileMenu.Experience) },
+                onClick = {
+                    onProfileMenuClick(ProfileMenu.Experience)
+                },
             )
         }
         MenuSection(
@@ -96,7 +102,9 @@ internal fun ProfileMenuContent(
                 value = goal?.primaryGoal?.label() ?: notSet,
                 loading = goalLoading,
                 showDivider = false,
-                onClick = { onProfileMenuClick(ProfileMenu.Goal) },
+                onClick = {
+                    onProfileMenuClick(ProfileMenu.Goal)
+                },
             )
         }
         MenuSection(
@@ -108,14 +116,18 @@ internal fun ProfileMenuContent(
                 title = ProfileMenu.Muscles.text().text(),
                 value = excludedMusclesCount?.toString() ?: notSet,
                 loading = musclesLoading,
-                onClick = { onProfileMenuClick(ProfileMenu.Muscles) },
+                onClick = {
+                    onProfileMenuClick(ProfileMenu.Muscles)
+                },
             )
             MenuValueRow(
                 title = ProfileMenu.Equipment.text().text(),
                 value = excludedEquipmentsCount?.toString() ?: notSet,
                 loading = equipmentsLoading,
                 showDivider = false,
-                onClick = { onProfileMenuClick(ProfileMenu.Equipment) },
+                onClick = {
+                    onProfileMenuClick(ProfileMenu.Equipment)
+                },
             )
         }
         MenuSection(
@@ -126,6 +138,7 @@ internal fun ProfileMenuContent(
         ) {
             val settingsMenu = SettingsMenu.entries
                 .filter { it != SettingsMenu.Debug || user?.role == RoleEnumState.ADMIN }
+
             settingsMenu.forEachIndexed { index, menu ->
                 MenuValueRow(
                     title = if (menu == SettingsMenu.Settings) {
@@ -133,9 +146,15 @@ internal fun ProfileMenuContent(
                     } else {
                         menu.text().text()
                     },
-                    titleColor = if (menu == SettingsMenu.Debug) menu.textColor() else AppTokens.colors.text.secondary,
+                    titleColor = if (menu == SettingsMenu.Debug) {
+                        menu.textColor()
+                    } else {
+                        AppTokens.colors.text.secondary
+                    },
                     showDivider = index < settingsMenu.lastIndex,
-                    onClick = { onSettingsMenuClick(menu) },
+                    onClick = {
+                        onSettingsMenuClick(menu)
+                    },
                 )
             }
         }
