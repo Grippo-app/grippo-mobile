@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.designSystem.resources.provider)
             implementation(projects.designSystem.core)
             implementation(projects.toolkit.logger)
+            implementation(projects.toolkit.localization)
 
             implementation(libs.compose.foundation)
 

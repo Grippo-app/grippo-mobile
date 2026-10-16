@@ -36,17 +36,17 @@ internal class TrainingCompletedViewModel(
     exercises: List<ExerciseState>,
     startAt: LocalDateTime,
     private val analytics: TrainingAnalytics,
-    private val trainingFeature: TrainingFeature,
-    setTrainingUseCase: SetTrainingUseCase,
-    updateTrainingUseCase: UpdateTrainingUseCase,
-    trainingTotalUseCase: TrainingTotalUseCase,
+    trainingFeature: TrainingFeature,
+    private val setTrainingUseCase: SetTrainingUseCase,
+    private val updateTrainingUseCase: UpdateTrainingUseCase,
+    private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
     exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     initialState: TrainingCompletedState,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
-    initialState
+    state = initialState,
 ), TrainingCompletedContract {
 
     override val screenPresentation = { reason: NavigationReason ->
@@ -56,52 +56,81 @@ internal class TrainingCompletedViewModel(
     init {
         safeLaunch(
             loader = TrainingCompletedLoader.SaveTraining,
-            onError = { navigateTo(TrainingCompletedDirection.Back) }
+            onError = {
+                navigateTo(TrainingCompletedDirection.Back)
+            },
         ) {
-            val id = state.value.savedTrainingId ?: run {
-                val duration = DateTimeUtils.ago(value = startAt)
+            val id = state.value.savedTrainingId ?: saveTraining(
+                stage = stage,
+                exercises = exercises,
+                startAt = startAt,
+            ) ?: return@safeLaunch
 
-                val domainExercises = exercises.toDomain()
-
-                val totals = trainingTotalUseCase
-                    .fromSetExercises(domainExercises)
-                    .toState()
-
-                val training = SetTraining(
-                    exercises = domainExercises,
-                    duration = duration,
-                    volume = totals.volume.value ?: 0f,
-                    intensity = totals.intensity.value ?: 0f,
-                    repetitions = totals.repetitions.value ?: 0,
-                )
-
-                val saveResult = when (val trainingId = stage.id) {
-                    null -> analytics.trackOperation(TrainingOperation.CreateTraining) {
-                        setTrainingUseCase.execute(training).getOrThrow()
-                    }
-                    else -> analytics.trackOperation(TrainingOperation.UpdateTraining) {
-                        updateTrainingUseCase.execute(trainingId, training).getOrThrow()
-                    }
-                }
-                val savedId = saveResult ?: return@safeLaunch
-                update { it.copy(savedTrainingId = savedId) }
-                savedId
-            }
-
-            analytics.trackOperation(TrainingOperation.DeleteDraft) {
+            analytics.trackOperation(operation = TrainingOperation.DeleteDraft) {
                 trainingFeature.deleteDraftTraining().getOrThrow()
             }
 
-            val domain = analytics.trackOperation(TrainingOperation.LoadTraining) {
+            val domain = analytics.trackOperation(operation = TrainingOperation.LoadTraining) {
                 trainingFeature.observeTraining(id).firstOrNull()
             }
 
-            analytics.trackOperation(TrainingOperation.RefreshExamples) {
+            analytics.trackOperation(operation = TrainingOperation.RefreshExamples) {
                 exerciseExampleFeature.getExerciseExamples().getOrThrow()
             }
 
             provideTraining(domain)
         }
+    }
+
+    private suspend fun saveTraining(
+        stage: StageState,
+        exercises: List<ExerciseState>,
+        startAt: LocalDateTime,
+    ): String? {
+        val training = assembleTraining(
+            exercises = exercises,
+            startAt = startAt,
+        )
+
+        val saveResult = when (val trainingId = stage.id) {
+            null -> {
+                analytics.trackOperation(operation = TrainingOperation.CreateTraining) {
+                    setTrainingUseCase.execute(training).getOrThrow()
+                }
+            }
+
+            else -> {
+                analytics.trackOperation(operation = TrainingOperation.UpdateTraining) {
+                    updateTrainingUseCase.execute(id = trainingId, training = training).getOrThrow()
+                }
+            }
+        }
+
+        val savedId = saveResult ?: return null
+
+        update { it.copy(savedTrainingId = savedId) }
+        return savedId
+    }
+
+    private fun assembleTraining(
+        exercises: List<ExerciseState>,
+        startAt: LocalDateTime,
+    ): SetTraining {
+        val duration = DateTimeUtils.ago(value = startAt)
+
+        val domainExercises = exercises.toDomain()
+
+        val totals = trainingTotalUseCase
+            .fromSetExercises(domainExercises)
+            .toState()
+
+        return SetTraining(
+            exercises = domainExercises,
+            duration = duration,
+            volume = totals.volume.value ?: 0f,
+            intensity = totals.intensity.value ?: 0f,
+            repetitions = totals.repetitions.value ?: 0,
+        )
     }
 
     private suspend fun provideTraining(value: Training?) {
@@ -117,31 +146,27 @@ internal class TrainingCompletedViewModel(
 
         val training = value.toState()
 
-        update {
-            it.copy(
-                timeline = timeline,
-                training = training,
-                muscleLoad = muscleLoad,
-            )
-        }
+        update { it.copy(timeline = timeline, training = training, muscleLoad = muscleLoad) }
     }
 
     override fun onSummaryClick() {
         val id = state.value.training?.id ?: return
-        analytics.trackEvent(TrainingEvent.Completed.SummaryOpened)
+
+        analytics.trackEvent(event = TrainingEvent.Completed.SummaryOpened)
 
         val dialog = DialogConfig.Statistics.Training(
-            title = UiText.Res(Res.string.statistics),
-            id = id
+            title = UiText.Res(value = Res.string.statistics),
+            id = id,
         )
 
         dialogController.open(dialog)
     }
 
     override fun onExerciseClick(id: String) {
-        analytics.trackEvent(TrainingEvent.Completed.ExerciseOpened)
+        analytics.trackEvent(event = TrainingEvent.Completed.ExerciseOpened)
+
         val dialog = DialogConfig.Exercise(
-            title = UiText.Res(Res.string.exercise_record),
+            title = UiText.Res(value = Res.string.exercise_record),
             id = id,
         )
 
@@ -149,7 +174,7 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onBack() {
-        analytics.trackEvent(TrainingEvent.Completed.DismissRequested)
+        analytics.trackEvent(event = TrainingEvent.Completed.DismissRequested)
         navigateTo(TrainingCompletedDirection.Back)
     }
 }

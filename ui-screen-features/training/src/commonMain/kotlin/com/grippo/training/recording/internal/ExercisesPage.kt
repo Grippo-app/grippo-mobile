@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.stage.StageState
-import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -33,26 +30,20 @@ import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
-import com.grippo.design.preview.AppPreview
-import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.empty_exercises
 import com.grippo.design.resources.provider.icons.Trash
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.training.recording.TrainingRecordingContract
-import com.grippo.training.recording.TrainingRecordingScreen
 import com.grippo.training.recording.TrainingRecordingState
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ColumnScope.ExercisesPage(
     modifier: Modifier = Modifier,
     state: TrainingRecordingState,
-    contract: TrainingRecordingContract
+    contract: TrainingRecordingContract,
 ) {
     val exercises = state.exercises.orEmpty()
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
@@ -65,12 +56,12 @@ internal fun ColumnScope.ExercisesPage(
             AnimatedContent(
                 modifier = containerModifier,
                 transitionSpec = {
-                    (fadeIn(animationSpec = tween(220, delayMillis = 90)))
-                        .togetherWith(fadeOut(animationSpec = tween(90)))
+                    fadeIn(animationSpec = tween(durationMillis = 220, delayMillis = 90))
+                        .togetherWith(fadeOut(animationSpec = tween(durationMillis = 90)))
                 },
-                targetState = exercises.isEmpty()
-            ) { s ->
-                when (s) {
+                targetState = exercises.isEmpty(),
+            ) { isEmpty ->
+                when (isEmpty) {
                     true -> {
                         IllustratedEmptyState(
                             modifier = Modifier
@@ -78,7 +69,7 @@ internal fun ColumnScope.ExercisesPage(
                                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                             painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
                             contentPadding = resolvedPadding,
-                            text = AppTokens.strings.res(Res.string.empty_training_exercises)
+                            text = AppTokens.strings.res(Res.string.empty_training_exercises),
                         )
                     }
 
@@ -92,20 +83,12 @@ internal fun ColumnScope.ExercisesPage(
                             modifier = Modifier.fillMaxSize(),
                             state = dragDropState.listState,
                             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                            contentPadding = resolvedPadding
+                            contentPadding = resolvedPadding,
                         ) {
                             items(
                                 items = exercises,
-                                key = { k -> k.id }
+                                key = { exercise -> exercise.id },
                             ) { exercise ->
-                                val editExerciseProvider = remember(exercise.id) {
-                                    { contract.onEditExercise(exercise.id) }
-                                }
-
-                                val deleteExerciseProvider = remember(exercise.id) {
-                                    { contract.onDeleteExercise(exercise.id) }
-                                }
-
                                 DraggableItem(state = dragDropState, key = exercise.id) {
                                     SwipeToReveal(
                                         horizontalPadding = AppTokens.dp.screen.horizontalPadding,
@@ -113,16 +96,19 @@ internal fun ColumnScope.ExercisesPage(
                                             SwipeRevealAction(
                                                 label = AppTokens.strings.res(Res.string.delete_btn),
                                                 icon = AppTokens.icons.Trash,
-                                                onClick = deleteExerciseProvider
+                                                onClick = {
+                                                    contract.onDeleteExercise(exercise.id)
+                                                },
                                             )
                                         }
                                     ) {
                                         ExerciseCard(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth(),
                                             value = exercise,
                                             style = ExerciseCardStyle.Large(
-                                                onClick = editExerciseProvider
+                                                onClick = {
+                                                    contract.onEditExercise(exercise.id)
+                                                },
                                             ),
                                         )
                                     }
@@ -144,44 +130,12 @@ internal fun ColumnScope.ExercisesPage(
                     text = AppTokens.strings.res(Res.string.add_exercise_btn),
                 ),
                 style = ButtonStyle.Secondary,
-                onClick = contract::onAddExercise
+                onClick = contract::onAddExercise,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
             Spacer(modifier = Modifier.navigationBarsPadding())
-        }
+        },
     )
-}
-
-@AppPreview
-@Composable
-private fun ExercisesPagePreview() {
-    PreviewContainer {
-        TrainingRecordingScreen(
-            state = TrainingRecordingState(
-                stage = StageState.Add,
-                startAt = DateTimeUtils.now(),
-                exercises = stubTraining().exercises,
-            ),
-            loaders = persistentSetOf(),
-            contract = TrainingRecordingContract.Empty
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ExercisesPageEmptyPreview() {
-    PreviewContainer {
-        TrainingRecordingScreen(
-            state = TrainingRecordingState(
-                stage = StageState.Add,
-                startAt = DateTimeUtils.now(),
-                exercises = persistentListOf(),
-            ),
-            loaders = persistentSetOf(),
-            contract = TrainingRecordingContract.Empty
-        )
-    }
 }

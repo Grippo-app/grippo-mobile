@@ -49,7 +49,7 @@ public sealed interface PerformanceMetricState {
 
     @Composable
     public fun currentDisplay(): String = when (this) {
-        is Duration -> current.display
+        is Duration -> current.short()
         is Volume -> current.short()
         is Density -> current.short()
         is Repetitions -> current.short()
@@ -58,7 +58,7 @@ public sealed interface PerformanceMetricState {
 
     @Composable
     public fun averageDisplay(): String = when (this) {
-        is Duration -> average.display
+        is Duration -> average.short()
         is Volume -> average.short()
         is Density -> average.short()
         is Repetitions -> average.short()
@@ -67,7 +67,7 @@ public sealed interface PerformanceMetricState {
 
     @Composable
     public fun bestDisplay(): String = when (this) {
-        is Duration -> best.display
+        is Duration -> best.short()
         is Volume -> best.short()
         is Density -> best.short()
         is Repetitions -> best.short()

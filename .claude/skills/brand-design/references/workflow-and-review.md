@@ -49,7 +49,7 @@ mark other axes inapplicable only when the affected source supports that conclus
 | Axis | Acceptance |
 |---|---|
 | Usage/states | The [source gate](usage-and-states.md#source-gate) is complete; every distinct role, state, reachable combination and transition is accounted for |
-| Composition | Purpose and next action are clear; headings, sections, cards, metrics and metadata have distinct hierarchy without redundant frames |
+| Composition | Purpose and next action are clear; headings, sections, metrics and metadata have distinct hierarchy; [container choices](design-language.md#shape-and-hierarchy) pass across the whole screen, including repeated sibling cards |
 | Brand/semantics | Neutral structure and deliberate warmth fit the role; selection, feedback and data colors preserve meaning; artwork earns its space |
 | Content | Actual copy, values, units, images and supported locales remain readable and complete |
 | Interaction | Existing semantics, focus/keyboard, selection, scroll/insets and action reachability survive the change |

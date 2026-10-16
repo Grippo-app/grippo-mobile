@@ -11,27 +11,28 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TimelineState.Companion.exercise
-import com.grippo.core.state.trainings.stubDailyTrainingTimeline
+import com.grippo.core.state.trainings.TrainingPosition
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -50,55 +51,55 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.go_to_dashboard
 import com.grippo.design.resources.provider.workout_summary
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRangePresets
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun TrainingCompletedScreen(
     state: TrainingCompletedState,
     loaders: ImmutableSet<TrainingCompletedLoader>,
-    contract: TrainingCompletedContract
+    contract: TrainingCompletedContract,
 ) = BaseComposeScreen(
-    ScreenBackground.Color(
+    background = ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
-    )
+    ),
 ) {
+    val hasTimeline = state.timeline.isNotEmpty()
+    val contentAlpha = animateFloatAsState(
+        targetValue = if (hasTimeline) 1f else 0f,
+        animationSpec = tween(durationMillis = 400),
+        label = "completionAlpha",
+    )
+    val contentOffset = animateDpAsState(
+        targetValue = if (hasTimeline) 0.dp else AppTokens.dp.training.completionEntranceOffset,
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+        label = "completionOffset",
+    )
+
     if (loaders.contains(TrainingCompletedLoader.SaveTraining)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen
     }
 
-    val cardVisible = remember { mutableStateOf(false) }
-
-    LaunchedEffect(state.timeline) {
-        cardVisible.value = state.timeline.isNotEmpty()
-    }
-
-    val alpha by animateFloatAsState(
-        targetValue = if (cardVisible.value) 1f else 0f,
-        animationSpec = tween(durationMillis = 400),
-        label = "alpha"
-    )
-
-    val offsetY by animateDpAsState(
-        targetValue = if (cardVisible.value) 0.dp else AppTokens.dp.training.completionEntranceOffset,
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
-        label = "offsetY"
-    )
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
-        title = AppTokens.strings.res(Res.string.workout_summary)
+        title = AppTokens.strings.res(Res.string.workout_summary),
     )
 
     val basePadding = PaddingValues(
         start = AppTokens.dp.screen.horizontalPadding,
         end = AppTokens.dp.screen.horizontalPadding,
-        top = AppTokens.dp.contentPadding.content
+        top = AppTokens.dp.contentPadding.content,
+        bottom = AppTokens.dp.contentPadding.subContent,
     )
 
-    if (cardVisible.value) {
+    if (hasTimeline) {
         BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,8 +109,10 @@ internal fun TrainingCompletedScreen(
                 LazyColumn(
                     modifier = containerModifier
                         .fillMaxSize()
-                        .offset(y = offsetY)
-                        .alpha(alpha),
+                        .graphicsLayer {
+                            alpha = contentAlpha.value
+                            translationY = contentOffset.value.toPx()
+                        },
                     contentPadding = resolvedPadding,
                 ) {
                     val training = state.training
@@ -132,7 +135,9 @@ internal fun TrainingCompletedScreen(
                     if (exerciseCount > 0) {
                         item(key = "exercises_section") {
                             ExercisesSectionHeader(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = AppTokens.dp.contentPadding.subContent),
                                 count = exerciseCount,
                             )
                         }
@@ -141,21 +146,17 @@ internal fun TrainingCompletedScreen(
                     items(
                         items = state.timeline,
                         key = { it.key },
-                        contentType = { it::class }
+                        contentType = { it::class },
                     ) { value ->
-                        val exercise = remember(value.key) { value.exercise() }
+                        val exercise = value.exercise()
 
                         if (exercise != null) {
-                            val clickProvider = remember(exercise.id) {
-                                { contract.onExerciseClick(exercise.id) }
-                            }
-
                             ExerciseCard(
-                                modifier = Modifier
-                                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                                    .fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth(),
                                 value = exercise,
-                                style = ExerciseCardStyle.Medium(clickProvider)
+                                style = ExerciseCardStyle.Medium(
+                                    onClick = { contract.onExerciseClick(id = exercise.id) },
+                                ),
                             )
                         }
                     }
@@ -173,7 +174,7 @@ internal fun TrainingCompletedScreen(
                         text = AppTokens.strings.res(Res.string.go_to_dashboard),
                     ),
                     style = ButtonStyle.Primary,
-                    onClick = contract::onBack
+                    onClick = contract::onBack,
                 )
 
                 Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
@@ -199,44 +200,130 @@ private fun ExercisesSectionHeader(
             text = AppTokens.strings.res(Res.string.exercises),
             style = AppTokens.typography.h4(),
             color = AppTokens.colors.text.primary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
 
         Text(
             text = count.toString(),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.tertiary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }
 
+private fun trainingCompletedPreviewState(): TrainingCompletedState {
+    val createdAt = DateTimeFormatState.of(
+        value = LocalDateTime(
+            year = 2026,
+            month = 10,
+            day = 16,
+            hour = 12,
+            minute = 0,
+        ),
+        range = DateRangePresets.infinity(),
+        format = DateFormat.DateOnly.DateMmmDdYyyy,
+    )
+    val base = stubTraining()
+    val exercise = base.exercises.first()
+    val iteration = stubPendingIteration().copy(
+        id = "completed-set",
+        repetitions = RepetitionsFormatState.of(10),
+        externalWeight = VolumeFormatState.of(40f),
+    )
+    val exercises = List(3) { index ->
+        exercise.copy(
+            id = "completed-exercise-$index",
+            exerciseExample = exercise.exerciseExample.copy(
+                id = "completed-example-$index",
+                name = if (index == 0) {
+                    "Жим гантелей лёжа на наклонной скамье нейтральным хватом"
+                } else {
+                    exercise.exerciseExample.name
+                },
+                lastUsed = createdAt,
+            ),
+            iterations = List(3) { setIndex ->
+                iteration.copy(id = "completed-set-$index-$setIndex")
+            }.toPersistentList(),
+            createdAt = createdAt,
+            total = exercise.total.copy(
+                volume = VolumeFormatState.of(1_200f),
+                intensity = IntensityFormatState.of(40f),
+                repetitions = RepetitionsFormatState.of(30),
+            ),
+        )
+    }.toPersistentList()
+    val training = base.copy(
+        id = "completed-training",
+        exercises = exercises,
+        createdAt = createdAt,
+        duration = DurationFormatState.of(45.minutes),
+        total = base.total.copy(
+            volume = VolumeFormatState.of(3_600f),
+            intensity = IntensityFormatState.of(40f),
+            repetitions = RepetitionsFormatState.of(90),
+        ),
+    )
+    val timeline = exercises.mapIndexed { index, value ->
+        TimelineState.MiddleExercise(
+            exerciseState = value,
+            position = TrainingPosition.SINGLE,
+            key = value.id,
+            indexInTraining = index + 1,
+        )
+    }.toPersistentList()
+
+    return TrainingCompletedState(
+        savedTrainingId = training.id,
+        timeline = timeline,
+        training = training,
+        muscleLoad = stubMuscleLoadSummary(),
+    )
+}
+
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun TrainingCompletedPopulatedPreview() {
     PreviewContainer {
         TrainingCompletedScreen(
-            state = TrainingCompletedState(
-                timeline = stubDailyTrainingTimeline(),
-                training = stubTraining(),
-                muscleLoad = stubMuscleLoadSummary(),
-            ),
+            state = trainingCompletedPreviewState(),
             loaders = persistentSetOf(),
-            contract = TrainingCompletedContract.Empty
+            contract = TrainingCompletedContract.Empty,
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun ScreenPreviewLoading() {
+private fun TrainingCompletedWithoutSummaryPreview() {
+    PreviewContainer {
+        TrainingCompletedScreen(
+            state = trainingCompletedPreviewState().copy(muscleLoad = null),
+            loaders = persistentSetOf(),
+            contract = TrainingCompletedContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingCompletedInitialPreview() {
     PreviewContainer {
         TrainingCompletedScreen(
             state = TrainingCompletedState(),
+            loaders = persistentSetOf(),
+            contract = TrainingCompletedContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingCompletedLoadingPreview() {
+    PreviewContainer {
+        TrainingCompletedScreen(
+            state = trainingCompletedPreviewState(),
             loaders = persistentSetOf(TrainingCompletedLoader.SaveTraining),
-            contract = TrainingCompletedContract.Empty
+            contract = TrainingCompletedContract.Empty,
         )
     }
 }

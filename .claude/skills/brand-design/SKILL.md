@@ -74,8 +74,8 @@ or composition is also in scope; a layout edit does not require new artwork.
 
 - Build hierarchy through grouping, space, type and neutral surfaces. Concentrate
   emphasis on the next action, meaningful selection/status or purposeful brand region.
-- Keep enclosing surfaces, controls and image slots related by role rather than
-  forcing identical geometry. Avoid redundant frames and competing focal points.
+- Choose containers through [shape and hierarchy](references/design-language.md#shape-and-hierarchy);
+  avoid competing focal points.
 - Preserve distinctions between selection, semantic feedback, illustration treatment
   and data-series color. Similar hues do not make those roles interchangeable.
 - Preserve necessary content and usable interaction. Resolve layout pressure through

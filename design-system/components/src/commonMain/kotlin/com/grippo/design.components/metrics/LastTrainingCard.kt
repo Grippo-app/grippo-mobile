@@ -85,7 +85,7 @@ public fun LastTrainingCard(
                 ) {
                     RecapMetric(
                         modifier = Modifier.weight(1f),
-                        value = value.duration.display,
+                        value = value.duration.short(),
                         label = AppTokens.strings.res(Res.string.metric_overview_duration),
                     )
                     RecapMetric(

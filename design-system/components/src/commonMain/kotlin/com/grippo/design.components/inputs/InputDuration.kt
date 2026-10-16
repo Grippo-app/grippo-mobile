@@ -22,7 +22,7 @@ public fun InputDuration(
 ) {
     Input(
         modifier = modifier,
-        value = value.display,
+        value = value.short(),
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(

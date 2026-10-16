@@ -111,12 +111,37 @@ A compact navigation item and a screen heading do not need the same font size.
   content with contentPadding.block, keeping compact section gaps at content.
   Loading name/email slots derive their heights from the same h3/b13Med line
   heights; HeaderLoading tokens retain their width fractions and corner radius.
-- Standalone content cards and menu sections use the large 28 dp shape and a thin
-  neutral outline. A standalone card is a card that is its own section; rows
-  repeated inside a list are compact, not standalone. Nested/compact metric
-  panels, repeated list rows and input fields use the 12 dp shape; chips, set
-  cells and thumbnails keep the shape appropriate to their role.
-  Do not put a second card frame around an already framed shared composition.
+- When using a framed presentation under
+  [shape and hierarchy](../.claude/skills/brand-design/references/design-language.md#shape-and-hierarchy),
+  standalone content cards and framed menu sections use the large 28 dp shape
+  and a thin neutral outline. A standalone card is its own section; rows repeated
+  inside a list are compact. Nested/compact metric panels, repeated framed list
+  rows and input fields use the 12 dp shape; chips, set cells and thumbnails keep
+  their owned shapes.
+- Training recording places duration, tonnage and repetitions directly on
+  `background.screen`, aligned to `screen.horizontalPadding`. Equal-width cells
+  use `h5` primary values and `b12Med` secondary labels with content-driven height;
+  `contentPadding.content` supplies the summary's vertical padding and
+  `contentPadding.subContent` separates its cells. Save/Update keeps the toolbar's
+  primary action; Add Exercise keeps the pinned secondary action.
+- Training exercise editing keeps the exercise summary open on `background.screen`.
+  Sets are compact open journal rows on the same opaque screen surface, separated
+  by `divider.subtle`; they have no card outline or filled value fields. The set
+  number sits beside two independent metric actions, using the content-driven
+  `iterationCard.editor.numberMinWidth` minimum. Numbers, labels and previous-set
+  context use secondary `b12Med`; values use neutral `h5`. Metric targets retain
+  `iterationCard.editor.minActionHeight` without a filled or outlined field shape.
+  Warnings use `semantic.warning` only for the affected value and icon;
+  actionable explanatory text stays neutral without a filled warning panel.
+  Save keeps the primary button; Add Set keeps the secondary button.
+- Training completion groups tonnage, set/repetition/duration totals and the complete
+  PerGroup muscle breakdown in one neutral Large MetricSectionPanel: the existing
+  28 dp shape, card surface and thin outline define its whole-summary detail action.
+  Tonnage uses a secondary `b13Med` label above a primary `h4` value; the decorative
+  detail chevron uses `icon.secondary`. Values remain complete and may wrap.
+  Exercises stay open Medium rows on the screen surface, with only their owner's
+  vertical padding; `contentPadding.block` separates the summary from the list.
+  The pinned dashboard action retains ButtonStyle.Primary and resolved overlay insets.
 - MenuSection headings use `h4` and a 22 dp glyph centered in a 32 dp tile with
   12 dp corners. The tile lightly tints the supplied icon hue through the
   theme-owned `icon.tintedBackgroundAlpha` coefficient, preserving caller alpha;

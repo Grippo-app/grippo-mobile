@@ -17,13 +17,9 @@ import kotlinx.serialization.Transient
 @Serializable
 internal data class TrainingRecordingState(
     val stage: StageState,
-
-    // === Main data ===
+    val startAt: LocalDateTime,
     @Serializable(with = ImmutableListSerializer::class)
     val exercises: ImmutableList<ExerciseState>? = null,
-    val startAt: LocalDateTime,
-
-    // === Filters / Sorting ===
     @Transient
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     @Transient

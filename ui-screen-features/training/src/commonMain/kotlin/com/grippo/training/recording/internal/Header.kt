@@ -1,7 +1,7 @@
 package com.grippo.training.recording.internal
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,8 +14,10 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
+import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.tonnage
+import com.grippo.design.resources.provider.x
 
 @Composable
 internal fun Header(
@@ -24,10 +26,9 @@ internal fun Header(
     volume: VolumeFormatState,
     repetitions: RepetitionsFormatState,
 ) {
-    FlowRow(
+    Row(
         modifier = modifier.fillMaxWidth(),
-        maxItemsInEachRow = 3,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         TrainingStat(
             modifier = Modifier.weight(1f),
@@ -39,8 +40,12 @@ internal fun Header(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.tonnage),
             value = when (volume) {
-                is VolumeFormatState.Empty -> VolumeFormatState.Valid("0", 0f).shortAnnotated()
-                else -> volume.shortAnnotated()
+                is VolumeFormatState.Empty -> {
+                    AnnotatedString("0${AppTokens.strings.res(Res.string.kg)}")
+                }
+                else -> {
+                    volume.shortAnnotated()
+                }
             },
             contentColor = AppTokens.colors.text.primary,
         )
@@ -48,8 +53,12 @@ internal fun Header(
             modifier = Modifier.weight(1f),
             label = AppTokens.strings.res(Res.string.reps),
             value = when (repetitions) {
-                is RepetitionsFormatState.Empty -> RepetitionsFormatState.Valid("0", 0).shortAnnotated()
-                else -> repetitions.shortAnnotated()
+                is RepetitionsFormatState.Empty -> {
+                    AnnotatedString("${AppTokens.strings.res(Res.string.x)}0")
+                }
+                else -> {
+                    repetitions.shortAnnotated()
+                }
             },
             contentColor = AppTokens.colors.text.primary,
         )
@@ -85,7 +94,7 @@ private fun HeaderJustStartedPreview() {
 private fun HeaderHeavyPreview() {
     PreviewContainer {
         Header(
-            duration = "01:35:42",
+            duration = "125:35:42",
             volume = VolumeFormatState.of(12480f),
             repetitions = RepetitionsFormatState.of(96),
         )

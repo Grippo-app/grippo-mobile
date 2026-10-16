@@ -4,6 +4,7 @@ Read only sections matching the task. These patterns guide hierarchy, not new AP
 or mandatory wrappers. Use current
 [shared owners](../../design-system/references/components.md) and
 [product usage rules](../../../../design-system/CONSISTENCY.md).
+Choose containment through [shape and hierarchy](design-language.md#shape-and-hierarchy).
 
 ## Choose intensity by purpose
 
@@ -15,7 +16,7 @@ or mandatory wrappers. Use current
 | Training/history/list | Restrained brand through shape, rhythm and controls | Records, state and interaction |
 | Empty content | Relevant artwork when useful, concise guidance | Actual absence and available next step |
 | Error/confirmation | Compact focused interruption | Message, consequence and action |
-| Chart/data detail | Neutral frame and meaningful series/status colors | Comparison, units and interpretation |
+| Chart/data detail | Quiet hierarchy and meaningful series/status colors | Comparison, units and interpretation |
 
 Intensity follows role/density; a logo, hero or illustration is not required on
 every screen, row or dialog.
@@ -52,13 +53,12 @@ Reuse BrandHeader when its contract fits; its optional logo is not required per 
 ## Home, dashboards and summaries
 
 The welcome region introduces the surface; actual data and the useful next action
-remain prominent. Keep card gutters and role-based headings coherent. Reduce
-repeated title/value/status emphasis before adding branded containers.
+remain prominent. Keep content edges and role-based headings coherent. Reduce
+repeated title/value/status emphasis.
 
 Preserve established metric hierarchy, grids and ordering unless composition
-changes are authorized. Distinguish standalone panels from compact nested summaries;
-avoid framing the same information repeatedly. Use actual empty, partial and
-populated states, not richer invented data to claim production hierarchy is sound.
+changes are authorized. Use actual empty, partial and populated states, not richer
+invented data to claim production hierarchy is sound.
 
 ## Lists, choices and equipment
 

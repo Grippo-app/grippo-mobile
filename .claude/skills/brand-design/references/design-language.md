@@ -67,12 +67,23 @@ screen palette or state opacity from illustration pixels or local blends.
 
 ## Shape and hierarchy
 
-Enclosing surfaces gather content; controls communicate interaction. Their forms
-should share a family while expressing different roles. Standalone cards can be
-softer than compact panels, fields, chips and image slots.
+Start with open sections on the screen surface, grouped through spacing, alignment
+and typography. Quiet dividers can separate rows without enclosing each one.
+Choose a card or panel when its visible boundary makes an independent entity,
+a cohesive summary or the extent of a meaningful action or state clearer than open
+grouping would. Ordinary clickable rows use their existing action affordances;
+clickability alone does not justify a card. Name the boundary's purpose and benefit
+in the visual brief; a section, metric or chart does not require a container by type
+alone.
 
-Prefer grouping through space and surface tone. Add a boundary where it clarifies
-containment/state. Avoid multiple heavy frames around already grouped content or
+Review containment across the whole screen. A sequence of cards whose boundaries
+only repeat section structure fails composition even without nested frames.
+Combine open and contained content according to their roles. Inputs, selection
+controls and image slots retain the surface and shape of their shared owner.
+
+Chosen enclosing surfaces and controls should share a family while expressing
+different roles. Standalone cards can be softer than compact panels, fields, chips
+and image slots. Avoid multiple heavy frames around already grouped content or
 outline + strong shadow + gradient on an ordinary card. Internal padding must leave
 room inside curved corners and preserve intended image scale.
 

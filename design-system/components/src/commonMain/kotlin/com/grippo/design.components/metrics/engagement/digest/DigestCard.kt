@@ -86,6 +86,8 @@ private fun EmptyDigestBody() {
 private fun ContentDigestBody(
     value: DigestState.Content,
 ) {
+    val duration = value.duration.short()
+
     DigestHero(
         value = value.total.short(),
         label = AppTokens.strings.res(Res.string.volume),
@@ -99,8 +101,8 @@ private fun ContentDigestBody(
             ),
             MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.duration),
-                value = value.duration.display.ifBlank { "0" },
-                dimmed = value.duration.display.isBlank(),
+                value = duration.ifBlank { "0" },
+                dimmed = duration.isBlank(),
             ),
             MetricBreakdownItem(
                 label = AppTokens.strings.res(Res.string.sets),

@@ -18,8 +18,15 @@ import kotlinx.datetime.LocalDateTime
 internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
     stage: StageState,
-    private val toCompleted: (stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime) -> Unit,
-    private val toExercise: (exercise: ExerciseState, resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>) -> Unit,
+    private val toCompleted: (
+        stage: StageState,
+        exercises: List<ExerciseState>,
+        startAt: LocalDateTime,
+    ) -> Unit,
+    private val toExercise: (
+        exercise: ExerciseState,
+        resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>,
+    ) -> Unit,
     private val toLibrary: (ExercisesRouter.Library) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
@@ -27,16 +34,24 @@ internal class TrainingRecordingComponent(
     init {
         observeResult(
             key = TrainingRecordingViewModel.LIBRARY_RESULT_KEY,
-            onResult = { viewModel.acceptLibrarySelection(it.data) },
+            onResult = { result ->
+                viewModel.acceptLibrarySelection(result.data)
+            },
         )
+
         observeResult(
             key = TrainingRecordingViewModel.EXERCISE_RESULT_KEY,
-            onResult = {
-                when (val action = it.data) {
-                    is TrainingRouter.Exercise.Action.Sync -> viewModel.updateExercise(action.exercise)
-                    is TrainingRouter.Exercise.Action.Remove -> viewModel.removeExercise(action.id)
+            onResult = { result ->
+                when (val action = result.data) {
+                    is TrainingRouter.Exercise.Action.Sync -> {
+                        viewModel.updateExercise(action.exercise)
+                    }
+
+                    is TrainingRouter.Exercise.Action.Remove -> {
+                        viewModel.removeExercise(action.id)
+                    }
                 }
-            }
+            },
         )
     }
 
@@ -59,24 +74,34 @@ internal class TrainingRecordingComponent(
 
     init {
         saveState(DRAFT) { viewModel.state.value }
+
         backHandler.register(backCallback)
     }
 
     override suspend fun eventListener(direction: TrainingRecordingDirection) {
         when (direction) {
-            is TrainingRecordingDirection.ToLibrary -> toLibrary(direction.route)
-            is TrainingRecordingDirection.ToCompleted -> toCompleted.invoke(
-                direction.stage,
-                direction.exercises,
-                direction.startAt
-            )
+            is TrainingRecordingDirection.ToLibrary -> {
+                toLibrary(direction.route)
+            }
 
-            is TrainingRecordingDirection.ToExercise -> toExercise.invoke(
-                direction.exercise,
-                direction.resultKey,
-            )
+            is TrainingRecordingDirection.ToCompleted -> {
+                toCompleted.invoke(
+                    direction.stage,
+                    direction.exercises,
+                    direction.startAt,
+                )
+            }
 
-            TrainingRecordingDirection.Back -> back.invoke()
+            is TrainingRecordingDirection.ToExercise -> {
+                toExercise.invoke(
+                    direction.exercise,
+                    direction.resultKey,
+                )
+            }
+
+            TrainingRecordingDirection.Back -> {
+                back.invoke()
+            }
         }
     }
 
@@ -84,10 +109,18 @@ internal class TrainingRecordingComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingRecordingScreen(state.value, loaders.value, viewModel)
+
+        TrainingRecordingScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("TrainingRecordingDraft", TrainingRecordingState.serializer())
+        val DRAFT = PersistenceKey(
+            key = "TrainingRecordingDraft",
+            serializer = TrainingRecordingState.serializer(),
+        )
     }
 }

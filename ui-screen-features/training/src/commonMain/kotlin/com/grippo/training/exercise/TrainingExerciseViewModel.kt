@@ -41,6 +41,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -59,16 +60,11 @@ internal class TrainingExerciseViewModel(
     private val exerciseValidatorUseCase: ExerciseValidatorUseCase,
     initialState: TrainingExerciseState?,
 ) : BaseViewModel<TrainingExerciseState, TrainingExerciseDirection, TrainingExerciseLoader>(
-    initialState ?: TrainingExerciseState(exercise = exercise)
+    state = initialState ?: TrainingExerciseState(exercise = exercise),
 ), TrainingExerciseContract {
 
     override val screenPresentation = { reason: NavigationReason ->
         analytics.presentScreen(TrainingScreen.Exercise, reason)
-    }
-
-    companion object {
-        fun libraryResultKey(exerciseId: String): ResultKey<Result<ExerciseExampleState>> =
-            ResultKeys.create("exercise-library:$exerciseId")
     }
 
     init {
@@ -79,45 +75,75 @@ internal class TrainingExerciseViewModel(
             .onEach(::provideExerciseExample)
             .safeLaunch()
 
-        val validationContexts = state
-            .map { TrainingExerciseValidationTarget(it.exercise.exerciseExample.id, it.exercise.createdAt.value) }
-            .distinctUntilChanged()
-            .onEach { clearValidation() }
-            .flatMapLatest { target ->
-                val date = target.performedAt ?: return@flatMapLatest emptyFlow<TrainingExerciseValidationContext>()
-                exerciseValidatorUseCase.observeContext(
-                    exampleId = target.exampleId,
-                    performedAt = date,
-                    excludedExerciseId = exercise.id,
-                ).map { TrainingExerciseValidationContext(target, it) }
-            }
-
-        combine(
-            state.map { it.exercise }.distinctUntilChanged(),
-            validationContexts,
-        ) { source, snapshot ->
-            val target = TrainingExerciseValidationTarget(source.exerciseExample.id, source.createdAt.value)
-            if (snapshot.target != target) return@combine null
-            validateTrainingExercise(source, snapshot.value)
-        }
-            .filterNotNull()
+        observeValidation(excludedExerciseId = exercise.id)
             .onEach(::provideValidation)
             .safeLaunch(onError = ::clearValidation)
     }
 
+    private fun observeValidation(excludedExerciseId: String): Flow<TrainingExerciseValidation> {
+        val validationContexts = state
+            .map { current ->
+                TrainingExerciseValidationTarget(
+                    exampleId = current.exercise.exerciseExample.id,
+                    performedAt = current.exercise.createdAt.value,
+                )
+            }
+            .distinctUntilChanged()
+            .onEach {
+                clearValidation()
+            }
+            .flatMapLatest { target ->
+                val performedAt = target.performedAt
+                    ?: return@flatMapLatest emptyFlow<TrainingExerciseValidationContext>()
+
+                exerciseValidatorUseCase.observeContext(
+                    exampleId = target.exampleId,
+                    performedAt = performedAt,
+                    excludedExerciseId = excludedExerciseId,
+                ).map { context ->
+                    TrainingExerciseValidationContext(target = target, value = context)
+                }
+            }
+
+        val exercises = state
+            .map { it.exercise }
+            .distinctUntilChanged()
+
+        return combine(flow = exercises, flow2 = validationContexts) { source, snapshot ->
+            val target = TrainingExerciseValidationTarget(
+                exampleId = source.exerciseExample.id,
+                performedAt = source.createdAt.value,
+            )
+            if (snapshot.target != target) {
+                return@combine null
+            }
+
+            validateTrainingExercise(source = source, context = snapshot.value)
+        }
+            .filterNotNull()
+    }
+
     private fun clearValidation() {
-        update { current ->
-            current.copy(
-                previousIterations = persistentListOf(),
-                volumeArtifactIds = persistentSetOf(),
-                repetitionArtifactIds = persistentSetOf(),
+        val previousIterations = persistentListOf<IterationState>()
+
+        val volumeArtifactIds = persistentSetOf<String>()
+
+        val repetitionArtifactIds = persistentSetOf<String>()
+
+        update {
+            it.copy(
+                previousIterations = previousIterations,
+                volumeArtifactIds = volumeArtifactIds,
+                repetitionArtifactIds = repetitionArtifactIds,
             )
         }
     }
 
     private fun provideValidation(value: TrainingExerciseValidation) {
         update { current ->
-            if (current.exercise != value.source) return@update current
+            if (current.exercise != value.source) {
+                return@update current
+            }
 
             current.copy(
                 previousIterations = value.previousIterations,
@@ -129,116 +155,39 @@ internal class TrainingExerciseViewModel(
 
     private fun provideExerciseExample(value: ExerciseExample?) {
         val example = value?.toState() ?: return
+
         update { it.copy(exerciseExample = example) }
     }
 
-    override fun onAddIteration() {
-        val example = state.value.exerciseExample ?: return
-        analytics.trackEvent(TrainingEvent.Exercise.AddIteration)
-        safeLaunch {
-            val initial = buildBlankIteration(example)
-                .withResolvedBodyWeight(example)
-
-            showIterationDialog(
-                initial = initial,
-                example = example,
-                number = state.value.exercise.iterations.size + 1,
-                focus = IterationFocusState.UNIDENTIFIED,
-                onResult = ::addIteration,
-            )
-        }
-    }
-
-    override fun onEditVolume(id: String) {
-        editIteration(id, IterationFocusState.VOLUME)
-    }
-
-    override fun onEditRepetition(id: String) {
-        editIteration(id, IterationFocusState.REPETITIONS)
-    }
-
-    override fun onDeleteIteration(id: String) {
-        analytics.trackEvent(TrainingEvent.Exercise.DeleteIteration)
-        mutateIterations { iterations -> iterations.filter { it.id != id } }
-    }
-
-    override fun onStartReorderIterations(fromId: String, toId: String) {
-        if (fromId == toId) return
-        val iterations = state.value.exercise.iterations
-        val from = iterations.indexOfFirst { it.id == fromId }
-        val to = iterations.indexOfFirst { it.id == toId }
-        if (from < 0 || to < 0) return
-
-        analytics.trackEvent(TrainingEvent.Exercise.ReorderIterations)
-        val reordered = iterations.toMutableList().apply { add(to, removeAt(from)) }
-        update { it.copy(exercise = it.exercise.copy(iterations = reordered.toPersistentList())) }
-    }
-
-    override fun onEndReorderIterations() {
-        analytics.trackEvent(TrainingEvent.Exercise.ReorderFinished)
-        updateExercise(state.value.exercise)
-    }
-
-    override fun onExampleClick() {
-        analytics.trackEvent(TrainingEvent.Exercise.ExampleOpened)
-        val exampleId = state.value.exercise.exerciseExample.id
-        val title = UiText.Res(Res.string.change_btn)
-        val dialog = DialogConfig.ExerciseExampleDetails(
-            title = UiText.Res(Res.string.exercise_details_btn),
-            id = exampleId,
-            mode = DialogConfig.ExerciseExampleDetails.Mode.Action(
-                title = title,
-                onClick = { navigation -> showExerciseLibrary(navigation, exampleId) },
-            ),
-        )
-        dialogController.open(dialog)
-    }
-
-    override fun onSave() {
-        analytics.trackEvent(TrainingEvent.Exercise.Save)
-        navigateTo(TrainingExerciseDirection.Save(exercise = state.value.exercise))
-    }
-
-    override fun onBack() {
-        analytics.trackEvent(TrainingEvent.Exercise.DismissRequested)
-        navigateTo(TrainingExerciseDirection.Back)
-    }
-
     private fun showExerciseLibrary(navigation: Session, exampleId: String) {
-        analytics.trackEvent(TrainingEvent.Exercise.ReplaceExample)
+        analytics.trackEvent(event = TrainingEvent.Exercise.ReplaceExample)
         navigation.close()
-        navigateTo(TrainingExerciseDirection.ToLibrary(
-            ExercisesRouter.Library(
-                mode = ExercisesRouter.Mode.SimilarTo(exampleId),
-                resultKey = libraryResultKey(state.value.exercise.id),
-            )
-        ))
-    }
 
-    fun swapExerciseExample(value: ExerciseExampleState) {
-        val current = state.value.exercise
-        if (current.exerciseExample.id == value.value.id) return
+        val mode = ExercisesRouter.Mode.SimilarTo(targetExerciseExampleId = exampleId)
 
-        analytics.trackEvent(TrainingEvent.Exercise.ExampleSelected)
-        val updated = current.copy(
-            name = value.value.name,
-            exerciseExample = value.value,
-        )
+        val resultKey = libraryResultKey(state.value.exercise.id)
 
-        updateExercise(updated)
+        val route = ExercisesRouter.Library(mode = mode, resultKey = resultKey)
+
+        val direction = TrainingExerciseDirection.ToLibrary(route = route)
+
+        navigateTo(direction)
     }
 
     private fun editIteration(id: String, focus: IterationFocusState) {
         val example = state.value.exerciseExample ?: return
         val iterations = state.value.exercise.iterations
         val index = iterations.indexOfFirst { it.id == id }
-        if (index < 0) return
+        if (index < 0) {
+            return
+        }
 
         when (focus) {
-            IterationFocusState.VOLUME -> analytics.trackEvent(TrainingEvent.Exercise.EditVolume)
-            IterationFocusState.REPETITIONS -> analytics.trackEvent(TrainingEvent.Exercise.EditRepetitions)
+            IterationFocusState.VOLUME -> analytics.trackEvent(event = TrainingEvent.Exercise.EditVolume)
+            IterationFocusState.REPETITIONS -> analytics.trackEvent(event = TrainingEvent.Exercise.EditRepetitions)
             IterationFocusState.UNIDENTIFIED -> Unit
         }
+
         safeLaunch {
             val initial = iterations[index]
                 .withResolvedBodyWeight(example)
@@ -254,7 +203,10 @@ internal class TrainingExerciseViewModel(
     }
 
     private suspend fun IterationState.withResolvedBodyWeight(example: ExerciseExampleState): IterationState {
-        if (bodyWeight.value != null) return this
+        if (bodyWeight.value != null) {
+            return this
+        }
+
         val needsBodyWeight = when (example.components) {
             is ExerciseExampleComponentsState.BodyAndAssist,
             is ExerciseExampleComponentsState.BodyAndExtra,
@@ -262,10 +214,15 @@ internal class TrainingExerciseViewModel(
 
             is ExerciseExampleComponentsState.External -> false
         }
-        if (!needsBodyWeight) return this
+        if (!needsBodyWeight) {
+            return this
+        }
+
         val weight = weightHistoryFeature.observeLastWeight().firstOrNull()?.weight ?: return this
 
-        return copy(bodyWeight = WeightFormatState.of(weight))
+        val resolvedBodyWeight = WeightFormatState.of(weight)
+
+        return copy(bodyWeight = resolvedBodyWeight)
     }
 
     private fun showIterationDialog(
@@ -275,21 +232,29 @@ internal class TrainingExerciseViewModel(
         focus: IterationFocusState,
         onResult: (IterationState) -> Unit,
     ) {
+        val titleArgs = persistentListOf(number)
+
+        val title = UiText.Res(value = Res.string.set_value, formatArgs = titleArgs)
+
+        val suggestions = suggestedIterations()
+
+        val previousIteration = state.value.previousIterations.getOrNull(number - 1)
+
         val dialog = DialogConfig.Iteration(
-            title = UiText.Res(Res.string.set_value, persistentListOf(number)),
+            title = title,
             initial = initial,
             number = number,
-            suggestions = suggestedIterations(),
-            previousIteration = state.value.previousIterations.getOrNull(number - 1),
+            suggestions = suggestions,
+            previousIteration = previousIteration,
             focus = focus,
             example = example,
             onResult = { iteration ->
-                analytics.trackEvent(TrainingEvent.Exercise.IterationConfirmed)
+                analytics.trackEvent(event = TrainingEvent.Exercise.IterationConfirmed)
                 onResult(iteration)
             },
         )
 
-        analytics.trackEvent(TrainingEvent.Exercise.IterationOpened)
+        analytics.trackEvent(event = TrainingEvent.Exercise.IterationOpened)
         dialogController.open(dialog)
     }
 
@@ -301,12 +266,16 @@ internal class TrainingExerciseViewModel(
             is ExerciseExampleComponentsState.External -> null
         }
 
+        val id = Uuid.random().toString()
+
+        val multiplier = MultiplierFormatState.of(bodyMultiplier)
+
         return IterationState(
-            id = Uuid.random().toString(),
+            id = id,
             externalWeight = VolumeFormatState.Empty(),
             extraWeight = VolumeFormatState.Empty(),
             assistWeight = VolumeFormatState.Empty(),
-            bodyMultiplier = MultiplierFormatState.of(bodyMultiplier),
+            bodyMultiplier = multiplier,
             bodyWeight = WeightFormatState.Empty(),
             repetitions = RepetitionsFormatState.Empty(),
         )
@@ -329,16 +298,28 @@ internal class TrainingExerciseViewModel(
     }
 
     private fun addIteration(value: IterationState) {
-        mutateIterations { it + value }
+        mutateIterations {
+            it + value
+        }
     }
 
     private fun replaceIteration(id: String, value: IterationState) {
-        mutateIterations { iterations -> iterations.map { if (it.id == id) value else it } }
+        mutateIterations { iterations ->
+            iterations.map { iteration ->
+                if (iteration.id == id) {
+                    value
+                } else {
+                    iteration
+                }
+            }
+        }
     }
 
     private fun mutateIterations(transform: (List<IterationState>) -> List<IterationState>) {
         val currentExercise = state.value.exercise
+
         val iterations = transform(currentExercise.iterations).toPersistentList()
+
         val updatedExercise = currentExercise.copy(iterations = iterations)
 
         updateExercise(updatedExercise)
@@ -348,9 +329,9 @@ internal class TrainingExerciseViewModel(
         update { it.copy(exercise = exercise) }
 
         val direction = if (exercise.iterations.isEmpty()) {
-            TrainingExerciseDirection.Delete(exercise.id)
+            TrainingExerciseDirection.Delete(id = exercise.id)
         } else {
-            TrainingExerciseDirection.Update(exercise)
+            TrainingExerciseDirection.Update(exercise = exercise)
         }
 
         navigateTo(direction)
@@ -363,28 +344,178 @@ internal class TrainingExerciseViewModel(
         // The domain mapper drops rows without repetitions. Filter them before capturing IDs,
         // so findings always address the exact rows sent to the validator.
         val completed = source.iterations.filter { !it.isPending && it.repetitions.value != null }
+
+        val iterations = completed.toDomain()
+
         val input = ExerciseValidationInput(
             name = source.name,
             exampleId = source.exerciseExample.id,
-            iterations = completed.toDomain(),
+            iterations = iterations,
             performedAt = source.createdAt.value,
         )
-        val artifacts = exerciseValidatorUseCase.execute(input, context)
+
+        val artifacts = exerciseValidatorUseCase.execute(exercise = input, context = context)
+
         val volumeIds = mutableSetOf<String>()
         val repetitionIds = mutableSetOf<String>()
+
         artifacts?.iterations?.forEachIndexed { index, row ->
             val id = completed[index].id
             for (artifact in row.artifacts) {
-                if (artifact.field == Field.Repetitions) repetitionIds += id else volumeIds += id
+                if (artifact.field == Field.Repetitions) {
+                    repetitionIds += id
+                } else {
+                    volumeIds += id
+                }
             }
         }
-        val previousIterations = context.history
+
+        val previousExercise = context.history
             .filter { it.exerciseExample.id == source.exerciseExample.id }
             .filter { it.id != source.id && it.id != context.excludedExerciseId }
             .filter { previous -> source.createdAt.value?.let { previous.createdAt < it } == true }
             .filter { it.iterations.isNotEmpty() }
             .maxByOrNull { it.createdAt }
-            ?.iterations?.map { it.toState() }?.toPersistentList() ?: persistentListOf()
-        return TrainingExerciseValidation(source, volumeIds.toPersistentSet(), repetitionIds.toPersistentSet(), previousIterations)
+
+        val previousIterations = previousExercise
+            ?.iterations
+            ?.map { it.toState() }
+            ?.toPersistentList()
+            ?: persistentListOf()
+
+        val volumeArtifactIds = volumeIds.toPersistentSet()
+
+        val repetitionArtifactIds = repetitionIds.toPersistentSet()
+
+        return TrainingExerciseValidation(
+            source = source,
+            volumeIds = volumeArtifactIds,
+            repetitionIds = repetitionArtifactIds,
+            previousIterations = previousIterations,
+        )
+    }
+
+    internal fun swapExerciseExample(value: ExerciseExampleState) {
+        val current = state.value.exercise
+        if (current.exerciseExample.id == value.value.id) {
+            return
+        }
+
+        analytics.trackEvent(event = TrainingEvent.Exercise.ExampleSelected)
+
+        val updated = current.copy(
+            name = value.value.name,
+            exerciseExample = value.value,
+        )
+
+        updateExercise(updated)
+    }
+
+    override fun onAddIteration() {
+        val example = state.value.exerciseExample ?: return
+
+        analytics.trackEvent(event = TrainingEvent.Exercise.AddIteration)
+
+        safeLaunch {
+            val blankIteration = buildBlankIteration(example)
+
+            val initial = blankIteration.withResolvedBodyWeight(example)
+
+            showIterationDialog(
+                initial = initial,
+                example = example,
+                number = state.value.exercise.iterations.size + 1,
+                focus = IterationFocusState.UNIDENTIFIED,
+                onResult = ::addIteration,
+            )
+        }
+    }
+
+    override fun onEditVolume(id: String) {
+        editIteration(id = id, focus = IterationFocusState.VOLUME)
+    }
+
+    override fun onEditRepetition(id: String) {
+        editIteration(id = id, focus = IterationFocusState.REPETITIONS)
+    }
+
+    override fun onDeleteIteration(id: String) {
+        analytics.trackEvent(event = TrainingEvent.Exercise.DeleteIteration)
+        mutateIterations { iterations ->
+            iterations.filter { it.id != id }
+        }
+    }
+
+    override fun onStartReorderIterations(fromId: String, toId: String) {
+        if (fromId == toId) {
+            return
+        }
+
+        val iterations = state.value.exercise.iterations
+        val fromIndex = iterations.indexOfFirst { it.id == fromId }
+        val toIndex = iterations.indexOfFirst { it.id == toId }
+        if (fromIndex < 0 || toIndex < 0) {
+            return
+        }
+
+        analytics.trackEvent(event = TrainingEvent.Exercise.ReorderIterations)
+
+        val reorderedIterations = iterations.toMutableList().apply {
+            val iteration = removeAt(fromIndex)
+            add(index = toIndex, element = iteration)
+        }.toPersistentList()
+
+        update { current ->
+            val exercise = current.exercise.copy(iterations = reorderedIterations)
+
+            current.copy(exercise = exercise)
+        }
+    }
+
+    override fun onEndReorderIterations() {
+        analytics.trackEvent(event = TrainingEvent.Exercise.ReorderFinished)
+        updateExercise(state.value.exercise)
+    }
+
+    override fun onExampleClick() {
+        analytics.trackEvent(event = TrainingEvent.Exercise.ExampleOpened)
+
+        val exampleId = state.value.exercise.exerciseExample.id
+
+        val actionTitle = UiText.Res(value = Res.string.change_btn)
+
+        val title = UiText.Res(value = Res.string.exercise_details_btn)
+
+        val mode = DialogConfig.ExerciseExampleDetails.Mode.Action(
+            title = actionTitle,
+            onClick = { navigation -> showExerciseLibrary(navigation = navigation, exampleId = exampleId) },
+        )
+
+        val dialog = DialogConfig.ExerciseExampleDetails(
+            title = title,
+            id = exampleId,
+            mode = mode,
+        )
+
+        dialogController.open(dialog)
+    }
+
+    override fun onSave() {
+        analytics.trackEvent(event = TrainingEvent.Exercise.Save)
+
+        val direction = TrainingExerciseDirection.Save(exercise = state.value.exercise)
+
+        navigateTo(direction)
+    }
+
+    override fun onBack() {
+        analytics.trackEvent(event = TrainingEvent.Exercise.DismissRequested)
+        navigateTo(TrainingExerciseDirection.Back)
+    }
+
+    companion object {
+        internal fun libraryResultKey(exerciseId: String): ResultKey<Result<ExerciseExampleState>> {
+            return ResultKeys.create("exercise-library:$exerciseId")
+        }
     }
 }

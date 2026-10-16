@@ -595,6 +595,13 @@ public data object AppDp {
     public data object IterationCard {
         val borderWidth: Dp = 1.dp
         val radius: Dp = AppDp.radius.small
+        public val editor: Editor = Editor
+
+        public data object Editor {
+            public val numberMinWidth: Dp = size.large
+            public val minActionHeight: Dp = 48.dp
+            public val icon: Dp = 20.dp
+        }
     }
 
     public data object Check {

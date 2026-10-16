@@ -71,7 +71,7 @@ internal class TrainingRecordingViewModel(
     stage: StageState,
     private val analytics: TrainingAnalytics,
     muscleFeature: MuscleFeature,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
+    exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
@@ -86,49 +86,53 @@ internal class TrainingRecordingViewModel(
         analytics.presentScreen(TrainingScreen.Recording, reason)
     }
 
-    companion object {
-        val LIBRARY_RESULT_KEY: ResultKey<Result<ExerciseExampleState>> = ResultKeys.create("exercise-library-add")
-        val EXERCISE_RESULT_KEY: ResultKey<Result<TrainingRouter.Exercise.Action>> = ResultKeys.create("exercise")
-        private val START_TRAINING_DIALOG_DELAY = 300.milliseconds
-    }
-
     init {
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
             .safeLaunch()
 
         state
-            .map { it.exercises.orEmpty().map { exercise -> exercise.exerciseExample.id }.distinct() }
+            .map { current ->
+                current.exercises.orEmpty()
+                    .map { it.exerciseExample.id }
+                    .distinct()
+            }
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
-        if (initialState?.exercises == null) {
-            safeLaunch {
-                when (val stage = state.value.stage) {
-                    StageState.Add -> {
-                        analytics.trackOperation(TrainingOperation.DeleteDraft) {
-                            trainingFeature.deleteDraftTraining().getOrThrow()
-                        }
-                        showStartTrainingDialog()
-                    }
+        when (initialState?.exercises) {
+            null -> {
+                safeLaunch {
+                    when (val stage = state.value.stage) {
+                        StageState.Add -> {
+                            analytics.trackOperation(TrainingOperation.DeleteDraft) {
+                                trainingFeature.deleteDraftTraining().getOrThrow()
+                            }
 
-                    is StageState.Edit -> {
-                        analytics.trackOperation(TrainingOperation.DeleteDraft) {
-                            trainingFeature.deleteDraftTraining().getOrThrow()
+                            showStartTrainingDialog()
                         }
-                        val training = analytics.trackOperation(TrainingOperation.LoadTraining) {
-                            trainingFeature.observeTraining(stage.id).firstOrNull()
-                        }
-                        provideTraining(training)
-                    }
 
-                    StageState.Draft -> {
-                        val draft = analytics.trackOperation(TrainingOperation.LoadDraft) {
-                            trainingFeature.getDraftTraining().firstOrNull()
+                        is StageState.Edit -> {
+                            analytics.trackOperation(TrainingOperation.DeleteDraft) {
+                                trainingFeature.deleteDraftTraining().getOrThrow()
+                            }
+
+                            val training = analytics.trackOperation(TrainingOperation.LoadTraining) {
+                                trainingFeature.observeTraining(stage.id).firstOrNull()
+                            }
+
+                            provideTraining(training)
                         }
-                        provideDraftTraining(draft)
+
+                        StageState.Draft -> {
+                            val draft = analytics.trackOperation(TrainingOperation.LoadDraft) {
+                                trainingFeature.getDraftTraining().firstOrNull()
+                            }
+
+                            provideDraftTraining(draft)
+                        }
                     }
                 }
             }
@@ -137,7 +141,11 @@ internal class TrainingRecordingViewModel(
 
     private suspend fun showStartTrainingDialog() {
         delay(START_TRAINING_DIALOG_DELAY)
-        if (state.value.exercises != null) return
+
+        if (state.value.exercises != null) {
+            return
+        }
+
         val dialog = DialogConfig.StartTraining(
             title = UiText.Res(Res.string.start_training_title),
             onStartEmpty = {
@@ -145,149 +153,116 @@ internal class TrainingRecordingViewModel(
                 openExerciseLibrary()
             },
             onUseExercises = { exercises ->
-                if (exercises.isEmpty()) return@StartTraining
+                if (exercises.isEmpty()) {
+                    return@StartTraining
+                }
+
                 analytics.trackEvent(TrainingEvent.Recording.StartConfirmed)
+
                 val refreshed = exercises
                     .map { it.withRecalculatedTotal() }
                     .toPersistentList()
+
                 update { it.copy(exercises = refreshed) }
                 saveDraftTraining()
             },
         )
+
         analytics.trackEvent(TrainingEvent.Recording.StartOpened)
         dialogController.open(dialog)
     }
 
     private fun provideDraftTraining(value: DraftTraining?) {
         value ?: return
-        if (state.value.exercises != null) return
+
+        if (state.value.exercises != null) {
+            return
+        }
 
         val exercises = value.exercises.map { exercise ->
-            exercise.toState(
-                id = Uuid.random().toString(),
-                iterations = exercise.iterations.map { iteration ->
-                    iteration.toState(id = Uuid.random().toString())
-                }.toPersistentList(),
-            ).withRecalculatedTotal()
-        }
-            .toPersistentList()
+            val id = Uuid.random().toString()
 
-        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
-        update {
-            it.copy(
-                stage = when (val trainingId = value.trainingId) {
-                    null -> StageState.Add
-                    else -> StageState.Edit(trainingId)
-                },
-                exercises = exercises,
-                startAt = startAt,
-            )
+            val iterations = exercise.iterations.map { iteration ->
+                val iterationId = Uuid.random().toString()
+
+                iteration.toState(id = iterationId)
+            }.toPersistentList()
+
+            val exerciseState = exercise.toState(id = id, iterations = iterations)
+
+            exerciseState.withRecalculatedTotal()
+        }.toPersistentList()
+
+        val now = DateTimeUtils.now()
+
+        val startAt = DateTimeUtils.minus(value = now, minus = value.duration)
+
+        val stage = when (val trainingId = value.trainingId) {
+            null -> {
+                StageState.Add
+            }
+
+            else -> {
+                StageState.Edit(id = trainingId)
+            }
         }
+
+        update { it.copy(stage = stage, exercises = exercises, startAt = startAt) }
     }
 
     private fun ExerciseState.withRecalculatedTotal(): ExerciseState {
         val completed = iterations.filterNot { it.isPending }.toDomain()
+
         val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
+
         return copy(total = totals)
     }
 
     private fun provideTraining(value: Training?) {
         value ?: return
-        if (state.value.exercises != null) return
+
+        if (state.value.exercises != null) {
+            return
+        }
+
         val exercises = value.exercises.toState()
             .map { it.withRecalculatedTotal() }
             .toPersistentList()
-        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
+
+        val now = DateTimeUtils.now()
+
+        val startAt = DateTimeUtils.minus(value = now, minus = value.duration)
+
         update { it.copy(exercises = exercises, startAt = startAt) }
     }
 
     private fun provideMuscles(value: List<MuscleGroup>) {
-        update { it.copy(muscles = value.toState()) }
+        val muscles = value.toState()
+
+        update { it.copy(muscles = muscles) }
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
-        update { it.copy(examples = value.toState()) }
-    }
+        val examples = value.toState()
 
-    override fun onAddExercise() {
-        analytics.trackEvent(TrainingEvent.Recording.AddExercise)
-        openExerciseLibrary()
+        update { it.copy(examples = examples) }
     }
 
     private fun openExerciseLibrary() {
         if (state.value.exercises == null) {
             update { it.copy(exercises = persistentListOf()) }
         }
-        navigateTo(TrainingRecordingDirection.ToLibrary(
-            ExercisesRouter.Library(
-                mode = ExercisesRouter.Mode.Default(lastTargetMuscleGroupId()),
-                resultKey = LIBRARY_RESULT_KEY,
-            )
-        ))
-    }
 
-    fun acceptLibrarySelection(example: ExerciseExampleState) {
-        analytics.trackEvent(TrainingEvent.Recording.LibrarySelected)
-        navigateTo(TrainingRecordingDirection.ToExercise(createExerciseFromExample(example.value), EXERCISE_RESULT_KEY))
-    }
+        val muscleGroupId = lastTargetMuscleGroupId()
 
-    override fun onEditExercise(id: String) {
-        val exercise = state.value.exercises.orEmpty().find { it.id == id } ?: return
-        analytics.trackEvent(TrainingEvent.Recording.EditExercise)
-        navigateTo(TrainingRecordingDirection.ToExercise(exercise, EXERCISE_RESULT_KEY))
-    }
+        val mode = ExercisesRouter.Mode.Default(preselectedMuscleGroupId = muscleGroupId)
 
-    fun updateExercise(value: ExerciseState) {
-        analytics.trackEvent(TrainingEvent.Recording.ExerciseUpdated)
-        val refreshed = value.withRecalculatedTotal()
+        val route = ExercisesRouter.Library(
+            mode = mode,
+            resultKey = LIBRARY_RESULT_KEY,
+        )
 
-        update { current ->
-            val index = current.exercises.orEmpty().indexOfFirst { it.id == refreshed.id }
-            val updated = if (index >= 0) {
-                current.exercises.orEmpty().toMutableList().apply {
-                    this[index] = refreshed
-                }
-            } else {
-                current.exercises.orEmpty() + refreshed
-            }
-            current.copy(exercises = updated.toPersistentList())
-        }
-
-        saveDraftTraining()
-    }
-
-    override fun onDeleteExercise(id: String) {
-        analytics.trackEvent(TrainingEvent.Recording.DeleteExercise)
-        removeExercise(id)
-    }
-
-    fun removeExercise(id: String) {
-        update { current -> current.copy(exercises = current.exercises.orEmpty().filterNot { it.id == id }.toPersistentList()) }
-
-        if (state.value.exercises.orEmpty().isEmpty()) {
-            clearDraftTraining()
-        } else {
-            saveDraftTraining()
-        }
-    }
-
-    override fun onStartReorderExercises(fromId: String, toId: String) {
-        if (fromId == toId) return
-        update { current ->
-            val exercises = current.exercises.orEmpty()
-            val from = exercises.indexOfFirst { it.id == fromId }
-            val to = exercises.indexOfFirst { it.id == toId }
-            if (from < 0 || to < 0) return@update current
-            val mutable = exercises.toMutableList()
-            mutable.add(to, mutable.removeAt(from))
-            current.copy(exercises = mutable.toPersistentList())
-        }
-    }
-
-    override fun onEndReorderExercises() {
-        if (state.value.exercises.orEmpty().isEmpty()) return
-        analytics.trackEvent(TrainingEvent.Recording.ReorderExercises)
-        saveDraftTraining()
+        navigateTo(TrainingRecordingDirection.ToLibrary(route = route))
     }
 
     private fun clearDraftTraining() {
@@ -298,30 +273,14 @@ internal class TrainingRecordingViewModel(
         }
     }
 
-    override fun onSave() {
-        analytics.trackEvent(TrainingEvent.Recording.Save)
-        val hasPending = state.value.exercises.orEmpty().any { exercise -> exercise.iterations.any { it.isPending } }
-
-        if (!hasPending) {
-            showCompletionDialog()
-            return
+    private fun showCompletionDialog() {
+        val hasCompletedSets = state.value.exercises.orEmpty().any { exercise ->
+            exercise.iterations.any { !it.isPending }
         }
 
-        val dialog = DialogConfig.Confirmation(
-            title = UiText.Res(Res.string.planned_sets_unfinished_title),
-            description = UiText.Res(Res.string.planned_sets_unfinished_description),
-            onResult = {
-                analytics.trackEvent(TrainingEvent.Recording.UnfinishedConfirmed)
-                showCompletionDialog()
-            }
-        )
-        analytics.trackEvent(TrainingEvent.Recording.UnfinishedOpened)
-        dialogController.open(dialog)
-    }
-
-    private fun showCompletionDialog() {
-        val hasCompletedSets = state.value.exercises.orEmpty().any { exercise -> exercise.iterations.any { !it.isPending } }
-        if (!hasCompletedSets) return
+        if (!hasCompletedSets) {
+            return
+        }
 
         val duration = DateTimeUtils.ago(state.value.startAt)
 
@@ -330,23 +289,29 @@ internal class TrainingRecordingViewModel(
             initial = duration,
             onResult = { result ->
                 analytics.trackEvent(TrainingEvent.Recording.CompletionConfirmed)
-                val startAt = DateTimeUtils.minus(DateTimeUtils.now(), result)
+
+                val now = DateTimeUtils.now()
+
+                val startAt = DateTimeUtils.minus(value = now, minus = result)
+
                 update { current ->
                     val cleaned = current.exercises.orEmpty()
                         .map { exercise ->
-                            exercise.copy(
-                                iterations = exercise.iterations
-                                    .filterNot { it.isPending }
-                                    .toPersistentList()
-                            )
+                            val iterations = exercise.iterations
+                                .filterNot { it.isPending }
+                                .toPersistentList()
+
+                            exercise.copy(iterations = iterations)
                         }
                         .filter { it.iterations.isNotEmpty() }
                         .toPersistentList()
+
                     current.copy(exercises = cleaned, startAt = startAt)
                 }
+
                 notificationManager.cancel(NotificationKey.FinishWorkout)
                 toCompleteTraining()
-            }
+            },
         )
 
         analytics.trackEvent(TrainingEvent.Recording.CompletionOpened)
@@ -355,6 +320,7 @@ internal class TrainingRecordingViewModel(
 
     private fun toCompleteTraining() {
         val snapshot = state.value
+
         navigateTo(
             TrainingRecordingDirection.ToCompleted(
                 stage = snapshot.stage,
@@ -364,30 +330,12 @@ internal class TrainingRecordingViewModel(
         )
     }
 
-    override fun onBack() {
-        analytics.trackEvent(TrainingEvent.Recording.DismissRequested)
-        if (state.value.exercises.orEmpty().isEmpty()) {
-            discardDraftAndExit()
-            return
-        }
-
-        val dialog = DialogConfig.Confirmation(
-            title = UiText.Res(Res.string.training_progress_lost_title),
-            description = UiText.Res(Res.string.training_progress_lost_description),
-            onResult = {
-                analytics.trackEvent(TrainingEvent.Recording.DiscardConfirmed)
-                discardDraftAndExit()
-            },
-        )
-        analytics.trackEvent(TrainingEvent.Recording.DiscardOpened)
-        dialogController.open(dialog)
-    }
-
     private fun discardDraftAndExit() {
         safeLaunch {
             analytics.trackOperation(TrainingOperation.DeleteDraft) {
                 trainingFeature.deleteDraftTraining().getOrThrow()
             }
+
             navigateTo(TrainingRecordingDirection.Back)
         }
     }
@@ -395,25 +343,37 @@ internal class TrainingRecordingViewModel(
     private fun saveDraftTraining() {
         safeLaunch {
             val snapshot = state.value
+
+            val duration = DateTimeUtils.ago(snapshot.startAt)
+
+            val exercises = snapshot.exercises.orEmpty().toDraftDomain()
+
             val draft = DraftTraining(
                 trainingId = snapshot.stage.id,
-                duration = DateTimeUtils.ago(snapshot.startAt),
-                exercises = snapshot.exercises.orEmpty().toDraftDomain(),
+                duration = duration,
+                exercises = exercises,
             )
+
             analytics.trackOperation(TrainingOperation.SaveDraft) {
                 trainingFeature.setDraftTraining(draft).getOrThrow()
             }
+
             scheduleNotificationReminder()
         }
     }
 
     private suspend fun scheduleNotificationReminder() {
+        val title = stringProvider.get(Res.string.notification_forgot_training_title)
+
+        val body = stringProvider.get(Res.string.notification_forgot_training_description)
+
         val notification = AppNotification(
             id = NotificationKey.FinishWorkout,
-            title = stringProvider.get(Res.string.notification_forgot_training_title),
-            body = stringProvider.get(Res.string.notification_forgot_training_description),
-            deeplink = Deeplink.TrainingDraft.key
+            title = title,
+            body = body,
+            deeplink = Deeplink.TrainingDraft.key,
         )
+
         notificationManager.show(notification = notification, delay = 45.minutes)
     }
 
@@ -435,28 +395,199 @@ internal class TrainingRecordingViewModel(
                 .find { group -> group.muscles.any { it.value.id == muscleId } }
                 ?.id
 
-            if (muscleGroupId != null) return muscleGroupId
+            if (muscleGroupId != null) {
+                return muscleGroupId
+            }
         }
 
         return null
     }
 
     private fun createExerciseFromExample(example: ExerciseExampleValueState): ExerciseState {
+        val id = Uuid.random().toString()
+
+        val now = DateTimeUtils.now()
+
+        val range = DateRangePresets.infinity()
+
+        val createdAt = DateTimeFormatState.of(
+            value = now,
+            range = range,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
+        )
+
+        val total = TrainingTotalState(
+            volume = VolumeFormatState.Empty(),
+            repetitions = RepetitionsFormatState.Empty(),
+            intensity = IntensityFormatState.Empty(),
+        )
+
         return ExerciseState(
-            id = Uuid.random().toString(),
+            id = id,
             name = example.name,
             iterations = persistentListOf(),
             exerciseExample = example,
-            createdAt = DateTimeFormatState.of(
-                value = DateTimeUtils.now(),
-                range = DateRangePresets.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            ),
-            total = TrainingTotalState(
-                volume = VolumeFormatState.Empty(),
-                repetitions = RepetitionsFormatState.Empty(),
-                intensity = IntensityFormatState.Empty(),
-            ),
+            createdAt = createdAt,
+            total = total,
         )
+    }
+
+    fun acceptLibrarySelection(example: ExerciseExampleState) {
+        analytics.trackEvent(TrainingEvent.Recording.LibrarySelected)
+
+        val exercise = createExerciseFromExample(example.value)
+
+        navigateTo(
+            TrainingRecordingDirection.ToExercise(exercise = exercise, resultKey = EXERCISE_RESULT_KEY)
+        )
+    }
+
+    fun updateExercise(value: ExerciseState) {
+        analytics.trackEvent(TrainingEvent.Recording.ExerciseUpdated)
+
+        val refreshed = value.withRecalculatedTotal()
+
+        update { current ->
+            val index = current.exercises.orEmpty().indexOfFirst { it.id == refreshed.id }
+
+            val updated = if (index >= 0) {
+                current.exercises.orEmpty().toMutableList().apply {
+                    this[index] = refreshed
+                }
+            } else {
+                current.exercises.orEmpty() + refreshed
+            }
+
+            val exercises = updated.toPersistentList()
+
+            current.copy(exercises = exercises)
+        }
+
+        saveDraftTraining()
+    }
+
+    fun removeExercise(id: String) {
+        update { current ->
+            val exercises = current.exercises.orEmpty()
+                .filterNot { it.id == id }
+                .toPersistentList()
+
+            current.copy(exercises = exercises)
+        }
+
+        if (state.value.exercises.orEmpty().isEmpty()) {
+            clearDraftTraining()
+        } else {
+            saveDraftTraining()
+        }
+    }
+
+    override fun onAddExercise() {
+        analytics.trackEvent(TrainingEvent.Recording.AddExercise)
+        openExerciseLibrary()
+    }
+
+    override fun onEditExercise(id: String) {
+        val exercise = state.value.exercises.orEmpty().find { it.id == id } ?: return
+
+        analytics.trackEvent(TrainingEvent.Recording.EditExercise)
+
+        navigateTo(
+            TrainingRecordingDirection.ToExercise(exercise = exercise, resultKey = EXERCISE_RESULT_KEY)
+        )
+    }
+
+    override fun onDeleteExercise(id: String) {
+        analytics.trackEvent(TrainingEvent.Recording.DeleteExercise)
+        removeExercise(id)
+    }
+
+    override fun onStartReorderExercises(fromId: String, toId: String) {
+        if (fromId == toId) {
+            return
+        }
+
+        update { current ->
+            val exercises = current.exercises.orEmpty()
+
+            val from = exercises.indexOfFirst { it.id == fromId }
+
+            val to = exercises.indexOfFirst { it.id == toId }
+
+            if (from < 0 || to < 0) {
+                return@update current
+            }
+
+            val mutable = exercises.toMutableList()
+
+            val exercise = mutable.removeAt(from)
+
+            mutable.add(index = to, element = exercise)
+
+            val reordered = mutable.toPersistentList()
+
+            current.copy(exercises = reordered)
+        }
+    }
+
+    override fun onEndReorderExercises() {
+        if (state.value.exercises.orEmpty().isEmpty()) {
+            return
+        }
+
+        analytics.trackEvent(TrainingEvent.Recording.ReorderExercises)
+        saveDraftTraining()
+    }
+
+    override fun onSave() {
+        analytics.trackEvent(TrainingEvent.Recording.Save)
+
+        val hasPending = state.value.exercises.orEmpty().any { exercise ->
+            exercise.iterations.any { it.isPending }
+        }
+
+        if (!hasPending) {
+            showCompletionDialog()
+            return
+        }
+
+        val dialog = DialogConfig.Confirmation(
+            title = UiText.Res(Res.string.planned_sets_unfinished_title),
+            description = UiText.Res(Res.string.planned_sets_unfinished_description),
+            onResult = {
+                analytics.trackEvent(TrainingEvent.Recording.UnfinishedConfirmed)
+                showCompletionDialog()
+            },
+        )
+
+        analytics.trackEvent(TrainingEvent.Recording.UnfinishedOpened)
+        dialogController.open(dialog)
+    }
+
+    override fun onBack() {
+        analytics.trackEvent(TrainingEvent.Recording.DismissRequested)
+
+        if (state.value.exercises.orEmpty().isEmpty()) {
+            discardDraftAndExit()
+            return
+        }
+
+        val dialog = DialogConfig.Confirmation(
+            title = UiText.Res(Res.string.training_progress_lost_title),
+            description = UiText.Res(Res.string.training_progress_lost_description),
+            onResult = {
+                analytics.trackEvent(TrainingEvent.Recording.DiscardConfirmed)
+                discardDraftAndExit()
+            },
+        )
+
+        analytics.trackEvent(TrainingEvent.Recording.DiscardOpened)
+        dialogController.open(dialog)
+    }
+
+    companion object {
+        val LIBRARY_RESULT_KEY: ResultKey<Result<ExerciseExampleState>> = ResultKeys.create("exercise-library-add")
+        val EXERCISE_RESULT_KEY: ResultKey<Result<TrainingRouter.Exercise.Action>> = ResultKeys.create("exercise")
+        private val START_TRAINING_DIALOG_DELAY = 300.milliseconds
     }
 }

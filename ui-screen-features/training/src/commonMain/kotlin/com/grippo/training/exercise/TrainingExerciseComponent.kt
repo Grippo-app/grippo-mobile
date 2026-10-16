@@ -15,7 +15,7 @@ import com.grippo.screen.api.TrainingRouter
 
 internal class TrainingExerciseComponent(
     componentContext: ComponentContext,
-    private val exercise: ExerciseState,
+    exercise: ExerciseState,
     private val resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>,
     private val toLibrary: (ExercisesRouter.Library) -> Unit,
     private val back: () -> Unit,
@@ -37,11 +37,14 @@ internal class TrainingExerciseComponent(
 
     init {
         saveState(DRAFT) { viewModel.state.value }
+
         backHandler.register(backCallback)
 
         observeResult(
             key = TrainingExerciseViewModel.libraryResultKey(exercise.id),
-            onResult = { viewModel.swapExerciseExample(it.data) },
+            onResult = { result ->
+                viewModel.swapExerciseExample(result.data)
+            },
         )
     }
 
@@ -50,22 +53,30 @@ internal class TrainingExerciseComponent(
             is TrainingExerciseDirection.ToLibrary -> toLibrary(direction.route)
             TrainingExerciseDirection.Back -> back.invoke()
 
-            is TrainingExerciseDirection.Update ->
-                sendResult(
-                    resultKey,
-                    TrainingRouter.Exercise.Action.Sync(direction.exercise)
-                )
+            is TrainingExerciseDirection.Update -> {
+                val action = TrainingRouter.Exercise.Action.Sync(exercise = direction.exercise)
 
-            is TrainingExerciseDirection.Delete ->
                 sendResult(
-                    resultKey,
-                    TrainingRouter.Exercise.Action.Remove(direction.id)
+                    key = resultKey,
+                    data = action,
                 )
+            }
+
+            is TrainingExerciseDirection.Delete -> {
+                val action = TrainingRouter.Exercise.Action.Remove(id = direction.id)
+
+                sendResult(
+                    key = resultKey,
+                    data = action,
+                )
+            }
 
             is TrainingExerciseDirection.Save -> {
+                val action = TrainingRouter.Exercise.Action.Sync(exercise = direction.exercise)
+
                 sendResult(
-                    resultKey,
-                    TrainingRouter.Exercise.Action.Sync(direction.exercise)
+                    key = resultKey,
+                    data = action,
                 )
                 back.invoke()
             }
@@ -75,10 +86,17 @@ internal class TrainingExerciseComponent(
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
-        TrainingExerciseScreen(state.value, viewModel)
+
+        TrainingExerciseScreen(
+            state = state.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("TrainingExerciseDraft", TrainingExerciseState.serializer())
+        val DRAFT = PersistenceKey(
+            key = "TrainingExerciseDraft",
+            serializer = TrainingExerciseState.serializer(),
+        )
     }
 }

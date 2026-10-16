@@ -119,7 +119,7 @@ private fun DailyTimelineItem(
                 Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
 
                 Text(
-                    text = value.duration.display,
+                    text = value.duration.short(),
                     style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.tertiary
                 )

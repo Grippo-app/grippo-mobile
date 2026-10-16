@@ -1,6 +1,8 @@
 package com.grippo.core.state.formatters
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
@@ -31,6 +33,12 @@ public sealed class DurationFormatState : FormatState<Duration> {
         override val display: String = "",
         override val value: Duration? = null
     ) : DurationFormatState(), FormatState.Empty<Duration>
+
+    @Composable
+    public fun short(): String {
+        val duration = value ?: return display
+        return DateCompose.rememberFormat(value = duration)
+    }
 
     public companion object {
         public val DurationLimitation: ClosedRange<Duration> =

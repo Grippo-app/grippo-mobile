@@ -172,7 +172,7 @@ private fun LifetimeStatsRow(
         )
         StatsCell(
             modifier = Modifier.weight(1f),
-            value = stats.totalDuration.display.ifBlank { "—" },
+            value = stats.totalDuration.short().ifBlank { "—" },
             valueColor = if (stats.totalDuration is FormatState.Empty<*>) tertiary else primary,
             label = AppTokens.strings.res(Res.string.duration),
         )

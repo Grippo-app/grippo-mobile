@@ -8,8 +8,11 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.today
 import com.grippo.design.resources.provider.tomorrow
 import com.grippo.design.resources.provider.yesterday
+import com.grippo.toolkit.date.utils.internal.SystemDateFormatter
+import com.grippo.toolkit.localization.AppLocale
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlin.time.Duration
 
 @Stable
 public object DateCompose {
@@ -44,6 +47,15 @@ public object DateCompose {
                 else -> null
             }
             contextualResult ?: DateTimeUtils.format(value, format)
+        }
+    }
+
+    @Composable
+    public fun rememberFormat(value: Duration): String {
+        val localeTag = AppLocale.current.substringBefore(',').trim()
+
+        return remember(key1 = value, key2 = localeTag) {
+            SystemDateFormatter().format(duration = value, localeTag = localeTag) ?: "-"
         }
     }
 }

@@ -22,17 +22,17 @@ internal class TrainingCompletedComponent(
     override val viewModel: TrainingCompletedViewModel = componentContext.retainedInstance {
         TrainingCompletedViewModel(
             stage = stage,
-            analytics = getKoin().get(),
             exercises = exercises,
             startAt = startAt,
+            analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
+            setTrainingUseCase = getKoin().get(),
+            updateTrainingUseCase = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
             dialogController = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             trainingTimelineUseCase = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
-            setTrainingUseCase = getKoin().get(),
-            updateTrainingUseCase = getKoin().get(),
             initialState = restoreState(DRAFT) ?: TrainingCompletedState(),
         )
     }
@@ -40,13 +40,18 @@ internal class TrainingCompletedComponent(
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
-        saveState(DRAFT) { viewModel.state.value }
+        saveState(DRAFT) {
+            viewModel.state.value
+        }
+
         backHandler.register(backCallback)
     }
 
     override suspend fun eventListener(direction: TrainingCompletedDirection) {
         when (direction) {
-            TrainingCompletedDirection.Back -> back.invoke()
+            TrainingCompletedDirection.Back -> {
+                back.invoke()
+            }
         }
     }
 
@@ -54,10 +59,18 @@ internal class TrainingCompletedComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingCompletedScreen(state.value, loaders.value, viewModel)
+
+        TrainingCompletedScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("TrainingCompletedDraft", TrainingCompletedState.serializer())
+        val DRAFT = PersistenceKey(
+            key = "TrainingCompletedDraft",
+            serializer = TrainingCompletedState.serializer(),
+        )
     }
 }
