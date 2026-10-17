@@ -50,7 +50,7 @@ recent history and achievements through their existing owners.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | ExerciseViewModel / ExerciseState | Available exercise: identity, date, ordered iterations and stored totals | Rebuild | TrainingFeature.observeExercise(id) → domain-to-state mapper | The primary subscription alone owns current-record state. Fresh session starts Loading; nonnull source becomes Available. A null source becomes Unavailable, clearing any earlier available record. No editable data. |
-| ExerciseState.Available.history | Immutable prior exercise records | Rebuild | TrainingFeature.getTrainings plus observeTrainings, SelectExerciseHistoryUseCase and domain-to-state mapper | The selected date bounds a 180-day window through the end of that day. At most five strictly prior workouts contribute one recorded matching exercise each; the current workout and future records are excluded. Same-ID primary emissions preserve history data. Progress belongs only to ExerciseLoader.History in the existing safeLaunch; State stores no duplicate loading mode. There is no draft or persistent comparison cache. A partial prior record remains the actual latest record; unknown load is omitted from comparisons rather than replaced by an older session. |
+| ExerciseState.Available.history | Immutable prior exercise records | Rebuild | TrainingFeature.getTrainings plus observeTrainings, SelectExerciseHistoryUseCase and domain-to-state mapper | The selected date bounds a 180-day window through the end of that day. At most five strictly prior workouts contribute one recorded matching exercise each; the current workout and future records are excluded. Same-ID primary emissions preserve history data. Progress belongs only to ExerciseLoader.History in the existing safeLaunch; State stores no duplicate loading mode. There is no draft or persistent comparison cache. A partial prior record remains the actual latest record; unknown per-set measurements stay unavailable rather than being replaced by an older session. |
 | ExerciseState | Loading / Available / Unavailable content lifecycle | Rebuild | Initial state and the current observeExercise emission | No saved flags, source snapshots or duplicated draft. An unavailable record exposes no details action. |
 | ExerciseScreen | Scroll position | Runtime only | Existing Compose scroll owner | Presentation-only; no business selection or accepted result. |
 | ExerciseVolumeHistoryChart | Tooltip / touched bar | Runtime only | Existing shared BarChart owner | No business selection; recreated from chronological history with the selected entry last. |
@@ -68,20 +68,32 @@ zero in this feature summary; absent per-set measurements remain unavailable.
 Bodyweight formulas use the recorded component values. Optional absent body mass
 contributes zero while known external, extra and assist values remain recorded
 load. Body mass without its multiplier and a coefficient without any weight input
-remain unknown. The sets section reuses IterationCard.Recorded and pairs matching load bases by
-ordinal in a quiet previous-result column; it does not infer set equivalence or
-strength progress. Comparison data, loading and accessibility stay in the feature-owned trailing slot, outside the IterationCard entity content. Nullable recorded-load calculation and comparison bases belong to the existing reusable IterationState/ExerciseState models. The fixed context width and two-line minimum reserve the same
-space for shimmer, prior values and absent matches.
+remain unknown. The sets section reuses IterationCard.Recorded and pairs actual prior
+sets by ordinal in a quiet previous-result column. Optional assistance or added
+weight changing does not hide the known effective load; no field-presence basis
+is inferred. A partial prior set keeps its known repetitions and unknown-load dash.
+Comparison data, loading and accessibility stay in the feature-owned trailing slot,
+outside the IterationCard entity content. Nullable recorded-load calculation belongs
+to IterationState. ExerciseState reports maximum effective load only when every
+positive-repetition set has a known load; an incomplete performed set cannot silently
+disappear from the maximum. The fixed context width and two-line minimum reserve the
+same space for shimmer, prior values and absent matches.
 
 The compact summary after the sets shows only current volume, repetitions and
 maximum effective load; set count already belongs to the Sets heading.
 Secondary history shows a concise previous value/date and guarded volume percent.
-The percentage requires a matching latest-prior load basis, a positive previous
-volume and a finite bounded ratio. The chart requires comparable load bases and
-finite nonnegative volumes for every displayed entry; otherwise explanatory copy
-occupies its reserved region. Signed recorded values remain visible in the sets,
-current summary and previous caption without clamping them to a fabricated zero.
-An incomparable latest-prior record also suppresses the percentage. History loading has one
+History selection already guarantees the same exercise example. Stored kilogram
+volume totals can be compared without reconstructing per-set load bases. The
+percentage requires positive previous tonnage, nonnegative current tonnage and a
+finite result representable by PercentageFormatState's Int. Zero change displays
+0%; zero baseline has no defined percentage. There is no arbitrary 999% ceiling.
+The feature checks finite nonnegative tonnage once before rendering the chronological
+chart; otherwise explanatory copy occupies its reserved region. The chart component
+renders supplied entries, including a single entry, without repeating that business
+eligibility check or silently dropping unsupported history. Its empty-input guard
+only avoids reading a nonexistent final date. Negative effective set load is an
+allowed machine convention, distinct from nonnegative tonnage; signed recorded facts
+remain visible without clamping them to fabricated zero. History loading has one
 localized indeterminate accessibility node, decorative shared shimmer slots and
 the same caption/chart geometry as loaded or empty history. It introduces no
 draft, timer, request, retry or business selection.
@@ -130,7 +142,7 @@ hooks or automated test infrastructure are introduced.
 Typed events, parameters, eligibility, consent and transport retain the recorded
 contract. The startup decorator remains after the available-record gate within
 the same initialization path; Available stores an immutable history list, while ExerciseLoader.History supplies
-the only operation progress. Empty comparison and incompatible load data use a
+the only operation progress. Empty history and unsupported stored tonnage use a
 neutral BannerCard in the existing reserved plot region. The admin
 section retains its live configuration evidence; layout and chart eligibility
 changes add no analytics-facing symbols or admin consumer dependency.

@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -37,13 +38,13 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_history_chart_unavailable
-import com.grippo.design.resources.provider.exercise_history_different_load
 import com.grippo.design.resources.provider.exercise_history_max_load
 import com.grippo.design.resources.provider.exercise_history_no_previous
 import com.grippo.design.resources.provider.exercise_history_previous_short
 import com.grippo.design.resources.provider.exercise_history_total_volume
 import com.grippo.design.resources.provider.exercise_history_trend_title
 import com.grippo.design.resources.provider.exercise_history_volume_delta
+import com.grippo.design.resources.provider.percent
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.icons.LineUp
@@ -54,7 +55,6 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
@@ -138,22 +138,27 @@ private fun ExerciseVolumeHistory(
     val exercise = value.exercise
     val records = value.history
     val previous = if (isHistoryLoading) null else records.lastOrNull()
-    val comparable = previous != null && exercise.hasComparableLoadTo(previous)
-    val chartComparable = previous != null && records.all { exercise.hasComparableLoadTo(it) }
     val volume = exercise.total.volume.value ?: 0f
     val chartValuesSupported = volume.isFinite() && volume >= 0f && records.all {
         val recordedVolume = it.total.volume.value ?: 0f
         recordedVolume.isFinite() && recordedVolume >= 0f
     }
     val previousVolume = previous?.total?.volume?.value ?: 0f
-    val percent = if (comparable && previousVolume > 0f && volume >= 0f) {
-        ((volume - previousVolume) / previousVolume * 100f)
-            .takeIf { it.isFinite() && abs(it) <= 999f }
+    val percent = if (previousVolume > 0f && volume >= 0f) {
+        ((volume.toDouble() - previousVolume) / previousVolume * 100.0)
+            .takeIf { it.isFinite() && it <= Int.MAX_VALUE }
             ?.roundToInt()
     } else {
         null
     }
-    val percentText = percent?.let { if (it > 0) "+$it%" else "$it%" }
+    val percentText = percent?.let {
+        val formatted = PercentageFormatState.of(it)
+        when {
+            it > 0 -> "+${formatted.short()}"
+            it == 0 -> "0${AppTokens.strings.res(Res.string.percent)}"
+            else -> formatted.short()
+        }
+    }
     val percentDescription = percentText?.let {
         AppTokens.strings.res(Res.string.exercise_history_volume_delta, it)
     }
@@ -230,12 +235,12 @@ private fun ExerciseVolumeHistory(
                             .heightIn(min = chartHeight),
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (chartComparable && chartValuesSupported) {
+                        if (previous != null && chartValuesSupported) {
                             ExerciseVolumeHistoryChart(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(chartHeight),
-                                value = value.history.toPersistentList().add(exercise),
+                                value = value.history.toPersistentList().adding(exercise),
                             )
                         } else {
                             val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.small.radius)
@@ -252,7 +257,6 @@ private fun ExerciseVolumeHistory(
                                 title = AppTokens.strings.res(
                                     when {
                                         previous == null -> Res.string.exercise_history_no_previous
-                                        !chartComparable -> Res.string.exercise_history_different_load
                                         else -> Res.string.exercise_history_chart_unavailable
                                     },
                                 ),
@@ -283,44 +287,57 @@ private fun ExerciseProgressCardWithoutHistoryPreview() {
 
 @AppPreview
 @Composable
-private fun ExerciseProgressCardDifferentLoadPreview() {
+private fun ExerciseProgressCardChangedAssistancePreview() {
     val value = progressPreviewState(historyCount = 1)
-    val history = value.history
-    val previous = history.last()
-    val bodyIterations = previous.iterations.map { iteration ->
-        iteration.copy(
-            externalWeight = VolumeFormatState.Empty(),
-            bodyWeight = WeightFormatState.of(80f),
-            bodyMultiplier = MultiplierFormatState.of(1f),
-        )
-    }.toPersistentList()
-    val records = persistentListOf(previous.copy(iterations = bodyIterations))
+    val current = value.exercise.copy(
+        iterations = value.exercise.iterations.map {
+            it.copy(
+                externalWeight = VolumeFormatState.Empty(),
+                bodyWeight = WeightFormatState.of(80f),
+                bodyMultiplier = MultiplierFormatState.of(1f),
+            )
+        }.toPersistentList(),
+    )
+    val previous = value.history.last()
+    val assisted = previous.copy(
+        iterations = current.iterations.map {
+            it.copy(assistWeight = VolumeFormatState.of(20f), repetitions = RepetitionsFormatState.of(5))
+        }.toPersistentList(),
+        total = previous.total.copy(volume = VolumeFormatState.of(900f), intensity = IntensityFormatState.of(60f)),
+    )
     PreviewContainer {
-        ExerciseProgressCard(value = value.copy(history = records))
+        ExerciseProgressCard(value = value.copy(exercise = current, history = persistentListOf(assisted)))
     }
 }
 
 @AppPreview
 @Composable
-private fun ExerciseProgressCardMixedHistoryPreview() {
-    val value = progressPreviewState(historyCount = 2)
-    val history = value.history
-    val records = history.mapIndexed { index, exercise ->
-        if (index == 0) {
-            val iterations = exercise.iterations.map { iteration ->
-                iteration.copy(
-                    externalWeight = VolumeFormatState.Empty(),
-                    bodyWeight = WeightFormatState.of(80f),
-                    bodyMultiplier = MultiplierFormatState.of(1f),
-                )
-            }.toPersistentList()
-            exercise.copy(iterations = iterations)
-        } else {
-            exercise
-        }
-    }.toPersistentList()
+private fun ExerciseProgressCardPartialMaximumPreview() {
+    val value = progressPreviewState(historyCount = 1)
+    val iterations = value.exercise.iterations.toPersistentList().replacingAt(
+        index = 1,
+        element = stubPendingIteration().copy(
+            id = "incomplete-load",
+            bodyWeight = WeightFormatState.of(80f),
+            repetitions = RepetitionsFormatState.of(10),
+        ),
+    )
     PreviewContainer {
-        ExerciseProgressCard(value = value.copy(history = records))
+        ExerciseProgressCard(value = value.copy(exercise = value.exercise.copy(iterations = iterations)))
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseProgressCardLargeIncreasePreview() {
+    val value = progressPreviewState(historyCount = 1)
+    val previous = value.history.last()
+    val light = previous.copy(
+        iterations = previous.iterations.map { it.copy(externalWeight = VolumeFormatState.of(2f)) }.toPersistentList(),
+        total = previous.total.copy(volume = VolumeFormatState.of(30f), intensity = IntensityFormatState.of(2f)),
+    )
+    PreviewContainer {
+        ExerciseProgressCard(value = value.copy(history = persistentListOf(light)))
     }
 }
 
@@ -409,7 +426,7 @@ private fun ExerciseProgressCardZeroBaselinePreview() {
 
 private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
     val date = DateTimeFormatState.of(
-        value = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 16, hour = 18, minute = 0),
+        value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 0),
         range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy,
     )
@@ -436,8 +453,8 @@ private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
             createdAt = DateTimeFormatState.of(
                 value = LocalDateTime(
                     year = 2026,
-                    monthNumber = 10,
-                    dayOfMonth = index * 3 + 1,
+                    month = 10,
+                    day = index * 3 + 1,
                     hour = 18,
                     minute = 0,
                 ),

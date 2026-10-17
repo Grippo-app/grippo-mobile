@@ -928,7 +928,6 @@
     <string name="exercise_history_comparison_loading">Завантаження попередніх тренувань…</string>
     <string name="exercise_history_volume_delta">%1$s обсягу</string>
     <string name="exercise_history_previous_set_date">Попередні підходи · %1$s</string>
-    <string name="exercise_history_different_load">Навантаження записано по-різному</string>
     <string name="exercise_history_chart_unavailable">Графік недоступний для цих значень обсягу</string>
     <string name="exercise_history_set_result">%1$s × %2$s</string>
     <string name="exercise_history_previous_short">%1$s · %2$s</string>

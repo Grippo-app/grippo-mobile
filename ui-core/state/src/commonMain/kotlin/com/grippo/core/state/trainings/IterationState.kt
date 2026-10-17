@@ -37,20 +37,6 @@ public data class IterationState(
         return calculatedVolume()
     }
 
-    public fun hasComparableLoadTo(other: IterationState): Boolean {
-        val current = loadBasis() ?: return false
-        return current == other.loadBasis()
-    }
-
-    internal fun loadBasis(): LoadBasis? {
-        recordedVolume() ?: return null
-        return LoadBasis(
-            external = externalWeight.value != null,
-            body = bodyWeight.value != null,
-            assisted = assistWeight.value != null,
-        )
-    }
-
     @Composable
     public fun volumeCalculation(): String? {
         val body = bodyWeight.value ?: return null
@@ -89,13 +75,6 @@ public data class IterationState(
         val multiplier = bodyMultiplier.value ?: 0f
         return external + extra + body * multiplier - assist
     }
-
-    @Immutable
-    internal data class LoadBasis(
-        val external: Boolean,
-        val body: Boolean,
-        val assisted: Boolean,
-    )
 }
 
 public fun stubIteration(): IterationState = listOf(

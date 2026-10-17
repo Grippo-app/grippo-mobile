@@ -35,11 +35,7 @@ public fun ExerciseVolumeHistoryChart(
     modifier: Modifier = Modifier,
     value: ImmutableList<ExerciseState>,
 ) {
-    val hasSupportedVolumes = value.all {
-        val volume = it.total.volume.value ?: 0f
-        volume.isFinite() && volume >= 0f
-    }
-    if (value.size < 2 || !hasSupportedVolumes) {
+    if (value.isEmpty()) {
         return
     }
 
@@ -73,15 +69,8 @@ public fun ExerciseVolumeHistoryChart(
             .aspectRatio(AppTokens.dp.metrics.volume.chart.historyAspectRatio),
         data = data,
         valueFormatter = { volume ->
-            if (volume.isFinite()) {
-                val formatted = VolumeFormatState.of(volume)
-                when (formatted.value) {
-                    null -> "0$kg"
-                    else -> formatted.short()
-                }
-            } else {
-                "—"
-            }
+            val formatted = VolumeFormatState.of(volume)
+            if (formatted.value == null) "0$kg" else formatted.short()
         },
         description = description,
     )
@@ -129,8 +118,8 @@ private fun exerciseVolumeHistoryPreview(vararg volumes: Float): ImmutableList<E
         val date = DateTimeFormatState.of(
             value = LocalDateTime(
                 year = 2026,
-                monthNumber = 10,
-                dayOfMonth = 1 + index * 3,
+                month = 10,
+                day = 1 + index * 3,
                 hour = 10,
                 minute = 0,
             ),

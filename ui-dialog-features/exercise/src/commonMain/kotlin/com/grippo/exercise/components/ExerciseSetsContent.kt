@@ -108,7 +108,6 @@ internal fun ExerciseSetsContent(
         value.forEachIndexed { index, iteration ->
             key(iteration.id) {
                 val previousSet = previous?.iterations?.getOrNull(index)
-                    ?.takeIf { iteration.hasComparableLoadTo(it) }
                 IterationCard(
                     value = iteration,
                     style = IterationCardStyle.Recorded(
@@ -245,7 +244,7 @@ private fun ExerciseSetsContentWithPreviousPreview() {
     )
     val previous = stubExercise().copy(
         createdAt = DateTimeFormatState.of(
-            value = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 7, hour = 18, minute = 0),
+            value = LocalDateTime(year = 2026, month = 10, day = 7, hour = 18, minute = 0),
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
         ),
@@ -256,6 +255,35 @@ private fun ExerciseSetsContentWithPreviousPreview() {
     PreviewContainer {
         ExerciseSetsContent(
             value = persistentListOf(iteration),
+            previous = previous,
+            isHistoryLoading = false,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseSetsContentChangedAssistanceAndPartialPreviousPreview() {
+    val iteration = stubPendingIteration().copy(
+        id = "unassisted-current",
+        bodyWeight = WeightFormatState.of(80f),
+        bodyMultiplier = MultiplierFormatState.of(1f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    val previous = stubExercise().copy(
+        createdAt = DateTimeFormatState.of(
+            value = LocalDateTime(year = 2026, month = 10, day = 7, hour = 18, minute = 0),
+            range = DateRangePresets.infinity(),
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
+        ),
+        iterations = persistentListOf(
+            iteration.copy(id = "assisted-previous", assistWeight = VolumeFormatState.of(20f)),
+            iteration.copy(id = "partial-previous", bodyMultiplier = MultiplierFormatState.Empty()),
+        ),
+    )
+    PreviewContainer {
+        ExerciseSetsContent(
+            value = persistentListOf(iteration, iteration.copy(id = "second-current")),
             previous = previous,
             isHistoryLoading = false,
         )

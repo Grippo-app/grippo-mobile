@@ -366,7 +366,7 @@ A compact navigation item and a screen heading do not need the same font size.
   `subContent` bottom padding before the first row's `subContent` top padding.
   The ordered sets use
   `IterationCard.Recorded` first: a small passive number badge (`iterationCard.historyNumberSize`),
-  neutral `h5` load × repetitions and quiet dividers only between rows. Matching
+  neutral `h5` load × repetitions and quiet dividers only between rows. Actual ordinal
   prior values belong to the feature-provided trailing slot, using secondary `b12Med` in a fixed `iterationCard.historyContextWidth`
   column, introduced once by a short previous-date header. Each context slot
   reserves two secondary line heights in loading, populated and absent-match
@@ -384,14 +384,15 @@ A compact navigation item and a screen heading do not need the same font size.
   history uses a quiet `b12Med` heading, neutral signed percentage and one short
   prior-volume/date caption. The percentage has no status fill or success meaning.
   Both caption and chart retain reserved geometry while history loads, is empty
-  or uses different load bases. Skeletons use `divider.default`, shared clipped
+  or contains unsupported tonnage. Skeletons use `divider.default`, shared clipped
   shimmer and typography-derived text slots; the card exposes one localized
   indeterminate node while individual bones remain decorative. No minimum loading
   duration or business animation is added.
-  Comparable chronological entries use the existing blue growth palette: P300
-  for prior entries and P500 for the selected entry. Different load bases show
-  a neutral `BannerCard.Custom` in the same reserved chart region. Its dialog
-  surface and small panel radius separate absent/incompatible comparison from
+  Chronological stored-volume entries use the existing blue growth palette: P300
+  for prior entries and P500 for the selected entry. Changed assistance or added
+  weight does not hide known prior results. Empty history or unsupported tonnage
+  shows a neutral `BannerCard.Custom` in the same reserved chart region. Its dialog
+  surface and small panel radius separate unavailable comparison from
   current facts; its icon is secondary and its copy keeps the actual reason. The compact chart retains
   `metrics.volume.chart.historyAspectRatio`, date-only labels, tooltips and the full
   selected-entry accessibility caption. It uses the same flat shared bar style as
@@ -399,7 +400,8 @@ A compact navigation item and a screen heading do not need the same font size.
   progress. Finite nonnegative volumes are the supported chart domain; unsupported
   values show quiet explanatory copy in the same reserved region while their
   recorded numeric facts remain visible. Nonnullable stored totals retain actual
-  zero values. The existing
+  zero values. Maximum effective load remains unavailable if any performed set
+  lacks calculable load; the summary does not present a partial maximum as complete. The existing
   secondary details action remains last. Empty records keep identity and details
   without fabricated sets or summary.
 - Keep control heights as minimums when content depends on font size. Chips, set

@@ -30,23 +30,9 @@ public data class ExerciseState(
     val total: TrainingTotalState
 ) {
     public fun maximumRecordedLoad(): Float? {
-        return iterations
-            .filter { (it.repetitions.value ?: 0) > 0 }
-            .mapNotNull { it.recordedVolume() }
-            .maxOrNull()
-    }
-
-    public fun hasComparableLoadTo(other: ExerciseState): Boolean {
-        val current = recordedLoadBases()
-        val previous = other.recordedLoadBases()
-        return current.isNotEmpty() && null !in current && current == previous
-    }
-
-    private fun recordedLoadBases(): Set<IterationState.LoadBasis?> {
-        return iterations
-            .filter { (it.repetitions.value ?: 0) > 0 }
-            .map { it.loadBasis() }
-            .toSet()
+        val performed = iterations.filter { (it.repetitions.value ?: 0) > 0 }
+        val loads = performed.map { it.recordedVolume() ?: return null }
+        return loads.maxOrNull()
     }
 }
 
