@@ -4,18 +4,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.grippo.chart.bar.BarChart
+import com.grippo.chart.bar.BarChart as ComposeBarChart
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.chart.bar.BarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Immutable
@@ -28,187 +27,103 @@ public enum class BarChartXAxisLabels {
 internal fun BarChart(
     modifier: Modifier = Modifier,
     data: BarData,
+    valueFormatter: @Composable (Float) -> String,
     xAxisLabels: BarChartXAxisLabels = BarChartXAxisLabels.WithLabels,
+    description: String? = null,
 ) {
     val colors = AppTokens.colors
     val typography = AppTokens.typography
-
-    val formatter: (Float, BarData) -> String = { value, _ -> value.prettyFormat() }
+    val dimensions = AppTokens.dp.metrics.charts
+    val formattedValues = data.items.associate { entry -> entry.value to valueFormatter(entry.value) }
+    val chartDescription = description ?: data.items.joinToString(separator = "; ") { entry ->
+        "${entry.label}: ${formattedValues[entry.value].orEmpty()}"
+    }
 
     val style = BarStyle(
         layout = BarStyle.Layout(
-            labelPadding = AppTokens.dp.metrics.charts.bar.labelPadding,
-            chartPadding = BarStyle.ChartPadding(
-                start = 0.dp,
-                top = 0.dp,
-                end = 0.dp,
-                bottom = 0.dp
-            ),
-            minBarHeight = AppTokens.dp.metrics.charts.bar.minHeight,
-            yAxisLabelSpacing = AppTokens.dp.metrics.charts.bar.axisLabelSpacing,
-            valueLabelSpacing = AppTokens.dp.metrics.charts.bar.contentSpacing,
-            baselineSpacing = AppTokens.dp.metrics.charts.bar.contentSpacing,
-            barsAxisInsetStart = AppTokens.dp.metrics.charts.bar.contentSpacing,
-            barsAxisInsetEnd = AppTokens.dp.metrics.charts.bar.contentSpacing
+            labelPadding = dimensions.bar.axisLabelSpacing,
+            xAxisLabelSpacing = dimensions.bar.axisLabelSpacing,
         ),
         grid = BarStyle.Grid(
-            show = true,
-            color = colors.charts.bar.grid,
-            strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
+            show = false,
+            color = Color.Transparent,
+            strokeWidth = 0.dp,
         ),
-        yAxis = BarStyle.YAxis.Labels(
-            ticks = 4,
-            textStyle = typography.b10Reg().copy(color = colors.text.secondary),
-            formatter = formatter,
-            tickMarkColor = colors.charts.bar.axis,
-            tickMarkWidth = AppTokens.dp.metrics.charts.axis.strokeWidth,
-            tickMarkLength = AppTokens.dp.metrics.charts.axis.tickLength
-        ),
-        peek = BarStyle.Peek.Visible(
-            hitSlop = AppTokens.dp.metrics.charts.peek.hitSlop,
-
-            guideColor = colors.charts.tooltip.guide,
-            guideWidth = AppTokens.dp.metrics.charts.peek.guideWidth,
-            guideDash = AppTokens.dp.metrics.charts.peek.guideDash,
-            guideGap = AppTokens.dp.metrics.charts.peek.guideGap,
-
-            focusColor = colors.charts.tooltip.focus,
-            focusRadius = AppTokens.dp.metrics.charts.peek.focusRadius,
-            focusRingWidth = AppTokens.dp.metrics.charts.peek.focusRingWidth,
-            focusHaloRadius = AppTokens.dp.metrics.charts.peek.focusHaloRadius,
-
-            tooltipBackground = colors.charts.tooltip.background,
-            tooltipBorder = colors.charts.tooltip.border,
-            tooltipText = colors.charts.tooltip.text,
-            tooltipCornerRadius = AppTokens.dp.metrics.charts.peek.tooltipRadius,
-            tooltipPaddingH = AppTokens.dp.metrics.charts.peek.tooltipHorizontalPadding,
-            tooltipPaddingV = AppTokens.dp.metrics.charts.peek.tooltipVerticalPadding,
-            tooltipMargin = AppTokens.dp.metrics.charts.peek.tooltipMargin,
-
-            decimals = 0,
-            showLabel = true,
-        ),
-        yAxisLine = BarStyle.AxisLine(
-            color = colors.charts.bar.axis,
-            width = AppTokens.dp.metrics.charts.axis.strokeWidth
-        ),
+        yAxis = BarStyle.YAxis.None,
+        yAxisLine = null,
         xAxis = if (xAxisLabels == BarChartXAxisLabels.WithLabels) {
             BarStyle.XAxis.LabelsAdaptive(
-                textStyle = typography.b10Reg()
-                    .copy(color = colors.text.tertiary),
-                minGapDp = AppTokens.dp.metrics.charts.bar.contentSpacing
+                textStyle = typography.b10Med().copy(color = colors.text.tertiary),
+                minGapDp = dimensions.bar.axisLabelSpacing,
             )
         } else {
             BarStyle.XAxis.None
         },
         xBaseline = BarStyle.Baseline(
             color = colors.charts.bar.baseline,
-            width = AppTokens.dp.metrics.charts.axis.strokeWidth
+            width = dimensions.axis.strokeWidth,
         ),
         bars = BarStyle.Bars(
-            corner = AppTokens.dp.metrics.charts.bar.radius,
-            brushProvider = { entry, _, rect ->
-                val topColor = lerp(entry.color, colors.static.white, colors.charts.bar.highlightMix)
-                val midColor = entry.color
-                Brush.verticalGradient(
-                    colorStops = arrayOf(
-                        0f to topColor,
-                        0.6f to midColor,
-                        1f to midColor.copy(alpha = colors.charts.bar.gradientEndAlpha)
-                    ),
-                    startY = rect.top,
-                    endY = rect.bottom
-                )
-            },
+            corner = dimensions.bar.radius,
+            brushProvider = null,
             strokeWidth = 0.dp,
             strokeColor = Color.Transparent,
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps(
-                midThresholdDp = AppTokens.dp.metrics.charts.bar.midDensityThreshold,
-                denseThresholdDp = AppTokens.dp.metrics.charts.bar.denseThreshold,
-                midRatio = 0.55f,
-                denseRatio = 0.35f,
-                maxBarWidth = AppTokens.dp.metrics.charts.bar.maxWidth
-            )
+            sizing = BarStyle.BarsSizing.EvenSlots(
+                maxBarWidth = dimensions.bar.maxWidth,
+                widthFraction = dimensions.bar.widthFraction,
+            ),
         ),
-        values = BarStyle.Values.Above(
-            textStyle = typography.b10Bold().copy(color = colors.text.primary),
-            formatter = formatter
+        values = BarStyle.Values.None,
+        peek = BarStyle.Peek.Visible(
+            hitSlop = dimensions.peek.hitSlop,
+            guideColor = colors.charts.tooltip.guide,
+            guideWidth = dimensions.peek.guideWidth,
+            guideDash = dimensions.peek.guideDash,
+            guideGap = dimensions.peek.guideGap,
+            focusColor = colors.charts.tooltip.focus,
+            focusRadius = 0.dp,
+            focusRingWidth = 0.dp,
+            focusHaloRadius = 0.dp,
+            selectedBarStrokeColor = colors.charts.tooltip.focus,
+            selectedBarStrokeWidth = dimensions.bar.selectionStrokeWidth,
+            tooltipBackground = colors.charts.tooltip.background,
+            tooltipBorder = colors.charts.tooltip.border,
+            tooltipText = colors.charts.tooltip.text,
+            tooltipCornerRadius = dimensions.peek.tooltipRadius,
+            tooltipPaddingH = dimensions.peek.tooltipHorizontalPadding,
+            tooltipPaddingV = dimensions.peek.tooltipVerticalPadding,
+            tooltipMargin = dimensions.peek.tooltipMargin,
+            valueTextStyle = typography.b12Semi(),
+            labelTextStyle = typography.b10Med(),
+            tooltipBorderWidth = dimensions.peek.tooltipBorderWidth,
+            tooltipLabelSpacing = dimensions.peek.tooltipLabelSpacing,
+            valueFormatter = { value, _ -> formattedValues[value].orEmpty() },
         ),
     )
 
-    BarChart(
-        modifier = modifier,
+    ComposeBarChart(
+        modifier = modifier.semantics { contentDescription = chartDescription },
         data = data,
-        style = style
+        style = style,
     )
-}
-
-private fun Float.prettyFormat(): String {
-    val absValue = abs(this)
-    return when {
-        absValue >= 1_000_000f -> formatCompact(this, 1_000_000, "M")
-        absValue >= 1_000f -> formatCompact(this, 1_000, "K")
-        absValue >= 1f -> roundToInt().toString()
-        absValue == 0f -> "0"
-        else -> formatCompact(this, 1, "", decimalsOverride = 1)
-    }
-}
-
-private fun formatCompact(
-    value: Float,
-    scale: Int,
-    suffix: String,
-    decimalsOverride: Int? = null
-): String {
-    val sign = if (value < 0f) "-" else ""
-    val absValue = abs(value)
-    val scaled = absValue / scale.toFloat()
-    val decimals = decimalsOverride ?: if (scaled < 10f) 1 else 0
-    val factor = when (decimals) {
-        0 -> 1
-        1 -> 10
-        2 -> 100
-        else -> 1
-    }
-    val rounded = (scaled * factor).roundToInt()
-    val integerPart = rounded / factor
-    val fractionalPart = rounded % factor
-    return buildString {
-        append(sign)
-        append(integerPart)
-        if (decimals > 0 && fractionalPart != 0) {
-            append('.')
-            append(fractionalPart.toString().padStart(decimals, '0'))
-        }
-        append(suffix)
-    }
 }
 
 @AppPreview
 @Composable
 private fun BarChartPreview() {
     PreviewContainer {
-        val ds = BarData(
-            items = listOf(
-                BarEntry("Mon", 6f, AppTokens.colors.palette.palette7BlueGrowth[0]),
-                BarEntry("Tue", 10f, AppTokens.colors.palette.palette7BlueGrowth[1]),
-                BarEntry("Wed", 4f, AppTokens.colors.palette.palette7BlueGrowth[2]),
-                BarEntry("Thu", 12f, AppTokens.colors.palette.palette7BlueGrowth[3]),
-                BarEntry("Fri", 8f, AppTokens.colors.palette.palette7BlueGrowth[4]),
-                BarEntry("Sat", 14f, AppTokens.colors.palette.palette7BlueGrowth[5]),
-                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[6]),
-                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[0]),
-                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[1]),
-                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[2]),
-                BarEntry("Sun", 9f, AppTokens.colors.palette.palette7BlueGrowth[3]),
-            ),
-            xName = "Day",
-            yName = "Volume",
-        )
-
         BarChart(
             modifier = Modifier.size(300.dp),
-            data = ds,
+            data = BarData(
+                items = (0..10).map { index ->
+                    BarEntry(
+                        label = "Day ${index + 1}",
+                        value = 4f + index % 5 * 2,
+                        color = AppTokens.colors.palette.palette7BlueGrowth[2],
+                    )
+                },
+            ),
+            valueFormatter = { value -> value.roundToInt().toString() },
         )
     }
 }
@@ -221,11 +136,52 @@ private fun BarChartWithoutLabelsPreview() {
             modifier = Modifier.size(300.dp),
             data = BarData(
                 items = listOf(
-                    BarEntry("First", 0f, AppTokens.colors.palette.palette7BlueGrowth.first()),
-                    BarEntry("Second", 1_250f, AppTokens.colors.palette.palette7BlueGrowth.last()),
+                    BarEntry(label = "First", value = 0f, color = AppTokens.colors.palette.palette7BlueGrowth.first()),
+                    BarEntry(label = "Second", value = 1_250f, color = AppTokens.colors.palette.palette7BlueGrowth[2]),
                 ),
             ),
+            valueFormatter = { value -> value.roundToInt().toString() },
             xAxisLabels = BarChartXAxisLabels.WithoutLabels,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun BarChartDensePreview() {
+    PreviewContainer {
+        BarChart(
+            modifier = Modifier.size(300.dp),
+            data = BarData(
+                items = (1..31).map { day ->
+                    BarEntry(
+                        label = day.toString(),
+                        value = if (day % 5 == 0) 0f else 100f + day % 7 * 150,
+                        color = AppTokens.colors.palette.palette7BlueGrowth[2],
+                    )
+                },
+            ),
+            valueFormatter = { value -> value.roundToInt().toString() },
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun BarChartZeroPreview() {
+    PreviewContainer {
+        BarChart(
+            modifier = Modifier.size(300.dp),
+            data = BarData(
+                items = (1..3).map { day ->
+                    BarEntry(
+                        label = "Day $day",
+                        value = 0f,
+                        color = AppTokens.colors.palette.palette7BlueGrowth[2],
+                    )
+                },
+            ),
+            valueFormatter = { value -> value.roundToInt().toString() },
         )
     }
 }
@@ -237,6 +193,7 @@ private fun BarChartEmptyPreview() {
         BarChart(
             modifier = Modifier.size(300.dp),
             data = BarData(items = emptyList()),
+            valueFormatter = { value -> value.roundToInt().toString() },
         )
     }
 }

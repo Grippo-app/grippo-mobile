@@ -42,7 +42,7 @@ import com.grippo.design.resources.provider.exercise_details_btn
 import com.grippo.design.resources.provider.exercise_history_no_sets
 import com.grippo.design.resources.provider.exercise_history_unavailable
 import com.grippo.exercise.components.ExerciseProgressCard
-import com.grippo.exercise.components.ExerciseJournal
+import com.grippo.exercise.components.ExerciseSetsContent
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableSet
@@ -75,6 +75,7 @@ internal fun ExerciseScreen(
 
             is ExerciseState.Available -> {
                 val exercise = state.exercise
+                val isHistoryLoading = loaders.contains(ExerciseLoader.History)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -115,9 +116,10 @@ internal fun ExerciseScreen(
                         color = AppTokens.colors.text.secondary,
                     )
                 } else {
-                    ExerciseJournal(
+                    ExerciseSetsContent(
                         value = exercise.iterations,
-                        history = state.history,
+                        previous = state.history.lastOrNull(),
+                        isHistoryLoading = isHistoryLoading,
                     )
 
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
@@ -125,6 +127,7 @@ internal fun ExerciseScreen(
                     ExerciseProgressCard(
                         modifier = Modifier.fillMaxWidth(),
                         value = state,
+                        isHistoryLoading = isHistoryLoading,
                     )
                 }
 
@@ -335,7 +338,7 @@ private fun exerciseWithPreviousPreview(): ExerciseState.Available {
     )
     return ExerciseState.Available(
         exercise = current,
-        history = ExerciseHistoryState.Loaded(records = persistentListOf(previous)),
+        history = persistentListOf(previous),
     )
 }
 
@@ -344,8 +347,20 @@ private fun exerciseWithPreviousPreview(): ExerciseState.Available {
 private fun ExerciseWithoutPreviousRecordPreview() {
     PreviewContainer {
         ExerciseScreen(
-            state = exerciseWithPreviousPreview().copy(history = ExerciseHistoryState.Loaded(records = persistentListOf())),
+            state = exerciseWithPreviousPreview().copy(history = persistentListOf()),
             loaders = persistentSetOf(),
+            contract = ExerciseContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseHistoryLoadingPreview() {
+    PreviewContainer {
+        ExerciseScreen(
+            state = ExerciseState.Available(exercise = exerciseHistoryPreview()),
+            loaders = persistentSetOf(ExerciseLoader.History),
             contract = ExerciseContract.Empty,
         )
     }

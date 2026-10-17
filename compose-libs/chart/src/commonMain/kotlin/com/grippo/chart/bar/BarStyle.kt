@@ -6,8 +6,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
  * Visual configuration for a vertical Bar chart.
@@ -19,7 +21,7 @@ import androidx.compose.ui.unit.dp
  * - Bars: per-entry fill (solid/gradient), stroke and corner radius
  * - Values: labels above bars
  * - Baseline: optional reference line
- * - Peek: click/selection overlay + tooltip
+ * - Peek: tap or horizontal scrub selection + tooltip
  */
 @Immutable
 public data class BarStyle(
@@ -44,6 +46,7 @@ public data class BarStyle(
         val baselineSpacing: Dp = 0.dp,
         val barsAxisInsetStart: Dp = 0.dp,
         val barsAxisInsetEnd: Dp = 0.dp,
+        val xAxisLabelSpacing: Dp = labelPadding,
     )
 
     @Immutable
@@ -126,6 +129,13 @@ public data class BarStyle(
 
     @Immutable
     public sealed interface BarsSizing {
+        /** Centers each bar in an equal plot slot, independently of the width cap. */
+        @Immutable
+        public data class EvenSlots(
+            val maxBarWidth: Dp,
+            val widthFraction: Float,
+        ) : BarsSizing
+
         /** Compute equal bar/gap width to fill the chart (now adaptive under high density). */
         @Immutable
         public data class AutoEqualBarsAndGaps(
@@ -156,7 +166,7 @@ public data class BarStyle(
         val width: Dp,
     )
 
-    /** X=0 baseline line. */
+    /** Y=0 baseline line. */
     @Immutable
     public data class Baseline(
         val color: Color,
@@ -193,10 +203,19 @@ public data class BarStyle(
             val tooltipPaddingH: Dp,
             val tooltipPaddingV: Dp,
             val tooltipMargin: Dp,
-
             val decimals: Int = 0,
             val showLabel: Boolean = true,
             val valueFormatter: ((Float, BarData) -> String)? = null,
+            val tooltipBorderWidth: Dp = 1.dp,
+            val tooltipLabelSpacing: Dp = 2.dp,
+            val valueTextStyle: TextStyle = TextStyle(
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+            ),
+            val labelTextStyle: TextStyle = TextStyle(
+                fontSize = 10.sp,
+                textAlign = TextAlign.Center,
+            ),
         ) : Peek
     }
 }

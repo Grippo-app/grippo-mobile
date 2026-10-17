@@ -14,6 +14,35 @@ loading, menu, metrics, modifiers, muscle, navigation, segment, selectors, split
 swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
 `EmptyState` composable; the empty-list owner is `IllustratedEmptyState`.
 
+## Entity component families
+
+When several visual components render the same UI entity with different roles or
+densities, MUST extend one design-system component family with a sealed style or
+variant contract instead of adding a parallel feature-owned renderer. Treat the
+variants as a component matrix: each variant has a clear visual role, shares the
+entity's existing `*State` input and retains its own needed interactions. Name
+variants by role, size or density rather than a generic `Default`. The entry
+composable takes only inputs common to all variants; variant-specific arguments,
+including callbacks and neutral content slots, belong to the sealed subtype.
+Inspect
+[ExerciseCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/training/ExerciseCard.kt):
+`ExerciseCardStyle` currently contains Large, Medium and Small variants.
+
+Caller-specific data and logic, such as a comparison with another workout, stay
+with the caller. Its UI may enter the card through a neutral `@Composable` trailing
+slot, carried by the sealed subtype when only that variant uses it. Shared
+components MUST NOT import a feature's history, comparison or presentation model
+to fill the slot. Inspect
+[Chip.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/chip/Chip.kt):
+`ChipLeading.Content` carries a neutral content lambda. Slot-model stability follows
+[Compose stability](../../compose-components/references/structure-and-runtime.md#stability-and-recomposition);
+feature-State purity follows [UI state](../../ui-feature/references/state.md).
+
+Components with different entities or semantic responsibilities may keep separate
+owners. A new family does not require speculative variants. During a family
+migration, inspect every existing variant and caller, preserve the established
+behavior and cover the added variant under the existing preview rules.
+
 ## Entry points and non-obvious behavior
 
 | Topic | Current source and invariant |

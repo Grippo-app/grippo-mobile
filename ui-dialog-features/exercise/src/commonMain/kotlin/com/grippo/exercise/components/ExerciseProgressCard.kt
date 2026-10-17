@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
@@ -29,6 +28,8 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.design.components.banner.BannerCard
+import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.volume.ExerciseVolumeHistoryChart
 import com.grippo.design.core.AppTokens
@@ -44,7 +45,8 @@ import com.grippo.design.resources.provider.exercise_history_total_volume
 import com.grippo.design.resources.provider.exercise_history_trend_title
 import com.grippo.design.resources.provider.exercise_history_volume_delta
 import com.grippo.design.resources.provider.repetitions
-import com.grippo.exercise.ExerciseHistoryState
+import com.grippo.design.resources.provider.kg
+import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.exercise.ExerciseState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -59,12 +61,14 @@ import kotlin.math.roundToInt
 internal fun ExerciseProgressCard(
     modifier: Modifier = Modifier,
     value: ExerciseState.Available,
+    isHistoryLoading: Boolean = false,
 ) {
     val exercise = value.exercise
     // Stored totals originate in non-null domain fields; formatter Empty means recorded zero.
-    val volume = exercise.total.volume.value ?: 0f
+    val zeroVolume = "0${AppTokens.strings.res(Res.string.kg)}"
     val repetitions = exercise.total.repetitions.value ?: 0
     val maximum = exercise.maximumRecordedLoad()
+    val maximumVolume = VolumeFormatState.of(maximum)
     val panel = AppTokens.dp.metrics.panel.large
     val shape = RoundedCornerShape(panel.radius)
 
@@ -86,7 +90,7 @@ internal fun ExerciseProgressCard(
             ResultMetric(
                 modifier = Modifier.weight(1f),
                 label = AppTokens.strings.res(Res.string.exercise_history_total_volume),
-                current = volume.exerciseLoadText(),
+                current = if (exercise.total.volume.value == null) zeroVolume else exercise.total.volume.short(),
             )
             ResultMetric(
                 modifier = Modifier.weight(1f),
@@ -96,13 +100,17 @@ internal fun ExerciseProgressCard(
             ResultMetric(
                 modifier = Modifier.weight(1f),
                 label = AppTokens.strings.res(Res.string.exercise_history_max_load),
-                current = maximum.exerciseLoadText(),
+                current = when {
+                    maximum == null -> "—"
+                    maximumVolume.value == null -> zeroVolume
+                    else -> maximumVolume.short()
+                },
             )
         }
 
         ContentDivider()
 
-        ExerciseVolumeHistory(value = value)
+        ExerciseVolumeHistory(value = value, isHistoryLoading = isHistoryLoading)
     }
 }
 
@@ -125,17 +133,18 @@ private fun ResultMetric(
 private fun ExerciseVolumeHistory(
     modifier: Modifier = Modifier,
     value: ExerciseState.Available,
+    isHistoryLoading: Boolean,
 ) {
     val exercise = value.exercise
-    val records = (value.history as? ExerciseHistoryState.Loaded)?.records
-    val previous = records?.lastOrNull()
+    val records = value.history
+    val previous = if (isHistoryLoading) null else records.lastOrNull()
     val comparable = previous != null && exercise.hasComparableLoadTo(previous)
-    val chartComparable = previous != null && records?.all { exercise.hasComparableLoadTo(it) } == true
+    val chartComparable = previous != null && records.all { exercise.hasComparableLoadTo(it) }
     val volume = exercise.total.volume.value ?: 0f
-    val chartValuesSupported = volume.isFinite() && volume >= 0f && records?.all {
+    val chartValuesSupported = volume.isFinite() && volume >= 0f && records.all {
         val recordedVolume = it.total.volume.value ?: 0f
         recordedVolume.isFinite() && recordedVolume >= 0f
-    } == true
+    }
     val previousVolume = previous?.total?.volume?.value ?: 0f
     val percent = if (comparable && previousVolume > 0f && volume >= 0f) {
         ((volume - previousVolume) / previousVolume * 100f)
@@ -152,9 +161,14 @@ private fun ExerciseVolumeHistory(
         DateTimeUtils.format(value = it, format = DateFormat.DateOnly.DateDdMmm)
     } ?: previous?.createdAt?.display
     val caption = previous?.let {
+        val previousVolumeText = if (it.total.volume.value == null) {
+            "0${AppTokens.strings.res(Res.string.kg)}"
+        } else {
+            it.total.volume.short()
+        }
         AppTokens.strings.res(
             Res.string.exercise_history_previous_short,
-            previousVolume.exerciseLoadText(),
+            previousVolumeText,
             previousDate.orEmpty(),
         )
     }
@@ -188,56 +202,61 @@ private fun ExerciseVolumeHistory(
                 }
             }
 
-            when (value.history) {
-                ExerciseHistoryState.Loading -> ExerciseHistoryShimmer(
+            if (isHistoryLoading) {
+                ExerciseHistoryShimmer(
                     captionMinHeight = captionMinHeight,
                     chartHeight = chartHeight,
                 )
-
-                is ExerciseHistoryState.Loaded -> {
-                    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = captionMinHeight),
-                        ) {
-                            if (caption != null) {
-                                Text(
-                                    text = caption,
-                                    style = captionStyle,
-                                    color = AppTokens.colors.text.secondary,
-                                    minLines = 2,
-                                )
-                            }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = captionMinHeight),
+                    ) {
+                        if (caption != null) {
+                            Text(
+                                text = caption,
+                                style = captionStyle,
+                                color = AppTokens.colors.text.secondary,
+                                minLines = 2,
+                            )
                         }
+                    }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = chartHeight),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            if (chartComparable && chartValuesSupported) {
-                                ExerciseVolumeHistoryChart(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(chartHeight),
-                                    value = value.history.records.toPersistentList().add(exercise),
-                                )
-                            } else {
-                                Text(
-                                    text = AppTokens.strings.res(
-                                        when {
-                                            previous == null -> Res.string.exercise_history_no_previous
-                                            !chartComparable -> Res.string.exercise_history_different_load
-                                            else -> Res.string.exercise_history_chart_unavailable
-                                        },
-                                    ),
-                                    style = AppTokens.typography.b12Med(),
-                                    color = AppTokens.colors.text.secondary,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = chartHeight),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (chartComparable && chartValuesSupported) {
+                            ExerciseVolumeHistoryChart(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(chartHeight),
+                                value = value.history.toPersistentList().add(exercise),
+                            )
+                        } else {
+                            val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.small.radius)
+                            BannerCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = AppTokens.colors.background.dialog, shape = shape)
+                                    .padding(AppTokens.dp.contentPadding.subContent),
+                                style = BannerCardStyle.Custom(
+                                    tint = AppTokens.colors.icon.secondary,
+                                    surface = AppTokens.colors.background.card,
+                                ),
+                                icon = AppTokens.icons.LineUp,
+                                title = AppTokens.strings.res(
+                                    when {
+                                        previous == null -> Res.string.exercise_history_no_previous
+                                        !chartComparable -> Res.string.exercise_history_different_load
+                                        else -> Res.string.exercise_history_chart_unavailable
+                                    },
+                                ),
+                            )
                         }
                     }
                 }
@@ -266,8 +285,8 @@ private fun ExerciseProgressCardWithoutHistoryPreview() {
 @Composable
 private fun ExerciseProgressCardDifferentLoadPreview() {
     val value = progressPreviewState(historyCount = 1)
-    val history = value.history as ExerciseHistoryState.Loaded
-    val previous = history.records.last()
+    val history = value.history
+    val previous = history.last()
     val bodyIterations = previous.iterations.map { iteration ->
         iteration.copy(
             externalWeight = VolumeFormatState.Empty(),
@@ -277,7 +296,7 @@ private fun ExerciseProgressCardDifferentLoadPreview() {
     }.toPersistentList()
     val records = persistentListOf(previous.copy(iterations = bodyIterations))
     PreviewContainer {
-        ExerciseProgressCard(value = value.copy(history = ExerciseHistoryState.Loaded(records = records)))
+        ExerciseProgressCard(value = value.copy(history = records))
     }
 }
 
@@ -285,8 +304,8 @@ private fun ExerciseProgressCardDifferentLoadPreview() {
 @Composable
 private fun ExerciseProgressCardMixedHistoryPreview() {
     val value = progressPreviewState(historyCount = 2)
-    val history = value.history as ExerciseHistoryState.Loaded
-    val records = history.records.mapIndexed { index, exercise ->
+    val history = value.history
+    val records = history.mapIndexed { index, exercise ->
         if (index == 0) {
             val iterations = exercise.iterations.map { iteration ->
                 iteration.copy(
@@ -301,7 +320,7 @@ private fun ExerciseProgressCardMixedHistoryPreview() {
         }
     }.toPersistentList()
     PreviewContainer {
-        ExerciseProgressCard(value = value.copy(history = ExerciseHistoryState.Loaded(records = records)))
+        ExerciseProgressCard(value = value.copy(history = records))
     }
 }
 
@@ -310,7 +329,7 @@ private fun ExerciseProgressCardMixedHistoryPreview() {
 private fun ExerciseProgressCardLoadingPreview() {
     val value = progressPreviewState(historyCount = 0)
     PreviewContainer {
-        ExerciseProgressCard(value = value.copy(history = ExerciseHistoryState.Loading))
+        ExerciseProgressCard(value = value, isHistoryLoading = true)
     }
 }
 
@@ -318,7 +337,7 @@ private fun ExerciseProgressCardLoadingPreview() {
 @Composable
 private fun ExerciseProgressCardNegativeVolumePreview() {
     val value = progressPreviewState(historyCount = 1)
-    val history = value.history as ExerciseHistoryState.Loaded
+    val history = value.history
     val iterations = value.exercise.iterations.map { iteration ->
         iteration.copy(
             externalWeight = VolumeFormatState.Empty(),
@@ -334,14 +353,14 @@ private fun ExerciseProgressCardNegativeVolumePreview() {
             intensity = IntensityFormatState.of(-10f),
         ),
     )
-    val previous = history.records.last().copy(
+    val previous = history.last().copy(
         iterations = iterations.map {
             it.copy(
                 assistWeight = VolumeFormatState.of(100f),
                 repetitions = RepetitionsFormatState.of(5),
             )
         }.toPersistentList(),
-        total = history.records.last().total.copy(
+        total = history.last().total.copy(
             volume = VolumeFormatState.of(-300f),
             intensity = IntensityFormatState.of(-20f),
         ),
@@ -350,7 +369,7 @@ private fun ExerciseProgressCardNegativeVolumePreview() {
         ExerciseProgressCard(
             value = value.copy(
                 exercise = exercise,
-                history = ExerciseHistoryState.Loaded(records = persistentListOf(previous)),
+                history = persistentListOf(previous),
             ),
         )
     }
@@ -360,7 +379,7 @@ private fun ExerciseProgressCardNegativeVolumePreview() {
 @Composable
 private fun ExerciseProgressCardZeroBaselinePreview() {
     val value = progressPreviewState(historyCount = 1)
-    val history = value.history as ExerciseHistoryState.Loaded
+    val history = value.history
     val iterations = value.exercise.iterations.map { iteration ->
         iteration.copy(
             externalWeight = VolumeFormatState.Empty(),
@@ -376,14 +395,14 @@ private fun ExerciseProgressCardZeroBaselinePreview() {
             intensity = IntensityFormatState.of(70f),
         ),
     )
-    val previous = history.records.last().copy(
+    val previous = history.last().copy(
         iterations = iterations.map { it.copy(assistWeight = VolumeFormatState.of(80f)) }.toPersistentList(),
         total = exercise.total.copy(volume = VolumeFormatState.of(0f), intensity = IntensityFormatState.of(0f)),
     )
     val records = persistentListOf(previous)
     PreviewContainer {
         ExerciseProgressCard(
-            value = value.copy(exercise = exercise, history = ExerciseHistoryState.Loaded(records = records)),
+            value = value.copy(exercise = exercise, history = records),
         )
     }
 }
@@ -434,5 +453,5 @@ private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
             ),
         )
     }.toPersistentList()
-    return ExerciseState.Available(exercise = exercise, history = ExerciseHistoryState.Loaded(records = previous))
+    return ExerciseState.Available(exercise = exercise, history = previous)
 }

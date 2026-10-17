@@ -77,14 +77,13 @@ public class ExerciseViewModel(
 
     private fun provideHistory(exerciseId: String, value: List<Exercise>) {
         val records = value.toState()
-        val history = ExerciseHistoryState.Loaded(records = records)
 
         update { current ->
             if (current !is ExerciseState.Available || current.exercise.id != exerciseId) {
                 return@update current
             }
 
-            current.copy(history = history)
+            current.copy(history = records)
         }
     }
 

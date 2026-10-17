@@ -258,11 +258,7 @@ public object LightColor : AppColor {
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
         override val bar = object : AppColor.Charts.BarColors {
-            override val grid = divider.default.copy(alpha = 0.2f)
-            override val axis = border.default.copy(alpha = 0.4f)
             override val baseline = border.default.copy(alpha = 0.45f)
-            override val highlightMix: Float = 0.25f
-            override val gradientEndAlpha: Float = 0.85f
         }
         override val sparkline = object : AppColor.Charts.SparklineColors {
             override val lineA = AppPalette.LightAccent.Blue

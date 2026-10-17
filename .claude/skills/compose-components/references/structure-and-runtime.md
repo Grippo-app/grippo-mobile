@@ -20,6 +20,8 @@ visibility and comments follow [code style](../../validation-gates/references/co
   the matching `*FormatState`. Do not invent a model solely to wrap a few unrelated
   primitive widget options. Feature model placement belongs to
   [UI state](../../ui-feature/references/state.md).
+- Entity component families and caller-owned context slots follow
+  [the design-system component family rule](../../design-system/references/components.md#entity-component-families).
 - Hoist controlled values and events to their current owner. Keep transient
   focus, gesture and animation state local when it represents presentation.
   Reusable widgets forward neutral callbacks; business decisions and analytics

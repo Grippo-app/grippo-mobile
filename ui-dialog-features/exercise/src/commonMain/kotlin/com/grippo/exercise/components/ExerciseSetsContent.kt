@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -21,17 +20,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.training.IterationCard
+import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -40,10 +41,9 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_history_previous_set_date
 import com.grippo.design.resources.provider.exercise_history_set_result
 import com.grippo.design.resources.provider.exercise_history_vs_date
-import com.grippo.design.resources.provider.set_value
+import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.sets_value
 import com.grippo.design.resources.provider.training_previous_set
-import com.grippo.exercise.ExerciseHistoryState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -52,12 +52,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
 
 @Composable
-internal fun ExerciseJournal(
+internal fun ExerciseSetsContent(
     modifier: Modifier = Modifier,
     value: ImmutableList<IterationState>,
-    history: ExerciseHistoryState,
+    previous: ExerciseState?,
+    isHistoryLoading: Boolean,
 ) {
-    val previous = (history as? ExerciseHistoryState.Loaded)?.records?.lastOrNull()
     val contextStyle = AppTokens.typography.b12Med()
     val contextHeight = with(LocalDensity.current) { contextStyle.lineHeight.toDp() }
 
@@ -81,12 +81,12 @@ internal fun ExerciseJournal(
                     .heightIn(min = contextHeight * 2),
                 contentAlignment = Alignment.CenterEnd,
             ) {
-                when (history) {
-                    ExerciseHistoryState.Loading -> ExerciseJournalBone(
+                when {
+                    isHistoryLoading -> ExerciseComparisonBone(
                         modifier = Modifier.fillMaxWidth().height(contextHeight),
                     )
 
-                    is ExerciseHistoryState.Loaded -> if (previous != null) {
+                    previous != null -> {
                         val date = previous.createdAt.value?.let { date ->
                             DateTimeUtils.format(value = date, format = DateFormat.DateOnly.DateDdMmm)
                         } ?: previous.createdAt.display
@@ -95,7 +95,7 @@ internal fun ExerciseJournal(
                             previous.createdAt.display,
                         )
                         Text(
-                            modifier = Modifier.semantics { contentDescription = description },
+                            modifier = Modifier.clearAndSetSemantics { contentDescription = description },
                             text = AppTokens.strings.res(Res.string.exercise_history_vs_date, date),
                             style = contextStyle,
                             color = AppTokens.colors.text.secondary,
@@ -109,11 +109,17 @@ internal fun ExerciseJournal(
             key(iteration.id) {
                 val previousSet = previous?.iterations?.getOrNull(index)
                     ?.takeIf { iteration.hasComparableLoadTo(it) }
-                ExerciseJournalRow(
+                IterationCard(
                     value = iteration,
-                    number = index + 1,
-                    previous = previousSet,
-                    isHistoryLoading = history is ExerciseHistoryState.Loading,
+                    style = IterationCardStyle.Recorded(
+                        number = index + 1,
+                        trailing = {
+                            ExerciseSetComparison(
+                                value = previousSet,
+                                isLoading = isHistoryLoading,
+                            )
+                        },
+                    ),
                 )
                 if (index < value.lastIndex) {
                     ContentDivider()
@@ -124,100 +130,47 @@ internal fun ExerciseJournal(
 }
 
 @Composable
-private fun ExerciseJournalRow(
+private fun ExerciseSetComparison(
     modifier: Modifier = Modifier,
-    value: IterationState,
-    number: Int,
-    previous: IterationState?,
-    isHistoryLoading: Boolean,
+    value: IterationState?,
+    isLoading: Boolean,
 ) {
-    val contextStyle = AppTokens.typography.b12Med()
-    val contextHeight = with(LocalDensity.current) { contextStyle.lineHeight.toDp() }
-    val load = value.effectiveLoadOrNull().exerciseLoadText()
-    val repetitions = value.repetitions.value?.toString() ?: "—"
-    val result = AppTokens.strings.res(Res.string.exercise_history_set_result, load, repetitions)
-    val calculation = value.volumeCalculation()
-    val previousLoad = if (!isHistoryLoading && previous != null) {
-        previous.effectiveLoadOrNull().exerciseLoadText()
-    } else {
-        null
-    }
-    val previousRepetitions = previous?.repetitions?.value?.toString() ?: "—"
-    val previousResult = previousLoad?.let {
-        AppTokens.strings.res(Res.string.exercise_history_set_result, it, previousRepetitions)
-    }
-    val previousDescription = previousLoad?.let {
-        AppTokens.strings.res(Res.string.training_previous_set, it, previousRepetitions)
-    }
-    val description = listOf(
-        AppTokens.strings.res(Res.string.set_value, number),
-        result,
-        calculation,
-        previousDescription,
-    ).filterNotNull().joinToString(separator = ", ")
+    val style = AppTokens.typography.b12Med()
+    val lineHeight = with(LocalDensity.current) { style.lineHeight.toDp() }
 
-    Row(
+    Box(
         modifier = modifier
-            .fillMaxWidth()
-            .clearAndSetSemantics { contentDescription = description }
-            .padding(vertical = AppTokens.dp.contentPadding.subContent),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalAlignment = Alignment.CenterVertically,
+            .width(AppTokens.dp.iterationCard.historyContextWidth)
+            .heightIn(min = lineHeight * 2),
+        contentAlignment = Alignment.CenterEnd,
     ) {
-        Box(
-            modifier = Modifier
-                .size(AppTokens.dp.iterationCard.historyNumberSize)
-                .background(
-                    color = AppTokens.colors.background.card,
-                    shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
+        if (isLoading) {
+            ExerciseComparisonBone(modifier = Modifier.fillMaxWidth().height(lineHeight))
+        } else if (value != null) {
+            val rawVolume = value.recordedVolume()
+            val volume = VolumeFormatState.of(rawVolume)
+            val load = when {
+                rawVolume == null -> "—"
+                volume.value == null -> "0${AppTokens.strings.res(Res.string.kg)}"
+                else -> volume.short()
+            }
+            val repetitions = value.repetitions.value?.toString() ?: "—"
+            val result = AppTokens.strings.res(Res.string.exercise_history_set_result, load, repetitions)
+            val description = AppTokens.strings.res(Res.string.training_previous_set, load, repetitions)
+
             Text(
-                text = number.toString(),
-                style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-        ) {
-            Text(
+                modifier = Modifier.clearAndSetSemantics { contentDescription = description },
                 text = result,
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary,
+                style = style,
+                color = AppTokens.colors.text.secondary,
+                textAlign = TextAlign.End,
             )
-            if (calculation != null) {
-                Text(
-                    text = calculation,
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .width(AppTokens.dp.iterationCard.historyContextWidth)
-                .heightIn(min = contextHeight * 2),
-            contentAlignment = Alignment.CenterEnd,
-        ) {
-            if (isHistoryLoading) {
-                ExerciseJournalBone(modifier = Modifier.fillMaxWidth().height(contextHeight))
-            } else if (previousResult != null) {
-                Text(
-                    text = previousResult,
-                    style = contextStyle,
-                    color = AppTokens.colors.text.secondary,
-                    textAlign = TextAlign.End,
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun ExerciseJournalBone(modifier: Modifier = Modifier) {
+private fun ExerciseComparisonBone(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.metrics.status.radius))
@@ -229,7 +182,7 @@ private fun ExerciseJournalBone(modifier: Modifier = Modifier) {
 
 @AppPreview
 @Composable
-private fun ExerciseJournalExternalBodyAndPartialPreview() {
+private fun ExerciseSetsContentExternalBodyAndPartialPreview() {
     val bodySet = stubPendingIteration().copy(
         id = "body-set",
         bodyWeight = WeightFormatState.of(80f),
@@ -237,7 +190,7 @@ private fun ExerciseJournalExternalBodyAndPartialPreview() {
         repetitions = RepetitionsFormatState.of(8),
     )
     PreviewContainer {
-        ExerciseJournal(
+        ExerciseSetsContent(
             value = persistentListOf(
                 bodySet.copy(
                     id = "external-set",
@@ -276,14 +229,15 @@ private fun ExerciseJournalExternalBodyAndPartialPreview() {
                 ),
                 bodySet.copy(id = "coefficient-only", bodyWeight = WeightFormatState.Empty()),
             ),
-            history = ExerciseHistoryState.Loaded(records = persistentListOf()),
+            previous = null,
+            isHistoryLoading = false,
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun ExerciseJournalWithPreviousPreview() {
+private fun ExerciseSetsContentWithPreviousPreview() {
     val iteration = stubPendingIteration().copy(
         id = "current-set",
         externalWeight = VolumeFormatState.of(90f),
@@ -300,22 +254,23 @@ private fun ExerciseJournalWithPreviousPreview() {
         ),
     )
     PreviewContainer {
-        ExerciseJournal(
+        ExerciseSetsContent(
             value = persistentListOf(iteration),
-            history = ExerciseHistoryState.Loaded(records = persistentListOf(previous)),
+            previous = previous,
+            isHistoryLoading = false,
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun ExerciseJournalLoadingPreviousPreview() {
+private fun ExerciseSetsContentLoadingPreviousPreview() {
     val iteration = stubPendingIteration().copy(
         id = "loading-previous-set",
         externalWeight = VolumeFormatState.of(90f),
         repetitions = RepetitionsFormatState.of(8),
     )
     PreviewContainer {
-        ExerciseJournal(value = persistentListOf(iteration), history = ExerciseHistoryState.Loading)
+        ExerciseSetsContent(value = persistentListOf(iteration), previous = null, isHistoryLoading = true)
     }
 }

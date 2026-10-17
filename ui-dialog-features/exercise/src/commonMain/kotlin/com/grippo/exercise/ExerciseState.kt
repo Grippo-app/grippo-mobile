@@ -1,6 +1,8 @@
 package com.grippo.exercise
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import com.grippo.core.state.trainings.ExerciseState as TrainingExerciseState
 
 @Immutable
@@ -14,6 +16,6 @@ public sealed interface ExerciseState {
     @Immutable
     public data class Available(
         val exercise: TrainingExerciseState,
-        val history: ExerciseHistoryState = ExerciseHistoryState.Loading,
+        val history: ImmutableList<TrainingExerciseState> = persistentListOf(),
     ) : ExerciseState
 }

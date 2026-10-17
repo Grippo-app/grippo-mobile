@@ -3,14 +3,17 @@ package com.grippo.chart.bar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,9 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -30,20 +32,20 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -62,58 +64,54 @@ public fun BarChart(
 ) {
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
-    val layoutDir = androidx.compose.ui.platform.LocalLayoutDirection.current
+    val layoutDir = LocalLayoutDirection.current
+    val peek = style.peek
+    val isPeekVisible = peek is BarStyle.Peek.Visible
 
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    var selectedIndex by remember { mutableStateOf<Int?>(null) }
+    var selectedIndex by remember(data, isPeekVisible) { mutableStateOf<Int?>(null) }
 
-    LaunchedEffect(data.items.size) {
-        val idx = selectedIndex
-        if (idx != null && idx !in data.items.indices) selectedIndex = null
-    }
+    val precomputedXLayouts = remember(data, style.xAxis, measurer) {
+        when (val xAxis = style.xAxis) {
+            is BarStyle.XAxis.None -> emptyList()
+            is BarStyle.XAxis.LabelsAdaptive -> data.items.map { entry ->
+                measurer.measure(AnnotatedString(entry.label), xAxis.textStyle)
+            }
 
-    // Precompute X-axis label layouts in composition to avoid measuring every draw
-    val precomputedXLayouts: List<TextLayoutResult> = when (val xCfg = style.xAxis) {
-        is BarStyle.XAxis.None -> emptyList()
-        is BarStyle.XAxis.LabelsAdaptive -> data.items.map { e ->
-            measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
-        }
-
-        is BarStyle.XAxis.LabelsShowAll -> data.items.map { e ->
-            measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
+            is BarStyle.XAxis.LabelsShowAll -> data.items.map { entry ->
+                measurer.measure(AnnotatedString(entry.label), xAxis.textStyle)
+            }
         }
     }
 
-    val layout by remember(
+    val layout = remember(
         canvasSize,
         data,
         style,
         layoutDir,
         density.density,
         density.fontScale,
-        precomputedXLayouts
+        precomputedXLayouts,
+        measurer,
     ) {
-        derivedStateOf {
-            if (canvasSize.width <= 0 || canvasSize.height <= 0 || data.items.isEmpty()) {
-                null
-            } else {
-                computeLayout(
-                    canvasSize = canvasSize,
-                    data = data,
-                    style = style,
-                    density = density,
-                    layoutDir = layoutDir,
-                    measurer = measurer,
-                    precomputedXLayouts = precomputedXLayouts
-                )
-            }
+        if (canvasSize.width <= 0 || canvasSize.height <= 0 ||
+            data.items.isEmpty() || data.items.any { !it.value.isFinite() }
+        ) {
+            null
+        } else {
+            computeLayout(
+                canvasSize = canvasSize,
+                data = data,
+                style = style,
+                density = density,
+                layoutDir = layoutDir,
+                measurer = measurer,
+                precomputedXLayouts = precomputedXLayouts,
+            )
         }
     }
 
-    val peek = style.peek
-    val hitSlopPx = remember(peek, density) {
-        if (peek is BarStyle.Peek.Visible) with(density) { peek.hitSlop.toPx() } else 0f
-    }
+    val hitSlopPx = if (peek is BarStyle.Peek.Visible) with(density) { peek.hitSlop.toPx() } else 0f
 
     Box(
         modifier = modifier
@@ -134,6 +132,35 @@ public fun BarChart(
                                 else -> hit
                             }
                         }
+                    }.pointerInput(data, style, canvasSize) {
+                        var isScrubbing = false
+                        detectHorizontalDragGestures(
+                            onDragStart = { position ->
+                                val currentLayout = layout
+                                isScrubbing = currentLayout?.chart?.contains(position) == true
+                                if (isScrubbing && currentLayout != null) {
+                                    selectedIndex = findNearestBarIndex(
+                                        bars = currentLayout.bars,
+                                        positionX = position.x,
+                                    )
+                                }
+                            },
+                            onDragEnd = {
+                                isScrubbing = false
+                            },
+                            onDragCancel = {
+                                isScrubbing = false
+                            },
+                            onHorizontalDrag = { change, _ ->
+                                val currentLayout = layout
+                                if (isScrubbing && currentLayout != null) {
+                                    selectedIndex = findNearestBarIndex(
+                                        bars = currentLayout.bars,
+                                        positionX = change.position.x,
+                                    )
+                                }
+                            },
+                        )
                     }
                 } else {
                     Modifier
@@ -194,29 +221,29 @@ public fun BarChart(
                 )
             }
 
-            // ----- Bars (top-only rounding at baseline side) -----
+            // ----- Bars -----
             val cornerPx = style.bars.corner.toPx()
             val strokeW = style.bars.strokeWidth.toPx()
 
             l.bars.forEachIndexed { i, b ->
                 val entry = data.items[i]
                 val rect = b.rect
-                if (rect.width <= 0f || rect.height <= 0f) return@forEachIndexed
+                if (rect.width <= 0f || rect.height <= 0f) {
+                    return@forEachIndexed
+                }
 
                 val brush = style.bars.brushProvider?.invoke(entry, size, rect)
-                drawTopOnlyRoundedBar(
+                drawRoundedBar(
                     rect = rect,
                     cornerPx = cornerPx,
-                    isPositive = b.isPositive,
                     brush = brush,
                     color = entry.color
                 )
 
                 if (strokeW > 0f) {
-                    drawTopOnlyRoundedBarStroke(
+                    drawRoundedBarStroke(
                         rect = rect,
                         cornerPx = cornerPx,
-                        isPositive = b.isPositive,
                         color = style.bars.strokeColor,
                         strokeWidth = strokeW
                     )
@@ -253,7 +280,6 @@ public fun BarChart(
                 drawSelectedBarHighlight(
                     rect = b.rect,
                     cornerPx = cornerPx,
-                    isPositive = b.isPositive,
                     focusColor = focus,
                     overlayColor = peek.selectedBarOverlay,
                     strokeColor = peek.selectedBarStrokeColor,
@@ -289,15 +315,17 @@ public fun BarChart(
                     valueText,
                     labelText,
                     peek,
-                    density
+                    density,
+                    canvasSize.width,
+                    measurer,
                 ) {
                     measureTooltipSize(
                         textMeasurer = measurer,
                         density = density,
                         valueText = valueText,
                         labelText = labelText,
-                        padH = peek.tooltipPaddingH,
-                        padV = peek.tooltipPaddingV
+                        style = peek,
+                        canvasWidth = canvasSize.width,
                     )
                 }
 
@@ -305,13 +333,7 @@ public fun BarChart(
                     anchor = bar.anchor,
                     canvasSize = canvasSize,
                     tooltipSize = tooltipSize,
-                    margin = peek.tooltipMargin,
-                    background = peek.tooltipBackground,
-                    border = peek.tooltipBorder,
-                    textColor = peek.tooltipText,
-                    corner = peek.tooltipCornerRadius,
-                    padH = peek.tooltipPaddingH,
-                    padV = peek.tooltipPaddingV,
+                    style = peek,
                     valueText = valueText,
                     labelText = labelText
                 )
@@ -329,7 +351,6 @@ private data class BarLayout(
     val rect: Rect,
     val centerX: Float,
     val anchor: Offset,
-    val isPositive: Boolean,
 )
 
 private data class BarChartLayoutResult(
@@ -341,6 +362,12 @@ private data class BarChartLayoutResult(
     val xLabels: List<AxisLabelLayout>,
     val bars: List<BarLayout>,
     val valueLabels: List<AxisLabelLayout>,
+)
+
+private data class XAxisLabelBounds(
+    val left: Float,
+    val right: Float,
+    val layout: TextLayoutResult,
 )
 
 private fun computeLayout(
@@ -356,12 +383,12 @@ private fun computeLayout(
     val heightPx = canvasSize.height.toFloat()
 
     // ----- Domain -----
-    val rawMin = data.items.minOf { it.value }
-    val rawMax = data.items.maxOf { it.value }
-    val baseSpan = (rawMax - rawMin).coerceAtLeast(1e-6f)
-    val headroom = (baseSpan * 0.08f).coerceAtLeast(1e-3f)
-    val yMinTarget = 0f
-    var yMaxTarget = rawMax + headroom
+    val rawMin = data.items.minOf { it.value }.toDouble()
+    val rawMax = data.items.maxOf { it.value }.toDouble()
+    val baseSpan = (rawMax - rawMin).coerceAtLeast(1e-6)
+    val headroom = (baseSpan * 0.08).coerceAtLeast(1e-3)
+    val yMinTarget = if (rawMin < 0.0) rawMin - headroom else 0.0
+    var yMaxTarget = if (rawMax >= 0.0) rawMax + headroom else 0.0
 
     // Predict vertical space needed for Above labels and enlarge max if necessary
     val valuePadPx = with(density) { style.layout.valueLabelSpacing.toPx() }
@@ -375,7 +402,7 @@ private fun computeLayout(
     }
 
     if (valueAboveMaxH > 0f) {
-        val bottomCandidate = when (val xCfg = style.xAxis) {
+        val bottomCandidate = when (style.xAxis) {
             is BarStyle.XAxis.LabelsAdaptive -> precomputedXLayouts.maxOfOrNull { it.size.height }
                 ?.toFloat() ?: 0f
 
@@ -395,25 +422,11 @@ private fun computeLayout(
         is BarStyle.YAxis.None -> 5
     }
 
-    fun niceStep(span: Float, ticks: Int): Float {
-        val raw = (span / ticks).coerceAtLeast(1e-6f)
-        val exp = floor(log10(raw.toDouble())).toInt()
-        val base = 10.0.pow(exp.toDouble()).toFloat()
-        val mul = (raw / base).toFloat()
-        val niceMul = when {
-            mul <= 1f -> 1f
-            mul <= 2f -> 2f
-            mul <= 5f -> 5f
-            else -> 10f
-        }
-        return niceMul * base
-    }
-
-    val spanRaw = (yMaxTarget - yMinTarget).coerceAtLeast(1e-6f)
+    val spanRaw = (yMaxTarget - yMinTarget).coerceAtLeast(1e-6)
     val yStep = niceStep(spanRaw, ticksY)
     val maxY = ceil(yMaxTarget / yStep) * yStep
     val minY = floor(yMinTarget / yStep) * yStep
-    val spanY = (maxY - minY).coerceAtLeast(1e-6f)
+    val spanY = (maxY - minY).coerceAtLeast(1e-6)
     val yTickCount = ((maxY - minY) / yStep).toInt().coerceAtLeast(1)
 
     // ----- Gutters -----
@@ -421,7 +434,10 @@ private fun computeLayout(
 
     val yAxisLabelsText = when (val yCfg = style.yAxis) {
         is BarStyle.YAxis.Labels -> (0..yTickCount).map { i ->
-            yCfg.formatter(minY + i * yStep, data) to yCfg.textStyle
+            val tickValue = (minY + i * yStep)
+                .coerceIn(-Float.MAX_VALUE.toDouble(), Float.MAX_VALUE.toDouble())
+                .toFloat()
+            yCfg.formatter(tickValue, data) to yCfg.textStyle
         }
 
         is BarStyle.YAxis.None -> emptyList()
@@ -438,10 +454,11 @@ private fun computeLayout(
         is BarStyle.YAxis.None -> 0f
     }
 
+    val xAxisLabelSpacingPx = with(density) { style.layout.xAxisLabelSpacing.toPx() }
     val bottomGutter = when (style.xAxis) {
         is BarStyle.XAxis.LabelsAdaptive,
         is BarStyle.XAxis.LabelsShowAll -> (precomputedXLayouts.maxOfOrNull { it.size.height }
-            ?: 0).toFloat()
+            ?: 0).toFloat() + xAxisLabelSpacingPx
 
         is BarStyle.XAxis.None -> 0f
     }
@@ -488,13 +505,11 @@ private fun computeLayout(
     val barsAreaRight = chart.right - with(density) { style.layout.barsAxisInsetEnd.toPx() }
     val barsAreaWidth = (barsAreaRight - barsAreaLeft).coerceAtLeast(0f)
 
-    fun mapY(v: Float): Float = chart.bottom - (v - minY) / spanY * chartH
-
-    val baseY = mapY(0f)
+    val baseY = mapY(value = 0.0, chart = chart, minY = minY, spanY = spanY)
 
     // ----- Grid lines -----
     val gridLinesY = (0..yTickCount).map { i ->
-        mapY(minY + i * yStep)
+        mapY(value = minY + i * yStep, chart = chart, minY = minY, spanY = spanY)
     }
 
     // ----- Y axis label layouts + positions -----
@@ -507,7 +522,7 @@ private fun computeLayout(
     }
 
     val yTickYs = (0..yTickCount).map { i ->
-        mapY(minY + i * yStep)
+        mapY(value = minY + i * yStep, chart = chart, minY = minY, spanY = spanY)
     }
 
     val yAxisLabels = if (style.yAxis is BarStyle.YAxis.Labels) {
@@ -515,7 +530,7 @@ private fun computeLayout(
             val layout = yAxisLabelLayouts[i]
             val x = (chart.left - yAxisLabelPadPx - layout.size.width).coerceAtLeast(0f)
             val top = (y - layout.size.height / 2f)
-                .coerceIn(chart.top, chart.bottom - layout.size.height.toFloat())
+                .coerceIn(chart.top, max(chart.top, chart.bottom - layout.size.height.toFloat()))
             AxisLabelLayout(layout = layout, topLeft = Offset(x, top))
         }
     } else {
@@ -527,6 +542,23 @@ private fun computeLayout(
     val sizing = style.bars.sizing
 
     val (bw, sp, startX) = when (sizing) {
+        is BarStyle.BarsSizing.EvenSlots -> {
+            val slotWidth = barsAreaWidth / nBars
+            val fraction = if (sizing.widthFraction.isFinite()) {
+                sizing.widthFraction.coerceIn(0f, 1f)
+            } else {
+                0f
+            }
+            val maxWidthPx = with(density) { sizing.maxBarWidth.toPx() }
+            val widthCap = if (maxWidthPx.isNaN()) 0f else maxWidthPx.coerceAtLeast(0f)
+            val width = min(slotWidth * fraction, widthCap)
+            Triple(
+                first = width,
+                second = slotWidth - width,
+                third = barsAreaLeft + (slotWidth - width) / 2f,
+            )
+        }
+
         is BarStyle.BarsSizing.AutoEqualBarsAndGaps -> {
             val maxWidthValue = sizing.maxBarWidth.value
             val maxWidthPx = when {
@@ -594,16 +626,21 @@ private fun computeLayout(
         val left = startX + i * (bw + sp)
         val yVal = e.value
 
-        var top = if (yVal >= 0f) mapY(yVal) else baseY
-        var bottom = if (yVal >= 0f) baseY else mapY(yVal)
+        val valueY = mapY(value = yVal.toDouble(), chart = chart, minY = minY, spanY = spanY)
+        var top = if (yVal >= 0f) valueY else baseY
+        var bottom = if (yVal >= 0f) baseY else valueY
 
         if (baselineSpacingPx > 0f && yVal != 0f) {
             if (yVal > 0f) {
                 bottom = (baseY - baselineSpacingPx).coerceAtMost(baseY)
-                if (bottom < top) bottom = top
+                if (bottom < top) {
+                    bottom = top
+                }
             } else {
                 top = (baseY + baselineSpacingPx).coerceAtLeast(baseY)
-                if (bottom < top) top = bottom
+                if (bottom < top) {
+                    top = bottom
+                }
             }
         }
 
@@ -628,7 +665,6 @@ private fun computeLayout(
             rect = rect,
             centerX = cx,
             anchor = anchor,
-            isPositive = isPositive
         )
     }
 
@@ -653,7 +689,7 @@ private fun computeLayout(
 
         is BarStyle.XAxis.LabelsShowAll -> {
             bars.mapIndexed { i, b ->
-                val maxWidth = b.rect.width
+                val maxWidth = max(b.rect.width, barsAreaWidth / nBars).coerceAtMost(chartW)
                 val measured = measureEllipsized(
                     measurer = measurer,
                     text = data.items[i].label,
@@ -661,61 +697,57 @@ private fun computeLayout(
                     maxWidthPx = maxWidth
                 )
                 val w = measured.size.width.toFloat()
-                val left = (b.centerX - w / 2f).coerceIn(chart.left, chart.right - w)
-                AxisLabelLayout(measured, Offset(left, chart.bottom))
+                val left = (b.centerX - w / 2f).coerceIn(chart.left, max(chart.left, chart.right - w))
+                AxisLabelLayout(
+                    layout = measured,
+                    topLeft = Offset(x = left, y = chart.bottom + xAxisLabelSpacingPx),
+                )
             }
         }
 
         is BarStyle.XAxis.LabelsAdaptive -> {
             val minGapPx = with(density) { xCfg.minGapDp.toPx() }
-            val layouts = precomputedXLayouts
-
-            data class Bound(val left: Float, val right: Float, val layout: TextLayoutResult)
-
-            val bounds = bars.indices.associateWith { i ->
-                val lay = layouts[i]
-                val w = lay.size.width.toFloat()
-                val left = (bars[i].centerX - w / 2f).coerceIn(chart.left, chart.right - w)
-                Bound(left = left, right = left + w, layout = lay)
+            val bounds = bars.mapIndexed { index, bar ->
+                val original = precomputedXLayouts[index]
+                val measured = if (original.size.width > chartW) {
+                    measureEllipsized(
+                        measurer = measurer,
+                        text = data.items[index].label,
+                        style = xCfg.textStyle,
+                        maxWidthPx = chartW,
+                    )
+                } else {
+                    original
+                }
+                val width = measured.size.width.toFloat()
+                val left = (bar.centerX - width / 2f)
+                    .coerceIn(chart.left, max(chart.left, chart.right - width))
+                XAxisLabelBounds(left = left, right = left + width, layout = measured)
             }
 
-            val order = bars.indices.toList()
             val selected = mutableListOf<Int>()
-            var lastRight = Float.NEGATIVE_INFINITY
-
-            run {
-                for (i in order) {
-                    val b = bounds[i] ?: continue
-                    selected.add(i)
-                    lastRight = b.right
-                    break
+            for (index in bounds.indices) {
+                val bound = bounds[index]
+                if (index == bounds.lastIndex) {
+                    while (selected.isNotEmpty() &&
+                        bound.left < bounds[selected.last()].right + minGapPx
+                    ) {
+                        selected.removeAt(selected.lastIndex)
+                    }
+                    selected.add(index)
+                } else if (selected.isEmpty() ||
+                    bound.left >= bounds[selected.last()].right + minGapPx
+                ) {
+                    selected.add(index)
                 }
             }
 
-            for (k in 1 until order.lastIndex) {
-                val i = order[k]
-                val b = bounds[i] ?: continue
-                if (b.left >= lastRight + minGapPx) {
-                    selected.add(i)
-                    lastRight = b.right
-                }
-            }
-
-            val lastIdx = order.lastOrNull()
-            val lastB = lastIdx?.let { bounds[it] }
-            if (lastIdx != null && lastB != null) {
-                while (selected.isNotEmpty()) {
-                    val tail = bounds[selected.last()] ?: break
-                    if (lastB.left >= tail.right + minGapPx) break
-                    if (selected.size == 1) break
-                    selected.removeAt(selected.lastIndex)
-                }
-                selected.add(lastIdx)
-            }
-
-            selected.distinct().sorted().mapNotNull { i ->
-                val b = bounds[i] ?: return@mapNotNull null
-                AxisLabelLayout(b.layout, Offset(b.left, chart.bottom))
+            selected.map { index ->
+                val bound = bounds[index]
+                AxisLabelLayout(
+                    layout = bound.layout,
+                    topLeft = Offset(x = bound.left, y = chart.bottom + xAxisLabelSpacingPx),
+                )
             }
         }
     }
@@ -732,123 +764,142 @@ private fun computeLayout(
     )
 }
 
+private fun niceStep(span: Double, ticks: Int): Double {
+    val raw = (span / ticks).coerceAtLeast(1e-6)
+    val exponent = floor(log10(raw)).toInt()
+    val base = 10.0.pow(exponent.toDouble())
+    val multiplier = raw / base
+    val roundedMultiplier = when {
+        multiplier <= 1.0 -> 1.0
+        multiplier <= 2.0 -> 2.0
+        multiplier <= 5.0 -> 5.0
+        else -> 10.0
+    }
+    return roundedMultiplier * base
+}
+
+private fun mapY(value: Double, chart: Rect, minY: Double, spanY: Double): Float {
+    return chart.bottom - ((value - minY) / spanY * chart.height).toFloat()
+}
+
 private fun findHitBarIndex(
     bars: List<BarLayout>,
     tap: Offset,
     hitSlopPx: Float
 ): Int? {
-    if (bars.isEmpty()) return null
+    if (bars.isEmpty()) {
+        return null
+    }
 
-    var bestIdx: Int? = null
-    var bestDist = Float.POSITIVE_INFINITY
+    var nearestIndex: Int? = null
+    var nearestDistance = Float.POSITIVE_INFINITY
 
-    for (i in bars.indices) {
-        val r = bars[i].rect
+    for (index in bars.indices) {
+        val rect = bars[index].rect
         val hit = Rect(
-            left = r.left - hitSlopPx,
-            top = r.top - hitSlopPx,
-            right = r.right + hitSlopPx,
-            bottom = r.bottom + hitSlopPx
+            left = rect.left - hitSlopPx,
+            top = rect.top - hitSlopPx,
+            right = rect.right + hitSlopPx,
+            bottom = rect.bottom + hitSlopPx,
         )
 
         if (hit.contains(tap)) {
-            val cx = (r.left + r.right) * 0.5f
-            val cy = (r.top + r.bottom) * 0.5f
-            val dx = tap.x - cx
-            val dy = tap.y - cy
-            val d = dx * dx + dy * dy
-            if (d < bestDist) {
-                bestDist = d
-                bestIdx = i
+            val distance = abs(bars[index].centerX - tap.x)
+            if (distance < nearestDistance) {
+                nearestDistance = distance
+                nearestIndex = index
             }
         }
     }
 
-    return bestIdx
+    return nearestIndex
 }
 
-private fun DrawScope.drawTopOnlyRoundedBar(
+private fun findNearestBarIndex(bars: List<BarLayout>, positionX: Float): Int? {
+    var nearestIndex: Int? = null
+    var nearestDistance = Float.POSITIVE_INFINITY
+    for (index in bars.indices) {
+        val distance = abs(bars[index].centerX - positionX)
+        if (distance < nearestDistance) {
+            nearestDistance = distance
+            nearestIndex = index
+        }
+    }
+    return nearestIndex
+}
+
+private fun DrawScope.drawRoundedBar(
     rect: Rect,
     cornerPx: Float,
-    isPositive: Boolean,
     brush: Brush?,
-    color: androidx.compose.ui.graphics.Color
+    color: Color,
 ) {
-    val r = cornerPx.coerceAtLeast(0f).coerceAtMost(min(rect.width, rect.height) / 2f)
-    val rr = RoundRect(
-        rect = rect,
-        topLeft = CornerRadius(if (isPositive) r else 0f, if (isPositive) r else 0f),
-        topRight = CornerRadius(if (isPositive) r else 0f, if (isPositive) r else 0f),
-        bottomRight = CornerRadius(if (!isPositive) r else 0f, if (!isPositive) r else 0f),
-        bottomLeft = CornerRadius(if (!isPositive) r else 0f, if (!isPositive) r else 0f)
-    )
-
-    val path = Path().apply { addRoundRect(rr) }
+    val radius = cornerPx.coerceAtLeast(0f).coerceAtMost(min(rect.width, rect.height) / 2f)
+    val cornerRadius = CornerRadius(x = radius, y = radius)
 
     if (brush != null) {
-        drawPath(path = path, brush = brush)
+        drawRoundRect(
+            brush = brush,
+            topLeft = rect.topLeft,
+            size = rect.size,
+            cornerRadius = cornerRadius,
+        )
     } else {
-        drawPath(path = path, color = color)
+        drawRoundRect(
+            color = color,
+            topLeft = rect.topLeft,
+            size = rect.size,
+            cornerRadius = cornerRadius,
+        )
     }
 }
 
-private fun DrawScope.drawTopOnlyRoundedBarStroke(
+private fun DrawScope.drawRoundedBarStroke(
     rect: Rect,
     cornerPx: Float,
-    isPositive: Boolean,
-    color: androidx.compose.ui.graphics.Color,
-    strokeWidth: Float
+    color: Color,
+    strokeWidth: Float,
 ) {
-    if (strokeWidth <= 0f) return
+    if (strokeWidth <= 0f) {
+        return
+    }
+    val radius = cornerPx.coerceAtLeast(0f).coerceAtMost(min(rect.width, rect.height) / 2f)
 
-    val r = cornerPx.coerceAtLeast(0f).coerceAtMost(min(rect.width, rect.height) / 2f)
-    val rr = RoundRect(
-        rect = rect,
-        topLeft = CornerRadius(if (isPositive) r else 0f, if (isPositive) r else 0f),
-        topRight = CornerRadius(if (isPositive) r else 0f, if (isPositive) r else 0f),
-        bottomRight = CornerRadius(if (!isPositive) r else 0f, if (!isPositive) r else 0f),
-        bottomLeft = CornerRadius(if (!isPositive) r else 0f, if (!isPositive) r else 0f)
-    )
-
-    val path = Path().apply { addRoundRect(rr) }
-
-    drawPath(
-        path = path,
+    drawRoundRect(
         color = color,
-        style = Stroke(
-            width = strokeWidth.coerceAtLeast(1f),
-            cap = StrokeCap.Round
-        )
+        topLeft = rect.topLeft,
+        size = rect.size,
+        cornerRadius = CornerRadius(x = radius, y = radius),
+        style = Stroke(width = strokeWidth),
     )
 }
 
 private fun DrawScope.drawSelectedBarHighlight(
     rect: Rect,
     cornerPx: Float,
-    isPositive: Boolean,
-    focusColor: androidx.compose.ui.graphics.Color,
-    overlayColor: androidx.compose.ui.graphics.Color?,
-    strokeColor: androidx.compose.ui.graphics.Color?,
-    strokeWidthPx: Float
+    focusColor: Color,
+    overlayColor: Color?,
+    strokeColor: Color?,
+    strokeWidthPx: Float,
 ) {
     val fill = overlayColor ?: focusColor.copy(alpha = 0.12f)
     val stroke = strokeColor ?: focusColor.copy(alpha = 0.72f)
     val sw = strokeWidthPx.coerceAtLeast(0f)
-    if (rect.width <= 0f || rect.height <= 0f) return
+    if (rect.width <= 0f || rect.height <= 0f) {
+        return
+    }
 
-    drawTopOnlyRoundedBar(
+    drawRoundedBar(
         rect = rect,
         cornerPx = cornerPx,
-        isPositive = isPositive,
         brush = null,
         color = fill
     )
 
     if (sw > 0f) {
-        drawTopOnlyRoundedBarStroke(
+        drawRoundedBarStroke(
             rect = rect,
             cornerPx = cornerPx,
-            isPositive = isPositive,
             color = stroke,
             strokeWidth = sw
         )
@@ -857,8 +908,8 @@ private fun DrawScope.drawSelectedBarHighlight(
 
 private fun DrawScope.drawPeekOverlay(
     point: Offset,
-    focusColor: androidx.compose.ui.graphics.Color,
-    guideColor: androidx.compose.ui.graphics.Color,
+    focusColor: Color,
+    guideColor: Color,
     guideWidthPx: Float,
     guideDashPx: Float,
     guideGapPx: Float,
@@ -867,44 +918,50 @@ private fun DrawScope.drawPeekOverlay(
     focusHaloRadiusPx: Float,
     chart: Rect,
 ) {
-    val guide = Path().apply {
-        moveTo(point.x, chart.top)
-        lineTo(point.x, chart.bottom)
+    if (guideWidthPx > 0f) {
+        val dash = if (guideDashPx > 0f && guideGapPx > 0f) {
+            PathEffect.dashPathEffect(
+                intervals = floatArrayOf(
+                    guideDashPx,
+                    guideGapPx,
+                ),
+                phase = 0f,
+            )
+        } else {
+            null
+        }
+        drawLine(
+            color = guideColor,
+            start = Offset(point.x, chart.top),
+            end = Offset(point.x, chart.bottom),
+            strokeWidth = guideWidthPx,
+            cap = StrokeCap.Round,
+            pathEffect = dash,
+        )
     }
 
-    drawPath(
-        path = guide,
-        color = guideColor,
-        style = Stroke(
-            width = guideWidthPx.coerceAtLeast(1f),
-            cap = StrokeCap.Round,
-            pathEffect = PathEffect.dashPathEffect(
-                intervals = floatArrayOf(
-                    guideDashPx.coerceAtLeast(1f),
-                    guideGapPx.coerceAtLeast(1f)
-                ),
-                phase = 0f
-            )
+    if (focusHaloRadiusPx > 0f) {
+        val halo = Brush.radialGradient(
+            colors = listOf(
+                focusColor.copy(alpha = 0.20f),
+                focusColor.copy(alpha = 0f),
+            ),
+            center = point,
+            radius = focusHaloRadiusPx,
         )
-    )
-
-    val halo = Brush.radialGradient(
-        colors = listOf(
-            focusColor.copy(alpha = 0.20f),
-            focusColor.copy(alpha = 0f)
-        ),
-        center = point,
-        radius = focusHaloRadiusPx.coerceAtLeast(focusRadiusPx * 2f)
-    )
-
-    drawCircle(brush = halo, radius = focusHaloRadiusPx, center = point)
-    drawCircle(
-        color = focusColor.copy(alpha = 0.48f),
-        radius = (focusRadiusPx * 1.9f).coerceAtLeast(focusRadiusPx + 1f),
-        center = point,
-        style = Stroke(width = focusRingWidthPx.coerceAtLeast(1f), cap = StrokeCap.Round)
-    )
-    drawCircle(color = focusColor, radius = focusRadiusPx.coerceAtLeast(1f), center = point)
+        drawCircle(brush = halo, radius = focusHaloRadiusPx, center = point)
+    }
+    if (focusRadiusPx > 0f && focusRingWidthPx > 0f) {
+        drawCircle(
+            color = focusColor.copy(alpha = 0.48f),
+            radius = (focusRadiusPx * 1.9f).coerceAtLeast(focusRadiusPx + 1f),
+            center = point,
+            style = Stroke(width = focusRingWidthPx, cap = StrokeCap.Round),
+        )
+    }
+    if (focusRadiusPx > 0f) {
+        drawCircle(color = focusColor, radius = focusRadiusPx, center = point)
+    }
 }
 
 private fun measureEllipsized(
@@ -913,22 +970,19 @@ private fun measureEllipsized(
     style: TextStyle,
     maxWidthPx: Float
 ): TextLayoutResult {
-    var layout = measurer.measure(AnnotatedString(text), style)
-    if (layout.size.width <= maxWidthPx) return layout
-
-    val ellipsis = "…"
-    var cut = text.length
-    while (cut > 0) {
-        val candidate = text.take(cut) + ellipsis
-        val candidateLayout = measurer.measure(AnnotatedString(candidate), style)
-        if (candidateLayout.size.width <= maxWidthPx) return candidateLayout
-        cut--
-    }
-    return measurer.measure(AnnotatedString(ellipsis), style)
+    return measurer.measure(
+        text = AnnotatedString(text),
+        style = style,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        constraints = Constraints(maxWidth = maxWidthPx.toInt().coerceAtLeast(1)),
+    )
 }
 
 private fun formatValue(value: Float, decimals: Int): String {
-    if (decimals <= 0) return value.roundToInt().toString()
+    if (decimals <= 0) {
+        return value.roundToInt().toString()
+    }
 
     val scale = 10.0.pow(decimals.toDouble())
     val v = round(value.toDouble() * scale) / scale
@@ -937,7 +991,7 @@ private fun formatValue(value: Float, decimals: Int): String {
     val absV = abs(v)
 
     val intPart = floor(absV).toLong()
-    var frac = absV - intPart.toDouble()
+    val frac = absV - intPart.toDouble()
 
     var fracInt = round(frac * scale).toLong()
     var ip = intPart
@@ -955,131 +1009,132 @@ private fun measureTooltipSize(
     density: Density,
     valueText: String,
     labelText: String?,
-    padH: Dp,
-    padV: Dp,
+    style: BarStyle.Peek.Visible,
+    canvasWidth: Int,
 ): IntSize {
+    val padHPx = with(density) { style.tooltipPaddingH.roundToPx() }
+    val padVPx = with(density) { style.tooltipPaddingV.roundToPx() }
+    val contentWidth = (canvasWidth - padHPx * 2).coerceAtLeast(1)
     val value = textMeasurer.measure(
         text = AnnotatedString(valueText),
-        style = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center)
+        style = style.valueTextStyle,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        constraints = Constraints(maxWidth = contentWidth),
     ).size
 
     val label = if (!labelText.isNullOrBlank()) {
         textMeasurer.measure(
             text = AnnotatedString(labelText),
-            style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center)
+            style = style.labelTextStyle,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+            constraints = Constraints(maxWidth = contentWidth),
         ).size
     } else {
         null
     }
 
-    val padHPx = with(density) { padH.toPx() }
-    val padVPx = with(density) { padV.toPx() }
-    val gapPx = if (label != null) with(density) { 2.dp.toPx() } else 0f
+    val gapPx = if (label != null) with(density) { style.tooltipLabelSpacing.roundToPx() } else 0
 
     val contentW = max(value.width, label?.width ?: 0)
-    val contentH = value.height + (label?.height ?: 0) + gapPx.roundToInt()
+    val contentH = value.height + (label?.height ?: 0) + gapPx
 
-    val w = ceil(contentW + padHPx * 2f + 2f).toInt()
-    val h = ceil(contentH + padVPx * 2f + 2f).toInt()
+    val w = (contentW + padHPx * 2).coerceAtMost(canvasWidth)
+    val h = contentH + padVPx * 2
 
     return IntSize(w, h)
 }
 
 @Composable
 private fun BarChartTooltip(
+    modifier: Modifier = Modifier,
     anchor: Offset,
     canvasSize: IntSize,
     tooltipSize: IntSize,
-    margin: Dp,
-    background: androidx.compose.ui.graphics.Color,
-    border: androidx.compose.ui.graphics.Color,
-    textColor: androidx.compose.ui.graphics.Color,
-    corner: Dp,
-    padH: Dp,
-    padV: Dp,
+    style: BarStyle.Peek.Visible,
     valueText: String,
     labelText: String?,
 ) {
     val density = LocalDensity.current
-    val marginPx = with(density) { margin.toPx() }.roundToInt()
+    val marginPx = with(density) { style.tooltipMargin.toPx() }.roundToInt()
 
-    val w = tooltipSize.width
-    val h = tooltipSize.height
-    if (w <= 0 || h <= 0 || canvasSize.width <= 0 || canvasSize.height <= 0) return
-
-    val ax = anchor.x.roundToInt()
-    val ay = anchor.y.roundToInt()
-
-    fun clampX(x: Int): Int = x.coerceIn(0, max(0, canvasSize.width - w))
-    fun clampY(y: Int): Int = y.coerceIn(0, max(0, canvasSize.height - h))
-
-    fun fits(x: Int, y: Int): Boolean {
-        return x >= 0 && y >= 0 && x + w <= canvasSize.width && y + h <= canvasSize.height
+    if (tooltipSize.width <= 0 || tooltipSize.height <= 0 ||
+        canvasSize.width <= 0 || tooltipSize.height > canvasSize.height
+    ) {
+        return
     }
-
-    data class Candidate(val x: Int, val y: Int)
-
-    val top = Candidate(
-        x = ax - w / 2,
-        y = ay - h - marginPx
+    val position = tooltipPosition(
+        anchor = anchor,
+        canvasSize = canvasSize,
+        tooltipSize = tooltipSize,
+        marginPx = marginPx,
     )
-    val bottom = Candidate(
-        x = ax - w / 2,
-        y = ay + marginPx
-    )
-    val right = Candidate(
-        x = ax + marginPx,
-        y = ay - h / 2
-    )
-    val left = Candidate(
-        x = ax - w - marginPx,
-        y = ay - h / 2
-    )
-
-    val candidates = listOf(top, bottom, right, left)
-
-    val chosen = candidates.firstOrNull { fits(it.x, it.y) } ?: run {
-        candidates.minBy { c ->
-            val cx = clampX(c.x)
-            val cy = clampY(c.y)
-            abs(cx - c.x) + abs(cy - c.y)
-        }
-    }
-
-    val x = clampX(chosen.x)
-    val y = clampY(chosen.y)
+    val shape = RoundedCornerShape(style.tooltipCornerRadius)
 
     Box(
-        modifier = Modifier
-            .offset { IntOffset(x, y) }
-            .background(
-                background,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(corner)
+        modifier = modifier
+            .offset { position }
+            .width(with(density) { tooltipSize.width.toDp() })
+            .background(color = style.tooltipBackground, shape = shape)
+            .then(
+                if (style.tooltipBorderWidth > Dp.Hairline) {
+                    Modifier.border(
+                        width = style.tooltipBorderWidth,
+                        color = style.tooltipBorder,
+                        shape = shape,
+                    )
+                } else {
+                    Modifier
+                }
             )
-            .border(
-                width = 1.dp,
-                color = border,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(corner)
-            )
-            .padding(horizontal = padH, vertical = padV)
+            .padding(horizontal = style.tooltipPaddingH, vertical = style.tooltipPaddingV)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            androidx.compose.foundation.text.BasicText(
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(style.tooltipLabelSpacing),
+        ) {
+            BasicText(
                 text = valueText,
-                style = TextStyle(
-                    color = textColor,
-                    fontSize = 12.sp
-                )
+                style = style.valueTextStyle.copy(color = style.tooltipText),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             if (!labelText.isNullOrBlank()) {
-                androidx.compose.foundation.text.BasicText(
+                BasicText(
                     text = labelText,
-                    style = TextStyle(
-                        color = textColor.copy(alpha = 0.80f),
-                        fontSize = 10.sp
-                    )
+                    style = style.labelTextStyle.copy(color = style.tooltipText),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
     }
+}
+
+private fun tooltipPosition(
+    anchor: Offset,
+    canvasSize: IntSize,
+    tooltipSize: IntSize,
+    marginPx: Int,
+): IntOffset {
+    val width = tooltipSize.width
+    val height = tooltipSize.height
+    val anchorX = anchor.x.roundToInt()
+    val anchorY = anchor.y.roundToInt()
+    val candidates = listOf(
+        IntOffset(x = anchorX - width / 2, y = anchorY - height - marginPx),
+        IntOffset(x = anchorX - width / 2, y = anchorY + marginPx),
+        IntOffset(x = anchorX + marginPx, y = anchorY - height / 2),
+        IntOffset(x = anchorX - width - marginPx, y = anchorY - height / 2),
+    )
+    val maxX = max(0, canvasSize.width - width)
+    val maxY = max(0, canvasSize.height - height)
+    val chosen = candidates.firstOrNull { candidate ->
+        candidate.x in 0..maxX && candidate.y in 0..maxY
+    } ?: candidates.minBy { candidate ->
+        abs(candidate.x.coerceIn(0, maxX) - candidate.x) +
+            abs(candidate.y.coerceIn(0, maxY) - candidate.y)
+    }
+    return IntOffset(x = chosen.x.coerceIn(0, maxX), y = chosen.y.coerceIn(0, maxY))
 }

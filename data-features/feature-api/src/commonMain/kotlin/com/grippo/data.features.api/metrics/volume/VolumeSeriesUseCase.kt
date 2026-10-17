@@ -194,8 +194,8 @@ public class VolumeSeriesUseCase {
     private fun bucketLabel(bucket: Bucket, scale: BucketScale): String {
         return when (scale) {
             BucketScale.Day -> DateTimeUtils.format(
-                bucket.start,
-                DateFormat.DateOnly.WeekdayShort
+                value = bucket.start,
+                format = DateFormat.DateOnly.DateDdMmm
             )
 
             BucketScale.Week -> {

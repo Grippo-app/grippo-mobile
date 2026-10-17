@@ -360,11 +360,7 @@ public interface AppColor {
         }
 
         public interface BarColors {
-            public val grid: Color
-            public val axis: Color
             public val baseline: Color
-            public val highlightMix: Float
-            public val gradientEndAlpha: Float
         }
     }
 

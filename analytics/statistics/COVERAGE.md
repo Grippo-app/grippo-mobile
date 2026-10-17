@@ -67,6 +67,13 @@ Therefore no StateKeeper key, initialState boundary or serialization is required
 Both shared dialog hosts use serializer=null intentionally. No dialog sessions,
 callbacks, metrics, secrets or telemetry provenance are archived. Opening the sheet
 again supplies business inputs and recomputes data; it does not replay user actions.
+The shared volume bar chart derives its geometry, exact formatted values and
+accessibility description from the existing series. Tap selection and horizontal
+exploration are local presentation state. They add no persisted field, route,
+Contract callback, analytics symbol, operation, consent or transport change.
+Daily training buckets use localized day-and-month labels instead of repeated
+weekday names. The existing pure series producer retains bucket selection,
+chronological order, totals, observation and request boundaries.
 
 ## Verification
 
@@ -76,7 +83,7 @@ original exception/cancellation propagation and reporting isolation. Screen and
 state source gates pass by the inventories above. No automated tests/infrastructure
 were added under the project verification policy.
 
-Runtime checks remain unrun: both modes with populated/empty sources, Back versus
+The earlier analytics verification did not exercise both modes with populated/empty sources, Back versus
 swipe dismissal, successful/failed/cancelled requests, reporting-failure injection,
 pause/resume subscriptions, retained Android recreation and fresh Android/iOS
 process restart (the dialog must remain closed). Compilation cannot prove these

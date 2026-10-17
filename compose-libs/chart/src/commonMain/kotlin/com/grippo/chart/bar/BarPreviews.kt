@@ -7,8 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private val palette = listOf(
     Color(0xFF6AA9FF), Color(0xFF00E6A7), Color(0xFFFF7A33),
@@ -94,6 +96,37 @@ private fun barStyle(
     ),
     values = valuesMode,
 )
+
+private fun capsuleStyle(): BarStyle {
+    val base = barStyle(
+        xAdaptive = true,
+        valuesMode = BarStyle.Values.None,
+        sizing = BarStyle.BarsSizing.EvenSlots(maxBarWidth = 18.dp, widthFraction = 0.5f),
+    )
+    return base.copy(
+        layout = base.layout.copy(xAxisLabelSpacing = 8.dp),
+        grid = base.grid.copy(show = false),
+        yAxis = BarStyle.YAxis.None,
+        yAxisLine = null,
+        bars = base.bars.copy(brushProvider = null),
+        peek = BarStyle.Peek.Visible(
+            guideColor = Color(0x40000000),
+            focusRadius = 0.dp,
+            focusRingWidth = 0.dp,
+            focusHaloRadius = 0.dp,
+            tooltipBackground = Color(0xFFF5F5F5),
+            tooltipBorder = Color(0x20000000),
+            tooltipText = Color(0xFF222222),
+            tooltipCornerRadius = 8.dp,
+            tooltipPaddingH = 8.dp,
+            tooltipPaddingV = 6.dp,
+            tooltipMargin = 4.dp,
+            tooltipLabelSpacing = 4.dp,
+            valueTextStyle = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
+            labelTextStyle = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Medium),
+        ),
+    )
+}
 
 @Preview
 @Composable
@@ -262,5 +295,119 @@ private fun PreviewBarFewAdaptiveNoneExplicit() {
     )
 }
 
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsSparse() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = fewData(),
+        style = capsuleStyle(),
+    )
+}
 
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsDense() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(180.dp),
+        data = manyData(n = 30),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsSingle() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = BarData(items = listOf(BarEntry(label = "Single entry", value = 12f, color = palette[0]))),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsSignedAndZero() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(180.dp),
+        data = BarData(
+            items = listOf(
+                BarEntry(label = "Negative", value = -12f, color = palette[0]),
+                BarEntry(label = "Zero", value = 0f, color = palette[1]),
+                BarEntry(label = "Positive", value = 8f, color = palette[2]),
+            ),
+        ),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsLongLabels() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = BarData(
+            items = listOf(
+                BarEntry(label = "A long first entry label", value = 8f, color = palette[0]),
+                BarEntry(label = "A long last entry label", value = 12f, color = palette[1]),
+            ),
+        ),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsAllZero() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = BarData(
+            items = listOf(
+                BarEntry(label = "First", value = 0f, color = palette[0]),
+                BarEntry(label = "Last", value = 0f, color = palette[1]),
+            ),
+        ),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsNegativeOnly() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = BarData(
+            items = listOf(
+                BarEntry(label = "First", value = -12f, color = palette[0]),
+                BarEntry(label = "Last", value = -5f, color = palette[1]),
+            ),
+        ),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsEmpty() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = BarData(items = emptyList()),
+        style = capsuleStyle(),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewBarEvenSlotsNonfinite() {
+    BarChart(
+        modifier = Modifier.fillMaxWidth().height(150.dp),
+        data = BarData(
+            items = listOf(
+                BarEntry(label = "First", value = 12f, color = palette[0]),
+                BarEntry(label = "Last", value = Float.NaN, color = palette[1]),
+            ),
+        ),
+        style = capsuleStyle(),
+    )
+}
 

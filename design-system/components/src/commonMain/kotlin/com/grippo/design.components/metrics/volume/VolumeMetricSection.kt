@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.volume.VolumeSeriesState
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChart
@@ -21,6 +22,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.tonnage
 
 @Composable
@@ -47,7 +49,18 @@ public fun VolumeMetricChart(
                 .heightIn(min = AppTokens.dp.metrics.volume.chart.height)
                 .aspectRatio(AppTokens.dp.metrics.volume.chart.aspectRatio),
             data = value.toBarData(),
-            xAxisLabels = xAxisLabels
+            valueFormatter = { volume ->
+                if (volume.isFinite()) {
+                    val formatted = VolumeFormatState.of(volume)
+                    when (formatted.value) {
+                        null -> "0${AppTokens.strings.res(Res.string.kg)}"
+                        else -> formatted.short()
+                    }
+                } else {
+                    "—"
+                }
+            },
+            xAxisLabels = xAxisLabels,
         )
     }
 }

@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.core.state.examples.WeightTypeEnumState
@@ -72,9 +70,20 @@ public fun ExerciseVolumeHistoryChart(
     BarChart(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(AppTokens.dp.metrics.volume.chart.historyAspectRatio)
-            .semantics { contentDescription = description },
+            .aspectRatio(AppTokens.dp.metrics.volume.chart.historyAspectRatio),
         data = data,
+        valueFormatter = { volume ->
+            if (volume.isFinite()) {
+                val formatted = VolumeFormatState.of(volume)
+                when (formatted.value) {
+                    null -> "0$kg"
+                    else -> formatted.short()
+                }
+            } else {
+                "—"
+            }
+        },
+        description = description,
     )
 }
 

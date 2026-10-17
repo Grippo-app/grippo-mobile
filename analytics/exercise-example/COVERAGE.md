@@ -65,6 +65,14 @@ No serializer or PersistenceKey is required: the module has no editable business
 state and its dialog session is intentionally unsaved. No parent drafts, routes or
 DialogConfig contracts change. Retained VM ownership and one-shot startup operations
 remain unchanged; source observation retains its existing lifecycle policy.
+The history tab uses the shared flat volume bar style with exact tooltip units
+and a complete series accessibility description. Its existing chronological
+series uses each recent record's formatted session date as the presentation label;
+the categorical workout-statistics series retains exercise-name labels.
+Tap and horizontal exploration
+stay local to the chart; recent records and exerciseVolume keep their existing
+rebuild sources. No VM State field, draft, callback, operation, analytics symbol,
+consent or transport contract changes.
 
 ## Verification
 

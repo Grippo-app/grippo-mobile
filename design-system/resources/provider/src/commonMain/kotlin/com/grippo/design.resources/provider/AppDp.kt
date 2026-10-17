@@ -216,6 +216,8 @@ public data object AppDp {
                 val tooltipHorizontalPadding: Dp = padding.small
                 val tooltipVerticalPadding: Dp = padding.extraSmall
                 val tooltipMargin: Dp = 6.dp
+                val tooltipBorderWidth: Dp = Axis.strokeWidth
+                val tooltipLabelSpacing: Dp = padding.tiny
             }
 
             public data object Area {
@@ -227,14 +229,11 @@ public data object AppDp {
             }
 
             public data object Bar {
-                val labelPadding: Dp = padding.small
-                val minHeight: Dp = 6.dp
-                val axisLabelSpacing: Dp = padding.tiny
-                val contentSpacing: Dp = padding.small
-                val radius: Dp = AppDp.radius.medium
-                val midDensityThreshold: Dp = 22.dp
-                val denseThreshold: Dp = 12.dp
-                val maxWidth: Dp = 56.dp
+                val axisLabelSpacing: Dp = padding.small
+                val radius: Dp = 4.dp
+                val maxWidth: Dp = 40.dp
+                val widthFraction: Float = 0.6f
+                val selectionStrokeWidth: Dp = Axis.strokeWidth
             }
 
             public data object Pie {

@@ -27,6 +27,30 @@ public data class IterationState(
             && assistWeight.value == null
             && bodyWeight.value == null
 
+    public fun recordedVolume(): Float? {
+        if (bodyWeight.value != null && bodyMultiplier.value == null) {
+            return null
+        }
+        if (isPending) {
+            return null
+        }
+        return calculatedVolume()
+    }
+
+    public fun hasComparableLoadTo(other: IterationState): Boolean {
+        val current = loadBasis() ?: return false
+        return current == other.loadBasis()
+    }
+
+    internal fun loadBasis(): LoadBasis? {
+        recordedVolume() ?: return null
+        return LoadBasis(
+            external = externalWeight.value != null,
+            body = bodyWeight.value != null,
+            assisted = assistWeight.value != null,
+        )
+    }
+
     @Composable
     public fun volumeCalculation(): String? {
         val body = bodyWeight.value ?: return null
@@ -53,14 +77,25 @@ public data class IterationState(
     @Composable
     public fun volume(): VolumeFormatState {
         return remember(externalWeight, extraWeight, bodyWeight, assistWeight, bodyMultiplier) {
-            val external = (externalWeight.value ?: 0f)
-            val extra = (extraWeight.value ?: 0f)
-            val body = (bodyWeight.value ?: 0f)
-            val assist = (assistWeight.value ?: 0f)
-            val multiplier = (bodyMultiplier.value ?: 0f)
-            VolumeFormatState.of(external + extra + (body * multiplier) - assist)
+            VolumeFormatState.of(calculatedVolume())
         }
     }
+
+    private fun calculatedVolume(): Float {
+        val external = externalWeight.value ?: 0f
+        val extra = extraWeight.value ?: 0f
+        val body = bodyWeight.value ?: 0f
+        val assist = assistWeight.value ?: 0f
+        val multiplier = bodyMultiplier.value ?: 0f
+        return external + extra + body * multiplier - assist
+    }
+
+    @Immutable
+    internal data class LoadBasis(
+        val external: Boolean,
+        val body: Boolean,
+        val assisted: Boolean,
+    )
 }
 
 public fun stubIteration(): IterationState = listOf(

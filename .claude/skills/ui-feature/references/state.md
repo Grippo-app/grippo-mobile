@@ -119,6 +119,20 @@ because it belongs to another screen; absent input uses `Empty()` (not `Invalid(
 
 Anti-patterns: `String` for an email/password/weight field; `Float?` for a weight (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
 
+### Read-only value presentation
+
+Read-only values reuse the existing unit formatter's display methods, such as
+`short()` and `shortAnnotated()`. Reusable parsing, precision, grouping and unit
+formatting belong to that `*FormatState`; MUST NOT add a standalone formatting
+extension file or a screen-specific presentation model as a second owner.
+
+Keep a small surface-specific display choice, such as a missing-value dash or a
+known-zero label, at its rendering site instead of introducing another formatter
+or presentation layer. A numeric factory's `Empty` result is an input convention;
+it does not turn a recorded zero into missing historical data. Inspect
+[ExerciseSummary.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/training/internal/ExerciseSummary.kt)
+for an existing local zero-display branch beside the regular formatter call.
+
 ## State conventions
 
 ```kotlin
@@ -148,6 +162,13 @@ when values arrive asynchronously.
 
 **Does NOT go in state**: domain objects directly when a transformed representation is needed (map via `:data-mappers:domain-to-state`); loaders (use `loaders` on the VM); pure presentation booleans derivable from other state (compute in the Composable; business decisions remain VM/domain-owned); unchanging configuration (companion/`val`).
 
+An operation's progress belongs to the feature's existing `*Loader` and VM
+`loaders`, including independently loaded sections. MUST NOT duplicate that
+progress with a parallel `Loading`/`Loaded` state or an `isLoading` field. State
+holds the resolved data; the Composable combines it with the existing loader to
+render a skeleton or populated content. A distinct layout alone does not justify
+another owner of the same operation lifecycle.
+
 State must not hide restoration/edit flags or previous-source copies removed from
 the ViewModel. Store actual draft values and needed display data; follow the
 [canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
@@ -165,7 +186,11 @@ A formatter *fits* an input when its unit, range and precision match the field. 
 
 ### Sealed-interface states
 
-For screens with discrete modes (Loading/Loaded/Empty/Error), use an `@Immutable sealed interface` with `@Immutable` on the parent AND every subtype. The Composable pattern-matches with an exhaustive `when`. Use sealed states only when the screen has **truly different layouts** per mode; for "same layout with some fields empty", use one `data class` with nullable fields.
+A sealed content state represents mutually exclusive data or business modes with
+**truly different layouts**. Use an `@Immutable sealed interface` with `@Immutable`
+on the parent AND every subtype, and an exhaustive `when` in the Composable. For
+the same layout with some fields empty, use one `data class` with nullable fields.
+Operation progress retains the loader owner described above.
 
 ### Process-death safety (MUST)
 

@@ -10,7 +10,6 @@ public data class BarEntry(
     val color: Color,
 )
 
-@Immutable
 public data class BarData(
     val items: List<BarEntry>,
     val xName: String? = null,

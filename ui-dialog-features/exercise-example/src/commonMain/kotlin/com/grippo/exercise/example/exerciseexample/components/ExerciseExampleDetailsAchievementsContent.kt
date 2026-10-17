@@ -14,6 +14,9 @@ import com.grippo.core.state.achievements.stubAchievements
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
+import com.grippo.core.state.metrics.volume.VolumeSeriesEntryState
+import com.grippo.core.state.metrics.volume.VolumeSeriesState
+import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.achievement.AchievementsCard
@@ -33,6 +36,7 @@ import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun ExerciseExampleDetailsAchievementsContent(
@@ -83,7 +87,7 @@ internal fun ExerciseExampleDetailsAchievementsContent(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            state.exerciseVolume
+            state.volumeWithSessionDates()
                 ?.takeIf { it.entries.isNotEmpty() }
                 ?.let { data ->
                     VolumeMetricChart(
@@ -125,6 +129,20 @@ internal fun ExerciseExampleDetailsAchievementsContent(
     }
 }
 
+private fun ExerciseExampleDetailsState.volumeWithSessionDates(): VolumeSeriesState? {
+    val series = exerciseVolume ?: return null
+    val chronological = recent.asReversed()
+    if (series.entries.size != chronological.size) {
+        return series
+    }
+
+    val entries = series.entries.mapIndexed { index, entry ->
+        val date = chronological[index].createdAt.display
+        if (date.isNotBlank()) entry.copy(label = date) else entry
+    }.toPersistentList()
+    return series.copy(entries = entries)
+}
+
 @AppPreview
 @Composable
 private fun ExerciseExampleDetailsAchievementsContentPreview() {
@@ -135,6 +153,7 @@ private fun ExerciseExampleDetailsAchievementsContentPreview() {
                 recent = stubExercises(),
                 estimatedOneRepMax = stubEstimatedOneRepMax(),
                 achievements = stubAchievements(),
+                exerciseVolume = stubVolumeSeries(),
             ),
             loaders = persistentSetOf(),
         )
@@ -181,7 +200,12 @@ private fun HistoryOnlyPreview() {
     PreviewContainer {
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
-            state = ExerciseExampleDetailsState(recent = persistentListOf(exercise)),
+            state = ExerciseExampleDetailsState(
+                recent = persistentListOf(exercise),
+                exerciseVolume = VolumeSeriesState(
+                    entries = persistentListOf(VolumeSeriesEntryState(label = exercise.name, value = 800f)),
+                ),
+            ),
             loaders = persistentSetOf(),
         )
     }

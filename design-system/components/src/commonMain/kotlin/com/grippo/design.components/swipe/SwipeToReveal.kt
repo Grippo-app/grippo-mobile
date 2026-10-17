@@ -34,6 +34,7 @@ import com.grippo.core.state.trainings.stubIteration
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.components.training.IterationCard
+import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -158,7 +159,7 @@ private fun SwipeToRevealPreview() {
             IterationCard(
                 modifier = Modifier.fillMaxWidth(),
                 value = stubIteration(),
-
+                style = IterationCardStyle.Compact,
             )
         }
         SwipeToReveal(
