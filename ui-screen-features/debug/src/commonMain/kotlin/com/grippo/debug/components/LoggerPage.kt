@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -24,6 +23,7 @@ import com.grippo.debug.LoggerState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
@@ -51,27 +51,33 @@ internal fun LoggerPage(
             state.categories.map { it to UiText.Str(it) }.toPersistentList()
         }
 
-        Segment(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            items = logItems,
-            selected = state.selectedCategory,
-            onSelect = contract::onSelectLogCategory,
-            segmentWidth = SegmentWidth.Unspecified,
-            style = SegmentStyle.Outline
-        )
+        if (logItems.isNotEmpty()) {
+            Segment(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                items = logItems,
+                selected = state.selectedCategory,
+                onSelect = contract::onSelectLogCategory,
+                segmentWidth = SegmentWidth.Unspecified,
+                style = SegmentStyle.Outline
+            )
 
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
-        HorizontalDivider(color = AppTokens.colors.divider.default)
+            ContentDivider()
+        }
 
         val logs = state.logs
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            contentPadding = PaddingValues(top = AppTokens.dp.contentPadding.content),
+            contentPadding = PaddingValues(
+                start = AppTokens.dp.screen.horizontalPadding,
+                top = AppTokens.dp.contentPadding.content,
+                end = AppTokens.dp.screen.horizontalPadding,
+            ),
         ) {
             itemsIndexed(
                 items = logs,

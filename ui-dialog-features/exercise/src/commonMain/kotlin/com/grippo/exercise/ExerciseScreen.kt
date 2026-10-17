@@ -1,16 +1,24 @@
 package com.grippo.exercise
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.stubExercise
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -24,7 +32,9 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_details_btn
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun ExerciseScreen(
@@ -35,62 +45,68 @@ internal fun ExerciseScreen(
 
     val exercise = state.exercise ?: return@BaseComposeScreen
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    ExerciseExampleImage(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        value = exercise.exerciseExample.imageUrl,
-        style = ExerciseExampleImageStyle.LARGE
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = exercise.exerciseExample.name,
-        style = AppTokens.typography.h1(),
-        color = AppTokens.colors.text.primary,
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-    TrainingTotalSection(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        value = exercise.total,
-    )
+            .verticalScroll(rememberScrollState()),
+    ) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    if (exercise.iterations.isNotEmpty()) {
+        ExerciseExampleImage(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            value = exercise.exerciseExample.imageUrl,
+            style = ExerciseExampleImageStyle.LARGE
+        )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        IterationsCard(
+        Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
-            value = exercise.iterations
+            text = exercise.exerciseExample.name,
+            style = AppTokens.typography.h1(),
+            color = AppTokens.colors.text.primary,
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        TrainingTotalSection(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            value = exercise.total,
+        )
+
+        if (exercise.iterations.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            IterationsCard(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                value = exercise.iterations
+            )
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        Button(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            onClick = contract::onExampleDetailsClick,
+            style = ButtonStyle.Secondary,
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.exercise_details_btn)
+            )
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    Button(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        onClick = contract::onExampleDetailsClick,
-        style = ButtonStyle.Secondary,
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.exercise_details_btn)
-        )
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview
@@ -103,6 +119,63 @@ private fun ScreenPreview() {
             ),
             contract = ExerciseContract.Empty,
             loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseWithManySetsPreview() {
+    val exercise = stubExercise()
+    PreviewContainer {
+        ExerciseScreen(
+            state = ExerciseState(
+                exercise = exercise.copy(
+                    id = "many-sets",
+                    exerciseExample = exercise.exerciseExample.copy(
+                        id = "long-exercise",
+                        name = "Жим гантелей на похилій лаві нейтральним хватом",
+                    ),
+                    iterations = List(24) { index ->
+                        stubPendingIteration().copy(
+                            id = "set-$index",
+                            externalWeight = VolumeFormatState.of(80f),
+                            repetitions = RepetitionsFormatState.of(10),
+                        )
+                    }.toPersistentList(),
+                    total = TrainingTotalState(
+                        volume = VolumeFormatState.of(19_200f),
+                        repetitions = RepetitionsFormatState.of(240),
+                        intensity = IntensityFormatState.of(80f),
+                    ),
+                ),
+            ),
+            contract = ExerciseContract.Empty,
+            loaders = persistentSetOf(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseWithoutSetsPreview() {
+    val exercise = stubExercise()
+    PreviewContainer {
+        ExerciseScreen(
+            state = ExerciseState(
+                exercise = exercise.copy(
+                    id = "without-sets",
+                    exerciseExample = exercise.exerciseExample.copy(id = "empty-exercise"),
+                    iterations = persistentListOf(),
+                    total = TrainingTotalState(
+                        volume = VolumeFormatState.of(0f),
+                        repetitions = RepetitionsFormatState.of(0),
+                        intensity = IntensityFormatState.of(0f),
+                    ),
+                ),
+            ),
+            contract = ExerciseContract.Empty,
+            loaders = persistentSetOf(),
         )
     }
 }

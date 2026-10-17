@@ -233,7 +233,7 @@ private fun HomeLoadingRecap(modifier: Modifier) {
                 modifier = Modifier
                     .width(AppTokens.dp.illustration.compact)
                     .height(AppTokens.dp.button.small.height),
-                shape = RoundedCornerShape(AppTokens.dp.button.radius),
+                shape = RoundedCornerShape(AppTokens.dp.button.small.radius),
             )
         }
     }
@@ -355,7 +355,7 @@ private fun HomeLoadingStreak(modifier: Modifier) {
 
 @Composable
 private fun HomeLoadingSpotlight(modifier: Modifier) {
-    HomeLoadingPanel(modifier = modifier, small = true) {
+    HomeLoadingPanel(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),

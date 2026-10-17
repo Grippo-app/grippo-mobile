@@ -34,9 +34,14 @@ internal fun PrimaryGoalPickerScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
+            .weight(1f, false)
+            .navigationBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            bottom = AppTokens.dp.dialog.bottom,
+        ),
     ) {
         items(state.goals, key = { it.ordinal }) { goal ->
             val onClickProvider = remember(goal) {
@@ -53,12 +58,6 @@ internal fun PrimaryGoalPickerScreen(
             )
         }
 
-        item(key = "bottom_spacer") {
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
     }
 }
 

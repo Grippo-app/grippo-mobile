@@ -32,8 +32,8 @@ A compact navigation item and a screen heading do not need the same font size.
   explicitly, rather than deriving opacity inside the component.
 - Ordinary weights, counts, dates and instructions use neutral text colors.
 - Destructive account outlines use `semantic.errorBorder`; quiet summary dividers
-  use `divider.subtle`. Disabled switches use their own `toggle.disabledTrack`
-  and `toggle.disabledThumb` roles.
+  use the shared `ContentDivider`. Disabled switches use their own
+  `toggle.disabledTrack` and `toggle.disabledThumb` roles.
 - Chart grid/axis/baseline colors and area/sparkline fill endpoints belong to
   their chart color groups. Dynamic series gradients retain the supplied series
   hue and use their chart group's blend/opacity coefficients. Avatar fills/rings
@@ -96,12 +96,32 @@ A compact navigation item and a screen heading do not need the same font size.
   choice cards and checked controls use their neutral roles.
 - Secondary buttons use a neutral filled surface and thin outline;
   Tertiary and Transparent retain their quieter surface and inline roles.
-- Text buttons use the 12 dp control shape; icon-only buttons remain circular.
+- Medium text buttons use the 16 dp control shape; Small text buttons use 12 dp
+  corners at their 32 dp minimum height. Icon-only buttons remain circular.
   All styles retain their existing sizes, single-line labels and loading geometry.
 - Error buttons keep the semantic red fill with a dedicated button content pair:
   light content in the light theme and graphite content in the dark theme.
 - Chart series, muscle maps, validation and diagnostic severity retain meaningful
   colors. Use theme-aware palettes in previews as well as production.
+
+## Shape family
+
+- Product corner radii follow the private 8 / 12 / 16 / 20 / 28 dp scale in AppDp;
+  consumers choose their existing semantic component tokens, never a raw radius.
+  The size of the boundary and its nesting determine the step.
+- 8 dp: badges, small chips, set cells and 32 dp icon/image slots. 12 dp: medium
+  chips, Small text buttons, compact filters and 48 dp thumbnails.
+- 16 dp: Medium text buttons, inputs, compact metric panels, repeated framed rows,
+  focus frames, wheel selections and swipe actions. 20 dp: standalone content,
+  menu, profile, recap, equipment, achievement and gallery cards.
+- 28 dp is reserved for BrandHeader, the onboarding hero and bottom-sheet top
+  corners. Warm card fills alone do not change a card's radius.
+- Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
+  inset. Avatars, icon buttons, check marks, progress capsules and switch geometry
+  keep their intentional circular forms. Chart points/arcs retain data geometry;
+  chart tooltip surfaces use the compact 8 dp shape.
+- Loading card, gallery, image and button silhouettes follow their populated
+  owners; text-line skeletons keep their own small corner radius.
 
 ## Layout and accessibility
 
@@ -120,11 +140,12 @@ A compact navigation item and a screen heading do not need the same font size.
   heights; HeaderLoading tokens retain their width fractions and corner radius.
 - When using a framed presentation under
   [shape and hierarchy](../.claude/skills/brand-design/references/design-language.md#shape-and-hierarchy),
-  standalone content cards and framed menu sections use the large 28 dp shape
+  standalone content cards and framed menu sections use the 20 dp shape
   and a thin neutral outline. A standalone card is its own section; rows repeated
-  inside a list are compact. Nested/compact metric panels, repeated framed list
-  rows and input fields use the 12 dp shape; chips, set cells and thumbnails keep
-  their owned shapes.
+  inside a list are compact. Compact metric panels, repeated framed rows, input
+  fields and focus frames use 16 dp corners, including goal insights, diagnostic
+  breakdown panels and weight history rows. Chips, set cells and thumbnails retain
+  their size-specific shapes. Open sections and journal rows remain unframed.
 - Training recording places duration, tonnage and repetitions directly on
   `background.screen`, aligned to `screen.horizontalPadding`. Equal-width cells
   use `h5` primary values and `b12Med` secondary labels with content-driven height;
@@ -144,7 +165,7 @@ A compact navigation item and a screen heading do not need the same font size.
 - Training completion starts with a logo-free Compact BrandHeader confirming a
   saved workout or an update; its owned warm surface carries the emotional accent.
   One neutral Large MetricSectionPanel groups the session's detail action using
-  the existing 28 dp shape, card surface and thin outline. Duration/sets and
+  the common 20 dp card shape, card surface and thin outline. Duration/sets and
   tonnage/repetitions form two equal rows: primary `h5` values and secondary
   `b11Med` labels, with complete wrapping values and `divider.subtle` separators.
   Its `h5` section title has a decorative `icon.secondary` detail chevron.
@@ -156,20 +177,21 @@ A compact navigation item and a screen heading do not need the same font size.
   state. Missing saved details use secondary `b14Med` copy; an unconfirmed result
   uses the same quiet copy without a success header.
 - MenuSection headings use `h4` and a 22 dp glyph centered in a 32 dp tile with
-  12 dp corners. The tile lightly tints the supplied icon hue through the
+  8 dp corners. The tile lightly tints the supplied icon hue through the
   theme-owned `icon.tintedBackgroundAlpha` coefficient, preserving caller alpha;
   the glyph retains its supplied tint. Context icon colors keep their meaning.
   The enclosing section owns the grouping surface; Subtle stays unframed with a
   secondary heading. Header gaps use `content`; values stay neutral.
-- DigestHeader retains its neutral 32 dp icon tile with 12 dp corners and the
+- DigestHeader retains its neutral 32 dp icon tile with 8 dp corners and the
   `context.volume` glyph; working metric panels carry no decorative illustration
   spot. Home's welcome and last-workout recap own the warm illustration regions.
 - Training history uses compact Medium exercise rows: a 48 dp Compact image,
   `b14Semi` full wrapping title and `subContent` gaps. Completed/total sets and
   recorded maximum keep their existing summary semantics. Large recording rows
-  retain their 64 dp image, `h5` title and `content` gaps. The daily timeline adds
-  only `text` vertical spacing outside the row; its time uses `b14Semi` and
-  duration uses secondary `b12Med` text.
+  retain their 64 dp image, `h5` title and `content` gaps. Recording, daily history
+  and completion rely on the open row's own `subContent` vertical padding, without
+  another list gap or vertical wrapper. Timeline time uses `b14Semi` and duration
+  uses secondary `b12Med` text.
 - The monthly training digest uses the Small MetricSectionPanel with an inline
   `h4` volume and tertiary `b12Med` label. Its date, total heading and three
   breakdown metrics stay visible; empty values retain their dimmed treatment.
@@ -227,7 +249,8 @@ A compact navigation item and a screen heading do not need the same font size.
   remain visible within the metric panel's intrinsic height.
   Duration comparison stays neutral and omits the numeric average truncated to
   whole minutes; its always-Stable chip is omitted in Home.
-- Exercise highlights form a horizontal gallery with regular 64 dp thumbnails,
+- Exercise highlights use the Large panel geometry (20 dp corners, 16 dp padding)
+  in a horizontal gallery with regular 64 dp thumbnails,
   complete insight text and existing detail actions; a next-card peek signals more
   items without repeating a tall vertical report. Cards share the tallest content's
   natural height. The gallery scroll viewport reaches the screen edges; internal
@@ -236,13 +259,13 @@ A compact navigation item and a screen heading do not need the same font size.
   no colored edge stripe. Its image/title/chevron header shares the card hierarchy.
 - MenuValueRow keeps neutral labels/values and a quiet chevron, with a 56 dp
   minimum height and 12 dp vertical padding/gaps. Optional leading icons use a
-  32 dp card-surface tile with 12 dp corners; caller-supplied channel/destructive
+  32 dp card-surface tile with 8 dp corners; caller-supplied channel/destructive
   colors retain their meaning. Dividers align with the text after the tile.
 - Equipment rows retain a 64 dp image slot with 12 dp surface padding on all sides.
   Highlighted controls reserve their indicator space so selection does not shift text.
-- Repeated ToggleSelectableCard rows and Medium/Small CheckSelectableCard controls
-  use the compact 12 dp shape. Large experience choices retain the softer 28 dp
-  shape and their full-width description below the title row.
+- Repeated ToggleSelectableCard rows and Medium CheckSelectableCard controls use
+  the 16 dp shape. Small filter choices retain 12 dp corners, and Large experience
+  choices use the 20 dp card shape with their full-width description below the title row.
 - Inputs already own their neutral surface and shape. Keep related fields in a
   spacing group without a second form-card frame; align their outer edges with
   the screen header and primary action. A branded hero and a standalone input
@@ -273,14 +296,54 @@ A compact navigation item and a screen heading do not need the same font size.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
   Medium history/read-only exercise rows use `COMPACT` (48 dp); small inline
   exercise references may use `SMALL` (32 dp).
+- Exercise-library results use open `ExerciseExampleCardStyle.Large` rows with
+  regular 64 dp thumbnails, complete `h5` names, neutral `b13Med` equipment names
+  and `b12Med` last-used dates only when present. Missing equipment falls back to
+  the declared weight type. Quiet dividers align with the text; repeated taxonomy
+  chips, outer card frames and never-used footers do not compete with selection.
+- Replacement-library targets use the passive Small reference with a complete
+  `b14Semi` name and a 32 dp image inside a neutral `FocusFrame`
+  (`background.card`, `border.default`), introduced by a `b12Med` caption.
+  The reference is distinct from selectable results and carries no selection accent.
+- The recording editor uses Medium as an open identity header: regular 64 dp
+  image, full `h5` name and neutral `b12Med` category/force metadata. Its existing
+  load-type line explains the actual set input, so weight type is not repeated.
+  The enclosing single Button action owns a decorative `icon.secondary` chevron
+  sized by `exerciseCard.chevron`; passive card variants add no detail action.
+  While matching catalog metadata is unavailable, the same Medium identity uses the
+  existing exercise draft's value without a click or chevron. The load-type line
+  waits for its real components; identity does not disappear during that interval.
 - Exercise image slots use `background.card`, a thin `border.default` boundary
-  and their existing compact radii. Loading/missing/error placeholders use
+  and size-specific corners: 8 dp at 32 dp, 12 dp at 48 dp, 16 dp at 64 dp and
+  20 dp at 100 dp. Loading/missing/error placeholders use
   `icon.secondary` with size-specific padding, keeping the 32 dp slot readable
   in both themes. Loaded images retain their colors and crop; image slots do not
   carry selection or status emphasis.
 - Use `contentPadding.block` between sections, `content` between related controls,
   `subContent` between compact items and `text` within a text group. Compact menu
   sections use `content` spacing.
+- Standalone profile editors separate toolbar and introduction with `block`;
+  explanations meet related choices at `content`, while the anatomy region starts
+  a new section at `block`. Settings consent keeps `text` between title and body
+  and `content` between the text group and its switch.
+- Goal, streak and performance details use `block` before a new section heading
+  and `content` from the heading to its card or between related entries. The first
+  visible section has no leading separator. Full-width sheet ranges retain
+  `dialog.horizontalPadding`; body content starts once at `dialog.top`.
+- Optional descriptions, suggestions, equipment and history leave no separator
+  when absent. Present sections own the gap between them; text groups use `text`.
+  Equipment galleries use `content` between cards, keeping image and card sizes.
+- Training totals stack full-width LONG chips with `subContent` between present
+  metrics, preserving complete localized labels and large values in both hosts.
+- Scrolling sheet lists own their final `dialog.bottom` through content padding,
+  with one navigation inset. A footer-only lazy item must not add an item gap to
+  that margin. The actionless library uses `screen.verticalPadding` at its end;
+  pinned actions still reserve their measured height through BottomOverlayContainer.
+- Set rows own their vertical padding and optional divider; the list omits it
+  for the final or only row. Their list adds no second row gap; the Sets heading
+  keeps `text` bottom padding beside the first row's
+  `subContent` top padding. Exercise sheets scroll long content rather than
+  compressing text, images, sets or the final action.
 - Keep control heights as minimums when content depends on font size. Chips, set
   cells, selectors and segmented labels must grow instead of clipping text.
 - Keep one layout across system font scales: single-line button labels, centered
@@ -289,6 +352,23 @@ A compact navigation item and a screen heading do not need the same font size.
 - Let tags wrap. Do not hide a weight type just because the preceding tags are long.
 - Preserve readable content when lists scroll behind a pinned action. Pass the
   bottom overlay's resolved padding into the list.
+
+## Content dividers
+
+- Neutral horizontal boundaries use `ContentDivider` with `divider.subtle` and
+  `divider.thickness` (1 dp) in both themes. Vertical metric separators share
+  those color and thickness roles. Selection indicators, timeline connectors,
+  chart guides and skeleton fills retain their own roles.
+- Boundaries between fixed headers or controls and scrolling content, including
+  bottom navigation, reach the host edges. The surrounding content owns its
+  horizontal gutter; the divider does not add another inset.
+- Open list rows separate only adjacent items. Their lines end at the content
+  edge and start at the primary text after a decorative image or icon. Set
+  numbers are content, so set-row lines span the existing row gutters. The last
+  or only row has no trailing line.
+- Independent framed cards and a section heading with its own body do not need
+  a second boundary. Labelled splitters appear only with their section; empty
+  selection groups leave no orphan line below absent tabs.
 
 Before changing shared components, inspect their variants and whole-screen
 consumers in both themes. Use the [standard viewport scope](../.claude/skills/design-system/references/visual-consistency.md#default-viewport-scope)

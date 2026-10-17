@@ -110,7 +110,7 @@ private fun ExerciseSpotlightCard(
 
     MetricSectionPanel(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Small,
+        style = MetricSectionPanelStyle.Large,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

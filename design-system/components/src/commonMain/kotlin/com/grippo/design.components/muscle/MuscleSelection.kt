@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -29,6 +27,7 @@ import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.cards.selectable.ToggleSelectableCard
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
@@ -69,10 +68,15 @@ public fun MuscleSelection(
             ) {
                 val availableHeight = (maxHeight - resolvedPadding.calculateBottomPadding())
                     .coerceAtLeast(0.dp)
+                val dividerHeight = if (groups.isNotEmpty()) {
+                    AppTokens.dp.divider.thickness
+                } else {
+                    0.dp
+                }
                 val availableHeroHeight = (
                     availableHeight - AppTokens.dp.segment.outline.height -
                         AppTokens.dp.contentPadding.content * 3 -
-                        DividerDefaults.Thickness - AppTokens.dp.muscleSelection.listMinHeight
+                        dividerHeight - AppTokens.dp.muscleSelection.listMinHeight
                     ).coerceAtLeast(AppTokens.dp.muscleSelection.heroMinHeight)
                 val heroSize = minOf(
                     maxWidth,
@@ -102,7 +106,9 @@ public fun MuscleSelection(
                         style = SegmentStyle.Outline
                     )
 
-                    HorizontalDivider(color = AppTokens.colors.divider.default)
+                    if (groups.isNotEmpty()) {
+                        ContentDivider()
+                    }
 
                     key(selectedGroupId) {
                         LazyColumn(

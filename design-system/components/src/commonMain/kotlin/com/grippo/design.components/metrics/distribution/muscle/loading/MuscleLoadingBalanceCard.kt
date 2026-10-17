@@ -130,6 +130,8 @@ public fun MuscleLoadingBalanceCard(
                     )
                 }
 
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+
                 Text(
                     text = status,
                     style = AppTokens.typography.b13Med(),
@@ -162,8 +164,6 @@ public fun MuscleLoadingBalanceCard(
                     style = AppTokens.typography.b13Med(),
                     color = AppTokens.colors.text.primary
                 )
-
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
             }
 
             BalanceRing(
@@ -201,7 +201,8 @@ private fun BalanceRing(
         val percent = AppTokens.strings.res(Res.string.percent)
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         ) {
             Text(
                 text = buildAnnotatedString {

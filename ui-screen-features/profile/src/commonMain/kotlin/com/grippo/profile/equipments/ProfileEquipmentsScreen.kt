@@ -61,7 +61,7 @@ internal fun ProfileEquipmentsScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
         }
     )
 

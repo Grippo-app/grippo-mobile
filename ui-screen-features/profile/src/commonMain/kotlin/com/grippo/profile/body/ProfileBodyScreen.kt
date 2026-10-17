@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -71,7 +70,7 @@ internal fun ProfileBodyScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
     InputHeight(
         modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
@@ -97,10 +96,6 @@ internal fun ProfileBodyScreen(
         style = AppTokens.typography.h4(),
         color = AppTokens.colors.text.primary,
     )
-
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-    HorizontalDivider(color = AppTokens.colors.divider.default)
 
     val basePadding = PaddingValues(
         top = AppTokens.dp.contentPadding.content,
@@ -189,6 +184,22 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = ProfileBodyContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyEmptyHistoryPreview() {
+    PreviewContainer {
+        ProfileBodyScreen(
+            state = ProfileBodyState(
+                weight = WeightFormatState.of(33f),
+                height = HeightFormatState.of(90),
+                user = stubUser(),
+            ),
+            loaders = persistentSetOf(),
+            contract = ProfileBodyContract.Empty,
         )
     }
 }

@@ -22,15 +22,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
+import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -42,6 +44,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.IllustratedEmptyState
@@ -63,6 +66,7 @@ import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.empty_sets
 import com.grippo.design.resources.provider.exercise_record
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.save_btn
@@ -87,27 +91,50 @@ internal fun TrainingExerciseScreen(
         style = ToolbarStyle.Transparent,
         leading = Leading.Back(onClick = contract::onBack),
         content = {
-            state.exerciseExample?.let { example ->
-                Column(
+            val example = state.exerciseExample?.takeIf {
+                it.value.id == state.exercise.exerciseExample.id
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = AppTokens.dp.screen.horizontalPadding,
+                        vertical = AppTokens.dp.contentPadding.content,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            horizontal = AppTokens.dp.screen.horizontalPadding,
-                            vertical = AppTokens.dp.contentPadding.content,
+                        .scalableClick(
+                            enabled = example != null,
+                            role = Role.Button,
+                            onClick = contract::onExampleClick,
                         ),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     ExerciseExampleCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .scalableClick(onClick = contract::onExampleClick),
-                        style = ExerciseExampleCardStyle.Medium(value = example),
+                        modifier = Modifier.weight(1f),
+                        style = ExerciseExampleCardStyle.Medium(
+                            value = example?.value ?: state.exercise.exerciseExample,
+                        ),
                     )
+                    if (example != null) {
+                        Icon(
+                            modifier = Modifier.size(AppTokens.dp.exerciseCard.chevron),
+                            imageVector = AppTokens.icons.ArrowRight,
+                            tint = AppTokens.colors.icon.secondary,
+                            contentDescription = null,
+                        )
+                    }
+                }
+                if (example != null) {
                     TrainingExerciseLoadType(components = example.components)
                 }
             }
 
-            HorizontalDivider(color = AppTokens.colors.divider.default)
+            ContentDivider()
         },
     )
 
@@ -151,13 +178,13 @@ internal fun TrainingExerciseScreen(
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             state = dragDropState.listState,
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                             contentPadding = resolvedPadding,
                         ) {
                             item {
                                 Text(
                                     modifier = Modifier
                                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                        .padding(bottom = AppTokens.dp.contentPadding.text)
                                         .fillMaxWidth(),
                                     text = AppTokens.strings.res(
                                         Res.string.sets_value,
@@ -191,6 +218,7 @@ internal fun TrainingExerciseScreen(
                                             previousIteration = state.previousIterations.getOrNull(index),
                                             unusualWeight = iteration.id in state.volumeArtifactIds,
                                             unusualRepetitions = iteration.id in state.repetitionArtifactIds,
+                                            showDivider = index < state.exercise.iterations.lastIndex,
                                             onVolumeClick = { contract.onEditVolume(iteration.id) },
                                             onRepetitionClick = { contract.onEditRepetition(iteration.id) },
                                         )
@@ -336,10 +364,32 @@ private fun TrainingExerciseScreenWarningsPreview() {
 
 @AppPreview
 @Composable
-private fun TrainingExerciseScreenWithoutExamplePreview() {
+private fun TrainingExerciseScreenWithoutCatalogDetailsPreview() {
     PreviewContainer {
         TrainingExerciseScreen(
             state = trainingExercisePreviewState().copy(exerciseExample = null),
+            contract = TrainingExerciseContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingExerciseScreenAwaitingReplacementDetailsPreview() {
+    val populated = trainingExercisePreviewState()
+    val replacement = populated.exercise.exerciseExample.copy(
+        id = "training-exercise-replacement",
+        name = "Reverse Grip Incline Bench Barbell Row",
+        forceType = ForceTypeEnumState.PULL,
+    )
+    PreviewContainer {
+        TrainingExerciseScreen(
+            state = populated.copy(
+                exercise = populated.exercise.copy(
+                    name = replacement.name,
+                    exerciseExample = replacement,
+                ),
+            ),
             contract = TrainingExerciseContract.Empty,
         )
     }

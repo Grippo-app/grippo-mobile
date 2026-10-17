@@ -56,7 +56,7 @@ internal fun MonthlyTrainingsPage(
             .fillMaxSize()
             .verticalScroll(scrollState)
             .padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.verticalPadding),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
         DigestCard(
             modifier = Modifier

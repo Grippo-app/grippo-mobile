@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingBalanceCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingImagesMode
@@ -40,6 +40,7 @@ import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun MuscleLoadingDetailsScreen(
@@ -51,7 +52,9 @@ internal fun MuscleLoadingDetailsScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         text = state.range.display,
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
@@ -75,9 +78,9 @@ internal fun MuscleLoadingDetailsScreen(
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             summary = summary
         )
-    }
 
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
+    }
 
     Text(
         modifier = Modifier
@@ -103,16 +106,20 @@ internal fun MuscleLoadingDetailsScreen(
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-    HorizontalDivider(color = AppTokens.colors.divider.default)
-
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+    ContentDivider()
 
     LazyColumn(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
-        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            .weight(1f, false)
+            .navigationBarsPadding(),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content,
+            bottom = AppTokens.dp.dialog.bottom,
+        ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.summary?.let { summary ->
@@ -125,11 +132,6 @@ internal fun MuscleLoadingDetailsScreen(
             }
         }
 
-        item("bottom_space") {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
     }
 }
 
@@ -157,8 +159,6 @@ private fun MuscleLoadOverviewCard(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
         MuscleLoadingImagesRow(
             modifier = Modifier.fillMaxWidth(),
             summary = summary,
@@ -171,7 +171,6 @@ private fun MuscleLoadOverviewCard(
             mode = listMode,
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
     }
 }
 
@@ -203,6 +202,23 @@ private fun ScreenPerMusclePreview() {
             ),
             loaders = persistentSetOf(),
             contract = MuscleLoadingDetailsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WithoutSummaryPreview() {
+    PreviewContainer {
+        MuscleLoadingDetailsScreen(
+            state = MuscleLoadingDetailsState(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = MuscleLoadingDetailsContract.Empty,
         )
     }
 }

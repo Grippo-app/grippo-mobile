@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -57,6 +57,7 @@ internal fun TrainingExerciseSetRow(
     previousIteration: IterationState? = null,
     unusualWeight: Boolean,
     unusualRepetitions: Boolean,
+    showDivider: Boolean,
     onVolumeClick: () -> Unit,
     onRepetitionClick: () -> Unit,
 ) {
@@ -139,10 +140,9 @@ internal fun TrainingExerciseSetRow(
                 onClick = onRepetitionClick,
             )
         }
-        HorizontalDivider(
-            thickness = AppTokens.dp.iterationCard.borderWidth,
-            color = AppTokens.colors.divider.subtle,
-        )
+        if (showDivider) {
+            ContentDivider()
+        }
     }
 }
 
@@ -281,6 +281,7 @@ private fun TrainingExerciseExternalSetPreview() {
             ),
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -300,6 +301,7 @@ private fun TrainingExerciseBodySetPreview() {
             number = 1,
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -326,6 +328,7 @@ private fun TrainingExerciseExtraWeightSetPreview() {
             number = 1,
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -352,6 +355,7 @@ private fun TrainingExerciseAssistedSetPreview() {
             number = 1,
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -368,6 +372,7 @@ private fun TrainingExerciseWeightWarningSetPreview() {
             number = 1,
             unusualWeight = true,
             unusualRepetitions = false,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -384,6 +389,7 @@ private fun TrainingExerciseRepetitionsWarningSetPreview() {
             number = 1,
             unusualWeight = false,
             unusualRepetitions = true,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -403,6 +409,7 @@ private fun TrainingExerciseCombinedWarningsSetPreview() {
             number = 1,
             unusualWeight = true,
             unusualRepetitions = true,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -422,6 +429,7 @@ private fun TrainingExercisePendingSetPreview() {
             number = 1,
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = true,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -434,6 +442,7 @@ private fun TrainingExercisePendingSetPreview() {
             number = 2,
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = true,
             onVolumeClick = {},
             onRepetitionClick = {},
         )
@@ -446,6 +455,7 @@ private fun TrainingExercisePendingSetPreview() {
             number = 3,
             unusualWeight = false,
             unusualRepetitions = false,
+            showDivider = false,
             onVolumeClick = {},
             onRepetitionClick = {},
         )

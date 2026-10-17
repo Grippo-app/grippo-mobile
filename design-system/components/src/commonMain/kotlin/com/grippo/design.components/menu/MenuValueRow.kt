@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.core.AppTokens
@@ -104,7 +104,7 @@ public fun MenuValueRow(
             }
         }
         if (showDivider) {
-            HorizontalDivider(
+            ContentDivider(
                 modifier = if (icon == null) {
                     Modifier
                 } else {
@@ -112,7 +112,6 @@ public fun MenuValueRow(
                         start = AppTokens.dp.menu.item.iconContainer + AppTokens.dp.menu.item.space,
                     )
                 },
-                color = AppTokens.colors.divider.default,
             )
         }
     }

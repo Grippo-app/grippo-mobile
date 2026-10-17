@@ -1,13 +1,12 @@
 package com.grippo.training.streak.details
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakInsightsCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
@@ -30,6 +30,7 @@ import com.grippo.design.resources.provider.training_streak_timeline_title
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun TrainingStreakDetailsScreen(
@@ -41,7 +42,9 @@ internal fun TrainingStreakDetailsScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         text = state.range.display,
         style = AppTokens.typography.b14Semi(),
         color = AppTokens.colors.text.secondary,
@@ -50,7 +53,7 @@ internal fun TrainingStreakDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    HorizontalDivider(color = AppTokens.colors.divider.default)
+    ContentDivider()
 
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated
@@ -60,13 +63,14 @@ internal fun TrainingStreakDetailsScreen(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
+            .weight(1f, false)
+            .navigationBarsPadding(),
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
             top = AppTokens.dp.contentPadding.content,
+            bottom = AppTokens.dp.dialog.bottom,
         ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.streak?.let { streak ->
             item(key = "summary") {
@@ -78,7 +82,9 @@ internal fun TrainingStreakDetailsScreen(
 
             item(key = "insights_header") {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.block),
                     text = AppTokens.strings.res(Res.string.training_streak_confidence_title),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
@@ -87,14 +93,18 @@ internal fun TrainingStreakDetailsScreen(
 
             item(key = "insights") {
                 TrainingStreakInsightsCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.content),
                     value = streak
                 )
             }
 
             item(key = "timeline_header") {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.block),
                     text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
@@ -103,17 +113,14 @@ internal fun TrainingStreakDetailsScreen(
 
             item(key = "timeline") {
                 TrainingStreakTimelineCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.content),
                     entries = streak.timeline
                 )
             }
         }
 
-        item("bottom_space") {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
     }
 }
 
@@ -128,6 +135,23 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = TrainingStreakDetailsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WithoutStreakPreview() {
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = TrainingStreakDetailsDialogState(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
         )
     }
 }

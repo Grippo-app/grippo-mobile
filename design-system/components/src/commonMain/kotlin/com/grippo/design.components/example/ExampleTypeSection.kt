@@ -121,7 +121,7 @@ private fun ExampleTypeSectionContextsPreview() {
                 .border(AppTokens.dp.iterationCard.borderWidth, AppTokens.colors.border.default, shape)
                 .padding(AppTokens.dp.contentPadding.content),
         ) {
-            ExerciseExampleCard(style = ExerciseExampleCardStyle.Medium(example))
+            ExerciseExampleCard(style = ExerciseExampleCardStyle.Medium(example.value))
         }
     }
 }

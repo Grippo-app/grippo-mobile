@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -32,6 +31,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.inputs.InputDate
 import com.grippo.design.components.inputs.InputPrimaryGoal
@@ -50,6 +50,7 @@ import com.grippo.design.resources.provider.goal_target_date_placeholder
 import com.grippo.design.resources.provider.goal_title
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -68,7 +69,7 @@ internal fun ProfileGoalScreen(
         leading = Leading.Back(contract::onBack),
     )
 
-    Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
 
     Text(
         modifier = Modifier
@@ -82,7 +83,7 @@ internal fun ProfileGoalScreen(
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-    HorizontalDivider(color = AppTokens.colors.divider.default)
+    ContentDivider()
 
     val basePadding = PaddingValues(
         start = AppTokens.dp.screen.horizontalPadding,
@@ -280,12 +281,16 @@ private fun ProfileGoalScreenPreview() {
     PreviewContainer {
         ProfileGoalScreen(
             state = ProfileGoalState(
-                selectedPrimary = GoalPrimaryGoalEnumState.entries.random(),
-                selectedSecondary = GoalSecondaryGoalEnumState.entries.random(),
-                selectedPersonalization = PersonalizationKeyEnumState.entries
-                    .shuffled()
-                    .take(6)
-                    .toPersistentList(),
+                selectedPrimary = GoalPrimaryGoalEnumState.BUILD_MUSCLE,
+                selectedSecondary = GoalSecondaryGoalEnumState.GET_STRONGER,
+                selectedPersonalization = persistentListOf(
+                    PersonalizationKeyEnumState.MODERATE_FREQUENCY,
+                    PersonalizationKeyEnumState.MINUTES_45_TO_90,
+                    PersonalizationKeyEnumState.SEDENTARY_JOB,
+                    PersonalizationKeyEnumState.RECOVERY_FOCUS,
+                    PersonalizationKeyEnumState.LOWER_BACK_CARE,
+                    PersonalizationKeyEnumState.SPORT_BODYBUILDING,
+                ),
             ),
             loaders = persistentSetOf(),
             contract = ProfileGoalContract.Empty,

@@ -42,6 +42,7 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -188,9 +189,9 @@ internal fun IterationPickerScreen(
                     }
                 }
             }
-        }
 
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+        }
 
         when (state.example.components) {
             is ExerciseExampleComponentsState.BodyAndAssist,
@@ -411,6 +412,36 @@ private fun ExtraPreview() = PickerPreview(
 private fun AssistPreview() = PickerPreview(
     ExerciseExampleComponentsState.BodyAndAssist(true, 0.65f, false)
 )
+
+@AppPreview
+@Composable
+private fun WithoutSuggestionsPreview() {
+    val example = stubExerciseExample()
+    PreviewContainer {
+        IterationPickerScreen(
+            state = IterationPickerState(
+                value = stubPendingIteration().copy(
+                    id = "current-empty",
+                    externalWeight = VolumeFormatState.Empty(),
+                    extraWeight = VolumeFormatState.Empty(),
+                    assistWeight = VolumeFormatState.Empty(),
+                    bodyWeight = WeightFormatState.Empty(),
+                    bodyMultiplier = MultiplierFormatState.Empty(),
+                    repetitions = RepetitionsFormatState.Empty(),
+                ),
+                number = 1,
+                iterationSuggestions = persistentListOf(),
+                focus = IterationFocusState.UNIDENTIFIED,
+                example = example.copy(
+                    value = example.value.copy(id = "without-suggestions"),
+                    components = ExerciseExampleComponentsState.External(true),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = IterationPickerContract.Empty,
+        )
+    }
+}
 
 @Composable
 private fun PickerPreview(components: ExerciseExampleComponentsState) {

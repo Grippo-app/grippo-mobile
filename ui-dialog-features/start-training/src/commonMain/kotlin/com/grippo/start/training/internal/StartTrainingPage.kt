@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,8 +132,6 @@ private fun EmptyPage(
             description = AppTokens.strings.res(Res.string.start_training_option_empty_description),
         )
 
-        HorizontalDivider(color = AppTokens.colors.divider.default)
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -218,8 +215,6 @@ private fun ExercisesPage(
             header = header,
             exercisesCount = exercises.size,
         )
-
-        HorizontalDivider(color = AppTokens.colors.divider.default)
 
         BottomOverlayContainer(
             modifier = Modifier

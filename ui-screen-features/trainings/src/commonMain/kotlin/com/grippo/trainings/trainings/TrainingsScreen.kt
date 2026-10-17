@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.datetime.DatePicker
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -86,7 +86,7 @@ internal fun TrainingsScreen(
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
-            HorizontalDivider(color = AppTokens.colors.divider.subtle)
+            ContentDivider()
         }
     )
 

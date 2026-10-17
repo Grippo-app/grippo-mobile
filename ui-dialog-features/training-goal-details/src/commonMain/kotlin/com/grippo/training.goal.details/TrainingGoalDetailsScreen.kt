@@ -1,6 +1,5 @@
 package com.grippo.training.goal.details
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,11 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -21,6 +20,7 @@ import com.grippo.core.state.metrics.profile.GoalFitSeverityState
 import com.grippo.core.state.metrics.profile.stubGoalProgress
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalFitDriftingCard
 import com.grippo.design.components.metrics.profile.goal.GoalFitOnTrackCard
@@ -42,6 +42,7 @@ import com.grippo.training.goal.details.TrainingGoalDetailsDialogState.TipCode
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun TrainingGoalDetailsScreen(
@@ -64,7 +65,7 @@ internal fun TrainingGoalDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    HorizontalDivider(color = AppTokens.colors.divider.default)
+    ContentDivider()
 
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated
@@ -74,13 +75,14 @@ internal fun TrainingGoalDetailsScreen(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
+            .weight(1f, false)
+            .navigationBarsPadding(),
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
             top = AppTokens.dp.contentPadding.content,
+            bottom = AppTokens.dp.dialog.bottom,
         ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         val progress = state.progress
 
@@ -95,7 +97,9 @@ internal fun TrainingGoalDetailsScreen(
 
             item(key = "description") {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.content),
                     text = progress.goal.primaryGoal.description(),
                     style = AppTokens.typography.b13Med(),
                     color = AppTokens.colors.text.secondary,
@@ -105,7 +109,9 @@ internal fun TrainingGoalDetailsScreen(
             if (progress.findings.any { it.severity != GoalFitSeverityState.PASS }) {
                 item(key = "drifting_header") {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = AppTokens.dp.contentPadding.block),
                         text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_drifting_title),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
@@ -114,7 +120,9 @@ internal fun TrainingGoalDetailsScreen(
 
                 item(key = "drifting") {
                     GoalFitDriftingCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = AppTokens.dp.contentPadding.content),
                         findings = progress.findings,
                     )
                 }
@@ -123,7 +131,9 @@ internal fun TrainingGoalDetailsScreen(
             if (progress.findings.any { it.severity == GoalFitSeverityState.PASS }) {
                 item(key = "on_track_header") {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = AppTokens.dp.contentPadding.block),
                         text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_on_track_title),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
@@ -132,7 +142,9 @@ internal fun TrainingGoalDetailsScreen(
 
                 item(key = "on_track") {
                     GoalFitOnTrackCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = AppTokens.dp.contentPadding.content),
                         findings = progress.findings,
                     )
                 }
@@ -142,7 +154,9 @@ internal fun TrainingGoalDetailsScreen(
         if (state.insights.isNotEmpty()) {
             item(key = "insights_header") {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = if (progress != null) AppTokens.dp.contentPadding.block else 0.dp),
                     text = AppTokens.strings.res(Res.string.goal_details_insights_title),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
@@ -156,7 +170,9 @@ internal fun TrainingGoalDetailsScreen(
                 val (headline, detail) = item.reason.reasonText()
                 val action = item.action?.tipText()
                 GoalInsightCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.content),
                     severity = item.severity.goalInsightSeverity(),
                     headline = headline,
                     detail = detail,
@@ -165,11 +181,6 @@ internal fun TrainingGoalDetailsScreen(
             }
         }
 
-        item("bottom_space") {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
     }
 }
 
@@ -191,6 +202,24 @@ private fun TrainingGoalDetailsScreenPreview() {
                     ),
                     InsightItem(InsightItem.Severity.Neutral, ReasonCode.AlmostDone),
                 ),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingGoalDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InsightsWithoutProgressPreview() {
+    PreviewContainer {
+        TrainingGoalDetailsScreen(
+            state = TrainingGoalDetailsDialogState(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
+                insights = persistentListOf(InsightItem(InsightItem.Severity.Neutral, ReasonCode.NoData)),
             ),
             loaders = persistentSetOf(),
             contract = TrainingGoalDetailsContract.Empty,

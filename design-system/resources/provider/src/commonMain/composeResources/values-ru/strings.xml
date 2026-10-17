@@ -152,7 +152,6 @@
     <string name="repetitions_placeholder">Повторения</string>
     <string name="height_placeholder">Введи свой рост</string>
     <string name="exercise_record">Рекорд упражнения</string>
-    <string name="not_used_before">Не использовалось ранее</string>
     <string name="history">История</string>
     <string name="achievements">Достижения</string>
 
@@ -337,7 +336,8 @@
     <string name="max_repetitions">Максимум повторений</string>
     <string name="peak_intensity">Пиковая интенсивность</string>
 
-    <string name="last_used_label">Последнее использование:</string>
+    <string name="exercise_example_last_used_value">Последнее использование: %1$s</string>
+    <string name="exercise_library_replace_target">Упражнение для замены</string>
 
 
     <!-- ForceTypeEnumState -->

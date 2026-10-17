@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +33,7 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -68,7 +68,7 @@ public fun <KEY> BottomBar(
     val split = (items.size + 1) / 2
     Box(modifier) {
         Column(Modifier.padding(top = dp.actionLift).background(AppTokens.colors.background.card)) {
-            HorizontalDivider(thickness = dp.borderWidth, color = AppTokens.colors.divider.default)
+            ContentDivider()
             Row(
                 modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).navigationBarsPadding()
                     .padding(horizontal = dp.horizontalPadding).selectableGroup(),

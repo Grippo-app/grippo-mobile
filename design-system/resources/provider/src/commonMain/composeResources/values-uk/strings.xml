@@ -152,7 +152,6 @@
     <string name="repetitions_placeholder">Повторення</string>
     <string name="height_placeholder">Вкажи свій зріст</string>
     <string name="exercise_record">Рекорд вправи</string>
-    <string name="not_used_before">Ще не використовувалося</string>
     <string name="history">Історія</string>
     <string name="achievements">Досягнення</string>
 
@@ -336,7 +335,8 @@
     <string name="max_repetitions">Максимум повторень</string>
     <string name="peak_intensity">Пікова інтенсивність</string>
 
-    <string name="last_used_label">Останнє використання:</string>
+    <string name="exercise_example_last_used_value">Останнє використання: %1$s</string>
+    <string name="exercise_library_replace_target">Вправа для заміни</string>
 
 
     <!-- ForceTypeEnumState -->

@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -82,7 +81,6 @@ internal fun ColumnScope.ExercisesPage(
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             state = dragDropState.listState,
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                             contentPadding = resolvedPadding,
                         ) {
                             items(

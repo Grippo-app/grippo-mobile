@@ -9,6 +9,7 @@ import com.grippo.design.core.AppTokens
 @Immutable
 internal data class ButtonMetrics(
     val height: Dp,
+    val radius: Dp,
     val horizontalPadding: Dp,
     val space: Dp,
     val spaceTransparent: Dp,
@@ -20,6 +21,7 @@ internal fun resolveButtonSize(size: ButtonSize): ButtonMetrics {
     return when (size) {
         ButtonSize.Medium -> ButtonMetrics(
             height = AppTokens.dp.button.medium.height,
+            radius = AppTokens.dp.button.medium.radius,
             horizontalPadding = AppTokens.dp.button.medium.horizontalPadding,
             space = AppTokens.dp.button.medium.space,
             spaceTransparent = AppTokens.dp.button.medium.spaceTransparent,
@@ -28,6 +30,7 @@ internal fun resolveButtonSize(size: ButtonSize): ButtonMetrics {
 
         ButtonSize.Small -> ButtonMetrics(
             height = AppTokens.dp.button.small.height,
+            radius = AppTokens.dp.button.small.radius,
             horizontalPadding = AppTokens.dp.button.small.horizontalPadding,
             space = AppTokens.dp.button.small.space,
             spaceTransparent = AppTokens.dp.button.small.spaceTransparent,

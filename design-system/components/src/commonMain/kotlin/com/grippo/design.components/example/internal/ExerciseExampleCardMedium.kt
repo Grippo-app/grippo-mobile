@@ -8,23 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.examples.stubExerciseExample
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.example.ExampleTypeSection
-import com.grippo.design.components.example.ExerciseExampleCard
-import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.core.AppTokens
-import com.grippo.design.preview.AppPreview
-import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun ExerciseExampleCardMedium(
     modifier: Modifier,
-    value: ExerciseExampleState,
+    value: ExerciseExampleValueState,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -32,40 +24,25 @@ internal fun ExerciseExampleCardMedium(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ExerciseExampleImage(
-            value = value.value.imageUrl,
-            style = ExerciseExampleImageStyle.MEDIUM
+            value = value.imageUrl,
+            style = ExerciseExampleImageStyle.MEDIUM,
         )
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         ) {
             Text(
-                text = value.value.name,
+                text = value.name,
                 style = AppTokens.typography.h5(),
                 color = AppTokens.colors.text.primary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
             )
 
-            ExampleTypeSection(
-                modifier = Modifier.fillMaxWidth(),
-                value = value.value,
-                size = ChipSize.Small
+            Text(
+                text = "${value.category.title().text()} · ${value.forceType.title().text()}",
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
             )
         }
-    }
-}
-
-@AppPreview
-@Composable
-private fun ExerciseExampleCardMediumPreview() {
-    PreviewContainer {
-        ExerciseExampleCard(
-            modifier = Modifier.fillMaxWidth(),
-            style = ExerciseExampleCardStyle.Medium(
-                stubExerciseExample(),
-            ),
-        )
     }
 }

@@ -3,7 +3,6 @@ package com.grippo.design.components.metrics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -16,6 +15,7 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.core.state.trainings.stubTraining
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
@@ -59,10 +59,7 @@ public fun TrainingSummaryCard(
             training = training,
         )
         if (muscleLoad != null && muscleLoad.perGroup.entries.isNotEmpty()) {
-            HorizontalDivider(
-                thickness = AppTokens.dp.metrics.trainingSummary.dividerWidth,
-                color = AppTokens.colors.divider.subtle,
-            )
+            ContentDivider()
 
             Column(
                 modifier = Modifier.fillMaxWidth(),

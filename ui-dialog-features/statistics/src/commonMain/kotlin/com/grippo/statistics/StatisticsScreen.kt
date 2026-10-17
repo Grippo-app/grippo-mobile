@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +19,7 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
@@ -51,22 +52,22 @@ internal fun StatisticsScreen(
         }
 
         is StatisticsMode.Trainings -> {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                 text = mode.range.display,
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
         }
     }
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
     if (state.mode is StatisticsMode.Trainings) {
-        HorizontalDivider(color = AppTokens.colors.divider.default)
+        ContentDivider()
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
     }
@@ -77,8 +78,13 @@ internal fun StatisticsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                .weight(1f)
+                .navigationBarsPadding(),
+            contentPadding = PaddingValues(
+                start = AppTokens.dp.dialog.horizontalPadding,
+                end = AppTokens.dp.dialog.horizontalPadding,
+                bottom = AppTokens.dp.dialog.bottom,
+            ),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
         ) {
             state.total?.let { metrics ->
@@ -105,15 +111,15 @@ internal fun StatisticsScreen(
                     }
                 }
 
-            item(key = "muscles_spliter") {
-                ContentSpliter(
-                    text = AppTokens.strings.res(Res.string.muscles)
-                )
-            }
-
             state.muscleLoad
                 ?.takeIf { it.perGroup.entries.isNotEmpty() }
                 ?.let { summary ->
+                    item(key = "muscles_spliter") {
+                        ContentSpliter(
+                            text = AppTokens.strings.res(Res.string.muscles)
+                        )
+                    }
+
                     item(key = "muscle_load") {
                         MuscleLoading(
                             modifier = Modifier.fillMaxWidth(),
@@ -123,11 +129,6 @@ internal fun StatisticsScreen(
                     }
                 }
 
-            item("bottom_space") {
-                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                Spacer(modifier = Modifier.navigationBarsPadding())
-            }
         }
     }
 }
@@ -175,6 +176,39 @@ private fun StatisticsExercisesLoadingPreview() {
         StatisticsScreen(
             state = StatisticsState(mode = StatisticsMode.Exercises),
             loaders = persistentSetOf(StatisticsLoader.Charts),
+            contract = StatisticsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsExercisesWithoutDataPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(mode = StatisticsMode.Exercises),
+            loaders = persistentSetOf(),
+            contract = StatisticsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsTrainingsWithoutMuscleLoadPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(
+                mode = StatisticsMode.Trainings(
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 5, 0, 0),
+                        to = LocalDateTime(2026, 10, 11, 23, 59),
+                    ),
+                ),
+                total = stubTotal(),
+                exerciseVolume = stubVolumeSeries(),
+            ),
+            loaders = persistentSetOf(),
             contract = StatisticsContract.Empty,
         )
     }

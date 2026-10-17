@@ -6,9 +6,9 @@ Visual creation/changes first pass
 Source owns complete signatures, token paths and callback behavior; this reference
 records component-specific constraints.
 
-Current shape, for orientation: 35 top-level packages under
+Current shape, for orientation: 36 top-level packages under
 `design-system/components/src/commonMain/kotlin/com/grippo/design.components/`:
-achievement, badge, banner, brand, button, cards, chart, chip, datetime, dragdrop,
+achievement, badge, banner, brand, button, cards, chart, chip, datetime, divider, dragdrop,
 empty, equipment, example, frames, illustration, indicators, inputs, konfetti,
 loading, menu, metrics, modifiers, muscle, navigation, segment, selectors, spliter,
 swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
@@ -24,6 +24,7 @@ swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
 | Highlighted content | [FocusFrame.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/frames/FocusFrame.kt); warm selection by default; custom semantic callers supply both accent and background from tokens |
 | Dialog title/actions | [BottomSheetToolbar.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/toolbar/BottomSheetToolbar.kt); the shared DialogScreen renders one, dialog bodies MUST NOT add a duplicate |
 | Bottom CTA/insets | [BottomOverlayContainer.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/frames/BottomOverlayContainer.kt); apply its resolved content Modifier and PaddingValues to the scrolling content |
+| Neutral horizontal boundary | [ContentDivider.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/divider/ContentDivider.kt); caller-owned geometry follows [divider usage](../../../../design-system/CONSISTENCY.md#content-dividers) |
 | Button | [Button.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/button/Button.kt); loading keeps label/icons/width, shimmers, blocks interaction and exposes indeterminate progress |
 | Input | [inputs/](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/inputs/); editable fields accept matching FormatState and raw text callbacks, picker-backed fields use typed selection and onClick; the core `Input` is internal, so a new field kind gets a public `Input*` wrapper here even for a single consumer |
 | Equipment selection | [EquipmentSelection.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/equipment/EquipmentSelection.kt); fixed group tabs and scrolling EquipmentRow list; selection and bottom actions belong to the caller |

@@ -11,8 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.achievements.stubAchievements
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.achievement.AchievementsCard
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.metrics.performance.EstimatedOneRepMaxCard
@@ -28,6 +31,7 @@ import com.grippo.design.resources.provider.no_data_yet
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsLoader
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
@@ -51,7 +55,9 @@ internal fun ExerciseExampleDetailsAchievementsContent(
         }
 
         if (state.estimatedOneRepMax != null) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            if (state.achievements.isNotEmpty()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            }
 
             EstimatedOneRepMaxCard(
                 modifier = Modifier
@@ -62,7 +68,9 @@ internal fun ExerciseExampleDetailsAchievementsContent(
         }
 
         if (state.recent.isNotEmpty()) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            if (state.achievements.isNotEmpty() || state.estimatedOneRepMax != null) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            }
 
             Text(
                 modifier = Modifier
@@ -140,6 +148,40 @@ private fun ExerciseExampleDetailsAchievementsContentEmptyPreview() {
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
             state = ExerciseExampleDetailsState(),
+            loaders = persistentSetOf(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun EstimatedMaxOnlyPreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsAchievementsContent(
+            modifier = Modifier.fillMaxWidth(),
+            state = ExerciseExampleDetailsState(estimatedOneRepMax = stubEstimatedOneRepMax()),
+            loaders = persistentSetOf(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HistoryOnlyPreview() {
+    val exercise = stubExercises().first().copy(
+        id = "history-only",
+        iterations = persistentListOf(
+            stubPendingIteration().copy(
+                id = "history-set",
+                externalWeight = VolumeFormatState.of(80f),
+                repetitions = RepetitionsFormatState.of(10),
+            ),
+        ),
+    )
+    PreviewContainer {
+        ExerciseExampleDetailsAchievementsContent(
+            modifier = Modifier.fillMaxWidth(),
+            state = ExerciseExampleDetailsState(recent = persistentListOf(exercise)),
             loaders = persistentSetOf(),
         )
     }

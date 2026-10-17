@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +19,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
@@ -31,6 +32,7 @@ import com.grippo.design.resources.provider.history
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun PerformanceTrendDetailsScreen(
@@ -42,7 +44,9 @@ internal fun PerformanceTrendDetailsScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         text = state.range.display,
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
@@ -51,7 +55,7 @@ internal fun PerformanceTrendDetailsScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    HorizontalDivider(color = AppTokens.colors.divider.default)
+    ContentDivider()
 
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated
@@ -61,13 +65,14 @@ internal fun PerformanceTrendDetailsScreen(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
+            .weight(1f, false)
+            .navigationBarsPadding(),
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
             top = AppTokens.dp.contentPadding.content,
+            bottom = AppTokens.dp.dialog.bottom,
         ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         item(key = "info") {
             Text(
@@ -81,7 +86,9 @@ internal fun PerformanceTrendDetailsScreen(
 
         item(key = "chart") {
             PerformanceTrendHistoryCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = AppTokens.dp.contentPadding.content),
                 history = state.history,
             )
         }
@@ -89,7 +96,9 @@ internal fun PerformanceTrendDetailsScreen(
         if (state.history.isNotEmpty()) {
             item(key = "history_header") {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.block),
                     text = AppTokens.strings.res(Res.string.history),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
@@ -102,7 +111,9 @@ internal fun PerformanceTrendDetailsScreen(
             key = { index, _ -> "history_$index" }
         ) { index, entry ->
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = AppTokens.dp.contentPadding.content),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
             ) {
                 val style = if (index == 0) {
@@ -131,11 +142,6 @@ internal fun PerformanceTrendDetailsScreen(
             }
         }
 
-        item("bottom_space") {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
     }
 }
 
@@ -151,6 +157,24 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = PerformanceTrendDetailsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WithoutHistoryPreview() {
+    PreviewContainer {
+        PerformanceTrendDetailsScreen(
+            state = PerformanceTrendDetailsDialogState(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
+                metricType = PerformanceMetricTypeState.Volume,
+            ),
+            loaders = persistentSetOf(),
+            contract = PerformanceTrendDetailsContract.Empty,
         )
     }
 }

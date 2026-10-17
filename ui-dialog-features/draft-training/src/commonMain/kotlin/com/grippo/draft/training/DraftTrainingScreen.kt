@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +21,7 @@ import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -80,7 +80,7 @@ internal fun DraftTrainingScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    HorizontalDivider(color = AppTokens.colors.divider.default)
+    ContentDivider()
 
     BottomOverlayContainer(
         modifier = Modifier
@@ -172,6 +172,18 @@ private fun ScreenPreviewEdit() {
             ),
             contract = DraftTrainingContract.Empty,
             loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DraftTrainingInitialPreview() {
+    PreviewContainer {
+        DraftTrainingScreen(
+            state = DraftTrainingState(),
+            loaders = persistentSetOf(),
+            contract = DraftTrainingContract.Empty,
         )
     }
 }

@@ -11,13 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.equipments.EquipmentGroupState
 import com.grippo.core.state.equipments.stubEquipments
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
@@ -59,7 +59,9 @@ public fun EquipmentSelection(
             style = SegmentStyle.Outline
         )
 
-        HorizontalDivider(color = AppTokens.colors.divider.default)
+        if (groups.isNotEmpty()) {
+            ContentDivider()
+        }
 
         BottomOverlayContainer(
             modifier = Modifier.fillMaxWidth().weight(1f),

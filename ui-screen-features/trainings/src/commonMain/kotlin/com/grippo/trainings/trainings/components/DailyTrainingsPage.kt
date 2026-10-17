@@ -141,7 +141,6 @@ private fun DailyTimelineItem(
         if (exercise != null) {
             ExerciseCard(
                 modifier = Modifier
-                    .padding(vertical = AppTokens.dp.contentPadding.text)
                     .fillMaxWidth(),
                 value = exercise,
                 style = ExerciseCardStyle.Medium(onClick = { onExerciseClick(exercise.id) }),

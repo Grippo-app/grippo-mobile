@@ -6,7 +6,7 @@ before choosing a slot. Current shape, for orientation (source owns changes):
 Private `padding`/`size`/`radius`/`icon` scales feed the top-level component
 groups (inspect the file for the leaves):
 
-- bottomBar, bottomSheet, contentPadding, screen, muscleSelection, dialog
+- bottomBar, bottomSheet, divider, contentPadding, screen, muscleSelection, dialog
 - input, button, loader, konfetti, segment, menu, checkSelectableCard
 - toggleSelectableCard, wheelPicker, achievementCard, equipmentCard, timeline, exerciseCard
 - exerciseExampleCard, weightHistoryCard, deleteUserCard, exerciseExampleImage, iterationCard, iterationsCard

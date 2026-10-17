@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.UiText
 import com.grippo.debug.components.GeneralPage
 import com.grippo.debug.components.LoggerPage
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -26,6 +26,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.debug
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -59,7 +61,7 @@ internal fun DebugScreen(
 
             Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
-            HorizontalDivider(color = AppTokens.colors.divider.default)
+            ContentDivider()
         }
     )
 
@@ -109,6 +111,45 @@ private fun DebugScreenLoadingPreview() {
         DebugScreen(
             state = DebugState(),
             loaders = persistentSetOf(DebugLoader.Logs),
+            contract = DebugContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DebugScreenLoggerPopulatedPreview() {
+    PreviewContainer {
+        DebugScreen(
+            state = DebugState(
+                selected = DebugMenu.Logger,
+                logger = LoggerState(
+                    categories = persistentListOf("General", "Network"),
+                    selectedCategory = "General",
+                    logsByCategory = persistentMapOf(
+                        "General" to persistentListOf(
+                            "Training loaded",
+                            "Exercise updated: four working sets retain their recorded weight and repetitions.",
+                        ),
+                    ),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = DebugContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DebugScreenGeneralPreview() {
+    PreviewContainer {
+        DebugScreen(
+            state = DebugState(
+                selected = DebugMenu.General,
+                pushToken = "FCM-TOKEN",
+            ),
+            loaders = persistentSetOf(),
             contract = DebugContract.Empty,
         )
     }

@@ -36,8 +36,6 @@ internal fun ConfirmationScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     if (state.description != null) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
@@ -48,9 +46,9 @@ internal fun ConfirmationScreen(
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
-    }
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    }
 
     Row(
         modifier = Modifier
@@ -94,6 +92,18 @@ private fun ScreenPreview() {
             ),
             contract = ConfirmationContract.Empty,
             loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ConfirmationWithoutDescriptionPreview() {
+    PreviewContainer {
+        ConfirmationScreen(
+            state = ConfirmationState(description = null),
+            contract = ConfirmationContract.Empty,
+            loaders = persistentSetOf(),
         )
     }
 }

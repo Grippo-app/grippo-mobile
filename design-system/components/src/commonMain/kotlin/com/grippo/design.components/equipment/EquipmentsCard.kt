@@ -26,7 +26,7 @@ public fun EquipmentsCard(
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(
-            AppTokens.dp.contentPadding.block,
+            AppTokens.dp.contentPadding.content,
             Alignment.CenterHorizontally
         ),
         contentPadding = contentPadding
@@ -50,6 +50,19 @@ private fun EquipmentsCardPreview() {
                 EquipmentState(id = "smith", type = EquipmentEnumState.SMITH_MACHINES),
                 EquipmentState(id = "bench", type = EquipmentEnumState.DECLINE_BENCH_WITH_RACK),
             )
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun EquipmentsCardSingleItemPreview() {
+    PreviewContainer {
+        EquipmentsCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = persistentListOf(
+                EquipmentState(id = "single-bench", type = EquipmentEnumState.DECLINE_BENCH_WITH_RACK),
+            ),
         )
     }
 }

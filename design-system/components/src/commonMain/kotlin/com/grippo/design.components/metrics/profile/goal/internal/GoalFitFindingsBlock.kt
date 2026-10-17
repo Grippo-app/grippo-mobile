@@ -158,7 +158,10 @@ private fun FindingInversionRow(
     ) {
         SeverityDot(color = finding.dotColor())
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        ) {
             Text(
                 text = title,
                 style = AppTokens.typography.b14Med(),

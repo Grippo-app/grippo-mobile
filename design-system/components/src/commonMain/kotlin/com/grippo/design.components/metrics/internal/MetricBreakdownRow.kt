@@ -48,7 +48,7 @@ internal fun MetricBreakdownRow(
             if (index != items.lastIndex) {
                 Box(
                     modifier = Modifier
-                        .width(AppTokens.dp.metrics.trainingSummary.dividerWidth)
+                        .width(AppTokens.dp.divider.thickness)
                         .fillMaxHeight()
                         .background(AppTokens.colors.divider.subtle),
                 )
