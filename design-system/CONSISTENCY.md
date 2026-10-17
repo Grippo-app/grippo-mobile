@@ -97,7 +97,8 @@ A compact navigation item and a screen heading do not need the same font size.
 - Secondary buttons use a neutral filled surface and thin outline;
   Tertiary and Transparent retain their quieter surface and inline roles.
 - Medium text buttons use the 16 dp control shape; Small text buttons use 12 dp
-  corners at their 32 dp minimum height. Icon-only buttons remain circular.
+  corners at their 32 dp minimum height. Tertiary icon-only buttons use 8 dp
+  corners; other icon button styles remain circular.
   All styles retain their existing sizes, single-line labels and loading geometry.
 - Error buttons keep the semantic red fill with a dedicated button content pair:
   light content in the light theme and graphite content in the dark theme.
@@ -117,8 +118,12 @@ A compact navigation item and a screen heading do not need the same font size.
 - 28 dp is reserved for BrandHeader, the onboarding hero and bottom-sheet top
   corners. Warm card fills alone do not change a card's radius.
 - Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
-  inset. Avatars, icon buttons, check marks, progress capsules and switch geometry
-  keep their intentional circular forms. Chart points/arcs retain data geometry;
+  inset. Neutral navigation and utility icon buttons use `ButtonStyle.Tertiary`
+  with `background.card` and `button.iconRadius` (8 dp), matching menu icon tiles:
+  sheet Back/Close, toolbar Back/Profile, date arrows and workout menus.
+  Other icon button styles, including the primary Play action, retain circular
+  forms alongside avatars, check marks, progress capsules and switch geometry.
+  Chart points/arcs retain data geometry;
   chart tooltip surfaces use the compact 8 dp shape.
 - Loading card, gallery, image and button silhouettes follow their populated
   owners; text-line skeletons keep their own small corner radius.

@@ -72,7 +72,7 @@ public fun DatePicker(
                 icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
             ),
             size = ButtonSize.Small,
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Tertiary,
             state = buttonState,
             onClick = onPrevious
         )
@@ -101,7 +101,7 @@ public fun DatePicker(
                 icon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
             ),
             size = ButtonSize.Small,
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Tertiary,
             state = buttonState,
             onClick = onNext
         )

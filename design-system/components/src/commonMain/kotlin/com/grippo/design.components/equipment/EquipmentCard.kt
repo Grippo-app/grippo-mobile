@@ -62,6 +62,7 @@ private fun EquipmentCardPreview() {
         listOf(
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
+            EquipmentEnumState.ROPE,
             EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.DECLINE_BENCH_WITH_RACK,
         ).forEach { type ->

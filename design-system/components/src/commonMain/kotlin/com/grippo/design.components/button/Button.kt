@@ -142,7 +142,11 @@ public fun Button(
     val gap = if (transparent) metrics.spaceTransparent else metrics.space
     val shape = when (content) {
         is ButtonContent.Text -> RoundedCornerShape(metrics.radius)
-        is ButtonContent.Icon -> CircleShape
+        is ButtonContent.Icon -> if (style == ButtonStyle.Tertiary) {
+            RoundedCornerShape(AppTokens.dp.button.iconRadius)
+        } else {
+            CircleShape
+        }
     }
     val baseModifier = modifier
         .semantics(mergeDescendants = true) {

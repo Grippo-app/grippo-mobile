@@ -536,6 +536,7 @@ public data object AppDp {
 
     public data object Button {
         val border: Dp = 1.dp
+        public val iconRadius: Dp = radius.small
         val verticalPadding: Dp = padding.extraSmall
         public val small: Small = Small
         public val medium: Medium = Medium

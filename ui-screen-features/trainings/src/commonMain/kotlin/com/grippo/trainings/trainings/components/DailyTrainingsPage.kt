@@ -131,7 +131,7 @@ private fun DailyTimelineItem(
                     content = ButtonContent.Icon(
                         icon = ButtonIcon.Icon(AppTokens.icons.MoreVertical),
                     ),
-                    style = ButtonStyle.Transparent,
+                    style = ButtonStyle.Tertiary,
                     size = ButtonSize.Small,
                     onClick = { onTrainingMenuClick(value.trainingId) },
                 )

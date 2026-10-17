@@ -2,6 +2,7 @@ package com.grippo.design.components.toolbar
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -63,7 +64,7 @@ public fun BottomSheetToolbar(
                         icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft),
                     ),
                     state = if (allowBack) ButtonState.Enabled else ButtonState.Disabled,
-                    style = ButtonStyle.Transparent,
+                    style = ButtonStyle.Tertiary,
                     size = ButtonSize.Small,
                     onClick = onBack
                 )
@@ -101,12 +102,14 @@ public fun BottomSheetToolbar(
 private fun BottomSheetToolbarPreview() {
     PreviewContainer {
         BottomSheetToolbar(
+            modifier = Modifier.background(AppTokens.colors.background.dialog),
             title = "Select exercise",
             onBack = {},
             onClose = {},
             allowBack = true
         )
         BottomSheetToolbar(
+            modifier = Modifier.background(AppTokens.colors.background.dialog),
             title = "Choose your primary training goal",
             onBack = {},
             onClose = {},

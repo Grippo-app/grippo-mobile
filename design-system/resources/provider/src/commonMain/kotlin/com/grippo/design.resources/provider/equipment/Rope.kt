@@ -60,7 +60,7 @@ public val Rope: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -327,7 +327,7 @@ public val Rope: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

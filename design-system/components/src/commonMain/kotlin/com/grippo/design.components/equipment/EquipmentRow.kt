@@ -33,8 +33,8 @@ public fun EquipmentRow(
 private fun EquipmentRowPreview() {
     PreviewContainer {
         val equipments = listOf(
-            EquipmentState(id = "barbell", type = EquipmentEnumState.BARBELL),
-            EquipmentState(id = "smith", type = EquipmentEnumState.SMITH_MACHINES),
+            EquipmentState(id = "rope", type = EquipmentEnumState.ROPE),
+            EquipmentState(id = "cord-handles", type = EquipmentEnumState.CORD_HANDLES),
         )
         equipments.forEach { equipment ->
             EquipmentRow(

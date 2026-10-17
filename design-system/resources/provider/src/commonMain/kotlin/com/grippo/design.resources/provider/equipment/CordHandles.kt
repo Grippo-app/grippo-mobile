@@ -18,7 +18,7 @@ public val CordHandles: ImageVector
             viewportWidth = 182f,
             viewportHeight = 168f
         ).apply {
-            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N500)) {
                 moveTo(3.27f, 74.92f)
                 curveTo(6.31f, 47.13f, 22.58f, 32.82f, 30.33f, 29.13f)
                 curveTo(34.57f, 33.3f, 40.51f, 42.77f, 30.33f, 47.27f)
@@ -76,7 +76,7 @@ public val CordHandles: ImageVector
                 moveTo(12.7f, 46.54f)
                 curveTo(19.68f, 45.17f, 34.11f, 41.7f, 35.96f, 38.79f)
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N500)) {
                 moveTo(84.97f, 74.78f)
                 curveTo(81.92f, 46.99f, 65.66f, 32.68f, 57.91f, 29f)
                 curveTo(53.66f, 33.17f, 47.73f, 42.63f, 57.91f, 47.14f)
@@ -164,7 +164,7 @@ public val CordHandles: ImageVector
                 curveTo(75.69f, 121.8f, 77.5f, 126f, 77.5f, 126f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N500)) {
                 moveTo(97.27f, 115.92f)
                 curveTo(100.31f, 88.13f, 116.57f, 73.82f, 124.33f, 70.13f)
                 curveTo(128.57f, 74.3f, 134.51f, 83.77f, 124.33f, 88.27f)
@@ -222,7 +222,7 @@ public val CordHandles: ImageVector
                 moveTo(106.7f, 87.54f)
                 curveTo(113.68f, 86.17f, 128.11f, 82.7f, 129.96f, 79.79f)
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N500)) {
                 moveTo(178.97f, 115.78f)
                 curveTo(175.93f, 87.99f, 159.66f, 73.68f, 151.91f, 70f)
                 curveTo(147.66f, 74.17f, 141.73f, 83.63f, 151.91f, 88.14f)

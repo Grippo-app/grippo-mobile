@@ -94,7 +94,7 @@ public fun Toolbar(
                             content = ButtonContent.Icon(
                                 icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
                             ),
-                            style = ButtonStyle.Transparent,
+                            style = ButtonStyle.Tertiary,
                             size = ButtonSize.Small,
                             onClick = leading.onClick,
                         )
@@ -103,7 +103,7 @@ public fun Toolbar(
                             content = ButtonContent.Icon(
                                 icon = ButtonIcon.Icon(AppTokens.icons.User)
                             ),
-                            style = ButtonStyle.Transparent,
+                            style = ButtonStyle.Tertiary,
                             size = ButtonSize.Small,
                             onClick = leading.onClick,
                         )
@@ -165,7 +165,7 @@ private fun ToolbarActionsPreview() {
                 Button(
                     modifier = Modifier.semantics { contentDescription = "Profile" },
                     content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.User)),
-                    style = ButtonStyle.Transparent,
+                    style = ButtonStyle.Tertiary,
                     size = ButtonSize.Small,
                     onClick = {},
                 )
