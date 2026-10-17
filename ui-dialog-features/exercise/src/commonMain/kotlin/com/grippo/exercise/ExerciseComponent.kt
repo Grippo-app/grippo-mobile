@@ -19,6 +19,7 @@ public class ExerciseComponent(
             id = id,
             analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
+            selectExerciseHistoryUseCase = getKoin().get(),
         )
     }
 

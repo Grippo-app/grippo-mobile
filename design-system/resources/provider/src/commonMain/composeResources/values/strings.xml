@@ -939,4 +939,19 @@
     <string name="accessibility_not_completed">Not completed</string>
     <string name="accessibility_previous_period">Previous period</string>
     <string name="accessibility_next_period">Next period</string>
+    <string name="exercise_history_total_volume">Total volume</string>
+    <string name="exercise_history_no_sets">No sets recorded</string>
+    <string name="exercise_history_unavailable">This exercise record is unavailable</string>
+    <string name="exercise_history_max_load">Max load</string>
+    <string name="exercise_history_trend_title">Volume history</string>
+    <string name="exercise_history_current_date">%1$s · this entry</string>
+    <string name="exercise_history_no_previous">No earlier entries in the previous 180 days</string>
+    <string name="exercise_history_comparison_loading">Loading previous workouts…</string>
+    <string name="exercise_history_volume_delta">%1$s volume</string>
+    <string name="exercise_history_previous_set_date">Previous sets · %1$s</string>
+    <string name="exercise_history_different_load">Load was recorded differently across entries</string>
+    <string name="exercise_history_chart_unavailable">Chart unavailable for these volume values</string>
+    <string name="exercise_history_set_result">%1$s × %2$s</string>
+    <string name="exercise_history_previous_short">%1$s · %2$s</string>
+    <string name="exercise_history_vs_date">vs %1$s</string>
 </resources>

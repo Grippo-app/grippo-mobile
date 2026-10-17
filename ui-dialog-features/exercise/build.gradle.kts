@@ -14,6 +14,7 @@ kotlin {
         implementation(projects.analytics.analyticsApi)
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
+        implementation(projects.toolkit.dateUtils)
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataFeatures.featureApi)
@@ -27,5 +28,6 @@ kotlin {
         implementation(libs.compose.material3)
 
         implementation(libs.immutable.collections)
+        implementation(libs.datetime)
     }
 }

@@ -393,6 +393,7 @@ public data object AppDp {
             public data object Chart {
                 val height: Dp = icon.xxxLarge
                 val aspectRatio: Float = 1.7f
+                val historyAspectRatio: Float = 3.2f
             }
         }
     }
@@ -597,6 +598,8 @@ public data object AppDp {
     public data object IterationCard {
         val borderWidth: Dp = 1.dp
         val radius: Dp = AppDp.radius.small
+        val historyNumberSize: Dp = size.small
+        val historyContextWidth: Dp = 112.dp
         public val editor: Editor = Editor
 
         public data object Editor {

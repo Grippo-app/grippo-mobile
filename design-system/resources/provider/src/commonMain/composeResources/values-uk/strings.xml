@@ -151,7 +151,7 @@
     <string name="volume_placeholder">Вага</string>
     <string name="repetitions_placeholder">Повторення</string>
     <string name="height_placeholder">Вкажи свій зріст</string>
-    <string name="exercise_record">Рекорд вправи</string>
+    <string name="exercise_record">Запис вправи</string>
     <string name="history">Історія</string>
     <string name="achievements">Досягнення</string>
 
@@ -918,4 +918,19 @@
     <string name="accessibility_not_completed">Не виконано</string>
     <string name="accessibility_previous_period">Попередній період</string>
     <string name="accessibility_next_period">Наступний період</string>
+    <string name="exercise_history_total_volume">Загальний обсяг</string>
+    <string name="exercise_history_no_sets">Немає записаних підходів</string>
+    <string name="exercise_history_unavailable">Цей запис вправи недоступний</string>
+    <string name="exercise_history_max_load">Макс. навантаження</string>
+    <string name="exercise_history_trend_title">Історія обсягу</string>
+    <string name="exercise_history_current_date">%1$s · цей запис</string>
+    <string name="exercise_history_no_previous">Немає попередніх записів за останні 180 днів</string>
+    <string name="exercise_history_comparison_loading">Завантаження попередніх тренувань…</string>
+    <string name="exercise_history_volume_delta">%1$s обсягу</string>
+    <string name="exercise_history_previous_set_date">Попередні підходи · %1$s</string>
+    <string name="exercise_history_different_load">Навантаження записано по-різному</string>
+    <string name="exercise_history_chart_unavailable">Графік недоступний для цих значень обсягу</string>
+    <string name="exercise_history_set_result">%1$s × %2$s</string>
+    <string name="exercise_history_previous_short">%1$s · %2$s</string>
+    <string name="exercise_history_vs_date">Раніше · %1$s</string>
 </resources>

@@ -1,117 +1,131 @@
-## Current contract follow-up (2026-10-14)
+# Exercise dialog coverage
 
-The [current analytics review](../COVERAGE.md#current-analytics-contract-review-2026-10-14)
-records this revision and its verification limits. Typed dialog observation names
-use DismissRequested across screens/dialogs, with dismiss_requested wire names/codes.
-The app has not been released; all analytics schemas use initial version 1.
-
-# Exercise dialog analytics and state assessment
-
-Scope: `:ui-dialog-features:exercise`, reviewed 2026-10-13.
+Scope: `:ui-dialog-features:exercise`, the read-only record opened from a
+completed exercise in workout history or the completed-workout screen.
 
 ## Surface and presentation gate
 
 | Route / rendered surface | Component → VM | Presentation classification |
 |---|---|---|
-| DialogConfig.Exercise → dialog content child → ExerciseScreen | ExerciseComponent → ExerciseViewModel | Read-only runtime overlay; default null screenPresentation. No independent screen or separate dialog presentation contract. |
-| ShowExampleDetails → host pushes DialogConfig.ExerciseExampleDetails | Existing ExerciseExampleDetailsComponent / VM | Nested runtime overlay outside this instrumentation scope; no new presentation contract. |
+| `DialogConfig.Exercise` → dialog content child → `ExerciseScreen` | ExerciseComponent → ExerciseViewModel | Read-only runtime overlay; default null `screenPresentation`. Loading, unavailable and available content are states of the same overlay, without a separate presentation contract. |
+| `TrainingsRouter.Trainings` → daily timeline → Exercise overlay | TrainingsComponent → TrainingsViewModel | Existing `TrainingsScreen.Calendar` presentation and `TrainingsEvent.ExerciseClicked` open intent remain unchanged. |
+| `TrainingRouter.Completed` → completed timeline → Exercise overlay | TrainingCompletedComponent → TrainingCompletedViewModel | Existing `TrainingScreen.Completed` presentation and `TrainingEvent.Completed.ExerciseOpened` open intent remain unchanged. |
+| `ShowExampleDetails` → host pushes `DialogConfig.ExerciseExampleDetails` | Existing ExerciseExampleDetailsComponent → VM | Existing nested runtime overlay; no new navigation or analytics contract. |
 
-Both ordinary and nested exercise entries use the same host factory. The existing
-Component resolves ExerciseAnalytics in its retainedInstance factory. Shared
-registers ExerciseAnalyticsModule and its uniquely qualified `exercise_analytics`
-schema catalog. No host, config, navigation or lifecycle instrumentation is added.
+Both entries use the same host factory. ExerciseComponent resolves
+ExerciseAnalytics inside `retainedInstance`. Shared registers ExerciseAnalyticsModule
+and its qualified `exercise_analytics` schema. The host retains its toolbar,
+Back/close behavior and in-memory session ownership.
 
-## Observed callbacks and schemas
+## Observed callbacks, operation and schemas
 
 | Owner / callback | Typed fact / version-1 wire schema | Eligibility and meaning |
 |---|---|---|
-| ExerciseViewModel.onExampleDetailsClick | ExampleDetailsClicked / exercise_example_details_clicked | After the existing exercise/example ID guard, before ShowExampleDetails; observes click, not successful downstream display. Null exercise emits nothing. |
-| ExerciseViewModel.onDismiss | Dismiss / exercise_dismiss_requested | Before the existing Back direction. The Component registers this callback with its BackCallback. Reports callback invocation without inferring user source or actual host dismissal. |
+| ExerciseViewModel.onExampleDetailsClick | ExampleDetailsClicked / `exercise_example_details_clicked` | After the existing available exercise/example ID guard, before ShowExampleDetails; observes the click, not downstream display. Loading/unavailable content emits nothing. |
+| ExerciseViewModel.onDismiss | DismissRequested / `exercise_dismiss_requested` | Before Back; reports callback invocation without inferring user source or host dismissal. |
+| ExerciseViewModel.init / startup safeLaunch | LoadHistory / `exercise_task_started`, `exercise_task_completed`, `exercise_task_failed`, `exercise_task_interrupted` | Once after the primary subscription supplies an available record. The complete decorated block rechecks the selected record, refreshes the 180-day workout window, reads the reconciled cache and fresh selected record, selects prior workouts and maps their history. `getOrThrow()` remains inside the block. |
 
-Both schemas have no parameters. No IDs, names, URLs, measurements, iteration
-values or exception text are reported. Ordinary reporting Exceptions are isolated
-in the implementation; fatal Errors remain fatal. Navigation and the observation
-subscription retain their original business behavior. There is no finite business
-command to decorate: observeExercise remains a subscription, not an operation.
+The two existing event schemas remain parameterless. The four new version-1
+operation schemas carry `exercise_operation=load_history`; terminal schemas also
+carry numeric `duration_ms`. No IDs, names, URLs, dates, measurements, set values
+or exception text are reported. Completion describes the whole read/reconciliation
+block, including an eligible early return if the selected record disappears;
+it does not prove that a prior workout exists or that a comparison was rendered.
+The journal, comparison and chart add no business commands. `observeExercise`
+remains a subscription, not an operation. Chart tooltips are local presentation
+interactions and deliberately emit no analytics.
 
 Omissions: automatic dialog view/close, host Back/swipe/outside-tap dismissal,
 programmatic removal, entry attribution and nested-example interaction/outcome.
-Host-managed exits can bypass ExerciseViewModel.onDismiss and therefore emit no
-exercise_dismiss_requested. No synthetic events on initialization, data emissions or resume.
-Calling screens retain their own open-intent observations.
+Host exits can bypass `onDismiss`. No synthetic events on initialization, content
+emissions or resume. The existing detail action provides exercise information,
+recent history and achievements through their existing owners.
 
 ## State preservation source gate
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| ExerciseViewModel | exercise with example presentation, total and iterations | Rebuild | TrainingFeature.observeExercise(id) → existing domain-to-state mapper | Fresh live session starts null and subscribes to the current source; no user-editable fields. |
-| DialogConfig.Exercise | id / title / callbacks and session identity | Runtime only | Existing host slot and content stack, both serializer = null | Retained VM supports ordinary recreation; process death closes the dialog session. No StateKeeper supplier is required or added. |
-| Exercise VM / foundation | loaders, directions, subscription and telemetry provenance | Runtime only | Existing foundation and retainedInstance | No jobs, flags, reporting metadata or callbacks serialized. |
-| Calling screen | accepted result / draft | Existing owner | This dialog returns no editable selection or accepted result | No parent draft changes required; detail navigation uses the existing example ID. |
+| ExerciseViewModel / ExerciseState | Available exercise: identity, date, ordered iterations and stored totals | Rebuild | TrainingFeature.observeExercise(id) → domain-to-state mapper | The primary subscription alone owns current-record state. Fresh session starts Loading; nonnull source becomes Available. A null source becomes Unavailable, clearing any earlier available record. No editable data. |
+| ExerciseState.Available / ExerciseHistoryState | Loading / Loaded prior exercise records | Rebuild | TrainingFeature.getTrainings plus observeTrainings, SelectExerciseHistoryUseCase and domain-to-state mapper | The selected date bounds a 180-day window through the end of that day. At most five strictly prior workouts contribute one recorded matching exercise each; the current workout and future records are excluded. Same-ID primary emissions preserve loaded history. There is no draft or persistent comparison cache. A partial prior record remains the actual latest record; unknown load is omitted from comparisons rather than replaced by an older session. |
+| ExerciseState | Loading / Available / Unavailable content lifecycle | Rebuild | Initial state and the current observeExercise emission | No saved flags, source snapshots or duplicated draft. An unavailable record exposes no details action. |
+| ExerciseScreen | Scroll position | Runtime only | Existing Compose scroll owner | Presentation-only; no business selection or accepted result. |
+| ExerciseVolumeHistoryChart | Tooltip / touched bar | Runtime only | Existing shared BarChart owner | No business selection; recreated from chronological history with the selected entry last. |
+| DialogConfig.Exercise / host | id, title, callbacks and session identity | Runtime only | Existing slot and content stack, serializer = null | Retained VM supports ordinary recreation; process death closes the dialog session. No StateKeeper supplier is added. |
+| Exercise VM / foundation | loaders, directions and subscription | Runtime only | Existing foundation and retainedInstance | Jobs, callbacks and reporting metadata are not serialized. |
+| Calling screens | Existing date/range and completed-workout draft | Preserve | Existing `TrainingsDraft` / `TrainingCompletedDraft` Component StateKeeper keys | Unchanged. This dialog returns no editable selection/result; detail navigation uses the existing example ID. |
 
-There are no inputs, selections, filters, parent drafts or secrets owned by this
-module. No serialization plugin, PersistenceKey, archive schema or app-shell
-change is warranted. An ordinary retained recreation does not rerun VM init;
-a new session creates a fresh VM and rebuilds presentation. Source review is not
-runtime proof of lifecycle resubscription or process restart.
+No new serialization, routes, archive schema or app-shell changes. The module
+declares the existing date-utils and datetime dependencies directly for the
+production history window and deterministic date fixtures; versions and build
+conventions are unchanged.
+Stored totals keep their current domain meaning and originate in nonnullable
+Float/Int domain fields. Their formatter-empty zero values render as recorded
+zero in this feature summary; absent per-set measurements remain unavailable.
+Bodyweight formulas use the recorded component values. Optional absent body mass
+contributes zero while known external, extra and assist values remain recorded
+load. Body mass without its multiplier and a coefficient without any weight input
+remain unknown. The journal leads the content and pairs matching load bases by
+ordinal in a quiet previous-result column; it does not infer set equivalence or
+strength progress. Its fixed context width and two-line minimum reserve the same
+space for shimmer, prior values and absent matches.
 
-## Verification
+The compact summary after the journal shows only current volume, repetitions and
+maximum effective load; set count already belongs to the journal heading.
+Secondary history shows a concise previous value/date and guarded volume percent.
+The percentage requires a matching latest-prior load basis, a positive previous
+volume and a finite bounded ratio. The chart requires comparable load bases and
+finite nonnegative volumes for every displayed entry; otherwise explanatory copy
+occupies its reserved region. Signed recorded values remain visible in the journal,
+current summary and previous caption without clamping them to a fabricated zero.
+An incomparable latest-prior record also suppresses the percentage. History loading has one
+localized indeterminate accessibility node, decorative shared shimmer slots and
+the same caption/chart geometry as loaded or empty history. It introduces no
+draft, timer, request, retry or business selection.
 
-Source review checked the actual screen body, Contract callbacks, Component
-factory, host nested navigation and serializer=null boundaries. The eligible and
-null-data paths retain their prior guard/navigation behavior. The typed family is
-exhaustively encoded into two parameterless schemas, and the implementation has
-no UI/domain/SDK imports. Module registration and the sole VM constructor caller
-are reconciled. The analytics surface gate and state inventory pass source review.
+History refresh failures use the standard `safeLaunch` / ErrorProvider pipeline.
+The user explicitly kept the general error dialog after being informed that the
+host replaces and closes the Exercise session. There is no local retry/failure
+state or retry event; re-entry rebuilds the record and history. Cancellation uses
+the standard interrupted operation outcome, without a synthetic failure UI.
 
-Runtime checks remain unperformed: callback delivery/Back priority, host swipe
-omission, SDK delivery, injected reporting failure, ordinary recreation, fresh
-process restart and iOS checkpoint behavior. No automated test infrastructure or
-verification-only production hooks were introduced. Independent review is
-unperformed: no permitted independent reviewer is available in this session.
+## Admin synchronization
 
-Manual checks: open the dialog with loaded data, tap details and return; verify
-one click observation per accepted callback. Verify null data cannot produce a
-detail event. Invoke Back and compare the actual host/child handling with the
-explicit dismissal omission. Rotate/resume while the session is live, then restart
-the process: retained recreation may keep the session, process death closes it;
-a newly opened session must rebuild current exercise data.
+The history operation changes analytics-facing symbols, so the live admin gate
+applies. Live inspection in the user's correct Chrome window verified account
+`379805710`, property `519002689` and both configured mobile app streams:
+Android `13265245917` / `com.grippo.android`, iOS `13348167981` / `com.grippo.app`.
+Their Firebase app identifiers match the synced public configurations.
 
-Fresh verification results:
-- `git diff --check` passed.
-- Ad hoc source checks passed: two unique version-1 parameterless schema names,
-  transport name syntax/length, no duplicate wire declarations, implementation
-  import boundaries and event placement after the existing null-data guard.
-- Combined Android build of exercise UI/analytics/shared failed during project
-  configuration: first `projects.analytics.heightPicker`, then on retry with
-  `--no-configuration-cache`, `muscleLoadingDetails` / `performanceTrendDetails`
-  were unresolved in shared/build.gradle.kts. These unrelated shared dependencies
-  were changing concurrently; no unrelated build edits were made for this task.
-- Isolated UI/analytics Android build with `--configure-on-demand
-  --no-configuration-cache` failed before exercise compilation in
-  `:compose-libs:chart:transformNativeMainDependenciesMetadata`: unreadable output,
-  missing `compose-libs/chart/build/kotlinTransformedMetadataLibraries/nativeMain/nativeMain.json`.
-  UI compilation and shared generated DI remain unverified; no chart/build
-  infrastructure changes were made.
-- Standalone `:analytics:exercise:compileAndroidMain --configure-on-demand
-  --no-configuration-cache` passed (BUILD SUCCESSFUL, 51s). Generated Koin source
-  binds ExerciseAnalytics to ExerciseAnalyticsImpl and registers the qualified
-  schema provider. This confirms analytics compilation and generated definitions,
-  not shared DI runtime or SDK delivery.
+Keep raw event-name diagnostics in saved report `События и экраны`
+(`16123956244`): Event name is the default dimension, Event count and Total users
+are the metrics, and its only filter is mobile Platform. It has no event allowlist,
+so all six exercise schemas are eligible without an admin addition when delivered.
+The registered `duration_ms` metric retains Event scope and Milliseconds; it is
+available for explicit mobile analysis of the exact terminal exercise family
+`^exercise_task_(completed|failed|interrupted)$`, but this saved diagnostics report
+does not display duration and no Exercise latency report is claimed.
+`exercise_operation` is not a registered dimension: the only current operation is
+already identified by its unique event family, so a new dimension is deliberately
+omitted and must be reconsidered if that family gains other operations. No derived
+rule or key event is needed. Both mobile streams' exact profile/training derived rules, existing key
+events, audiences, the profile/training report and training exploration/funnel have
+no Exercise dependency. No admin configuration change was required or made.
 
-### Follow-up tail review (2026-10-13)
+Current-build SDK receipt and processing remain unobserved; configuration
+reconciliation does not prove delivery. Root consumer mapping and evidence:
+[`analytics/COVERAGE.md`](../COVERAGE.md).
 
-Re-read the actual Exercise Contract/Screen/State/Component/VM, the analytics API,
-implementation/matrix/module, shared registration and dialog Back/session wiring.
-No missing caller, unused observation, duplicate exercise schema/provider,
-reporting-only navigation field or required draft was found in this scope.
-The existing host-managed dismissal omissions remain deliberate; this is not a
-complete count of all dialog exits. The previous compile success applies only to
-the analytics module, not the UI or shared composition root.
+## Verification boundary
 
-Fresh combined Android retry passed shared configuration but failed in
-`:toolkit:date-utils:compileCommonMainKotlinMetadata` because
-`toolkit/date-utils/build/kotlinTransformedMetadataLibraries/commonMain/commonMain.json`
-was missing. UI/shared compilation is still unverified. No unrelated generated
-outputs or build infrastructure were changed. Runtime and independent review
-limits above remain in effect.
+The source inventory includes both entry points, the shared host, Component,
+State, ViewModel, ordered set rendering and both callback guards. Runtime and
+build results belong in the task reply; source review does not establish SDK
+receipt, lifecycle resubscription or restoration. No verification-only production
+hooks or automated test infrastructure are introduced.
+
+Typed events, parameters, eligibility, consent and transport retain the recorded
+contract. The startup decorator remains after the available-record gate within
+the same initialization path; the initial Available state supplies Loading until
+the history read completes, without a redundant loading-state update. The admin
+section retains its live configuration evidence; layout and chart eligibility
+changes add no analytics-facing symbols or admin consumer dependency.
